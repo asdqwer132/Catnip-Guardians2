@@ -1,10 +1,22 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "AttackAtTargetEffect", menuName = "Game/Item Effect/Attack At Target")]
-public class AttackAtTargetEffect : ItemEffectData
+public class AttackAtTargetEffect : ItemEffectData, IItemEffectStatProvider
 {
+    [Header("Attack Effect Stat")]
+    public EffectStat effectStat;
+
+    [Header("Damage Apply")]
+    public DamageApplyMode damageApplyMode = DamageApplyMode.HitOnce;
+
     [Header("Optional Override")]
-    public GameObject overrideAttackPrefab; //비워둘시 아이템의 프리팹 사용
+    [Tooltip("비워두면 ItemData.prefab을 사용합니다.")]
+    public GameObject overrideAttackPrefab;
+
+    public EffectStat GetBaseEffectStat()
+    {
+        return effectStat;
+    }
 
     public override void Execute(ItemEffectContext context)
     {
@@ -26,14 +38,6 @@ public class AttackAtTargetEffect : ItemEffectData
         );
 
         ApplyDamageArea(obj, context);
-
-        //Debug.Log(
-        //    context.itemData.itemName +
-        //    " 공격 효과 실행 / 데미지: " +
-        //    GetItemDamage(context) +
-        //    " / 범위: " +
-        //    GetItemRadius(context)
-        //);
     }
 
     private GameObject GetAttackPrefab(ItemEffectContext context)
@@ -46,6 +50,9 @@ public class AttackAtTargetEffect : ItemEffectData
 
     private void ApplyDamageArea(GameObject obj, ItemEffectContext context)
     {
+        if (obj == null || context == null)
+            return;
+
         DamageArea damageArea = obj.GetComponent<DamageArea>();
 
         if (damageArea == null)
@@ -54,26 +61,21 @@ public class AttackAtTargetEffect : ItemEffectData
         if (damageArea == null)
             return;
 
+        EffectStat stat = context.effectStat;
+
+        if (stat == null)
+            stat = effectStat;
+
+        if (stat == null)
+            return;
+
         damageArea.Init(
-            damage: GetItemDamage(context),
-            radius: GetItemRadius(context),
-            lifeTime: context.itemData.effectStat.effectRadius,
-            hitOnce: context.itemData.effectStat.effectCount == 1 ? true : false,
+            damage: stat.GetAttackDamage(),
+            radius: stat.GetSafeRadius(),
+            lifeTime: stat.GetSafeLifeTime(),
+            damageApplyMode: damageApplyMode,
+            damageInterval: stat.GetSafeDamageInterval(),
             owner: context.owner
         );
-    }
-
-    private float GetItemDamage(ItemEffectContext context)
-    {
-        if (context.effectStat == null)
-            return 0f;
-
-        return context.effectStat.attackPower *
-               context.effectStat.attackMultiplier;
-    }
-
-    private float GetItemRadius(ItemEffectContext context)
-    {
-        return Mathf.Max(0.01f, context.effectRadius);
     }
 }

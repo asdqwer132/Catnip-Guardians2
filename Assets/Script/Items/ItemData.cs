@@ -36,33 +36,6 @@ public class ItemData : ScriptableObject
     [Header("Use Cooldown")]
     public float cooldown = 0.5f;
 
-    [Header("Effect Stat")]
-    public EffectStat effectStat = new EffectStat();
-
-    [Header("Throw Setting")]
-    [Tooltip("아이템마다 투척 설정을 따로 사용할지")]
-    public bool overrideThrowSetting = false;
-
-    [Tooltip("목표 지점까지 도착하는 시간")]
-    [Min(0.01f)]
-    public float throwArriveTime = 0.6f;
-
-    [Tooltip("포물선 높이")]
-    [Min(0f)]
-    public float throwArcHeight = 1.2f;
-
-    [Tooltip("거리 기반 자동 포물선 높이 사용")]
-    public bool autoArcHeightByDistance = true;
-
-    [Min(0f)]
-    public float minArcHeight = 0.5f;
-
-    [Min(0f)]
-    public float maxArcHeight = 2.5f;
-
-    [Min(0f)]
-    public float arcHeightDistanceMultiplier = 0.25f;
-
     [Header("Effects")]
     public ItemEffectData[] effectDatas;
 }

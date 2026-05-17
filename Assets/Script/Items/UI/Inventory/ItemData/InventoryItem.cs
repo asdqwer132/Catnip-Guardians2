@@ -15,7 +15,13 @@ public class InventoryItem
         this.amount = amount;
     }
 
-    public void ConsumeNextItemUseBuffs() { runtimeBuffList.ConsumeNextItemUseBuffs(); }
+    public void ConsumeNextItemUseBuffs()
+    {
+        if (runtimeBuffList == null)
+            return;
+
+        runtimeBuffList.ConsumeNextItemUseBuffs();
+    }
 
     public int GetRuntimeBuffDisplayNumber(
         Object source,
@@ -23,6 +29,9 @@ public class InventoryItem
         int currentCycleId
     )
     {
+        if (runtimeBuffList == null)
+            return 0;
+
         return runtimeBuffList.GetRuntimeBuffDisplayNumber(
             source,
             durationType,
@@ -39,6 +48,9 @@ public class InventoryItem
         int useCount
     )
     {
+        if (runtimeBuffList == null)
+            runtimeBuffList = new RuntimeItemBuffList();
+
         runtimeBuffList.AddRuntimeBuff(
             bonus,
             durationType,
@@ -46,18 +58,6 @@ public class InventoryItem
             currentCycleId,
             source,
             useCount
-        );
-    }
-
-    public EffectStat GetFinalEffectStat(
-        EffectStat ownerStat = null,
-        int currentCycleId = 0
-    )
-    {
-        return InventoryItemStatCalculator.GetFinalEffectStat(
-            this,
-            ownerStat,
-            currentCycleId
         );
     }
 
@@ -70,6 +70,9 @@ public class InventoryItem
         int useCount
     )
     {
+        if (runtimeBuffList == null)
+            runtimeBuffList = new RuntimeItemBuffList();
+
         runtimeBuffList.AddOrReplaceRuntimeBuff(
             source,
             bonus,
@@ -77,6 +80,20 @@ public class InventoryItem
             duration,
             currentCycleId,
             useCount
+        );
+    }
+
+    public EffectStat GetFinalEffectStat(
+        EffectStat baseEffectStat,
+        EffectStat ownerStat = null,
+        int currentCycleId = 0
+    )
+    {
+        return InventoryItemStatCalculator.GetFinalEffectStat(
+            this,
+            baseEffectStat,
+            ownerStat,
+            currentCycleId
         );
     }
 }

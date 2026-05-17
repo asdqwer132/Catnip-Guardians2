@@ -170,12 +170,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5ec18a9e88fb484a9ff083ac3372ddd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamageArea
-  damage: 10
-  radius: 1
   circleCollider: {fileID: -3564356176302842844}
   rangeVisual: {fileID: 6746801340493453165}
-  lifeTime: 0.1
-  hitOnce: 1
+  lifeTime: 10
+  damageApplyMode: 0
+  damageInterval: 0.5
   owner: {fileID: 0}
 --- !u!1 &3147158496488106615
 GameObject:

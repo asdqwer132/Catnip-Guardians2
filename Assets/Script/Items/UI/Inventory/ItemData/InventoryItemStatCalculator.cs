@@ -2,20 +2,26 @@ public static class InventoryItemStatCalculator
 {
     public static EffectStat GetFinalEffectStat(
         InventoryItem item,
+        EffectStat baseEffectStat,
         EffectStat ownerStat = null,
         int currentCycleId = 0
     )
     {
         EffectStat finalStat = new EffectStat();
 
+        if (baseEffectStat != null)
+            finalStat.Add(baseEffectStat);
+
         if (item == null)
+        {
+            if (ownerStat != null)
+                finalStat.Add(ownerStat);
+
             return finalStat;
+        }
 
         if (item.runtimeBuffList != null)
             item.runtimeBuffList.RemoveExpiredBuffs(currentCycleId);
-
-        if (item.itemData != null && item.itemData.effectStat != null)
-            finalStat.Add(item.itemData.effectStat);
 
         if (
             item.runtimeBuffList != null &&

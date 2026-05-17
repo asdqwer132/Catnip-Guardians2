@@ -16,6 +16,7 @@ public class ItemEffectContext
 
     public InventoryItem inventoryItem;
 
+    public ItemEffectData currentEffectData;
     public EffectStat effectStat;
 
     public float effectRadius;
@@ -32,6 +33,7 @@ public class ItemEffectContext
         Vector3 direction,
         EquipmentBag currentBag,
         InventoryItem inventoryItem = null,
+        ItemEffectData currentEffectData = null,
         EffectStat effectStat = null,
         int currentCycleId = 0
     )
@@ -39,29 +41,47 @@ public class ItemEffectContext
         this.owner = owner;
         this.itemObject = itemObject;
         this.itemData = itemData;
+
         this.usePosition = usePosition;
         this.targetPosition = targetPosition;
         this.direction = direction;
+
         this.currentBag = currentBag;
         this.inventoryItem = inventoryItem;
+
+        this.currentEffectData = currentEffectData;
         this.effectStat = effectStat;
+
         this.currentCycleId = currentCycleId;
 
         if (currentBag != null)
             this.bagItems = currentBag.equippedItems;
 
-        if (this.effectStat == null && itemData != null)
-            this.effectStat = itemData.effectStat;
+        RefreshCachedValues();
+    }
 
-        if (this.effectStat != null)
+    public void SetCurrentEffect(
+        ItemEffectData effectData,
+        EffectStat finalStat
+    )
+    {
+        currentEffectData = effectData;
+        effectStat = finalStat;
+
+        RefreshCachedValues();
+    }
+
+    private void RefreshCachedValues()
+    {
+        if (effectStat != null)
         {
-            this.effectRadius = this.effectStat.effectRadius;
-            this.effectCount = this.effectStat.effectCount;
+            effectRadius = effectStat.effectRadius;
+            effectCount = effectStat.effectCount;
         }
         else
         {
-            this.effectRadius = 0f;
-            this.effectCount = 0;
+            effectRadius = 0f;
+            effectCount = 0;
         }
     }
 }

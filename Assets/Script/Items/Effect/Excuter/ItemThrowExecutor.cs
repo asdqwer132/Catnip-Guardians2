@@ -35,18 +35,15 @@ public class ItemThrowExecutor : MonoBehaviour
 
         Sprite itemSprite = GetItemSprite(inventoryItem);
 
-        ApplyItemThrowSetting(mover, inventoryItem);
-
-        EffectStat finalStatForPreview = GetFinalEffectStat(
+        float previewRadius = GetPreviewRadius(
             inventoryItem,
             owner,
             currentCycleId
         );
 
         TargetRangeIndicator rangeIndicator = CreateTargetRangeIndicator(
-            inventoryItem,
             targetPosition,
-            finalStatForPreview
+            previewRadius
         );
 
         mover.Init(
@@ -104,34 +101,9 @@ public class ItemThrowExecutor : MonoBehaviour
         return inventoryItem.itemData.icon;
     }
 
-    private void ApplyItemThrowSetting(
-        ItemThrowMover mover,
-        InventoryItem inventoryItem
-    )
-    {
-        if (mover == null)
-            return;
-
-        if (inventoryItem == null || inventoryItem.itemData == null)
-            return;
-
-        ItemData itemData = inventoryItem.itemData;
-
-        if (!itemData.overrideThrowSetting)
-            return;
-
-        mover.arriveTime = itemData.throwArriveTime;
-        mover.arcHeight = itemData.throwArcHeight;
-        mover.autoArcHeightByDistance = itemData.autoArcHeightByDistance;
-        mover.minArcHeight = itemData.minArcHeight;
-        mover.maxArcHeight = itemData.maxArcHeight;
-        mover.arcHeightDistanceMultiplier = itemData.arcHeightDistanceMultiplier;
-    }
-
     private TargetRangeIndicator CreateTargetRangeIndicator(
-        InventoryItem inventoryItem,
         Vector3 targetPosition,
-        EffectStat finalStat
+        float radius
     )
     {
         if (!showTargetRange)
@@ -139,11 +111,6 @@ public class ItemThrowExecutor : MonoBehaviour
 
         if (targetRangeIndicatorPrefab == null)
             return null;
-
-        float radius = GetTargetRangeRadius(
-            inventoryItem,
-            finalStat
-        );
 
         if (radius <= 0f)
             return null;
@@ -159,24 +126,6 @@ public class ItemThrowExecutor : MonoBehaviour
         indicator.SetRadius(radius);
 
         return indicator;
-    }
-
-    private float GetTargetRangeRadius(
-        InventoryItem inventoryItem,
-        EffectStat finalStat
-    )
-    {
-        if (finalStat != null)
-            return finalStat.effectRadius;
-
-        if (inventoryItem != null &&
-            inventoryItem.itemData != null &&
-            inventoryItem.itemData.effectStat != null)
-        {
-            return inventoryItem.itemData.effectStat.effectRadius;
-        }
-
-        return defaultTargetRangeRadius;
     }
 
     private void ExecuteItemEffectAtArrivePosition(
@@ -196,12 +145,6 @@ public class ItemThrowExecutor : MonoBehaviour
 
         ItemData itemData = inventoryItem.itemData;
 
-        EffectStat finalStat = GetFinalEffectStat(
-            inventoryItem,
-            owner,
-            currentCycleId
-        );
-
         ItemEffectContext context = new ItemEffectContext(
             owner: owner,
             itemObject: null,
@@ -211,9 +154,12 @@ public class ItemThrowExecutor : MonoBehaviour
             direction: direction,
             currentBag: currentBag,
             inventoryItem: inventoryItem,
-            effectStat: finalStat,
+            currentEffectData: null,
+            effectStat: null,
             currentCycleId: currentCycleId
         );
+
+        float biggestRadius = 0f;
 
         if (itemData.effectDatas != null)
         {
@@ -224,6 +170,23 @@ public class ItemThrowExecutor : MonoBehaviour
                 if (effectData == null)
                     continue;
 
+                EffectStat baseEffectStat = GetBaseEffectStat(effectData);
+
+                EffectStat finalStat = GetFinalEffectStat(
+                    inventoryItem,
+                    baseEffectStat,
+                    owner,
+                    currentCycleId
+                );
+
+                context.SetCurrentEffect(
+                    effectData,
+                    finalStat
+                );
+
+                if (finalStat != null)
+                    biggestRadius = Mathf.Max(biggestRadius, finalStat.effectRadius);
+
                 effectData.Execute(context);
             }
         }
@@ -231,7 +194,7 @@ public class ItemThrowExecutor : MonoBehaviour
         SpawnImpactVfx(
             itemData,
             arrivePosition,
-            context.effectRadius
+            biggestRadius
         );
 
         inventoryItem.ConsumeNextItemUseBuffs();
@@ -261,7 +224,7 @@ public class ItemThrowExecutor : MonoBehaviour
 
         if (itemData.scaleImpactVfxByRadius)
         {
-            float size = Mathf.Max(0f, effectRadius);
+            float size = Mathf.Max(0.01f, effectRadius);
             vfx.transform.localScale = new Vector3(size, size, size);
         }
 
@@ -271,8 +234,70 @@ public class ItemThrowExecutor : MonoBehaviour
         );
     }
 
+    private float GetPreviewRadius(
+        InventoryItem inventoryItem,
+        GameObject owner,
+        int currentCycleId
+    )
+    {
+        if (inventoryItem == null || inventoryItem.itemData == null)
+            return defaultTargetRangeRadius;
+
+        ItemEffectData[] effectDatas = inventoryItem.itemData.effectDatas;
+
+        if (effectDatas == null || effectDatas.Length == 0)
+            return defaultTargetRangeRadius;
+
+        float biggestRadius = 0f;
+
+        for (int i = 0; i < effectDatas.Length; i++)
+        {
+            ItemEffectData effectData = effectDatas[i];
+
+            if (effectData == null)
+                continue;
+
+            EffectStat baseEffectStat = GetBaseEffectStat(effectData);
+
+            EffectStat finalStat = GetFinalEffectStat(
+                inventoryItem,
+                baseEffectStat,
+                owner,
+                currentCycleId
+            );
+
+            if (finalStat == null)
+                continue;
+
+            biggestRadius = Mathf.Max(
+                biggestRadius,
+                finalStat.effectRadius
+            );
+        }
+
+        if (biggestRadius <= 0f)
+            return defaultTargetRangeRadius;
+
+        return biggestRadius;
+    }
+
+    private EffectStat GetBaseEffectStat(ItemEffectData effectData)
+    {
+        if (effectData == null)
+            return null;
+
+        IItemEffectStatProvider statProvider =
+            effectData as IItemEffectStatProvider;
+
+        if (statProvider == null)
+            return null;
+
+        return statProvider.GetBaseEffectStat();
+    }
+
     private EffectStat GetFinalEffectStat(
         InventoryItem inventoryItem,
+        EffectStat baseEffectStat,
         GameObject owner,
         int currentCycleId
     )
@@ -290,12 +315,16 @@ public class ItemThrowExecutor : MonoBehaviour
         if (inventoryItem != null)
         {
             return inventoryItem.GetFinalEffectStat(
+                baseEffectStat,
                 ownerStat,
                 currentCycleId
             );
         }
 
         EffectStat result = new EffectStat();
+
+        if (baseEffectStat != null)
+            result.Add(baseEffectStat);
 
         if (ownerStat != null)
             result.Add(ownerStat);
