@@ -15,6 +15,22 @@ public class InventoryItem
         this.amount = amount;
     }
 
+    public void RemoveExpiredBuffs(int currentCycleId)
+    {
+        if (runtimeBuffList == null)
+            return;
+
+        runtimeBuffList.RemoveExpiredBuffs(currentCycleId);
+    }
+
+    public bool HasAnyActiveBuff(int currentCycleId)
+    {
+        if (runtimeBuffList == null)
+            return false;
+
+        return runtimeBuffList.HasAnyActiveBuff(currentCycleId);
+    }
+
     public void ConsumeNextItemUseBuffs()
     {
         if (runtimeBuffList == null)
@@ -89,6 +105,8 @@ public class InventoryItem
         int currentCycleId = 0
     )
     {
+        RemoveExpiredBuffs(currentCycleId);
+
         return InventoryItemStatCalculator.GetFinalEffectStat(
             this,
             baseEffectStat,

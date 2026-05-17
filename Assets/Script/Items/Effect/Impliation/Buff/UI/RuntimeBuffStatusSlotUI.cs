@@ -46,21 +46,19 @@ public class RuntimeBuffStatusSlotUI : MonoBehaviour
             fillImage.fillOrigin = 2;
             fillImage.fillClockwise = false;
             fillImage.fillAmount = 1f;
-
             fillImage.gameObject.SetActive(info.icon != null);
         }
 
-        if (info.startNumber > 0)
-        {
-            startNumber = info.startNumber;
-        }
-        else
-        {
-            startNumber = GetDisplayNumber();
-        }
+        startNumber = info.startNumber;
 
         if (startNumber <= 0)
-            startNumber = 1;
+            startNumber = GetDisplayNumber();
+
+        if (startNumber <= 0)
+        {
+            RemoveSelf();
+            return;
+        }
 
         Refresh();
     }
@@ -102,14 +100,10 @@ public class RuntimeBuffStatusSlotUI : MonoBehaviour
         }
 
         if (numberText != null)
-        {
             numberText.text = currentNumber.ToString();
-        }
 
         if (fillImage != null)
-        {
             fillImage.fillAmount = GetFillAmount(currentNumber);
-        }
     }
 
     private int GetDisplayNumber()
@@ -117,11 +111,12 @@ public class RuntimeBuffStatusSlotUI : MonoBehaviour
         if (info == null)
             return 0;
 
-        if (info.bagItems == null)
-            return startNumber;
+        if (info.bagItems == null || info.bagItems.Count <= 0)
+            return 0;
 
         int totalUseCount = 0;
         int maxTime = 0;
+        int currentCycleBuffCount = 0;
 
         for (int i = 0; i < info.bagItems.Count; i++)
         {
@@ -129,6 +124,8 @@ public class RuntimeBuffStatusSlotUI : MonoBehaviour
 
             if (item == null)
                 continue;
+
+            item.RemoveExpiredBuffs(info.currentCycleId);
 
             int itemNumber = item.GetRuntimeBuffDisplayNumber(
                 info.source,
@@ -147,25 +144,22 @@ public class RuntimeBuffStatusSlotUI : MonoBehaviour
             {
                 maxTime = Mathf.Max(maxTime, itemNumber);
             }
+            else if (info.durationType == RuntimeBuffDurationType.CurrentCycle)
+            {
+                currentCycleBuffCount += itemNumber;
+            }
         }
 
         if (info.durationType == RuntimeBuffDurationType.NextItemUse)
-        {
-            if (totalUseCount > 0)
-                return totalUseCount;
-
-            return startNumber;
-        }
+            return totalUseCount;
 
         if (info.durationType == RuntimeBuffDurationType.Seconds)
-        {
-            if (maxTime > 0)
-                return maxTime;
+            return maxTime;
 
-            return startNumber;
-        }
+        if (info.durationType == RuntimeBuffDurationType.CurrentCycle)
+            return currentCycleBuffCount;
 
-        return startNumber;
+        return 0;
     }
 
     private float GetFillAmount(int currentNumber)
@@ -179,12 +173,8 @@ public class RuntimeBuffStatusSlotUI : MonoBehaviour
     private void RemoveSelf()
     {
         if (owner != null)
-        {
             owner.RemoveSlot(this);
-        }
         else
-        {
             Destroy(gameObject);
-        }
     }
 }

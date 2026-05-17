@@ -12,20 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7db42f5a9e1737641b40b225289b19f4, type: 3}
   m_Name: AttackAtTargetEffect
   m_EditorClassIdentifier: Assembly-CSharp::AttackAtTargetEffect
-  effectStat:
-    attackPower: 15
-    healPower: 0
-    debuffPower: 0
-    effectDuration: 0
-    effectRadius: 0.5
+  attackStat:
+    effectRadius: 1
     effectCount: 0
-    defensePower: 0
-    speedPower: 0
+    effectLifeTime: 2
+    effectDuration: 0
+    attackPower: 30
+    damageApplyMode: 0
+    damageInterval: 0.5
     attackMultiplier: 1
-    healMultiplier: 1
-    debuffMultiplier: 1
-    defenseMultiplier: 1
-    speedMultiplier: 1
-  damageApplyMode: 0
-  damageInterval: 0.5
+  useDynamicRuntimeStat: 1
   overrideAttackPrefab: {fileID: 0}

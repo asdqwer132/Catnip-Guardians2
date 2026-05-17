@@ -40,7 +40,7 @@ public class RuntimeItemBuff
                 return remainingUseCount <= 0;
         }
 
-        return false;
+        return true;
     }
 
     public float GetRemainingTime()
@@ -55,6 +55,9 @@ public class RuntimeItemBuff
     {
         switch (durationType)
         {
+            case RuntimeBuffDurationType.CurrentCycle:
+                return 1;
+
             case RuntimeBuffDurationType.Seconds:
                 return Mathf.CeilToInt(GetRemainingTime());
 

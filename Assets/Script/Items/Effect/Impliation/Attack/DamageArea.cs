@@ -33,6 +33,12 @@ public class DamageArea : MonoBehaviour
     private readonly HashSet<GameObject> hitObjects = new HashSet<GameObject>();
     private readonly Dictionary<GameObject, float> periodicTimers = new Dictionary<GameObject, float>();
 
+    private bool useDynamicStat;
+    private InventoryItem statSourceItem;
+    private AttackStat baseAttackStat;
+    private EffectStat ownerStat;
+    private int currentCycleId;
+
     void Awake()
     {
         if (circleCollider == null)
@@ -58,6 +64,8 @@ public class DamageArea : MonoBehaviour
         GameObject owner
     )
     {
+        useDynamicStat = false;
+
         this.damage = damage;
         this.radius = Mathf.Max(0.01f, radius);
         this.lifeTime = Mathf.Max(0.01f, lifeTime);
@@ -72,8 +80,86 @@ public class DamageArea : MonoBehaviour
         ApplyRadius();
     }
 
+    public void InitDynamic(
+        InventoryItem statSourceItem,
+        AttackStat baseAttackStat,
+        GameObject owner,
+        EffectStat ownerStat,
+        int currentCycleId
+    )
+    {
+        useDynamicStat = true;
+
+        this.statSourceItem = statSourceItem;
+        this.baseAttackStat = baseAttackStat != null ? baseAttackStat.CloneAttack() : null;
+        this.owner = owner;
+        this.ownerStat = ownerStat;
+        this.currentCycleId = currentCycleId;
+
+        timer = 0f;
+        hitObjects.Clear();
+        periodicTimers.Clear();
+
+        RefreshDynamicStat();
+        ApplyRadius();
+    }
+
+    void Update()
+    {
+        if (useDynamicStat)
+        {
+            RefreshDynamicStat();
+        }
+
+        timer += Time.deltaTime;
+
+        if (timer >= lifeTime)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void RefreshDynamicStat()
+    {
+        if (baseAttackStat == null)
+            return;
+
+        EffectStat finalStat;
+
+        if (statSourceItem != null)
+        {
+            finalStat = statSourceItem.GetFinalEffectStat(
+                baseAttackStat,
+                ownerStat,
+                currentCycleId
+            );
+        }
+        else
+        {
+            finalStat = baseAttackStat.Clone();
+
+            if (ownerStat != null)
+                finalStat.Add(ownerStat);
+        }
+
+        AttackStat attackStat = finalStat as AttackStat;
+
+        if (attackStat == null)
+            return;
+
+        damage = attackStat.GetAttackDamage();
+        radius = attackStat.GetSafeRadius();
+        lifeTime = attackStat.GetSafeLifeTime();
+        damageApplyMode = attackStat.damageApplyMode;
+        damageInterval = attackStat.GetSafeDamageInterval();
+
+        ApplyRadius();
+    }
+
     private void ApplyRadius()
     {
+        radius = Mathf.Max(0.01f, radius);
+
         if (circleCollider == null)
             circleCollider = GetComponent<CircleCollider2D>();
 
@@ -95,18 +181,10 @@ public class DamageArea : MonoBehaviour
         transform.localScale = Vector3.one;
     }
 
-    void Update()
-    {
-        timer += Time.deltaTime;
-
-        if (timer >= lifeTime)
-        {
-            Destroy(gameObject);
-        }
-    }
-
     void OnTriggerEnter2D(Collider2D other)
     {
+        RefreshDynamicStatIfNeeded();
+
         if (damageApplyMode == DamageApplyMode.HitOnce)
         {
             TryHitOnce(other);
@@ -123,6 +201,8 @@ public class DamageArea : MonoBehaviour
 
     void OnTriggerStay2D(Collider2D other)
     {
+        RefreshDynamicStatIfNeeded();
+
         if (damageApplyMode != DamageApplyMode.Periodic)
             return;
 
@@ -138,6 +218,14 @@ public class DamageArea : MonoBehaviour
 
         if (periodicTimers.ContainsKey(targetObj))
             periodicTimers.Remove(targetObj);
+    }
+
+    private void RefreshDynamicStatIfNeeded()
+    {
+        if (!useDynamicStat)
+            return;
+
+        RefreshDynamicStat();
     }
 
     private void TryHitOnce(Collider2D other)

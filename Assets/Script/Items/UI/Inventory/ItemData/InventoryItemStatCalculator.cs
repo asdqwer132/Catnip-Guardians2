@@ -7,10 +7,12 @@ public static class InventoryItemStatCalculator
         int currentCycleId = 0
     )
     {
-        EffectStat finalStat = new EffectStat();
+        EffectStat finalStat;
 
         if (baseEffectStat != null)
-            finalStat.Add(baseEffectStat);
+            finalStat = baseEffectStat.Clone();
+        else
+            finalStat = new EffectStat();
 
         if (item == null)
         {
@@ -33,6 +35,9 @@ public static class InventoryItemStatCalculator
                 RuntimeItemBuff buff = item.runtimeBuffList.runtimeBuffs[i];
 
                 if (buff == null || buff.stat == null)
+                    continue;
+
+                if (buff.IsExpired(currentCycleId))
                     continue;
 
                 finalStat.Add(buff.stat);

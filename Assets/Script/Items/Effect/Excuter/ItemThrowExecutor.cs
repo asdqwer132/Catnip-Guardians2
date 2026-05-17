@@ -69,25 +69,19 @@ public class ItemThrowExecutor : MonoBehaviour
 
     private ItemThrowMover CreateThrowMover(Vector3 startPosition)
     {
-        ItemThrowMover mover = null;
-
         if (throwMoverPrefab != null)
         {
-            mover = Instantiate(
+            return Instantiate(
                 throwMoverPrefab,
                 startPosition,
                 Quaternion.identity
             );
-
-            return mover;
         }
 
         GameObject fallbackObj = new GameObject("ItemThrowMover");
         fallbackObj.transform.position = startPosition;
 
-        mover = fallbackObj.AddComponent<ItemThrowMover>();
-
-        return mover;
+        return fallbackObj.AddComponent<ItemThrowMover>();
     }
 
     private Sprite GetItemSprite(InventoryItem inventoryItem)
@@ -321,10 +315,12 @@ public class ItemThrowExecutor : MonoBehaviour
             );
         }
 
-        EffectStat result = new EffectStat();
+        EffectStat result;
 
         if (baseEffectStat != null)
-            result.Add(baseEffectStat);
+            result = baseEffectStat.Clone();
+        else
+            result = new EffectStat();
 
         if (ownerStat != null)
             result.Add(ownerStat);

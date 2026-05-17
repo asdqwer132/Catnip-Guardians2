@@ -9,7 +9,7 @@ public enum BuffItemTargetScope
 }
 
 [CreateAssetMenu(fileName = "BuffBagItemsEffect", menuName = "Game/Item Effect/Buff Bag Items")]
-public class BuffBagItemsEffect : ItemEffectData
+public class BuffBagItemsEffect : ItemEffectData, IItemEffectStatProvider
 {
     public static event Action<RuntimeBuffUIInfo> OnBuffActivated;
 
@@ -19,21 +19,16 @@ public class BuffBagItemsEffect : ItemEffectData
     [Header("Buff Target")]
     public bool includeSelf = false;
 
-    [Tooltip("Duration Type이 NextItemUse일 때 몇 개의 다음 아이템에 버프를 줄지")]
-    [Min(1)]
-    public int nextItemUseTargetCount = 1;
-
-    [Header("Stack")]
-    public bool allowStack = false;
-
-    [Header("Buff Duration")]
-    public RuntimeBuffDurationType durationType = RuntimeBuffDurationType.NextItemUse;
-
-    [Tooltip("Duration Type이 Seconds일 때만 사용")]
-    public float duration = 5f;
+    [Header("Buff Info")]
+    public BuffInfoStat buffInfo = new BuffInfoStat();
 
     [Header("Buff Stat")]
-    public EffectStat bonus = new EffectStat();
+    public BuffStat bonus = new BuffStat();
+
+    public EffectStat GetBaseEffectStat()
+    {
+        return bonus;
+    }
 
     public override void Execute(ItemEffectContext context)
     {
@@ -43,41 +38,40 @@ public class BuffBagItemsEffect : ItemEffectData
         List<InventoryItem> targetItems = GetTargetItems(context);
 
         if (targetItems == null)
-            return;
+            targetItems = new List<InventoryItem>();
 
-        if (targetItems.Count <= 0)
-        {
-            NotifyBuffUI(
-                context,
-                targetItems,
-                0
-            );
-
-            return;
-        }
+        BuffStat finalBuffStat = GetFinalBuffStat(context);
+        BuffInfoStat finalBuffInfo = GetFinalBuffInfo(finalBuffStat);
 
         int appliedCount = 0;
 
-        if (durationType == RuntimeBuffDurationType.NextItemUse)
+        if (finalBuffInfo.durationType == RuntimeBuffDurationType.NextItemUse)
         {
             appliedCount = ApplyNextItemUseBuff(
                 context,
-                targetItems
+                targetItems,
+                finalBuffStat,
+                finalBuffInfo
             );
         }
         else
         {
             appliedCount = ApplyBuffToAllTargetItems(
                 context,
-                targetItems
+                targetItems,
+                finalBuffStat,
+                finalBuffInfo
             );
         }
-
-        NotifyBuffUI(
-            context,
-            targetItems,
-            appliedCount
-        );
+        if (appliedCount > 0)
+        {
+            NotifyBuffUI(
+                context,
+                targetItems,
+                appliedCount,
+                finalBuffInfo
+            );
+        }
 
         string itemName = "Unknown Item";
 
@@ -89,20 +83,25 @@ public class BuffBagItemsEffect : ItemEffectData
             " 버프 적용 / 범위: " +
             targetScope +
             " / 타입: " +
-            durationType +
+            finalBuffInfo.durationType +
             " / 적용 수: " +
             appliedCount +
             " / 중첩 허용: " +
-            allowStack
+            finalBuffInfo.GetFinalAllowStack()
         );
     }
 
     private int ApplyNextItemUseBuff(
         ItemEffectContext context,
-        List<InventoryItem> targetItems
+        List<InventoryItem> targetItems,
+        BuffStat finalBuffStat,
+        BuffInfoStat finalBuffInfo
     )
     {
-        int targetCount = Mathf.Max(1, nextItemUseTargetCount);
+        if (targetItems == null || finalBuffStat == null || finalBuffInfo == null)
+            return 0;
+
+        int targetCount = finalBuffInfo.GetFinalNextItemUseTargetCount();
         int appliedCount = 0;
 
         for (int i = 0; i < targetItems.Count; i++)
@@ -115,6 +114,8 @@ public class BuffBagItemsEffect : ItemEffectData
             ApplyBuff(
                 item,
                 context,
+                finalBuffStat,
+                finalBuffInfo,
                 1
             );
 
@@ -129,9 +130,14 @@ public class BuffBagItemsEffect : ItemEffectData
 
     private int ApplyBuffToAllTargetItems(
         ItemEffectContext context,
-        List<InventoryItem> targetItems
+        List<InventoryItem> targetItems,
+        BuffStat finalBuffStat,
+        BuffInfoStat finalBuffInfo
     )
     {
+        if (targetItems == null || finalBuffStat == null || finalBuffInfo == null)
+            return 0;
+
         int appliedCount = 0;
 
         for (int i = 0; i < targetItems.Count; i++)
@@ -144,6 +150,8 @@ public class BuffBagItemsEffect : ItemEffectData
             ApplyBuff(
                 item,
                 context,
+                finalBuffStat,
+                finalBuffInfo,
                 0
             );
 
@@ -156,18 +164,25 @@ public class BuffBagItemsEffect : ItemEffectData
     private void ApplyBuff(
         InventoryItem item,
         ItemEffectContext context,
+        BuffStat finalBuffStat,
+        BuffInfoStat finalBuffInfo,
         int useCount
     )
     {
-        if (item == null)
+        if (item == null || finalBuffStat == null || finalBuffInfo == null)
             return;
 
-        if (allowStack)
+        BuffStat buffToApply = finalBuffStat.CloneBuff();
+
+        if (buffToApply == null)
+            return;
+
+        if (finalBuffInfo.GetFinalAllowStack())
         {
             item.AddRuntimeBuff(
-                bonus,
-                durationType,
-                duration,
+                buffToApply,
+                finalBuffInfo.durationType,
+                finalBuffInfo.GetFinalDuration(),
                 context.currentCycleId,
                 this,
                 useCount
@@ -177,13 +192,39 @@ public class BuffBagItemsEffect : ItemEffectData
         {
             item.AddOrReplaceRuntimeBuff(
                 this,
-                bonus,
-                durationType,
-                duration,
+                buffToApply,
+                finalBuffInfo.durationType,
+                finalBuffInfo.GetFinalDuration(),
                 context.currentCycleId,
                 useCount
             );
         }
+    }
+
+    private BuffStat GetFinalBuffStat(ItemEffectContext context)
+    {
+        if (context != null && context.effectStat is BuffStat contextBuff)
+            return contextBuff.CloneBuff();
+
+        if (bonus != null)
+            return bonus.CloneBuff();
+
+        return new BuffStat();
+    }
+
+    private BuffInfoStat GetFinalBuffInfo(BuffStat finalBuffStat)
+    {
+        BuffInfoStat result;
+
+        if (buffInfo != null)
+            result = buffInfo.Clone();
+        else
+            result = new BuffInfoStat();
+
+        if (finalBuffStat != null)
+            finalBuffStat.ApplyBuffInfoBuffTo(result);
+
+        return result;
     }
 
     private List<InventoryItem> GetTargetItems(ItemEffectContext context)
@@ -223,6 +264,9 @@ public class BuffBagItemsEffect : ItemEffectData
     private List<InventoryItem> GetAllBagsTargetItems(ItemEffectContext context)
     {
         List<InventoryItem> result = new List<InventoryItem>();
+
+        if (EquipmentBagManager.instance == null)
+            return result;
 
         EquipmentBag[] bags = EquipmentBagManager.instance.bags;
 
@@ -310,15 +354,17 @@ public class BuffBagItemsEffect : ItemEffectData
     private void NotifyBuffUI(
         ItemEffectContext context,
         List<InventoryItem> targetItems,
-        int appliedCount
+        int appliedCount,
+        BuffInfoStat finalBuffInfo
     )
     {
+        if (finalBuffInfo == null)
+            return;
+
         Sprite icon = null;
 
         if (context != null && context.itemData != null)
             icon = context.itemData.icon;
-
-        int startNumber = GetUIStartNumber();
 
         RuntimeBuffUIScope uiScope = RuntimeBuffUIScope.CurrentBag;
         EquipmentBag uiBag = null;
@@ -339,29 +385,14 @@ public class BuffBagItemsEffect : ItemEffectData
         RuntimeBuffUIInfo info = new RuntimeBuffUIInfo(
             source: this,
             icon: icon,
-            durationType: durationType,
+            durationType: finalBuffInfo.durationType,
             scope: uiScope,
             currentBag: uiBag,
             bagItems: targetItems,
             currentCycleId: context != null ? context.currentCycleId : 0,
-            startNumber: startNumber
+            startNumber: finalBuffInfo.GetUIStartNumber()
         );
 
         OnBuffActivated?.Invoke(info);
-    }
-
-    private int GetUIStartNumber()
-    {
-        if (durationType == RuntimeBuffDurationType.Seconds)
-        {
-            return Mathf.CeilToInt(duration);
-        }
-
-        if (durationType == RuntimeBuffDurationType.NextItemUse)
-        {
-            return Mathf.Max(1, nextItemUseTargetCount);
-        }
-
-        return 1;
     }
 }
