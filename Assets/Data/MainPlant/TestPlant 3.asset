@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b33b89be12f1b914ab6f81a5ff77bf4d, type: 3}
+  m_Name: TestPlant 3
+  m_EditorClassIdentifier: Assembly-CSharp::PlantData
+  plantName: test 3
+  plantSprite: {fileID: 4648265113512967146, guid: 305367f2a6a5d32469c721c7b2e7481b, type: 3}
+  rewardType: 4
+  rewardAmount: 1
+  maxHP: 100
+  growTime: 2
+  unlockedByDefault: 0
+  buyCosts: []
+  enemies:
+  - enemyPrefab: {fileID: 5831428086637394887, guid: 3440ce745fc7cbf4ab87f9df54a9445c, type: 3}
+    spawnWeight: 5
+  - enemyPrefab: {fileID: 5831428086637394887, guid: 577d76dcfd2a5e74eae19bd63c70fa48, type: 3}
+    spawnWeight: 5

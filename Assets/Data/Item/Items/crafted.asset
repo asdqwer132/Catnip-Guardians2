@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: crafted
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemName: dddd
+  icon: {fileID: 1404950666, guid: 89d6b9627a3a13b48948eca9d1c6f9f5, type: 3}
+  description: 
+  prefab: {fileID: 0}
+  impactVfxPrefab: {fileID: 0}
+  impactVfxLifeTime: 1
+  scaleImpactVfxByRadius: 1
+  grade: 0
+  category: 0
+  series: 0
+  weight: 3
+  cooldown: 0.5
+  effectStat:
+    attackPower: 0
+    healPower: 0
+    debuffPower: 0
+    effectRadius: 1
+    effectCount: 1
+    defensePower: 0
+    speedPower: 0
+    attackMultiplier: 1
+    healMultiplier: 1
+    debuffMultiplier: 1
+    defenseMultiplier: 1
+    speedMultiplier: 1
+  overrideThrowSetting: 0
+  throwArriveTime: 0.6
+  throwArcHeight: 1.2
+  autoArcHeightByDistance: 1
+  minArcHeight: 0.5
+  maxArcHeight: 2.5
+  arcHeightDistanceMultiplier: 0.25
+  effectDatas:
+  - {fileID: 11400000, guid: bd9d453ede70fd54ca2d6254bf1d5f98, type: 2}

@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b250f045bef3cf34fbfec8a0516c81f9, type: 3}
+  m_Name: BuffBagItemsEffect
+  m_EditorClassIdentifier: Assembly-CSharp::BuffBagItemsEffect
+  includeSelf: 0
+  nextItemUseTargetCount: 2
+  allowStack: 0
+  durationType: 1
+  duration: 10
+  bonus:
+    attackPower: 15
+    healPower: 0
+    debuffPower: 0
+    effectRadius: 0.5
+    effectCount: 0
+    defensePower: 0
+    speedPower: 0
+    attackMultiplier: 1
+    healMultiplier: 1
+    debuffMultiplier: 1
+    defenseMultiplier: 1
+    speedMultiplier: 1
