@@ -5,6 +5,7 @@ public class ItemCombinationManager : MonoBehaviour
 {
     public static ItemCombinationManager instance;
 
+    [Header("Recipes")]
     public List<ItemRecipeData> recipes = new List<ItemRecipeData>();
     public List<InventoryItem> currentMaterials = new List<InventoryItem>();
 
@@ -30,7 +31,7 @@ public class ItemCombinationManager : MonoBehaviour
 
         if (removed == false)
         {
-            Debug.Log("인벤토리에 아이템이 없습니다.");
+            //Debug.Log("인벤토리에 아이템이 없습니다.");
             return;
         }
 
@@ -46,7 +47,7 @@ public class ItemCombinationManager : MonoBehaviour
             currentMaterials.Add(new InventoryItem(itemData, 1));
         }
 
-        Debug.Log(itemData.itemName + " 조합 슬롯에 넣음");
+        //Debug.Log(itemData.itemName + " 조합 슬롯에 넣음");
 
         onMaterialChanged?.Invoke();
     }
@@ -79,7 +80,7 @@ public class ItemCombinationManager : MonoBehaviour
 
         onMaterialChanged?.Invoke();
 
-        Debug.Log(itemData.itemName + " 조합 재료 반환");
+        //Debug.Log(itemData.itemName + " 조합 재료 반환");
     }
 
     public void ReturnMaterials()
@@ -95,8 +96,6 @@ public class ItemCombinationManager : MonoBehaviour
         currentMaterials.Clear();
 
         onMaterialChanged?.Invoke();
-
-        Debug.Log("조합 재료 반환 완료");
     }
 
     public void ClearMaterials()
@@ -112,13 +111,11 @@ public class ItemCombinationManager : MonoBehaviour
 
         if (recipe == null)
         {
-            Debug.Log("조합 실패");
+            //Debug.Log("조합 실패");
             return;
         }
 
         InventoryManager.instance.AddItem(recipe.resultItem, 1);
-
-        Debug.Log("조합 성공: " + recipe.resultItem.itemName);
 
         ClearMaterials();
     }

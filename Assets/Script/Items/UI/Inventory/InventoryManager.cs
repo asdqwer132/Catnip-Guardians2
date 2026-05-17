@@ -6,6 +6,7 @@ public class InventoryManager : MonoBehaviour
 {
     public static InventoryManager instance;
 
+    [Header("Referrences")]
     public List<InventoryItem> items = new List<InventoryItem>();
 
     public Action onInventoryChanged;
@@ -13,13 +14,7 @@ public class InventoryManager : MonoBehaviour
     void Awake()
     {
         if (instance == null)
-        {
             instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
     }
 
     public void AddItem(ItemData itemData, int amount = 1)
@@ -59,13 +54,13 @@ public class InventoryManager : MonoBehaviour
 
         if (existingItem == null)
         {
-            Debug.Log("해당 아이템이 인벤토리에 없습니다.");
+            //Debug.Log("해당 아이템이 인벤토리에 없습니다.");
             return false;
         }
 
         if (existingItem.amount < amount)
         {
-            Debug.Log("아이템 수량이 부족합니다.");
+            //Debug.Log("아이템 수량이 부족합니다.");
             return false;
         }
 
@@ -94,17 +89,5 @@ public class InventoryManager : MonoBehaviour
         return item.amount;
     }
 
-    public bool HasItem(ItemData itemData, int amount = 1)
-    {
-        return GetItemAmount(itemData) >= amount;
-    }
-
-    public void ClearInventory()
-    {
-        items.Clear();
-        onInventoryChanged?.Invoke();
-
-        Debug.Log("인벤토리 초기화 완료");
-    }
+    public bool HasItem(ItemData itemData, int amount = 1) { return GetItemAmount(itemData) >= amount; }
 }
-

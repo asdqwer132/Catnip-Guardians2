@@ -9,14 +9,7 @@ public class InventoryUI : MonoBehaviour
     void Start()
     {
         if (InventoryManager.instance != null)
-        {
-            //Debug.Log("InventoryUI 이벤트 연결됨");
             InventoryManager.instance.onInventoryChanged += RefreshUI;
-        }
-        else
-        {
-            Debug.LogWarning("Start에서도 InventoryManager.instance가 null입니다.");
-        }
 
         RefreshUI();
     }
@@ -24,9 +17,7 @@ public class InventoryUI : MonoBehaviour
     void OnDestroy()
     {
         if (InventoryManager.instance != null)
-        {
             InventoryManager.instance.onInventoryChanged -= RefreshUI;
-        }
     }
 
     public void RefreshUI()
@@ -53,10 +44,6 @@ public class InventoryUI : MonoBehaviour
             {
                 slotUI.SetSlot(item);
             }
-            else
-            {
-                Debug.LogWarning(gameObject.name + " 슬롯 프리팹에 BaseItemSlotUI가 없습니다.");
-            }
         }
     }
 
@@ -66,8 +53,6 @@ public class InventoryUI : MonoBehaviour
             return;
 
         for (int i = slotParent.childCount - 1; i >= 0; i--)
-        {
             Destroy(slotParent.GetChild(i).gameObject);
-        }
     }
 }

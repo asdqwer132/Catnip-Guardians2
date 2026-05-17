@@ -10,26 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
-  m_Name: Item
+  m_Name: BuffItem
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemName: aaa
-  icon: {fileID: 2089382225, guid: 89d6b9627a3a13b48948eca9d1c6f9f5, type: 3}
+  itemName: dddd
+  icon: {fileID: 1404950666, guid: 89d6b9627a3a13b48948eca9d1c6f9f5, type: 3}
   description: 
-  prefab: {fileID: 3093583821147485359, guid: ba1a65fc3cffa9e41a41bdb190df387d, type: 3}
-  impactVfxPrefab: {fileID: 8307488558655258606, guid: 59aa4baea5dcb1747b7b9d8dc1e16b2c, type: 3}
+  prefab: {fileID: 0}
+  impactVfxPrefab: {fileID: 0}
   impactVfxLifeTime: 1
   scaleImpactVfxByRadius: 1
   grade: 0
   category: 0
   series: 0
-  weight: 2
+  weight: 3
   cooldown: 0.5
   effectStat:
-    attackPower: 15
+    attackPower: 0
     healPower: 0
     debuffPower: 0
     effectRadius: 1
-    effectCount: 0
+    effectCount: 1
     defensePower: 0
     speedPower: 0
     attackMultiplier: 1
@@ -45,4 +45,4 @@ MonoBehaviour:
   maxArcHeight: 2.5
   arcHeightDistanceMultiplier: 0.25
   effectDatas:
-  - {fileID: 11400000, guid: b1d4d8779dc9d464a8f904ab7f958884, type: 2}
+  - {fileID: 11400000, guid: bd9d453ede70fd54ca2d6254bf1d5f98, type: 2}

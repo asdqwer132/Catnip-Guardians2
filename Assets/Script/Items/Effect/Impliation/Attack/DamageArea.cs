@@ -124,16 +124,4 @@ public class DamageArea : MonoBehaviour
 
         hitObjects.Add(other.gameObject);
     }
-
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-
-        float drawRadius = radius;
-
-        if (circleCollider != null)
-            drawRadius = circleCollider.radius;
-
-        Gizmos.DrawWireSphere(transform.position, drawRadius);
-    }
 }

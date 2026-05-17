@@ -40,13 +40,13 @@ public class EquipmentBagManager : MonoBehaviour
     {
         if (index < 0 || index >= bags.Length)
         {
-            Debug.LogWarning("잘못된 가방 번호: " + index);
+            //Debug.LogWarning("잘못된 가방 번호: " + index);
             return;
         }
 
         if (bags[index] == null)
         {
-            Debug.LogWarning("가방이 비어있습니다: " + index);
+            //Debug.LogWarning("가방이 비어있습니다: " + index);
             return;
         }
 
@@ -73,25 +73,25 @@ public class EquipmentBagManager : MonoBehaviour
     {
         if (CurrentBag == null)
         {
-            Debug.LogWarning("선택된 가방이 없습니다.");
+            //Debug.LogWarning("선택된 가방이 없습니다.");
             return false;
         }
 
         if (item == null || item.itemData == null)
         {
-            Debug.LogWarning("장착할 아이템이 없습니다.");
+            //Debug.LogWarning("장착할 아이템이 없습니다.");
             return false;
         }
 
         if (InventoryManager.instance == null)
         {
-            Debug.LogWarning("InventoryManager가 없습니다.");
+            //Debug.LogWarning("InventoryManager가 없습니다.");
             return false;
         }
 
         if (!InventoryManager.instance.HasItem(item.itemData, 1))
         {
-            Debug.LogWarning("인벤토리에 해당 아이템이 없습니다.");
+            //Debug.LogWarning("인벤토리에 해당 아이템이 없습니다.");
             return false;
         }
 
@@ -99,7 +99,7 @@ public class EquipmentBagManager : MonoBehaviour
 
         if (!equipResult)
         {
-            Debug.LogWarning("장착 실패");
+           // Debug.LogWarning("장착 실패");
             return false;
         }
 
@@ -107,7 +107,7 @@ public class EquipmentBagManager : MonoBehaviour
 
         if (!removeResult)
         {
-            Debug.LogWarning("인벤토리 제거 실패");
+            //Debug.LogWarning("인벤토리 제거 실패");
 
             CurrentBag.UnequipItem(GetLastEquippedSlotIndex(item.itemData));
             CurrentBag.RefreshUI();
@@ -124,13 +124,13 @@ public class EquipmentBagManager : MonoBehaviour
     {
         if (CurrentBag == null)
         {
-            Debug.LogWarning("선택된 가방이 없습니다.");
+            //Debug.LogWarning("선택된 가방이 없습니다.");
             return;
         }
 
         if (InventoryManager.instance == null)
         {
-            Debug.LogWarning("InventoryManager가 없습니다.");
+           // Debug.LogWarning("InventoryManager가 없습니다.");
             return;
         }
 
@@ -138,7 +138,7 @@ public class EquipmentBagManager : MonoBehaviour
 
         if (item == null || item.itemData == null)
         {
-            Debug.LogWarning("해제할 아이템이 없습니다.");
+            //Debug.LogWarning("해제할 아이템이 없습니다.");
             return;
         }
 
@@ -147,20 +147,20 @@ public class EquipmentBagManager : MonoBehaviour
         CurrentBag.UnequipItem(slotIndex);
         CurrentBag.RefreshUI();
 
-        Debug.Log("장착 해제 완료: " + item.itemData.itemName);
+        //Debug.Log("장착 해제 완료: " + item.itemData.itemName);
     }
 
     public void ClearCurrentBagSlots()
     {
         if (CurrentBag == null)
         {
-            Debug.LogWarning("선택된 가방이 없습니다.");
+            //Debug.LogWarning("선택된 가방이 없습니다.");
             return;
         }
 
         if (InventoryManager.instance == null)
         {
-            Debug.LogWarning("InventoryManager가 없습니다.");
+           // Debug.LogWarning("InventoryManager가 없습니다.");
             return;
         }
 
@@ -177,14 +177,14 @@ public class EquipmentBagManager : MonoBehaviour
         CurrentBag.ClearAllSlots();
         CurrentBag.RefreshUI();
 
-        Debug.Log(CurrentBag.bagName + "의 모든 아이템을 해제했습니다.");
+        //Debug.Log(CurrentBag.bagData.bagName + "의 모든 아이템을 해제했습니다.");
     }
 
     public void ClearBagSlots(int bagIndex)
     {
         if (bagIndex < 0 || bagIndex >= bags.Length)
         {
-            Debug.LogWarning("잘못된 가방 번호: " + bagIndex);
+            //Debug.LogWarning("잘못된 가방 번호: " + bagIndex);
             return;
         }
 
@@ -192,13 +192,13 @@ public class EquipmentBagManager : MonoBehaviour
 
         if (bag == null)
         {
-            Debug.LogWarning("가방이 비어있습니다: " + bagIndex);
+           // Debug.LogWarning("가방이 비어있습니다: " + bagIndex);
             return;
         }
 
         if (InventoryManager.instance == null)
         {
-            Debug.LogWarning("InventoryManager가 없습니다.");
+            //Debug.LogWarning("InventoryManager가 없습니다.");
             return;
         }
 
@@ -215,7 +215,7 @@ public class EquipmentBagManager : MonoBehaviour
         bag.ClearAllSlots();
         bag.RefreshUI();
 
-        Debug.Log(bag.bagName + "의 모든 아이템을 해제했습니다.");
+        //Debug.Log(bag.bagData.bagName + "의 모든 아이템을 해제했습니다.");
     }
 
     private int GetLastEquippedSlotIndex(ItemData itemData)

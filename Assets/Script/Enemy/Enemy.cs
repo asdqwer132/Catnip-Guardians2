@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
+//추후 분리
 public class Enemy : MonoBehaviour
 {
     [Header("Move")]
@@ -18,25 +19,20 @@ public class Enemy : MonoBehaviour
 
     [Header("Animation")]
     public Animator animator;
-
-    [Header("Visual")]
     public SpriteRenderer spriteRenderer;
 
     [Header("Reward")]
     public int goldReward = 10;
 
-    [Header("HP UI")]
+    [Header("UI")]
     public Slider hpSlider;
 
     private Plant targetPlant;
     private Transform target;
-
     private float attackTimer = 0f;
-
     private bool isInitialized = false;
     private bool isDead = false;
     private bool isAttacking = false;
-
     private Coroutine attackCoroutine;
     private Coroutine dieCoroutine;
     private DamagePopupSpawner damagePopupSpawner;
@@ -84,9 +80,7 @@ public class Enemy : MonoBehaviour
         float distance = Vector2.Distance(transform.position, target.position);
 
         if (distance > attackRange)
-        {
             MoveToTarget();
-        }
         else
         {
             StopMove();
@@ -99,7 +93,6 @@ public class Enemy : MonoBehaviour
         if (target == null || spriteRenderer == null)
             return;
 
-        // 스프라이트 기본 방향이 오른쪽일 때 기준
         spriteRenderer.flipX = target.position.x < transform.position.x;
     }
 
@@ -117,10 +110,7 @@ public class Enemy : MonoBehaviour
         );
     }
 
-    void StopMove()
-    {
-        SetWalking(false);
-    }
+    void StopMove() { SetWalking(false); }
 
     void AttackTarget()
     {
@@ -149,21 +139,17 @@ public class Enemy : MonoBehaviour
             animator.ResetTrigger("Die");
             animator.SetTrigger("Attack");
 
-            // Animator가 Attack 상태로 전환될 시간을 1프레임 줌
             yield return null;
-
             yield return WaitCurrentAnimationEnd();
         }
         else
-        {
             yield return null;
-        }
 
         isAttacking = false;
         attackCoroutine = null;
     }
 
-    // 이 함수는 공격 애니메이션의 Animation Event에서 호출
+    //애니메이션 이벤트 호출 함수
     public void ApplyAttackDamage()
     {
         if (isDead)
@@ -186,12 +172,11 @@ public class Enemy : MonoBehaviour
             return;
 
         hp -= dmg;
-
         UpdateHPBar();
+
         if (damagePopupSpawner != null)
-        {
             damagePopupSpawner.ShowDamage(dmg);
-        }
+
         if (hp <= 0)
         {
             Die();
@@ -295,16 +280,8 @@ public class Enemy : MonoBehaviour
     void DestroySelf()
     {
         if (EnemyManager.instance != null)
-        {
             EnemyManager.instance.RemoveEnemy(gameObject);
-        }
 
         Destroy(gameObject);
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }

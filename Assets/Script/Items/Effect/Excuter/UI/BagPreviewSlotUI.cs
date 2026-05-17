@@ -6,7 +6,6 @@ public class BagPreviewSlotUI : MonoBehaviour
 {
     [Header("UI")]
     public Image bagIcon;
-    public TextMeshProUGUI bagNameText;
     public GameObject selectedFrame;
 
     public void SetUI(BagItemUseManager manager, bool isSelected)
@@ -15,11 +14,6 @@ public class BagPreviewSlotUI : MonoBehaviour
         {
             Clear();
             return;
-        }
-
-        if (bagNameText != null)
-        {
-            bagNameText.text = manager.bag.bagName;
         }
 
         if (bagIcon != null)
@@ -46,9 +40,6 @@ public class BagPreviewSlotUI : MonoBehaviour
 
     public void Clear()
     {
-        if (bagNameText != null)
-            bagNameText.text = "";
-
         if (bagIcon != null)
         {
             bagIcon.enabled = false;

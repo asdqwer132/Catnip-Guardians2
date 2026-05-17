@@ -1,6 +1,7 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
+using static UnityEditor.Progress;
 
 public class ItemTooltipUI : MonoBehaviour
 {
@@ -71,17 +72,6 @@ public class ItemTooltipUI : MonoBehaviour
 
         Debug.Log("ÅøÆÁ »óÅÂ: " + (useTooltip ? "ÄÑÁü" : "²¨Áü"));
     }
-
-    public void SetUseTooltip(bool value)
-    {
-        useTooltip = value;
-
-        if (!useTooltip)
-            Hide();
-
-        Debug.Log("ÅøÆÁ »óÅÂ: " + (useTooltip ? "ÄÑÁü" : "²¨Áü"));
-    }
-
     public void Show(InventoryItem item)
     {
         if (!useTooltip)
@@ -96,10 +86,22 @@ public class ItemTooltipUI : MonoBehaviour
             return;
         }
 
-        ItemData itemData = item.itemData;
-
         if (tooltipPanel != null)
             tooltipPanel.SetActive(true);
+
+        SetData(item);
+
+        isShowing = true;
+
+        if (tooltipRect != null)
+            LayoutRebuilder.ForceRebuildLayoutImmediate(tooltipRect);
+
+        UpdateTooltipPosition();
+    }
+    private void SetData(InventoryItem item)
+    {
+
+        ItemData itemData = item.itemData;
 
         if (icon != null)
         {
@@ -119,14 +121,7 @@ public class ItemTooltipUI : MonoBehaviour
         if (descriptionText != null)
             descriptionText.text = itemData.description;
 
-        isShowing = true;
-
-        if (tooltipRect != null)
-            LayoutRebuilder.ForceRebuildLayoutImmediate(tooltipRect);
-
-        UpdateTooltipPosition();
     }
-
     public void Hide()
     {
         isShowing = false;

@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class CraftMaterialSlotUI : ClickableItemSlotUI
 {
+    //UI ¿¬°á
     public override void OnClickSlot()
     {
         if (currentItem == null || currentItem.itemData == null)

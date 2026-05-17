@@ -24,23 +24,8 @@ public class DamagePopup : MonoBehaviour
             damageText = GetComponentInChildren<TextMeshProUGUI>();
 
         canvasGroup = GetComponent<CanvasGroup>();
-
         if (canvasGroup == null)
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
-    }
-
-    public void Init(float damage)
-    {
-        if (damageText != null)
-        {
-            damageText.text = Mathf.RoundToInt(damage).ToString();
-        }
-
-        timer = 0f;
-        transform.localScale = Vector3.one * startScale;
-
-        if (canvasGroup != null)
-            canvasGroup.alpha = 1f;
     }
 
     void Update()
@@ -62,8 +47,18 @@ public class DamagePopup : MonoBehaviour
         }
 
         if (timer >= lifeTime)
-        {
             Destroy(gameObject);
-        }
+    }
+
+    public void Init(float damage)
+    {
+        if (damageText != null)
+            damageText.text = Mathf.RoundToInt(damage).ToString();
+
+        timer = 0f;
+        transform.localScale = Vector3.one * startScale;
+
+        if (canvasGroup != null)
+            canvasGroup.alpha = 1f;
     }
 }

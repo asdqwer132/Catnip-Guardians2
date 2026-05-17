@@ -12,7 +12,6 @@ public class EffectStat
     [Header("Effect")]
     [Tooltip("기본 아이템에서는 기본 범위, 버프/디버프에서는 범위 변화량")]
     public float effectRadius = 0f;
-
     [Tooltip("기본 아이템에서는 기본 횟수, 버프/디버프에서는 횟수 변화량")]
     public int effectCount = 0;
 

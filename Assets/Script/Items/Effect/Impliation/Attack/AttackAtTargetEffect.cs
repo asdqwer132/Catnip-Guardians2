@@ -4,8 +4,7 @@ using UnityEngine;
 public class AttackAtTargetEffect : ItemEffectData
 {
     [Header("Optional Override")]
-    [Tooltip("비워두면 ItemData.prefab을 사용합니다.")]
-    public GameObject overrideAttackPrefab;
+    public GameObject overrideAttackPrefab; //비워둘시 아이템의 프리팹 사용
 
     public override void Execute(ItemEffectContext context)
     {
@@ -28,13 +27,13 @@ public class AttackAtTargetEffect : ItemEffectData
 
         ApplyDamageArea(obj, context);
 
-        Debug.Log(
-            context.itemData.itemName +
-            " 공격 효과 실행 / 데미지: " +
-            GetItemDamage(context) +
-            " / 범위: " +
-            GetItemRadius(context)
-        );
+        //Debug.Log(
+        //    context.itemData.itemName +
+        //    " 공격 효과 실행 / 데미지: " +
+        //    GetItemDamage(context) +
+        //    " / 범위: " +
+        //    GetItemRadius(context)
+        //);
     }
 
     private GameObject GetAttackPrefab(ItemEffectContext context)

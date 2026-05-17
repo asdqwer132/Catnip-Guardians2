@@ -1,8 +1,21 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
+
+public enum BuffItemTargetScope
+{
+    CurrentBag,
+    AllBags
+}
 
 [CreateAssetMenu(fileName = "BuffBagItemsEffect", menuName = "Game/Item Effect/Buff Bag Items")]
 public class BuffBagItemsEffect : ItemEffectData
 {
+    public static event Action<RuntimeBuffUIInfo> OnBuffActivated;
+
+    [Header("Buff Target Scope")]
+    public BuffItemTargetScope targetScope = BuffItemTargetScope.CurrentBag;
+
     [Header("Buff Target")]
     public bool includeSelf = false;
 
@@ -27,17 +40,44 @@ public class BuffBagItemsEffect : ItemEffectData
         if (context == null)
             return;
 
-        if (context.bagItems == null)
+        List<InventoryItem> targetItems = GetTargetItems(context);
+
+        if (targetItems == null)
             return;
+
+        if (targetItems.Count <= 0)
+        {
+            NotifyBuffUI(
+                context,
+                targetItems,
+                0
+            );
+
+            return;
+        }
+
+        int appliedCount = 0;
 
         if (durationType == RuntimeBuffDurationType.NextItemUse)
         {
-            ApplyNextItemUseBuff(context);
+            appliedCount = ApplyNextItemUseBuff(
+                context,
+                targetItems
+            );
         }
         else
         {
-            ApplyBuffToAllBagItems(context);
+            appliedCount = ApplyBuffToAllTargetItems(
+                context,
+                targetItems
+            );
         }
+
+        NotifyBuffUI(
+            context,
+            targetItems,
+            appliedCount
+        );
 
         string itemName = "Unknown Item";
 
@@ -46,29 +86,28 @@ public class BuffBagItemsEffect : ItemEffectData
 
         Debug.Log(
             itemName +
-            " 버프 적용 / 타입: " +
+            " 버프 적용 / 범위: " +
+            targetScope +
+            " / 타입: " +
             durationType +
+            " / 적용 수: " +
+            appliedCount +
             " / 중첩 허용: " +
             allowStack
         );
     }
 
-    private void ApplyNextItemUseBuff(ItemEffectContext context)
+    private int ApplyNextItemUseBuff(
+        ItemEffectContext context,
+        List<InventoryItem> targetItems
+    )
     {
         int targetCount = Mathf.Max(1, nextItemUseTargetCount);
-
-        int startIndex = GetStartIndex(context);
         int appliedCount = 0;
-        int totalCount = context.bagItems.Count;
 
-        if (totalCount <= 0)
-            return;
-
-        for (int i = 0; i < totalCount; i++)
+        for (int i = 0; i < targetItems.Count; i++)
         {
-            int index = (startIndex + i) % totalCount;
-
-            InventoryItem item = context.bagItems[index];
+            InventoryItem item = targetItems[i];
 
             if (!CanBuffItem(item, context))
                 continue;
@@ -84,13 +123,20 @@ public class BuffBagItemsEffect : ItemEffectData
             if (appliedCount >= targetCount)
                 break;
         }
+
+        return appliedCount;
     }
 
-    private void ApplyBuffToAllBagItems(ItemEffectContext context)
+    private int ApplyBuffToAllTargetItems(
+        ItemEffectContext context,
+        List<InventoryItem> targetItems
+    )
     {
-        for (int i = 0; i < context.bagItems.Count; i++)
+        int appliedCount = 0;
+
+        for (int i = 0; i < targetItems.Count; i++)
         {
-            InventoryItem item = context.bagItems[i];
+            InventoryItem item = targetItems[i];
 
             if (!CanBuffItem(item, context))
                 continue;
@@ -100,7 +146,11 @@ public class BuffBagItemsEffect : ItemEffectData
                 context,
                 0
             );
+
+            appliedCount++;
         }
+
+        return appliedCount;
     }
 
     private void ApplyBuff(
@@ -136,7 +186,95 @@ public class BuffBagItemsEffect : ItemEffectData
         }
     }
 
-    private int GetStartIndex(ItemEffectContext context)
+    private List<InventoryItem> GetTargetItems(ItemEffectContext context)
+    {
+        if (targetScope == BuffItemTargetScope.CurrentBag)
+            return GetCurrentBagTargetItems(context);
+
+        return GetAllBagsTargetItems(context);
+    }
+
+    private List<InventoryItem> GetCurrentBagTargetItems(ItemEffectContext context)
+    {
+        List<InventoryItem> result = new List<InventoryItem>();
+
+        if (context == null)
+            return result;
+
+        if (context.bagItems == null)
+            return result;
+
+        int totalCount = context.bagItems.Count;
+
+        if (totalCount <= 0)
+            return result;
+
+        int startIndex = GetStartIndexInCurrentBag(context);
+
+        for (int i = 0; i < totalCount; i++)
+        {
+            int index = (startIndex + i) % totalCount;
+            result.Add(context.bagItems[index]);
+        }
+
+        return result;
+    }
+
+    private List<InventoryItem> GetAllBagsTargetItems(ItemEffectContext context)
+    {
+        List<InventoryItem> result = new List<InventoryItem>();
+
+        EquipmentBag[] bags = EquipmentBagManager.instance.bags;
+
+        if (bags == null || bags.Length <= 0)
+            return result;
+
+        List<InventoryItem> allItems = new List<InventoryItem>();
+
+        for (int i = 0; i < bags.Length; i++)
+        {
+            EquipmentBag bag = bags[i];
+
+            if (bag == null)
+                continue;
+
+            if (bag.equippedItems == null)
+                continue;
+
+            for (int j = 0; j < bag.equippedItems.Count; j++)
+            {
+                allItems.Add(bag.equippedItems[j]);
+            }
+        }
+
+        if (allItems.Count <= 0)
+            return result;
+
+        int startIndex = 0;
+
+        if (context != null && context.inventoryItem != null)
+        {
+            int selfIndex = allItems.IndexOf(context.inventoryItem);
+
+            if (selfIndex >= 0)
+            {
+                if (includeSelf)
+                    startIndex = selfIndex;
+                else
+                    startIndex = selfIndex + 1;
+            }
+        }
+
+        for (int i = 0; i < allItems.Count; i++)
+        {
+            int index = (startIndex + i) % allItems.Count;
+            result.Add(allItems[index]);
+        }
+
+        return result;
+    }
+
+    private int GetStartIndexInCurrentBag(ItemEffectContext context)
     {
         if (context == null || context.bagItems == null)
             return 0;
@@ -163,9 +301,67 @@ public class BuffBagItemsEffect : ItemEffectData
         if (item == null || item.itemData == null)
             return false;
 
-        if (!includeSelf && item == context.inventoryItem)
+        if (!includeSelf && context != null && item == context.inventoryItem)
             return false;
 
         return true;
+    }
+
+    private void NotifyBuffUI(
+        ItemEffectContext context,
+        List<InventoryItem> targetItems,
+        int appliedCount
+    )
+    {
+        Sprite icon = null;
+
+        if (context != null && context.itemData != null)
+            icon = context.itemData.icon;
+
+        int startNumber = GetUIStartNumber();
+
+        RuntimeBuffUIScope uiScope = RuntimeBuffUIScope.CurrentBag;
+        EquipmentBag uiBag = null;
+
+        if (targetScope == BuffItemTargetScope.AllBags)
+        {
+            uiScope = RuntimeBuffUIScope.AllBags;
+            uiBag = null;
+        }
+        else
+        {
+            uiScope = RuntimeBuffUIScope.CurrentBag;
+
+            if (context != null)
+                uiBag = context.currentBag;
+        }
+
+        RuntimeBuffUIInfo info = new RuntimeBuffUIInfo(
+            source: this,
+            icon: icon,
+            durationType: durationType,
+            scope: uiScope,
+            currentBag: uiBag,
+            bagItems: targetItems,
+            currentCycleId: context != null ? context.currentCycleId : 0,
+            startNumber: startNumber
+        );
+
+        OnBuffActivated?.Invoke(info);
+    }
+
+    private int GetUIStartNumber()
+    {
+        if (durationType == RuntimeBuffDurationType.Seconds)
+        {
+            return Mathf.CeilToInt(duration);
+        }
+
+        if (durationType == RuntimeBuffDurationType.NextItemUse)
+        {
+            return Mathf.Max(1, nextItemUseTargetCount);
+        }
+
+        return 1;
     }
 }

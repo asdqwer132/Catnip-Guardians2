@@ -11,18 +11,9 @@ public class BagItemUseManager : MonoBehaviour
     [Header("Throw")]
     public ItemThrowExecutor throwExecutor;
 
-    private float bagCooldownEndTime = 0f;
-
-    private float nextItemUseTime = 0f;
-    private float currentItemCooldownDuration = 0f;
-
-    private float[] slotCooldownEndTimes;
-    private bool[] slotPreparationStarted;
-
-    private int currentSlotIndex = 0;
-    private bool[] usedSlotInCycle;
-
-    private int currentCycleId = 0;
+    private BagItemUseCycle useCycle = new BagItemUseCycle();
+    private BagItemCooldownController cooldownController =
+        new BagItemCooldownController();
 
     void Awake()
     {
@@ -45,43 +36,21 @@ public class BagItemUseManager : MonoBehaviour
         if (throwExecutor == null)
             throwExecutor = GetComponent<ItemThrowExecutor>();
 
-        bagCooldownEndTime = 0f;
+        int slotCount = GetSlotCount();
 
-        SyncSlotArrays();
+        cooldownController.SetBagCooldown(bagCooldown);
+        cooldownController.Init(slotCount);
 
-        currentSlotIndex = 0;
-        currentCycleId++;
-
-        if (usedSlotInCycle != null)
-        {
-            for (int i = 0; i < usedSlotInCycle.Length; i++)
-                usedSlotInCycle[i] = false;
-        }
-
-        if (slotPreparationStarted != null)
-        {
-            for (int i = 0; i < slotPreparationStarted.Length; i++)
-                slotPreparationStarted[i] = false;
-        }
-
-        if (slotCooldownEndTimes != null)
-        {
-            for (int i = 0; i < slotCooldownEndTimes.Length; i++)
-                slotCooldownEndTimes[i] = 0f;
-        }
-
-        nextItemUseTime = 0f;
-        currentItemCooldownDuration = 0f;
+        useCycle.Init(slotCount);
 
         StartPreparationForCurrentSlot();
 
-        Debug.Log("BagItemUseManager 초기화 완료 / 아이템 사용 순서 초기화 / Cycle: " + currentCycleId);
+        // Debug.Log("BagItemUseManager 초기화 완료 / Cycle: " + useCycle.CurrentCycleId);
     }
 
     public void SetBag(EquipmentBag newBag)
     {
         bag = newBag;
-
         Init();
     }
 
@@ -94,15 +63,19 @@ public class BagItemUseManager : MonoBehaviour
         if (!CanTryUse(owner))
             return false;
 
-        SyncSlotArrays();
+        SyncControllers();
 
         if (IsBagCoolingDown())
         {
-            Debug.Log("가방 쿨타임 중입니다. 남은 시간: " + GetBagCooldownRemain().ToString("F1"));
+            Debug.Log(
+                "가방 쿨타임 중입니다. 남은 시간: " +
+                GetBagCooldownRemain().ToString("F1")
+            );
+
             return false;
         }
 
-        int slotIndex = GetNextUsableSlotIndex();
+        int slotIndex = useCycle.GetNextUsableSlotIndex(bag);
 
         if (slotIndex == -1)
         {
@@ -118,17 +91,17 @@ public class BagItemUseManager : MonoBehaviour
             return false;
         }
 
-        StartPreparationCooldownIfNeeded(
+        cooldownController.StartPreparationCooldownIfNeeded(
             slotIndex,
             inventoryItem
         );
 
-        if (IsSlotCoolingDown(slotIndex))
+        if (cooldownController.IsSlotCoolingDown(slotIndex))
         {
             Debug.Log(
                 inventoryItem.itemData.itemName +
                 " 준비 중입니다. 남은 시간: " +
-                GetSlotCooldownRemain(slotIndex).ToString("F1")
+                cooldownController.GetSlotCooldownRemain(slotIndex).ToString("F1")
             );
 
             return false;
@@ -160,15 +133,7 @@ public class BagItemUseManager : MonoBehaviour
             direction,
             owner,
             bag,
-            currentCycleId
-        );
-
-        Debug.Log(
-            bag.bagName +
-            " 슬롯 " +
-            slotIndex +
-            " 아이템 사용: " +
-            inventoryItem.itemData.itemName
+            useCycle.CurrentCycleId
         );
 
         ApplyUseResult(slotIndex);
@@ -215,18 +180,14 @@ public class BagItemUseManager : MonoBehaviour
 
     private void ApplyUseResult(int slotIndex)
     {
-        usedSlotInCycle[slotIndex] = true;
+        useCycle.MarkSlotUsedAndMoveNext(
+            slotIndex,
+            GetSlotCount()
+        );
 
-        currentSlotIndex = slotIndex + 1;
-
-        if (currentSlotIndex >= bag.equippedItems.Count)
-            currentSlotIndex = 0;
-
-        if (HasUsedAllUsableSlotsThisCycle())
+        if (useCycle.HasUsedAllUsableSlotsThisCycle(bag))
         {
-            Debug.Log(bag.bagName + "의 아이템을 한 바퀴 전부 사용했습니다. 가방 쿨타임 시작.");
-
-            StartBagCooldown();
+            cooldownController.StartBagCooldown();
             ResetUsePosition();
 
             return;
@@ -243,191 +204,69 @@ public class BagItemUseManager : MonoBehaviour
         if (IsBagCoolingDown())
             return;
 
-        SyncSlotArrays();
+        SyncControllers();
 
-        int slotIndex = GetNextUsableSlotIndex();
+        int slotIndex = useCycle.GetNextUsableSlotIndex(bag);
 
         if (slotIndex == -1)
             return;
 
         InventoryItem inventoryItem = bag.equippedItems[slotIndex];
 
-        StartPreparationCooldownIfNeeded(
+        cooldownController.StartPreparationCooldownIfNeeded(
             slotIndex,
             inventoryItem
         );
     }
 
-    private void StartPreparationCooldownIfNeeded(
-        int slotIndex,
-        InventoryItem item
-    )
+    private void SyncControllers()
     {
-        if (item == null || item.itemData == null)
-            return;
+        int slotCount = GetSlotCount();
 
-        if (slotPreparationStarted == null)
-            return;
-
-        if (slotIndex < 0 || slotIndex >= slotPreparationStarted.Length)
-            return;
-
-        if (slotPreparationStarted[slotIndex])
-            return;
-
-        float cooldown = Mathf.Max(
-            0f,
-            item.itemData.cooldown
-        );
-
-        currentItemCooldownDuration = cooldown;
-        nextItemUseTime = Time.time + cooldown;
-
-        if (slotCooldownEndTimes != null &&
-            slotIndex >= 0 &&
-            slotIndex < slotCooldownEndTimes.Length)
-        {
-            slotCooldownEndTimes[slotIndex] = Time.time + cooldown;
-        }
-
-        slotPreparationStarted[slotIndex] = true;
-
-        Debug.Log(item.itemData.itemName + " 준비 시작 / 준비 시간: " + cooldown);
+        useCycle.SyncSlotCount(slotCount);
+        cooldownController.SyncSlotCount(slotCount);
+        cooldownController.SetBagCooldown(bagCooldown);
     }
 
-    private void SyncSlotArrays()
+    private int GetSlotCount()
     {
         if (bag == null || bag.equippedItems == null)
-            return;
+            return 0;
 
-        int slotCount = bag.equippedItems.Count;
-
-        if (slotCooldownEndTimes == null || slotCooldownEndTimes.Length != slotCount)
-            slotCooldownEndTimes = new float[slotCount];
-
-        if (slotPreparationStarted == null || slotPreparationStarted.Length != slotCount)
-            slotPreparationStarted = new bool[slotCount];
-
-        if (usedSlotInCycle == null || usedSlotInCycle.Length != slotCount)
-            usedSlotInCycle = new bool[slotCount];
-
-        if (slotCount == 0)
-        {
-            currentSlotIndex = 0;
-            return;
-        }
-
-        if (currentSlotIndex < 0 || currentSlotIndex >= slotCount)
-            currentSlotIndex = 0;
+        return bag.equippedItems.Count;
     }
 
     public void ResetUsePosition()
     {
-        currentCycleId++;
+        int slotCount = GetSlotCount();
 
-        currentSlotIndex = 0;
-
-        if (usedSlotInCycle != null)
-        {
-            for (int i = 0; i < usedSlotInCycle.Length; i++)
-                usedSlotInCycle[i] = false;
-        }
-
-        if (slotPreparationStarted != null)
-        {
-            for (int i = 0; i < slotPreparationStarted.Length; i++)
-                slotPreparationStarted[i] = false;
-        }
-
-        if (slotCooldownEndTimes != null)
-        {
-            for (int i = 0; i < slotCooldownEndTimes.Length; i++)
-                slotCooldownEndTimes[i] = 0f;
-        }
-
-        nextItemUseTime = 0f;
-        currentItemCooldownDuration = 0f;
+        useCycle.ResetUsePosition(slotCount);
+        cooldownController.ResetSlotPreparation(slotCount);
 
         StartPreparationForCurrentSlot();
 
-        Debug.Log("아이템 사용 위치가 초기화되고, 첫 아이템 준비가 시작되었습니다. Cycle: " + currentCycleId);
+        Debug.Log(
+            "아이템 사용 위치가 초기화되고, 첫 아이템 준비가 시작되었습니다. Cycle: " +
+            useCycle.CurrentCycleId
+        );
     }
 
     public void ResetAllCooldowns()
     {
-        bagCooldownEndTime = 0f;
+        int slotCount = GetSlotCount();
 
-        nextItemUseTime = 0f;
-        currentItemCooldownDuration = 0f;
-
-        currentSlotIndex = 0;
-        currentCycleId++;
-
-        if (usedSlotInCycle != null)
-        {
-            for (int i = 0; i < usedSlotInCycle.Length; i++)
-                usedSlotInCycle[i] = false;
-        }
-
-        if (slotCooldownEndTimes != null)
-        {
-            for (int i = 0; i < slotCooldownEndTimes.Length; i++)
-                slotCooldownEndTimes[i] = 0f;
-        }
-
-        if (slotPreparationStarted != null)
-        {
-            for (int i = 0; i < slotPreparationStarted.Length; i++)
-                slotPreparationStarted[i] = false;
-        }
+        useCycle.ResetUsePosition(slotCount);
+        cooldownController.ResetAllCooldowns(slotCount);
 
         StartPreparationForCurrentSlot();
 
-        Debug.Log("가방 쿨타임과 아이템 사용 순서가 초기화되고, 첫 아이템 준비가 시작되었습니다.");
-    }
-
-    private int GetNextUsableSlotIndex()
-    {
-        if (bag == null || bag.equippedItems == null)
-            return -1;
-
-        SyncSlotArrays();
-
-        int slotCount = bag.equippedItems.Count;
-
-        if (slotCount <= 0)
-            return -1;
-
-        if (usedSlotInCycle == null || usedSlotInCycle.Length != slotCount)
-            return -1;
-
-        if (currentSlotIndex < 0 || currentSlotIndex >= slotCount)
-            currentSlotIndex = 0;
-
-        for (int i = 0; i < slotCount; i++)
-        {
-            int index = (currentSlotIndex + i) % slotCount;
-
-            if (index < 0 || index >= usedSlotInCycle.Length)
-                continue;
-
-            if (usedSlotInCycle[index])
-                continue;
-
-            InventoryItem item = bag.equippedItems[index];
-
-            if (!IsUsableItem(item))
-                continue;
-
-            return index;
-        }
-
-        return -1;
+        // Debug.Log("가방 쿨타임과 아이템 사용 순서가 초기화되었습니다.");
     }
 
     public int GetNextReadyUsableSlotIndexForUI()
     {
-        return GetNextUsableSlotIndex();
+        SyncControllers();
+        return useCycle.GetNextUsableSlotIndex(bag);
     }
 
     public InventoryItem GetNextUsableInventoryItemForUI()
@@ -446,47 +285,9 @@ public class BagItemUseManager : MonoBehaviour
         return bag.equippedItems[index];
     }
 
-    private bool HasUsedAllUsableSlotsThisCycle()
-    {
-        if (bag == null || bag.equippedItems == null)
-            return false;
-
-        if (usedSlotInCycle == null || usedSlotInCycle.Length != bag.equippedItems.Count)
-            return false;
-
-        bool hasUsableItem = false;
-
-        for (int i = 0; i < bag.equippedItems.Count; i++)
-        {
-            InventoryItem item = bag.equippedItems[i];
-
-            if (!IsUsableItem(item))
-                continue;
-
-            hasUsableItem = true;
-
-            if (!usedSlotInCycle[i])
-                return false;
-        }
-
-        return hasUsableItem;
-    }
-
-    private bool IsUsableItem(InventoryItem item)
-    {
-        return item != null &&
-               item.itemData != null &&
-               item.amount > 0;
-    }
-
-    private void StartBagCooldown()
-    {
-        bagCooldownEndTime = Time.time + bagCooldown;
-    }
-
     public bool IsBagCoolingDown()
     {
-        return Time.time < bagCooldownEndTime;
+        return cooldownController.IsBagCoolingDown();
     }
 
     public bool IsNextItemUseCoolingDown()
@@ -501,31 +302,17 @@ public class BagItemUseManager : MonoBehaviour
 
     public bool IsSlotCoolingDown(int slotIndex)
     {
-        if (slotCooldownEndTimes == null)
-            return false;
-
-        if (slotIndex < 0 || slotIndex >= slotCooldownEndTimes.Length)
-            return false;
-
-        return Time.time < slotCooldownEndTimes[slotIndex];
+        return cooldownController.IsSlotCoolingDown(slotIndex);
     }
 
     public float GetBagCooldownRemain()
     {
-        return Mathf.Max(
-            0f,
-            bagCooldownEndTime - Time.time
-        );
+        return cooldownController.GetBagCooldownRemain();
     }
 
     public float GetBagCooldownRatio()
     {
-        if (bagCooldown <= 0f)
-            return 0f;
-
-        return Mathf.Clamp01(
-            GetBagCooldownRemain() / bagCooldown
-        );
+        return cooldownController.GetBagCooldownRatio();
     }
 
     public float GetNextItemUseCooldownRemain()
@@ -550,46 +337,14 @@ public class BagItemUseManager : MonoBehaviour
 
     public float GetSlotCooldownRemain(int slotIndex)
     {
-        if (slotCooldownEndTimes == null)
-            return 0f;
-
-        if (slotIndex < 0 || slotIndex >= slotCooldownEndTimes.Length)
-            return 0f;
-
-        return Mathf.Max(
-            0f,
-            slotCooldownEndTimes[slotIndex] - Time.time
-        );
+        return cooldownController.GetSlotCooldownRemain(slotIndex);
     }
 
     public float GetSlotCooldownRatio(int slotIndex)
     {
-        if (bag == null || bag.equippedItems == null)
-            return 0f;
-
-        if (slotIndex < 0 || slotIndex >= bag.equippedItems.Count)
-            return 0f;
-
-        InventoryItem item = bag.equippedItems[slotIndex];
-
-        if (item == null || item.itemData == null)
-            return 0f;
-
-        float cooldown = Mathf.Max(
-            0f,
-            item.itemData.cooldown
+        return cooldownController.GetSlotCooldownRatio(
+            bag,
+            slotIndex
         );
-
-        if (cooldown <= 0f)
-            return 0f;
-
-        return Mathf.Clamp01(
-            GetSlotCooldownRemain(slotIndex) / cooldown
-        );
-    }
-
-    public int GetCurrentCycleId()
-    {
-        return currentCycleId;
     }
 }

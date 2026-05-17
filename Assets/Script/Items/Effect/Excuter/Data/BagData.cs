@@ -4,5 +4,6 @@ using UnityEngine;
 public class BagData : ScriptableObject
 {
     public Sprite icon;
+    public string bagName;
     public int maxWeight;
 }

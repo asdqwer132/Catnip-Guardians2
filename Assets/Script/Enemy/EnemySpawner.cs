@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
+    [Header("Setting")]
     public GameObject enemyPrefab;
     public float spawnRate = 1.5f;
     public float spawnDistance = 8f;
@@ -18,10 +19,7 @@ public class EnemySpawner : MonoBehaviour
         InvokeRepeating(nameof(SpawnEnemy), 1f, info.spawnWeight);
     }
 
-    public void StopSpawning()
-    {
-        CancelInvoke(nameof(SpawnEnemy));
-    }
+    public void StopSpawning(){ CancelInvoke(nameof(SpawnEnemy)); }
 
     void SpawnEnemy()
     {
@@ -42,9 +40,7 @@ public class EnemySpawner : MonoBehaviour
         Enemy enemy = spawnedEnemy.GetComponent<Enemy>();
 
         if (enemy != null)
-        {
             enemy.Init(targetPlant);
-        }
 
         EnemyManager.instance.RegisterEnemy(spawnedEnemy);
     }

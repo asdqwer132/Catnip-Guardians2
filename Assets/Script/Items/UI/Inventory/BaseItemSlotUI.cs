@@ -10,6 +10,7 @@ public class BaseItemSlotUI : MonoBehaviour
     public TextMeshProUGUI amountText;
     public TextMeshProUGUI gradeText;
 
+    [Header("Referrence")]
     public InventoryItem currentItem;
 
     public virtual void SetSlot(InventoryItem item)
@@ -30,7 +31,7 @@ public class BaseItemSlotUI : MonoBehaviour
         if (itemData == null)
         {
             ClearSlot();
-            Debug.Log("데이터 없음");
+            //Debug.Log("데이터 없음");
             return;
         }
         //Debug.Log(gameObject.name +  "데이터 있음" + itemData.itemName);
@@ -71,13 +72,5 @@ public class BaseItemSlotUI : MonoBehaviour
             gradeText.text = "";
     }
 
-    public InventoryItem GetCurrentItem()
-    {
-        return currentItem;
-    }
-
-    public bool IsEmpty()
-    {
-        return currentItem == null || currentItem.itemData == null;
-    }
+    public InventoryItem GetCurrentItem() { return currentItem; }
 }

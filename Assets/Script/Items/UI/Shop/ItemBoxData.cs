@@ -1,15 +1,25 @@
 using Mono.Cecil;
 using UnityEngine;
 
+[System.Serializable]
+public class GachaItemInfo
+{
+    public ItemData itemData;
+    public int weight;
+}
+
 [CreateAssetMenu(fileName = "Box", menuName = "Game/Box")]
 public class ItemBoxData : ScriptableObject
 {
+    [Header("Info")]
     public string boxName;
     public Sprite icon;
 
+    [Header("Price")]
     public CurrencyType priceType;
     public int price;
 
+    [Header("Gacha")]
     public GachaItemInfo[] gachaItems;
 
     public ItemData GetRandomItem()
@@ -36,11 +46,4 @@ public class ItemBoxData : ScriptableObject
 
         return null;
     }
-}
-
-[System.Serializable]
-public class GachaItemInfo
-{
-    public ItemData itemData;
-    public int weight;
 }

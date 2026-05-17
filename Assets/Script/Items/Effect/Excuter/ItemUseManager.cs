@@ -164,7 +164,7 @@ public class ItemUseManager : MonoBehaviour
 
         UpdateCooldownUI();
 
-        Debug.Log("전체 가방 쿨타임과 아이템 준비시간을 초기화했습니다.");
+       // Debug.Log("전체 가방 쿨타임과 아이템 준비시간을 초기화했습니다.");
     }
 
     public void ResetCurrentBagCooldowns()

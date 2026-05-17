@@ -23,8 +23,6 @@ public class GameManager : MonoBehaviour
     {
         if (isGameOver) return;
 
-        //Debug.Log("Victory!");
-
         CurrencyManager.instance.AddCurrency(
             plant.plantData.rewardType,
             plant.plantData.rewardAmount
@@ -36,8 +34,6 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         if (isGameOver) return;
-
-        //Debug.Log("Game Over");
 
         ReadyUpgrade();
     }
@@ -69,7 +65,6 @@ public class GameManager : MonoBehaviour
 
         if (upgradePanel != null)
             upgradePanel.SetActive(false);
-
 
         CursorChanger.instance.SetCursor(CursorType.Attack);
     }

@@ -3,7 +3,7 @@ using UnityEngine;
 public class PlayOnActive : MonoBehaviour
 {
     public Animator animator;
-    public string stateName = "Open"; // 애니메이션 State 이름
+    public string stateName = "Open";
 
     void OnEnable()
     {

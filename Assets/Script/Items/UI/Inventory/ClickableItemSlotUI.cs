@@ -23,8 +23,5 @@ public class ClickableItemSlotUI : BaseItemSlotUI
             slotButton.onClick.RemoveListener(OnClickSlot);
     }
 
-    public virtual void OnClickSlot()
-    {
-        // 클릭 가능 슬롯의 기본 동작 없음
-    }
+    public virtual void OnClickSlot() { }
 }

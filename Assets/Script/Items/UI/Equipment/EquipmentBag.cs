@@ -4,7 +4,6 @@ using UnityEngine;
 public class EquipmentBag : MonoBehaviour
 {
     [Header("Bag Info")]
-    public string bagName = "가방";
     public BagData bagData;
 
     [Header("Slot Settings")]
@@ -67,7 +66,7 @@ public class EquipmentBag : MonoBehaviour
 
         if (emptyIndex == -1)
         {
-            Debug.LogWarning(bagName + "에 빈 슬롯이 없습니다.");
+            //Debug.LogWarning(bagData.bagName + "에 빈 슬롯이 없습니다.");
             return false;
         }
 
@@ -77,13 +76,12 @@ public class EquipmentBag : MonoBehaviour
 
         if (currentWeight + itemWeight > maxWeight)
         {
-            Debug.LogWarning(
-                bagName + "의 최대 무게를 초과합니다. " +
-                "현재 무게: " + currentWeight +
-                " / 추가 무게: " + itemWeight +
-                " / 최대 무게: " + maxWeight
-            );
-
+            //Debug.LogWarning(
+            //    bagData.bagName + "의 최대 무게를 초과합니다. " +
+            //    "현재 무게: " + currentWeight +
+            //    " / 추가 무게: " + itemWeight +
+            //    " / 최대 무게: " + maxWeight
+            //);
             return false;
         }
 
@@ -93,11 +91,11 @@ public class EquipmentBag : MonoBehaviour
 
         RefreshUI();
 
-        Debug.Log(
-            bagName + "에 장착됨: " + item.itemData.itemName +
-            " / 현재 무게: " + GetCurrentWeight() +
-            " / 최대 무게: " + maxWeight
-        );
+        //Debug.Log(
+        //    bagData.bagName + "에 장착됨: " + item.itemData.itemName +
+        //    " / 현재 무게: " + GetCurrentWeight() +
+        //    " / 최대 무게: " + maxWeight
+        //);
 
         return true;
     }
@@ -110,8 +108,6 @@ public class EquipmentBag : MonoBehaviour
         }
 
         RefreshUI();
-
-        Debug.Log(bagName + "의 모든 슬롯을 비웠습니다.");
     }
 
     public void UnequipItem(int slotIndex)
@@ -123,8 +119,6 @@ public class EquipmentBag : MonoBehaviour
 
         if (item == null || item.itemData == null)
             return;
-
-        Debug.Log(bagName + "에서 해제됨: " + item.itemData.itemName);
 
         equippedItems[slotIndex] = new InventoryItem(null, 0);
 
@@ -164,21 +158,21 @@ public class EquipmentBag : MonoBehaviour
         return bagData.maxWeight;
     }
 
-    public bool CanAddItem(InventoryItem item)
-    {
-        if (item == null || item.itemData == null)
-            return false;
+    //public bool CanAddItem(InventoryItem item)
+    //{
+    //    if (item == null || item.itemData == null)
+    //        return false;
 
-        if (bagData == null)
-            return false;
+    //    if (bagData == null)
+    //        return false;
 
-        if (GetEmptySlotIndex() == -1)
-            return false;
+    //    if (GetEmptySlotIndex() == -1)
+    //        return false;
 
-        float nextWeight = GetCurrentWeight() + item.itemData.weight;
+    //    float nextWeight = GetCurrentWeight() + item.itemData.weight;
 
-        return nextWeight <= bagData.maxWeight;
-    }
+    //    return nextWeight <= bagData.maxWeight;
+    //}
 
     public void RefreshUI()
     {

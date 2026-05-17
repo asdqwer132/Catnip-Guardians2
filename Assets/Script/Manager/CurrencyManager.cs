@@ -18,6 +18,9 @@ public class CurrencyManager : MonoBehaviour
 {
     public static CurrencyManager instance;
 
+    [Header("UI")]
+    public CurrencyUI[] currencyUIs;
+
     [Serializable]
     public class CurrencyUI
     {
@@ -25,9 +28,6 @@ public class CurrencyManager : MonoBehaviour
         public GameObject textObj;
         public TextMeshProUGUI textUI;
     }
-
-    [Header("UI")]
-    public CurrencyUI[] currencyUIs;
 
     private Dictionary<CurrencyType, int> currencies =
         new Dictionary<CurrencyType, int>();
@@ -44,7 +44,7 @@ public class CurrencyManager : MonoBehaviour
 
         foreach (CurrencyType type in Enum.GetValues(typeof(CurrencyType)))
         {
-
+            //시작 자원 값
             currencies[type] = 11110;
 
             uiDictionary[type] = new List<TextMeshProUGUI>();
@@ -99,10 +99,7 @@ public class CurrencyManager : MonoBehaviour
             return false;
 
         if (currencies[type] < amount)
-        {
-            Debug.Log(type + " 부족");
             return false;
-        }
 
         currencies[type] -= amount;
         UpdateUI(type);

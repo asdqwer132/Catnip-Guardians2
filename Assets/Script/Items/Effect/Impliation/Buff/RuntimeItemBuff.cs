@@ -50,4 +50,18 @@ public class RuntimeItemBuff
 
         return Mathf.Max(0f, endTime - Time.time);
     }
+
+    public int GetUIDisplayNumber()
+    {
+        switch (durationType)
+        {
+            case RuntimeBuffDurationType.Seconds:
+                return Mathf.CeilToInt(GetRemainingTime());
+
+            case RuntimeBuffDurationType.NextItemUse:
+                return Mathf.Max(0, remainingUseCount);
+        }
+
+        return 0;
+    }
 }

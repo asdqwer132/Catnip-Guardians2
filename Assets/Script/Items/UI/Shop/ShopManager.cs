@@ -13,15 +13,10 @@ public class ShopManager : MonoBehaviour
 
     [Header("Shop Settings")]
     public int displayBoxCount = 3;
-
-    [Header("Shop Buttons")]
     public ShopBoxButton[] boxButtons;
-
-    [Header("Info UI")]
     public ShopBoxInfoUI boxInfoUI;
 
     private List<ItemBoxData> currentShopBoxes = new List<ItemBoxData>();
-
     private ItemBoxData currentSelectedBox;
     private ShopBoxButton currentSelectedButton;
 
@@ -30,13 +25,9 @@ public class ShopManager : MonoBehaviour
         instance = this;
     }
 
-    private void Start()
-    {
-        InitShop();
-    }
-
     public void InitShop()
     {
+        rerollManager.ResetFreeReroll();
         RefreshShopWithoutCost();
     }
 
@@ -60,11 +51,11 @@ public class ShopManager : MonoBehaviour
         //Debug.Log("상점 목록 무료 갱신 완료");
     }
 
+    //UI 연결
     public void RerollShop()
     {
         if (rerollManager == null)
         {
-            Debug.LogWarning("Reroll Manager가 연결되지 않았습니다.");
             return;
         }
 
@@ -74,8 +65,6 @@ public class ShopManager : MonoBehaviour
             return;
 
         RefreshShopWithoutCost();
-
-        Debug.Log("상점 리롤 완료");
     }
 
     private void ApplyBoxesToButtons()

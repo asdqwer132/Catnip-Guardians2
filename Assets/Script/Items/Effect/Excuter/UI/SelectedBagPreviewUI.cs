@@ -85,7 +85,7 @@ public class SelectedBagPreviewUI : MonoBehaviour
 
         if (currentBagNameText != null)
         {
-            currentBagNameText.text = currentManager.bag.bagName;
+            currentBagNameText.text = currentManager.bag.bagData.bagName;
         }
 
         if (currentBagIcon != null)

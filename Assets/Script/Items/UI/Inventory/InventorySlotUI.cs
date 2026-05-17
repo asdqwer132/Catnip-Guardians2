@@ -1,3 +1,1 @@
-public class InventorySlotUI : BaseItemSlotUI
-{
-}
+public class InventorySlotUI : BaseItemSlotUI { }

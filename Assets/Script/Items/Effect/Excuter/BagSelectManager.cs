@@ -69,7 +69,7 @@ public class BagSelectManager : MonoBehaviour
 
         currentBagIndex = index;
 
-        Debug.Log("현재 선택된 가방 인덱스: " + currentBagIndex);
+        //Debug.Log("현재 선택된 가방 인덱스: " + currentBagIndex);
 
         return true;
     }
