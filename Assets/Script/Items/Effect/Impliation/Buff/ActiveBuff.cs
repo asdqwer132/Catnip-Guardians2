@@ -12,6 +12,14 @@ public class ActiveBuff
     public EquipmentBag sourceBag;
     public ItemEffectData sourceEffectData;
 
+    [Header("Option")]
+    public bool includeSelf;
+
+    [Header("Stack")]
+    public BuffStackMode stackMode;
+    public int stack = 1;
+    public int maxStack = 1;
+
     [Header("Time")]
     public float maxTime;
     public float remainTime;
@@ -20,10 +28,11 @@ public class ActiveBuff
 
     public ActiveBuff(
         BuffStat buffStat,
-        float duration,
+        BuffInfo buffInfo,
         ItemData sourceItemData,
         EquipmentBag sourceBag,
-        ItemEffectData sourceEffectData
+        ItemEffectData sourceEffectData,
+        bool includeSelf
     )
     {
         this.buffStat = buffStat;
@@ -32,8 +41,18 @@ public class ActiveBuff
         this.sourceBag = sourceBag;
         this.sourceEffectData = sourceEffectData;
 
-        maxTime = duration;
-        remainTime = duration;
+        this.includeSelf = includeSelf;
+
+        stackMode = buffInfo != null ? buffInfo.stackMode : BuffStackMode.Refresh;
+        maxStack = buffInfo != null ? Mathf.Max(1, buffInfo.maxStack) : 1;
+
+        if (stackMode == BuffStackMode.Refresh)
+            maxStack = 1;
+
+        stack = 1;
+
+        maxTime = buffInfo != null ? Mathf.Max(0.01f, buffInfo.duration) : 0.01f;
+        remainTime = maxTime;
     }
 
     public void Tick(float deltaTime)
@@ -42,6 +61,38 @@ public class ActiveBuff
 
         if (remainTime < 0f)
             remainTime = 0f;
+    }
+
+    public void RefreshTime()
+    {
+        remainTime = maxTime;
+    }
+
+    public void ApplyRegisterAgain(BuffInfo buffInfo)
+    {
+        if (buffInfo != null)
+        {
+            maxTime = Mathf.Max(0.01f, buffInfo.duration);
+            maxStack = Mathf.Max(1, buffInfo.maxStack);
+            stackMode = buffInfo.stackMode;
+
+            if (stackMode == BuffStackMode.Refresh)
+                maxStack = 1;
+        }
+
+        if (stackMode == BuffStackMode.Stack)
+        {
+            stack++;
+
+            if (stack > maxStack)
+                stack = maxStack;
+        }
+        else
+        {
+            stack = 1;
+        }
+
+        RefreshTime();
     }
 
     public float GetTimeRate()
@@ -66,5 +117,12 @@ public class ActiveBuff
             return "Unknown Bag";
 
         return sourceBag.name;
+    }
+
+    public bool IsSameBuff(ItemData itemData, EquipmentBag bag, ItemEffectData effectData)
+    {
+        return sourceItemData == itemData &&
+               sourceBag == bag &&
+               sourceEffectData == effectData;
     }
 }

@@ -3,12 +3,12 @@ using UnityEngine;
 
 public class BuffManager : MonoBehaviour
 {
+    [Header("UI")]
+    public BuffUIManager buffUIManager;
+
     [Header("Runtime Global Buffs")]
     [SerializeField]
     private List<ActiveBuff> globalBuffs = new List<ActiveBuff>();
-
-    [Header("UI")]
-    public BuffUIManager buffUIManager;
 
     private Dictionary<EquipmentBag, List<ActiveBuff>> bagBuffs =
         new Dictionary<EquipmentBag, List<ActiveBuff>>();
@@ -52,73 +52,201 @@ public class BuffManager : MonoBehaviour
         if (effect.buffInfo == null)
             return;
 
-        if (effect.buffInfo.duration <= 0f)
+        BuffInfo finalBuffInfo = GetBuffedBuffInfo(
+            effect.buffInfo,
+            context.sourceItemData,
+            context.sourceBag
+        );
+
+        if (finalBuffInfo == null)
             return;
 
-        ActiveBuff activeBuff = new ActiveBuff(
-            effect.bonus,
-            effect.buffInfo.duration,
-            context.sourceItemData,
-            context.sourceBag,
-            context.currentEffectData
-        );
+        finalBuffInfo.Clamp();
+
+        if (finalBuffInfo.duration <= 0f)
+            return;
 
         switch (effect.targetScope)
         {
             case BuffTarget.Self:
-                RegisterItemBuff(context.sourceItemData, activeBuff);
+                RegisterOrUpdateItemBuff(
+                    context.sourceItemData,
+                    effect,
+                    context,
+                    finalBuffInfo
+                );
                 break;
 
             case BuffTarget.SameBag:
-                RegisterBagBuff(context.sourceBag, activeBuff);
+                RegisterOrUpdateBagBuff(
+                    context.sourceBag,
+                    effect,
+                    context,
+                    finalBuffInfo
+                );
                 break;
 
             case BuffTarget.All:
-                RegisterGlobalBuff(activeBuff);
+                RegisterOrUpdateGlobalBuff(
+                    effect,
+                    context,
+                    finalBuffInfo
+                );
                 break;
         }
 
         RefreshUI();
     }
 
-    private void RegisterGlobalBuff(ActiveBuff buff)
-    {
-        if (buff == null)
-            return;
-
-        globalBuffs.Add(buff);
-    }
-
-    private void RegisterBagBuff(
-        EquipmentBag bag,
-        ActiveBuff buff
+    private void RegisterOrUpdateGlobalBuff(
+        BuffEffect effect,
+        ItemEffectContext context,
+        BuffInfo finalBuffInfo
     )
     {
-        if (bag == null || buff == null)
+        ActiveBuff existing = FindSameBuff(
+            globalBuffs,
+            context.sourceItemData,
+            context.sourceBag,
+            context.currentEffectData
+        );
+
+        if (existing != null)
+        {
+            existing.ApplyRegisterAgain(finalBuffInfo);
+            return;
+        }
+
+        ActiveBuff activeBuff = CreateActiveBuff(
+            effect,
+            context,
+            finalBuffInfo
+        );
+
+        globalBuffs.Add(activeBuff);
+    }
+
+    private void RegisterOrUpdateBagBuff(
+        EquipmentBag bag,
+        BuffEffect effect,
+        ItemEffectContext context,
+        BuffInfo finalBuffInfo
+    )
+    {
+        if (bag == null)
             return;
 
         if (!bagBuffs.ContainsKey(bag))
-        {
             bagBuffs.Add(bag, new List<ActiveBuff>());
+
+        List<ActiveBuff> list = bagBuffs[bag];
+
+        ActiveBuff existing = FindSameBuff(
+            list,
+            context.sourceItemData,
+            context.sourceBag,
+            context.currentEffectData
+        );
+
+        if (existing != null)
+        {
+            existing.ApplyRegisterAgain(finalBuffInfo);
+            return;
         }
 
-        bagBuffs[bag].Add(buff);
+        ActiveBuff activeBuff = CreateActiveBuff(
+            effect,
+            context,
+            finalBuffInfo
+        );
+
+        list.Add(activeBuff);
     }
 
-    private void RegisterItemBuff(
+    private void RegisterOrUpdateItemBuff(
         ItemData itemData,
-        ActiveBuff buff
+        BuffEffect effect,
+        ItemEffectContext context,
+        BuffInfo finalBuffInfo
     )
     {
-        if (itemData == null || buff == null)
+        if (itemData == null)
             return;
 
         if (!itemBuffs.ContainsKey(itemData))
-        {
             itemBuffs.Add(itemData, new List<ActiveBuff>());
+
+        List<ActiveBuff> list = itemBuffs[itemData];
+
+        ActiveBuff existing = FindSameBuff(
+            list,
+            context.sourceItemData,
+            context.sourceBag,
+            context.currentEffectData
+        );
+
+        if (existing != null)
+        {
+            existing.ApplyRegisterAgain(finalBuffInfo);
+            return;
         }
 
-        itemBuffs[itemData].Add(buff);
+        ActiveBuff activeBuff = CreateActiveBuff(
+            effect,
+            context,
+            finalBuffInfo
+        );
+
+        list.Add(activeBuff);
+    }
+
+    private ActiveBuff CreateActiveBuff(
+        BuffEffect effect,
+        ItemEffectContext context,
+        BuffInfo finalBuffInfo
+    )
+    {
+        return new ActiveBuff(
+            effect.bonus,
+            finalBuffInfo,
+            context.sourceItemData,
+            context.sourceBag,
+            context.currentEffectData,
+            effect.includeSelf
+        );
+    }
+
+    private ActiveBuff FindSameBuff(
+        List<ActiveBuff> buffs,
+        ItemData sourceItemData,
+        EquipmentBag sourceBag,
+        ItemEffectData sourceEffectData
+    )
+    {
+        if (buffs == null)
+            return null;
+
+        for (int i = 0; i < buffs.Count; i++)
+        {
+            ActiveBuff buff = buffs[i];
+
+            if (buff == null)
+                continue;
+
+            if (buff.IsExpired)
+                continue;
+
+            if (buff.IsSameBuff(
+                    sourceItemData,
+                    sourceBag,
+                    sourceEffectData
+                ))
+            {
+                return buff;
+            }
+        }
+
+        return null;
     }
 
     private bool TickBuffList(
@@ -228,34 +356,91 @@ public class BuffManager : MonoBehaviour
         EquipmentBag targetBag
     )
     {
+        return GetBuffedStat(
+            baseStat,
+            targetItemData,
+            targetBag,
+            ApplyBuffToAttackStat
+        );
+    }
+
+    public BuffInfo GetBuffedBuffInfo(
+        BuffInfo baseInfo,
+        ItemData targetItemData,
+        EquipmentBag targetBag
+    )
+    {
+        return GetBuffedStat(
+            baseInfo,
+            targetItemData,
+            targetBag,
+            ApplyBuffToBuffInfo
+        );
+    }
+
+    private T GetBuffedStat<T>(
+        T baseStat,
+        ItemData targetItemData,
+        EquipmentBag targetBag,
+        System.Action<BuffStat, T> applyAction
+    )
+        where T : class, IGameStat<T>
+    {
         if (baseStat == null)
             return null;
 
-        AttackStat result = baseStat.Clone();
+        T result = baseStat.Clone();
 
-        ApplyAttackBuffList(result, globalBuffs);
+        ApplyBuffsToStat(
+            result,
+            globalBuffs,
+            targetItemData,
+            targetBag,
+            applyAction
+        );
 
         if (targetBag != null && bagBuffs.ContainsKey(targetBag))
         {
-            ApplyAttackBuffList(result, bagBuffs[targetBag]);
+            ApplyBuffsToStat(
+                result,
+                bagBuffs[targetBag],
+                targetItemData,
+                targetBag,
+                applyAction
+            );
         }
 
         if (targetItemData != null && itemBuffs.ContainsKey(targetItemData))
         {
-            ApplyAttackBuffList(result, itemBuffs[targetItemData]);
+            ApplyBuffsToStat(
+                result,
+                itemBuffs[targetItemData],
+                targetItemData,
+                targetBag,
+                applyAction
+            );
         }
 
-        ClampAttackStat(result);
+        result.Clamp();
 
         return result;
     }
 
-    private void ApplyAttackBuffList(
-        AttackStat target,
-        List<ActiveBuff> buffs
+    private void ApplyBuffsToStat<T>(
+        T target,
+        List<ActiveBuff> buffs,
+        ItemData targetItemData,
+        EquipmentBag targetBag,
+        System.Action<BuffStat, T> applyAction
     )
     {
-        if (target == null || buffs == null)
+        if (target == null)
+            return;
+
+        if (buffs == null)
+            return;
+
+        if (applyAction == null)
             return;
 
         for (int i = 0; i < buffs.Count; i++)
@@ -265,51 +450,70 @@ public class BuffManager : MonoBehaviour
             if (activeBuff == null)
                 continue;
 
+            if (activeBuff.IsExpired)
+                continue;
+
             if (activeBuff.buffStat == null)
                 continue;
 
-            if (activeBuff.buffStat.attackBuffStat == null)
+            if (!CanApplyBuffToTarget(
+                    activeBuff,
+                    targetItemData,
+                    targetBag
+                ))
+            {
                 continue;
+            }
 
-            ApplyAttackBuff(
-                target,
-                activeBuff.buffStat.attackBuffStat
-            );
+            int stackCount = Mathf.Max(1, activeBuff.stack);
+
+            for (int stackIndex = 0; stackIndex < stackCount; stackIndex++)
+            {
+                applyAction(activeBuff.buffStat, target);
+            }
         }
     }
 
-    private void ApplyAttackBuff(
-        AttackStat target,
-        AttackBuffStat buff
+    private bool CanApplyBuffToTarget(
+        ActiveBuff activeBuff,
+        ItemData targetItemData,
+        EquipmentBag targetBag
     )
     {
-        if (target == null || buff == null)
-            return;
+        if (activeBuff == null)
+            return false;
 
-        target.attackPower += buff.attackPower;
-        target.damageInterval += buff.damageInterval;
-        target.attackRange += buff.attackRange;
-        target.attackLifeTime += buff.attackLifeTime;
+        bool isSelf =
+            activeBuff.sourceItemData != null &&
+            targetItemData != null &&
+            activeBuff.sourceItemData == targetItemData;
 
-        target.attackPower *= 1f + buff.attackPowerM;
-        target.damageInterval *= 1f + buff.damageIntervalM;
-        target.attackRange *= 1f + buff.attackRangeM;
-        target.attackLifeTime *= 1f + buff.attackLifeTimeM;
+        if (isSelf && !activeBuff.includeSelf)
+            return false;
+
+        return true;
     }
 
-    private void ClampAttackStat(AttackStat stat)
+    private void ApplyBuffToAttackStat(
+        BuffStat buffStat,
+        AttackStat target
+    )
     {
-        if (stat == null)
+        if (buffStat == null)
             return;
 
-        if (stat.damageInterval < 0.01f)
-            stat.damageInterval = 0.01f;
+        buffStat.ApplyToAttackStat(target);
+    }
 
-        if (stat.attackRange < 0f)
-            stat.attackRange = 0f;
+    private void ApplyBuffToBuffInfo(
+        BuffStat buffStat,
+        BuffInfo target
+    )
+    {
+        if (buffStat == null)
+            return;
 
-        if (stat.attackLifeTime < 0.01f)
-            stat.attackLifeTime = 0.01f;
+        buffStat.ApplyToBuffInfo(target);
     }
 
     public List<ActiveBuff> GetAllActiveBuffs()
@@ -366,7 +570,10 @@ public class BuffManager : MonoBehaviour
         List<ActiveBuff> source
     )
     {
-        if (target == null || source == null)
+        if (target == null)
+            return;
+
+        if (source == null)
             return;
 
         for (int i = 0; i < source.Count; i++)

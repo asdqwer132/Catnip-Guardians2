@@ -3170,8 +3170,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1daeea4e3c9258643a97f920d3a58337, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuffManager
-  globalBuffs: []
   buffUIManager: {fileID: 1380607546}
+  globalBuffs: []
 --- !u!1 &411036250
 GameObject:
   m_ObjectHideFlags: 0
@@ -10836,7 +10836,7 @@ MonoBehaviour:
   allBoxList:
   - {fileID: 11400000, guid: 705548d4ce2ec7d45ab57affcf4b01fc, type: 2}
   - {fileID: 11400000, guid: ce619ab0bf3ffbb4eaea948b123af8ff, type: 2}
-  - {fileID: 11400000, guid: 7485f725616c1e249bc9749795a326f1, type: 2}
+  - {fileID: 11400000, guid: bf470ad5eea9b254f9f4362a28a49ab6, type: 2}
   allowDuplicate: 1
 --- !u!1 &1077673599
 GameObject:
@@ -14262,7 +14262,7 @@ MonoBehaviour:
   buffManager: {fileID: 378844629}
   contentParent: {fileID: 1380607545}
   slotPrefab: {fileID: 1722376472968725201, guid: c284b47c6cd0f4349869d2c29dda09db, type: 3}
-  displayMode: 2
+  displayMode: 3
   targetBag: {fileID: 0}
   targetItemData: {fileID: 0}
 --- !u!114 &1380607547

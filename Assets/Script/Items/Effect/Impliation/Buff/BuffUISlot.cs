@@ -10,6 +10,7 @@ public class BuffUISlot : MonoBehaviour
     public TextMeshProUGUI sourceText;
     public TextMeshProUGUI timeText;
     public TextMeshProUGUI statText;
+    public TextMeshProUGUI stackText;
 
     [Header("Images")]
     public Image iconImage;
@@ -78,6 +79,11 @@ public class BuffUISlot : MonoBehaviour
 
         if (timeFillImage != null)
             timeFillImage.fillAmount = activeBuff.GetTimeRate();
+
+        if (stackText != null)
+        {
+                stackText.text = "x" + activeBuff.stack;
+        }
     }
 
     private string GetBuffName()

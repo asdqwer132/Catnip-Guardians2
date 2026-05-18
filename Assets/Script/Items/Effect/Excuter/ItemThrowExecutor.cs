@@ -63,54 +63,6 @@ public class ItemThrowExecutor : MonoBehaviour
         );
     }
 
-    private ItemThrowMover CreateThrowMover(Vector3 startPosition)
-    {
-        if (throwMoverPrefab != null)
-        {
-            return Instantiate(
-                throwMoverPrefab,
-                startPosition,
-                Quaternion.identity
-            );
-        }
-
-        GameObject fallbackObj = new GameObject("ItemThrowMover");
-        fallbackObj.transform.position = startPosition;
-
-        return fallbackObj.AddComponent<ItemThrowMover>();
-    }
-
-    private Sprite GetItemSprite(InventoryItem inventoryItem)
-    {
-        if (!useItemIconWhenPrefabMissing)
-            return null;
-
-        if (inventoryItem == null || inventoryItem.itemData == null)
-            return null;
-
-        return inventoryItem.itemData.icon;
-    }
-
-    private TargetRangeIndicator CreateTargetRangeIndicator(
-        Vector3 targetPosition
-    )
-    {
-        if (!showTargetRange)
-            return null;
-
-        if (targetRangeIndicatorPrefab == null)
-            return null;
-
-        targetPosition.z = 0f;
-
-        TargetRangeIndicator indicator = Instantiate(
-            targetRangeIndicatorPrefab,
-            targetPosition,
-            Quaternion.identity
-        );
-
-        return indicator;
-    }
 
     private void ExecuteItemEffectAtArrivePosition(
         InventoryItem inventoryItem,
@@ -173,5 +125,53 @@ public class ItemThrowExecutor : MonoBehaviour
         }
 
         return false;
+    }
+
+
+    private ItemThrowMover CreateThrowMover(Vector3 startPosition)
+    {
+        if (throwMoverPrefab != null)
+        {
+            return Instantiate(
+                throwMoverPrefab,
+                startPosition,
+                Quaternion.identity
+            );
+        }
+
+        GameObject fallbackObj = new GameObject("ItemThrowMover");
+        fallbackObj.transform.position = startPosition;
+
+        return fallbackObj.AddComponent<ItemThrowMover>();
+    }
+
+    private Sprite GetItemSprite(InventoryItem inventoryItem)
+    {
+        if (!useItemIconWhenPrefabMissing)
+            return null;
+
+        if (inventoryItem == null || inventoryItem.itemData == null)
+            return null;
+
+        return inventoryItem.itemData.icon;
+    }
+
+    private TargetRangeIndicator CreateTargetRangeIndicator(Vector3 targetPosition)
+    {
+        if (!showTargetRange)
+            return null;
+
+        if (targetRangeIndicatorPrefab == null)
+            return null;
+
+        targetPosition.z = 0f;
+
+        TargetRangeIndicator indicator = Instantiate(
+            targetRangeIndicatorPrefab,
+            targetPosition,
+            Quaternion.identity
+        );
+
+        return indicator;
     }
 }
