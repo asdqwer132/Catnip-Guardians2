@@ -15,14 +15,13 @@ public class DamageArea : MonoBehaviour
     public Transform rangeVisual;
 
     [Header("Life Time")]
-    public float lifeTime = 0.2f;
+    public float lifeTime = 0.2f;//
 
     [Header("Hit Option")]
     public DamageApplyMode damageApplyMode = DamageApplyMode.HitOnce;
 
-    [Tooltip("Periodic일 때 데미지가 들어가는 간격")]
     [Min(0.01f)]
-    public float damageInterval = 0.5f;
+    public float damageInterval = 0.5f;//
 
     public GameObject owner;
 
@@ -34,12 +33,13 @@ public class DamageArea : MonoBehaviour
     private readonly Dictionary<GameObject, float> periodicTimers = new Dictionary<GameObject, float>();
 
     private bool useDynamicStat;
-    private InventoryItem statSourceItem;
-    private AttackStat baseAttackStat;
-    private EffectStat ownerStat;
-    private int currentCycleId;
 
-    void Awake()
+    private AttackStat baseAttackStat;
+    private ItemData sourceItemData;
+    private EquipmentBag sourceBag;
+    private BuffManager buffManager;
+
+    private void Awake()
     {
         if (circleCollider == null)
             circleCollider = GetComponent<CircleCollider2D>();
@@ -81,20 +81,20 @@ public class DamageArea : MonoBehaviour
     }
 
     public void InitDynamic(
-        InventoryItem statSourceItem,
         AttackStat baseAttackStat,
-        GameObject owner,
-        EffectStat ownerStat,
-        int currentCycleId
+        ItemData sourceItemData,
+        EquipmentBag sourceBag,
+        BuffManager buffManager,
+        GameObject owner
     )
     {
         useDynamicStat = true;
 
-        this.statSourceItem = statSourceItem;
-        this.baseAttackStat = baseAttackStat != null ? baseAttackStat.CloneAttack() : null;
+        this.baseAttackStat = baseAttackStat;
+        this.sourceItemData = sourceItemData;
+        this.sourceBag = sourceBag;
+        this.buffManager = buffManager;
         this.owner = owner;
-        this.ownerStat = ownerStat;
-        this.currentCycleId = currentCycleId;
 
         timer = 0f;
         hitObjects.Clear();
@@ -104,7 +104,7 @@ public class DamageArea : MonoBehaviour
         ApplyRadius();
     }
 
-    void Update()
+    private void Update()
     {
         if (useDynamicStat)
         {
@@ -119,39 +119,29 @@ public class DamageArea : MonoBehaviour
         }
     }
 
-    private void RefreshDynamicStat()
+    private void  RefreshDynamicStat()
     {
         if (baseAttackStat == null)
             return;
 
-        EffectStat finalStat;
+        AttackStat currentStat = baseAttackStat;
 
-        if (statSourceItem != null)
+        if (buffManager != null)
         {
-            finalStat = statSourceItem.GetFinalEffectStat(
+            AttackStat buffedStat = buffManager.GetBuffedAttackStat(
                 baseAttackStat,
-                ownerStat,
-                currentCycleId
+                sourceItemData,
+                sourceBag
             );
-        }
-        else
-        {
-            finalStat = baseAttackStat.Clone();
 
-            if (ownerStat != null)
-                finalStat.Add(ownerStat);
+            if (buffedStat != null)
+                currentStat = buffedStat;
         }
 
-        AttackStat attackStat = finalStat as AttackStat;
-
-        if (attackStat == null)
-            return;
-
-        damage = attackStat.GetAttackDamage();
-        radius = attackStat.GetSafeRadius();
-        lifeTime = attackStat.GetSafeLifeTime();
-        damageApplyMode = attackStat.damageApplyMode;
-        damageInterval = attackStat.GetSafeDamageInterval();
+        damage = currentStat.attackPower;
+        radius = Mathf.Max(0.01f, currentStat.attackRange);
+        lifeTime = Mathf.Max(0.01f, currentStat.attackLifeTime);
+        damageInterval = Mathf.Max(0.01f, currentStat.damageInterval);
 
         ApplyRadius();
     }
@@ -181,7 +171,7 @@ public class DamageArea : MonoBehaviour
         transform.localScale = Vector3.one;
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         RefreshDynamicStatIfNeeded();
 
@@ -199,7 +189,7 @@ public class DamageArea : MonoBehaviour
         }
     }
 
-    void OnTriggerStay2D(Collider2D other)
+    private void OnTriggerStay2D(Collider2D other)
     {
         RefreshDynamicStatIfNeeded();
 
@@ -209,7 +199,7 @@ public class DamageArea : MonoBehaviour
         TryHitPeriodicStay(other);
     }
 
-    void OnTriggerExit2D(Collider2D other)
+    private void OnTriggerExit2D(Collider2D other)
     {
         GameObject targetObj = GetTargetObject(other);
 

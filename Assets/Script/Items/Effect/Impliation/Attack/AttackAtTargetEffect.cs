@@ -1,52 +1,49 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "AttackAtTargetEffect", menuName = "Game/Item Effect/Attack At Target")]
-public class AttackAtTargetEffect : ItemEffectData, IItemEffectStatProvider
+[CreateAssetMenu(
+    fileName = "AttackAtTargetEffect",
+    menuName = "Game/Item Effect/Attack At Target"
+)]
+public class AttackAtTargetEffect : ItemEffectData
 {
     [Header("Attack Stat")]
     public AttackStat attackStat;
 
-    [Header("Runtime")]
-    [Tooltip("켜면 이미 생성된 장판도 버프 만료/해제에 따라 실시간으로 약해짐")]
-    public bool useDynamicRuntimeStat = true;
-
     [Header("Optional Override")]
-    [Tooltip("비워두면 ItemData.prefab을 사용합니다.")]
     public GameObject overrideAttackPrefab;
 
-    public EffectStat GetBaseEffectStat()
-    {
-        return attackStat;
-    }
+    [Header("Hit Option")]
+    public DamageApplyMode damageApplyMode = DamageApplyMode.HitOnce;
 
     public override void Execute(ItemEffectContext context)
     {
-        if (context == null || context.itemData == null)
+        if (context == null || context.sourceItemData == null)
             return;
 
-        GameObject attackPrefab = GetAttackPrefab(context);
-
-        if (attackPrefab == null)
+        if (attackStat == null)
         {
-            Debug.LogWarning(context.itemData.itemName + " 공격 프리팹이 없습니다.");
+            Debug.LogWarning(context.sourceItemData.itemName + " 공격 스탯이 없습니다.");
             return;
         }
 
+        GameObject attackPrefab = overrideAttackPrefab;
+
+        if (attackPrefab == null)
+        {
+            Debug.LogWarning(context.sourceItemData.itemName + " 공격 프리팹이 없습니다.");
+            return;
+        }
+
+        Vector3 spawnPosition = context.targetPosition;
+        spawnPosition.z = 0f;
+
         GameObject obj = Instantiate(
             attackPrefab,
-            context.targetPosition,
+            spawnPosition,
             Quaternion.identity
         );
 
         ApplyDamageArea(obj, context);
-    }
-
-    private GameObject GetAttackPrefab(ItemEffectContext context)
-    {
-        if (overrideAttackPrefab != null)
-            return overrideAttackPrefab;
-
-        return context.itemData.prefab;
     }
 
     private void ApplyDamageArea(GameObject obj, ItemEffectContext context)
@@ -62,71 +59,14 @@ public class AttackAtTargetEffect : ItemEffectData, IItemEffectStatProvider
         if (damageArea == null)
             return;
 
-        AttackStat finalAttackStat = GetFinalAttackStat(context);
+        damageArea.damageApplyMode = damageApplyMode;
 
-        if (finalAttackStat == null)
-        {
-            Debug.LogWarning("최종 AttackStat이 없습니다.");
-            return;
-        }
-
-        if (useDynamicRuntimeStat)
-        {
-            EffectStat ownerStat = GetOwnerStat(context.owner);
-
-            damageArea.InitDynamic(
-                statSourceItem: context.inventoryItem,
-                baseAttackStat: attackStat,
-                owner: context.owner,
-                ownerStat: ownerStat,
-                currentCycleId: context.currentCycleId
-            );
-        }
-        else
-        {
-            damageArea.Init(
-                damage: finalAttackStat.GetAttackDamage(),
-                radius: finalAttackStat.GetSafeRadius(),
-                lifeTime: finalAttackStat.GetSafeLifeTime(),
-                damageApplyMode: finalAttackStat.damageApplyMode,
-                damageInterval: finalAttackStat.GetSafeDamageInterval(),
-                owner: context.owner
-            );
-        }
-
-        Debug.Log(
-            "공격 실행 / 데미지: " +
-            finalAttackStat.GetAttackDamage() +
-            " / 범위: " +
-            finalAttackStat.effectRadius +
-            " / 생존시간: " +
-            finalAttackStat.effectLifeTime +
-            " / 실시간 스탯: " +
-            useDynamicRuntimeStat
+        damageArea.InitDynamic(
+            baseAttackStat: attackStat,
+            sourceItemData: context.sourceItemData,
+            sourceBag: context.sourceBag,
+            buffManager: context.buffManager,
+            owner: context.owner
         );
-    }
-
-    private AttackStat GetFinalAttackStat(ItemEffectContext context)
-    {
-        if (context.effectStat is AttackStat contextAttackStat)
-            return contextAttackStat;
-
-        if (attackStat != null)
-            return attackStat.CloneAttack();
-
-        return null;
-    }
-
-    private EffectStat GetOwnerStat(GameObject owner)
-    {
-        if (owner == null)
-            return null;
-
-        PlayerStat playerStat = owner.GetComponent<PlayerStat>();
-
-        if (playerStat == null)
-            return null;
-
-        return playerStat.TotalStat;
     }
 }

@@ -1,87 +1,41 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ItemEffectContext
 {
     public GameObject owner;
-    public GameObject itemObject;
-    public ItemData itemData;
+
+    public ItemData sourceItemData;
+    public EquipmentBag sourceBag;
+    public ItemEffectData currentEffectData;
+
+    public BuffManager buffManager;
 
     public Vector3 usePosition;
     public Vector3 targetPosition;
-    public Vector3 direction;
-
-    public EquipmentBag currentBag;
-    public List<InventoryItem> bagItems;
-
-    public InventoryItem inventoryItem;
-
-    public ItemEffectData currentEffectData;
-    public EffectStat effectStat;
-
-    public float effectRadius;
-    public int effectCount;
-
-    public int currentCycleId;
 
     public ItemEffectContext(
         GameObject owner,
-        GameObject itemObject,
-        ItemData itemData,
+        ItemData sourceItemData,
         Vector3 usePosition,
         Vector3 targetPosition,
-        Vector3 direction,
-        EquipmentBag currentBag,
-        InventoryItem inventoryItem = null,
+        EquipmentBag sourceBag,
         ItemEffectData currentEffectData = null,
-        EffectStat effectStat = null,
-        int currentCycleId = 0
+        BuffManager buffManager = null
     )
     {
         this.owner = owner;
-        this.itemObject = itemObject;
-        this.itemData = itemData;
+        this.sourceItemData = sourceItemData;
 
         this.usePosition = usePosition;
         this.targetPosition = targetPosition;
-        this.direction = direction;
 
-        this.currentBag = currentBag;
-        this.inventoryItem = inventoryItem;
-
+        this.sourceBag = sourceBag;
         this.currentEffectData = currentEffectData;
-        this.effectStat = effectStat;
-
-        this.currentCycleId = currentCycleId;
-
-        if (currentBag != null)
-            this.bagItems = currentBag.equippedItems;
-
-        RefreshCachedValues();
+        this.buffManager = buffManager;
     }
 
-    public void SetCurrentEffect(
-        ItemEffectData effectData,
-        EffectStat finalStat
-    )
+    public void SetCurrentEffect(ItemEffectData effectData)
     {
         currentEffectData = effectData;
-        effectStat = finalStat;
-
-        RefreshCachedValues();
-    }
-
-    private void RefreshCachedValues()
-    {
-        if (effectStat != null)
-        {
-            effectRadius = effectStat.effectRadius;
-            effectCount = effectStat.effectCount;
-        }
-        else
-        {
-            effectRadius = 0f;
-            effectCount = 0;
-        }
     }
 }

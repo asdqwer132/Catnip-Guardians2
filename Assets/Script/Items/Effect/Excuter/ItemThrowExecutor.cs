@@ -11,6 +11,9 @@ public class ItemThrowExecutor : MonoBehaviour
     public bool showTargetRange = true;
     public float defaultTargetRangeRadius = 1f;
 
+    [Header("Managers")]
+    public BuffManager buffManager;
+
     public void Throw(
         InventoryItem inventoryItem,
         Vector3 startPosition,
@@ -35,15 +38,8 @@ public class ItemThrowExecutor : MonoBehaviour
 
         Sprite itemSprite = GetItemSprite(inventoryItem);
 
-        float previewRadius = GetPreviewRadius(
-            inventoryItem,
-            owner,
-            currentCycleId
-        );
-
         TargetRangeIndicator rangeIndicator = CreateTargetRangeIndicator(
-            targetPosition,
-            previewRadius
+            targetPosition
         );
 
         mover.Init(
@@ -96,17 +92,13 @@ public class ItemThrowExecutor : MonoBehaviour
     }
 
     private TargetRangeIndicator CreateTargetRangeIndicator(
-        Vector3 targetPosition,
-        float radius
+        Vector3 targetPosition
     )
     {
         if (!showTargetRange)
             return null;
 
         if (targetRangeIndicatorPrefab == null)
-            return null;
-
-        if (radius <= 0f)
             return null;
 
         targetPosition.z = 0f;
@@ -116,8 +108,6 @@ public class ItemThrowExecutor : MonoBehaviour
             targetPosition,
             Quaternion.identity
         );
-
-        indicator.SetRadius(radius);
 
         return indicator;
     }
@@ -141,19 +131,13 @@ public class ItemThrowExecutor : MonoBehaviour
 
         ItemEffectContext context = new ItemEffectContext(
             owner: owner,
-            itemObject: null,
-            itemData: itemData,
+            sourceItemData: itemData,
             usePosition: arrivePosition,
             targetPosition: arrivePosition,
-            direction: direction,
-            currentBag: currentBag,
-            inventoryItem: inventoryItem,
+            sourceBag: currentBag,
             currentEffectData: null,
-            effectStat: null,
-            currentCycleId: currentCycleId
+            buffManager: buffManager
         );
-
-        float biggestRadius = 0f;
 
         if (itemData.effectDatas != null)
         {
@@ -164,168 +148,12 @@ public class ItemThrowExecutor : MonoBehaviour
                 if (effectData == null)
                     continue;
 
-                EffectStat baseEffectStat = GetBaseEffectStat(effectData);
-
-                EffectStat finalStat = GetFinalEffectStat(
-                    inventoryItem,
-                    baseEffectStat,
-                    owner,
-                    currentCycleId
-                );
-
-                context.SetCurrentEffect(
-                    effectData,
-                    finalStat
-                );
-
-                if (finalStat != null)
-                    biggestRadius = Mathf.Max(biggestRadius, finalStat.effectRadius);
-
+                context.SetCurrentEffect(effectData);
                 effectData.Execute(context);
             }
         }
 
-        SpawnImpactVfx(
-            itemData,
-            arrivePosition,
-            biggestRadius
-        );
-
-        inventoryItem.ConsumeNextItemUseBuffs();
-
         Debug.Log(itemData.itemName + " 도착 위치에서 이펙트 실행");
-    }
-
-    private void SpawnImpactVfx(
-        ItemData itemData,
-        Vector3 position,
-        float effectRadius
-    )
-    {
-        if (itemData == null)
-            return;
-
-        if (itemData.impactVfxPrefab == null)
-            return;
-
-        position.z = 0f;
-
-        GameObject vfx = Instantiate(
-            itemData.impactVfxPrefab,
-            position,
-            Quaternion.identity
-        );
-
-        if (itemData.scaleImpactVfxByRadius)
-        {
-            float size = Mathf.Max(0.01f, effectRadius);
-            vfx.transform.localScale = new Vector3(size, size, size);
-        }
-
-        Destroy(
-            vfx,
-            Mathf.Max(0.01f, itemData.impactVfxLifeTime)
-        );
-    }
-
-    private float GetPreviewRadius(
-        InventoryItem inventoryItem,
-        GameObject owner,
-        int currentCycleId
-    )
-    {
-        if (inventoryItem == null || inventoryItem.itemData == null)
-            return defaultTargetRangeRadius;
-
-        ItemEffectData[] effectDatas = inventoryItem.itemData.effectDatas;
-
-        if (effectDatas == null || effectDatas.Length == 0)
-            return defaultTargetRangeRadius;
-
-        float biggestRadius = 0f;
-
-        for (int i = 0; i < effectDatas.Length; i++)
-        {
-            ItemEffectData effectData = effectDatas[i];
-
-            if (effectData == null)
-                continue;
-
-            EffectStat baseEffectStat = GetBaseEffectStat(effectData);
-
-            EffectStat finalStat = GetFinalEffectStat(
-                inventoryItem,
-                baseEffectStat,
-                owner,
-                currentCycleId
-            );
-
-            if (finalStat == null)
-                continue;
-
-            biggestRadius = Mathf.Max(
-                biggestRadius,
-                finalStat.effectRadius
-            );
-        }
-
-        if (biggestRadius <= 0f)
-            return defaultTargetRangeRadius;
-
-        return biggestRadius;
-    }
-
-    private EffectStat GetBaseEffectStat(ItemEffectData effectData)
-    {
-        if (effectData == null)
-            return null;
-
-        IItemEffectStatProvider statProvider =
-            effectData as IItemEffectStatProvider;
-
-        if (statProvider == null)
-            return null;
-
-        return statProvider.GetBaseEffectStat();
-    }
-
-    private EffectStat GetFinalEffectStat(
-        InventoryItem inventoryItem,
-        EffectStat baseEffectStat,
-        GameObject owner,
-        int currentCycleId
-    )
-    {
-        EffectStat ownerStat = null;
-
-        if (owner != null)
-        {
-            PlayerStat playerStat = owner.GetComponent<PlayerStat>();
-
-            if (playerStat != null)
-                ownerStat = playerStat.TotalStat;
-        }
-
-        if (inventoryItem != null)
-        {
-            return inventoryItem.GetFinalEffectStat(
-                baseEffectStat,
-                ownerStat,
-                currentCycleId
-            );
-        }
-
-        EffectStat result;
-
-        if (baseEffectStat != null)
-            result = baseEffectStat.Clone();
-        else
-            result = new EffectStat();
-
-        if (ownerStat != null)
-            result.Add(ownerStat);
-
-        return result;
     }
 
     public static bool CanExecuteItemEffect(InventoryItem inventoryItem)

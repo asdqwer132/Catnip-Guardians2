@@ -23,22 +23,22 @@ public class ItemImpactVfx : MonoBehaviour
 
     public void Play(ItemData itemData, Vector3 position, float radius)
     {
-        transform.position = position;
+        //transform.position = position;
 
-        if (itemData != null)
-            lifeTime = itemData.impactVfxLifeTime;
+        //if (itemData != null)
+        //    lifeTime = itemData.impactVfxLifeTime;
 
-        if (itemData != null && itemData.scaleImpactVfxByRadius)
-        {
-            float diameter = Mathf.Max(0.01f, radius * 2f);
-            transform.localScale = new Vector3(diameter, diameter, 1f);
-        }
+        //if (itemData != null && itemData.scaleImpactVfxByRadius)
+        //{
+        //    float diameter = Mathf.Max(0.01f, radius * 2f);
+        //    transform.localScale = new Vector3(diameter, diameter, 1f);
+        //}
 
-        if (animator != null)
-            animator.Play(0, 0, 0f);
+        //if (animator != null)
+        //    animator.Play(0, 0, 0f);
 
-        if (particle != null)
-            particle.Play();
+        //if (particle != null)
+        //    particle.Play();
     }
 
     void Update()

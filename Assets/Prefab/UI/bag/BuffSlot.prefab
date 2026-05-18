@@ -223,7 +223,7 @@ GameObject:
   - component: {fileID: 2914247427473365682}
   - component: {fileID: 4984471644384013824}
   - component: {fileID: 2247859939179903274}
-  - component: {fileID: 6960154932502599998}
+  - component: {fileID: 1722376472968725201}
   m_Layer: 5
   m_Name: BuffSlot
   m_TagString: Untagged
@@ -291,7 +291,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6960154932502599998
+--- !u!114 &1722376472968725201
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -300,12 +300,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 7619061205891307961}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a380ff733471754ba512b01bb73963c, type: 3}
+  m_Script: {fileID: 11500000, guid: efc56d58aec811c48b197166e46896c3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RuntimeBuffStatusSlotUI
+  m_EditorClassIdentifier: Assembly-CSharp::BuffUISlot
+  displayLabelText: {fileID: 0}
+  buffNameText: {fileID: 0}
+  sourceText: {fileID: 0}
+  timeText: {fileID: 6548147297948555719}
+  statText: {fileID: 0}
   iconImage: {fileID: 5973217845723543862}
-  fillImage: {fileID: 8706148184511872866}
-  numberText: {fileID: 6548147297948555719}
+  timeFillImage: {fileID: 8706148184511872866}
+  defaultBuffName: Buff
 --- !u!1 &8578770989171562217
 GameObject:
   m_ObjectHideFlags: 0

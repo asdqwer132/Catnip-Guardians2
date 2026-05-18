@@ -12,32 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b250f045bef3cf34fbfec8a0516c81f9, type: 3}
   m_Name: AttackBuff
   m_EditorClassIdentifier: Assembly-CSharp::BuffBagItemsEffect
-  targetScope: 0
+  impactVfxPrefab: {fileID: 0}
+  scaleImpactVfxByRadius: 1
+  impactVfxLifeTime: 1
+  targetScope: 1
   includeSelf: 0
   buffInfo:
-    durationType: 1
-    duration: 3
-    nextItemUseTargetCount: 1
-    allowStack: 0
-    bonusDuration: 0
-    bonusNextItemUseTargetCount: 0
-    forceAllowStack: 0
+    duration: 10
   bonus:
-    effectRadius: 5
-    effectCount: 0
-    effectLifeTime: 0
-    effectDuration: 0
-    attackBuff:
+    attackBuffStat:
       attackPower: 0
-      attackMultiplier: 1
-      effectRadius: 0
-      effectCount: 0
-      effectLifeTime: 0
-      damageIntervalMultiplier: 1
-    cooldownBuff:
-      cooldownAdd: 0
-      cooldownMultiplier: 1
-    buffInfoBuff:
-      bonusDuration: 0
-      bonusNextItemUseTargetCount: 0
-      forceAllowStack: 0
+      damageInterval: 0
+      attackRange: 2
+      attackLifeTime: 0
+      attackPowerM: 0
+      damageIntervalM: 0
+      attackRangeM: 0
+      attackLifeTimeM: 0
