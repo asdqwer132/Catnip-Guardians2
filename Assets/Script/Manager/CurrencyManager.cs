@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
+[Serializable]
+public class Cost
+{
+    public CurrencyType currencyType;
+    public int amount = 1;
+}
+
 public enum CurrencyType
 {
     Gold,
@@ -21,6 +28,9 @@ public class CurrencyManager : MonoBehaviour
     [Header("UI")]
     public CurrencyUI[] currencyUIs;
 
+    [Header("Start Value")]
+    public int defaultStartAmount = 11110;
+
     [Serializable]
     public class CurrencyUI
     {
@@ -38,30 +48,49 @@ public class CurrencyManager : MonoBehaviour
     private Dictionary<CurrencyType, List<TextMeshProUGUI>> uiDictionary =
         new Dictionary<CurrencyType, List<TextMeshProUGUI>>();
 
-    void Awake()
+    private void Awake()
     {
         instance = this;
 
+        InitCurrencies();
+        InitCurrencyUIs();
+    }
+
+    private void Start()
+    {
+        UpdateAllUI();
+    }
+
+    private void InitCurrencies()
+    {
+        currencies.Clear();
+        uiDictionary.Clear();
+        uiObjDictionary.Clear();
+
         foreach (CurrencyType type in Enum.GetValues(typeof(CurrencyType)))
         {
-            //시작 자원 값
-            currencies[type] = 11110;
 
+            currencies[type] = defaultStartAmount;
             uiDictionary[type] = new List<TextMeshProUGUI>();
             uiObjDictionary[type] = new List<GameObject>();
         }
+    }
+
+    private void InitCurrencyUIs()
+    {
+        if (currencyUIs == null)
+            return;
 
         foreach (var ui in currencyUIs)
         {
             if (ui == null)
                 continue;
 
-
             if (!uiDictionary.ContainsKey(ui.type))
-            {
                 uiDictionary[ui.type] = new List<TextMeshProUGUI>();
+
+            if (!uiObjDictionary.ContainsKey(ui.type))
                 uiObjDictionary[ui.type] = new List<GameObject>();
-            }
 
             if (ui.textUI != null)
                 uiDictionary[ui.type].Add(ui.textUI);
@@ -69,11 +98,6 @@ public class CurrencyManager : MonoBehaviour
             if (ui.textObj != null)
                 uiObjDictionary[ui.type].Add(ui.textObj);
         }
-    }
-
-    void Start()
-    {
-        UpdateAllUI();
     }
 
     public int GetCurrency(CurrencyType type)
@@ -86,39 +110,137 @@ public class CurrencyManager : MonoBehaviour
 
     public void AddCurrency(CurrencyType type, int amount)
     {
+
+        if (amount <= 0)
+            return;
+
         if (!currencies.ContainsKey(type))
             currencies[type] = 0;
 
         currencies[type] += amount;
+
         UpdateUI(type);
-    }
-
-    public bool SpendCurrency(CurrencyType type, int amount)
-    {
-        if (!currencies.ContainsKey(type))
-            return false;
-
-        if (currencies[type] < amount)
-            return false;
-
-        currencies[type] -= amount;
-        UpdateUI(type);
-
-        return true;
     }
 
     public bool HasCurrency(CurrencyType type, int amount)
     {
+        if (amount <= 0)
+            return true;
+
         if (!currencies.ContainsKey(type))
             return false;
 
         return currencies[type] >= amount;
     }
 
-    void UpdateUI(CurrencyType type)
+    public bool SpendCurrency(CurrencyType type, int amount)
+    {
+
+        if (amount <= 0)
+            return true;
+
+        if (!HasCurrency(type, amount))
+            return false;
+
+        currencies[type] -= amount;
+
+        UpdateUI(type);
+
+        return true;
+    }
+
+    public bool HasCurrencies(List<Cost> costs)
+    {
+        if (costs == null)
+            return true;
+
+        for (int i = 0; i < costs.Count; i++)
+        {
+            Cost cost = costs[i];
+
+            if (cost == null)
+                continue;
+
+            if (cost.amount <= 0)
+                continue;
+
+            if (!HasCurrency(cost.currencyType, cost.amount))
+                return false;
+        }
+
+        return true;
+    }
+
+    public bool HasCurrencies(Cost[] costs)
+    {
+        if (costs == null)
+            return true;
+
+        for (int i = 0; i < costs.Length; i++)
+        {
+            Cost cost = costs[i];
+
+            if (cost == null)
+                continue;
+
+            if (cost.amount <= 0)
+                continue;
+
+            if (!HasCurrency(cost.currencyType, cost.amount))
+                return false;
+        }
+
+        return true;
+    }
+
+    public bool SpendCurrencies(List<Cost> costs)
+    {
+        if (!HasCurrencies(costs))
+            return false;
+
+        for (int i = 0; i < costs.Count; i++)
+        {
+            Cost cost = costs[i];
+
+            if (cost == null)
+                continue;
+
+            if (cost.amount <= 0)
+                continue;
+
+            SpendCurrency(cost.currencyType, cost.amount);
+        }
+
+        return true;
+    }
+
+    public bool SpendCurrencies(Cost[] costs)
+    {
+        if (!HasCurrencies(costs))
+            return false;
+
+        for (int i = 0; i < costs.Length; i++)
+        {
+            Cost cost = costs[i];
+
+            if (cost == null)
+                continue;
+
+            if (cost.amount <= 0)
+                continue;
+
+            SpendCurrency(cost.currencyType, cost.amount);
+        }
+
+        return true;
+    }
+
+    private void UpdateUI(CurrencyType type)
     {
         if (!currencies.ContainsKey(type))
             return;
+
+        int amount = currencies[type];
 
         if (uiDictionary.ContainsKey(type))
         {
@@ -127,7 +249,7 @@ public class CurrencyManager : MonoBehaviour
                 if (textUI == null)
                     continue;
 
-                textUI.text = "" + currencies[type];
+                textUI.text = amount.ToString();
             }
         }
 
@@ -138,15 +260,16 @@ public class CurrencyManager : MonoBehaviour
                 if (textObj == null)
                     continue;
 
-                textObj.SetActive(currencies[type] > 0 || type == CurrencyType.Gold);
+                textObj.SetActive(amount > 0 || type == CurrencyType.Gold);
             }
         }
     }
 
-    void UpdateAllUI()
+    private void UpdateAllUI()
     {
         foreach (CurrencyType type in Enum.GetValues(typeof(CurrencyType)))
         {
+
             UpdateUI(type);
         }
     }

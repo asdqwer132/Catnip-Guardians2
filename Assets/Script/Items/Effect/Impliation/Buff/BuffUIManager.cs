@@ -36,7 +36,7 @@ public class BuffUIManager : MonoBehaviour
                 DisplayAllBuffs();
                 break;
 
-            case BuffTarget.SameBag:
+            case BuffTarget.Bag:
                 DisplayBagBuffs(targetBag);
                 break;
 
@@ -53,7 +53,7 @@ public class BuffUIManager : MonoBehaviour
 
         displayMode = BuffTarget.All;
 
-        List<ActiveBuff> buffs = buffManager.GetAllActiveBuffs();
+        List<ActiveBuff> buffs = buffManager.GetAllVisibleBuffs();
 
         RefreshSlots(
             buffs,
@@ -66,10 +66,10 @@ public class BuffUIManager : MonoBehaviour
         if (buffManager == null)
             return;
 
-        displayMode = BuffTarget.SameBag;
+        displayMode = BuffTarget.Bag;
         targetBag = bag;
 
-        List<ActiveBuff> buffs = buffManager.GetBagBuffsAsList(bag);
+        List<ActiveBuff> buffs = buffManager.GetVisibleBagBuffsAsList(bag);
 
         string label = "가방 버프";
 
@@ -90,12 +90,12 @@ public class BuffUIManager : MonoBehaviour
         displayMode = BuffTarget.Item;
         targetItemData = itemData;
 
-        List<ActiveBuff> buffs = buffManager.GetItemBuffsAsList(itemData);
+        List<ActiveBuff> buffs = buffManager.GetVisibleItemBuffsAsList(itemData);
 
         string label = "아이템 버프";
 
         if (itemData != null)
-            label = "아이템 버프: " + itemData.itemName;
+            label = "아이템 버프: " + itemData.dataName;
 
         RefreshSlots(
             buffs,
@@ -107,7 +107,7 @@ public class BuffUIManager : MonoBehaviour
     {
         targetBag = bag;
 
-        if (displayMode == BuffTarget.SameBag)
+        if (displayMode == BuffTarget.Bag)
             DisplayBagBuffs(targetBag);
     }
 

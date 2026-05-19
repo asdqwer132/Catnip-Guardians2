@@ -42,10 +42,8 @@ public class ShopBoxInfoUI : MonoBehaviour
         }
 
         if (boxNameText != null)
-            boxNameText.text = boxData.boxName;
+            boxNameText.text = boxData.dataName;
 
-        if (priceText != null)
-            priceText.text = boxData.priceType + " : " + boxData.price;
 
         RefreshRewardList(boxData);
 

@@ -105,7 +105,7 @@ public class ItemThrowExecutor : MonoBehaviour
             }
         }
 
-        Debug.Log(itemData.itemName + " 도착 위치에서 이펙트 실행");
+        Debug.Log(itemData.dataName + " 도착 위치에서 이펙트 실행");
     }
 
     public static bool CanExecuteItemEffect(InventoryItem inventoryItem)

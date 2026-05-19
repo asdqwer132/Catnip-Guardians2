@@ -9,8 +9,8 @@ public class BuffUISlot : MonoBehaviour
     public TextMeshProUGUI buffNameText;
     public TextMeshProUGUI sourceText;
     public TextMeshProUGUI timeText;
-    public TextMeshProUGUI statText;
     public TextMeshProUGUI stackText;
+    public TextMeshProUGUI statText;
 
     [Header("Images")]
     public Image iconImage;
@@ -82,7 +82,10 @@ public class BuffUISlot : MonoBehaviour
 
         if (stackText != null)
         {
+            if (activeBuff.stack > 1)
                 stackText.text = "x" + activeBuff.stack;
+            else
+                stackText.text = "";
         }
     }
 
@@ -114,43 +117,9 @@ public class BuffUISlot : MonoBehaviour
             return "";
 
         if (activeBuff.buffStat == null)
-            return "";
+            return "스탯 변화 없음";
 
-        if (activeBuff.buffStat.attackBuffStat == null)
-            return "";
-
-        AttackBuffStat stat = activeBuff.buffStat.attackBuffStat;
-
-        string result = "";
-
-        if (stat.attackPower != 0f)
-            result += "공격력 +" + stat.attackPower + " ";
-
-        if (stat.attackPowerM != 0f)
-            result += "공격력 x" + (1f + stat.attackPowerM).ToString("0.##") + " ";
-
-        if (stat.attackRange != 0f)
-            result += "범위 +" + stat.attackRange + " ";
-
-        if (stat.attackRangeM != 0f)
-            result += "범위 x" + (1f + stat.attackRangeM).ToString("0.##") + " ";
-
-        if (stat.attackLifeTime != 0f)
-            result += "지속 +" + stat.attackLifeTime + " ";
-
-        if (stat.attackLifeTimeM != 0f)
-            result += "지속 x" + (1f + stat.attackLifeTimeM).ToString("0.##") + " ";
-
-        if (stat.damageInterval != 0f)
-            result += "간격 +" + stat.damageInterval + " ";
-
-        if (stat.damageIntervalM != 0f)
-            result += "간격 x" + (1f + stat.damageIntervalM).ToString("0.##") + " ";
-
-        if (string.IsNullOrEmpty(result))
-            result = "스탯 변화 없음";
-
-        return result;
+        return activeBuff.buffStat.GetSummaryText();
     }
 
     private void RefreshIcon()

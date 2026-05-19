@@ -27,7 +27,9 @@ public class ShopManager : MonoBehaviour
 
     public void InitShop()
     {
-        rerollManager.ResetFreeReroll();
+        if (rerollManager != null)
+            rerollManager.ResetFreeReroll();
+
         RefreshShopWithoutCost();
     }
 
@@ -47,17 +49,13 @@ public class ShopManager : MonoBehaviour
         currentShopBoxes = boxPoolManager.GetRandomBoxes(displayBoxCount);
 
         ApplyBoxesToButtons();
-
-        //Debug.Log("상점 목록 무료 갱신 완료");
     }
 
-    //UI 연결
+    // UI 버튼에 연결
     public void RerollShop()
     {
         if (rerollManager == null)
-        {
             return;
-        }
 
         bool canReroll = rerollManager.TryPayRerollPrice();
 
@@ -123,9 +121,6 @@ public class ShopManager : MonoBehaviour
         currentSelectedButton = button;
         currentSelectedBox = boxData;
 
-       // Debug.Log("현재 선택된 슬롯: " + button.name);
-        //Debug.Log("현재 선택된 상자: " + boxData.boxName);
-
         if (boxInfoUI != null)
             boxInfoUI.ShowBoxInfo(boxData);
     }
@@ -137,8 +132,6 @@ public class ShopManager : MonoBehaviour
 
         if (boxInfoUI != null)
             boxInfoUI.ClearInfo();
-
-        //Debug.Log("상자 선택 해제");
     }
 
     public void BuySelectedBox()
@@ -166,7 +159,7 @@ public class ShopManager : MonoBehaviour
             return;
         }
 
-        bool canBuy = CurrencyManager.instance.SpendCurrency(boxData.priceType, boxData.price);
+        bool canBuy = CurrencyManager.instance.SpendCurrencies(boxData.costs);
 
         if (!canBuy)
         {
@@ -179,17 +172,22 @@ public class ShopManager : MonoBehaviour
         if (resultItem == null)
         {
             Debug.LogWarning("가챠 결과 아이템이 없습니다.");
+
+            // 여기서 환불할 수도 있음.
+            // 지금은 기존 구조 유지 때문에 환불은 안 넣음.
             return;
         }
 
         if (InventoryManager.instance == null)
         {
             Debug.LogWarning("InventoryManager가 없습니다.");
+
+            // 여기도 환불 처리 가능.
             return;
         }
 
         InventoryManager.instance.AddItem(resultItem, 1);
 
-        //Debug.Log("상자 구매 완료: " + resultItem.itemName);
+        Debug.Log("상자 구매 완료: " + resultItem.dataName);
     }
 }

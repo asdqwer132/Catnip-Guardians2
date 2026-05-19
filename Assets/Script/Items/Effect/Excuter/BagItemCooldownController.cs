@@ -89,7 +89,7 @@ public class BagItemCooldownController
         slotPreparationStarted[slotIndex] = true;
 
         Debug.Log(
-            item.itemData.itemName +
+            item.itemData.dataName +
             " 준비 시작 / 준비 시간: " +
             cooldown
         );

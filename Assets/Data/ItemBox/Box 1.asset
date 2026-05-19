@@ -12,10 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b981b44f6bdba44eb09234b25940801, type: 3}
   m_Name: Box 1
   m_EditorClassIdentifier: Assembly-CSharp::ItemBoxData
-  boxName: dddd
+  dataName: 
   icon: {fileID: 1797939398, guid: 89d6b9627a3a13b48948eca9d1c6f9f5, type: 3}
-  priceType: 0
-  price: 0
+  description: 
+  dataId: Box 1
+  requireUnlock: 0
+  costs:
+  - currencyType: 0
+    amount: 10
+  - currencyType: 1
+    amount: 10
   gachaItems:
   - itemData: {fileID: 11400000, guid: 92fd2e1927ea58b4ebf0b8d9dcb59f45, type: 2}
     weight: 1

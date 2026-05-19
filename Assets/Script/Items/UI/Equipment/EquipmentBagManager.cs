@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class EquipmentBagManager : MonoBehaviour
+public class EquipmentBagManager : RefreshListener
 {
     public static EquipmentBagManager instance;
 
@@ -9,6 +9,7 @@ public class EquipmentBagManager : MonoBehaviour
 
     [Header("Bag Panels")]
     public GameObject[] bagPanels;
+    public GameObject[] toggles;
 
     [Header("Default")]
     public int currentBagIndex = 0;
@@ -20,11 +21,6 @@ public class EquipmentBagManager : MonoBehaviour
         instance = this;
     }
 
-    private void Start()
-    {
-        Init();
-    }
-
     public void Init()
     {
         for (int i = 0; i < bags.Length; i++)
@@ -32,6 +28,7 @@ public class EquipmentBagManager : MonoBehaviour
             if (bags[i] != null)
                 bags[i].Init();
         }
+        RefreshUI();
 
         SelectBag(currentBagIndex);
     }
@@ -99,7 +96,7 @@ public class EquipmentBagManager : MonoBehaviour
 
         if (!equipResult)
         {
-           // Debug.LogWarning("장착 실패");
+            // Debug.LogWarning("장착 실패");
             return false;
         }
 
@@ -130,7 +127,7 @@ public class EquipmentBagManager : MonoBehaviour
 
         if (InventoryManager.instance == null)
         {
-           // Debug.LogWarning("InventoryManager가 없습니다.");
+            // Debug.LogWarning("InventoryManager가 없습니다.");
             return;
         }
 
@@ -160,7 +157,7 @@ public class EquipmentBagManager : MonoBehaviour
 
         if (InventoryManager.instance == null)
         {
-           // Debug.LogWarning("InventoryManager가 없습니다.");
+            // Debug.LogWarning("InventoryManager가 없습니다.");
             return;
         }
 
@@ -192,7 +189,7 @@ public class EquipmentBagManager : MonoBehaviour
 
         if (bag == null)
         {
-           // Debug.LogWarning("가방이 비어있습니다: " + bagIndex);
+            // Debug.LogWarning("가방이 비어있습니다: " + bagIndex);
             return;
         }
 
@@ -232,5 +229,18 @@ public class EquipmentBagManager : MonoBehaviour
         }
 
         return -1;
+    }
+
+    protected override void RefreshUI(RefreshType refreshType)
+    {
+        RefreshUI();
+    }
+    private void RefreshUI()
+    {
+
+        for (int i = 0; i < bags.Length; i++)
+        {
+            toggles[i].gameObject.SetActive(UnlockCheckUtility.CanUse(bags[i].bagData));
+        }
     }
 }

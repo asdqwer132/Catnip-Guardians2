@@ -77,7 +77,7 @@ public class BuffManager : MonoBehaviour
                 );
                 break;
 
-            case BuffTarget.SameBag:
+            case BuffTarget.Bag:
                 RegisterOrUpdateBagBuff(
                     context.sourceBag,
                     effect,
@@ -212,7 +212,8 @@ public class BuffManager : MonoBehaviour
             context.sourceItemData,
             context.sourceBag,
             context.currentEffectData,
-            effect.includeSelf
+            effect.includeSelf,
+            effect.showInUI
         );
     }
 
@@ -535,6 +536,25 @@ public class BuffManager : MonoBehaviour
         return result;
     }
 
+    public List<ActiveBuff> GetAllVisibleBuffs()
+    {
+        List<ActiveBuff> result = new List<ActiveBuff>();
+
+        AddBuffsToList(result, globalBuffs, true);
+
+        foreach (KeyValuePair<EquipmentBag, List<ActiveBuff>> pair in bagBuffs)
+        {
+            AddBuffsToList(result, pair.Value, true);
+        }
+
+        foreach (KeyValuePair<ItemData, List<ActiveBuff>> pair in itemBuffs)
+        {
+            AddBuffsToList(result, pair.Value, true);
+        }
+
+        return result;
+    }
+
     public List<ActiveBuff> GetBagBuffsAsList(EquipmentBag bag)
     {
         List<ActiveBuff> result = new List<ActiveBuff>();
@@ -546,6 +566,21 @@ public class BuffManager : MonoBehaviour
             return result;
 
         AddBuffsToList(result, bagBuffs[bag]);
+
+        return result;
+    }
+
+    public List<ActiveBuff> GetVisibleBagBuffsAsList(EquipmentBag bag)
+    {
+        List<ActiveBuff> result = new List<ActiveBuff>();
+
+        if (bag == null)
+            return result;
+
+        if (!bagBuffs.ContainsKey(bag))
+            return result;
+
+        AddBuffsToList(result, bagBuffs[bag], true);
 
         return result;
     }
@@ -565,9 +600,25 @@ public class BuffManager : MonoBehaviour
         return result;
     }
 
+    public List<ActiveBuff> GetVisibleItemBuffsAsList(ItemData itemData)
+    {
+        List<ActiveBuff> result = new List<ActiveBuff>();
+
+        if (itemData == null)
+            return result;
+
+        if (!itemBuffs.ContainsKey(itemData))
+            return result;
+
+        AddBuffsToList(result, itemBuffs[itemData], true);
+
+        return result;
+    }
+
     private void AddBuffsToList(
         List<ActiveBuff> target,
-        List<ActiveBuff> source
+        List<ActiveBuff> source,
+        bool visibleOnly = false
     )
     {
         if (target == null)
@@ -584,6 +635,9 @@ public class BuffManager : MonoBehaviour
                 continue;
 
             if (buff.IsExpired)
+                continue;
+
+            if (visibleOnly && !buff.showInUI)
                 continue;
 
             target.Add(buff);

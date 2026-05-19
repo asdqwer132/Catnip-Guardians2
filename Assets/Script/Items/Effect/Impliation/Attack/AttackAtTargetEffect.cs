@@ -22,7 +22,7 @@ public class AttackAtTargetEffect : ItemEffectData
 
         if (attackStat == null)
         {
-            Debug.LogWarning(context.sourceItemData.itemName + " 공격 스탯이 없습니다.");
+            Debug.LogWarning(context.sourceItemData.dataName + " 공격 스탯이 없습니다.");
             return;
         }
 
@@ -30,7 +30,7 @@ public class AttackAtTargetEffect : ItemEffectData
 
         if (attackPrefab == null)
         {
-            Debug.LogWarning(context.sourceItemData.itemName + " 공격 프리팹이 없습니다.");
+            Debug.LogWarning(context.sourceItemData.dataName + " 공격 프리팹이 없습니다.");
             return;
         }
 

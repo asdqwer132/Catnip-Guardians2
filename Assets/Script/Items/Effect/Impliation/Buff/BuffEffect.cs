@@ -3,7 +3,7 @@ using UnityEngine;
 public enum BuffTarget
 {
     Self,
-    SameBag,
+    Bag,
     Item,
     All
 }
@@ -15,10 +15,14 @@ public enum BuffTarget
 public class BuffEffect : ItemEffectData
 {
     [Header("Buff Target")]
-    public BuffTarget targetScope = BuffTarget.SameBag;
+    public BuffTarget targetScope = BuffTarget.Bag;
 
     [Tooltip("SameBag / All 버프일 때, 버프를 발생시킨 아이템 자신도 이 버프를 받을지")]
     public bool includeSelf = false;
+
+    [Header("UI")]
+    [Tooltip("이 버프를 버프 UI에 표시할지")]
+    public bool showInUI = true;
 
     [Header("Buff Info")]
     public BuffInfo buffInfo = new BuffInfo();

@@ -14,6 +14,7 @@ public class ActiveBuff
 
     [Header("Option")]
     public bool includeSelf;
+    public bool showInUI = true;
 
     [Header("Stack")]
     public BuffStackMode stackMode;
@@ -32,7 +33,8 @@ public class ActiveBuff
         ItemData sourceItemData,
         EquipmentBag sourceBag,
         ItemEffectData sourceEffectData,
-        bool includeSelf
+        bool includeSelf,
+        bool showInUI
     )
     {
         this.buffStat = buffStat;
@@ -42,6 +44,7 @@ public class ActiveBuff
         this.sourceEffectData = sourceEffectData;
 
         this.includeSelf = includeSelf;
+        this.showInUI = showInUI;
 
         stackMode = buffInfo != null ? buffInfo.stackMode : BuffStackMode.Refresh;
         maxStack = buffInfo != null ? Mathf.Max(1, buffInfo.maxStack) : 1;
@@ -108,7 +111,7 @@ public class ActiveBuff
         if (sourceItemData == null)
             return "Unknown Item";
 
-        return sourceItemData.itemName;
+        return sourceItemData.dataName;
     }
 
     public string GetSourceBagName()
@@ -119,7 +122,11 @@ public class ActiveBuff
         return sourceBag.name;
     }
 
-    public bool IsSameBuff(ItemData itemData, EquipmentBag bag, ItemEffectData effectData)
+    public bool IsSameBuff(
+        ItemData itemData,
+        EquipmentBag bag,
+        ItemEffectData effectData
+    )
     {
         return sourceItemData == itemData &&
                sourceBag == bag &&

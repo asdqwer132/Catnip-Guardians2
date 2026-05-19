@@ -99,7 +99,7 @@ public class BagItemUseManager : MonoBehaviour
         if (cooldownController.IsSlotCoolingDown(slotIndex))
         {
             Debug.Log(
-                inventoryItem.itemData.itemName +
+                inventoryItem.itemData.dataName +
                 " 준비 중입니다. 남은 시간: " +
                 cooldownController.GetSlotCooldownRemain(slotIndex).ToString("F1")
             );
