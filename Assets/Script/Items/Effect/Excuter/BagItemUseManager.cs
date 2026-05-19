@@ -15,16 +15,12 @@ public class BagItemUseManager : MonoBehaviour
     private BagItemCooldownController cooldownController =
         new BagItemCooldownController();
 
-    void Awake()
-    {
-        Init();
-    }
+    void Awake() { Init(); }
 
     void Update()
     {
         if (bag == null || bag.equippedItems == null)
             return;
-
         if (IsBagCoolingDown())
             return;
 
@@ -45,20 +41,10 @@ public class BagItemUseManager : MonoBehaviour
 
         StartPreparationForCurrentSlot();
 
-        // Debug.Log("BagItemUseManager 초기화 완료 / Cycle: " + useCycle.CurrentCycleId);
+        //Debug.Log("BagItemUseManager 초기화 완료 / Cycle: " + useCycle.CurrentCycleId);
     }
 
-    public void SetBag(EquipmentBag newBag)
-    {
-        bag = newBag;
-        Init();
-    }
-
-    public bool TryUseNextItem(
-        Vector3 startPosition,
-        Vector3 targetPosition,
-        GameObject owner
-    )
+    public bool TryUseNextItem(Vector3 startPosition, Vector3 targetPosition, GameObject owner)
     {
         if (!CanTryUse(owner))
             return false;
@@ -66,65 +52,30 @@ public class BagItemUseManager : MonoBehaviour
         SyncControllers();
 
         if (IsBagCoolingDown())
-        {
-            Debug.Log(
-                "가방 쿨타임 중입니다. 남은 시간: " +
-                GetBagCooldownRemain().ToString("F1")
-            );
-
             return false;
-        }
 
         int slotIndex = useCycle.GetNextUsableSlotIndex(bag);
-
         if (slotIndex == -1)
-        {
-            Debug.LogWarning("사용 가능한 아이템이 없습니다.");
             return false;
-        }
 
         InventoryItem inventoryItem = bag.equippedItems[slotIndex];
-
         if (!ItemThrowExecutor.CanExecuteItemEffect(inventoryItem))
-        {
-            Debug.LogWarning("아이템 효과가 없어서 사용할 수 없습니다.");
             return false;
-        }
 
-        cooldownController.StartPreparationCooldownIfNeeded(
-            slotIndex,
-            inventoryItem
-        );
-
+        cooldownController.StartPreparationCooldownIfNeeded(            slotIndex,            inventoryItem        );
         if (cooldownController.IsSlotCoolingDown(slotIndex))
-        {
-            Debug.Log(
-                inventoryItem.itemData.dataName +
-                " 준비 중입니다. 남은 시간: " +
-                cooldownController.GetSlotCooldownRemain(slotIndex).ToString("F1")
-            );
-
             return false;
-        }
 
         startPosition.z = 0f;
         targetPosition.z = 0f;
-
         Vector3 direction = targetPosition - startPosition;
-
-        if (direction.sqrMagnitude <= 0.0001f)
-        {
-            Debug.LogWarning("시작 위치와 목표 위치가 너무 가깝습니다.");
+        if (direction.sqrMagnitude <= 0.0001f) //가깝
             return false;
-        }
 
         direction.Normalize();
 
         if (throwExecutor == null)
-        {
-            Debug.LogWarning("ItemThrowExecutor가 없습니다.");
             return false;
-        }
 
         throwExecutor.Throw(
             inventoryItem,
@@ -141,49 +92,19 @@ public class BagItemUseManager : MonoBehaviour
         return true;
     }
 
-    public bool TryUseNextItem(
-        Vector3 targetPosition,
-        GameObject owner
-    )
-    {
-        if (owner == null)
-            return false;
-
-        Vector3 startPosition = owner.transform.position;
-        startPosition.z = 0f;
-
-        targetPosition.z = 0f;
-
-        return TryUseNextItem(
-            startPosition,
-            targetPosition,
-            owner
-        );
-    }
-
     private bool CanTryUse(GameObject owner)
     {
         if (bag == null || bag.equippedItems == null)
-        {
-            Debug.LogWarning("가방이 없습니다.");
             return false;
-        }
-
         if (owner == null)
-        {
-            Debug.LogWarning("아이템 사용자 오브젝트가 없습니다.");
             return false;
-        }
 
         return true;
     }
 
     private void ApplyUseResult(int slotIndex)
     {
-        useCycle.MarkSlotUsedAndMoveNext(
-            slotIndex,
-            GetSlotCount()
-        );
+        useCycle.MarkSlotUsedAndMoveNext(           slotIndex,            GetSlotCount()        );
 
         if (useCycle.HasUsedAllUsableSlotsThisCycle(bag))
         {
@@ -200,7 +121,6 @@ public class BagItemUseManager : MonoBehaviour
     {
         if (bag == null || bag.equippedItems == null)
             return;
-
         if (IsBagCoolingDown())
             return;
 

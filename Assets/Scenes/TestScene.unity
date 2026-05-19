@@ -12265,6 +12265,10 @@ GameObject:
   - component: {fileID: 1230235212}
   - component: {fileID: 1230235213}
   - component: {fileID: 1230235214}
+  - component: {fileID: 1230235218}
+  - component: {fileID: 1230235217}
+  - component: {fileID: 1230235216}
+  - component: {fileID: 1230235215}
   m_Layer: 0
   m_Name: MainPlant
   m_TagString: Plant
@@ -12358,10 +12362,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de0ef65856498bf47ab159fe6561c7dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Plant
+  health: {fileID: 1230235218}
+  healthBarUI: {fileID: 1230235217}
+  visual: {fileID: 1230235216}
+  damagePopupSpawner: {fileID: 1230235215}
+  useDamagePopup: 1
   plantUI: {fileID: 1230235213}
   gameManager: {fileID: 1318438114}
   plantData: {fileID: 11400000, guid: 77749048288366242a8e845d219c9c11, type: 2}
-  healthSlider: {fileID: 411036252}
   growthSlider: {fileID: 984865922}
 --- !u!61 &1230235211
 BoxCollider2D:
@@ -12467,6 +12475,72 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 480a1f4b54cf26b4a880a0fc4008a76c, type: 2}
   - {fileID: 11400000, guid: 5798d333d86e1544885fa8ef8234d041, type: 2}
   - {fileID: 11400000, guid: 380faa9c24503a34d9a1a48f381fca8e, type: 2}
+--- !u!114 &1230235215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1230235207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b6df663bf9a3df4b8267d08461dd38b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamagePopupSpawner
+  damagePopupPrefab: {fileID: 2401740305231073992, guid: 90a8963889acb9b41805551146ab46ab, type: 3}
+  popupPoint: {fileID: 1230235209}
+  offset: {x: 0, y: 1, z: 0}
+  useRandomOffset: 1
+  randomXRange: 0.25
+  randomYRange: 0.15
+--- !u!114 &1230235216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1230235207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c703176cdc697ac44a852bcc39c3ce1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ActorVisual
+  animator: {fileID: 0}
+  spriteRenderer: {fileID: 0}
+  walkingBoolName: IsWalking
+  attackTriggerName: Attack
+  hitTriggerName: Hit
+  dieTriggerName: Die
+--- !u!114 &1230235217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1230235207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd038496d724962468ae9d2e4799b22c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HealthBarUI
+  health: {fileID: 1230235218}
+  hpSlider: {fileID: 411036252}
+  hideWhenFullHp: 0
+  hideWhenDead: 1
+--- !u!114 &1230235218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1230235207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9ce1731c768c049b9fe5c40e0d1765, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Health
+  hp: 0
+  maxHp: 0
 --- !u!1 &1241834022
 GameObject:
   m_ObjectHideFlags: 0

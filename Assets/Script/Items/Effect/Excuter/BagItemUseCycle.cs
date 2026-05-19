@@ -1,5 +1,3 @@
-using UnityEngine;
-
 [System.Serializable]
 public class BagItemUseCycle
 {
@@ -7,10 +5,7 @@ public class BagItemUseCycle
     private bool[] usedSlotInCycle;
     private int currentCycleId = 0;
 
-    public int CurrentCycleId
-    {
-        get { return currentCycleId; }
-    }
+    public int CurrentCycleId { get { return currentCycleId; } }
 
     public void Init(int slotCount)
     {
@@ -25,16 +20,13 @@ public class BagItemUseCycle
     {
         if (slotCount < 0)
             slotCount = 0;
-
         if (usedSlotInCycle == null || usedSlotInCycle.Length != slotCount)
             usedSlotInCycle = new bool[slotCount];
-
         if (slotCount == 0)
         {
             currentSlotIndex = 0;
             return;
         }
-
         if (currentSlotIndex < 0 || currentSlotIndex >= slotCount)
             currentSlotIndex = 0;
     }
@@ -48,21 +40,16 @@ public class BagItemUseCycle
         ClearUsedSlots();
     }
 
-    public void MarkSlotUsedAndMoveNext(
-        int slotIndex,
-        int slotCount
-    )
+    public void MarkSlotUsedAndMoveNext(int slotIndex, int slotCount)
     {
         SyncSlotCount(slotCount);
 
         if (usedSlotInCycle == null)
             return;
-
         if (slotIndex < 0 || slotIndex >= usedSlotInCycle.Length)
             return;
 
         usedSlotInCycle[slotIndex] = true;
-
         currentSlotIndex = slotIndex + 1;
 
         if (slotCount <= 0)
@@ -70,7 +57,6 @@ public class BagItemUseCycle
             currentSlotIndex = 0;
             return;
         }
-
         if (currentSlotIndex >= slotCount)
             currentSlotIndex = 0;
     }
@@ -81,30 +67,23 @@ public class BagItemUseCycle
             return -1;
 
         int slotCount = bag.equippedItems.Count;
-
         SyncSlotCount(slotCount);
 
         if (slotCount <= 0)
             return -1;
-
         if (usedSlotInCycle == null || usedSlotInCycle.Length != slotCount)
             return -1;
-
         if (currentSlotIndex < 0 || currentSlotIndex >= slotCount)
             currentSlotIndex = 0;
-
         for (int i = 0; i < slotCount; i++)
         {
             int index = (currentSlotIndex + i) % slotCount;
-
             if (index < 0 || index >= usedSlotInCycle.Length)
                 continue;
-
             if (usedSlotInCycle[index])
                 continue;
 
             InventoryItem item = bag.equippedItems[index];
-
             if (!IsUsableItem(item))
                 continue;
 
@@ -120,7 +99,6 @@ public class BagItemUseCycle
             return false;
 
         int slotCount = bag.equippedItems.Count;
-
         SyncSlotCount(slotCount);
 
         if (usedSlotInCycle == null || usedSlotInCycle.Length != slotCount)
@@ -153,10 +131,5 @@ public class BagItemUseCycle
             usedSlotInCycle[i] = false;
     }
 
-    private bool IsUsableItem(InventoryItem item)
-    {
-        return item != null &&
-               item.itemData != null &&
-               item.amount > 0;
-    }
+    private bool IsUsableItem(InventoryItem item) { return item != null && item.itemData != null && item.amount > 0; }
 }

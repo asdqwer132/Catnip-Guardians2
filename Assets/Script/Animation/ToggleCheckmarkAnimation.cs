@@ -12,15 +12,11 @@ public class ToggleCheckmarkAnimation : MonoBehaviour
     {
         if (toggle == null)
             toggle = GetComponent<Toggle>();
-
         if (toggle != null)
             toggle.onValueChanged.AddListener(OnToggleChanged);
     }
 
-    void Start()
-    {
-        OnToggleChanged(toggle.isOn);
-    }
+    void Start() { OnToggleChanged(toggle.isOn); }
 
     void OnToggleChanged(bool isOn)
     {
@@ -28,7 +24,6 @@ public class ToggleCheckmarkAnimation : MonoBehaviour
             return;
         slectedImage.SetActive(isOn);
         checkmarkAnimator.gameObject.SetActive(isOn);
-
         if (isOn)
         {
             checkmarkAnimator.Rebind();
