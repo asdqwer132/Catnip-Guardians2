@@ -15,7 +15,7 @@ public class AttackAtTargetEffect : ItemEffectData
     [Header("Hit Option")]
     public DamageApplyMode damageApplyMode = DamageApplyMode.HitOnce;
 
-    public override void Execute(ItemEffectContext context)
+    public override void ExecuteEffect(ItemEffectContext context)
     {
         if (context == null || context.sourceItemData == null)
             return;
@@ -44,6 +44,36 @@ public class AttackAtTargetEffect : ItemEffectData
         );
 
         ApplyDamageArea(obj, context);
+    }
+
+    protected override float GetImpactRadius(ItemEffectContext context)
+    {
+        AttackStat currentStat = GetCurrentAttackStat(context);
+
+        if (currentStat == null)
+            return 1f;
+
+        return currentStat.attackRange;
+    }
+
+    private AttackStat GetCurrentAttackStat(ItemEffectContext context)
+    {
+        if (attackStat == null)
+            return null;
+
+        if (context == null || context.buffManager == null)
+            return attackStat;
+
+        AttackStat buffedStat = context.buffManager.GetBuffedAttackStat(
+            attackStat,
+            context.sourceItemData,
+            context.sourceBag
+        );
+
+        if (buffedStat != null)
+            return buffedStat;
+
+        return attackStat;
     }
 
     private void ApplyDamageArea(GameObject obj, ItemEffectContext context)

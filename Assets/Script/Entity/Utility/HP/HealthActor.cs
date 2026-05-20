@@ -16,6 +16,9 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
     public DamagePopupSpawner damagePopupSpawner;
     public bool useDamagePopup = true;
 
+    [Header("Death Option")]
+    public bool hideHealthBarOnDeath = true;
+
     public Transform DamageTransform => transform;
     public bool IsDead => health != null && health.IsDead;
 
@@ -41,13 +44,13 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
 
     protected virtual void OnEnable()
     {
-        isDying = false;
         SubscribeHealth();
     }
 
     protected virtual void OnDisable()
     {
         UnsubscribeHealth();
+        StopDeathRoutine();
     }
 
     protected void InitHealth(float maxHp, bool fillHp = true)
@@ -58,8 +61,48 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
             return;
         }
 
+        ResetDeathState();
+
         health.Init(maxHp, fillHp);
+
         ConnectHealthUI();
+        ShowHealthBar();
+    }
+
+    public virtual void Revive(float maxHp, bool fillHp = true)
+    {
+        if (health == null)
+        {
+            Debug.LogWarning(name + " Health가 없습니다.");
+            return;
+        }
+
+        ResetDeathState();
+
+        health.Init(maxHp, fillHp);
+
+        ConnectHealthUI();
+        ShowHealthBar();
+
+        //if (visual != null)
+        //    visual.PlayIdle();
+
+        OnRevived();
+    }
+
+    public virtual void ResetDeathState()
+    {
+        StopDeathRoutine();
+        isDying = false;
+    }
+
+    private void StopDeathRoutine()
+    {
+        if (deathCoroutine != null)
+        {
+            StopCoroutine(deathCoroutine);
+            deathCoroutine = null;
+        }
     }
 
     void ConnectHealthUI()
@@ -71,6 +114,24 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
             return;
 
         healthBarUI.SetTarget(health);
+    }
+
+    protected virtual void ShowHealthBar()
+    {
+        Debug.Log("aasa");
+        if (healthBarUI == null)
+            return;
+        Debug.Log("aaa");
+        healthBarUI.gameObject.SetActive(true);
+        healthBarUI.SetTarget(health);
+    }
+
+    protected virtual void HideHealthBar()
+    {
+        if (healthBarUI == null)
+            return;
+
+        healthBarUI.gameObject.SetActive(false);
     }
 
     void SubscribeHealth()
@@ -100,12 +161,18 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
 
     void HandleDamagedInternal(float damage)
     {
+        if (isDying)
+            return;
+
         ShowDamagePopup(damage);
         OnDamaged(damage);
     }
 
     void HandleHealedInternal(float amount)
     {
+        if (isDying)
+            return;
+
         OnHealed(amount);
     }
 
@@ -116,6 +183,7 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
 
         isDying = true;
 
+        StopDeathRoutine();
         deathCoroutine = StartCoroutine(DeathRoutine());
     }
 
@@ -134,11 +202,16 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
     {
         OnDeathStarted();
 
+        if (hideHealthBarOnDeath)
+            HideHealthBar();
+
         if (visual != null)
         {
             visual.PlayDie();
             yield return visual.WaitCurrentAnimationEnd();
         }
+
+        deathCoroutine = null;
 
         OnDeathFinished();
     }
@@ -146,6 +219,9 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
     public virtual void TakeDamage(float damage)
     {
         if (health == null)
+            return;
+
+        if (isDying)
             return;
 
         health.TakeDamage(damage);
@@ -156,6 +232,9 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
         if (health == null)
             return;
 
+        if (isDying)
+            return;
+
         health.Heal(amount);
     }
 
@@ -164,4 +243,6 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
 
     protected virtual void OnDeathStarted() { }
     protected virtual void OnDeathFinished() { }
+
+    protected virtual void OnRevived() { }
 }

@@ -4,7 +4,12 @@ public class ActorTarget : MonoBehaviour
 {
     private IDamageable target;
 
+    [Header("Debug")]
+    [SerializeField] private string targetName = "None";
+
     public IDamageable Target => target;
+
+    public string TargetName => targetName;
 
     public Transform TargetTransform
     {
@@ -30,6 +35,7 @@ public class ActorTarget : MonoBehaviour
     public void SetTarget(IDamageable newTarget)
     {
         target = newTarget;
+        RefreshTargetName();
     }
 
     public void SetTargetFromComponent(Component component)
@@ -37,15 +43,18 @@ public class ActorTarget : MonoBehaviour
         if (component == null)
         {
             target = null;
+            RefreshTargetName();
             return;
         }
 
         target = component.GetComponent<IDamageable>();
+        RefreshTargetName();
     }
 
     public void ClearTarget()
     {
         target = null;
+        RefreshTargetName();
     }
 
     public float GetDistanceFrom(Transform origin)
@@ -62,8 +71,29 @@ public class ActorTarget : MonoBehaviour
     public void DamageTarget(float damage)
     {
         if (!HasTarget)
+        {
+            RefreshTargetName();
             return;
+        }
 
         target.TakeDamage(damage);
     }
+
+    private void RefreshTargetName()
+    {
+        if (target == null || target.DamageTransform == null)
+        {
+            targetName = "None";
+            return;
+        }
+
+        targetName = target.DamageTransform.name;
+    }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        RefreshTargetName();
+    }
+#endif
 }

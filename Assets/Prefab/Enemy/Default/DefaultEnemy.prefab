@@ -172,15 +172,15 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 9081233426807069, guid: 5a5c6928eff105d42b5747f6c78c0bee, type: 3}
+  m_Sprite: {fileID: 3799508404887519019, guid: 7b4aa390d3184284cab965cb3b850f9f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 3.125, y: 3.125}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
 --- !u!95 &1451514569049703972
 Animator:
@@ -192,7 +192,7 @@ Animator:
   m_GameObject: {fileID: 5831428086637394887}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 68ebf3096ceca9c4982ef7084070eb8e, type: 2}
+  m_Controller: {fileID: 9100000, guid: 46b923adacf91e24da0852fed4e5db7a, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -221,7 +221,7 @@ MonoBehaviour:
   visual: {fileID: 7063470980320774977}
   damagePopupSpawner: {fileID: 6645173589337704241}
   useDamagePopup: 1
-  statData: {fileID: 11400000, guid: 42deeb5ea1122e54dbf4ef56cdf9f1d8, type: 2}
+  statData: {fileID: 11400000, guid: adfa2dc0d65e3274eb450294f041842b, type: 2}
   actorTarget: {fileID: 1506509451877719227}
   mover: {fileID: 7500191993510811139}
   attack: {fileID: 2430655365351377237}
@@ -286,6 +286,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d360c64c3ee80046bf3070fd131b24c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActorTarget
+  targetName: None
 --- !u!61 &2261896026362960400
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -325,7 +326,7 @@ BoxCollider2D:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
     oldSize: {x: 3.125, y: 3.125}
-    newSize: {x: 1, y: 1}
+    newSize: {x: 3.125, y: 3.125}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0

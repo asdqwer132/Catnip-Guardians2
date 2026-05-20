@@ -49,7 +49,6 @@ public class Plant : HealthActor
         }
     }
 
-    // 체력, 성장 타이머 리셋
     public void Init()
     {
         if (PlantManager.instance != null &&
@@ -67,10 +66,11 @@ public class Plant : HealthActor
         if (plantUI != null)
             plantUI.SetPlantData(plantData);
 
-        InitHealth(plantData.maxHP, true);
+        Revive(plantData.maxHP, true);
 
         if (growthSlider != null)
         {
+            growthSlider.gameObject.SetActive(true);
             growthSlider.maxValue = plantData.growTime;
             growthSlider.value = 0f;
         }
@@ -81,8 +81,7 @@ public class Plant : HealthActor
 
     protected override void OnDamaged(float damage)
     {
-        // 식물 피격 연출이 필요하면 여기서 처리
-        // 예: visual.PlayHit();
+        // 식물 피격 연출 필요하면 여기
     }
 
     protected override void OnDeathStarted()
@@ -95,7 +94,11 @@ public class Plant : HealthActor
 
     protected override void OnDeathFinished()
     {
-        // 식물은 죽어도 Destroy하지 않을 거면 비워둠
-        // Destroy(gameObject)를 원하면 여기서 처리
+        // 식물은 Destroy하지 않음
+    }
+
+    protected override void OnRevived()
+    {
+        isInitialized = true;
     }
 }

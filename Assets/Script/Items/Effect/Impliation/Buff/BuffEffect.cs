@@ -30,7 +30,7 @@ public class BuffEffect : ItemEffectData
     [Header("Buff Stat")]
     public BuffStat bonus = new BuffStat();
 
-    public override void Execute(ItemEffectContext context)
+    public override void ExecuteEffect(ItemEffectContext context)
     {
         if (context == null)
             return;

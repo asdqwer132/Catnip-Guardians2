@@ -1252,6 +1252,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 108902537}
+  - component: {fileID: 108902538}
   m_Layer: 5
   m_Name: HpArea
   m_TagString: Untagged
@@ -1280,6 +1281,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 47.5}
   m_SizeDelta: {x: 355, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &108902538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 108902536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd038496d724962468ae9d2e4799b22c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HealthBarUI
+  health: {fileID: 1230235218}
+  hpSlider: {fileID: 411036252}
+  hideWhenFullHp: 0
+  hideWhenDead: 0
 --- !u!1 &115883885
 GameObject:
   m_ObjectHideFlags: 0
@@ -12266,7 +12283,6 @@ GameObject:
   - component: {fileID: 1230235213}
   - component: {fileID: 1230235214}
   - component: {fileID: 1230235218}
-  - component: {fileID: 1230235217}
   - component: {fileID: 1230235216}
   - component: {fileID: 1230235215}
   m_Layer: 0
@@ -12363,10 +12379,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Plant
   health: {fileID: 1230235218}
-  healthBarUI: {fileID: 1230235217}
+  healthBarUI: {fileID: 108902538}
   visual: {fileID: 1230235216}
   damagePopupSpawner: {fileID: 1230235215}
   useDamagePopup: 1
+  hideHealthBarOnDeath: 1
   plantUI: {fileID: 1230235213}
   gameManager: {fileID: 1318438114}
   plantData: {fileID: 11400000, guid: 77749048288366242a8e845d219c9c11, type: 2}
@@ -12511,22 +12528,6 @@ MonoBehaviour:
   attackTriggerName: Attack
   hitTriggerName: Hit
   dieTriggerName: Die
---- !u!114 &1230235217
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1230235207}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd038496d724962468ae9d2e4799b22c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HealthBarUI
-  health: {fileID: 1230235218}
-  hpSlider: {fileID: 411036252}
-  hideWhenFullHp: 0
-  hideWhenDead: 1
 --- !u!114 &1230235218
 MonoBehaviour:
   m_ObjectHideFlags: 0
