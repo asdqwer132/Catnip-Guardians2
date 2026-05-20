@@ -4,13 +4,9 @@ public abstract class ItemEffectData : ScriptableObject
 {
     [Header("Impact Visual")]
     public ImpactVfxInstance impactVfxPrefab;
-
-    [Tooltip("임팩트 기본 스케일")]
     public Vector3 impactBaseScale = Vector3.one;
-
-    [Tooltip("범위 기반으로 임팩트 크기 조절")]
     public bool scaleImpactVfxByRadius = true;
-
+    public bool useAnimatorClipLifeTime = true;
     [Min(0.01f)]
     public float impactVfxLifeTime = 1f;
 
@@ -45,7 +41,8 @@ public abstract class ItemEffectData : ScriptableObject
             context: context,
             baseScale: impactBaseScale,
             useRadiusScale: scaleImpactVfxByRadius,
-            lifeTime: impactVfxLifeTime
+            lifeTime: impactVfxLifeTime,
+            useAnimatorClipLifeTime: useAnimatorClipLifeTime
         );
     }
 

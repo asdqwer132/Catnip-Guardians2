@@ -3450,7 +3450,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af80b1550729b354b84a2dc9fa1be3d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SkillTreeManager
-  debugLog: 1
+  debugLog: 0
 --- !u!114 &428193924
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11399,7 +11399,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnlockManager
   defaultUnlockRewards: []
   unlockedDebugList: []
-  debugLog: 1
+  debugLog: 0
 --- !u!1 &1147465324
 GameObject:
   m_ObjectHideFlags: 0
@@ -13286,6 +13286,7 @@ MonoBehaviour:
   plant: {fileID: 1230235210}
   itemUseManager: {fileID: 378844623}
   shopManager: {fileID: 1077092589}
+  buffManager: {fileID: 378844629}
   skillTreeUI: {fileID: 428193924}
 --- !u!1001 &1324248901
 PrefabInstance:

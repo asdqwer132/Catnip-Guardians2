@@ -12,14 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7db42f5a9e1737641b40b225289b19f4, type: 3}
   m_Name: AttackAtTargetEffect
   m_EditorClassIdentifier: Assembly-CSharp::AttackAtTargetEffect
-  impactVfxPrefab: {fileID: 7370820554304283871, guid: 59aa4baea5dcb1747b7b9d8dc1e16b2c, type: 3}
+  impactVfxPrefab: {fileID: 7370820554304283871, guid: 1b08a87fc03a3d74abbdc9b66c52c003, type: 3}
   impactBaseScale: {x: 1, y: 1, z: 1}
   scaleImpactVfxByRadius: 1
-  impactVfxLifeTime: 1
+  useAnimatorClipLifeTime: 1
+  impactVfxLifeTime: 100
   attackStat:
     attackPower: 10
     damageInterval: 0
     attackRange: 1
-    attackLifeTime: 2
+    attackLifeTime: 0.02
   overrideAttackPrefab: {fileID: 3093583821147485359, guid: ba1a65fc3cffa9e41a41bdb190df387d, type: 3}
   damageApplyMode: 0

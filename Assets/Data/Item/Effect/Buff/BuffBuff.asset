@@ -12,11 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b250f045bef3cf34fbfec8a0516c81f9, type: 3}
   m_Name: BuffBuff
   m_EditorClassIdentifier: Assembly-CSharp::BuffBagItemsEffect
-  impactVfxPrefab: {fileID: 0}
+  impactVfxPrefab: {fileID: 7370820554304283871, guid: 6b8bd603235153f4da4a9b733e6371f4, type: 3}
+  impactBaseScale: {x: 1, y: 1, z: 1}
   scaleImpactVfxByRadius: 1
+  useAnimatorClipLifeTime: 1
   impactVfxLifeTime: 1
   targetScope: 1
   includeSelf: 0
+  showInUI: 1
   buffInfo:
     duration: 10
     stackMode: 0

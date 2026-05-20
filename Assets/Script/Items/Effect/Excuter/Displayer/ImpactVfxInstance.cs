@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class ImpactVfxInstance : MonoBehaviour
@@ -11,12 +12,15 @@ public class ImpactVfxInstance : MonoBehaviour
     private float lifeTime = 1f;
     private float timer = 0f;
 
+    private Animator animator;
+
     public void Init(
         ItemEffectData effectData,
         ItemEffectContext context,
         Vector3 baseScale,
         bool useRadiusScale,
-        float lifeTime
+        float lifeTime,
+        bool useAnimatorClipLifeTime
     )
     {
         this.effectData = effectData;
@@ -27,7 +31,51 @@ public class ImpactVfxInstance : MonoBehaviour
 
         timer = 0f;
 
+        animator = GetComponentInChildren<Animator>(true);
+
         RefreshScale();
+
+        if (useAnimatorClipLifeTime)
+            StartCoroutine(SetLifeTimeFromCurrentAnimatorClip());
+    }
+
+    private IEnumerator SetLifeTimeFromCurrentAnimatorClip()
+    {
+        // Animator가 Entry 상태에서 실제 기본 State로 진입할 시간 확보
+        yield return null;
+
+        float clipLifeTime = GetCurrentAnimatorClipLength();
+
+        if (clipLifeTime > 0f)
+            lifeTime = clipLifeTime;
+    }
+
+    private float GetCurrentAnimatorClipLength()
+    {
+        if (animator == null)
+            return -1f;
+
+        // 현재 상태를 즉시 평가
+        animator.Update(0f);
+
+        int layerIndex = 0;
+
+        AnimatorClipInfo[] clipInfos = animator.GetCurrentAnimatorClipInfo(layerIndex);
+
+        if (clipInfos == null || clipInfos.Length == 0)
+            return -1f;
+
+        AnimationClip clip = clipInfos[0].clip;
+
+        if (clip == null)
+            return -1f;
+
+        float speed = Mathf.Abs(animator.speed);
+
+        if (speed <= 0.0001f)
+            speed = 1f;
+
+        return clip.length / speed;
     }
 
     private void Update()

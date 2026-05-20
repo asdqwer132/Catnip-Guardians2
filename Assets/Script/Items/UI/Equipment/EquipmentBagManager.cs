@@ -233,6 +233,7 @@ public class EquipmentBagManager : RefreshListener
 
     protected override void RefreshUI(RefreshType refreshType)
     {
+        //Debug.Log("¹æ¼Ûµé¾î¿È");
         RefreshUI();
     }
     private void RefreshUI()

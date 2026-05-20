@@ -118,10 +118,8 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
 
     protected virtual void ShowHealthBar()
     {
-        Debug.Log("aasa");
         if (healthBarUI == null)
             return;
-        Debug.Log("aaa");
         healthBarUI.gameObject.SetActive(true);
         healthBarUI.SetTarget(health);
     }

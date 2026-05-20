@@ -27,15 +27,15 @@ public static class UnlockCheckUtility
             unlockable.UnlockId
         );
 
-        if (!unlocked)
-        {
-            Debug.Log(
-                "잠겨 있습니다: " +
-                unlockable.UnlockType +
-                " / " +
-                unlockable.UnlockId 
-            );
-        }
+        //if (!unlocked)
+        //{
+        //    Debug.Log(
+        //        "잠겨 있습니다: " +
+        //        unlockable.UnlockType +
+        //        " / " +
+        //        unlockable.UnlockId 
+        //    );
+        //}
 
         return unlocked;
     }
