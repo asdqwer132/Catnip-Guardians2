@@ -56,10 +56,7 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
     protected void InitHealth(float maxHp, bool fillHp = true)
     {
         if (health == null)
-        {
-            Debug.LogWarning(name + " Health가 없습니다.");
             return;
-        }
 
         ResetDeathState();
 

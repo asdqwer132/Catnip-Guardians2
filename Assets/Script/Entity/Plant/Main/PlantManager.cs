@@ -8,8 +8,6 @@ public class PlantManager : MonoBehaviour
     [Header("Plant List")]
     public PlantData[] allPlants;
 
-    private Dictionary<PlantData, bool> unlockedPlants =
-        new Dictionary<PlantData, bool>();
 
     public PlantData CurrentPlant { get; private set; }
 
@@ -21,7 +19,6 @@ public class PlantManager : MonoBehaviour
 
     void InitPlants()
     {
-        unlockedPlants.Clear();
         CurrentPlant = null;
 
         foreach (PlantData plant in allPlants)
@@ -29,12 +26,8 @@ public class PlantManager : MonoBehaviour
             if (plant == null)
                 continue;
 
-            unlockedPlants[plant] = UnlockCheckUtility.CanUse(plant);
-
-            if (CurrentPlant == null && unlockedPlants[plant])
-            {
+            if (CurrentPlant == null && UnlockCheckUtility.CanUse(plant)) // 최종 언락 식물 연결
                 CurrentPlant = plant;
-            }
         }
     }
 
@@ -43,46 +36,6 @@ public class PlantManager : MonoBehaviour
         if (plant == null)
             return;
 
-        if (!IsUnlocked(plant))
-        {
-            Debug.Log("아직 해금되지 않은 플랜트입니다: " + plant.dataName);
-            return;
-        }
-
         CurrentPlant = plant;
-        Debug.Log("선택된 플랜트: " + plant.dataName);
-    }
-
-    public void UnlockPlant(PlantData plant)
-    {
-        if (plant == null)
-            return;
-
-        if (!unlockedPlants.ContainsKey(plant))
-        {
-            unlockedPlants.Add(plant, true);
-        }
-        else
-        {
-            unlockedPlants[plant] = true;
-        }
-
-        if (CurrentPlant == null)
-        {
-            CurrentPlant = plant;
-        }
-        SelectPlant(plant);
-        Debug.Log("플랜트 해금 완료: " + plant.dataName);
-    }
-
-    public bool IsUnlocked(PlantData plant)
-    {
-        if (plant == null)
-            return false;
-
-        if (!unlockedPlants.ContainsKey(plant))
-            return false;
-
-        return unlockedPlants[plant];
     }
 }

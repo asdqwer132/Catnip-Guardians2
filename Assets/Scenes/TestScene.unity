@@ -1625,6 +1625,7 @@ MonoBehaviour:
   enemyPrefab: {fileID: 5831428086637394887, guid: 3440ce745fc7cbf4ab87f9df54a9445c, type: 3}
   spawnRate: 1.5
   spawnDistance: 8
+  buffManager: {fileID: 378844629}
 --- !u!1 &160430757
 GameObject:
   m_ObjectHideFlags: 0
@@ -3404,7 +3405,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuffManager
   buffUIManager: {fileID: 1380607546}
-  globalBuffs: []
 --- !u!1 &411036250
 GameObject:
   m_ObjectHideFlags: 0
@@ -5070,6 +5070,7 @@ MonoBehaviour:
   enemyPrefab: {fileID: 5831428086637394887, guid: 3440ce745fc7cbf4ab87f9df54a9445c, type: 3}
   spawnRate: 1.5
   spawnDistance: 8
+  buffManager: {fileID: 378844629}
 --- !u!1 &526400858
 GameObject:
   m_ObjectHideFlags: 0
@@ -7536,6 +7537,7 @@ MonoBehaviour:
   enemyPrefab: {fileID: 5831428086637394887, guid: 3440ce745fc7cbf4ab87f9df54a9445c, type: 3}
   spawnRate: 1.5
   spawnDistance: 8
+  buffManager: {fileID: 378844629}
 --- !u!114 &604714688 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 315598459254101236, guid: 26604c98dfdf550448ed91cf3bcea9b2, type: 3}
@@ -7825,6 +7827,7 @@ MonoBehaviour:
   enemyPrefab: {fileID: 5831428086637394887, guid: 3440ce745fc7cbf4ab87f9df54a9445c, type: 3}
   spawnRate: 1.5
   spawnDistance: 8
+  buffManager: {fileID: 378844629}
 --- !u!1 &646778560
 GameObject:
   m_ObjectHideFlags: 0
@@ -8768,6 +8771,7 @@ MonoBehaviour:
   enemyPrefab: {fileID: 5831428086637394887, guid: 3440ce745fc7cbf4ab87f9df54a9445c, type: 3}
   spawnRate: 1.5
   spawnDistance: 8
+  buffManager: {fileID: 378844629}
 --- !u!4 &726708667
 Transform:
   m_ObjectHideFlags: 0
@@ -12880,7 +12884,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlantUI
   spriteRenderer: {fileID: 1230235208}
-  plantData: {fileID: 0}
 --- !u!114 &1230235214
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12962,7 +12965,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GrowManager
   growthSlider: {fileID: 984865922}
   gameManager: {fileID: 1318438114}
-  debugLog: 0
 --- !u!1 &1241834022
 GameObject:
   m_ObjectHideFlags: 0

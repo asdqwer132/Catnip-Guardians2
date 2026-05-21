@@ -6,6 +6,7 @@ public class EnemySpawnInfo
     public GameObject enemyPrefab;
     public float spawnWeight = 1f;
 }
+
 [CreateAssetMenu(menuName = "Game/Plant Data")]
 public class PlantData : DefaultData
 {

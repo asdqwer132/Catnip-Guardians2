@@ -10,24 +10,14 @@ public class Plant : HealthActor
     [Header("Growth")]
     public GrowManager growManager;
 
-    protected override void Awake()
-    {
-        base.Awake();
-    }
-
     public void Init()
     {
-        if (PlantManager.instance != null &&
-            PlantManager.instance.CurrentPlant != null)
-        {
+        if (PlantManager.instance != null && PlantManager.instance.CurrentPlant != null)
             plantData = PlantManager.instance.CurrentPlant;
-        }
+
 
         if (plantData == null)
-        {
-            Debug.LogWarning(name + " PlantData가 없습니다.");
             return;
-        }
 
         if (plantUI != null)
             plantUI.SetPlantData(plantData);
@@ -43,10 +33,6 @@ public class Plant : HealthActor
         }
     }
 
-    protected override void OnDamaged(float damage)
-    {
-        // 식물 피격 연출 필요하면 여기
-    }
 
     protected override void OnDeathStarted()
     {
@@ -57,12 +43,5 @@ public class Plant : HealthActor
             gameManager.GameOver();
     }
 
-    protected override void OnDeathFinished()
-    {
-        // 식물은 Destroy하지 않음
-    }
-
-    protected override void OnRevived()
-    {
-    }
+    protected override void OnDeathFinished() { }
 }

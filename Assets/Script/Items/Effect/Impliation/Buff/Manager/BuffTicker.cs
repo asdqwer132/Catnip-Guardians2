@@ -1,0 +1,111 @@
+using System.Collections.Generic;
+
+public class BuffTicker
+{
+    private BuffStorage storage;
+
+    public BuffTicker(BuffStorage storage)
+    {
+        this.storage = storage;
+    }
+
+    public bool Tick(float deltaTime)
+    {
+        bool changed = false;
+
+        if (TickList(storage.globalBuffs, deltaTime))
+            changed = true;
+
+        if (TickDictionary(storage.bagBuffs, deltaTime))
+            changed = true;
+
+        if (TickDictionary(storage.itemBuffs, deltaTime))
+            changed = true;
+
+        if (TickDictionary(storage.enemyBuffs, deltaTime))
+            changed = true;
+
+        RemoveNullEnemies();
+
+        return changed;
+    }
+
+    private bool TickList(List<ActiveBuff> buffs, float deltaTime)
+    {
+        bool changed = false;
+
+        if (buffs == null)
+            return false;
+
+        for (int i = buffs.Count - 1; i >= 0; i--)
+        {
+            ActiveBuff buff = buffs[i];
+
+            if (buff == null)
+            {
+                buffs.RemoveAt(i);
+                changed = true;
+                continue;
+            }
+
+            buff.Tick(deltaTime);
+
+            if (buff.IsExpired)
+            {
+                buffs.RemoveAt(i);
+                changed = true;
+            }
+        }
+
+        return changed;
+    }
+
+    private bool TickDictionary<TKey>(
+        Dictionary<TKey, List<ActiveBuff>> dictionary,
+        float deltaTime
+    )
+    {
+        bool changed = false;
+
+        if (dictionary == null)
+            return false;
+
+        List<TKey> removeKeys = null;
+
+        foreach (KeyValuePair<TKey, List<ActiveBuff>> pair in dictionary)
+        {
+            List<ActiveBuff> list = pair.Value;
+
+            if (TickList(list, deltaTime))
+                changed = true;
+
+            if (list == null || list.Count == 0)
+            {
+                if (removeKeys == null)
+                    removeKeys = new List<TKey>();
+
+                removeKeys.Add(pair.Key);
+            }
+        }
+
+        if (removeKeys != null)
+        {
+            for (int i = 0; i < removeKeys.Count; i++)
+            {
+                dictionary.Remove(removeKeys[i]);
+                changed = true;
+            }
+        }
+
+        return changed;
+    }
+
+    private void RemoveNullEnemies()
+    {
+        for (int i = storage.registeredEnemies.Count - 1; i >= 0; i--)
+        {
+            if (storage.registeredEnemies[i] == null)
+                storage.registeredEnemies.RemoveAt(i);
+        }
+    }
+}

@@ -5,16 +5,12 @@ public class PlantUI : MonoBehaviour
     [Header("Renderer")]
     public SpriteRenderer spriteRenderer;
 
-    [Header("Data")]
-    public PlantData plantData;
+    private PlantData plantData;
 
     void Start()
     {
-        if (PlantManager.instance != null &&
-            PlantManager.instance.CurrentPlant != null)
-        {
+        if (PlantManager.instance != null && PlantManager.instance.CurrentPlant != null)
             plantData = PlantManager.instance.CurrentPlant;
-        }
 
         UpdateSprite();
     }
@@ -27,11 +23,6 @@ public class PlantUI : MonoBehaviour
 
     public void UpdateSprite()
     {
-        if (spriteRenderer == null)
-        {
-            spriteRenderer = GetComponent<SpriteRenderer>();
-        }
-
         if (spriteRenderer == null || plantData == null)
             return;
 

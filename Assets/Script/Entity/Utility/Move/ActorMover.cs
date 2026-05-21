@@ -27,19 +27,75 @@ public class ActorMover : MonoBehaviour
             return;
         }
 
-        if (visual != null)
-            visual.SetWalking(true);
+        Vector2 direction = target.position - transform.position;
+        MoveDirection(direction);
+    }
 
-        transform.position = Vector2.MoveTowards(
-            transform.position,
-            target.position,
-            speed * Time.deltaTime
-        );
+    public void MoveToDistanceFromTarget(
+        Transform target,
+        float targetDistance,
+        float tolerance
+    )
+    {
+        if (target == null)
+        {
+            Stop();
+            return;
+        }
+
+        Vector2 toTarget = target.position - transform.position;
+        float currentDistance = toTarget.magnitude;
+
+        if (currentDistance <= 0.0001f)
+        {
+            MoveDirection(Vector2.right);
+            return;
+        }
+
+        float distanceDifference = currentDistance - targetDistance;
+
+        if (Mathf.Abs(distanceDifference) <= tolerance)
+        {
+            Stop();
+            return;
+        }
+
+        Vector2 directionToTarget = toTarget.normalized;
+
+        if (distanceDifference > 0f)
+        {
+            // 너무 멀다 → 타겟 쪽으로 접근
+            MoveDirection(directionToTarget);
+        }
+        else
+        {
+            // 너무 가깝다 → 타겟 반대 방향으로 후퇴
+            MoveDirection(-directionToTarget);
+        }
+    }
+
+    public void MoveDirection(Vector2 direction)
+    {
+        if (direction.sqrMagnitude <= 0.0001f)
+        {
+            Stop();
+            return;
+        }
+
+        direction.Normalize();
+
+        if (visual != null)
+        {
+            visual.PlayMove();
+            visual.LookDirection(direction);
+        }
+
+        transform.position += (Vector3)(direction * speed * Time.deltaTime);
     }
 
     public void Stop()
     {
         if (visual != null)
-            visual.SetWalking(false);
+            visual.StopMove();
     }
 }

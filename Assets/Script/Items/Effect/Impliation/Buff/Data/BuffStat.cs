@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+
 [Serializable]
 public class BuffStat
 {
@@ -8,6 +9,9 @@ public class BuffStat
 
     [Header("Buff Info Buff")]
     public BuffInfoBuffStat buffInfoBuffStat = new BuffInfoBuffStat();
+
+    [Header("Enemy Buff")]
+    public EnemyBuffStat enemyBuffStat = new EnemyBuffStat();
 
     public void ApplyToAttackStat(AttackStat target)
     {
@@ -19,10 +23,12 @@ public class BuffStat
         ApplyBuff(buffInfoBuffStat, target);
     }
 
-    private void ApplyBuff<T>(
-        IBuffStat<T> buffStat,
-        T target
-    )
+    public void ApplyToEnemyStat(EnemyStat target)
+    {
+        ApplyBuff(enemyBuffStat, target);
+    }
+
+    private void ApplyBuff<T>(IBuffStat<T> buffStat, T target)
     {
         if (buffStat == null)
             return;
@@ -39,6 +45,7 @@ public class BuffStat
 
         AppendSummary(ref result, attackBuffStat);
         AppendSummary(ref result, buffInfoBuffStat);
+        AppendSummary(ref result, enemyBuffStat);
 
         if (string.IsNullOrEmpty(result))
             result = "스탯 변화 없음";
@@ -46,10 +53,7 @@ public class BuffStat
         return result;
     }
 
-    private void AppendSummary<T>(
-        ref string result,
-        IBuffStat<T> buffStat
-    )
+    private void AppendSummary<T>(ref string result, IBuffStat<T> buffStat)
     {
         if (buffStat == null)
             return;

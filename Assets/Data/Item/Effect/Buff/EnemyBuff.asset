@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b250f045bef3cf34fbfec8a0516c81f9, type: 3}
+  m_Name: EnemyBuff
+  m_EditorClassIdentifier: Assembly-CSharp::BuffEffect
+  impactVfxPrefab: {fileID: 0}
+  impactBaseScale: {x: 1, y: 1, z: 1}
+  scaleImpactVfxByRadius: 1
+  useAnimatorClipLifeTime: 1
+  impactVfxLifeTime: 1
+  targetScope: 5
+  includeSelf: 0
+  showInUI: 0
+  buffInfo:
+    duration: 5
+    stackMode: 0
+    maxStack: 1
+  bonus:
+    attackBuffStat:
+      attackPower: 0
+      damageInterval: 0.5
+      attackRange: 0.5
+      attackLifeTime: 0.5
+      attackPowerM: 0
+      damageIntervalM: 0
+      attackRangeM: 0
+      attackLifeTimeM: 0
+    buffInfoBuffStat:
+      duration: 0
+      durationM: 0
+    enemyBuffStat:
+      speed: -0.9
+      maxHp: 10
+      damage: 50
+      attackRange: 3.5
+      attackCooldown: 0
+      enemyBuffRadius: 1
+      enemyTargetLayer:
+        serializedVersion: 2
+        m_Bits: 0
+      affectDeadEnemies: 0
+      speedM: 0
+      maxHpM: 0
+      damageM: 0
+      attackRangeM: 0
+      attackCooldownM: 0

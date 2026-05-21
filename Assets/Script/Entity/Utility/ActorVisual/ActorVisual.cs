@@ -9,6 +9,10 @@ public class ActorVisual : MonoBehaviour
     [Header("Sprite")]
     public SpriteRenderer spriteRenderer;
 
+    [Header("Flip")]
+    [Tooltip("원본 스프라이트가 왼쪽을 보고 있으면 true, 오른쪽을 보고 있으면 false")]
+    public bool defaultFaceLeft = false;
+
     [Header("Animator Params")]
     public string walkingBoolName = "IsWalking";
     public string attackTriggerName = "Attack";
@@ -26,18 +30,52 @@ public class ActorVisual : MonoBehaviour
 
     public void LookAt(Transform target)
     {
-        if (target == null || spriteRenderer == null)
+        if (target == null)
             return;
 
-        spriteRenderer.flipX = target.position.x < transform.position.x;
+        Vector2 direction = target.position - transform.position;
+        LookDirection(direction);
     }
 
-    public void SetWalking(bool value)
+    public void LookDirection(Vector2 direction)
+    {
+        if (spriteRenderer == null)
+            return;
+
+        if (Mathf.Abs(direction.x) < 0.01f)
+            return;
+
+        bool faceLeft = direction.x < 0f;
+
+        if (defaultFaceLeft)
+            spriteRenderer.flipX = !faceLeft;
+        else
+            spriteRenderer.flipX = faceLeft;
+    }
+
+    public void PlayMove()
     {
         if (animator == null)
             return;
 
-        animator.SetBool(walkingBoolName, value);
+        animator.ResetTrigger(attackTriggerName);
+        animator.SetBool(walkingBoolName, true);
+    }
+
+    public void StopMove()
+    {
+        if (animator == null)
+            return;
+
+        animator.SetBool(walkingBoolName, false);
+    }
+
+    public void SetWalking(bool value)
+    {
+        if (value)
+            PlayMove();
+        else
+            StopMove();
     }
 
     public void PlayAttack()
@@ -45,6 +83,7 @@ public class ActorVisual : MonoBehaviour
         if (animator == null)
             return;
 
+        animator.SetBool(walkingBoolName, false);
         animator.ResetTrigger(hitTriggerName);
         animator.ResetTrigger(dieTriggerName);
         animator.SetTrigger(attackTriggerName);
@@ -55,6 +94,7 @@ public class ActorVisual : MonoBehaviour
         if (animator == null)
             return;
 
+        animator.SetBool(walkingBoolName, false);
         animator.ResetTrigger(attackTriggerName);
         animator.SetTrigger(hitTriggerName);
     }
@@ -64,6 +104,7 @@ public class ActorVisual : MonoBehaviour
         if (animator == null)
             return;
 
+        animator.SetBool(walkingBoolName, false);
         animator.ResetTrigger(hitTriggerName);
         animator.ResetTrigger(attackTriggerName);
         animator.SetTrigger(dieTriggerName);
@@ -77,6 +118,7 @@ public class ActorVisual : MonoBehaviour
         yield return null;
 
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+
         yield return new WaitForSeconds(stateInfo.length);
     }
 }

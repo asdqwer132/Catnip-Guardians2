@@ -11,21 +11,11 @@ public class GrowManager : MonoBehaviour
     [Header("Managers")]
     public GameManager gameManager;
 
-    [Header("Debug")]
-    public bool debugLog = false;
-
     private PlantData plantData;
     private float growValue;
     private bool isGrowing = false;
 
-    public float GrowValue => growValue;
-    public float GrowMaxValue => plantData != null ? plantData.growTime : 0f;
-    public bool IsGrowing => isGrowing;
-
-    private void Awake()
-    {
-        instance = this;
-    }
+    private void Awake() { instance = this; }
 
     private void Update()
     {
@@ -46,7 +36,6 @@ public class GrowManager : MonoBehaviour
 
         if (plantData == null)
         {
-            Debug.LogWarning(name + " GrowManager에 PlantData가 없습니다.");
             UpdateUI();
             return;
         }
@@ -60,10 +49,8 @@ public class GrowManager : MonoBehaviour
         }
 
         isGrowing = true;
-        UpdateUI();
 
-        if (debugLog)
-            Debug.Log("성장 시작 / 목표 성장치: " + plantData.growTime);
+        UpdateUI();
     }
 
     public void AddGrowth(float amount)
@@ -84,13 +71,8 @@ public class GrowManager : MonoBehaviour
 
         UpdateUI();
 
-        if (debugLog)
-            Debug.Log("성장 증가: +" + amount + " / 현재: " + growValue);
-
         if (growValue >= plantData.growTime)
-        {
             CompleteGrowth();
-        }
     }
 
     public void StopGrowth()
@@ -111,9 +93,6 @@ public class GrowManager : MonoBehaviour
             return;
 
         isGrowing = false;
-
-        if (debugLog)
-            Debug.Log("성장 완료");
 
         if (gameManager != null)
             gameManager.Victory();

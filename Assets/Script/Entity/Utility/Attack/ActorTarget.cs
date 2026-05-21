@@ -7,10 +7,6 @@ public class ActorTarget : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private string targetName = "None";
 
-    public IDamageable Target => target;
-
-    public string TargetName => targetName;
-
     public Transform TargetTransform
     {
         get
@@ -26,34 +22,13 @@ public class ActorTarget : MonoBehaviour
     {
         get
         {
-            return target != null &&
-                   target.DamageTransform != null &&
-                   !target.IsDead;
+            return target != null && target.DamageTransform != null && !target.IsDead;
         }
     }
 
     public void SetTarget(IDamageable newTarget)
     {
         target = newTarget;
-        RefreshTargetName();
-    }
-
-    public void SetTargetFromComponent(Component component)
-    {
-        if (component == null)
-        {
-            target = null;
-            RefreshTargetName();
-            return;
-        }
-
-        target = component.GetComponent<IDamageable>();
-        RefreshTargetName();
-    }
-
-    public void ClearTarget()
-    {
-        target = null;
         RefreshTargetName();
     }
 

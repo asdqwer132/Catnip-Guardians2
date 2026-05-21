@@ -65,35 +65,6 @@ public class Health : MonoBehaviour
         OnHealed?.Invoke(amount);
         BroadcastHpChanged();
     }
-
-    public void SetMaxHp(float newMaxHp, bool fillHp = false)
-    {
-        if (newMaxHp <= 0f)
-            newMaxHp = 1f;
-
-        maxHp = newMaxHp;
-
-        if (fillHp)
-            hp = maxHp;
-        else
-            hp = Mathf.Clamp(hp, 0f, maxHp);
-
-        BroadcastHpChanged();
-
-        if (hp <= 0f)
-            Die();
-    }
-
-    public void Kill()
-    {
-        if (IsDead)
-            return;
-
-        hp = 0f;
-        BroadcastHpChanged();
-        Die();
-    }
-
     void Die()
     {
         if (IsDead)

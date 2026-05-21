@@ -5,8 +5,15 @@ public class ActorAttack : MonoBehaviour
 {
     [Header("Attack Stat")]
     public float damage = 5f;
+
+    [Tooltip("공격 가능한 범위가 아니라, 타겟과 유지해야 하는 공격 거리")]
     public float attackRange = 1.5f;
+
     public float attackCooldown = 1f;
+
+    [Header("Attack Distance")]
+    [Tooltip("attackRange와 현재 거리 차이가 이 값 이하일 때 공격 가능")]
+    public float attackDistanceTolerance = 0.15f;
 
     [Header("Components")]
     public ActorTarget target;
@@ -29,17 +36,28 @@ public class ActorAttack : MonoBehaviour
     public void SetAttackStat(float newDamage, float newRange, float newCooldown)
     {
         damage = newDamage;
-        attackRange = newRange;
-        attackCooldown = newCooldown;
+        attackRange = Mathf.Max(0.01f, newRange);
+        attackCooldown = Mathf.Max(0.01f, newCooldown);
     }
 
-    public bool IsTargetInRange()
+    public float GetDistanceToTarget()
+    {
+        if (target == null)
+            return float.MaxValue;
+
+        return target.GetDistanceFrom(transform);
+    }
+
+    public bool IsTargetAtAttackDistance()
     {
         if (target == null)
             return false;
 
-        float distance = target.GetDistanceFrom(transform);
-        return distance <= attackRange;
+        if (!target.HasTarget)
+            return false;
+
+        float distance = GetDistanceToTarget();
+        return Mathf.Abs(distance - attackRange) <= attackDistanceTolerance;
     }
 
     public void TickAttack()
@@ -50,12 +68,12 @@ public class ActorAttack : MonoBehaviour
         if (target == null || !target.HasTarget)
             return;
 
+        if (!IsTargetAtAttackDistance())
+            return;
+
         attackTimer -= Time.deltaTime;
 
         if (attackTimer > 0f)
-            return;
-
-        if (!IsTargetInRange())
             return;
 
         attackCoroutine = StartCoroutine(AttackRoutine());
@@ -68,9 +86,7 @@ public class ActorAttack : MonoBehaviour
 
         if (visual != null)
         {
-            visual.SetWalking(false);
             visual.PlayAttack();
-
             yield return visual.WaitCurrentAnimationEnd();
         }
         else
@@ -91,7 +107,7 @@ public class ActorAttack : MonoBehaviour
         if (!target.HasTarget)
             return;
 
-        if (!IsTargetInRange())
+        if (!IsTargetAtAttackDistance())
             return;
 
         target.DamageTarget(damage);

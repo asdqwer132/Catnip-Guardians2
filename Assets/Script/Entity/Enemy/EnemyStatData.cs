@@ -1,13 +1,12 @@
 using UnityEngine;
 
-[CreateAssetMenu(
-    fileName = "EnemyStatData",
-    menuName = "Game/Enemy/Enemy Stat Data"
-)]
+[CreateAssetMenu(fileName = "EnemyStatData", menuName = "Game/Enemy/Enemy Stat Data")]
 public class EnemyStatData : ScriptableObject
 {
-    [Header("Stat")]
+    [Header("Move")]
     public float speed = 2f;
+
+    [Header("Health")]
     public float maxHp = 10f;
 
     [Header("Attack")]
@@ -17,5 +16,20 @@ public class EnemyStatData : ScriptableObject
 
     [Header("Reward")]
     public Cost[] reward;
-    public float growEx = 10;
+    public float growEx = 10f;
+
+    public EnemyStat CreateStat()
+    {
+        EnemyStat stat = new EnemyStat();
+
+        stat.speed = speed;
+        stat.maxHp = maxHp;
+        stat.damage = damage;
+        stat.attackRange = attackRange;
+        stat.attackCooldown = attackCooldown;
+
+        stat.Clamp();
+
+        return stat;
+    }
 }
