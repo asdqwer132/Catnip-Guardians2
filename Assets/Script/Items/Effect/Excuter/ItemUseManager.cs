@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class ItemUseManager : MonoBehaviour
 {
@@ -15,7 +16,9 @@ public class ItemUseManager : MonoBehaviour
 
     [Header("Debug Input")]
     public bool useResetCooldownKey = true;
-    public KeyCode resetAllCooldownKey = KeyCode.R;
+
+    [Tooltip("새 Input System용 키")]
+    public Key resetAllCooldownKey = Key.R;
 
     void Awake()
     {
@@ -39,6 +42,7 @@ public class ItemUseManager : MonoBehaviour
 
         if (cooldownUIController != null)
             cooldownUIController.Init(bagSelectManager);
+
         ResetAllCooldowns();
         UpdateCooldownUI();
     }
@@ -61,7 +65,10 @@ public class ItemUseManager : MonoBehaviour
 
     private void HandleUseInput()
     {
-        if (!Input.GetMouseButtonDown(0))
+        if (Mouse.current == null)
+            return;
+
+        if (!Mouse.current.leftButton.wasPressedThisFrame)
             return;
 
         if (IsPointerOverUI())
@@ -75,7 +82,10 @@ public class ItemUseManager : MonoBehaviour
         if (!useResetCooldownKey)
             return;
 
-        if (!Input.GetKeyDown(resetAllCooldownKey))
+        if (Keyboard.current == null)
+            return;
+
+        if (!Keyboard.current[resetAllCooldownKey].wasPressedThisFrame)
             return;
 
         ResetAllCooldowns();
@@ -161,10 +171,7 @@ public class ItemUseManager : MonoBehaviour
         }
 
         bagSelectManager.ResetAllCooldowns();
-
         UpdateCooldownUI();
-
-       // Debug.Log("전체 가방 쿨타임과 아이템 준비시간을 초기화했습니다.");
     }
 
     public void ResetCurrentBagCooldowns()

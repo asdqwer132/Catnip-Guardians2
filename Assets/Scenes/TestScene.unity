@@ -3153,6 +3153,8 @@ MonoBehaviour:
   - {fileID: 2078391367}
   - {fileID: 907073006}
   - {fileID: 350341227}
+  selectedBagPreviewUI: {fileID: 46985077}
+  toggles: []
   currentBagIndex: 0
 --- !u!114 &378844626
 MonoBehaviour:
@@ -13288,6 +13290,7 @@ MonoBehaviour:
   shopManager: {fileID: 1077092589}
   buffManager: {fileID: 378844629}
   skillTreeUI: {fileID: 428193924}
+  selectedBagPreviewUI: {fileID: 46985077}
 --- !u!1001 &1324248901
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18387,15 +18390,15 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 4
+  m_ChildAlignment: 5
   m_Spacing: 10
-  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 1
-  m_ChildControlHeight: 1
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
+  m_ReverseArrangement: 1
 --- !u!114 &1886140882
 MonoBehaviour:
   m_ObjectHideFlags: 0

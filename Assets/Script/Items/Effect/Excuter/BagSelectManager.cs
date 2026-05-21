@@ -1,9 +1,12 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class BagSelectManager : MonoBehaviour
 {
     [Header("Bag Managers")]
     public BagItemUseManager[] bagUseManagers;
+    public SelectedBagPreviewUI selectedBagPreviewUI;
+    public GameObject[] toggles;
 
     [Header("Default")]
     public int currentBagIndex = 0;
@@ -12,7 +15,7 @@ public class BagSelectManager : MonoBehaviour
     {
         get { return currentBagIndex; }
     }
-
+    public void SetToggles(GameObject[] toggles) { this.toggles = toggles; }
     public BagItemUseManager CurrentBagUseManager
     {
         get
@@ -29,26 +32,47 @@ public class BagSelectManager : MonoBehaviour
 
     public void Init()
     {
+        RefreshUI();
         SelectBag(currentBagIndex);
     }
 
     public void HandleBagSelectInput()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (Keyboard.current == null)
+            return;
+
+        if (Keyboard.current.digit1Key.wasPressedThisFrame)
+        {
             SelectBag(0);
+            selectedBagPreviewUI.UpdateUI();
+        }
 
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+        if (Keyboard.current.digit2Key.wasPressedThisFrame)
+        {
             SelectBag(1);
+            selectedBagPreviewUI.UpdateUI();
+        }
 
-        if (Input.GetKeyDown(KeyCode.Alpha3))
+        if (Keyboard.current.digit3Key.wasPressedThisFrame)
+        {
             SelectBag(2);
-
-        if (Input.GetKeyDown(KeyCode.Alpha4))
+            selectedBagPreviewUI.UpdateUI();
+        }
+        if (Keyboard.current.digit4Key.wasPressedThisFrame)
+        {
             SelectBag(3);
+            selectedBagPreviewUI.UpdateUI();
+        }
+        if (Keyboard.current.digit5Key.wasPressedThisFrame)
+        {
+            SelectBag(4);
+            selectedBagPreviewUI.UpdateUI();
+        }
     }
 
     public bool SelectBag(int index)
     {
+        if(!UnlockCheckUtility.CanUse(bagUseManagers[index].GetBagData())) return false;
         if (bagUseManagers == null || bagUseManagers.Length == 0)
         {
             Debug.LogWarning("등록된 가방 매니저가 없습니다.");
@@ -69,11 +93,15 @@ public class BagSelectManager : MonoBehaviour
 
         currentBagIndex = index;
 
-        //Debug.Log("현재 선택된 가방 인덱스: " + currentBagIndex);
-
         return true;
     }
-
+    private void RefreshUI()
+    {
+        for (int i = 0; i < bagUseManagers.Length; i++)
+        {
+            toggles[i].gameObject.SetActive(UnlockCheckUtility.CanUse(bagUseManagers[i].GetBagData()));
+        }
+    }
     public BagItemUseManager GetBagUseManager(int index)
     {
         if (bagUseManagers == null)

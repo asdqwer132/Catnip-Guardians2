@@ -10,6 +10,7 @@ public class InitManager : MonoBehaviour
 
     [Header("UI")]
     public SkillTreeUI skillTreeUI;
+    public SelectedBagPreviewUI selectedBagPreviewUI;
 
     public void InitAll()
     {
@@ -24,6 +25,7 @@ public class InitManager : MonoBehaviour
 
     public void FirstInit()
     {
+        selectedBagPreviewUI.Init();
         skillTreeUI.Init();
         EquipmentBagManager.instance.Init();
     }

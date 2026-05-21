@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-
+using UnityEngine.InputSystem;
 public enum CursorType
 {
     Default,
@@ -30,32 +30,35 @@ public class CursorChanger : MonoBehaviour
     private CursorType currentType = CursorType.Default;
     private CursorSet currentSet;
 
-    void Awake()
+    private void Awake()
     {
         instance = this;
     }
 
-    void Start()
+    private void Start()
     {
         SetCursor(CursorType.Default);
     }
 
-    void Update()
+    private void Update()
     {
         UpdateClickCursor();
     }
 
-    void UpdateClickCursor()
+    private void UpdateClickCursor()
     {
         if (currentSet == null)
             return;
 
-        if (Input.GetMouseButtonDown(0))
+        if (Mouse.current == null)
+            return;
+
+        if (Mouse.current.leftButton.wasPressedThisFrame)
         {
             ApplyCursor(currentSet.clickCursor, currentSet.hotspot);
         }
 
-        if (Input.GetMouseButtonUp(0))
+        if (Mouse.current.leftButton.wasReleasedThisFrame)
         {
             ApplyCursor(currentSet.defaultCursor, currentSet.hotspot);
         }
@@ -77,10 +80,16 @@ public class CursorChanger : MonoBehaviour
         ApplyCursor(currentSet.defaultCursor, currentSet.hotspot);
     }
 
-    CursorSet GetCursorSet(CursorType type)
+    private CursorSet GetCursorSet(CursorType type)
     {
+        if (cursorSets == null)
+            return null;
+
         foreach (CursorSet set in cursorSets)
         {
+            if (set == null)
+                continue;
+
             if (set.type == type)
                 return set;
         }
@@ -88,7 +97,7 @@ public class CursorChanger : MonoBehaviour
         return null;
     }
 
-    void ApplyCursor(Texture2D texture, Vector2 hotspot)
+    private void ApplyCursor(Texture2D texture, Vector2 hotspot)
     {
         if (texture == null)
             return;

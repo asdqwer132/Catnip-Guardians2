@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class ItemUsePositionProvider : MonoBehaviour
 {
@@ -40,7 +41,16 @@ public class ItemUsePositionProvider : MonoBehaviour
         if (mainCamera == null)
             mainCamera = Camera.main;
 
-        Vector3 worldPosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        if (Mouse.current == null)
+        {
+            Vector3 fallbackPosition = transform.position;
+            fallbackPosition.z = 0f;
+            return fallbackPosition;
+        }
+
+        Vector2 mouseScreenPosition = Mouse.current.position.ReadValue();
+
+        Vector3 worldPosition = mainCamera.ScreenToWorldPoint(mouseScreenPosition);
         worldPosition.z = 0f;
 
         return worldPosition;

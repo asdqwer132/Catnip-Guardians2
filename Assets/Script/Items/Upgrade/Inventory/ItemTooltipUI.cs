@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
 
 public class ItemTooltipUI : MonoBehaviour
 {
@@ -72,6 +72,7 @@ public class ItemTooltipUI : MonoBehaviour
 
         Debug.Log("ÅøÆÁ »óÅÂ: " + (useTooltip ? "ÄÑÁü" : "²¨Áü"));
     }
+
     public void Show(InventoryItem item)
     {
         if (!useTooltip)
@@ -98,9 +99,9 @@ public class ItemTooltipUI : MonoBehaviour
 
         UpdateTooltipPosition();
     }
+
     private void SetData(InventoryItem item)
     {
-
         ItemData itemData = item.itemData;
 
         if (icon != null)
@@ -120,8 +121,8 @@ public class ItemTooltipUI : MonoBehaviour
 
         if (descriptionText != null)
             descriptionText.text = itemData.description;
-
     }
+
     public void Hide()
     {
         isShowing = false;
@@ -135,12 +136,15 @@ public class ItemTooltipUI : MonoBehaviour
         if (tooltipRect == null || parentRect == null)
             return;
 
+        if (Mouse.current == null)
+            return;
+
         Camera uiCamera = null;
 
         if (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay)
             uiCamera = canvas.worldCamera;
 
-        Vector2 mousePos = Input.mousePosition;
+        Vector2 mousePos = Mouse.current.position.ReadValue();
 
         Vector2 finalScreenPos = mousePos + offset;
 

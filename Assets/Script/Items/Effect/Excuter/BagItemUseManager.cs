@@ -26,7 +26,10 @@ public class BagItemUseManager : MonoBehaviour
 
         StartPreparationForCurrentSlot();
     }
-
+    public BagData GetBagData()
+    {
+        return bag.bagData;
+    }
     public void Init()
     {
         if (throwExecutor == null)

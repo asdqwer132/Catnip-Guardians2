@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,14 +28,9 @@ public class SelectedBagPreviewUI : MonoBehaviour
     private List<BagPreviewSlotUI> otherBagUIs = new List<BagPreviewSlotUI>();
 
 
-    void Start()
+    public void Init()
     {
         BuildOtherBagUIs();
-        UpdateUI();
-    }
-
-    void Update()
-    {
         UpdateUI();
     }
 
@@ -56,6 +52,12 @@ public class SelectedBagPreviewUI : MonoBehaviour
             ui.gameObject.SetActive(true);
             otherBagUIs.Add(ui);
         }
+
+        GameObject[] toggleObjects = otherBagUIs
+            .Select(ui => ui.gameObject)
+            .ToArray();
+
+        bagSelectManager.SetToggles(toggleObjects);
     }
 
     public void UpdateUI()

@@ -34,8 +34,6 @@ public class BagPreviewSlotUI : MonoBehaviour
         {
             selectedFrame.SetActive(isSelected);
         }
-
-        gameObject.SetActive(true);
     }
 
     public void Clear()
