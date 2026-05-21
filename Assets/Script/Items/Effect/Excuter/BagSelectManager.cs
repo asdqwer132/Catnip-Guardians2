@@ -5,7 +5,6 @@ public class BagSelectManager : MonoBehaviour
 {
     [Header("Bag Managers")]
     public BagItemUseManager[] bagUseManagers;
-    public SelectedBagPreviewUI selectedBagPreviewUI;
     public GameObject[] toggles;
 
     [Header("Default")]
@@ -44,29 +43,24 @@ public class BagSelectManager : MonoBehaviour
         if (Keyboard.current.digit1Key.wasPressedThisFrame)
         {
             SelectBag(0);
-            selectedBagPreviewUI.UpdateUI();
         }
 
         if (Keyboard.current.digit2Key.wasPressedThisFrame)
         {
             SelectBag(1);
-            selectedBagPreviewUI.UpdateUI();
         }
 
         if (Keyboard.current.digit3Key.wasPressedThisFrame)
         {
             SelectBag(2);
-            selectedBagPreviewUI.UpdateUI();
         }
         if (Keyboard.current.digit4Key.wasPressedThisFrame)
         {
             SelectBag(3);
-            selectedBagPreviewUI.UpdateUI();
         }
         if (Keyboard.current.digit5Key.wasPressedThisFrame)
         {
             SelectBag(4);
-            selectedBagPreviewUI.UpdateUI();
         }
     }
 

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Plant : HealthActor
 {
@@ -8,45 +7,12 @@ public class Plant : HealthActor
     public GameManager gameManager;
     public PlantData plantData;
 
-    [Header("Growth UI")]
-    public Slider growthSlider;
-
-    private float growTimer;
-    private bool isInitialized = false;
+    [Header("Growth")]
+    public GrowManager growManager;
 
     protected override void Awake()
     {
         base.Awake();
-    }
-
-    void Update()
-    {
-        if (!isInitialized)
-            return;
-
-        if (IsDead)
-            return;
-
-        UpdateGrowth();
-    }
-
-    void UpdateGrowth()
-    {
-        if (plantData == null)
-            return;
-
-        growTimer += Time.deltaTime;
-
-        if (growthSlider != null)
-            growthSlider.value = growTimer;
-
-        if (growTimer >= plantData.growTime)
-        {
-            if (gameManager != null)
-                gameManager.Victory();
-
-            isInitialized = false;
-        }
     }
 
     public void Init()
@@ -68,15 +34,13 @@ public class Plant : HealthActor
 
         Revive(plantData.maxHP, true);
 
-        if (growthSlider != null)
+        if (growManager != null)
         {
-            growthSlider.gameObject.SetActive(true);
-            growthSlider.maxValue = plantData.growTime;
-            growthSlider.value = 0f;
-        }
+            if (growManager.gameManager == null)
+                growManager.gameManager = gameManager;
 
-        growTimer = 0f;
-        isInitialized = true;
+            growManager.Init(plantData);
+        }
     }
 
     protected override void OnDamaged(float damage)
@@ -86,10 +50,11 @@ public class Plant : HealthActor
 
     protected override void OnDeathStarted()
     {
+        if (growManager != null)
+            growManager.StopGrowth();
+
         if (gameManager != null)
             gameManager.GameOver();
-
-        isInitialized = false;
     }
 
     protected override void OnDeathFinished()
@@ -99,6 +64,5 @@ public class Plant : HealthActor
 
     protected override void OnRevived()
     {
-        isInitialized = true;
     }
 }

@@ -12,13 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33b89be12f1b914ab6f81a5ff77bf4d, type: 3}
   m_Name: TestPlant 2
   m_EditorClassIdentifier: Assembly-CSharp::PlantData
-  plantName: test 2
-  plantSprite: {fileID: 8199913277324792824, guid: 305367f2a6a5d32469c721c7b2e7481b, type: 3}
-  rewardType: 3
-  rewardAmount: 1
+  dataName: 
+  icon: {fileID: 0}
+  description: 
+  dataId: TestPlant 2
+  dataType: 7
+  requireUnlock: 1
+  reward: []
   maxHP: 100
   growTime: 2
-  unlockedByDefault: 0
   buyCosts: []
   enemies:
   - enemyPrefab: {fileID: 5831428086637394887, guid: 3440ce745fc7cbf4ab87f9df54a9445c, type: 3}

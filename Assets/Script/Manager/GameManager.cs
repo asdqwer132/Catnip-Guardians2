@@ -24,10 +24,7 @@ public class GameManager : MonoBehaviour
     {
         if (isGameOver) return;
 
-        CurrencyManager.instance.AddCurrency(
-            plant.plantData.rewardType,
-            plant.plantData.rewardAmount
-        );
+        CurrencyManager.instance.AddCurrency(plant.plantData.reward);
 
         ReadyUpgrade();
     }

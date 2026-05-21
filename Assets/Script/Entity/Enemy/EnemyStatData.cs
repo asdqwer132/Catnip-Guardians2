@@ -6,10 +6,8 @@ using UnityEngine;
 )]
 public class EnemyStatData : ScriptableObject
 {
-    [Header("Move")]
+    [Header("Stat")]
     public float speed = 2f;
-
-    [Header("HP")]
     public float maxHp = 10f;
 
     [Header("Attack")]
@@ -18,5 +16,6 @@ public class EnemyStatData : ScriptableObject
     public float attackCooldown = 1f;
 
     [Header("Reward")]
-    public int goldReward = 10;
+    public Cost[] reward;
+    public float growEx = 10;
 }

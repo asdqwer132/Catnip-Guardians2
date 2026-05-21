@@ -35,6 +35,6 @@ public class PlantUI : MonoBehaviour
         if (spriteRenderer == null || plantData == null)
             return;
 
-        spriteRenderer.sprite = plantData.plantSprite;
+        spriteRenderer.sprite = plantData.icon;
     }
 }

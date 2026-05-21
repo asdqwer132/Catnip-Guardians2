@@ -8,7 +8,8 @@ public enum DataType
     System,
     ItemClass,
     ItemCategory,
-    SkillLine
+    SkillLine,
+    Plant
 }
 
 [Serializable]

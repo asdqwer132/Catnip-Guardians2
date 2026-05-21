@@ -59,7 +59,10 @@ public class SelectedBagPreviewUI : MonoBehaviour
 
         bagSelectManager.SetToggles(toggleObjects);
     }
-
+    private void Update()
+    {
+        UpdateUI();
+    }
     public void UpdateUI()
     {
         if (bagSelectManager == null)

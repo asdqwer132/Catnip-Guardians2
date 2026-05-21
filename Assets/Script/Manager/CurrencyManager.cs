@@ -108,18 +108,25 @@ public class CurrencyManager : MonoBehaviour
         return currencies[type];
     }
 
-    public void AddCurrency(CurrencyType type, int amount)
+    public void AddCurrency(Cost[] cost)
+    {
+        foreach(var c in cost)
+        {
+            AddCurrency(c);
+        }
+    }
+    public void AddCurrency(Cost cost)
     {
 
-        if (amount <= 0)
+        if (cost.amount <= 0)
             return;
 
-        if (!currencies.ContainsKey(type))
-            currencies[type] = 0;
+        if (!currencies.ContainsKey(cost.currencyType))
+            currencies[cost.currencyType] = 0;
 
-        currencies[type] += amount;
+        currencies[cost.currencyType] += cost.amount;
 
-        UpdateUI(type);
+        UpdateUI(cost.currencyType);
     }
 
     public bool HasCurrency(CurrencyType type, int amount)

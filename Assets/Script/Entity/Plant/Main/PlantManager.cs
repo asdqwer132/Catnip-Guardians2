@@ -29,9 +29,9 @@ public class PlantManager : MonoBehaviour
             if (plant == null)
                 continue;
 
-            unlockedPlants[plant] = plant.unlockedByDefault;
+            unlockedPlants[plant] = UnlockCheckUtility.CanUse(plant);
 
-            if (CurrentPlant == null && plant.unlockedByDefault)
+            if (CurrentPlant == null && unlockedPlants[plant])
             {
                 CurrentPlant = plant;
             }
@@ -45,12 +45,12 @@ public class PlantManager : MonoBehaviour
 
         if (!IsUnlocked(plant))
         {
-            Debug.Log("아직 해금되지 않은 플랜트입니다: " + plant.plantName);
+            Debug.Log("아직 해금되지 않은 플랜트입니다: " + plant.dataName);
             return;
         }
 
         CurrentPlant = plant;
-        Debug.Log("선택된 플랜트: " + plant.plantName);
+        Debug.Log("선택된 플랜트: " + plant.dataName);
     }
 
     public void UnlockPlant(PlantData plant)
@@ -72,7 +72,7 @@ public class PlantManager : MonoBehaviour
             CurrentPlant = plant;
         }
         SelectPlant(plant);
-        Debug.Log("플랜트 해금 완료: " + plant.plantName);
+        Debug.Log("플랜트 해금 완료: " + plant.dataName);
     }
 
     public bool IsUnlocked(PlantData plant)

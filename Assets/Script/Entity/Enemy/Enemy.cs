@@ -129,10 +129,12 @@ public class Enemy : HealthActor
 
         if (CurrencyManager.instance != null)
         {
-            CurrencyManager.instance.AddCurrency(
-                CurrencyType.Gold,
-                statData.goldReward
-            );
+            CurrencyManager.instance.AddCurrency(statData.reward);
+        }
+
+        if (GrowManager.instance != null)
+        {
+            GrowManager.instance.AddGrowth(statData.growEx);
         }
     }
 
