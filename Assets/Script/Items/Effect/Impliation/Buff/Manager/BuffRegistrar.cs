@@ -40,8 +40,11 @@ public class BuffRegistrar
 
         finalBuffInfo.Clamp();
 
-        if (finalBuffInfo.duration <= 0f)
+        if (finalBuffInfo.useLimitType == BuffUseLimitType.Time &&
+            finalBuffInfo.duration <= 0f)
+        {
             return;
+        }
 
         switch (effect.targetScope)
         {

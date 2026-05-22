@@ -16,6 +16,16 @@ public class ActiveBuff
     public bool includeSelf;
     public bool showInUI = true;
 
+    [Header("Apply Timing")]
+    public BuffApplyTiming applyTiming = BuffApplyTiming.Snapshot;
+
+    [Header("Use Limit")]
+    public BuffUseLimitType useLimitType = BuffUseLimitType.Time;
+
+    [Header("Use Count")]
+    public int maxUseCount = 1;
+    public int remainUseCount = 1;
+
     [Header("Stack")]
     public BuffStackMode stackMode;
     public int stack = 1;
@@ -25,7 +35,16 @@ public class ActiveBuff
     public float maxTime;
     public float remainTime;
 
-    public bool IsExpired => remainTime <= 0f;
+    public bool IsExpired
+    {
+        get
+        {
+            if (useLimitType == BuffUseLimitType.UseCount)
+                return remainUseCount <= 0;
+
+            return remainTime <= 0f;
+        }
+    }
 
     public ActiveBuff(
         BuffStat buffStat,
@@ -38,28 +57,51 @@ public class ActiveBuff
     )
     {
         this.buffStat = buffStat;
-
         this.sourceItemData = sourceItemData;
         this.sourceBag = sourceBag;
         this.sourceEffectData = sourceEffectData;
-
         this.includeSelf = includeSelf;
         this.showInUI = showInUI;
 
-        stackMode = buffInfo != null ? buffInfo.stackMode : BuffStackMode.Refresh;
-        maxStack = buffInfo != null ? Mathf.Max(1, buffInfo.maxStack) : 1;
+        stackMode = buffInfo != null
+            ? buffInfo.stackMode
+            : BuffStackMode.Refresh;
+
+        maxStack = buffInfo != null
+            ? Mathf.Max(1, buffInfo.maxStack)
+            : 1;
 
         if (stackMode == BuffStackMode.Refresh)
             maxStack = 1;
 
         stack = 1;
 
-        maxTime = buffInfo != null ? Mathf.Max(0.01f, buffInfo.duration) : 0.01f;
+        maxTime = buffInfo != null
+            ? Mathf.Max(0.01f, buffInfo.duration)
+            : 0.01f;
+
         remainTime = maxTime;
+
+        applyTiming = buffInfo != null
+            ? buffInfo.applyTiming
+            : BuffApplyTiming.Snapshot;
+
+        useLimitType = buffInfo != null
+            ? buffInfo.useLimitType
+            : BuffUseLimitType.Time;
+
+        maxUseCount = buffInfo != null
+            ? Mathf.Max(1, buffInfo.maxUseCount)
+            : 1;
+
+        remainUseCount = maxUseCount;
     }
 
     public void Tick(float deltaTime)
     {
+        if (useLimitType != BuffUseLimitType.Time)
+            return;
+
         remainTime -= deltaTime;
 
         if (remainTime < 0f)
@@ -71,6 +113,17 @@ public class ActiveBuff
         remainTime = maxTime;
     }
 
+    public void ConsumeUse()
+    {
+        if (useLimitType != BuffUseLimitType.UseCount)
+            return;
+
+        remainUseCount--;
+
+        if (remainUseCount < 0)
+            remainUseCount = 0;
+    }
+
     public void ApplyRegisterAgain(BuffInfo buffInfo)
     {
         if (buffInfo != null)
@@ -78,6 +131,11 @@ public class ActiveBuff
             maxTime = Mathf.Max(0.01f, buffInfo.duration);
             maxStack = Mathf.Max(1, buffInfo.maxStack);
             stackMode = buffInfo.stackMode;
+
+            applyTiming = buffInfo.applyTiming;
+            useLimitType = buffInfo.useLimitType;
+
+            maxUseCount = Mathf.Max(1, buffInfo.maxUseCount);
 
             if (stackMode == BuffStackMode.Refresh)
                 maxStack = 1;
@@ -96,10 +154,21 @@ public class ActiveBuff
         }
 
         RefreshTime();
+
+        if (useLimitType == BuffUseLimitType.UseCount)
+            remainUseCount = maxUseCount;
     }
 
     public float GetTimeRate()
     {
+        if (useLimitType == BuffUseLimitType.UseCount)
+        {
+            if (maxUseCount <= 0)
+                return 0f;
+
+            return (float)remainUseCount / maxUseCount;
+        }
+
         if (maxTime <= 0f)
             return 0f;
 

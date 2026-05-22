@@ -15,13 +15,13 @@ public class DamageArea : MonoBehaviour
     public Transform rangeVisual;
 
     [Header("Life Time")]
-    public float lifeTime = 0.2f;//
+    public float lifeTime = 0.2f;
 
     [Header("Hit Option")]
     public DamageApplyMode damageApplyMode = DamageApplyMode.HitOnce;
 
     [Min(0.01f)]
-    public float damageInterval = 0.5f;//
+    public float damageInterval = 0.5f;
 
     public GameObject owner;
 
@@ -29,12 +29,15 @@ public class DamageArea : MonoBehaviour
     private float radius = 1f;
     private float timer;
 
-    private readonly HashSet<GameObject> hitObjects = new HashSet<GameObject>();
-    private readonly Dictionary<GameObject, float> periodicTimers = new Dictionary<GameObject, float>();
+    private readonly HashSet<GameObject> hitObjects =
+        new HashSet<GameObject>();
 
-    private bool useDynamicStat;
+    private readonly Dictionary<GameObject, float> periodicTimers =
+        new Dictionary<GameObject, float>();
 
-    private AttackStat baseAttackStat;
+    private bool useSnapshotAndDynamicBuff;
+
+    private AttackStat snapshotAttackStat;
     private ItemData sourceItemData;
     private EquipmentBag sourceBag;
     private BuffManager buffManager;
@@ -46,7 +49,8 @@ public class DamageArea : MonoBehaviour
 
         if (rangeVisual == null)
         {
-            SpriteRenderer spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+            SpriteRenderer spriteRenderer =
+                GetComponentInChildren<SpriteRenderer>();
 
             if (spriteRenderer != null)
                 rangeVisual = spriteRenderer.transform;
@@ -64,7 +68,7 @@ public class DamageArea : MonoBehaviour
         GameObject owner
     )
     {
-        useDynamicStat = false;
+        useSnapshotAndDynamicBuff = false;
 
         this.damage = damage;
         this.radius = Mathf.Max(0.01f, radius);
@@ -73,6 +77,11 @@ public class DamageArea : MonoBehaviour
         this.damageInterval = Mathf.Max(0.01f, damageInterval);
         this.owner = owner;
 
+        snapshotAttackStat = null;
+        sourceItemData = null;
+        sourceBag = null;
+        buffManager = null;
+
         timer = 0f;
         hitObjects.Clear();
         periodicTimers.Clear();
@@ -80,17 +89,17 @@ public class DamageArea : MonoBehaviour
         ApplyRadius();
     }
 
-    public void InitDynamic(
-        AttackStat baseAttackStat,
+    public void InitWithSnapshotAndDynamicBuff(
+        AttackStat snapshotAttackStat,
         ItemData sourceItemData,
         EquipmentBag sourceBag,
         BuffManager buffManager,
         GameObject owner
     )
     {
-        useDynamicStat = true;
+        useSnapshotAndDynamicBuff = true;
 
-        this.baseAttackStat = baseAttackStat;
+        this.snapshotAttackStat = snapshotAttackStat;
         this.sourceItemData = sourceItemData;
         this.sourceBag = sourceBag;
         this.buffManager = buffManager;
@@ -100,42 +109,39 @@ public class DamageArea : MonoBehaviour
         hitObjects.Clear();
         periodicTimers.Clear();
 
-        RefreshDynamicStat();
+        RefreshStatFromSnapshotAndDynamicBuff();
         ApplyRadius();
     }
 
     private void Update()
     {
-        if (useDynamicStat)
-        {
-            RefreshDynamicStat();
-        }
+        if (useSnapshotAndDynamicBuff)
+            RefreshStatFromSnapshotAndDynamicBuff();
 
         timer += Time.deltaTime;
 
         if (timer >= lifeTime)
-        {
             Destroy(gameObject);
-        }
     }
 
-    private void  RefreshDynamicStat()
+    private void RefreshStatFromSnapshotAndDynamicBuff()
     {
-        if (baseAttackStat == null)
+        if (snapshotAttackStat == null)
             return;
 
-        AttackStat currentStat = baseAttackStat;
+        AttackStat currentStat = snapshotAttackStat;
 
         if (buffManager != null)
         {
-            AttackStat buffedStat = buffManager.GetBuffedAttackStat(
-                baseAttackStat,
-                sourceItemData,
-                sourceBag
-            );
+            AttackStat dynamicBuffedStat =
+                buffManager.GetDynamicAttackStat(
+                    snapshotAttackStat,
+                    sourceItemData,
+                    sourceBag
+                );
 
-            if (buffedStat != null)
-                currentStat = buffedStat;
+            if (dynamicBuffedStat != null)
+                currentStat = dynamicBuffedStat;
         }
 
         damage = currentStat.attackPower;
@@ -212,10 +218,10 @@ public class DamageArea : MonoBehaviour
 
     private void RefreshDynamicStatIfNeeded()
     {
-        if (!useDynamicStat)
+        if (!useSnapshotAndDynamicBuff)
             return;
 
-        RefreshDynamicStat();
+        RefreshStatFromSnapshotAndDynamicBuff();
     }
 
     private void TryHitOnce(Collider2D other)

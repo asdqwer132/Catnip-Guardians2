@@ -16,11 +16,30 @@ public class BuffStatCalculator
         EquipmentBag targetBag
     )
     {
+        return GetBuffedAttackStat(
+            baseStat,
+            targetItemData,
+            targetBag,
+            BuffCalculationMode.All,
+            false
+        );
+    }
+
+    public AttackStat GetBuffedAttackStat(
+        AttackStat baseStat,
+        ItemData targetItemData,
+        EquipmentBag targetBag,
+        BuffCalculationMode calculationMode,
+        bool consumeUseCount
+    )
+    {
         return GetBuffedItemStat(
             baseStat,
             targetItemData,
             targetBag,
-            ApplyBuffToAttackStat
+            ApplyBuffToAttackStat,
+            calculationMode,
+            consumeUseCount
         );
     }
 
@@ -34,7 +53,9 @@ public class BuffStatCalculator
             baseInfo,
             targetItemData,
             targetBag,
-            ApplyBuffToBuffInfo
+            ApplyBuffToBuffInfo,
+            BuffCalculationMode.All,
+            false
         );
     }
 
@@ -48,13 +69,9 @@ public class BuffStatCalculator
 
         EnemyStat result = baseStat.Clone();
 
-        // 기존 글로벌 버프
         ApplyEnemyBuffs(result, storage.globalBuffs);
-
-        // 현재 적 + 미래 신규 적까지 적용되는 버프
         ApplyEnemyBuffs(result, storage.futureEnemyBuffs);
 
-        // 특정 적에게 직접 등록된 버프
         if (enemy != null && storage.enemyBuffs.ContainsKey(enemy))
         {
             ApplyEnemyBuffs(
@@ -72,7 +89,9 @@ public class BuffStatCalculator
         T baseStat,
         ItemData targetItemData,
         EquipmentBag targetBag,
-        System.Action<BuffStat, T> applyAction
+        System.Action<BuffStat, T> applyAction,
+        BuffCalculationMode calculationMode,
+        bool consumeUseCount
     )
         where T : class, IGameStat<T>
     {
@@ -86,7 +105,9 @@ public class BuffStatCalculator
             storage.globalBuffs,
             targetItemData,
             targetBag,
-            applyAction
+            applyAction,
+            calculationMode,
+            consumeUseCount
         );
 
         if (targetBag != null && storage.bagBuffs.ContainsKey(targetBag))
@@ -96,7 +117,9 @@ public class BuffStatCalculator
                 storage.bagBuffs[targetBag],
                 targetItemData,
                 targetBag,
-                applyAction
+                applyAction,
+                calculationMode,
+                consumeUseCount
             );
         }
 
@@ -107,7 +130,9 @@ public class BuffStatCalculator
                 storage.itemBuffs[targetItemData],
                 targetItemData,
                 targetBag,
-                applyAction
+                applyAction,
+                calculationMode,
+                consumeUseCount
             );
         }
 
@@ -121,7 +146,9 @@ public class BuffStatCalculator
         List<ActiveBuff> buffs,
         ItemData targetItemData,
         EquipmentBag targetBag,
-        System.Action<BuffStat, T> applyAction
+        System.Action<BuffStat, T> applyAction,
+        BuffCalculationMode calculationMode,
+        bool consumeUseCount
     )
     {
         if (target == null)
@@ -133,12 +160,22 @@ public class BuffStatCalculator
         if (applyAction == null)
             return;
 
+        List<ActiveBuff> consumedBuffs = null;
+
         for (int i = 0; i < buffs.Count; i++)
         {
             ActiveBuff activeBuff = buffs[i];
 
             if (!CanUseBuff(activeBuff))
                 continue;
+
+            if (!CanUseBuffByCalculationMode(
+                    activeBuff,
+                    calculationMode
+                ))
+            {
+                continue;
+            }
 
             if (!CanApplyBuffToItemTarget(
                     activeBuff,
@@ -153,7 +190,22 @@ public class BuffStatCalculator
 
             for (int stackIndex = 0; stackIndex < stackCount; stackIndex++)
                 applyAction(activeBuff.buffStat, target);
+
+            if (consumeUseCount &&
+                activeBuff.useLimitType == BuffUseLimitType.UseCount)
+            {
+                if (consumedBuffs == null)
+                    consumedBuffs = new List<ActiveBuff>();
+
+                consumedBuffs.Add(activeBuff);
+            }
         }
+
+        if (consumedBuffs == null)
+            return;
+
+        for (int i = 0; i < consumedBuffs.Count; i++)
+            consumedBuffs[i].ConsumeUse();
     }
 
     private void ApplyEnemyBuffs(
@@ -191,6 +243,26 @@ public class BuffStatCalculator
 
         if (activeBuff.buffStat == null)
             return false;
+
+        return true;
+    }
+
+    private bool CanUseBuffByCalculationMode(
+        ActiveBuff activeBuff,
+        BuffCalculationMode calculationMode
+    )
+    {
+        if (activeBuff == null)
+            return false;
+
+        if (calculationMode == BuffCalculationMode.All)
+            return true;
+
+        if (calculationMode == BuffCalculationMode.SnapshotOnly)
+            return activeBuff.applyTiming == BuffApplyTiming.Snapshot;
+
+        if (calculationMode == BuffCalculationMode.DynamicOnly)
+            return activeBuff.applyTiming == BuffApplyTiming.Dynamic;
 
         return true;
     }

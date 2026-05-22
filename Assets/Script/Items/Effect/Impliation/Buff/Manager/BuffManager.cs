@@ -87,6 +87,48 @@ public class BuffManager : MonoBehaviour
         );
     }
 
+    public AttackStat GetSnapshotAttackStatAndConsume(
+        AttackStat baseStat,
+        ItemData targetItemData,
+        EquipmentBag targetBag
+    )
+    {
+        if (calculator == null)
+            return baseStat;
+
+        AttackStat result = calculator.GetBuffedAttackStat(
+            baseStat,
+            targetItemData,
+            targetBag,
+            BuffCalculationMode.SnapshotOnly,
+            true
+        );
+
+        RefreshAllRegisteredEnemyStats();
+        RefreshUI();
+        RefreshDebugInspector();
+
+        return result;
+    }
+
+    public AttackStat GetDynamicAttackStat(
+        AttackStat baseStat,
+        ItemData targetItemData,
+        EquipmentBag targetBag
+    )
+    {
+        if (calculator == null)
+            return baseStat;
+
+        return calculator.GetBuffedAttackStat(
+            baseStat,
+            targetItemData,
+            targetBag,
+            BuffCalculationMode.DynamicOnly,
+            false
+        );
+    }
+
     public BuffInfo GetBuffedBuffInfo(
         BuffInfo baseInfo,
         ItemData targetItemData,

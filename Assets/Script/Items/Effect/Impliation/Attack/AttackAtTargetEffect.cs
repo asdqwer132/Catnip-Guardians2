@@ -91,8 +91,23 @@ public class AttackAtTargetEffect : ItemEffectData
 
         damageArea.damageApplyMode = damageApplyMode;
 
-        damageArea.InitDynamic(
-            baseAttackStat: attackStat,
+        AttackStat snapshotStat = attackStat;
+
+        if (context.buffManager != null)
+        {
+            AttackStat buffedSnapshotStat =
+                context.buffManager.GetSnapshotAttackStatAndConsume(
+                    attackStat,
+                    context.sourceItemData,
+                    context.sourceBag
+                );
+
+            if (buffedSnapshotStat != null)
+                snapshotStat = buffedSnapshotStat;
+        }
+
+        damageArea.InitWithSnapshotAndDynamicBuff(
+            snapshotAttackStat: snapshotStat,
             sourceItemData: context.sourceItemData,
             sourceBag: context.sourceBag,
             buffManager: context.buffManager,
