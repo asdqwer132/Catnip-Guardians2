@@ -20,7 +20,30 @@ public class EquipmentBagManager : RefreshListener
     {
         instance = this;
     }
+    public EquipmentBag GetBagData(string bagId)
+    {
+        if (string.IsNullOrEmpty(bagId))
+            return null;
 
+        if (bags == null)
+            return null;
+
+        for (int i = 0; i < bags.Length; i++)
+        {
+            if (bags[i] == null)
+                continue;
+
+            BagData bagData = bags[i].bagData;
+
+            if (bagData == null)
+                continue;
+
+            if (bagData.dataId == bagId)
+                return bags[i];
+        }
+
+        return null;
+    }
     public void Init()
     {
         for (int i = 0; i < bags.Length; i++)

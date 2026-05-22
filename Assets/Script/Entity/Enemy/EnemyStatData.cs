@@ -1,4 +1,9 @@
 using UnityEngine;
+public enum EnemyBuffApplyMode
+{
+    CurrentEnemiesOnly,
+    AllEnemiesIncludingFuture
+}
 
 [CreateAssetMenu(fileName = "EnemyStatData", menuName = "Game/Enemy/Enemy Stat Data")]
 public class EnemyStatData : ScriptableObject

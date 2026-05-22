@@ -81,7 +81,15 @@ public class BuffRegistrar
                 break;
 
             case BuffTarget.AllEnemies:
-                RegisterOrUpdateAllEnemies(
+                RegisterOrUpdateAllCurrentEnemies(
+                    effect,
+                    context,
+                    finalBuffInfo
+                );
+                break;
+
+            case BuffTarget.AllEnemiesIncludingFuture:
+                RegisterOrUpdateFutureEnemyBuff(
                     effect,
                     context,
                     finalBuffInfo
@@ -98,6 +106,20 @@ public class BuffRegistrar
     {
         RegisterOrUpdateList(
             storage.globalBuffs,
+            effect,
+            context,
+            finalBuffInfo
+        );
+    }
+
+    private void RegisterOrUpdateFutureEnemyBuff(
+        BuffEffect effect,
+        ItemEffectContext context,
+        BuffInfo finalBuffInfo
+    )
+    {
+        RegisterOrUpdateList(
+            storage.futureEnemyBuffs,
             effect,
             context,
             finalBuffInfo
@@ -161,15 +183,20 @@ public class BuffRegistrar
         BuffInfo finalBuffInfo
     )
     {
+        EnemyBuffStat enemyBuffStat = effect.GetEnemyBuffStat();
+
+        if (enemyBuffStat == null)
+            return;
+
         Vector3 position = context.targetPosition;
         position.z = 0f;
 
-        float radius = Mathf.Max(0.01f, effect.GetEnemyBuffStat().enemyBuffRadius);
+        float radius = Mathf.Max(0.01f, enemyBuffStat.enemyBuffRadius);
 
         Collider2D[] hits = Physics2D.OverlapCircleAll(
             position,
             radius,
-            effect.GetEnemyBuffStat().enemyTargetLayer
+            enemyBuffStat.enemyTargetLayer
         );
 
         for (int i = 0; i < hits.Length; i++)
@@ -182,7 +209,7 @@ public class BuffRegistrar
             if (enemy == null)
                 continue;
 
-            if (!effect.GetEnemyBuffStat().affectDeadEnemies && enemy.IsDead)
+            if (!enemyBuffStat.affectDeadEnemies && enemy.IsDead)
                 continue;
 
             RegisterOrUpdateEnemyBuff(
@@ -194,12 +221,17 @@ public class BuffRegistrar
         }
     }
 
-    private void RegisterOrUpdateAllEnemies(
+    private void RegisterOrUpdateAllCurrentEnemies(
         BuffEffect effect,
         ItemEffectContext context,
         BuffInfo finalBuffInfo
     )
     {
+        EnemyBuffStat enemyBuffStat = effect.GetEnemyBuffStat();
+
+        if (enemyBuffStat == null)
+            return;
+
         for (int i = 0; i < storage.registeredEnemies.Count; i++)
         {
             Enemy enemy = storage.registeredEnemies[i];
@@ -207,7 +239,7 @@ public class BuffRegistrar
             if (enemy == null)
                 continue;
 
-            if (!effect.GetEnemyBuffStat().affectDeadEnemies && enemy.IsDead)
+            if (!enemyBuffStat.affectDeadEnemies && enemy.IsDead)
                 continue;
 
             RegisterOrUpdateEnemyBuff(

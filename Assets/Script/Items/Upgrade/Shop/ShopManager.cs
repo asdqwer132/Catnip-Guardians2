@@ -188,6 +188,6 @@ public class ShopManager : MonoBehaviour
 
         InventoryManager.instance.AddItem(resultItem, 1);
 
-        Debug.Log("상자 구매 완료: " + resultItem.dataName);
+        //Debug.Log("상자 구매 완료: " + resultItem.dataName);
     }
 }

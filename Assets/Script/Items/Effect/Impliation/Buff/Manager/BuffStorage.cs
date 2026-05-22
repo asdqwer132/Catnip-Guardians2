@@ -2,7 +2,11 @@ using System.Collections.Generic;
 
 public class BuffStorage
 {
-    public readonly List<ActiveBuff> globalBuffs = new List<ActiveBuff>();
+    public readonly List<ActiveBuff> globalBuffs =
+        new List<ActiveBuff>();
+
+    public readonly List<ActiveBuff> futureEnemyBuffs =
+        new List<ActiveBuff>();
 
     public readonly Dictionary<EquipmentBag, List<ActiveBuff>> bagBuffs =
         new Dictionary<EquipmentBag, List<ActiveBuff>>();
@@ -13,7 +17,8 @@ public class BuffStorage
     public readonly Dictionary<Enemy, List<ActiveBuff>> enemyBuffs =
         new Dictionary<Enemy, List<ActiveBuff>>();
 
-    public readonly List<Enemy> registeredEnemies = new List<Enemy>();
+    public readonly List<Enemy> registeredEnemies =
+        new List<Enemy>();
 
     public List<ActiveBuff> GetOrCreateBagBuffs(EquipmentBag bag)
     {
@@ -71,6 +76,7 @@ public class BuffStorage
     public void ClearAll()
     {
         globalBuffs.Clear();
+        futureEnemyBuffs.Clear();
         bagBuffs.Clear();
         itemBuffs.Clear();
         enemyBuffs.Clear();

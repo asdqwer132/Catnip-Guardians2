@@ -1625,7 +1625,7 @@ MonoBehaviour:
   enemyPrefab: {fileID: 5831428086637394887, guid: 3440ce745fc7cbf4ab87f9df54a9445c, type: 3}
   spawnRate: 1.5
   spawnDistance: 8
-  buffManager: {fileID: 378844629}
+  buffManager: {fileID: 1318438117}
 --- !u!1 &160430757
 GameObject:
   m_ObjectHideFlags: 0
@@ -2894,17 +2894,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &344476869 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7657232372962933514, guid: bd4e4cd47a3d37b4891e124612d1c9b0, type: 3}
-  m_PrefabInstance: {fileID: 282753011763519200}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 99a55c56522129d46ad0241ab302f082, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SkillNodeUI
 --- !u!1 &347725495
 GameObject:
   m_ObjectHideFlags: 0
@@ -3359,7 +3348,7 @@ MonoBehaviour:
   targetRangeIndicatorPrefab: {fileID: 7885248462748341646, guid: f3f56727797bdb640b4b975b776cdacd, type: 3}
   showTargetRange: 1
   defaultTargetRangeRadius: 1
-  buffManager: {fileID: 378844629}
+  itemEffectExecutor: {fileID: 378844629}
 --- !u!114 &378844627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3401,10 +3390,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 378844622}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1daeea4e3c9258643a97f920d3a58337, type: 3}
+  m_Script: {fileID: 11500000, guid: 8a3b78c5960043048bc4c47c33dd29ac, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BuffManager
-  buffUIManager: {fileID: 1380607546}
+  m_EditorClassIdentifier: Assembly-CSharp::ItemEffectExecutor
+  buffManager: {fileID: 1318438117}
+--- !u!114 &389002722 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3575002897317009530, guid: bd4e4cd47a3d37b4891e124612d1c9b0, type: 3}
+  m_PrefabInstance: {fileID: 282753011763519200}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99a55c56522129d46ad0241ab302f082, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkillNodeUI
 --- !u!1 &411036250
 GameObject:
   m_ObjectHideFlags: 0
@@ -3623,6 +3623,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1143531032}
+  - {fileID: 900877715}
   m_Father: {fileID: 542858357}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &428193923
@@ -3637,6 +3638,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af80b1550729b354b84a2dc9fa1be3d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SkillTreeManager
+  buffSkillManager: {fileID: 900877716}
   debugLog: 0
 --- !u!114 &428193924
 MonoBehaviour:
@@ -3656,9 +3658,8 @@ MonoBehaviour:
   - {fileID: 1792312375}
   - {fileID: 324430685}
   - {fileID: 1590922426}
-  - {fileID: 1704931130}
-  - {fileID: 1139898926}
-  - {fileID: 344476869}
+  - {fileID: 389002722}
+  - {fileID: 1330123797}
   includeInactive: 1
 --- !u!114 &428193925
 MonoBehaviour:
@@ -5070,7 +5071,7 @@ MonoBehaviour:
   enemyPrefab: {fileID: 5831428086637394887, guid: 3440ce745fc7cbf4ab87f9df54a9445c, type: 3}
   spawnRate: 1.5
   spawnDistance: 8
-  buffManager: {fileID: 378844629}
+  buffManager: {fileID: 1318438117}
 --- !u!1 &526400858
 GameObject:
   m_ObjectHideFlags: 0
@@ -7537,7 +7538,7 @@ MonoBehaviour:
   enemyPrefab: {fileID: 5831428086637394887, guid: 3440ce745fc7cbf4ab87f9df54a9445c, type: 3}
   spawnRate: 1.5
   spawnDistance: 8
-  buffManager: {fileID: 378844629}
+  buffManager: {fileID: 1318438117}
 --- !u!114 &604714688 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 315598459254101236, guid: 26604c98dfdf550448ed91cf3bcea9b2, type: 3}
@@ -7827,7 +7828,7 @@ MonoBehaviour:
   enemyPrefab: {fileID: 5831428086637394887, guid: 3440ce745fc7cbf4ab87f9df54a9445c, type: 3}
   spawnRate: 1.5
   spawnDistance: 8
-  buffManager: {fileID: 378844629}
+  buffManager: {fileID: 1318438117}
 --- !u!1 &646778560
 GameObject:
   m_ObjectHideFlags: 0
@@ -8771,7 +8772,7 @@ MonoBehaviour:
   enemyPrefab: {fileID: 5831428086637394887, guid: 3440ce745fc7cbf4ab87f9df54a9445c, type: 3}
   spawnRate: 1.5
   spawnDistance: 8
-  buffManager: {fileID: 378844629}
+  buffManager: {fileID: 1318438117}
 --- !u!4 &726708667
 Transform:
   m_ObjectHideFlags: 0
@@ -10070,6 +10071,67 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
+--- !u!1 &900877714
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 900877715}
+  - component: {fileID: 900877717}
+  - component: {fileID: 900877716}
+  m_Layer: 0
+  m_Name: BuffSkillManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &900877715
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900877714}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 428193921}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &900877716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900877714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a213513bd595ff4a9554c69059f64f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BuffSkillManager
+  itemEffectExecutor: {fileID: 900877717}
+  equipmentBagManager: {fileID: 323889356}
+  registeredBuffItems: []
+--- !u!114 &900877717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900877714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a3b78c5960043048bc4c47c33dd29ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemEffectExecutor
+  buffManager: {fileID: 1318438117}
 --- !u!1 &906088065
 GameObject:
   m_ObjectHideFlags: 0
@@ -11751,17 +11813,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1125686535}
   m_CullTransparentMesh: 1
---- !u!114 &1139898926 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8180389984098168130, guid: bd4e4cd47a3d37b4891e124612d1c9b0, type: 3}
-  m_PrefabInstance: {fileID: 282753011763519200}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 99a55c56522129d46ad0241ab302f082, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SkillNodeUI
 --- !u!1 &1143531031
 GameObject:
   m_ObjectHideFlags: 0
@@ -12933,6 +12984,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ActorVisual
   animator: {fileID: 0}
   spriteRenderer: {fileID: 0}
+  defaultFaceLeft: 0
   walkingBoolName: IsWalking
   attackTriggerName: Attack
   hitTriggerName: Hit
@@ -13693,6 +13745,7 @@ GameObject:
   - component: {fileID: 1318438115}
   - component: {fileID: 1318438114}
   - component: {fileID: 1318438116}
+  - component: {fileID: 1318438117}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -13745,9 +13798,26 @@ MonoBehaviour:
   plant: {fileID: 1230235210}
   itemUseManager: {fileID: 378844623}
   shopManager: {fileID: 1077092589}
-  buffManager: {fileID: 378844629}
+  buffManager: {fileID: 1318438117}
+  buffSkillManager: {fileID: 900877716}
   skillTreeUI: {fileID: 428193924}
   selectedBagPreviewUI: {fileID: 46985077}
+--- !u!114 &1318438117
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1318438113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1daeea4e3c9258643a97f920d3a58337, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BuffManager
+  buffUIManager: {fileID: 1380607546}
+  useDebugInspector: 1
+  debugAllActiveBuffs: []
+  debugBuffGroups: []
 --- !u!1001 &1324248901
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14333,6 +14403,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1329506793}
   m_CullTransparentMesh: 1
+--- !u!114 &1330123797 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6164480526985701086, guid: bd4e4cd47a3d37b4891e124612d1c9b0, type: 3}
+  m_PrefabInstance: {fileID: 282753011763519200}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99a55c56522129d46ad0241ab302f082, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkillNodeUI
 --- !u!1 &1337593354 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7846030166743371181, guid: ae7f2f81a08b5724bbc7676eb5ad561c, type: 3}
@@ -14863,7 +14944,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5335af96ef3c0a48893594d1535bc66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuffUIManager
-  buffManager: {fileID: 378844629}
+  buffManager: {fileID: 1318438117}
   contentParent: {fileID: 1380607545}
   slotPrefab: {fileID: 1722376472968725201, guid: c284b47c6cd0f4349869d2c29dda09db, type: 3}
   displayMode: 3
@@ -17886,17 +17967,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4851005288612205113, guid: ae7f2f81a08b5724bbc7676eb5ad561c, type: 3}
   m_PrefabInstance: {fileID: 2147685523659134090}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1704931130 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3575002897317009530, guid: bd4e4cd47a3d37b4891e124612d1c9b0, type: 3}
-  m_PrefabInstance: {fileID: 282753011763519200}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 99a55c56522129d46ad0241ab302f082, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SkillNodeUI
 --- !u!1 &1705317162
 GameObject:
   m_ObjectHideFlags: 0
@@ -21661,6 +21731,22 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7831868864949808931, guid: bd4e4cd47a3d37b4891e124612d1c9b0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8298920985130166481, guid: bd4e4cd47a3d37b4891e124612d1c9b0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8298920985130166481, guid: bd4e4cd47a3d37b4891e124612d1c9b0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8298920985130166481, guid: bd4e4cd47a3d37b4891e124612d1c9b0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8298920985130166481, guid: bd4e4cd47a3d37b4891e124612d1c9b0, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}

@@ -15,21 +15,27 @@ public class BagItemUseManager : MonoBehaviour
     private BagItemCooldownController cooldownController =
         new BagItemCooldownController();
 
-    void Awake() { Init(); }
+    void Awake()
+    {
+        Init();
+    }
 
     void Update()
     {
         if (bag == null || bag.equippedItems == null)
             return;
+
         if (IsBagCoolingDown())
             return;
 
         StartPreparationForCurrentSlot();
     }
+
     public BagData GetBagData()
     {
         return bag.bagData;
     }
+
     public void Init()
     {
         if (throwExecutor == null)
@@ -43,11 +49,13 @@ public class BagItemUseManager : MonoBehaviour
         useCycle.Init(slotCount);
 
         StartPreparationForCurrentSlot();
-
-        //Debug.Log("BagItemUseManager 초기화 완료 / Cycle: " + useCycle.CurrentCycleId);
     }
 
-    public bool TryUseNextItem(Vector3 startPosition, Vector3 targetPosition, GameObject owner)
+    public bool TryUseNextItem(
+        Vector3 startPosition,
+        Vector3 targetPosition,
+        GameObject owner
+    )
     {
         if (!CanTryUse(owner))
             return false;
@@ -58,21 +66,29 @@ public class BagItemUseManager : MonoBehaviour
             return false;
 
         int slotIndex = useCycle.GetNextUsableSlotIndex(bag);
+
         if (slotIndex == -1)
             return false;
 
-        InventoryItem inventoryItem = bag.equippedItems[slotIndex];
-        if (!ItemThrowExecutor.CanExecuteItemEffect(inventoryItem))
+        ItemData inventoryItem = bag.equippedItems[slotIndex].itemData;
+
+        if (!ItemEffectExecutor.CanExecuteItemEffect(inventoryItem))
             return false;
 
-        cooldownController.StartPreparationCooldownIfNeeded(            slotIndex,            inventoryItem        );
+        cooldownController.StartPreparationCooldownIfNeeded(
+            slotIndex,
+            inventoryItem
+        );
+
         if (cooldownController.IsSlotCoolingDown(slotIndex))
             return false;
 
         startPosition.z = 0f;
         targetPosition.z = 0f;
+
         Vector3 direction = targetPosition - startPosition;
-        if (direction.sqrMagnitude <= 0.0001f) //가깝
+
+        if (direction.sqrMagnitude <= 0.0001f)
             return false;
 
         direction.Normalize();
@@ -99,6 +115,7 @@ public class BagItemUseManager : MonoBehaviour
     {
         if (bag == null || bag.equippedItems == null)
             return false;
+
         if (owner == null)
             return false;
 
@@ -107,7 +124,10 @@ public class BagItemUseManager : MonoBehaviour
 
     private void ApplyUseResult(int slotIndex)
     {
-        useCycle.MarkSlotUsedAndMoveNext(           slotIndex,            GetSlotCount()        );
+        useCycle.MarkSlotUsedAndMoveNext(
+            slotIndex,
+            GetSlotCount()
+        );
 
         if (useCycle.HasUsedAllUsableSlotsThisCycle(bag))
         {
@@ -124,6 +144,7 @@ public class BagItemUseManager : MonoBehaviour
     {
         if (bag == null || bag.equippedItems == null)
             return;
+
         if (IsBagCoolingDown())
             return;
 
@@ -134,7 +155,7 @@ public class BagItemUseManager : MonoBehaviour
         if (slotIndex == -1)
             return;
 
-        InventoryItem inventoryItem = bag.equippedItems[slotIndex];
+        ItemData inventoryItem = bag.equippedItems[slotIndex].itemData;
 
         cooldownController.StartPreparationCooldownIfNeeded(
             slotIndex,
@@ -168,10 +189,10 @@ public class BagItemUseManager : MonoBehaviour
 
         StartPreparationForCurrentSlot();
 
-        Debug.Log(
-            "아이템 사용 위치가 초기화되고, 첫 아이템 준비가 시작되었습니다. Cycle: " +
-            useCycle.CurrentCycleId
-        );
+        //Debug.Log(
+        //    "아이템 사용 위치가 초기화되고, 첫 아이템 준비가 시작되었습니다. Cycle: " +
+        //    useCycle.CurrentCycleId
+        //);
     }
 
     public void ResetAllCooldowns()
@@ -182,13 +203,12 @@ public class BagItemUseManager : MonoBehaviour
         cooldownController.ResetAllCooldowns(slotCount);
 
         StartPreparationForCurrentSlot();
-
-        // Debug.Log("가방 쿨타임과 아이템 사용 순서가 초기화되었습니다.");
     }
 
     public int GetNextReadyUsableSlotIndexForUI()
     {
         SyncControllers();
+
         return useCycle.GetNextUsableSlotIndex(bag);
     }
 

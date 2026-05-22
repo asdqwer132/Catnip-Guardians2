@@ -6,6 +6,8 @@ public class SkillTreeManager : MonoBehaviour
 {
     public static SkillTreeManager Instance { get; private set; }
 
+    public BuffSkillManager buffSkillManager;
+
     public event Action OnSkillTreeChanged;
     public event Action<SkillNodeData> OnSkillUnlocked;
 
@@ -29,7 +31,8 @@ public class SkillTreeManager : MonoBehaviour
         context = new SkillApplyContext
         {
             skillTreeManager = this,
-            unlockManager = UnlockManager.Instance
+            unlockManager = UnlockManager.Instance,
+            buffSkillManager = buffSkillManager
         };
     }
     private void RefreshContext()
@@ -41,6 +44,7 @@ public class SkillTreeManager : MonoBehaviour
 
         context.skillTreeManager = this;
         context.unlockManager = UnlockManager.Instance;
+        context.buffSkillManager = buffSkillManager;
     }
     public bool CanUnlock(SkillNodeData node)
     {

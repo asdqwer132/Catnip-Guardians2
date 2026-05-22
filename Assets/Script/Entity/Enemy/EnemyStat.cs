@@ -61,6 +61,17 @@ public class EnemyBuffStat : EnemyStat, IBuffStat<EnemyStat>
     public float attackRangeM = 0f;
     public float attackCooldownM = 0f;
 
+    public EnemyBuffStat()
+    {
+        // EnemyStat 기본값을 버프값으로 쓰면 안 됨.
+        // 버프는 기본적으로 변화량 0이어야 함.
+        speed = 0f;
+        maxHp = 0f;
+        damage = 0f;
+        attackRange = 0f;
+        attackCooldown = 0f;
+    }
+
     public void ApplyTo(EnemyStat target)
     {
         if (target == null)
@@ -98,10 +109,10 @@ public class EnemyBuffStat : EnemyStat, IBuffStat<EnemyStat>
             result += "적 공격력 x" + (1f + damageM).ToString("0.##") + " ";
 
         if (attackRange != 0f)
-            result += "적 사거리 +" + attackRange + " ";
+            result += "적 공격거리 +" + attackRange + " ";
 
         if (attackRangeM != 0f)
-            result += "적 사거리 x" + (1f + attackRangeM).ToString("0.##") + " ";
+            result += "적 공격거리 x" + (1f + attackRangeM).ToString("0.##") + " ";
 
         if (attackCooldown != 0f)
             result += "적 공격쿨 +" + attackCooldown + " ";

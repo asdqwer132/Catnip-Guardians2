@@ -128,13 +128,13 @@ public class Enemy : HealthActor
     {
         buffManager = injectedBuffManager;
 
-        if (buffManager != null)
-            buffManager.RegisterEnemy(this);
-
         ApplyBaseStat();
 
         if (actorTarget != null)
             actorTarget.SetTarget(target);
+
+        if (buffManager != null)
+            buffManager.RegisterEnemy(this);
 
         isInitialized = true;
     }
@@ -143,15 +143,14 @@ public class Enemy : HealthActor
     {
         ApplyBaseStat();
 
-        if (buffManager != null)
-            buffManager.RegisterEnemy(this);
-
         if (actorTarget != null)
             actorTarget.SetTarget(target);
 
+        if (buffManager != null)
+            buffManager.RegisterEnemy(this);
+
         isInitialized = true;
     }
-
     void ApplyBaseStat()
     {
         if (statData == null)

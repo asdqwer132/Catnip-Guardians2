@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,6 +6,17 @@ public class BuffManager : MonoBehaviour
 {
     [Header("UI")]
     public BuffUIManager buffUIManager;
+
+    [Header("Debug")]
+    [SerializeField] private bool useDebugInspector = true;
+
+    [SerializeField]
+    private List<ActiveBuff> debugAllActiveBuffs =
+        new List<ActiveBuff>();
+
+    [SerializeField]
+    private List<DebugBuffGroup> debugBuffGroups =
+        new List<DebugBuffGroup>();
 
     private BuffStorage storage;
     private BuffTicker ticker;
@@ -22,6 +34,8 @@ public class BuffManager : MonoBehaviour
         registrar = new BuffRegistrar(storage, calculator);
         ticker = new BuffTicker(storage);
         query = new BuffQuery(storage);
+
+        RefreshDebugInspector();
     }
 
     private void Update()
@@ -32,7 +46,14 @@ public class BuffManager : MonoBehaviour
         bool changed = ticker.Tick(Time.deltaTime);
 
         if (changed)
+        {
+            RefreshAllRegisteredEnemyStats();
             RefreshUI();
+            RefreshDebugInspector();
+        }
+
+        if (useDebugInspector)
+            RefreshDebugInspector();
     }
 
     public void RegisterBuff(
@@ -44,7 +65,10 @@ public class BuffManager : MonoBehaviour
             return;
 
         registrar.RegisterBuff(effect, context);
+
+        RefreshAllRegisteredEnemyStats();
         RefreshUI();
+        RefreshDebugInspector();
     }
 
     public AttackStat GetBuffedAttackStat(
@@ -99,6 +123,11 @@ public class BuffManager : MonoBehaviour
             return;
 
         storage.RegisterEnemy(enemy);
+
+        if (enemy != null)
+            enemy.RefreshBuffedStat();
+
+        RefreshDebugInspector();
     }
 
     public void UnregisterEnemy(Enemy enemy)
@@ -107,7 +136,9 @@ public class BuffManager : MonoBehaviour
             return;
 
         storage.UnregisterEnemy(enemy);
+
         RefreshUI();
+        RefreshDebugInspector();
     }
 
     public List<ActiveBuff> GetAllActiveBuffs()
@@ -183,7 +214,11 @@ public class BuffManager : MonoBehaviour
             return;
 
         storage.enemyBuffs.Remove(enemy);
+
+        enemy.RefreshBuffedStat();
+
         RefreshUI();
+        RefreshDebugInspector();
     }
 
     public void ClearAllBuffs()
@@ -192,7 +227,28 @@ public class BuffManager : MonoBehaviour
             return;
 
         storage.ClearAll();
+
         RefreshUI();
+        RefreshDebugInspector();
+    }
+
+    private void RefreshAllRegisteredEnemyStats()
+    {
+        if (storage == null)
+            return;
+
+        for (int i = storage.registeredEnemies.Count - 1; i >= 0; i--)
+        {
+            Enemy enemy = storage.registeredEnemies[i];
+
+            if (enemy == null)
+            {
+                storage.registeredEnemies.RemoveAt(i);
+                continue;
+            }
+
+            enemy.RefreshBuffedStat();
+        }
     }
 
     private void RefreshUI()
@@ -202,4 +258,79 @@ public class BuffManager : MonoBehaviour
 
         buffUIManager.RefreshCurrentMode();
     }
+
+    private void RefreshDebugInspector()
+    {
+        if (!useDebugInspector)
+            return;
+
+        if (storage == null)
+            return;
+
+        debugAllActiveBuffs.Clear();
+        debugBuffGroups.Clear();
+
+        AddDebugGroup("Global", "All", storage.globalBuffs);
+        AddDebugGroup("Enemy Future", "All Current + Future", storage.futureEnemyBuffs);
+
+        foreach (KeyValuePair<EquipmentBag, List<ActiveBuff>> pair in storage.bagBuffs)
+        {
+            string targetName = pair.Key != null ? pair.Key.name : "Null Bag";
+            AddDebugGroup("Bag", targetName, pair.Value);
+        }
+
+        foreach (KeyValuePair<ItemData, List<ActiveBuff>> pair in storage.itemBuffs)
+        {
+            string targetName = pair.Key != null ? pair.Key.dataName : "Null Item";
+            AddDebugGroup("Item", targetName, pair.Value);
+        }
+
+        foreach (KeyValuePair<Enemy, List<ActiveBuff>> pair in storage.enemyBuffs)
+        {
+            string targetName = pair.Key != null ? pair.Key.name : "Null Enemy";
+            AddDebugGroup("Enemy", targetName, pair.Value);
+        }
+    }
+
+    private void AddDebugGroup(
+        string groupType,
+        string targetName,
+        List<ActiveBuff> buffs
+    )
+    {
+        if (buffs == null)
+            return;
+
+        if (buffs.Count <= 0)
+            return;
+
+        DebugBuffGroup group = new DebugBuffGroup();
+        group.groupType = groupType;
+        group.targetName = targetName;
+
+        for (int i = 0; i < buffs.Count; i++)
+        {
+            ActiveBuff buff = buffs[i];
+
+            if (buff == null)
+                continue;
+
+            if (buff.IsExpired)
+                continue;
+
+            group.buffs.Add(buff);
+            debugAllActiveBuffs.Add(buff);
+        }
+
+        if (group.buffs.Count > 0)
+            debugBuffGroups.Add(group);
+    }
+}
+
+[Serializable]
+public class DebugBuffGroup
+{
+    public string groupType;
+    public string targetName;
+    public List<ActiveBuff> buffs = new List<ActiveBuff>();
 }

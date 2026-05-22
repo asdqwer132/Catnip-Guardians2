@@ -14,6 +14,7 @@ public class BuffQuery
         List<ActiveBuff> result = new List<ActiveBuff>();
 
         AddBuffsToList(result, storage.globalBuffs);
+        AddBuffsToList(result, storage.futureEnemyBuffs);
 
         foreach (KeyValuePair<EquipmentBag, List<ActiveBuff>> pair in storage.bagBuffs)
             AddBuffsToList(result, pair.Value);
@@ -32,6 +33,7 @@ public class BuffQuery
         List<ActiveBuff> result = new List<ActiveBuff>();
 
         AddBuffsToList(result, storage.globalBuffs, true);
+        AddBuffsToList(result, storage.futureEnemyBuffs, true);
 
         foreach (KeyValuePair<EquipmentBag, List<ActiveBuff>> pair in storage.bagBuffs)
             AddBuffsToList(result, pair.Value, true);
@@ -82,10 +84,11 @@ public class BuffQuery
         if (enemy == null)
             return result;
 
-        if (!storage.enemyBuffs.ContainsKey(enemy))
-            return result;
+        // 미래 적 포함 버프는 모든 적에게 적용되는 적 버프라서 같이 보여줌.
+        AddBuffsToList(result, storage.futureEnemyBuffs, visibleOnly);
 
-        AddBuffsToList(result, storage.enemyBuffs[enemy], visibleOnly);
+        if (storage.enemyBuffs.ContainsKey(enemy))
+            AddBuffsToList(result, storage.enemyBuffs[enemy], visibleOnly);
 
         return result;
     }

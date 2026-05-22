@@ -7,6 +7,7 @@ public class InitManager : MonoBehaviour
     public ItemUseManager itemUseManager;
     public ShopManager shopManager;
     public BuffManager buffManager;
+    public BuffSkillManager buffSkillManager;
 
     [Header("UI")]
     public SkillTreeUI skillTreeUI;
@@ -18,6 +19,7 @@ public class InitManager : MonoBehaviour
         itemUseManager.Init();
         shopManager.InitShop();
         buffManager.ClearAllBuffs();
+        buffSkillManager.ExecuteAllRegisteredBuffItems(buffSkillManager.gameObject, 0);
         EnemyManager enemyManager = EnemyManager.instance;
         enemyManager.KillAllEnemies();
         enemyManager.Init(plant.plantData.enemies);

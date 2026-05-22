@@ -8,7 +8,12 @@ public enum BuffTarget
     All,
 
     EnemyInRange,
-    AllEnemies
+
+    // 지금 살아있는 적에게만 적용
+    AllEnemies,
+
+    // 지금 살아있는 적 + 이후 새로 스폰되는 적까지 적용
+    AllEnemiesIncludingFuture
 }
 
 [CreateAssetMenu(
@@ -22,7 +27,6 @@ public class BuffEffect : ItemEffectData
 
     [Tooltip("버프를 발생시킨 아이템 자신도 이 버프를 받을지")]
     public bool includeSelf = false;
-
 
     [Header("UI")]
     public bool showInUI = true;
@@ -47,5 +51,11 @@ public class BuffEffect : ItemEffectData
         context.buffManager.RegisterBuff(this, context);
     }
 
-    public EnemyBuffStat GetEnemyBuffStat() { return bonus.enemyBuffStat; } 
+    public EnemyBuffStat GetEnemyBuffStat()
+    {
+        if (bonus == null)
+            return null;
+
+        return bonus.enemyBuffStat;
+    }
 }

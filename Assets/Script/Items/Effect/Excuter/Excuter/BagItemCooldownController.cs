@@ -47,9 +47,9 @@ public class BagItemCooldownController
         ClearSlotPreparation();
     }
 
-    public void StartPreparationCooldownIfNeeded(int slotIndex, InventoryItem item)
+    public void StartPreparationCooldownIfNeeded(int slotIndex, ItemData item)
     {
-        if (item == null || item.itemData == null)
+        if (item == null || item == null)
             return;
         if (slotPreparationStarted == null)
             return;
@@ -58,7 +58,7 @@ public class BagItemCooldownController
         if (slotPreparationStarted[slotIndex])
             return;
 
-        float cooldown = Mathf.Max(0f, item.itemData.cooldown);
+        float cooldown = Mathf.Max(0f, item.cooldown);
 
         if (slotCooldownEndTimes != null && slotIndex >= 0 && slotIndex < slotCooldownEndTimes.Length)
             slotCooldownEndTimes[slotIndex] = Time.time + cooldown;

@@ -16,6 +16,9 @@ public class BuffTicker
         if (TickList(storage.globalBuffs, deltaTime))
             changed = true;
 
+        if (TickList(storage.futureEnemyBuffs, deltaTime))
+            changed = true;
+
         if (TickDictionary(storage.bagBuffs, deltaTime))
             changed = true;
 

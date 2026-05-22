@@ -48,8 +48,13 @@ public class BuffStatCalculator
 
         EnemyStat result = baseStat.Clone();
 
+        // 기존 글로벌 버프
         ApplyEnemyBuffs(result, storage.globalBuffs);
 
+        // 현재 적 + 미래 신규 적까지 적용되는 버프
+        ApplyEnemyBuffs(result, storage.futureEnemyBuffs);
+
+        // 특정 적에게 직접 등록된 버프
         if (enemy != null && storage.enemyBuffs.ContainsKey(enemy))
         {
             ApplyEnemyBuffs(
@@ -147,9 +152,7 @@ public class BuffStatCalculator
             int stackCount = Mathf.Max(1, activeBuff.stack);
 
             for (int stackIndex = 0; stackIndex < stackCount; stackIndex++)
-            {
                 applyAction(activeBuff.buffStat, target);
-            }
         }
     }
 
@@ -174,9 +177,7 @@ public class BuffStatCalculator
             int stackCount = Mathf.Max(1, activeBuff.stack);
 
             for (int stackIndex = 0; stackIndex < stackCount; stackIndex++)
-            {
                 activeBuff.buffStat.ApplyToEnemyStat(target);
-            }
         }
     }
 
