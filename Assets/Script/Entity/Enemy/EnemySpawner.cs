@@ -38,21 +38,32 @@ public class EnemySpawner : MonoBehaviour
         Vector2 dir = Random.insideUnitCircle.normalized;
         Vector2 spawnPos = dir * spawnDistance;
 
-        GameObject spawnedEnemy = Instantiate(
-            enemyPrefab,
-            spawnPos,
-            Quaternion.identity
-        );
+        GameObject spawnedEnemy = null;
+
+        if (ObjectPoolManager.instance != null)
+        {
+            spawnedEnemy = ObjectPoolManager.instance.Spawn(
+                enemyPrefab,
+                spawnPos,
+                Quaternion.identity
+            );
+        }
+        else
+        {
+            spawnedEnemy = Instantiate(
+                enemyPrefab,
+                spawnPos,
+                Quaternion.identity
+            );
+        }
+
+        if (spawnedEnemy == null)
+            return;
 
         Enemy enemy = spawnedEnemy.GetComponent<Enemy>();
 
         if (enemy != null)
-        {
-            enemy.Init(
-                targetPlant,
-                buffManager
-            );
-        }
+            enemy.Init(targetPlant, buffManager);
 
         if (EnemyManager.instance != null)
             EnemyManager.instance.RegisterEnemy(spawnedEnemy);

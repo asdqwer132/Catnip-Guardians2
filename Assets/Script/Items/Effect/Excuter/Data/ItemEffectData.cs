@@ -22,6 +22,7 @@ public abstract class ItemEffectData : ScriptableObject
 
     public abstract void ExecuteEffect(ItemEffectContext context);
 
+    #region Impact
     protected virtual void PlayImpactVfx(ItemEffectContext context)
     {
         if (impactVfxPrefab == null)
@@ -30,11 +31,7 @@ public abstract class ItemEffectData : ScriptableObject
         Vector3 position = context.targetPosition;
         position.z = 0f;
 
-        ImpactVfxInstance impact = Instantiate(
-            impactVfxPrefab,
-            position,
-            Quaternion.identity
-        );
+        ImpactVfxInstance impact = Instantiate(impactVfxPrefab, position, Quaternion.identity);
 
         impact.Init(
             effectData: this,
@@ -45,12 +42,7 @@ public abstract class ItemEffectData : ScriptableObject
             useAnimatorClipLifeTime: useAnimatorClipLifeTime
         );
     }
-
-    public Vector3 GetCurrentImpactScale(
-        ItemEffectContext context,
-        Vector3 baseScale,
-        bool useRadiusScale
-    )
+    public Vector3 GetCurrentImpactScale(ItemEffectContext context, Vector3 baseScale, bool useRadiusScale)
     {
         Vector3 finalScale = baseScale;
 
@@ -61,10 +53,7 @@ public abstract class ItemEffectData : ScriptableObject
 
             float diameter = radius * 2f;
 
-            finalScale = Vector3.Scale(
-                finalScale,
-                new Vector3(diameter, diameter, 1f)
-            );
+            finalScale = Vector3.Scale(finalScale, new Vector3(diameter, diameter, 1f));
         }
 
         Vector3 additionalScale = GetAdditionalImpactScale(context);
@@ -72,14 +61,7 @@ public abstract class ItemEffectData : ScriptableObject
 
         return finalScale;
     }
-
-    protected virtual float GetImpactRadius(ItemEffectContext context)
-    {
-        return 1f;
-    }
-
-    protected virtual Vector3 GetAdditionalImpactScale(ItemEffectContext context)
-    {
-        return Vector3.one;
-    }
+    protected virtual float GetImpactRadius(ItemEffectContext context) { return 1f; }
+    protected virtual Vector3 GetAdditionalImpactScale(ItemEffectContext context) { return Vector3.one; }
+    #endregion
 }

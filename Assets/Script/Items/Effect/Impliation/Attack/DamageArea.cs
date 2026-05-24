@@ -8,16 +8,17 @@ public enum DamageApplyMode
     Periodic
 }
 
-public class DamageArea : MonoBehaviour
+public class DamageArea : MonoBehaviour, IDynamicBuffReceiver
 {
-    [Header("Area")]
+    private static readonly List<DamageArea> activeAreas =
+        new List<DamageArea>();
+
+    [Header("Componnet")]
     public CircleCollider2D circleCollider;
     public Transform rangeVisual;
 
-    [Header("Life Time")]
+    [Header("Refference")]
     public float lifeTime = 0.2f;
-
-    [Header("Hit Option")]
     public DamageApplyMode damageApplyMode = DamageApplyMode.HitOnce;
 
     [Min(0.01f)]
@@ -28,14 +29,13 @@ public class DamageArea : MonoBehaviour
     private float damage = 10f;
     private float radius = 1f;
     private float timer;
+    private bool useSnapshotAndDynamicBuff;
 
     private readonly HashSet<GameObject> hitObjects =
         new HashSet<GameObject>();
 
     private readonly Dictionary<GameObject, float> periodicTimers =
         new Dictionary<GameObject, float>();
-
-    private bool useSnapshotAndDynamicBuff;
 
     private AttackStat snapshotAttackStat;
     private ItemData sourceItemData;
@@ -59,35 +59,27 @@ public class DamageArea : MonoBehaviour
         ApplyRadius();
     }
 
-    public void Init(
-        float damage,
-        float radius,
-        float lifeTime,
-        DamageApplyMode damageApplyMode,
-        float damageInterval,
-        GameObject owner
-    )
+    private void OnEnable()
     {
-        useSnapshotAndDynamicBuff = false;
-
-        this.damage = damage;
-        this.radius = Mathf.Max(0.01f, radius);
-        this.lifeTime = Mathf.Max(0.01f, lifeTime);
-        this.damageApplyMode = damageApplyMode;
-        this.damageInterval = Mathf.Max(0.01f, damageInterval);
-        this.owner = owner;
-
-        snapshotAttackStat = null;
-        sourceItemData = null;
-        sourceBag = null;
-        buffManager = null;
-
-        timer = 0f;
-        hitObjects.Clear();
-        periodicTimers.Clear();
-
-        ApplyRadius();
+        if (!activeAreas.Contains(this))
+            activeAreas.Add(this);
     }
+
+    private void OnDisable()
+    {
+        activeAreas.Remove(this);
+        UnregisterDynamicBuffReceiver();
+    }
+
+    private void Update()
+    {
+        timer += Time.deltaTime;
+
+        if (timer >= lifeTime)
+            Destroy(gameObject);
+    }
+
+    #region Init
 
     public void InitWithSnapshotAndDynamicBuff(
         AttackStat snapshotAttackStat,
@@ -97,6 +89,8 @@ public class DamageArea : MonoBehaviour
         GameObject owner
     )
     {
+        UnregisterDynamicBuffReceiver();
+
         useSnapshotAndDynamicBuff = true;
 
         this.snapshotAttackStat = snapshotAttackStat;
@@ -109,19 +103,34 @@ public class DamageArea : MonoBehaviour
         hitObjects.Clear();
         periodicTimers.Clear();
 
-        RefreshStatFromSnapshotAndDynamicBuff();
+        RegisterDynamicBuffReceiver();
+
+        OnDynamicBuffChanged();
         ApplyRadius();
     }
 
-    private void Update()
+    private void RegisterDynamicBuffReceiver()
     {
-        if (useSnapshotAndDynamicBuff)
-            RefreshStatFromSnapshotAndDynamicBuff();
+        if (buffManager == null)
+            return;
 
-        timer += Time.deltaTime;
+        buffManager.RegisterDynamicBuffReceiver(this);
+    }
 
-        if (timer >= lifeTime)
-            Destroy(gameObject);
+    private void UnregisterDynamicBuffReceiver()
+    {
+        if (buffManager == null)
+            return;
+
+        buffManager.UnregisterDynamicBuffReceiver(this);
+    }
+
+    public void OnDynamicBuffChanged()
+    {
+        if (!useSnapshotAndDynamicBuff)
+            return;
+
+        RefreshStatFromSnapshotAndDynamicBuff();
     }
 
     private void RefreshStatFromSnapshotAndDynamicBuff()
@@ -177,28 +186,46 @@ public class DamageArea : MonoBehaviour
         transform.localScale = Vector3.one;
     }
 
+    public static void ClearAllActiveAreas()
+    {
+        for (int i = activeAreas.Count - 1; i >= 0; i--)
+        {
+            DamageArea area = activeAreas[i];
+
+            if (area == null)
+            {
+                activeAreas.RemoveAt(i);
+                continue;
+            }
+
+            if (area.circleCollider != null)
+                area.circleCollider.enabled = false;
+
+            area.UnregisterDynamicBuffReceiver();
+
+            area.gameObject.SetActive(false);
+            Destroy(area.gameObject);
+        }
+
+        activeAreas.Clear();
+    }
+
+    #endregion
+
+    #region SetAttackMode
+
     private void OnTriggerEnter2D(Collider2D other)
     {
-        RefreshDynamicStatIfNeeded();
-
         if (damageApplyMode == DamageApplyMode.HitOnce)
-        {
             TryHitOnce(other);
-        }
         else if (damageApplyMode == DamageApplyMode.EveryEnter)
-        {
             TryHitAlways(other);
-        }
         else if (damageApplyMode == DamageApplyMode.Periodic)
-        {
             TryHitPeriodicEnter(other);
-        }
     }
 
     private void OnTriggerStay2D(Collider2D other)
     {
-        RefreshDynamicStatIfNeeded();
-
         if (damageApplyMode != DamageApplyMode.Periodic)
             return;
 
@@ -216,13 +243,9 @@ public class DamageArea : MonoBehaviour
             periodicTimers.Remove(targetObj);
     }
 
-    private void RefreshDynamicStatIfNeeded()
-    {
-        if (!useSnapshotAndDynamicBuff)
-            return;
+    #endregion
 
-        RefreshStatFromSnapshotAndDynamicBuff();
-    }
+    #region Attack
 
     private void TryHitOnce(Collider2D other)
     {
@@ -324,6 +347,10 @@ public class DamageArea : MonoBehaviour
         return true;
     }
 
+    #endregion
+
+    #region GetObject
+
     private Enemy GetEnemy(Collider2D other)
     {
         if (other == null)
@@ -346,4 +373,6 @@ public class DamageArea : MonoBehaviour
 
         return other.gameObject;
     }
+
+    #endregion
 }

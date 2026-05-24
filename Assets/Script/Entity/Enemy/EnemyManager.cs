@@ -47,6 +47,7 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
+    #region Clear
     public void StopAllSpawners()
     {
         if (enemySpawners == null)
@@ -60,29 +61,6 @@ public class EnemyManager : MonoBehaviour
             }
         }
     }
-
-    public void RegisterEnemy(GameObject enemy)
-    {
-        if (enemy == null)
-            return;
-
-        if (!currentEnemies.Contains(enemy))
-        {
-            currentEnemies.Add(enemy);
-        }
-    }
-
-    public void RemoveEnemy(GameObject enemy)
-    {
-        if (enemy == null)
-            return;
-
-        if (currentEnemies.Contains(enemy))
-        {
-            currentEnemies.Remove(enemy);
-        }
-    }
-
     public void KillAllEnemies()
     {
         for (int i = currentEnemies.Count - 1; i >= 0; i--)
@@ -95,10 +73,25 @@ public class EnemyManager : MonoBehaviour
 
         currentEnemies.Clear();
     }
+    #endregion
 
-    public void Clear()
+    #region Register
+    public void RegisterEnemy(GameObject enemy)
     {
-        StopAllSpawners();
-        KillAllEnemies();
+        if (enemy == null)
+            return;
+
+        if (!currentEnemies.Contains(enemy))
+            currentEnemies.Add(enemy);
     }
+
+    public void RemoveEnemy(GameObject enemy)
+    {
+        if (enemy == null)
+            return;
+
+        if (currentEnemies.Contains(enemy))
+            currentEnemies.Remove(enemy);
+    }
+    #endregion
 }

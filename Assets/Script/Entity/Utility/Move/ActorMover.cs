@@ -19,6 +19,7 @@ public class ActorMover : MonoBehaviour
         speed = newSpeed;
     }
 
+    #region Move
     public void MoveTo(Transform target)
     {
         if (target == null)
@@ -30,12 +31,7 @@ public class ActorMover : MonoBehaviour
         Vector2 direction = target.position - transform.position;
         MoveDirection(direction);
     }
-
-    public void MoveToDistanceFromTarget(
-        Transform target,
-        float targetDistance,
-        float tolerance
-    )
+    public void MoveToDistanceFromTarget(Transform target, float targetDistance, float tolerance)
     {
         if (target == null)
         {
@@ -63,17 +59,10 @@ public class ActorMover : MonoBehaviour
         Vector2 directionToTarget = toTarget.normalized;
 
         if (distanceDifference > 0f)
-        {
-            // 너무 멀다 → 타겟 쪽으로 접근
             MoveDirection(directionToTarget);
-        }
         else
-        {
-            // 너무 가깝다 → 타겟 반대 방향으로 후퇴
             MoveDirection(-directionToTarget);
-        }
     }
-
     public void MoveDirection(Vector2 direction)
     {
         if (direction.sqrMagnitude <= 0.0001f)
@@ -92,10 +81,10 @@ public class ActorMover : MonoBehaviour
 
         transform.position += (Vector3)(direction * speed * Time.deltaTime);
     }
-
     public void Stop()
     {
         if (visual != null)
             visual.StopMove();
     }
+    #endregion
 }

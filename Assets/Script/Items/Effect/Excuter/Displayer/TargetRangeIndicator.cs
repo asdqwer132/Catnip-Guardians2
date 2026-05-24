@@ -17,10 +17,7 @@ public class IndicatorSpriteSet
     public Sprite sprite;
 
     [Header("Visual Size")]
-    [Tooltip("이 값이 클수록 같은 공격 범위여도 인디케이터 이미지가 더 크게 보입니다.")]
     public float sizeMultiplier = 1f;
-
-    [Tooltip("스프라이트 원본 기준 지름입니다. 보통 원형 스프라이트가 1유닛 크기면 1로 둡니다.")]
     public float baseSpriteDiameter = 1f;
 }
 
@@ -51,24 +48,7 @@ public class TargetRangeIndicator : MonoBehaviour
         ApplyRadiusScale();
     }
 
-    public void SetRadius(float radius)
-    {
-        currentRadius = Mathf.Max(0.01f, radius);
-
-        ApplySettingSprite();
-        ApplyRadiusScale();
-    }
-
-    public void ApplySettingSprite()
-    {
-        IndicatorSpriteSize size = IndicatorSpriteSize.Medium;
-
-        if (SettingManager.instance != null)
-            size = SettingManager.instance.GetIndicatorSpriteSize();
-
-        SetIndicatorSprite(size);
-    }
-
+    #region Sprite
     public void SetIndicatorSprite(IndicatorSpriteSize size)
     {
         if (spriteRenderer == null)
@@ -89,7 +69,15 @@ public class TargetRangeIndicator : MonoBehaviour
 
         ApplyRadiusScale();
     }
+    public void ApplySettingSprite()
+    {
+        IndicatorSpriteSize size = IndicatorSpriteSize.Medium;
 
+        if (SettingManager.instance != null)
+            size = SettingManager.instance.GetIndicatorSpriteSize();
+
+        SetIndicatorSprite(size);
+    }
     private IndicatorSpriteSet GetSpriteSet(IndicatorSpriteSize size)
     {
         if (indicatorSprites == null)
@@ -106,7 +94,16 @@ public class TargetRangeIndicator : MonoBehaviour
 
         return null;
     }
+    #endregion
 
+    #region Radius
+    public void SetRadius(float radius)
+    {
+        currentRadius = Mathf.Max(0.01f, radius);
+
+        ApplySettingSprite();
+        ApplyRadiusScale();
+    }
     private void ApplyRadiusScale()
     {
         if (rangeVisual == null)
@@ -127,10 +124,7 @@ public class TargetRangeIndicator : MonoBehaviour
         float scale = diameter / baseDiameter;
         scale *= sizeMultiplier;
 
-        rangeVisual.localScale = new Vector3(
-            scale,
-            scale,
-            1f
-        );
+        rangeVisual.localScale = new Vector3(scale, scale, 1f);
     }
+    #endregion
 }

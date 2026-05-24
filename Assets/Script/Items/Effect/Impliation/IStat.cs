@@ -6,5 +6,4 @@ public interface IGameStat<T>
 public interface IBuffStat<T>
 {
     void ApplyTo(T target);
-    string GetSummaryText();
 }

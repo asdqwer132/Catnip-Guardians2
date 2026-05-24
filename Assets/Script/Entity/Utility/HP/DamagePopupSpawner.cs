@@ -32,11 +32,7 @@ public class DamagePopupSpawner : MonoBehaviour
             spawnPosition.y += Random.Range(0f, randomYRange);
         }
 
-        DamagePopup popup = Instantiate(
-            damagePopupPrefab,
-            spawnPosition,
-            Quaternion.identity
-        );
+        DamagePopup popup = Instantiate(damagePopupPrefab, spawnPosition, Quaternion.identity);
 
         popup.Init(damage);
     }

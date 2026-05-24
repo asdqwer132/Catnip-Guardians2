@@ -1,31 +1,19 @@
 using System;
 using UnityEngine;
 
-public enum BuffStackMode
-{
-    Refresh,
-    Stack
-}
-
 [Serializable]
 public class BuffInfo : IGameStat<BuffInfo>
 {
-    [Header("Time")]
-    [Min(0.01f)]
-    public float duration = 1f;
-
-    [Header("Stack")]
+    [Header("Stackable")]
     public BuffStackMode stackMode = BuffStackMode.Refresh;
-
     [Min(1)]
     public int maxStack = 1;
 
-    [Header("Apply Timing")]
-    public BuffApplyTiming applyTiming = BuffApplyTiming.Snapshot;
-
     [Header("Use Limit")]
+    public BuffApplyTiming applyTiming = BuffApplyTiming.Snapshot;
     public BuffUseLimitType useLimitType = BuffUseLimitType.Time;
-
+    [Min(0.01f)]
+    public float duration = 1f;
     [Min(1)]
     public int maxUseCount = 1;
 
@@ -71,18 +59,5 @@ public class BuffInfoBuffStat : IBuffStat<BuffInfo>
         target.duration *= 1f + durationM;
 
         target.Clamp();
-    }
-
-    public string GetSummaryText()
-    {
-        string result = "";
-
-        if (duration != 0f)
-            result += "버프시간 +" + duration + " ";
-
-        if (durationM != 0f)
-            result += "버프시간 x" + (1f + durationM).ToString("0.##") + " ";
-
-        return result.Trim();
     }
 }

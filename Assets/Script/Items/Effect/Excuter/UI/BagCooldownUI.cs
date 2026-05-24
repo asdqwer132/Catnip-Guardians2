@@ -26,16 +26,10 @@ public class BagCooldownUI : MonoBehaviour
             return;
 
         if (slotUIParent == null)
-        {
-            Debug.LogWarning(name + "의 Slot UI Parent가 없습니다.");
             return;
-        }
 
         if (slotUIPrefab == null)
-        {
-            Debug.LogWarning(name + "의 Slot UI Prefab이 없습니다.");
             return;
-        }
 
         int slotCount = manager.bag.equippedItems.Count;
 
@@ -70,9 +64,7 @@ public class BagCooldownUI : MonoBehaviour
     private void UpdateSelectedUI(bool isSelected)
     {
         if (selectedFrame != null)
-        {
             selectedFrame.SetActive(isSelected);
-        }
     }
 
     private void UpdateBagCooldown(BagItemUseManager manager)

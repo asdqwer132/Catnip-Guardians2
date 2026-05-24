@@ -6,34 +6,31 @@ public class ActiveBuff
 {
     [Header("Buff")]
     public BuffStat buffStat;
+    public bool includeSelf;
+    public bool showInUI = true;
 
     [Header("Source Info")]
     public ItemData sourceItemData;
     public EquipmentBag sourceBag;
     public ItemEffectData sourceEffectData;
 
-    [Header("Option")]
-    public bool includeSelf;
-    public bool showInUI = true;
-
     [Header("Apply Timing")]
     public BuffApplyTiming applyTiming = BuffApplyTiming.Snapshot;
-
-    [Header("Use Limit")]
     public BuffUseLimitType useLimitType = BuffUseLimitType.Time;
 
     [Header("Use Count")]
     public int maxUseCount = 1;
     public int remainUseCount = 1;
 
+    [Header("Time")]
+    public float maxTime;
+    public float remainTime;
+
     [Header("Stack")]
     public BuffStackMode stackMode;
     public int stack = 1;
     public int maxStack = 1;
 
-    [Header("Time")]
-    public float maxTime;
-    public float remainTime;
 
     public bool IsExpired
     {
@@ -149,9 +146,7 @@ public class ActiveBuff
                 stack = maxStack;
         }
         else
-        {
-            stack = 1;
-        }
+            stack = 1;       
 
         RefreshTime();
 
@@ -175,30 +170,8 @@ public class ActiveBuff
         return remainTime / maxTime;
     }
 
-    public string GetSourceItemName()
+    public bool IsSameBuff(ItemData itemData, EquipmentBag bag, ItemEffectData effectData)
     {
-        if (sourceItemData == null)
-            return "Unknown Item";
-
-        return sourceItemData.dataName;
-    }
-
-    public string GetSourceBagName()
-    {
-        if (sourceBag == null)
-            return "Unknown Bag";
-
-        return sourceBag.name;
-    }
-
-    public bool IsSameBuff(
-        ItemData itemData,
-        EquipmentBag bag,
-        ItemEffectData effectData
-    )
-    {
-        return sourceItemData == itemData &&
-               sourceBag == bag &&
-               sourceEffectData == effectData;
+        return sourceItemData == itemData && sourceBag == bag && sourceEffectData == effectData;
     }
 }

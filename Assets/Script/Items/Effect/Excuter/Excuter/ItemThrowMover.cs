@@ -9,27 +9,20 @@ public class ItemThrowMover : MonoBehaviour
     [Header("Move")]
     [Tooltip("자동 계산됨. 도착 시간과 X거리 기준")]
     public float speed = 10f;
-
     [Tooltip("목표 지점까지 도착하는 시간")]
     public float arriveTime = 0.6f;
-
     public float maxMoveTime = 3f;
 
     [Header("Projectile Arc")]
     [Tooltip("최고점 높이")]
     public float arcHeight = 1.5f;
-
     public bool autoArcHeightByDistance = true;
-
     [Tooltip("자동 높이 최소값")]
     public float minArcHeight = 0.6f;
-
     [Tooltip("자동 높이 최대값")]
     public float maxArcHeight = 3f;
-
     [Tooltip("X거리 기준으로 높이 계산")]
     public float arcHeightDistanceMultiplier = 0.25f;
-
     [Range(0.1f, 0.9f)]
     [Tooltip("최고점 위치. 0.5면 가운데, 0.35면 초반에 높이 뜸")]
     public float arcPeakProgress = 0.45f;
@@ -43,14 +36,11 @@ public class ItemThrowMover : MonoBehaviour
 
     private Vector3 startPosition;
     private Vector3 targetPosition;
-
     private float timer;
     private float moveDuration;
     private float horizontalDistance;
     private float finalArcHeight;
-
     private float peakY;
-
     private bool isMoving;
     private Action onArrive;
 
@@ -60,70 +50,37 @@ public class ItemThrowMover : MonoBehaviour
             spriteRenderer = GetComponentInChildren<SpriteRenderer>();
     }
 
-    public void Init(
-        Vector3 startPosition,
-        Vector3 targetPosition,
-        Sprite itemSprite,
-        Action onArrive
-    )
+    void Update()
     {
-        SetSprite(itemSprite);
-        InitMove(startPosition, targetPosition, arriveTime, onArrive);
-    }
-
-    public void Init(
-        Vector3 startPosition,
-        Vector3 targetPosition,
-        Action onArrive
-    )
-    {
-        InitMove(startPosition, targetPosition, arriveTime, onArrive);
-    }
-
-    public void Init(
-        Vector3 startPosition,
-        Vector3 targetPosition,
-        Sprite itemSprite,
-        float arriveTime,
-        Action onArrive
-    )
-    {
-        SetSprite(itemSprite);
-        InitMove(startPosition, targetPosition, arriveTime, onArrive);
-    }
-
-    public void Init(
-        Vector3 startPosition,
-        Vector3 targetPosition,
-        float arriveTime,
-        Action onArrive
-    )
-    {
-        InitMove(startPosition, targetPosition, arriveTime, onArrive);
-    }
-
-    private void SetSprite(Sprite itemSprite)
-    {
-        if (itemSprite == null)
+        if (!isMoving)
             return;
 
-        if (spriteRenderer == null)
-            spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        timer += Time.deltaTime;
 
-        if (spriteRenderer == null)
+        float progress = timer / moveDuration;
+
+        if (progress >= 1f)
         {
-            GameObject visualObj = new GameObject("Visual");
-            visualObj.transform.SetParent(transform);
-            visualObj.transform.localPosition = Vector3.zero;
-            visualObj.transform.localRotation = Quaternion.identity;
-            visualObj.transform.localScale = Vector3.one;
-
-            spriteRenderer = visualObj.AddComponent<SpriteRenderer>();
+            Arrive();
+            return;
         }
 
-        spriteRenderer.sprite = itemSprite;
+        progress = Mathf.Clamp01(progress);
+
+        MoveProjectileArc(progress);
+        UpdateRotation();
     }
 
+    public void Init(
+        Vector3 startPosition,
+        Vector3 targetPosition,
+        Sprite itemSprite,
+        Action onArrive
+    )
+    {
+        SetSprite(itemSprite);
+        InitMove(startPosition, targetPosition, arriveTime, onArrive);
+    }
     private void InitMove(
         Vector3 startPosition,
         Vector3 targetPosition,
@@ -149,34 +106,33 @@ public class ItemThrowMover : MonoBehaviour
 
         finalArcHeight = GetFinalArcHeight();
 
-        // 핵심:
-        // 최고점은 시작Y/도착Y 중 더 높은 곳에서 arcHeight만큼 위
         peakY = Mathf.Max(this.startPosition.y, this.targetPosition.y) + finalArcHeight;
 
         timer = 0f;
         isMoving = true;
     }
-
-    void Update()
+    private void SetSprite(Sprite itemSprite)
     {
-        if (!isMoving)
+        if (itemSprite == null)
             return;
 
-        timer += Time.deltaTime;
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
-        float progress = timer / moveDuration;
-
-        if (progress >= 1f)
+        if (spriteRenderer == null)
         {
-            Arrive();
-            return;
+            GameObject visualObj = new GameObject("Visual");
+            visualObj.transform.SetParent(transform);
+            visualObj.transform.localPosition = Vector3.zero;
+            visualObj.transform.localRotation = Quaternion.identity;
+            visualObj.transform.localScale = Vector3.one;
+
+            spriteRenderer = visualObj.AddComponent<SpriteRenderer>();
         }
 
-        progress = Mathf.Clamp01(progress);
-
-        MoveProjectileArc(progress);
-        UpdateRotation();
+        spriteRenderer.sprite = itemSprite;
     }
+
 
     private void MoveProjectileArc(float progress)
     {
@@ -208,11 +164,6 @@ public class ItemThrowMover : MonoBehaviour
         float y0 = startPosition.y;
         float y1 = targetPosition.y;
         float yp = peakY;
-
-        // 3점을 지나는 포물선
-        // p = 0   → 시작 Y
-        // p = k   → 최고점 Y
-        // p = 1   → 도착 Y
 
         float l0 = ((p - k) * (p - 1f)) / ((0f - k) * (0f - 1f));
         float lp = ((p - 0f) * (p - 1f)) / ((k - 0f) * (k - 1f));

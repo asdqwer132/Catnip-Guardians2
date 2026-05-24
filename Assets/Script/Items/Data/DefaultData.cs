@@ -8,7 +8,6 @@ public class DefaultData : ScriptableObject, IUnlockable
     public Sprite icon;
     [TextArea] public string description;
 
-
     [Header("Id Info")]
     public string dataId;
     public DataType dataType;
@@ -17,6 +16,7 @@ public class DefaultData : ScriptableObject, IUnlockable
     public bool RequireUnlock => requireUnlock;
     public DataType UnlockType => dataType;
     public string UnlockId => dataId;
+
 #if UNITY_EDITOR
     private void OnValidate()
     {

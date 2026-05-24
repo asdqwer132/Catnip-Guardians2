@@ -33,6 +33,7 @@ public class Health : MonoBehaviour
         BroadcastHpChanged();
     }
 
+    #region Event
     public void TakeDamage(float damage)
     {
         if (IsDead)
@@ -76,6 +77,7 @@ public class Health : MonoBehaviour
         BroadcastHpChanged();
         OnDead?.Invoke();
     }
+    #endregion
 
     void BroadcastHpChanged()
     {

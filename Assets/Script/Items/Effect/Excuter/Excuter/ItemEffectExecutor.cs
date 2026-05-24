@@ -5,7 +5,6 @@ public class ItemEffectExecutor : MonoBehaviour
     [Header("Managers")]
     public BuffManager buffManager;
 
-
     public void ExecuteItemEffect(
         ItemData itemData,
         Vector3 usePosition,
@@ -34,30 +33,9 @@ public class ItemEffectExecutor : MonoBehaviour
         );
 
         ExecuteItemEffectDatas(itemData, context);
-
-        Debug.Log(itemData.dataName + " ¿Ã∆Â∆Æ Ω««‡");
     }
 
-    public void ExecuteItemEffectWithContext(
-        ItemData itemData,
-        ItemEffectContext context
-    )
-    {
-        if (itemData == null)
-            return;
-
-        if (context == null)
-            return;
-
-        ExecuteItemEffectDatas(itemData, context);
-
-        Debug.Log(itemData.dataName + " ¿Ã∆Â∆Æ Ω««‡");
-    }
-
-    private void ExecuteItemEffectDatas(
-        ItemData itemData,
-        ItemEffectContext context
-    )
+    private void ExecuteItemEffectDatas(ItemData itemData, ItemEffectContext context)
     {
         if (itemData == null)
             return;
@@ -78,14 +56,6 @@ public class ItemEffectExecutor : MonoBehaviour
             context.SetCurrentEffect(effectData);
             effectData.Execute(context);
         }
-    }
-
-    public static bool CanExecuteItemEffect(InventoryItem inventoryItem)
-    {
-        if (inventoryItem == null || inventoryItem.itemData == null)
-            return false;
-
-        return CanExecuteItemEffect(inventoryItem.itemData);
     }
 
     public static bool CanExecuteItemEffect(ItemData itemData)

@@ -24,7 +24,6 @@ public class BagSlotCooldownUI : MonoBehaviour
 
         itemIcon.enabled = true;
 
-        // ItemData에 icon 변수가 있다면 사용
         itemIcon.sprite = item.itemData.icon;
     }
 
@@ -61,18 +60,12 @@ public class BagSlotCooldownUI : MonoBehaviour
         }
 
         if (cooldownFill != null)
-        {
             cooldownFill.fillAmount = 0f;
-        }
 
         if (cooldownText != null)
-        {
             cooldownText.text = "";
-        }
 
         if (nextUseImage != null)
-        {
             nextUseImage.gameObject.SetActive(false);
-        }
     }
 }

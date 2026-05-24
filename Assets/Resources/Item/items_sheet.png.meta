@@ -3638,7 +3638,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: items_sheet_0
+      name: WeaponWoodSword
       rect:
         serializedVersion: 2
         x: 0
@@ -3660,7 +3660,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: items_sheet_1
+      name: WeaponStoneSword
       rect:
         serializedVersion: 2
         x: 16
@@ -3704,7 +3704,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: sword
+      name: WeaponStealSword
       rect:
         serializedVersion: 2
         x: 48
@@ -5134,7 +5134,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: items_sheet_68
+      name: WeaponRubyHammer
       rect:
         serializedVersion: 2
         x: 512
@@ -5992,7 +5992,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: items_sheet_107
+      name: WeaponStealSide
       rect:
         serializedVersion: 2
         x: 560
@@ -6234,7 +6234,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: items_sheet_118
+      name: WeaponGoldSpear
       rect:
         serializedVersion: 2
         x: 160
@@ -6586,7 +6586,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: items_sheet_134
+      name: WeaponGoldMage
       rect:
         serializedVersion: 2
         x: 416
@@ -6608,7 +6608,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: items_sheet_135
+      name: WeaponShilverMage
       rect:
         serializedVersion: 2
         x: 432
@@ -22822,7 +22822,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Artifact
+      name: WeaponArtifact
       rect:
         serializedVersion: 2
         x: 128
@@ -31021,7 +31021,6 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":16.0,"y":16.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Artifact: 1404950666
       Bag: 818217597
       Core: -2130251977
       Craft: 2089382225
@@ -31031,13 +31030,20 @@ TextureImporter:
       Seed: -710504842
       Shop: 1738407581
       Skill: 257659411
+      WeaponArtifact: 1404950666
+      WeaponGoldMage: 1840628419
+      WeaponGoldSpear: 491545947
+      WeaponRubyHammer: 1945242275
+      WeaponShilverMage: -1718948376
+      WeaponStealSide: -1972888971
+      WeaponStealSword: 1797939398
+      WeaponStoneSword: -197616818
+      WeaponWoodSword: 1784169712
       bag2: -836772957
       bag3: 2076595756
       bag4: 1467950389
       bag5: -216223674
       crystal: -2023129094
-      items_sheet_0: 1784169712
-      items_sheet_1: -197616818
       items_sheet_10: -2008102719
       items_sheet_100: -1841108941
       items_sheet_1000: -693793751
@@ -31115,7 +31121,6 @@ TextureImporter:
       items_sheet_1067: 528038342
       items_sheet_1068: 33292843
       items_sheet_1069: -1297505039
-      items_sheet_107: -1972888971
       items_sheet_1070: -1699222302
       items_sheet_1071: 260252582
       items_sheet_1072: 83833673
@@ -31236,7 +31241,6 @@ TextureImporter:
       items_sheet_1177: 775479279
       items_sheet_1178: 2077558108
       items_sheet_1179: 1711986661
-      items_sheet_118: 491545947
       items_sheet_1180: 334017551
       items_sheet_1181: 414229625
       items_sheet_1182: -833349724
@@ -31317,8 +31321,6 @@ TextureImporter:
       items_sheet_131: -1123561305
       items_sheet_132: -2053043864
       items_sheet_133: 452948039
-      items_sheet_134: 1840628419
-      items_sheet_135: -1718948376
       items_sheet_136: 1050949704
       items_sheet_137: -1369889439
       items_sheet_138: -1761745627
@@ -31915,7 +31917,6 @@ TextureImporter:
       items_sheet_677: -65323309
       items_sheet_678: -707215342
       items_sheet_679: -267496429
-      items_sheet_68: 1945242275
       items_sheet_682: -1516873450
       items_sheet_683: -198387358
       items_sheet_684: 380362695
@@ -32264,7 +32265,6 @@ TextureImporter:
       items_sheet_997: 1696723569
       items_sheet_998: 1267889428
       items_sheet_999: 1540145354
-      sword: 1797939398
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

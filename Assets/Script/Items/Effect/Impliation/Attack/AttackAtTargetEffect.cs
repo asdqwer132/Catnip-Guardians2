@@ -21,61 +21,20 @@ public class AttackAtTargetEffect : ItemEffectData
             return;
 
         if (attackStat == null)
-        {
-            Debug.LogWarning(context.sourceItemData.dataName + " 공격 스탯이 없습니다.");
             return;
-        }
-
+        
         GameObject attackPrefab = overrideAttackPrefab;
 
         if (attackPrefab == null)
-        {
-            Debug.LogWarning(context.sourceItemData.dataName + " 공격 프리팹이 없습니다.");
             return;
-        }
 
         Vector3 spawnPosition = context.targetPosition;
         spawnPosition.z = 0f;
 
-        GameObject obj = Instantiate(
-            attackPrefab,
-            spawnPosition,
-            Quaternion.identity
-        );
+        GameObject obj = Instantiate(attackPrefab, spawnPosition, Quaternion.identity);
 
         ApplyDamageArea(obj, context);
     }
-
-    protected override float GetImpactRadius(ItemEffectContext context)
-    {
-        AttackStat currentStat = GetCurrentAttackStat(context);
-
-        if (currentStat == null)
-            return 1f;
-
-        return currentStat.attackRange;
-    }
-
-    private AttackStat GetCurrentAttackStat(ItemEffectContext context)
-    {
-        if (attackStat == null)
-            return null;
-
-        if (context == null || context.buffManager == null)
-            return attackStat;
-
-        AttackStat buffedStat = context.buffManager.GetBuffedAttackStat(
-            attackStat,
-            context.sourceItemData,
-            context.sourceBag
-        );
-
-        if (buffedStat != null)
-            return buffedStat;
-
-        return attackStat;
-    }
-
     private void ApplyDamageArea(GameObject obj, ItemEffectContext context)
     {
         if (obj == null || context == null)
@@ -113,5 +72,35 @@ public class AttackAtTargetEffect : ItemEffectData
             buffManager: context.buffManager,
             owner: context.owner
         );
+    }
+
+    protected override float GetImpactRadius(ItemEffectContext context)
+    {
+        AttackStat currentStat = GetCurrentAttackStat(context);
+
+        if (currentStat == null)
+            return 1f;
+
+        return currentStat.attackRange;
+    }
+
+    private AttackStat GetCurrentAttackStat(ItemEffectContext context)
+    {
+        if (attackStat == null)
+            return null;
+
+        if (context == null || context.buffManager == null)
+            return attackStat;
+
+        AttackStat buffedStat = context.buffManager.GetBuffedAttackStat(
+            attackStat,
+            context.sourceItemData,
+            context.sourceBag
+        );
+
+        if (buffedStat != null)
+            return buffedStat;
+
+        return attackStat;
     }
 }

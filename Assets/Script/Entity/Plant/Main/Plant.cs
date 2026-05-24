@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class Plant : HealthActor
 {
+    [Header("PlantData")]
     public PlantUI plantUI;
-
-    public GameManager gameManager;
     public PlantData plantData;
 
-    [Header("Growth")]
+    [Header("Manager")]
+    public GameManager gameManager;
     public GrowManager growManager;
 
     public void Init()
@@ -33,7 +33,7 @@ public class Plant : HealthActor
         }
     }
 
-
+    #region OnEvent
     protected override void OnDeathStarted()
     {
         if (growManager != null)
@@ -44,4 +44,5 @@ public class Plant : HealthActor
     }
 
     protected override void OnDeathFinished() { }
+    #endregion
 }

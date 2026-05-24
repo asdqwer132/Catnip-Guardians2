@@ -64,35 +64,4 @@ public class AttackBuffStat : AttackStat, IBuffStat<AttackStat>
 
         target.Clamp();
     }
-
-    public string GetSummaryText()
-    {
-        string result = "";
-
-        if (attackPower != 0f)
-            result += "공격력 +" + attackPower + " ";
-
-        if (attackPowerM != 0f)
-            result += "공격력 x" + (1f + attackPowerM).ToString("0.##") + " ";
-
-        if (attackRange != 0f)
-            result += "범위 +" + attackRange + " ";
-
-        if (attackRangeM != 0f)
-            result += "범위 x" + (1f + attackRangeM).ToString("0.##") + " ";
-
-        if (attackLifeTime != 0f)
-            result += "지속 +" + attackLifeTime + " ";
-
-        if (attackLifeTimeM != 0f)
-            result += "지속 x" + (1f + attackLifeTimeM).ToString("0.##") + " ";
-
-        if (damageInterval != 0f)
-            result += "간격 +" + damageInterval + " ";
-
-        if (damageIntervalM != 0f)
-            result += "간격 x" + (1f + damageIntervalM).ToString("0.##") + " ";
-
-        return result.Trim();
-    }
 }

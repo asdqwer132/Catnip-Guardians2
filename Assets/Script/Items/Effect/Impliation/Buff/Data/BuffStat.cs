@@ -38,34 +38,4 @@ public class BuffStat
 
         buffStat.ApplyTo(target);
     }
-
-    public string GetSummaryText()
-    {
-        string result = "";
-
-        AppendSummary(ref result, attackBuffStat);
-        AppendSummary(ref result, buffInfoBuffStat);
-        AppendSummary(ref result, enemyBuffStat);
-
-        if (string.IsNullOrEmpty(result))
-            result = "스탯 변화 없음";
-
-        return result;
-    }
-
-    private void AppendSummary<T>(ref string result, IBuffStat<T> buffStat)
-    {
-        if (buffStat == null)
-            return;
-
-        string text = buffStat.GetSummaryText();
-
-        if (string.IsNullOrEmpty(text))
-            return;
-
-        if (!string.IsNullOrEmpty(result))
-            result += " / ";
-
-        result += text;
-    }
 }

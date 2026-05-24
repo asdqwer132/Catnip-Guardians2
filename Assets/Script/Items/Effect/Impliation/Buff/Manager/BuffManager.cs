@@ -24,6 +24,9 @@ public class BuffManager : MonoBehaviour
     private BuffRegistrar registrar;
     private BuffQuery query;
 
+    private readonly List<IDynamicBuffReceiver> dynamicBuffReceivers =
+        new List<IDynamicBuffReceiver>();
+
     public BuffStorage Storage => storage;
 
     private void Awake()
@@ -46,11 +49,7 @@ public class BuffManager : MonoBehaviour
         bool changed = ticker.Tick(Time.deltaTime);
 
         if (changed)
-        {
-            RefreshAllRegisteredEnemyStats();
-            RefreshUI();
-            RefreshDebugInspector();
-        }
+            NotifyBuffChanged();
 
         if (useDebugInspector)
             RefreshDebugInspector();
@@ -66,9 +65,7 @@ public class BuffManager : MonoBehaviour
 
         registrar.RegisterBuff(effect, context);
 
-        RefreshAllRegisteredEnemyStats();
-        RefreshUI();
-        RefreshDebugInspector();
+        NotifyBuffChanged();
     }
 
     public AttackStat GetBuffedAttackStat(
@@ -104,9 +101,15 @@ public class BuffManager : MonoBehaviour
             true
         );
 
-        RefreshAllRegisteredEnemyStats();
-        RefreshUI();
-        RefreshDebugInspector();
+        /*
+         * UseCount 버프는 ConsumeUse()로 0이 되어도
+         * 시간형처럼 다음 프레임까지 기다릴 필요가 없음.
+         * Tick(0f)를 한 번 돌려서 만료된 UseCount 버프를 즉시 제거한다.
+         */
+        if (ticker != null)
+            ticker.Tick(0f);
+
+        NotifyBuffChanged();
 
         return result;
     }
@@ -179,8 +182,26 @@ public class BuffManager : MonoBehaviour
 
         storage.UnregisterEnemy(enemy);
 
-        RefreshUI();
-        RefreshDebugInspector();
+        NotifyBuffChanged();
+    }
+
+    public void RegisterDynamicBuffReceiver(IDynamicBuffReceiver receiver)
+    {
+        if (receiver == null)
+            return;
+
+        if (dynamicBuffReceivers.Contains(receiver))
+            return;
+
+        dynamicBuffReceivers.Add(receiver);
+    }
+
+    public void UnregisterDynamicBuffReceiver(IDynamicBuffReceiver receiver)
+    {
+        if (receiver == null)
+            return;
+
+        dynamicBuffReceivers.Remove(receiver);
     }
 
     public List<ActiveBuff> GetAllActiveBuffs()
@@ -259,8 +280,7 @@ public class BuffManager : MonoBehaviour
 
         enemy.RefreshBuffedStat();
 
-        RefreshUI();
-        RefreshDebugInspector();
+        NotifyBuffChanged();
     }
 
     public void ClearAllBuffs()
@@ -270,8 +290,32 @@ public class BuffManager : MonoBehaviour
 
         storage.ClearAll();
 
+        NotifyBuffChanged();
+    }
+
+    private void NotifyBuffChanged()
+    {
+        RefreshAllRegisteredEnemyStats();
         RefreshUI();
         RefreshDebugInspector();
+
+        NotifyDynamicBuffReceivers();
+    }
+
+    private void NotifyDynamicBuffReceivers()
+    {
+        for (int i = dynamicBuffReceivers.Count - 1; i >= 0; i--)
+        {
+            IDynamicBuffReceiver receiver = dynamicBuffReceivers[i];
+
+            if (receiver == null)
+            {
+                dynamicBuffReceivers.RemoveAt(i);
+                continue;
+            }
+
+            receiver.OnDynamicBuffChanged();
+        }
     }
 
     private void RefreshAllRegisteredEnemyStats()
@@ -300,6 +344,8 @@ public class BuffManager : MonoBehaviour
 
         buffUIManager.RefreshCurrentMode();
     }
+
+    #region Debug
 
     private void RefreshDebugInspector()
     {
@@ -367,6 +413,8 @@ public class BuffManager : MonoBehaviour
         if (group.buffs.Count > 0)
             debugBuffGroups.Add(group);
     }
+
+    #endregion
 }
 
 [Serializable]

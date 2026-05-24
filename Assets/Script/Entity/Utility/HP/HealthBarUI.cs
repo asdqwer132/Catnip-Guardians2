@@ -33,6 +33,7 @@ public class HealthBarUI : MonoBehaviour
         Unsubscribe();
     }
 
+    #region Setting
     public void SetTarget(Health targetHealth)
     {
         Unsubscribe();
@@ -63,6 +64,9 @@ public class HealthBarUI : MonoBehaviour
         health.OnHpChanged -= Refresh;
         health.OnDead -= HandleDead;
     }
+    #endregion
+
+    #region Refresh
 
     void Refresh()
     {
@@ -86,6 +90,7 @@ public class HealthBarUI : MonoBehaviour
             hpSlider.gameObject.SetActive(!isFull);
         }
     }
+    #endregion
 
     void HandleDead()
     {

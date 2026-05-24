@@ -5,12 +5,8 @@ using UnityEngine.UI;
 public class BuffUISlot : MonoBehaviour
 {
     [Header("Texts")]
-    public TextMeshProUGUI displayLabelText;
-    public TextMeshProUGUI buffNameText;
-    public TextMeshProUGUI sourceText;
     public TextMeshProUGUI timeText;
     public TextMeshProUGUI stackText;
-    public TextMeshProUGUI statText;
 
     [Header("Images")]
     public Image iconImage;
@@ -28,8 +24,6 @@ public class BuffUISlot : MonoBehaviour
     {
         this.activeBuff = activeBuff;
 
-        if (displayLabelText != null)
-            displayLabelText.text = displayLabel;
 
         RefreshStaticInfo();
         RefreshTimeInfo();
@@ -56,15 +50,6 @@ public class BuffUISlot : MonoBehaviour
     {
         if (activeBuff == null)
             return;
-
-        if (buffNameText != null)
-            buffNameText.text = GetBuffName();
-
-        if (sourceText != null)
-            sourceText.text = GetSourceText();
-
-        if (statText != null)
-            statText.text = GetStatText();
 
         RefreshIcon();
     }
@@ -99,29 +84,6 @@ public class BuffUISlot : MonoBehaviour
 
         return defaultBuffName;
     }
-
-    private string GetSourceText()
-    {
-        if (activeBuff == null)
-            return "출처 없음";
-
-        return "출처: " +
-               activeBuff.GetSourceBagName() +
-               " / " +
-               activeBuff.GetSourceItemName();
-    }
-
-    private string GetStatText()
-    {
-        if (activeBuff == null)
-            return "";
-
-        if (activeBuff.buffStat == null)
-            return "스탯 변화 없음";
-
-        return activeBuff.buffStat.GetSummaryText();
-    }
-
     private void RefreshIcon()
     {
         if (iconImage == null)

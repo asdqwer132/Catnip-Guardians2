@@ -3,14 +3,9 @@ using UnityEngine;
 
 public class ActorVisual : MonoBehaviour
 {
-    [Header("Animation")]
+    [Header("Visual")]
     public Animator animator;
-
-    [Header("Sprite")]
     public SpriteRenderer spriteRenderer;
-
-    [Header("Flip")]
-    [Tooltip("원본 스프라이트가 왼쪽을 보고 있으면 true, 오른쪽을 보고 있으면 false")]
     public bool defaultFaceLeft = false;
 
     [Header("Animator Params")]
@@ -19,6 +14,10 @@ public class ActorVisual : MonoBehaviour
     public string hitTriggerName = "Hit";
     public string dieTriggerName = "Die";
 
+    private bool defaultFlipX;
+    private Color defaultColor;
+    private Vector3 defaultLocalScale;
+
     void Awake()
     {
         if (animator == null)
@@ -26,15 +25,37 @@ public class ActorVisual : MonoBehaviour
 
         if (spriteRenderer == null)
             spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        if (spriteRenderer != null)
+        {
+            defaultFlipX = spriteRenderer.flipX;
+            defaultColor = spriteRenderer.color;
+        }
+
+        defaultLocalScale = transform.localScale;
     }
 
-    public void LookAt(Transform target)
+    public void ResetVisual()
     {
-        if (target == null)
-            return;
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.flipX = defaultFlipX;
+            spriteRenderer.color = defaultColor;
+        }
 
-        Vector2 direction = target.position - transform.position;
-        LookDirection(direction);
+        transform.localScale = defaultLocalScale;
+
+        if (animator != null)
+        {
+            animator.ResetTrigger(attackTriggerName);
+            animator.ResetTrigger(hitTriggerName);
+            animator.ResetTrigger(dieTriggerName);
+
+            animator.SetBool(walkingBoolName, false);
+
+            animator.Rebind();
+            animator.Update(0f);
+        }
     }
 
     public void LookDirection(Vector2 direction)
@@ -53,14 +74,7 @@ public class ActorVisual : MonoBehaviour
             spriteRenderer.flipX = faceLeft;
     }
 
-    public void PlayMove()
-    {
-        if (animator == null)
-            return;
-
-        animator.ResetTrigger(attackTriggerName);
-        animator.SetBool(walkingBoolName, true);
-    }
+    #region PlayAnimation
 
     public void StopMove()
     {
@@ -70,12 +84,13 @@ public class ActorVisual : MonoBehaviour
         animator.SetBool(walkingBoolName, false);
     }
 
-    public void SetWalking(bool value)
+    public void PlayMove()
     {
-        if (value)
-            PlayMove();
-        else
-            StopMove();
+        if (animator == null)
+            return;
+
+        animator.ResetTrigger(attackTriggerName);
+        animator.SetBool(walkingBoolName, true);
     }
 
     public void PlayAttack()
@@ -121,4 +136,6 @@ public class ActorVisual : MonoBehaviour
 
         yield return new WaitForSeconds(stateInfo.length);
     }
+
+    #endregion
 }

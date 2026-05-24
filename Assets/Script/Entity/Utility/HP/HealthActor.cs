@@ -6,17 +6,11 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
     [Header("Health")]
     public Health health;
 
-    [Header("Health UI")]
-    public HealthBarUI healthBarUI;
-
     [Header("Visual")]
+    public HealthBarUI healthBarUI;
     public ActorVisual visual;
-
-    [Header("Damage Popup")]
     public DamagePopupSpawner damagePopupSpawner;
     public bool useDamagePopup = true;
-
-    [Header("Death Option")]
     public bool hideHealthBarOnDeath = true;
 
     public Transform DamageTransform => transform;
@@ -58,13 +52,29 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
         if (health == null)
             return;
 
-        ResetDeathState();
+        ResetActorStateForReuse();
 
         health.Init(maxHp, fillHp);
 
         ConnectHealthUI();
         ShowHealthBar();
     }
+
+    #region Pool / Reuse
+
+    protected virtual void ResetActorStateForReuse()
+    {
+        ResetDeathState();
+
+        ShowHealthBar();
+
+        if (visual != null)
+            visual.ResetVisual();
+    }
+
+    #endregion
+
+    #region SetLive
 
     public virtual void Revive(float maxHp, bool fillHp = true)
     {
@@ -74,15 +84,12 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
             return;
         }
 
-        ResetDeathState();
+        ResetActorStateForReuse();
 
         health.Init(maxHp, fillHp);
 
         ConnectHealthUI();
         ShowHealthBar();
-
-        //if (visual != null)
-        //    visual.PlayIdle();
 
         OnRevived();
     }
@@ -93,6 +100,24 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
         isDying = false;
     }
 
+    IEnumerator DeathRoutine()
+    {
+        OnDeathStarted();
+
+        if (hideHealthBarOnDeath)
+            HideHealthBar();
+
+        if (visual != null)
+        {
+            visual.PlayDie();
+            yield return visual.WaitCurrentAnimationEnd();
+        }
+
+        deathCoroutine = null;
+
+        OnDeathFinished();
+    }
+
     private void StopDeathRoutine()
     {
         if (deathCoroutine != null)
@@ -101,6 +126,10 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
             deathCoroutine = null;
         }
     }
+
+    #endregion
+
+    #region SetUI
 
     void ConnectHealthUI()
     {
@@ -117,6 +146,7 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
     {
         if (healthBarUI == null)
             return;
+
         healthBarUI.gameObject.SetActive(true);
         healthBarUI.SetTarget(health);
     }
@@ -128,6 +158,21 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
 
         healthBarUI.gameObject.SetActive(false);
     }
+
+    void ShowDamagePopup(float damage)
+    {
+        if (!useDamagePopup)
+            return;
+
+        if (damagePopupSpawner == null)
+            return;
+
+        damagePopupSpawner.ShowDamage(damage);
+    }
+
+    #endregion
+
+    #region SetHealthComponnet
 
     void SubscribeHealth()
     {
@@ -182,34 +227,9 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
         deathCoroutine = StartCoroutine(DeathRoutine());
     }
 
-    void ShowDamagePopup(float damage)
-    {
-        if (!useDamagePopup)
-            return;
+    #endregion
 
-        if (damagePopupSpawner == null)
-            return;
-
-        damagePopupSpawner.ShowDamage(damage);
-    }
-
-    IEnumerator DeathRoutine()
-    {
-        OnDeathStarted();
-
-        if (hideHealthBarOnDeath)
-            HideHealthBar();
-
-        if (visual != null)
-        {
-            visual.PlayDie();
-            yield return visual.WaitCurrentAnimationEnd();
-        }
-
-        deathCoroutine = null;
-
-        OnDeathFinished();
-    }
+    #region Event
 
     public virtual void TakeDamage(float damage)
     {
@@ -233,11 +253,15 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
         health.Heal(amount);
     }
 
+    #endregion
+
+    #region OnEvent
+
     protected virtual void OnDamaged(float damage) { }
     protected virtual void OnHealed(float amount) { }
-
     protected virtual void OnDeathStarted() { }
     protected virtual void OnDeathFinished() { }
-
     protected virtual void OnRevived() { }
+
+    #endregion
 }

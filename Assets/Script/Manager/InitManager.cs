@@ -21,6 +21,7 @@ public class InitManager : MonoBehaviour
         buffManager.ClearAllBuffs();
         buffSkillManager.ExecuteAllRegisteredBuffItems(buffSkillManager.gameObject, 0);
         EnemyManager enemyManager = EnemyManager.instance;
+        DamageArea.ClearAllActiveAreas();
         enemyManager.KillAllEnemies();
         enemyManager.Init(plant.plantData.enemies);
     }

@@ -8,8 +8,6 @@ public class BagItemCooldownController
     private float[] slotCooldownEndTimes;
     private bool[] slotPreparationStarted;
 
-    public void SetBagCooldown(float value) { bagCooldown = Mathf.Max(0f, value); }
-
     public void Init(int slotCount)
     {
         bagCooldownEndTime = 0f;
@@ -18,6 +16,8 @@ public class BagItemCooldownController
         ClearSlotCooldowns();
         ClearSlotPreparation();
     }
+
+    public void SetBagCooldown(float value) { bagCooldown = Mathf.Max(0f, value); }
 
     public void SyncSlotCount(int slotCount)
     {
@@ -64,8 +64,6 @@ public class BagItemCooldownController
             slotCooldownEndTimes[slotIndex] = Time.time + cooldown;
 
         slotPreparationStarted[slotIndex] = true;
-
-        //Debug.Log(item.itemData.dataName + " 준비 시작 / 준비 시간: " + cooldown);
     }
 
     public void StartBagCooldown() { bagCooldownEndTime = Time.time + bagCooldown; }

@@ -7,6 +7,7 @@ public class ActorTarget : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private string targetName = "None";
 
+    #region Getter
     public Transform TargetTransform
     {
         get
@@ -25,6 +26,7 @@ public class ActorTarget : MonoBehaviour
             return target != null && target.DamageTransform != null && !target.IsDead;
         }
     }
+    #endregion
 
     public void SetTarget(IDamageable newTarget)
     {
@@ -54,6 +56,7 @@ public class ActorTarget : MonoBehaviour
         target.TakeDamage(damage);
     }
 
+    #region Debug
     private void RefreshTargetName()
     {
         if (target == null || target.DamageTransform == null)
@@ -71,4 +74,5 @@ public class ActorTarget : MonoBehaviour
         RefreshTargetName();
     }
 #endif
+    #endregion
 }

@@ -28,10 +28,7 @@ public class ItemThrowExecutor : MonoBehaviour
             return;
 
         if (itemEffectExecutor == null)
-        {
-            Debug.LogWarning("ItemThrowExecutor에 ItemEffectExecutor가 연결되지 않았습니다.");
             return;
-        }
 
         startPosition.z = 0f;
         targetPosition.z = 0f;

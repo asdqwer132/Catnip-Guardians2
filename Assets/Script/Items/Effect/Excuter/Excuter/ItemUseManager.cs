@@ -9,8 +9,6 @@ public class ItemUseManager : MonoBehaviour
 
     [Header("Managers")]
     public BagSelectManager bagSelectManager;
-
-    [Header("Helpers")]
     public ItemUsePositionProvider positionProvider;
     public BagCooldownUIController cooldownUIController;
 
@@ -35,6 +33,14 @@ public class ItemUseManager : MonoBehaviour
             cooldownUIController = GetComponent<BagCooldownUIController>();
     }
 
+    void Update()
+    {
+        HandleBagSelectInput();
+        HandleUseInput();
+        HandleResetCooldownInput();
+        UpdateCooldownUI();
+    }
+
     public void Init()
     {
         if (bagSelectManager != null)
@@ -47,13 +53,6 @@ public class ItemUseManager : MonoBehaviour
         UpdateCooldownUI();
     }
 
-    void Update()
-    {
-        HandleBagSelectInput();
-        HandleUseInput();
-        HandleResetCooldownInput();
-        UpdateCooldownUI();
-    }
 
     private void HandleBagSelectInput()
     {
@@ -94,24 +93,15 @@ public class ItemUseManager : MonoBehaviour
     public void UseCurrentBagItem()
     {
         if (bagSelectManager == null)
-        {
-            Debug.LogWarning("BagSelectManager가 없습니다.");
             return;
-        }
 
         if (positionProvider == null)
-        {
-            Debug.LogWarning("ItemUsePositionProvider가 없습니다.");
             return;
-        }
 
         BagItemUseManager bagManager = bagSelectManager.CurrentBagUseManager;
 
         if (bagManager == null)
-        {
-            Debug.LogWarning("현재 선택된 가방 매니저가 없습니다.");
             return;
-        }
 
         Vector3 startPosition = positionProvider.GetUseStartPosition(owner);
         Vector3 targetPosition = positionProvider.GetMouseWorldPosition();
@@ -119,82 +109,14 @@ public class ItemUseManager : MonoBehaviour
         bagManager.TryUseNextItem(startPosition, targetPosition, owner);
     }
 
-    public void SelectBag(int index)
-    {
-        if (bagSelectManager == null)
-        {
-            Debug.LogWarning("BagSelectManager가 없습니다.");
-            return;
-        }
-
-        bool success = bagSelectManager.SelectBag(index);
-
-        if (success)
-        {
-            UpdateCooldownUI();
-        }
-    }
-
-    public void RebuildAllBagSlotUIs()
-    {
-        if (cooldownUIController == null)
-            return;
-
-        cooldownUIController.Init(bagSelectManager);
-        UpdateCooldownUI();
-    }
-
-    public void ResetCurrentBagUsePosition()
-    {
-        if (bagSelectManager == null)
-            return;
-
-        bagSelectManager.ResetCurrentBagUsePosition();
-        UpdateCooldownUI();
-    }
-
-    public void ResetAllBagUsePositions()
-    {
-        if (bagSelectManager == null)
-            return;
-
-        bagSelectManager.ResetAllBagUsePositions();
-        UpdateCooldownUI();
-    }
-
     public void ResetAllCooldowns()
     {
         if (bagSelectManager == null)
-        {
-            Debug.LogWarning("BagSelectManager가 없어서 전체 쿨타임을 초기화할 수 없습니다.");
             return;
-        }
+        
 
         bagSelectManager.ResetAllCooldowns();
         UpdateCooldownUI();
-    }
-
-    public void ResetCurrentBagCooldowns()
-    {
-        if (bagSelectManager == null)
-        {
-            Debug.LogWarning("BagSelectManager가 없어서 현재 가방 쿨타임을 초기화할 수 없습니다.");
-            return;
-        }
-
-        BagItemUseManager currentBagManager = bagSelectManager.CurrentBagUseManager;
-
-        if (currentBagManager == null)
-        {
-            Debug.LogWarning("현재 선택된 가방 매니저가 없습니다.");
-            return;
-        }
-
-        currentBagManager.ResetAllCooldowns();
-
-        UpdateCooldownUI();
-
-        Debug.Log("현재 가방의 쿨타임과 아이템 준비시간을 초기화했습니다.");
     }
 
     private void UpdateCooldownUI()

@@ -31,16 +31,12 @@ public class EnemyStat : IGameStat<EnemyStat>
     {
         if (speed < 0f)
             speed = 0f;
-
         if (maxHp < 1f)
             maxHp = 1f;
-
         if (damage < 0f)
             damage = 0f;
-
         if (attackRange < 0f)
             attackRange = 0f;
-
         if (attackCooldown < 0.01f)
             attackCooldown = 0.01f;
     }
@@ -50,9 +46,9 @@ public class EnemyStat : IGameStat<EnemyStat>
 public class EnemyBuffStat : EnemyStat, IBuffStat<EnemyStat>
 {
     [Header("Enemy Target")]
+    public bool affectDeadEnemies = false;
     public float enemyBuffRadius = 1f;
     public LayerMask enemyTargetLayer;
-    public bool affectDeadEnemies = false;
 
     [Header("Multiplier")]
     public float speedM = 0f;
@@ -63,8 +59,6 @@ public class EnemyBuffStat : EnemyStat, IBuffStat<EnemyStat>
 
     public EnemyBuffStat()
     {
-        // EnemyStat 기본값을 버프값으로 쓰면 안 됨.
-        // 버프는 기본적으로 변화량 0이어야 함.
         speed = 0f;
         maxHp = 0f;
         damage = 0f;
@@ -90,36 +84,5 @@ public class EnemyBuffStat : EnemyStat, IBuffStat<EnemyStat>
         target.attackCooldown *= 1f + attackCooldownM;
 
         target.Clamp();
-    }
-
-    public string GetSummaryText()
-    {
-        string result = "";
-
-        if (speed != 0f)
-            result += "적 속도 +" + speed + " ";
-
-        if (speedM != 0f)
-            result += "적 속도 x" + (1f + speedM).ToString("0.##") + " ";
-
-        if (damage != 0f)
-            result += "적 공격력 +" + damage + " ";
-
-        if (damageM != 0f)
-            result += "적 공격력 x" + (1f + damageM).ToString("0.##") + " ";
-
-        if (attackRange != 0f)
-            result += "적 공격거리 +" + attackRange + " ";
-
-        if (attackRangeM != 0f)
-            result += "적 공격거리 x" + (1f + attackRangeM).ToString("0.##") + " ";
-
-        if (attackCooldown != 0f)
-            result += "적 공격쿨 +" + attackCooldown + " ";
-
-        if (attackCooldownM != 0f)
-            result += "적 공격쿨 x" + (1f + attackCooldownM).ToString("0.##") + " ";
-
-        return result.Trim();
     }
 }

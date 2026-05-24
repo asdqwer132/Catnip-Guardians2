@@ -5,14 +5,8 @@ public class ActorAttack : MonoBehaviour
 {
     [Header("Attack Stat")]
     public float damage = 5f;
-
-    [Tooltip("공격 가능한 범위가 아니라, 타겟과 유지해야 하는 공격 거리")]
     public float attackRange = 1.5f;
-
     public float attackCooldown = 1f;
-
-    [Header("Attack Distance")]
-    [Tooltip("attackRange와 현재 거리 차이가 이 값 이하일 때 공격 가능")]
     public float attackDistanceTolerance = 0.15f;
 
     [Header("Components")]
@@ -40,6 +34,7 @@ public class ActorAttack : MonoBehaviour
         attackCooldown = Mathf.Max(0.01f, newCooldown);
     }
 
+    #region SetRange
     public float GetDistanceToTarget()
     {
         if (target == null)
@@ -59,7 +54,9 @@ public class ActorAttack : MonoBehaviour
         float distance = GetDistanceToTarget();
         return Mathf.Abs(distance - attackRange) <= attackDistanceTolerance;
     }
+    #endregion
 
+    #region Attack
     public void TickAttack()
     {
         if (IsAttacking)
@@ -97,7 +94,9 @@ public class ActorAttack : MonoBehaviour
         IsAttacking = false;
         attackCoroutine = null;
     }
+    #endregion
 
+    #region Event
     // 애니메이션 이벤트에서 호출
     public void ApplyAttackDamage()
     {
@@ -123,4 +122,5 @@ public class ActorAttack : MonoBehaviour
             attackCoroutine = null;
         }
     }
+    #endregion
 }

@@ -53,6 +53,22 @@ public class GrowManager : MonoBehaviour
         UpdateUI();
     }
 
+    private void UpdateUI()
+    {
+        if (growthSlider == null)
+            return;
+
+        if (plantData == null)
+        {
+            growthSlider.value = 0f;
+            return;
+        }
+
+        growthSlider.maxValue = plantData.growTime;
+        growthSlider.value = growValue;
+    }
+
+    #region Modify Growth
     public void AddGrowth(float amount)
     {
         if (!isGrowing)
@@ -97,19 +113,5 @@ public class GrowManager : MonoBehaviour
         if (gameManager != null)
             gameManager.Victory();
     }
-
-    private void UpdateUI()
-    {
-        if (growthSlider == null)
-            return;
-
-        if (plantData == null)
-        {
-            growthSlider.value = 0f;
-            return;
-        }
-
-        growthSlider.maxValue = plantData.growTime;
-        growthSlider.value = growValue;
-    }
+    #endregion
 }

@@ -12846,8 +12846,8 @@ MonoBehaviour:
   useDamagePopup: 1
   hideHealthBarOnDeath: 1
   plantUI: {fileID: 1230235213}
-  gameManager: {fileID: 1318438114}
   plantData: {fileID: 11400000, guid: 77749048288366242a8e845d219c9c11, type: 2}
+  gameManager: {fileID: 1318438114}
   growManager: {fileID: 1230235219}
 --- !u!61 &1230235211
 BoxCollider2D:
@@ -20652,6 +20652,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2053447136}
   m_CullTransparentMesh: 1
+--- !u!1 &2058885510
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2058885512}
+  - component: {fileID: 2058885511}
+  m_Layer: 0
+  m_Name: PoolManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2058885511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2058885510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825544a4c3793ce4ca457e82536875bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ObjectPoolManager
+  poolParent: {fileID: 2058885512}
+--- !u!4 &2058885512
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2058885510}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2062036294 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8321424357665838463, guid: ae7f2f81a08b5724bbc7676eb5ad561c, type: 3}
@@ -22574,3 +22619,4 @@ SceneRoots:
   - {fileID: 542858357}
   - {fileID: 2074965169}
   - {fileID: 1749361164}
+  - {fileID: 2058885512}

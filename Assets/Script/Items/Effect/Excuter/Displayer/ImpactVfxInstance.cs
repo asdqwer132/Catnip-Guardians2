@@ -14,6 +14,16 @@ public class ImpactVfxInstance : MonoBehaviour
 
     private Animator animator;
 
+    private void Update()
+    {
+        RefreshScale();
+
+        timer += Time.deltaTime;
+
+        if (timer >= lifeTime)
+            Destroy(gameObject);
+    }
+
     public void Init(
         ItemEffectData effectData,
         ItemEffectContext context,
@@ -39,9 +49,9 @@ public class ImpactVfxInstance : MonoBehaviour
             StartCoroutine(SetLifeTimeFromCurrentAnimatorClip());
     }
 
+    #region SetAnimationScale
     private IEnumerator SetLifeTimeFromCurrentAnimatorClip()
     {
-        // Animator가 Entry 상태에서 실제 기본 State로 진입할 시간 확보
         yield return null;
 
         float clipLifeTime = GetCurrentAnimatorClipLength();
@@ -49,13 +59,11 @@ public class ImpactVfxInstance : MonoBehaviour
         if (clipLifeTime > 0f)
             lifeTime = clipLifeTime;
     }
-
     private float GetCurrentAnimatorClipLength()
     {
         if (animator == null)
             return -1f;
 
-        // 현재 상태를 즉시 평가
         animator.Update(0f);
 
         int layerIndex = 0;
@@ -77,17 +85,6 @@ public class ImpactVfxInstance : MonoBehaviour
 
         return clip.length / speed;
     }
-
-    private void Update()
-    {
-        RefreshScale();
-
-        timer += Time.deltaTime;
-
-        if (timer >= lifeTime)
-            Destroy(gameObject);
-    }
-
     private void RefreshScale()
     {
         if (effectData == null || context == null)
@@ -99,4 +96,5 @@ public class ImpactVfxInstance : MonoBehaviour
             useRadiusScale
         );
     }
+    #endregion
 }

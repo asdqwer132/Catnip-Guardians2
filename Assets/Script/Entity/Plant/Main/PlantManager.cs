@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlantManager : MonoBehaviour
@@ -7,7 +6,6 @@ public class PlantManager : MonoBehaviour
 
     [Header("Plant List")]
     public PlantData[] allPlants;
-
 
     public PlantData CurrentPlant { get; private set; }
 
@@ -29,13 +27,5 @@ public class PlantManager : MonoBehaviour
             if (CurrentPlant == null && UnlockCheckUtility.CanUse(plant)) // 최종 언락 식물 연결
                 CurrentPlant = plant;
         }
-    }
-
-    public void SelectPlant(PlantData plant)
-    {
-        if (plant == null)
-            return;
-
-        CurrentPlant = plant;
     }
 }

@@ -89,9 +89,7 @@ public class SelectedBagPreviewUI : MonoBehaviour
         }
 
         if (currentBagNameText != null)
-        {
             currentBagNameText.text = currentManager.bag.bagData.dataName;
-        }
 
         if (currentBagIcon != null)
         {
@@ -125,20 +123,14 @@ public class SelectedBagPreviewUI : MonoBehaviour
         float ratio = currentManager.GetBagCooldownRatio();
 
         if (currentBagCooldownFill != null)
-        {
             currentBagCooldownFill.fillAmount = ratio;
-        }
 
         if (currentBagCooldownText != null)
         {
             if (remain > 0f)
-            {
                 currentBagCooldownText.text = "가방 쿨타임: " + remain.ToString("F1") + "초";
-            }
             else
-            {
                 currentBagCooldownText.text = "가방 사용 가능";
-            }
         }
     }
 
@@ -174,9 +166,7 @@ public class SelectedBagPreviewUI : MonoBehaviour
         ItemData itemData = nextItem.itemData;
 
         if (nextItemNameText != null)
-        {
             nextItemNameText.text = itemData.dataName;
-        }
 
         if (nextItemIcon != null)
         {
@@ -211,24 +201,17 @@ public class SelectedBagPreviewUI : MonoBehaviour
         float ratio = currentManager.GetNextItemUseCooldownRatio();
 
         if (nextItemCooldownFill != null)
-        {
             nextItemCooldownFill.fillAmount = ratio;
-        }
 
         if (nextItemCooldownText != null)
         {
             if (currentManager.IsBagCoolingDown())
-            {
                 nextItemCooldownText.text = "가방 대기 중";
-            }
             else if (remain > 0f)
-            {
                 nextItemCooldownText.text = "아이템 준비 중: " + remain.ToString("F1") + "초";
-            }
             else
-            {
                 nextItemCooldownText.text = "아이템 사용 가능";
-            }
+
         }
     }
 

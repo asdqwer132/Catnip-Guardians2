@@ -20,17 +20,11 @@ public class ItemUsePositionProvider : MonoBehaviour
         Vector3 position;
 
         if (useStartPoint != null)
-        {
             position = useStartPoint.position;
-        }
         else if (owner != null)
-        {
             position = owner.transform.position;
-        }
         else
-        {
             position = transform.position;
-        }
 
         position.z = 0f;
         return position;

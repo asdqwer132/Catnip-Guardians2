@@ -1,6 +1,7 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class Enemy : HealthActor
+public class Enemy : HealthActor, IPoolable
 {
     [Header("Data")]
     public EnemyStatData statData;
@@ -16,9 +17,10 @@ public class Enemy : HealthActor
 
     private EnemyStat baseStat;
     private EnemyStat currentStat;
-
     private float statRefreshTimer;
     private bool isInitialized = false;
+
+    #region Control
 
     protected override void Awake()
     {
@@ -83,11 +85,76 @@ public class Enemy : HealthActor
 
         StopMove();
 
-        if (visual != null)
-            visual.LookAt(targetTransform);
-
         attack.TickAttack();
     }
+
+    #endregion
+
+    #region Pool
+
+    public void OnSpawnedFromPool()
+    {
+        isInitialized = false;
+        statRefreshTimer = 0f;
+    }
+
+    public void OnReturnedToPool()
+    {
+        isInitialized = false;
+
+        StopMove();
+        CancelAttack();
+
+        if (actorTarget != null)
+            actorTarget.SetTarget(null);
+
+        if (buffManager != null)
+        {
+            buffManager.ClearEnemyBuffs(this);
+            buffManager.UnregisterEnemy(this);
+        }
+
+        if (EnemyManager.instance != null)
+            EnemyManager.instance.RemoveEnemy(gameObject);
+    }
+
+    #endregion
+
+    #region Init
+
+    public void Init(IDamageable target, BuffManager injectedBuffManager)
+    {
+        buffManager = injectedBuffManager;
+
+        ApplyBaseStat();
+
+        if (actorTarget != null)
+            actorTarget.SetTarget(target);
+
+        if (buffManager != null)
+            buffManager.RegisterEnemy(this);
+
+        isInitialized = true;
+    }
+
+    void ReturnSelfToPool()
+    {
+        if (EnemyManager.instance != null)
+            EnemyManager.instance.RemoveEnemy(gameObject);
+
+        if (ObjectPoolManager.instance != null)
+        {
+            ObjectPoolManager.instance.Release(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    #endregion
+
+    #region Move and Attack
 
     void MoveToAttackDistance(Transform targetTransform)
     {
@@ -121,36 +188,10 @@ public class Enemy : HealthActor
             attack.CancelAttack();
     }
 
-    public void Init(
-        IDamageable target,
-        BuffManager injectedBuffManager
-    )
-    {
-        buffManager = injectedBuffManager;
+    #endregion
 
-        ApplyBaseStat();
+    #region Stat
 
-        if (actorTarget != null)
-            actorTarget.SetTarget(target);
-
-        if (buffManager != null)
-            buffManager.RegisterEnemy(this);
-
-        isInitialized = true;
-    }
-
-    public void Init(IDamageable target)
-    {
-        ApplyBaseStat();
-
-        if (actorTarget != null)
-            actorTarget.SetTarget(target);
-
-        if (buffManager != null)
-            buffManager.RegisterEnemy(this);
-
-        isInitialized = true;
-    }
     void ApplyBaseStat()
     {
         if (statData == null)
@@ -184,12 +225,7 @@ public class Enemy : HealthActor
         EnemyStat nextStat = null;
 
         if (buffManager != null)
-        {
-            nextStat = buffManager.GetBuffedEnemyStat(
-                baseStat,
-                this
-            );
-        }
+            nextStat = buffManager.GetBuffedEnemyStat(baseStat, this);
 
         if (nextStat == null)
             nextStat = baseStat.Clone();
@@ -219,6 +255,10 @@ public class Enemy : HealthActor
         }
     }
 
+    #endregion
+
+    #region OnEvent
+
     protected override void OnDamaged(float damage)
     {
         if (IsDead)
@@ -241,8 +281,10 @@ public class Enemy : HealthActor
 
     protected override void OnDeathFinished()
     {
-        DestroySelf();
+        ReturnSelfToPool();
     }
+
+    #endregion
 
     void GiveReward()
     {
@@ -254,13 +296,5 @@ public class Enemy : HealthActor
 
         if (GrowManager.instance != null)
             GrowManager.instance.AddGrowth(statData.growEx);
-    }
-
-    void DestroySelf()
-    {
-        if (EnemyManager.instance != null)
-            EnemyManager.instance.RemoveEnemy(gameObject);
-
-        Destroy(gameObject);
     }
 }
