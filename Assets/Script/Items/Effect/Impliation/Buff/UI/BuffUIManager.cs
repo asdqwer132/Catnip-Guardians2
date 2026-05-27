@@ -3,14 +3,9 @@ using UnityEngine;
 
 public class BuffUIManager : MonoBehaviour
 {
-    [Header("References")]
     public BuffManager buffManager;
-
-    [Header("UI")]
     public Transform contentParent;
     public BuffUISlot slotPrefab;
-
-    [Header("Default Display")]
     public BuffTarget displayMode = BuffTarget.All;
     public EquipmentBag targetBag;
     public ItemData targetItemData;
@@ -32,16 +27,14 @@ public class BuffUIManager : MonoBehaviour
 
         switch (displayMode)
         {
-            case BuffTarget.All:
-                DisplayAllBuffs();
-                break;
-
             case BuffTarget.Bag:
                 DisplayBagBuffs(targetBag);
                 break;
-
             case BuffTarget.Item:
                 DisplayItemBuffs(targetItemData);
+                break;
+            default:
+                DisplayAllBuffs();
                 break;
         }
     }
@@ -52,13 +45,7 @@ public class BuffUIManager : MonoBehaviour
             return;
 
         displayMode = BuffTarget.All;
-
-        List<ActiveBuff> buffs = buffManager.GetAllVisibleBuffs();
-
-        RefreshSlots(
-            buffs,
-            "전체 버프"
-        );
+        RefreshSlots(buffManager.GetAllVisibleBuffs(), "전체 버프");
     }
 
     public void DisplayBagBuffs(EquipmentBag bag)
@@ -68,18 +55,7 @@ public class BuffUIManager : MonoBehaviour
 
         displayMode = BuffTarget.Bag;
         targetBag = bag;
-
-        List<ActiveBuff> buffs = buffManager.GetVisibleBagBuffsAsList(bag);
-
-        string label = "가방 버프";
-
-        if (bag != null)
-            label = "가방 버프: " + bag.name;
-
-        RefreshSlots(
-            buffs,
-            label
-        );
+        RefreshSlots(buffManager.GetVisibleBagBuffsAsList(bag), bag != null ? "가방 버프: " + bag.name : "가방 버프");
     }
 
     public void DisplayItemBuffs(ItemData itemData)
@@ -89,18 +65,7 @@ public class BuffUIManager : MonoBehaviour
 
         displayMode = BuffTarget.Item;
         targetItemData = itemData;
-
-        List<ActiveBuff> buffs = buffManager.GetVisibleItemBuffsAsList(itemData);
-
-        string label = "아이템 버프";
-
-        if (itemData != null)
-            label = "아이템 버프: " + itemData.GetDataName();
-
-        RefreshSlots(
-            buffs,
-            label
-        );
+        RefreshSlots(buffManager.GetVisibleItemBuffsAsList(itemData), itemData != null ? "아이템 버프: " + itemData.GetDataName() : "아이템 버프");
     }
 
     public void SetTargetBag(EquipmentBag bag)
@@ -119,59 +84,31 @@ public class BuffUIManager : MonoBehaviour
             DisplayItemBuffs(targetItemData);
     }
 
-    private void RefreshSlots(
-        IReadOnlyList<ActiveBuff> buffs,
-        string displayLabel
-    )
+    private void RefreshSlots(IReadOnlyList<ActiveBuff> buffs, string displayLabel)
     {
         ClearSlots();
 
-        if (buffs == null)
+        if (buffs == null || contentParent == null || slotPrefab == null)
             return;
 
         for (int i = 0; i < buffs.Count; i++)
         {
             ActiveBuff buff = buffs[i];
-
-            if (buff == null)
+            if (buff == null || buff.IsExpired)
                 continue;
 
-            if (buff.IsExpired)
-                continue;
-
-            CreateSlot(buff, displayLabel);
+            BuffUISlot slot = Instantiate(slotPrefab, contentParent);
+            slot.Set(buff, displayLabel);
+            spawnedSlots.Add(slot);
         }
-    }
-
-    private void CreateSlot(
-        ActiveBuff activeBuff,
-        string displayLabel
-    )
-    {
-        if (contentParent == null)
-            return;
-
-        if (slotPrefab == null)
-            return;
-
-        BuffUISlot slot = Instantiate(slotPrefab, contentParent);
-
-        slot.Set(
-            activeBuff,
-            displayLabel
-        );
-
-        spawnedSlots.Add(slot);
     }
 
     private void ClearSlots()
     {
         for (int i = spawnedSlots.Count - 1; i >= 0; i--)
         {
-            BuffUISlot slot = spawnedSlots[i];
-
-            if (slot != null)
-                Destroy(slot.gameObject);
+            if (spawnedSlots[i] != null)
+                Destroy(spawnedSlots[i].gameObject);
         }
 
         spawnedSlots.Clear();

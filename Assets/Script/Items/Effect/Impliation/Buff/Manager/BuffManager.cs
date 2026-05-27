@@ -83,7 +83,36 @@ public class BuffManager : MonoBehaviour
             targetBag
         );
     }
+    public EnemySpawnerStat GetBuffedEnemySpawnerStat(EnemySpawnerStat baseStat, EnemySpawner spawner)
+    {
+        if (calculator == null)
+            return baseStat;
 
+        return calculator.GetBuffedEnemySpawnerStat(baseStat, spawner);
+    }
+
+    public void RegisterEnemySpawner(EnemySpawner spawner)
+    {
+        if (storage == null)
+            return;
+
+        storage.RegisterEnemySpawner(spawner);
+
+        if (spawner != null)
+            spawner.RefreshBuffedStat();
+
+        RefreshDebugInspector();
+    }
+
+    public void UnregisterEnemySpawner(EnemySpawner spawner)
+    {
+        if (storage == null)
+            return;
+
+        storage.UnregisterEnemySpawner(spawner);
+
+        NotifyBuffChanged();
+    }
     public AttackStat GetSnapshotAttackStatAndConsume(
         AttackStat baseStat,
         ItemData targetItemData,
@@ -312,12 +341,29 @@ public class BuffManager : MonoBehaviour
     private void NotifyBuffChanged()
     {
         RefreshAllRegisteredEnemyStats();
+        RefreshAllRegisteredEnemySpawnerStats();
         RefreshUI();
         RefreshDebugInspector();
-
         NotifyDynamicBuffReceivers();
     }
+    private void RefreshAllRegisteredEnemySpawnerStats()
+    {
+        if (storage == null)
+            return;
 
+        for (int i = storage.registeredEnemySpawners.Count - 1; i >= 0; i--)
+        {
+            EnemySpawner spawner = storage.registeredEnemySpawners[i];
+
+            if (spawner == null)
+            {
+                storage.registeredEnemySpawners.RemoveAt(i);
+                continue;
+            }
+
+            spawner.RefreshBuffedStat();
+        }
+    }
     private void NotifyDynamicBuffReceivers()
     {
         for (int i = dynamicBuffReceivers.Count - 1; i >= 0; i--)
@@ -375,6 +421,8 @@ public class BuffManager : MonoBehaviour
         debugBuffGroups.Clear();
 
         AddDebugGroup("Global", "All", storage.globalBuffs);
+        AddDebugGroup("Enemy Spawner Future", "All Spawners", storage.globalEnemySpawnerBuffs);
+
         AddDebugGroup("Enemy Future", "All Current + Future", storage.futureEnemyBuffs);
 
         foreach (KeyValuePair<EquipmentBag, List<ActiveBuff>> pair in storage.bagBuffs)
@@ -382,7 +430,11 @@ public class BuffManager : MonoBehaviour
             string targetName = pair.Key != null ? pair.Key.name : "Null Bag";
             AddDebugGroup("Bag", targetName, pair.Value);
         }
-
+        foreach (KeyValuePair<EnemySpawner, List<ActiveBuff>> pair in storage.enemySpawnerBuffs)
+        {
+            string targetName = pair.Key != null ? pair.Key.name : "Null Spawner";
+            AddDebugGroup("Enemy Spawner", targetName, pair.Value);
+        }
         foreach (KeyValuePair<ItemData, List<ActiveBuff>> pair in storage.itemBuffs)
         {
             string targetName = pair.Key != null ? pair.Key.GetDataName() : "Null Item";

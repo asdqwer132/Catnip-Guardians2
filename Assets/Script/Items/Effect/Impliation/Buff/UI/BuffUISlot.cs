@@ -4,54 +4,36 @@ using UnityEngine.UI;
 
 public class BuffUISlot : MonoBehaviour
 {
-    [Header("Texts")]
     public TextMeshProUGUI timeText;
     public TextMeshProUGUI stackText;
-
-    [Header("Images")]
     public Image iconImage;
     public Image timeFillImage;
-
-    [Header("Options")]
-    public string defaultBuffName = "Buff";
+    public float refreshInterval = 0.1f;
 
     private ActiveBuff activeBuff;
+    private float refreshTimer;
 
-    public void Set(
-        ActiveBuff activeBuff,
-        string displayLabel
-    )
+    public void Set(ActiveBuff activeBuff, string displayLabel)
     {
         this.activeBuff = activeBuff;
-
-
-        RefreshStaticInfo();
+        RefreshIcon();
         RefreshTimeInfo();
     }
 
     private void Update()
     {
-        if (activeBuff == null)
+        if (activeBuff == null || activeBuff.IsExpired)
         {
             gameObject.SetActive(false);
             return;
         }
 
-        if (activeBuff.IsExpired)
-        {
-            gameObject.SetActive(false);
+        refreshTimer -= Time.unscaledDeltaTime;
+        if (refreshTimer > 0f)
             return;
-        }
 
+        refreshTimer = refreshInterval;
         RefreshTimeInfo();
-    }
-
-    private void RefreshStaticInfo()
-    {
-        if (activeBuff == null)
-            return;
-
-        RefreshIcon();
     }
 
     private void RefreshTimeInfo()
@@ -60,51 +42,24 @@ public class BuffUISlot : MonoBehaviour
             return;
 
         if (timeText != null)
-            timeText.text = activeBuff.remainTime.ToString("0.0");
+            timeText.text = activeBuff.useLimitType == BuffUseLimitType.UseCount ? activeBuff.remainUseCount.ToString() : activeBuff.remainTime.ToString("0.0");
 
         if (timeFillImage != null)
             timeFillImage.fillAmount = activeBuff.GetTimeRate();
 
         if (stackText != null)
-        {
-            if (activeBuff.stack > 1)
-                stackText.text = "x" + activeBuff.stack;
-            else
-                stackText.text = "";
-        }
+            stackText.text = activeBuff.stack > 1 ? "x" + activeBuff.stack : "";
     }
 
-    private string GetBuffName()
-    {
-        if (activeBuff == null)
-            return defaultBuffName;
-
-        if (activeBuff.sourceEffectData != null)
-            return activeBuff.sourceEffectData.name;
-
-        return defaultBuffName;
-    }
     private void RefreshIcon()
     {
         if (iconImage == null)
             return;
 
-        Sprite icon = null;
-
-        if (activeBuff != null &&
-            activeBuff.sourceItemData != null)
-        {
-            icon = activeBuff.sourceItemData.icon;
-        }
+        Sprite icon = activeBuff != null && activeBuff.sourceItemData != null ? activeBuff.sourceItemData.icon : null;
+        iconImage.enabled = icon != null;
 
         if (icon != null)
-        {
             iconImage.sprite = icon;
-            iconImage.enabled = true;
-        }
-        else
-        {
-            iconImage.enabled = false;
-        }
     }
 }

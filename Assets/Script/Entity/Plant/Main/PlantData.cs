@@ -5,7 +5,9 @@ public class EnemySpawnInfo
 {
     public GameObject enemyPrefab;
     public float spawnWeight = 1f;
+    public float spawnRate = 1f;
 }
+
 [CreateAssetMenu(menuName = "Game/Plant Data")]
 public class PlantData : DefaultData
 {
@@ -23,5 +25,6 @@ public class PlantData : DefaultData
     public Cost[] buyCosts;
 
     [Header("Spawn Enemies")]
+    public int spawnCount = 1;
     public EnemySpawnInfo[] enemies;
 }

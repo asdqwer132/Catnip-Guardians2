@@ -1,6 +1,23 @@
 using System;
 using UnityEngine;
 
+/// <summary>
+/// ActiveBuff
+/// 
+/// 역할:
+/// - 실제 게임 중 적용 중인 버프 한 개를 표현한다.
+/// - 원본 BuffEffect가 아니라, 남은 시간/남은 횟수/중첩 수를 가진 런타임 인스턴스다.
+/// 
+/// 책임:
+/// - 남은 시간 감소.
+/// - 사용 횟수 감소.
+/// - 같은 버프 재등록 시 갱신/중첩 처리.
+/// - UI 표시용 진행률 제공.
+/// 
+/// 주의:
+/// - 이 클래스는 버프를 직접 적용하지 않는다.
+/// - 실제 스탯 적용은 BuffStatCalculator가 담당한다.
+/// </summary>
 [Serializable]
 public class ActiveBuff
 {
@@ -20,6 +37,7 @@ public class ActiveBuff
     public EquipmentBag targetBag;
     public ItemSeries targetSeries = ItemSeries.None;
     public Enemy targetEnemy;
+    public EnemySpawner targetEnemySpawner;
 
     [Header("Apply Timing")]
     public BuffApplyTiming applyTiming = BuffApplyTiming.Snapshot;
@@ -38,7 +56,6 @@ public class ActiveBuff
     public int stack = 1;
     public int maxStack = 1;
 
-
     public bool IsExpired
     {
         get
@@ -49,6 +66,7 @@ public class ActiveBuff
             return remainTime <= 0f;
         }
     }
+
     public ActiveBuff(
         BuffStat buffStat,
         BuffInfo buffInfo,
@@ -61,7 +79,8 @@ public class ActiveBuff
         ItemData targetItemData = null,
         EquipmentBag targetBag = null,
         ItemSeries targetSeries = ItemSeries.None,
-        Enemy targetEnemy = null
+        Enemy targetEnemy = null,
+        EnemySpawner targetEnemySpawner = null
     )
     {
         this.buffStat = buffStat;
@@ -76,38 +95,23 @@ public class ActiveBuff
         this.targetBag = targetBag;
         this.targetSeries = targetSeries;
         this.targetEnemy = targetEnemy;
+        this.targetEnemySpawner = targetEnemySpawner;
 
-        stackMode = buffInfo != null
-            ? buffInfo.stackMode
-            : BuffStackMode.Refresh;
-
-        maxStack = buffInfo != null
-            ? Mathf.Max(1, buffInfo.maxStack)
-            : 1;
+        stackMode = buffInfo != null ? buffInfo.stackMode : BuffStackMode.Refresh;
+        maxStack = buffInfo != null ? Mathf.Max(1, buffInfo.maxStack) : 1;
 
         if (stackMode == BuffStackMode.Refresh)
             maxStack = 1;
 
         stack = 1;
 
-        maxTime = buffInfo != null
-            ? Mathf.Max(0.01f, buffInfo.duration)
-            : 0.01f;
-
+        maxTime = buffInfo != null ? Mathf.Max(0.01f, buffInfo.duration) : 0.01f;
         remainTime = maxTime;
 
-        applyTiming = buffInfo != null
-            ? buffInfo.applyTiming
-            : BuffApplyTiming.Snapshot;
+        applyTiming = buffInfo != null ? buffInfo.applyTiming : BuffApplyTiming.Snapshot;
+        useLimitType = buffInfo != null ? buffInfo.useLimitType : BuffUseLimitType.Time;
 
-        useLimitType = buffInfo != null
-            ? buffInfo.useLimitType
-            : BuffUseLimitType.Time;
-
-        maxUseCount = buffInfo != null
-            ? Mathf.Max(1, buffInfo.maxUseCount)
-            : 1;
-
+        maxUseCount = buffInfo != null ? Mathf.Max(1, buffInfo.maxUseCount) : 1;
         remainUseCount = maxUseCount;
     }
 
@@ -145,10 +149,8 @@ public class ActiveBuff
             maxTime = Mathf.Max(0.01f, buffInfo.duration);
             maxStack = Mathf.Max(1, buffInfo.maxStack);
             stackMode = buffInfo.stackMode;
-
             applyTiming = buffInfo.applyTiming;
             useLimitType = buffInfo.useLimitType;
-
             maxUseCount = Mathf.Max(1, buffInfo.maxUseCount);
 
             if (stackMode == BuffStackMode.Refresh)
@@ -163,7 +165,9 @@ public class ActiveBuff
                 stack = maxStack;
         }
         else
-            stack = 1;       
+        {
+            stack = 1;
+        }
 
         RefreshTime();
 

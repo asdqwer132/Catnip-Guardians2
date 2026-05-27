@@ -25,7 +25,7 @@ public class InitManager : MonoBehaviour
         EnemyManager enemyManager = EnemyManager.instance;
         DamageArea.ClearAllActiveAreas();
         enemyManager.KillAllEnemies();
-        enemyManager.Init(plantManager.CurrentPlant.enemies);
+        enemyManager.Init(plantManager.CurrentPlant);
     }
 
     public void FirstInit()

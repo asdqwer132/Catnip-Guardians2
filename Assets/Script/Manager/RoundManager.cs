@@ -29,7 +29,7 @@ public class RoundManager : MonoBehaviour
         if (plantManager.UpIndex())
         {
             enemyManager.KillAllEnemies();
-            enemyManager.Init(plantManager.CurrentPlant.enemies);
+            enemyManager.Init(plantManager.CurrentPlant);
         }
         else
         {

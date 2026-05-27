@@ -4,7 +4,7 @@ public class Plant : HealthActor
 {
     [Header("PlantData")]
     public PlantUI plantUI;
-    [SerializeField] PlantData debugData;
+    public PlantData plantData;
 
     [Header("Manager")]
     public GameManager gameManager;
@@ -14,7 +14,7 @@ public class Plant : HealthActor
     {
         if (plantData == null)
             return;
-
+        this.plantData = plantData;
         if (plantUI != null)
             plantUI.SetPlantData(plantData);
 

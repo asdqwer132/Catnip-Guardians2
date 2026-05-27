@@ -24,11 +24,16 @@ MonoBehaviour:
   - {fileID: 1302930124755786175, guid: be3f29b035713b846ba58326f559edca, type: 3}
   grownUp: {fileID: -1773102970, guid: efe67b985d5838242bcaa783eeb0f150, type: 3}
   maxHP: 1000
-  growTime: 2
+  growTime: 60
   reward:
   - currencyType: 0
     amount: 0
   buyCosts: []
+  spawnCount: 2
   enemies:
   - enemyPrefab: {fileID: 5831428086637394887, guid: 18c3e1283dacc2b4e9e55e6859a428d2, type: 3}
     spawnWeight: 5
+    spawnRate: 2
+  - enemyPrefab: {fileID: 5831428086637394887, guid: 6746e86cfbeab6a43b8793c026e2178b, type: 3}
+    spawnWeight: 5
+    spawnRate: 5

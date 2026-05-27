@@ -1622,9 +1622,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 613e1bfde2dc93b448b8fe52c131dc52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
-  enemyPrefab: {fileID: 5831428086637394887, guid: 3440ce745fc7cbf4ab87f9df54a9445c, type: 3}
-  spawnRate: 1.5
-  spawnDistance: 8
+  enemyInfos: []
+  baseStat:
+    spawnInterval: 1.5
+    spawnDistance: 8
+  currentStat:
+    spawnInterval: 1.5
+    spawnDistance: 8
   buffManager: {fileID: 1318438117}
 --- !u!1 &160430757
 GameObject:
@@ -1953,6 +1957,9 @@ MonoBehaviour:
   - {fileID: 524226288}
   - {fileID: 596179852}
   - {fileID: 726708666}
+  maxAliveEnemyCount: 300
+  logSpawnTime: 0
+  currentAliveEnemyCount: 0
 --- !u!114 &207548723 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5466055925067975717, guid: ae7f2f81a08b5724bbc7676eb5ad561c, type: 3}
@@ -4241,7 +4248,7 @@ PrefabInstance:
     - target: {fileID: 6655386588844478430, guid: 58625170834ed164d94aa7afe0e5a3e3, type: 3}
       propertyPath: bagData
       value: 
-      objectReference: {fileID: 11400000, guid: dbcb8d56ab0751541a69323b53243f58, type: 2}
+      objectReference: {fileID: 11400000, guid: 70749facc170b6444944a57caf00f0a7, type: 2}
     - target: {fileID: 6655386588844478430, guid: 58625170834ed164d94aa7afe0e5a3e3, type: 3}
       propertyPath: bagName
       value: "\uAC00\uBC292"
@@ -5106,9 +5113,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 613e1bfde2dc93b448b8fe52c131dc52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
-  enemyPrefab: {fileID: 5831428086637394887, guid: 3440ce745fc7cbf4ab87f9df54a9445c, type: 3}
-  spawnRate: 1.5
-  spawnDistance: 8
+  enemyInfos: []
+  baseStat:
+    spawnInterval: 1.5
+    spawnDistance: 8
+  currentStat:
+    spawnInterval: 1.5
+    spawnDistance: 8
   buffManager: {fileID: 1318438117}
 --- !u!1 &526400858
 GameObject:
@@ -7573,9 +7584,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 613e1bfde2dc93b448b8fe52c131dc52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
-  enemyPrefab: {fileID: 5831428086637394887, guid: 3440ce745fc7cbf4ab87f9df54a9445c, type: 3}
-  spawnRate: 1.5
-  spawnDistance: 8
+  enemyInfos: []
+  baseStat:
+    spawnInterval: 1.5
+    spawnDistance: 8
+  currentStat:
+    spawnInterval: 1.5
+    spawnDistance: 8
   buffManager: {fileID: 1318438117}
 --- !u!114 &604714688 stripped
 MonoBehaviour:
@@ -7863,9 +7878,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 613e1bfde2dc93b448b8fe52c131dc52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
-  enemyPrefab: {fileID: 5831428086637394887, guid: 3440ce745fc7cbf4ab87f9df54a9445c, type: 3}
-  spawnRate: 1.5
-  spawnDistance: 8
+  enemyInfos: []
+  baseStat:
+    spawnInterval: 1.5
+    spawnDistance: 8
+  currentStat:
+    spawnInterval: 1.5
+    spawnDistance: 8
   buffManager: {fileID: 1318438117}
 --- !u!1 &646778560
 GameObject:
@@ -8169,7 +8188,7 @@ PrefabInstance:
     - target: {fileID: 6655386588844478430, guid: 58625170834ed164d94aa7afe0e5a3e3, type: 3}
       propertyPath: bagData
       value: 
-      objectReference: {fileID: 11400000, guid: 4bf2e088b7f05784a9a4529a9e60deb0, type: 2}
+      objectReference: {fileID: 11400000, guid: 65edb48ea5a511240afe448867304314, type: 2}
     - target: {fileID: 6655386588844478430, guid: 58625170834ed164d94aa7afe0e5a3e3, type: 3}
       propertyPath: bagName
       value: "\uAC00\uBC295"
@@ -8807,9 +8826,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 613e1bfde2dc93b448b8fe52c131dc52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
-  enemyPrefab: {fileID: 5831428086637394887, guid: 3440ce745fc7cbf4ab87f9df54a9445c, type: 3}
-  spawnRate: 1.5
-  spawnDistance: 8
+  enemyInfos: []
+  baseStat:
+    spawnInterval: 1.5
+    spawnDistance: 8
+  currentStat:
+    spawnInterval: 1.5
+    spawnDistance: 8
   buffManager: {fileID: 1318438117}
 --- !u!4 &726708667
 Transform:
@@ -12203,7 +12226,7 @@ PrefabInstance:
     - target: {fileID: 6655386588844478430, guid: 58625170834ed164d94aa7afe0e5a3e3, type: 3}
       propertyPath: bagData
       value: 
-      objectReference: {fileID: 11400000, guid: bdf6595342180bd4490f49bbfcef6ac7, type: 2}
+      objectReference: {fileID: 11400000, guid: 20e3e60b545e5774cbff3cdb8afff5ad, type: 2}
     - target: {fileID: 6655386588844478430, guid: 58625170834ed164d94aa7afe0e5a3e3, type: 3}
       propertyPath: bagName
       value: "\uAC00\uBC294"
@@ -12885,7 +12908,7 @@ MonoBehaviour:
   useDamagePopup: 1
   hideHealthBarOnDeath: 1
   plantUI: {fileID: 1230235213}
-  debugData: {fileID: 0}
+  plantData: {fileID: 0}
   gameManager: {fileID: 1318438114}
   growManager: {fileID: 1230235219}
 --- !u!61 &1230235211
@@ -13860,7 +13883,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuffManager
   buffUIManager: {fileID: 1380607546}
-  useDebugInspector: 1
+  useDebugInspector: 0
   debugAllActiveBuffs: []
   debugBuffGroups: []
 --- !u!114 &1318438118
@@ -13876,13 +13899,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemInitManager
   items:
-  - itemData: {fileID: 11400000, guid: c34154534efabe24a9f94ae7f07a2a88, type: 2}
+  - itemData: {fileID: 11400000, guid: bedfc9f34f258ae49b53c37cb2e2fe84, type: 2}
     amount: 10
-  - itemData: {fileID: 11400000, guid: 92fd2e1927ea58b4ebf0b8d9dcb59f45, type: 2}
+  - itemData: {fileID: 11400000, guid: 2e02a93ec5983f84e814f3e42d366b19, type: 2}
     amount: 10
-  - itemData: {fileID: 11400000, guid: 5e8d721c93ad8ec41a978370c4c8231b, type: 2}
+  - itemData: {fileID: 11400000, guid: d3e2c05aead04d44bb918546ee1d4acc, type: 2}
     amount: 10
-  - itemData: {fileID: 11400000, guid: 00c94e499c6d1864293543b34d8971be, type: 2}
+  - itemData: {fileID: 11400000, guid: 5ed02f57c2ad93249929fa3fdc66a054, type: 2}
+    amount: 10
+  - itemData: {fileID: 11400000, guid: 873a3b3f0eb28a24cb7ee4de658ee5d9, type: 2}
+    amount: 10
+  - itemData: {fileID: 11400000, guid: ce21217d4fb65d0419eee3638b4770f4, type: 2}
+    amount: 10
+  - itemData: {fileID: 11400000, guid: 660fb7fb552461d48978ec1a31fcc35f, type: 2}
+    amount: 10
+  - itemData: {fileID: 11400000, guid: 324d63b8b67ec8d469dd859a740a7330, type: 2}
     amount: 10
 --- !u!114 &1318438119
 MonoBehaviour:
@@ -14103,7 +14134,7 @@ PrefabInstance:
     - target: {fileID: 6655386588844478430, guid: 58625170834ed164d94aa7afe0e5a3e3, type: 3}
       propertyPath: bagData
       value: 
-      objectReference: {fileID: 11400000, guid: 53c95392045569648b6074b51f42e92a, type: 2}
+      objectReference: {fileID: 11400000, guid: 709340cd6be774e4196610c1da6ec806, type: 2}
     - target: {fileID: 6655386588844478430, guid: 58625170834ed164d94aa7afe0e5a3e3, type: 3}
       propertyPath: bagName
       value: "\uAC00\uBC293"
@@ -16612,7 +16643,7 @@ PrefabInstance:
     - target: {fileID: 6655386588844478430, guid: 58625170834ed164d94aa7afe0e5a3e3, type: 3}
       propertyPath: bagData
       value: 
-      objectReference: {fileID: 11400000, guid: 4e8318f9300074c47bc50b35bc9b0192, type: 2}
+      objectReference: {fileID: 11400000, guid: 1606754d8af0fbf47aa94ea564652af9, type: 2}
     - target: {fileID: 6655386588844478430, guid: 58625170834ed164d94aa7afe0e5a3e3, type: 3}
       propertyPath: bagName
       value: "\uAC00\uBC292"
