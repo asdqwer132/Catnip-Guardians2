@@ -102,9 +102,9 @@ public class BuffManager : MonoBehaviour
         );
 
         /*
-         * UseCount 버프는 ConsumeUse()로 0이 되어도
-         * 시간형처럼 다음 프레임까지 기다릴 필요가 없음.
-         * Tick(0f)를 한 번 돌려서 만료된 UseCount 버프를 즉시 제거한다.
+         * UseCount  ConsumeUse() 0 퓸諍�
+         * 챨처  蛋 摸 却娥� .
+         * Tick(0f)     UseCount   磯.
          */
         if (ticker != null)
             ticker.Tick(0f);
@@ -252,6 +252,22 @@ public class BuffManager : MonoBehaviour
         return query.GetItemBuffsAsList(itemData, true);
     }
 
+    public List<ActiveBuff> GetItemSeriesBuffsAsList(ItemSeries series)
+    {
+        if (query == null)
+            return new List<ActiveBuff>();
+
+        return query.GetItemSeriesBuffsAsList(series);
+    }
+
+    public List<ActiveBuff> GetVisibleItemSeriesBuffsAsList(ItemSeries series)
+    {
+        if (query == null)
+            return new List<ActiveBuff>();
+
+        return query.GetItemSeriesBuffsAsList(series, true);
+    }
+
     public List<ActiveBuff> GetEnemyBuffsAsList(Enemy enemy)
     {
         if (query == null)
@@ -369,8 +385,13 @@ public class BuffManager : MonoBehaviour
 
         foreach (KeyValuePair<ItemData, List<ActiveBuff>> pair in storage.itemBuffs)
         {
-            string targetName = pair.Key != null ? pair.Key.dataName : "Null Item";
+            string targetName = pair.Key != null ? pair.Key.GetDataName() : "Null Item";
             AddDebugGroup("Item", targetName, pair.Value);
+        }
+
+        foreach (KeyValuePair<ItemSeries, List<ActiveBuff>> pair in storage.itemSeriesBuffs)
+        {
+            AddDebugGroup("Item Series", pair.Key.ToString(), pair.Value);
         }
 
         foreach (KeyValuePair<Enemy, List<ActiveBuff>> pair in storage.enemyBuffs)

@@ -14,6 +14,13 @@ public class ActiveBuff
     public EquipmentBag sourceBag;
     public ItemEffectData sourceEffectData;
 
+    [Header("Target Debug")]
+    public BuffTarget targetScope;
+    public ItemData targetItemData;
+    public EquipmentBag targetBag;
+    public ItemSeries targetSeries = ItemSeries.None;
+    public Enemy targetEnemy;
+
     [Header("Apply Timing")]
     public BuffApplyTiming applyTiming = BuffApplyTiming.Snapshot;
     public BuffUseLimitType useLimitType = BuffUseLimitType.Time;
@@ -42,7 +49,6 @@ public class ActiveBuff
             return remainTime <= 0f;
         }
     }
-
     public ActiveBuff(
         BuffStat buffStat,
         BuffInfo buffInfo,
@@ -50,7 +56,12 @@ public class ActiveBuff
         EquipmentBag sourceBag,
         ItemEffectData sourceEffectData,
         bool includeSelf,
-        bool showInUI
+        bool showInUI,
+        BuffTarget targetScope = BuffTarget.Bag,
+        ItemData targetItemData = null,
+        EquipmentBag targetBag = null,
+        ItemSeries targetSeries = ItemSeries.None,
+        Enemy targetEnemy = null
     )
     {
         this.buffStat = buffStat;
@@ -59,6 +70,12 @@ public class ActiveBuff
         this.sourceEffectData = sourceEffectData;
         this.includeSelf = includeSelf;
         this.showInUI = showInUI;
+
+        this.targetScope = targetScope;
+        this.targetItemData = targetItemData;
+        this.targetBag = targetBag;
+        this.targetSeries = targetSeries;
+        this.targetEnemy = targetEnemy;
 
         stackMode = buffInfo != null
             ? buffInfo.stackMode

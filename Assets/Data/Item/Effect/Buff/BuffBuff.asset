@@ -18,12 +18,17 @@ MonoBehaviour:
   useAnimatorClipLifeTime: 1
   impactVfxLifeTime: 1
   targetScope: 1
-  includeSelf: 0
-  showInUI: 1
   buffInfo:
-    duration: 10
     stackMode: 0
     maxStack: 1
+    applyTiming: 0
+    useLimitType: 0
+    duration: 10
+    maxUseCount: 1
+  includeSelf: 0
+  showInUI: 1
+  targetItemData: {fileID: 0}
+  targetSeries: 0
   bonus:
     attackBuffStat:
       attackPower: 0
@@ -37,3 +42,19 @@ MonoBehaviour:
     buffInfoBuffStat:
       duration: 30
       durationM: 0
+    enemyBuffStat:
+      speed: 0
+      maxHp: 0
+      damage: 0
+      attackRange: 0
+      attackCooldown: 0
+      affectDeadEnemies: 0
+      enemyBuffRadius: 1
+      enemyTargetLayer:
+        serializedVersion: 2
+        m_Bits: 0
+      speedM: 0
+      maxHpM: 0
+      damageM: 0
+      attackRangeM: 0
+      attackCooldownM: 0

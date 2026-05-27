@@ -22,6 +22,9 @@ public class BuffQuery
         foreach (KeyValuePair<ItemData, List<ActiveBuff>> pair in storage.itemBuffs)
             AddBuffsToList(result, pair.Value);
 
+        foreach (KeyValuePair<ItemSeries, List<ActiveBuff>> pair in storage.itemSeriesBuffs)
+            AddBuffsToList(result, pair.Value);
+
         foreach (KeyValuePair<Enemy, List<ActiveBuff>> pair in storage.enemyBuffs)
             AddBuffsToList(result, pair.Value);
 
@@ -39,6 +42,9 @@ public class BuffQuery
             AddBuffsToList(result, pair.Value, true);
 
         foreach (KeyValuePair<ItemData, List<ActiveBuff>> pair in storage.itemBuffs)
+            AddBuffsToList(result, pair.Value, true);
+
+        foreach (KeyValuePair<ItemSeries, List<ActiveBuff>> pair in storage.itemSeriesBuffs)
             AddBuffsToList(result, pair.Value, true);
 
         foreach (KeyValuePair<Enemy, List<ActiveBuff>> pair in storage.enemyBuffs)
@@ -77,6 +83,22 @@ public class BuffQuery
         return result;
     }
 
+
+    public List<ActiveBuff> GetItemSeriesBuffsAsList(ItemSeries series, bool visibleOnly = false)
+    {
+        List<ActiveBuff> result = new List<ActiveBuff>();
+
+        if (series == ItemSeries.None)
+            return result;
+
+        if (!storage.itemSeriesBuffs.ContainsKey(series))
+            return result;
+
+        AddBuffsToList(result, storage.itemSeriesBuffs[series], visibleOnly);
+
+        return result;
+    }
+
     public List<ActiveBuff> GetEnemyBuffsAsList(Enemy enemy, bool visibleOnly = false)
     {
         List<ActiveBuff> result = new List<ActiveBuff>();
@@ -84,7 +106,7 @@ public class BuffQuery
         if (enemy == null)
             return result;
 
-        // 미래 적 포함 버프는 모든 적에게 적용되는 적 버프라서 같이 보여줌.
+        // 肩      풔    .
         AddBuffsToList(result, storage.futureEnemyBuffs, visibleOnly);
 
         if (storage.enemyBuffs.ContainsKey(enemy))

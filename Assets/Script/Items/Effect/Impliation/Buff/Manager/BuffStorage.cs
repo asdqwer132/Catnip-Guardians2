@@ -14,6 +14,9 @@ public class BuffStorage
     public readonly Dictionary<ItemData, List<ActiveBuff>> itemBuffs =
         new Dictionary<ItemData, List<ActiveBuff>>();
 
+    public readonly Dictionary<ItemSeries, List<ActiveBuff>> itemSeriesBuffs =
+        new Dictionary<ItemSeries, List<ActiveBuff>>();
+
     public readonly Dictionary<Enemy, List<ActiveBuff>> enemyBuffs =
         new Dictionary<Enemy, List<ActiveBuff>>();
 
@@ -40,6 +43,17 @@ public class BuffStorage
             itemBuffs.Add(itemData, new List<ActiveBuff>());
 
         return itemBuffs[itemData];
+    }
+
+    public List<ActiveBuff> GetOrCreateItemSeriesBuffs(ItemSeries series)
+    {
+        if (series == ItemSeries.None)
+            return null;
+
+        if (!itemSeriesBuffs.ContainsKey(series))
+            itemSeriesBuffs.Add(series, new List<ActiveBuff>());
+
+        return itemSeriesBuffs[series];
     }
 
     public List<ActiveBuff> GetOrCreateEnemyBuffs(Enemy enemy)
@@ -79,6 +93,7 @@ public class BuffStorage
         futureEnemyBuffs.Clear();
         bagBuffs.Clear();
         itemBuffs.Clear();
+        itemSeriesBuffs.Clear();
         enemyBuffs.Clear();
         registeredEnemies.Clear();
     }

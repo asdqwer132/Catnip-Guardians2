@@ -43,7 +43,7 @@ public class BaseItemSlotUI : MonoBehaviour
         }
 
         if (nameText != null)
-            nameText.text = itemData.dataName;
+            nameText.text = itemData.GetDataName();
 
         if (amountText != null)
             amountText.text = "x" + amount;

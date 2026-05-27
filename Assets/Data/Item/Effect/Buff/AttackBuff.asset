@@ -17,16 +17,18 @@ MonoBehaviour:
   scaleImpactVfxByRadius: 1
   useAnimatorClipLifeTime: 1
   impactVfxLifeTime: 1
-  targetScope: 1
+  targetScope: 2
   buffInfo:
     stackMode: 0
     maxStack: 30
-    applyTiming: 1
-    useLimitType: 0
-    duration: 2
-    maxUseCount: 10
+    applyTiming: 0
+    useLimitType: 1
+    duration: 30
+    maxUseCount: 2
   includeSelf: 0
   showInUI: 1
+  targetItemData: {fileID: 11400000, guid: c34154534efabe24a9f94ae7f07a2a88, type: 2}
+  targetSeries: 1
   bonus:
     attackBuffStat:
       attackPower: 0

@@ -12,13 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: AttackBuffItem
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemName: dddd
   icon: {fileID: 1797939398, guid: 89d6b9627a3a13b48948eca9d1c6f9f5, type: 3}
-  description: 
-  weight: 0.01
+  data:
+  - language: 0
+    dataName: item
+    description: ddd
+  dataId: AttackBuffItem
+  dataType: 0
+  requireUnlock: 0
   grade: 0
   category: 2
   series: 0
+  weight: 0.01
   cooldown: 0.5
   effectDatas:
   - {fileID: 11400000, guid: 9479ce6d030d556499eb045fa753a4be, type: 2}

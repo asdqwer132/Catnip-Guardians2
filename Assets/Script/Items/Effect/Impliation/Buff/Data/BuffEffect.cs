@@ -2,13 +2,14 @@ using UnityEngine;
 
 public enum BuffTarget
 {
-    //item
+    // item
     Self,
     Bag,
     Item,
+    ItemSeries,
     All,
 
-    //enemy
+    // enemy
     EnemyInRange,
     AllEnemies,
     AllEnemiesIncludingFuture
@@ -23,6 +24,12 @@ public class BuffEffect : ItemEffectData
     public bool includeSelf = false;
     public bool showInUI = true;
 
+    [Header("Item Target")]
+    public ItemData targetItemData;
+
+    [Header("Item Series Target")]
+    public ItemSeries targetSeries = ItemSeries.None;
+
     [Header("Buff Stat")]
     public BuffStat bonus = new BuffStat();
 
@@ -33,7 +40,7 @@ public class BuffEffect : ItemEffectData
 
         if (context.buffManager == null)
             return;
-       
+
         context.buffManager.RegisterBuff(this, context);
     }
 

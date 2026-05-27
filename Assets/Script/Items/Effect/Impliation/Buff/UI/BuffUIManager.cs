@@ -95,7 +95,7 @@ public class BuffUIManager : MonoBehaviour
         string label = "아이템 버프";
 
         if (itemData != null)
-            label = "아이템 버프: " + itemData.dataName;
+            label = "아이템 버프: " + itemData.GetDataName();
 
         RefreshSlots(
             buffs,

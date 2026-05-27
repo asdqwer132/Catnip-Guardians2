@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: BuffBuffItem
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  dataName: 
   icon: {fileID: 1404950666, guid: 89d6b9627a3a13b48948eca9d1c6f9f5, type: 3}
-  description: 
+  data:
+  - language: 0
+    dataName: item
+    description: ddd
   dataId: BuffBuffItem
   dataType: 0
   requireUnlock: 0

@@ -49,9 +49,26 @@ public class BuffRegistrar
         switch (effect.targetScope)
         {
             case BuffTarget.Self:
-            case BuffTarget.Item:
                 RegisterOrUpdateItemBuff(
                     context.sourceItemData,
+                    effect,
+                    context,
+                    finalBuffInfo
+                );
+                break;
+
+            case BuffTarget.Item:
+                RegisterOrUpdateItemBuff(
+                    effect.targetItemData,
+                    effect,
+                    context,
+                    finalBuffInfo
+                );
+                break;
+
+            case BuffTarget.ItemSeries:
+                RegisterOrUpdateItemSeriesBuff(
+                    effect.targetSeries,
                     effect,
                     context,
                     finalBuffInfo
@@ -111,7 +128,8 @@ public class BuffRegistrar
             storage.globalBuffs,
             effect,
             context,
-            finalBuffInfo
+            finalBuffInfo,
+            BuffTarget.All
         );
     }
 
@@ -125,7 +143,8 @@ public class BuffRegistrar
             storage.futureEnemyBuffs,
             effect,
             context,
-            finalBuffInfo
+            finalBuffInfo,
+            BuffTarget.AllEnemiesIncludingFuture
         );
     }
 
@@ -142,7 +161,10 @@ public class BuffRegistrar
             list,
             effect,
             context,
-            finalBuffInfo
+            finalBuffInfo,
+            BuffTarget.Bag,
+            null,
+            bag
         );
     }
 
@@ -159,7 +181,30 @@ public class BuffRegistrar
             list,
             effect,
             context,
-            finalBuffInfo
+            finalBuffInfo,
+            effect.targetScope,
+            itemData
+        );
+    }
+
+    private void RegisterOrUpdateItemSeriesBuff(
+        ItemSeries series,
+        BuffEffect effect,
+        ItemEffectContext context,
+        BuffInfo finalBuffInfo
+    )
+    {
+        List<ActiveBuff> list = storage.GetOrCreateItemSeriesBuffs(series);
+
+        RegisterOrUpdateList(
+            list,
+            effect,
+            context,
+            finalBuffInfo,
+            BuffTarget.ItemSeries,
+            null,
+            null,
+            series
         );
     }
 
@@ -176,7 +221,12 @@ public class BuffRegistrar
             list,
             effect,
             context,
-            finalBuffInfo
+            finalBuffInfo,
+            effect.targetScope,
+            null,
+            null,
+            ItemSeries.None,
+            enemy
         );
     }
 
@@ -258,7 +308,12 @@ public class BuffRegistrar
         List<ActiveBuff> list,
         BuffEffect effect,
         ItemEffectContext context,
-        BuffInfo finalBuffInfo
+        BuffInfo finalBuffInfo,
+        BuffTarget targetScope,
+        ItemData targetItemData = null,
+        EquipmentBag targetBag = null,
+        ItemSeries targetSeries = ItemSeries.None,
+        Enemy targetEnemy = null
     )
     {
         if (list == null)
@@ -273,6 +328,11 @@ public class BuffRegistrar
 
         if (existing != null)
         {
+            existing.targetScope = targetScope;
+            existing.targetItemData = targetItemData;
+            existing.targetBag = targetBag;
+            existing.targetSeries = targetSeries;
+            existing.targetEnemy = targetEnemy;
             existing.ApplyRegisterAgain(finalBuffInfo);
             return;
         }
@@ -284,7 +344,12 @@ public class BuffRegistrar
             context.sourceBag,
             context.currentEffectData,
             effect.includeSelf,
-            effect.showInUI
+            effect.showInUI,
+            targetScope,
+            targetItemData,
+            targetBag,
+            targetSeries,
+            targetEnemy
         );
 
         list.Add(activeBuff);

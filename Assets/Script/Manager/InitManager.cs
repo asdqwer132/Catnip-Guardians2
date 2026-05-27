@@ -8,6 +8,7 @@ public class InitManager : MonoBehaviour
     public ShopManager shopManager;
     public BuffManager buffManager;
     public BuffSkillManager buffSkillManager;
+    public ItemInitManager itemInitManager;
 
     [Header("UI")]
     public SkillTreeUI skillTreeUI;
@@ -31,5 +32,6 @@ public class InitManager : MonoBehaviour
         selectedBagPreviewUI.Init();
         skillTreeUI.Init();
         EquipmentBagManager.instance.Init();
+        itemInitManager.ApplyDefaultInventoryItems();
     }
 }

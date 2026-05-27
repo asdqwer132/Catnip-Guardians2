@@ -136,6 +136,21 @@ public class BuffStatCalculator
             );
         }
 
+        if (targetItemData != null &&
+            targetItemData.series != ItemSeries.None &&
+            storage.itemSeriesBuffs.ContainsKey(targetItemData.series))
+        {
+            ApplyItemBuffs(
+                result,
+                storage.itemSeriesBuffs[targetItemData.series],
+                targetItemData,
+                targetBag,
+                applyAction,
+                calculationMode,
+                consumeUseCount
+            );
+        }
+
         result.Clamp();
 
         return result;
@@ -276,9 +291,27 @@ public class BuffStatCalculator
         if (activeBuff == null)
             return false;
 
+        if (targetItemData == null)
+            return false;
+
+        if (activeBuff.targetScope == BuffTarget.Item &&
+            activeBuff.targetItemData != null &&
+            activeBuff.targetItemData != targetItemData)
+        {
+            return false;
+        }
+
+        if (activeBuff.targetScope == BuffTarget.ItemSeries)
+        {
+            if (activeBuff.targetSeries == ItemSeries.None)
+                return false;
+
+            if (targetItemData.series != activeBuff.targetSeries)
+                return false;
+        }
+
         bool isSelf =
             activeBuff.sourceItemData != null &&
-            targetItemData != null &&
             activeBuff.sourceItemData == targetItemData;
 
         if (isSelf && !activeBuff.includeSelf)

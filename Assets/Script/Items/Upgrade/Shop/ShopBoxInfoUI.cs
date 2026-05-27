@@ -42,7 +42,7 @@ public class ShopBoxInfoUI : MonoBehaviour
         }
 
         if (boxNameText != null)
-            boxNameText.text = boxData.dataName;
+            boxNameText.text = boxData.GetDataName();
 
 
         RefreshRewardList(boxData);

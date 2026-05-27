@@ -25,6 +25,9 @@ public class BuffTicker
         if (TickDictionary(storage.itemBuffs, deltaTime))
             changed = true;
 
+        if (TickDictionary(storage.itemSeriesBuffs, deltaTime))
+            changed = true;
+
         if (TickDictionary(storage.enemyBuffs, deltaTime))
             changed = true;
 

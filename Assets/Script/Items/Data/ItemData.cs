@@ -33,17 +33,5 @@ public enum ItemCategory
 public enum ItemSeries
 {
     None,
-
-    Equipment,
-    IceCream,
-    Food,
-    Hammer,
-    Bomb,
-    Potion,
-    Magic,
-    Nature,
-    Machine,
-    Toy,
-    Curse,
-    Treasure
+    Weapon
 }

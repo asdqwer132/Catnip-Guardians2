@@ -40,7 +40,7 @@ public class BuffSkillManager : MonoBehaviour
 
         if (!ItemEffectExecutor.CanExecuteItemEffect(itemData))
         {
-            Debug.LogWarning(itemData.dataName + " 은 실행 가능한 이펙트가 없습니다.");
+            Debug.LogWarning(itemData.GetDataName() + " 은 실행 가능한 이펙트가 없습니다.");
             return;
         }
 
@@ -62,7 +62,7 @@ public class BuffSkillManager : MonoBehaviour
             new RegisteredBuffSkillItem(itemData, bagId)
         );
 
-        Debug.Log("버프 스킬 아이템 등록: " + itemData.dataName + " / BagId: " + bagId);
+        Debug.Log("버프 스킬 아이템 등록: " + itemData.GetDataName() + " / BagId: " + bagId);
     }
 
     public void ExecuteAllRegisteredBuffItems(

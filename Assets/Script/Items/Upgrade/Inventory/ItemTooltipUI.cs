@@ -111,7 +111,7 @@ public class ItemTooltipUI : MonoBehaviour
         }
 
         if (nameText != null)
-            nameText.text = itemData.dataName;
+            nameText.text = itemData.GetDataName();
 
         if (gradeText != null)
             gradeText.text = itemData.grade.ToString();
@@ -120,7 +120,7 @@ public class ItemTooltipUI : MonoBehaviour
             amountText.text = "x " + item.amount;
 
         if (descriptionText != null)
-            descriptionText.text = itemData.description;
+            descriptionText.text = itemData.GetDescription();
     }
 
     public void Hide()

@@ -89,7 +89,7 @@ public class SelectedBagPreviewUI : MonoBehaviour
         }
 
         if (currentBagNameText != null)
-            currentBagNameText.text = currentManager.bag.bagData.dataName;
+            currentBagNameText.text = currentManager.bag.bagData.GetDataName();
 
         if (currentBagIcon != null)
         {
@@ -166,7 +166,7 @@ public class SelectedBagPreviewUI : MonoBehaviour
         ItemData itemData = nextItem.itemData;
 
         if (nextItemNameText != null)
-            nextItemNameText.text = itemData.dataName;
+            nextItemNameText.text = itemData.GetDataName();
 
         if (nextItemIcon != null)
         {
