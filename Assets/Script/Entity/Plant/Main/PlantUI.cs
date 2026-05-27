@@ -7,25 +7,52 @@ public class PlantUI : MonoBehaviour
 
     private PlantData plantData;
 
-    void Start()
-    {
-        if (PlantManager.instance != null && PlantManager.instance.CurrentPlant != null)
-            plantData = PlantManager.instance.CurrentPlant;
-
-        UpdateSprite();
-    }
-
     public void SetPlantData(PlantData data)
     {
         plantData = data;
-        UpdateSprite();
     }
 
-    public void UpdateSprite()
+    public void SetGrowingSprite(int index)
     {
-        if (spriteRenderer == null || plantData == null)
+        if (spriteRenderer == null)
             return;
 
-        spriteRenderer.sprite = plantData.icon;
+        if (plantData == null)
+            return;
+
+        if (plantData.growing == null || plantData.growing.Length == 0)
+            return;
+
+        if (index < 0 || index >= plantData.growing.Length)
+            return;
+
+        Sprite sprite = plantData.growing[index];
+
+        if (sprite == null)
+            return;
+
+        spriteRenderer.sprite = sprite;
+    }
+
+    public void SetGrownUpSprite()
+    {
+        if (spriteRenderer == null)
+            return;
+
+        if (plantData == null)
+            return;
+
+        if (plantData.grownUp == null)
+            return;
+
+        spriteRenderer.sprite = plantData.grownUp;
+    }
+
+    public void SetSprite(Sprite sprite)
+    {
+        if (spriteRenderer == null)
+            return;
+
+        spriteRenderer.sprite = sprite;
     }
 }

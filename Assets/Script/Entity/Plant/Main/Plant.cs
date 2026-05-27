@@ -4,18 +4,14 @@ public class Plant : HealthActor
 {
     [Header("PlantData")]
     public PlantUI plantUI;
-    public PlantData plantData;
+    [SerializeField] PlantData debugData;
 
     [Header("Manager")]
     public GameManager gameManager;
     public GrowManager growManager;
 
-    public void Init()
+    public void Init(PlantData plantData)
     {
-        if (PlantManager.instance != null && PlantManager.instance.CurrentPlant != null)
-            plantData = PlantManager.instance.CurrentPlant;
-
-
         if (plantData == null)
             return;
 
@@ -29,7 +25,8 @@ public class Plant : HealthActor
             if (growManager.gameManager == null)
                 growManager.gameManager = gameManager;
 
-            growManager.Init(plantData);
+            growManager.Init(plantData, plantUI);
+            growManager.StartGrowth();
         }
     }
 

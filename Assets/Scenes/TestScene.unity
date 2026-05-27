@@ -11895,7 +11895,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e52d275f8c47222448e084ea4c31f89e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnlockManager
-  defaultUnlockRewards: []
+  defaultUnlockRewards:
+  - {fileID: 11400000, guid: 65e703e0874b085489635bbd56fd08cc, type: 2}
   unlockedDebugList: []
   debugLog: 0
 --- !u!1 &1147465324
@@ -12840,15 +12841,15 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 5352016057496544581, guid: 305367f2a6a5d32469c721c7b2e7481b, type: 3}
+  m_Sprite: {fileID: -1773102970, guid: efe67b985d5838242bcaa783eeb0f150, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 2, y: 2}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
 --- !u!4 &1230235209
 Transform:
@@ -12884,7 +12885,7 @@ MonoBehaviour:
   useDamagePopup: 1
   hideHealthBarOnDeath: 1
   plantUI: {fileID: 1230235213}
-  plantData: {fileID: 11400000, guid: 77749048288366242a8e845d219c9c11, type: 2}
+  debugData: {fileID: 0}
   gameManager: {fileID: 1318438114}
   growManager: {fileID: 1230235219}
 --- !u!61 &1230235211
@@ -12925,8 +12926,8 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.0625, y: 1}
-    newSize: {x: 1, y: 1}
+    oldSize: {x: 2, y: 2}
+    newSize: {x: 2, y: 2}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
@@ -12985,11 +12986,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 538f5aa8c650d62438bb1cb1a5367b4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlantManager
+  plant: {fileID: 1230235210}
   allPlants:
   - {fileID: 11400000, guid: 77749048288366242a8e845d219c9c11, type: 2}
   - {fileID: 11400000, guid: 480a1f4b54cf26b4a880a0fc4008a76c, type: 2}
   - {fileID: 11400000, guid: 5798d333d86e1544885fa8ef8234d041, type: 2}
   - {fileID: 11400000, guid: 380faa9c24503a34d9a1a48f381fca8e, type: 2}
+  currentPlantIndex: 0
 --- !u!114 &1230235215
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13054,6 +13057,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrowManager
   growthSlider: {fileID: 984865922}
+  plantUI: {fileID: 1230235213}
   gameManager: {fileID: 1318438114}
 --- !u!1 &1241834022
 GameObject:
@@ -13785,6 +13789,7 @@ GameObject:
   - component: {fileID: 1318438117}
   - component: {fileID: 1318438118}
   - component: {fileID: 1318438119}
+  - component: {fileID: 1318438120}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -13805,8 +13810,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   initManager: {fileID: 1318438116}
-  plant: {fileID: 1230235210}
-  upgradePanel: {fileID: 1267322650}
+  roundManager: {fileID: 1318438120}
 --- !u!4 &1318438115
 Transform:
   m_ObjectHideFlags: 0
@@ -13834,12 +13838,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c07007c28b4fb740a03866d0b7b5ff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InitManager
-  plant: {fileID: 1230235210}
+  plantManager: {fileID: 1230235214}
   itemUseManager: {fileID: 378844623}
   shopManager: {fileID: 1077092589}
   buffManager: {fileID: 1318438117}
   buffSkillManager: {fileID: 900877716}
   itemInitManager: {fileID: 1318438118}
+  unlockManager: {fileID: 1143531033}
   skillTreeUI: {fileID: 428193924}
   selectedBagPreviewUI: {fileID: 46985077}
 --- !u!114 &1318438117
@@ -13877,6 +13882,8 @@ MonoBehaviour:
     amount: 10
   - itemData: {fileID: 11400000, guid: 5e8d721c93ad8ec41a978370c4c8231b, type: 2}
     amount: 10
+  - itemData: {fileID: 11400000, guid: 00c94e499c6d1864293543b34d8971be, type: 2}
+    amount: 10
 --- !u!114 &1318438119
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13890,6 +13897,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LanguageManager
   selectedLan: 0
+--- !u!114 &1318438120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1318438113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e47d46249636586409ef51a26ece4694, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoundManager
+  enemyManager: {fileID: 197801883}
+  plantManager: {fileID: 1230235214}
+  upgradePanel: {fileID: 1267322650}
 --- !u!1001 &1324248901
 PrefabInstance:
   m_ObjectHideFlags: 0

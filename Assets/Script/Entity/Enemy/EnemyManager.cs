@@ -13,6 +13,10 @@ public class EnemyManager : MonoBehaviour
 
     private List<GameObject> currentEnemies = new List<GameObject>();
 
+    private bool allEnemiesActionDisabled = false;
+
+    public bool AllEnemiesActionDisabled => allEnemiesActionDisabled;
+
     void Awake()
     {
         instance = this;
@@ -22,6 +26,8 @@ public class EnemyManager : MonoBehaviour
     {
         StopAllSpawners();
         KillAllEnemies();
+
+        allEnemiesActionDisabled = false;
 
         if (plant == null)
         {
@@ -47,7 +53,58 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
+    #region Action Control
+
+    public void DisableAllEnemiesAction()
+    {
+        allEnemiesActionDisabled = true;
+
+        for (int i = currentEnemies.Count - 1; i >= 0; i--)
+        {
+            GameObject enemyObject = currentEnemies[i];
+
+            if (enemyObject == null)
+            {
+                currentEnemies.RemoveAt(i);
+                continue;
+            }
+
+            Enemy enemy = enemyObject.GetComponent<Enemy>();
+
+            if (enemy == null)
+                continue;
+
+            enemy.DisableAction();
+        }
+    }
+
+    public void EnableAllEnemiesAction()
+    {
+        allEnemiesActionDisabled = false;
+
+        for (int i = currentEnemies.Count - 1; i >= 0; i--)
+        {
+            GameObject enemyObject = currentEnemies[i];
+
+            if (enemyObject == null)
+            {
+                currentEnemies.RemoveAt(i);
+                continue;
+            }
+
+            Enemy enemy = enemyObject.GetComponent<Enemy>();
+
+            if (enemy == null)
+                continue;
+
+            enemy.EnableAction();
+        }
+    }
+
+    #endregion
+
     #region Clear
+
     public void StopAllSpawners()
     {
         if (enemySpawners == null)
@@ -61,6 +118,7 @@ public class EnemyManager : MonoBehaviour
             }
         }
     }
+
     public void KillAllEnemies()
     {
         for (int i = currentEnemies.Count - 1; i >= 0; i--)
@@ -73,9 +131,11 @@ public class EnemyManager : MonoBehaviour
 
         currentEnemies.Clear();
     }
+
     #endregion
 
     #region Register
+
     public void RegisterEnemy(GameObject enemy)
     {
         if (enemy == null)
@@ -83,6 +143,14 @@ public class EnemyManager : MonoBehaviour
 
         if (!currentEnemies.Contains(enemy))
             currentEnemies.Add(enemy);
+
+        if (allEnemiesActionDisabled)
+        {
+            Enemy enemyComponent = enemy.GetComponent<Enemy>();
+
+            if (enemyComponent != null)
+                enemyComponent.DisableAction();
+        }
     }
 
     public void RemoveEnemy(GameObject enemy)
@@ -93,5 +161,6 @@ public class EnemyManager : MonoBehaviour
         if (currentEnemies.Contains(enemy))
             currentEnemies.Remove(enemy);
     }
+
     #endregion
 }

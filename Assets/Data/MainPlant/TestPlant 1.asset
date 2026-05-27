@@ -12,18 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33b89be12f1b914ab6f81a5ff77bf4d, type: 3}
   m_Name: TestPlant 1
   m_EditorClassIdentifier: Assembly-CSharp::PlantData
-  dataName: 
   icon: {fileID: 0}
-  description: 
+  data: []
   dataId: TestPlant 1
   dataType: 7
-  requireUnlock: 1
-  reward: []
+  requireUnlock: 0
+  seed: {fileID: -710504842, guid: 89d6b9627a3a13b48948eca9d1c6f9f5, type: 3}
+  growing:
+  - {fileID: -5784410927573482350, guid: be3f29b035713b846ba58326f559edca, type: 3}
+  - {fileID: 7448935753994061408, guid: be3f29b035713b846ba58326f559edca, type: 3}
+  - {fileID: 1116706725642825598, guid: be3f29b035713b846ba58326f559edca, type: 3}
+  grownUp: {fileID: 313259941, guid: efe67b985d5838242bcaa783eeb0f150, type: 3}
   maxHP: 100
   growTime: 2
+  reward: []
   buyCosts: []
   enemies:
-  - enemyPrefab: {fileID: 5831428086637394887, guid: 3440ce745fc7cbf4ab87f9df54a9445c, type: 3}
-    spawnWeight: 5
-  - enemyPrefab: {fileID: 5831428086637394887, guid: 577d76dcfd2a5e74eae19bd63c70fa48, type: 3}
+  - enemyPrefab: {fileID: 5831428086637394887, guid: 0aa27e184c0676747b929452609a9054, type: 3}
     spawnWeight: 5

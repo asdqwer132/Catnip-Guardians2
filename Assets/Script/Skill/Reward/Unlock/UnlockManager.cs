@@ -34,7 +34,7 @@ public class UnlockManager : MonoBehaviour
         Instance = this;
     }
 
-    private void Start()
+    public void Init()
     {
         ApplyDefaultUnlockRewards();
         RefreshDebugList();

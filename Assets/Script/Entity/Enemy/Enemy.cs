@@ -20,6 +20,12 @@ public class Enemy : HealthActor, IPoolable
     private float statRefreshTimer;
     private bool isInitialized = false;
 
+    private bool isActionDisabled = false;
+    private Animator cachedAnimator;
+    private float previousAnimatorSpeed = 1f;
+
+    public bool IsActionDisabled => isActionDisabled;
+
     #region Control
 
     protected override void Awake()
@@ -34,6 +40,8 @@ public class Enemy : HealthActor, IPoolable
 
         if (attack == null)
             attack = GetComponent<ActorAttack>();
+
+        cachedAnimator = GetComponentInChildren<Animator>();
     }
 
     private void OnDestroy()
@@ -49,6 +57,13 @@ public class Enemy : HealthActor, IPoolable
 
         if (IsDead)
             return;
+
+        if (isActionDisabled)
+        {
+            StopMove();
+            CancelAttack();
+            return;
+        }
 
         RefreshBuffedStatByTimer();
 
@@ -90,17 +105,76 @@ public class Enemy : HealthActor, IPoolable
 
     #endregion
 
+    #region Action Control
+
+    public void DisableAction()
+    {
+        if (isActionDisabled)
+            return;
+
+        isActionDisabled = true;
+
+        StopMove();
+        CancelAttack();
+        PauseAnimation();
+    }
+
+    public void EnableAction()
+    {
+        if (!isActionDisabled)
+            return;
+
+        isActionDisabled = false;
+
+        ResumeAnimation();
+    }
+
+    private void PauseAnimation()
+    {
+        if (cachedAnimator == null)
+            cachedAnimator = GetComponentInChildren<Animator>();
+
+        if (cachedAnimator == null)
+            return;
+
+        previousAnimatorSpeed = cachedAnimator.speed;
+        cachedAnimator.speed = 0f;
+    }
+
+    private void ResumeAnimation()
+    {
+        if (cachedAnimator == null)
+            cachedAnimator = GetComponentInChildren<Animator>();
+
+        if (cachedAnimator == null)
+            return;
+
+        if (previousAnimatorSpeed <= 0f)
+            previousAnimatorSpeed = 1f;
+
+        cachedAnimator.speed = previousAnimatorSpeed;
+    }
+
+    #endregion
+
     #region Pool
 
     public void OnSpawnedFromPool()
     {
         isInitialized = false;
         statRefreshTimer = 0f;
+        isActionDisabled = false;
+        previousAnimatorSpeed = 1f;
+
+        ResumeAnimation();
     }
 
     public void OnReturnedToPool()
     {
         isInitialized = false;
+        isActionDisabled = false;
+
+        ResumeAnimation();
 
         StopMove();
         CancelAttack();
@@ -125,6 +199,10 @@ public class Enemy : HealthActor, IPoolable
     public void Init(IDamageable target, BuffManager injectedBuffManager)
     {
         buffManager = injectedBuffManager;
+
+        isActionDisabled = false;
+        previousAnimatorSpeed = 1f;
+        ResumeAnimation();
 
         ApplyBaseStat();
 
@@ -272,6 +350,9 @@ public class Enemy : HealthActor, IPoolable
     {
         StopMove();
         CancelAttack();
+
+        isActionDisabled = false;
+        ResumeAnimation();
 
         if (buffManager != null)
             buffManager.ClearEnemyBuffs(this);

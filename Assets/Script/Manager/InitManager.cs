@@ -3,12 +3,13 @@ using UnityEngine;
 public class InitManager : MonoBehaviour
 {
     [Header("Managers")]
-    public Plant plant;
+    public PlantManager plantManager;
     public ItemUseManager itemUseManager;
     public ShopManager shopManager;
     public BuffManager buffManager;
     public BuffSkillManager buffSkillManager;
     public ItemInitManager itemInitManager;
+    public UnlockManager unlockManager;
 
     [Header("UI")]
     public SkillTreeUI skillTreeUI;
@@ -16,7 +17,7 @@ public class InitManager : MonoBehaviour
 
     public void InitAll()
     {
-        plant.Init();
+        plantManager.SetPlaints();
         itemUseManager.Init();
         shopManager.InitShop();
         buffManager.ClearAllBuffs();
@@ -24,11 +25,12 @@ public class InitManager : MonoBehaviour
         EnemyManager enemyManager = EnemyManager.instance;
         DamageArea.ClearAllActiveAreas();
         enemyManager.KillAllEnemies();
-        enemyManager.Init(plant.plantData.enemies);
+        enemyManager.Init(plantManager.CurrentPlant.enemies);
     }
 
     public void FirstInit()
     {
+        unlockManager.Init();
         selectedBagPreviewUI.Init();
         skillTreeUI.Init();
         EquipmentBagManager.instance.Init();
