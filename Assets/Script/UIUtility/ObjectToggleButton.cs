@@ -3,68 +3,88 @@ using UnityEngine.UI;
 
 public class ObjectToggleButton : MonoBehaviour
 {
-    [Header("Target")]
-    public GameObject targetObject;
+    [Header("Targets")]
+    public GameObject[] targetObjects;
+    public bool initClose = true;
 
     [Header("Button Image")]
     public Image buttonImage;
 
     [Header("Sprites")]
-    public Sprite onSprite;   // 오브젝트가 켜져 있을 때 버튼 이미지
-    public Sprite offSprite;  // 오브젝트가 꺼져 있을 때 버튼 이미지
+    public Sprite onSprite;
+    public Sprite offSprite;
 
     private Button button;
 
-    void Awake()
+    private void Awake()
     {
         button = GetComponent<Button>();
 
         if (buttonImage == null)
             buttonImage = GetComponent<Image>();
 
-        button.onClick.AddListener(ToggleObject);
+        if (buttonImage != null)
+        {
+            if (onSprite == null)
+                onSprite = buttonImage.sprite;
+
+            if (offSprite == null)
+                offSprite = buttonImage.sprite;
+        }
+
+        if (button != null)
+            button.onClick.AddListener(ToggleObject);
     }
 
-    void Start()
+    private void Start()
     {
-        UpdateButtonSprite();
+        SetObjectActive(!initClose);
     }
 
     public void ToggleObject()
     {
-        if (targetObject == null)
+        bool currentActive = HasAnyActiveTarget();
+        SetObjectActive(!currentActive);
+    }
+
+    private bool HasAnyActiveTarget()
+    {
+        if (targetObjects == null || targetObjects.Length == 0)
+            return false;
+
+        for (int i = 0; i < targetObjects.Length; i++)
+        {
+            if (targetObjects[i] != null && targetObjects[i].activeSelf)
+                return true;
+        }
+
+        return false;
+    }
+
+    public void SetObjectActive(bool active)
+    {
+        if (targetObjects == null || targetObjects.Length == 0)
         {
             Debug.LogWarning("토글할 오브젝트가 없습니다.");
+            UpdateButtonSprite();
             return;
         }
 
-        bool nextState = !targetObject.activeSelf;
-        targetObject.SetActive(nextState);
+        for (int i = 0; i < targetObjects.Length; i++)
+        {
+            if (targetObjects[i] != null)
+                targetObjects[i].SetActive(active);
+        }
 
         UpdateButtonSprite();
     }
 
     public void UpdateButtonSprite()
     {
-        if (buttonImage == null || targetObject == null)
+        if (buttonImage == null)
             return;
 
-        if (targetObject.activeSelf)
-        {
-            buttonImage.sprite = onSprite;
-        }
-        else
-        {
-            buttonImage.sprite = offSprite;
-        }
-    }
-
-    public void SetObjectActive(bool active)
-    {
-        if (targetObject == null)
-            return;
-
-        targetObject.SetActive(active);
-        UpdateButtonSprite();
+        bool currentActive = HasAnyActiveTarget();
+        buttonImage.sprite = currentActive ? onSprite : offSprite;
     }
 }
