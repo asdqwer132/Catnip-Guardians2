@@ -7,18 +7,24 @@ public class ObjectToggleButton : MonoBehaviour
     public GameObject[] targetObjects;
     public bool initClose = true;
 
-    [Header("Button Image")]
+    [Header("UI")]
     public Image buttonImage;
+    public Button button;
+    public Toggle toggle;
 
     [Header("Sprites")]
     public Sprite onSprite;
     public Sprite offSprite;
 
-    private Button button;
+    private bool isChanging;
 
     private void Awake()
     {
-        button = GetComponent<Button>();
+        if (button == null)
+            button = GetComponent<Button>();
+
+        if (toggle == null)
+            toggle = GetComponent<Toggle>();
 
         if (buttonImage == null)
             buttonImage = GetComponent<Image>();
@@ -34,11 +40,23 @@ public class ObjectToggleButton : MonoBehaviour
 
         if (button != null)
             button.onClick.AddListener(ToggleObject);
+
+        if (toggle != null)
+            toggle.onValueChanged.AddListener(SetObjectActive);
     }
 
     private void Start()
     {
         SetObjectActive(!initClose);
+    }
+
+    private void OnDestroy()
+    {
+        if (button != null)
+            button.onClick.RemoveListener(ToggleObject);
+
+        if (toggle != null)
+            toggle.onValueChanged.RemoveListener(SetObjectActive);
     }
 
     public void ToggleObject()
@@ -63,10 +81,16 @@ public class ObjectToggleButton : MonoBehaviour
 
     public void SetObjectActive(bool active)
     {
+        if (isChanging)
+            return;
+
+        isChanging = true;
+
         if (targetObjects == null || targetObjects.Length == 0)
         {
             Debug.LogWarning("토글할 오브젝트가 없습니다.");
-            UpdateButtonSprite();
+            UpdateUIState();
+            isChanging = false;
             return;
         }
 
@@ -76,15 +100,19 @@ public class ObjectToggleButton : MonoBehaviour
                 targetObjects[i].SetActive(active);
         }
 
-        UpdateButtonSprite();
+        UpdateUIState();
+
+        isChanging = false;
     }
 
-    public void UpdateButtonSprite()
+    public void UpdateUIState()
     {
-        if (buttonImage == null)
-            return;
-
         bool currentActive = HasAnyActiveTarget();
-        buttonImage.sprite = currentActive ? onSprite : offSprite;
+
+        if (buttonImage != null)
+            buttonImage.sprite = currentActive ? onSprite : offSprite;
+
+        if (toggle != null)
+            toggle.SetIsOnWithoutNotify(currentActive);
     }
 }

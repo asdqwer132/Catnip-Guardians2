@@ -91,9 +91,12 @@ public class BagSelectManager : MonoBehaviour
     }
     private void RefreshUI()
     {
-        for (int i = 0; i < bagUseManagers.Length; i++)
+        if(toggles.Length > 0)
         {
-            toggles[i].gameObject.SetActive(UnlockCheckUtility.CanUse(bagUseManagers[i].GetBagData()));
+            for (int i = 0; i < bagUseManagers.Length; i++)
+            {
+                toggles[i].gameObject.SetActive(UnlockCheckUtility.CanUse(bagUseManagers[i].GetBagData()));
+            }
         }
     }
     public BagItemUseManager GetBagUseManager(int index)

@@ -15518,7 +15518,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: crystal
+      name: CurrencyCrystal
       rect:
         serializedVersion: 2
         x: 0
@@ -25242,7 +25242,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Core
+      name: CurrencyCore
       rect:
         serializedVersion: 2
         x: 160
@@ -25484,7 +25484,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Leaf
+      name: CurrencyLeaf
       rect:
         serializedVersion: 2
         x: 336
@@ -25924,7 +25924,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Seed
+      name: CurrencySeed
       rect:
         serializedVersion: 2
         x: 80
@@ -28388,7 +28388,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Scrap
+      name: CurrencyScrap
       rect:
         serializedVersion: 2
         x: 144
@@ -29092,7 +29092,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: items_sheet_1157
+      name: weight
       rect:
         serializedVersion: 2
         x: 80
@@ -29114,7 +29114,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: gold
+      name: CurrencyGold
       rect:
         serializedVersion: 2
         x: 96
@@ -29906,7 +29906,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: End
+      name: CurrencyEnd
       rect:
         serializedVersion: 2
         x: 96
@@ -31022,11 +31022,13 @@ TextureImporter:
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":16.0,"y":16.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Bag: 818217597
-      Core: -2130251977
-      End: -268386930
-      Leaf: -920287250
-      Scrap: 805210560
-      Seed: -710504842
+      CurrencyCore: -2130251977
+      CurrencyCrystal: -2023129094
+      CurrencyEnd: -268386930
+      CurrencyGold: 1307959557
+      CurrencyLeaf: -920287250
+      CurrencyScrap: 805210560
+      CurrencySeed: -710504842
       Shop: 1738407581
       Skill: 257659411
       Weapon1: 1784169712
@@ -31074,7 +31076,6 @@ TextureImporter:
       bag3: 2076595756
       bag4: 1467950389
       bag5: -216223674
-      crystal: -2023129094
       food1: 1725555295
       food10: -1277066198
       food2: -1199666196
@@ -31085,7 +31086,6 @@ TextureImporter:
       food7: -891808480
       food8: 964805976
       food9: 505757739
-      gold: 1307959557
       items_sheet_100: -1841108941
       items_sheet_1000: -693793751
       items_sheet_1001: -470336949
@@ -31255,7 +31255,6 @@ TextureImporter:
       items_sheet_1154: -702716217
       items_sheet_1155: -1737356103
       items_sheet_1156: -1955779247
-      items_sheet_1157: 2025466663
       items_sheet_1159: -923592952
       items_sheet_116: 979023070
       items_sheet_1160: -2012496121
@@ -32265,6 +32264,7 @@ TextureImporter:
       items_sheet_997: 1696723569
       items_sheet_998: 1267889428
       items_sheet_999: 1540145354
+      weight: 2025466663
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

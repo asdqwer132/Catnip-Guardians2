@@ -1,12 +1,11 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class GrowManager : MonoBehaviour
 {
     public static GrowManager instance;
 
     [Header("UI")]
-    public Slider growthSlider;
+    public ImageFillUI growthFill;
 
     [Header("Plant UI")]
     public PlantUI plantUI;
@@ -45,14 +44,10 @@ public class GrowManager : MonoBehaviour
         if (plantUI != null)
             plantUI.SetPlantData(plantData);
 
-        if (growthSlider != null)
+        if (growthFill != null)
         {
-            growthSlider.gameObject.SetActive(true);
-            growthSlider.minValue = 0f;
-            growthSlider.value = 0f;
-
-            if (plantData != null)
-                growthSlider.maxValue = plantData.growTime;
+            growthFill.gameObject.SetActive(true);
+            growthFill.SetFill01(0f);
         }
 
         UpdateUI();
@@ -68,8 +63,6 @@ public class GrowManager : MonoBehaviour
         currentGrowingIndex = -1;
 
         UpdateUI();
-
-        // 성장 시작 시 seed가 아니라 growing[0]부터 표시
         UpdateGrowingSprite();
     }
 
@@ -101,10 +94,16 @@ public class GrowManager : MonoBehaviour
 
     private void UpdateUI()
     {
-        if (growthSlider == null)
+        if (growthFill == null)
             return;
 
-        growthSlider.value = growValue;
+        if (plantData == null)
+        {
+            growthFill.SetFill01(0f);
+            return;
+        }
+
+        growthFill.SetFill(growValue, plantData.growTime);
     }
 
     private void UpdateGrowingSprite()
@@ -163,9 +162,6 @@ public class GrowManager : MonoBehaviour
         currentGrowingIndex = -1;
 
         UpdateUI();
-
-        // 여기서도 seed 표시 안 함
-        // 필요하면 외부 애니메이션에서 따로 처리
     }
 
     private void CompleteGrowth()
@@ -175,7 +171,6 @@ public class GrowManager : MonoBehaviour
 
         isGrowing = false;
 
-        // 완료 시점에만 grownUp으로 변경
         if (plantUI != null)
             plantUI.SetGrownUpSprite();
 

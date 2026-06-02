@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class HealthBarUI : MonoBehaviour
 {
@@ -7,33 +6,34 @@ public class HealthBarUI : MonoBehaviour
     public Health health;
 
     [Header("UI")]
-    public Slider hpSlider;
+    public ImageFillUI hpFill;
 
     [Header("Option")]
     public bool hideWhenFullHp = false;
     public bool hideWhenDead = true;
 
-    void Awake()
+    private void Awake()
     {
         if (health == null)
             health = GetComponentInParent<Health>();
 
-        if (hpSlider == null)
-            hpSlider = GetComponent<Slider>();
+        if (hpFill == null)
+            hpFill = GetComponentInChildren<ImageFillUI>();
     }
 
-    void OnEnable()
+    private void OnEnable()
     {
         Subscribe();
         Refresh();
     }
 
-    void OnDisable()
+    private void OnDisable()
     {
         Unsubscribe();
     }
 
     #region Setting
+
     public void SetTarget(Health targetHealth)
     {
         Unsubscribe();
@@ -44,7 +44,7 @@ public class HealthBarUI : MonoBehaviour
         Refresh();
     }
 
-    void Subscribe()
+    private void Subscribe()
     {
         if (health == null)
             return;
@@ -56,7 +56,7 @@ public class HealthBarUI : MonoBehaviour
         health.OnDead += HandleDead;
     }
 
-    void Unsubscribe()
+    private void Unsubscribe()
     {
         if (health == null)
             return;
@@ -64,11 +64,12 @@ public class HealthBarUI : MonoBehaviour
         health.OnHpChanged -= Refresh;
         health.OnDead -= HandleDead;
     }
+
     #endregion
 
     #region Refresh
 
-    void Refresh()
+    private void Refresh()
     {
         if (health == null)
             return;
@@ -76,28 +77,28 @@ public class HealthBarUI : MonoBehaviour
         Refresh(health.Hp, health.MaxHp);
     }
 
-    void Refresh(float hp, float maxHp)
+    private void Refresh(float hp, float maxHp)
     {
-        if (hpSlider == null)
+        if (hpFill == null)
             return;
 
-        hpSlider.maxValue = maxHp;
-        hpSlider.value = hp;
+        hpFill.SetFill(hp, maxHp);
 
         if (hideWhenFullHp)
         {
             bool isFull = hp >= maxHp;
-            hpSlider.gameObject.SetActive(!isFull);
+            hpFill.SetVisible(!isFull);
         }
     }
+
     #endregion
 
-    void HandleDead()
+    private void HandleDead()
     {
         if (!hideWhenDead)
             return;
 
-        if (hpSlider != null)
-            hpSlider.gameObject.SetActive(false);
+        if (hpFill != null)
+            hpFill.SetVisible(false);
     }
 }

@@ -1,124 +1,219 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using TMPro;
 
 public class SnapScroll : MonoBehaviour, IEndDragHandler
 {
+    [Header("Scroll")]
     public ScrollRect scrollRect;
 
     [Header("Page")]
-    public int pageCount = 5;
+    public int pageCount = 1;
     public float snapSpeed = 10f;
 
-    [Header("Toggle")]
-    public Toggle[] pageToggles;
+    [Header("Loop")]
+    public bool infiniteLoop = false;
 
+    [Header("Buttons")]
+    public Button nextButton;
+    public Button prevButton;
+
+    [Header("Page Text")]
+    public TMP_Text pageCountText;
+
+    private int currentPage;
     private float targetPos;
     private bool isSnapping;
-    private bool isChangingToggle;
 
-    void Start()
+    private void Awake()
     {
         if (scrollRect == null)
             scrollRect = GetComponent<ScrollRect>();
-
-        if (pageToggles != null && pageToggles.Length > 0)
-            pageCount = pageToggles.Length;
-
-        targetPos = scrollRect.horizontalNormalizedPosition;
-
-        for (int i = 0; i < pageToggles.Length; i++)
-        {
-            int index = i;
-
-            pageToggles[i].onValueChanged.AddListener((isOn) =>
-            {
-                if (isOn && !isChangingToggle)
-                {
-                    MoveToPage(index);
-                }
-            });
-        }
-
-        MoveToPage(0);
-        scrollRect.horizontalNormalizedPosition = targetPos;
-        isSnapping = false;
     }
 
-    void Update()
+    private void Start()
     {
-        if (!isSnapping)
+        SetPageCount(pageCount);
+        MoveToPageInstant(0);
+    }
+
+    private void Update()
+    {
+        if (!isSnapping || scrollRect == null)
             return;
 
-        scrollRect.horizontalNormalizedPosition =
-            Mathf.Lerp(
-                scrollRect.horizontalNormalizedPosition,
-                targetPos,
-                Time.unscaledDeltaTime * snapSpeed
-            );
+        scrollRect.horizontalNormalizedPosition = Mathf.Lerp(
+            scrollRect.horizontalNormalizedPosition,
+            targetPos,
+            Time.unscaledDeltaTime * snapSpeed
+        );
 
         if (Mathf.Abs(scrollRect.horizontalNormalizedPosition - targetPos) < 0.001f)
         {
             scrollRect.horizontalNormalizedPosition = targetPos;
             isSnapping = false;
-
-            UpdateToggle(GetCurrentPage());
+            UpdateButtons();
+            UpdatePageText();
         }
+    }
+
+    public void SetPageCount(int count)
+    {
+        pageCount = Mathf.Max(1, count);
+        currentPage = Mathf.Clamp(currentPage, 0, pageCount - 1);
+
+        if (scrollRect != null)
+        {
+            scrollRect.horizontal = pageCount > 1;
+            scrollRect.StopMovement();
+            scrollRect.velocity = Vector2.zero;
+        }
+
+        SetTargetByPage(currentPage);
+        UpdateButtons();
+        UpdatePageText();
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        MoveToPage(GetCurrentPage());
+        if (pageCount <= 1)
+            return;
+
+        MoveToPage(GetNearestPage());
     }
 
     public void MoveToPage(int pageIndex)
     {
-        pageIndex = Mathf.Clamp(pageIndex, 0, pageCount - 1);
-
-        float pageSize = 1f / (pageCount - 1);
-        targetPos = pageIndex * pageSize;
-
-        if (scrollRect != null)
-            scrollRect.StopMovement();
-
-        isSnapping = true;
-
-        UpdateToggle(pageIndex);
-    }
-
-    int GetCurrentPage()
-    {
-        if (pageCount <= 1)
-            return 0;
-
-        float pageSize = 1f / (pageCount - 1);
-        return Mathf.RoundToInt(scrollRect.horizontalNormalizedPosition / pageSize);
-    }
-
-    void UpdateToggle(int pageIndex)
-    {
-        if (pageToggles == null || pageToggles.Length == 0)
+        if (scrollRect == null)
             return;
 
-        isChangingToggle = true;
+        pageIndex = GetValidPageIndex(pageIndex);
 
-        for (int i = 0; i < pageToggles.Length; i++)
-        {
-            pageToggles[i].isOn = i == pageIndex;
-        }
+        currentPage = pageIndex;
+        SetTargetByPage(currentPage);
 
-        pageToggles[pageIndex].Select();
+        scrollRect.StopMovement();
+        scrollRect.velocity = Vector2.zero;
+        isSnapping = true;
 
-        isChangingToggle = false;
+        UpdateButtons();
+        UpdatePageText();
+    }
+
+    public void MoveToPageInstant(int pageIndex)
+    {
+        if (scrollRect == null)
+            return;
+
+        pageIndex = GetValidPageIndex(pageIndex);
+
+        currentPage = pageIndex;
+        SetTargetByPage(currentPage);
+
+        scrollRect.StopMovement();
+        scrollRect.velocity = Vector2.zero;
+        scrollRect.horizontalNormalizedPosition = targetPos;
+        isSnapping = false;
+
+        UpdateButtons();
+        UpdatePageText();
     }
 
     public void NextPage()
     {
-        MoveToPage(GetCurrentPage() + 1);
+        if (pageCount <= 1)
+            return;
+
+        MoveToPage(currentPage + 1);
     }
 
     public void PrevPage()
     {
-        MoveToPage(GetCurrentPage() - 1);
+        if (pageCount <= 1)
+            return;
+
+        MoveToPage(currentPage - 1);
+    }
+
+    private int GetValidPageIndex(int pageIndex)
+    {
+        if (pageCount <= 1)
+            return 0;
+
+        if (!infiniteLoop)
+            return Mathf.Clamp(pageIndex, 0, pageCount - 1);
+
+        if (pageIndex < 0)
+            return pageCount - 1;
+
+        if (pageIndex >= pageCount)
+            return 0;
+
+        return pageIndex;
+    }
+
+    private void SetTargetByPage(int pageIndex)
+    {
+        if (pageCount <= 1)
+        {
+            targetPos = 0f;
+            return;
+        }
+
+        float pageSize = 1f / (pageCount - 1);
+        targetPos = pageIndex * pageSize;
+    }
+
+    private int GetNearestPage()
+    {
+        if (pageCount <= 1 || scrollRect == null)
+            return 0;
+
+        float pageSize = 1f / (pageCount - 1);
+
+        return Mathf.Clamp(
+            Mathf.RoundToInt(scrollRect.horizontalNormalizedPosition / pageSize),
+            0,
+            pageCount - 1
+        );
+    }
+
+    private void UpdateButtons()
+    {
+        if (infiniteLoop)
+        {
+            if (prevButton != null)
+                prevButton.interactable = pageCount > 1;
+
+            if (nextButton != null)
+                nextButton.interactable = pageCount > 1;
+
+            return;
+        }
+
+        if (prevButton != null)
+            prevButton.interactable = pageCount > 1 && currentPage > 0;
+
+        if (nextButton != null)
+            nextButton.interactable = pageCount > 1 && currentPage < pageCount - 1;
+    }
+
+    private void UpdatePageText()
+    {
+        if (pageCountText == null)
+            return;
+
+        pageCountText.text = $"{currentPage + 1}/{pageCount}";
+    }
+
+    public int GetCurrentPage()
+    {
+        return currentPage;
+    }
+
+    public int GetPageCount()
+    {
+        return pageCount;
     }
 }

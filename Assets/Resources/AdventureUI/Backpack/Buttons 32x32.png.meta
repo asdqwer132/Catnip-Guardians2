@@ -234,7 +234,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Buttons 32x32_1
+      name: CloseP
       rect:
         serializedVersion: 2
         x: 37
@@ -278,13 +278,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Buttons 32x32_4
+      name: Close
       rect:
         serializedVersion: 2
         x: 133
         y: 195
         width: 22
-        height: 22
+        height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -344,7 +344,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Buttons 32x32_7
+      name: ListP
       rect:
         serializedVersion: 2
         x: 38
@@ -410,13 +410,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Buttons 32x32_10
+      name: List
       rect:
         serializedVersion: 2
         x: 134
         y: 163
         width: 22
-        height: 22
+        height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -975,8 +975,6 @@ TextureImporter:
     nameFileIdTable:
       3: -1074272657812112578
       Buttons 32x32_0: -1056201094
-      Buttons 32x32_1: -8708432058759913845
-      Buttons 32x32_10: -5570706303797486335
       Buttons 32x32_11: -4982471148816629635
       Buttons 32x32_12: 4157384976084670312
       Buttons 32x32_15: 5139417186494355295
@@ -992,12 +990,14 @@ TextureImporter:
       Buttons 32x32_31: 5175533792402626891
       Buttons 32x32_32: 438262296722856088
       Buttons 32x32_33: 1359470682790380157
-      Buttons 32x32_4: 2499303894879395700
       Buttons 32x32_5: 4263028457466276189
-      Buttons 32x32_7: 3445719518148517927
       Buttons 32x32_8: 7337211896497735516
+      Close: 2499303894879395700
+      CloseP: -8708432058759913845
       Home: 2668017024924519062
       HomeP: 1078188806180510580
+      List: -5570706303797486335
+      ListP: 3445719518148517927
       PlayP: -3289682402572544752
       Reroll: -2775209714907932872
       RerollP: -1633472076505444120

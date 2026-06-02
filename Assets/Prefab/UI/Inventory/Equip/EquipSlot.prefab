@@ -32,10 +32,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 2519819567434971660}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 3.75}
-  m_SizeDelta: {x: -30, y: -37.5}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 70, y: 62.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5068870672507933150
 CanvasRenderer:
@@ -144,8 +144,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 8118200262300106799, guid: 65c7424d38a883c4abd6a39168e228b3, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 7015356209238420904, guid: d221ccb1912844e4cb4f7b66fdf1c5d6, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -217,18 +217,8 @@ MonoBehaviour:
   currentItem:
     itemData: {fileID: 0}
     amount: 0
-    bonus:
-      attackPower: 0
-      healPower: 0
-      debuffPower: 0
-      defensePower: 0
-      speedPower: 0
-      attackMultiplier: 1
-      healMultiplier: 1
-      debuffMultiplier: 1
-      defenseMultiplier: 1
-      speedMultiplier: 1
   slotButton: {fileID: 3794983566759181056}
+  dragIconOffset: {x: 0, y: 0}
 --- !u!225 &5548845191489271285
 CanvasGroup:
   m_ObjectHideFlags: 0

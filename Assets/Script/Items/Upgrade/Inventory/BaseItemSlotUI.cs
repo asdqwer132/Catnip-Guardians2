@@ -46,7 +46,7 @@ public class BaseItemSlotUI : MonoBehaviour
             nameText.text = itemData.GetDataName();
 
         if (amountText != null)
-            amountText.text = "x" + amount;
+            amountText.text = "" + amount;
 
         if (gradeText != null)
             gradeText.text = itemData.grade.ToString();

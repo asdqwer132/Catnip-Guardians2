@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 [Serializable]
@@ -18,42 +17,29 @@ public enum CurrencyType
     Core,
     Leaf,
     Scrap,
-    End
+    EndPearl
 }
 
 public class CurrencyManager : MonoBehaviour
 {
     public static CurrencyManager instance;
 
-    [Header("UI")]
-    public CurrencyUI[] currencyUIs;
+    [Header("UI Groups")]
+    public CurrencyUIGroup[] uiGroups;
+    public bool autoFindUIGroupsInChildren = true;
 
     [Header("Start Value")]
     public int defaultStartAmount = 11110;
 
-    [Serializable]
-    public class CurrencyUI
-    {
-        public CurrencyType type;
-        public GameObject textObj;
-        public TextMeshProUGUI textUI;
-    }
-
     private Dictionary<CurrencyType, int> currencies =
         new Dictionary<CurrencyType, int>();
-
-    private Dictionary<CurrencyType, List<GameObject>> uiObjDictionary =
-        new Dictionary<CurrencyType, List<GameObject>>();
-
-    private Dictionary<CurrencyType, List<TextMeshProUGUI>> uiDictionary =
-        new Dictionary<CurrencyType, List<TextMeshProUGUI>>();
 
     private void Awake()
     {
         instance = this;
 
         InitCurrencies();
-        InitCurrencyUIs();
+        InitUIGroups();
     }
 
     private void Start()
@@ -64,40 +50,23 @@ public class CurrencyManager : MonoBehaviour
     private void InitCurrencies()
     {
         currencies.Clear();
-        uiDictionary.Clear();
-        uiObjDictionary.Clear();
 
         foreach (CurrencyType type in Enum.GetValues(typeof(CurrencyType)))
         {
 
             currencies[type] = defaultStartAmount;
-            uiDictionary[type] = new List<TextMeshProUGUI>();
-            uiObjDictionary[type] = new List<GameObject>();
         }
     }
 
-    private void InitCurrencyUIs()
+    private void InitUIGroups()
     {
-        if (currencyUIs == null)
+        if (!autoFindUIGroupsInChildren)
             return;
 
-        foreach (var ui in currencyUIs)
-        {
-            if (ui == null)
-                continue;
+        if (uiGroups != null && uiGroups.Length > 0)
+            return;
 
-            if (!uiDictionary.ContainsKey(ui.type))
-                uiDictionary[ui.type] = new List<TextMeshProUGUI>();
-
-            if (!uiObjDictionary.ContainsKey(ui.type))
-                uiObjDictionary[ui.type] = new List<GameObject>();
-
-            if (ui.textUI != null)
-                uiDictionary[ui.type].Add(ui.textUI);
-
-            if (ui.textObj != null)
-                uiObjDictionary[ui.type].Add(ui.textObj);
-        }
+        uiGroups = GetComponentsInChildren<CurrencyUIGroup>(true);
     }
 
     public int GetCurrency(CurrencyType type)
@@ -108,25 +77,35 @@ public class CurrencyManager : MonoBehaviour
         return currencies[type];
     }
 
-    public void AddCurrency(Cost[] cost)
+    public void AddCurrency(Cost[] costs)
     {
-        foreach(var c in cost)
-        {
-            AddCurrency(c);
-        }
-    }
-    public void AddCurrency(Cost cost)
-    {
-
-        if (cost.amount <= 0)
+        if (costs == null)
             return;
 
-        if (!currencies.ContainsKey(cost.currencyType))
-            currencies[cost.currencyType] = 0;
+        for (int i = 0; i < costs.Length; i++)
+            AddCurrency(costs[i]);
+    }
 
-        currencies[cost.currencyType] += cost.amount;
+    public void AddCurrency(Cost cost)
+    {
+        if (cost == null)
+            return;
 
-        UpdateUI(cost.currencyType);
+        AddCurrency(cost.currencyType, cost.amount);
+    }
+
+    public void AddCurrency(CurrencyType type, int amount)
+    {
+        if (amount <= 0)
+            return;
+
+
+        if (!currencies.ContainsKey(type))
+            currencies[type] = 0;
+
+        currencies[type] += amount;
+
+        UpdateUI(type);
     }
 
     public bool HasCurrency(CurrencyType type, int amount)
@@ -142,7 +121,6 @@ public class CurrencyManager : MonoBehaviour
 
     public bool SpendCurrency(CurrencyType type, int amount)
     {
-
         if (amount <= 0)
             return true;
 
@@ -249,26 +227,15 @@ public class CurrencyManager : MonoBehaviour
 
         int amount = currencies[type];
 
-        if (uiDictionary.ContainsKey(type))
+        if (uiGroups == null)
+            return;
+
+        for (int i = 0; i < uiGroups.Length; i++)
         {
-            foreach (var textUI in uiDictionary[type])
-            {
-                if (textUI == null)
-                    continue;
+            if (uiGroups[i] == null)
+                continue;
 
-                textUI.text = amount.ToString();
-            }
-        }
-
-        if (uiObjDictionary.ContainsKey(type))
-        {
-            foreach (var textObj in uiObjDictionary[type])
-            {
-                if (textObj == null)
-                    continue;
-
-                textObj.SetActive(amount > 0 || type == CurrencyType.Gold);
-            }
+            uiGroups[i].UpdateUI(type, amount);
         }
     }
 
@@ -276,7 +243,6 @@ public class CurrencyManager : MonoBehaviour
     {
         foreach (CurrencyType type in Enum.GetValues(typeof(CurrencyType)))
         {
-
             UpdateUI(type);
         }
     }
