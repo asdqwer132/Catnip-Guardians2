@@ -1,14 +1,14 @@
 using System;
 using UnityEngine;
 
+[Serializable]
+public class ObjectUIBinding
+{
+    public int index;
+    public GameObject pannels;
+}
 public class QuickInfoUI : MonoBehaviour
 {
-    [Serializable]
-    public class ObjectUIBinding
-    {
-        public int index;
-        public GameObject pannels;
-    }
 
     [Header("Manager")]
     public BagSelectManager bagSelectManager;

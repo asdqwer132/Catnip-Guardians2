@@ -191,8 +191,8 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 0
-  m_StartCorner: 0
+  m_ChildAlignment: 2
+  m_StartCorner: 1
   m_StartAxis: 0
   m_CellSize: {x: 100, y: 100}
   m_Spacing: {x: 0, y: 0}
@@ -509,6 +509,7 @@ GameObject:
   - component: {fileID: 7198190026934997515}
   - component: {fileID: 453336223191142069}
   - component: {fileID: 6466682211163937130}
+  - component: {fileID: 7754589435150047168}
   m_Layer: 5
   m_Name: CurrentBag
   m_TagString: Untagged
@@ -588,10 +589,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BagCooldownUI
   selectedFrame: {fileID: 0}
-  bagCooldownFill: {fileID: 0}
-  bagCooldownText: {fileID: 0}
   slotUIParent: {fileID: 6574724753243310105}
   slotUIPrefab: {fileID: 7360696520956671010, guid: bf34c1e56a31c5742be4241f27e41935, type: 3}
+--- !u!114 &7754589435150047168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5450683034549810864}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: affad4a121a2cc34b90ee3f0406be566, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AllBagInBag
+  bagId: 
+  bagIcon: {fileID: 7465626235462320526}
+  count: {fileID: 1288074092241691706}
 --- !u!1 &7553576660346609384
 GameObject:
   m_ObjectHideFlags: 0

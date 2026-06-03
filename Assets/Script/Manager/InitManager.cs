@@ -13,6 +13,7 @@ public class InitManager : MonoBehaviour
 
     [Header("UI")]
     public SkillTreeUI skillTreeUI;
+    public BagUIInitializer bagUIInitializer;
     public SelectedBagPreviewUI selectedBagPreviewUI;
 
     public void InitAll()
@@ -24,6 +25,7 @@ public class InitManager : MonoBehaviour
         buffSkillManager.ExecuteAllRegisteredBuffItems(buffSkillManager.gameObject, 0);
         EnemyManager enemyManager = EnemyManager.instance;
         DamageArea.ClearAllActiveAreas();
+        bagUIInitializer.InitAll();
         enemyManager.KillAllEnemies();
         enemyManager.Init(plantManager.CurrentPlant);
     }
