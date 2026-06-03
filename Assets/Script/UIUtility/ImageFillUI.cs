@@ -8,6 +8,7 @@ public class ImageFillUI : MonoBehaviour
 
     [Header("Option")]
     public bool clampValue = true;
+    public bool reverseFill = false;
 
     private void Awake()
     {
@@ -17,13 +18,14 @@ public class ImageFillUI : MonoBehaviour
 
     public void SetFill01(float value)
     {
-        if (fillImage == null)
-            return;
-
         if (clampValue)
             value = Mathf.Clamp01(value);
 
-        fillImage.fillAmount = value;
+        if (reverseFill)
+            value = 1f - value;
+
+        if (fillImage != null)
+            fillImage.fillAmount = value;
     }
 
     public void SetFill(float current, float max)
@@ -35,6 +37,11 @@ public class ImageFillUI : MonoBehaviour
         }
 
         SetFill01(current / max);
+    }
+
+    public void Clear()
+    {
+        SetFill01(0f);
     }
 
     public void SetVisible(bool visible)

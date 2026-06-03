@@ -129,12 +129,7 @@ public class BuffManager : MonoBehaviour
             BuffCalculationMode.SnapshotOnly,
             true
         );
-
-        /*
-         * UseCount  ConsumeUse() 0 Ǿ
-         * ðó  ӱ ٸ ʿ䰡 .
-         * Tick(0f)     UseCount   Ѵ.
-         */
+        
         if (ticker != null)
             ticker.Tick(0f);
 

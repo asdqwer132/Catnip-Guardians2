@@ -13,7 +13,15 @@ public class EquipmentBag : MonoBehaviour
     public EquipmentBagUI bagUI;
 
     public List<InventoryItem> equippedItems = new List<InventoryItem>();
-
+    public int GetEquippedCount()
+    {
+        int count = 0;
+        foreach (InventoryItem item in equippedItems)
+        {
+            count += item.itemData == null ? 0 : 1;
+        }
+        return count;  
+    }
     public void Init()
     {
         equippedItems.Clear();

@@ -18,7 +18,7 @@ public class ItemUseManager : MonoBehaviour
     [Tooltip("»õ Input System¿ë Å°")]
     public Key resetAllCooldownKey = Key.R;
 
-    void Awake()
+    private void Awake()
     {
         if (owner == null)
             owner = gameObject;
@@ -33,12 +33,11 @@ public class ItemUseManager : MonoBehaviour
             cooldownUIController = GetComponent<BagCooldownUIController>();
     }
 
-    void Update()
+    private void Update()
     {
         HandleBagSelectInput();
         HandleUseInput();
         HandleResetCooldownInput();
-        UpdateCooldownUI();
     }
 
     public void Init()
@@ -50,9 +49,8 @@ public class ItemUseManager : MonoBehaviour
             cooldownUIController.Init(bagSelectManager);
 
         ResetAllCooldowns();
-        UpdateCooldownUI();
+        RefreshSelectUI();
     }
-
 
     private void HandleBagSelectInput()
     {
@@ -92,10 +90,7 @@ public class ItemUseManager : MonoBehaviour
 
     public void UseCurrentBagItem()
     {
-        if (bagSelectManager == null)
-            return;
-
-        if (positionProvider == null)
+        if (bagSelectManager == null || positionProvider == null)
             return;
 
         BagItemUseManager bagManager = bagSelectManager.CurrentBagUseManager;
@@ -106,25 +101,27 @@ public class ItemUseManager : MonoBehaviour
         Vector3 startPosition = positionProvider.GetUseStartPosition(owner);
         Vector3 targetPosition = positionProvider.GetMouseWorldPosition();
 
-        bagManager.TryUseNextItem(startPosition, targetPosition, owner);
+        bool used = bagManager.TryUseNextItem(startPosition, targetPosition, owner);
+
+        if (used)
+            RefreshSelectUI();
     }
 
     public void ResetAllCooldowns()
     {
         if (bagSelectManager == null)
             return;
-        
 
         bagSelectManager.ResetAllCooldowns();
-        UpdateCooldownUI();
+        RefreshSelectUI();
     }
 
-    private void UpdateCooldownUI()
+    private void RefreshSelectUI()
     {
         if (cooldownUIController == null)
             return;
 
-        cooldownUIController.UpdateUI(bagSelectManager);
+        cooldownUIController.RefreshSelection();
     }
 
     private bool IsPointerOverUI()

@@ -1,16 +1,10 @@
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class BagCooldownUI : MonoBehaviour
 {
     [Header("Select UI")]
     public GameObject selectedFrame;
-
-    [Header("Bag UI")]
-    public Image bagCooldownFill;
-    public TextMeshProUGUI bagCooldownText;
 
     [Header("Slot Create UI")]
     public Transform slotUIParent;
@@ -25,40 +19,38 @@ public class BagCooldownUI : MonoBehaviour
         if (manager == null || manager.bag == null || manager.bag.equippedItems == null)
             return;
 
-        if (slotUIParent == null)
+        if (slotUIParent == null || slotUIPrefab == null)
             return;
 
-        if (slotUIPrefab == null)
-            return;
-
-        int slotCount = manager.bag.equippedItems.Count;
+        int slotCount = manager.bag.GetEquippedCount();
 
         for (int i = 0; i < slotCount; i++)
         {
             BagSlotCooldownUI slotUI = Instantiate(slotUIPrefab, slotUIParent);
             slotUI.gameObject.SetActive(true);
-
             slotUIs.Add(slotUI);
         }
 
         RefreshSlotItemIcons(manager);
     }
 
-    public void UpdateUI(BagItemUseManager manager, bool isSelected)
+    public void RefreshUI(BagItemUseManager manager, bool isSelected)
     {
         UpdateSelectedUI(isSelected);
+        ClearNextUseSlotImages();
 
         if (manager == null)
         {
-            ClearCooldownUI();
             ClearSlotUIsVisualOnly();
             return;
         }
 
-        UpdateBagCooldown(manager);
-        UpdateSlotCooldowns(manager);
-        UpdateNextUseSlotImages(manager, isSelected);
         RefreshSlotItemIcons(manager);
+
+        if (!isSelected)
+            return;
+
+        UpdateNextUseSlotImage(manager);
     }
 
     private void UpdateSelectedUI(bool isSelected)
@@ -67,50 +59,15 @@ public class BagCooldownUI : MonoBehaviour
             selectedFrame.SetActive(isSelected);
     }
 
-    private void UpdateBagCooldown(BagItemUseManager manager)
+    private void UpdateNextUseSlotImage(BagItemUseManager manager)
     {
-        float ratio = manager.GetBagCooldownRatio();
-        float remain = manager.GetBagCooldownRemain();
-
-        if (bagCooldownFill != null)
-        {
-            bagCooldownFill.fillAmount = ratio;
-        }
-
-        if (bagCooldownText != null)
-        {
-            if (remain > 0f)
-                bagCooldownText.text = remain.ToString("F1");
-            else
-                bagCooldownText.text = "";
-        }
-    }
-
-    private void UpdateSlotCooldowns(BagItemUseManager manager)
-    {
-        for (int i = 0; i < slotUIs.Count; i++)
-        {
-            if (slotUIs[i] == null)
-                continue;
-
-            float ratio = manager.GetSlotCooldownRatio(i);
-            float remain = manager.GetSlotCooldownRemain(i);
-
-            slotUIs[i].SetCooldown(ratio, remain);
-        }
-    }
-
-    private void UpdateNextUseSlotImages(BagItemUseManager manager, bool isSelected)
-    {
-        ClearNextUseSlotImages();
-
-        if (!isSelected)
+        if (manager == null)
             return;
 
-        int nextSlotIndex = manager.GetNextReadyUsableSlotIndexForUI();
-
-        if (nextSlotIndex == -1)
+        if (manager.IsBagCoolingDown())
             return;
+
+        int nextSlotIndex = GetNextSlotIndex(manager);
 
         if (nextSlotIndex < 0 || nextSlotIndex >= slotUIs.Count)
             return;
@@ -119,6 +76,35 @@ public class BagCooldownUI : MonoBehaviour
             return;
 
         slotUIs[nextSlotIndex].SetNextUse(true);
+    }
+
+    private int GetNextSlotIndex(BagItemUseManager manager)
+    {
+        int readyIndex = manager.GetNextReadyUsableSlotIndexForUI();
+
+        if (readyIndex >= 0)
+            return readyIndex;
+
+        return FindNextItemSlotIndex(manager);
+    }
+
+    private int FindNextItemSlotIndex(BagItemUseManager manager)
+    {
+        if (manager == null || manager.bag == null || manager.bag.equippedItems == null)
+            return -1;
+
+        InventoryItem nextItem = manager.GetNextUsableInventoryItemForUI();
+
+        if (nextItem == null)
+            return -1;
+
+        for (int i = 0; i < manager.bag.equippedItems.Count; i++)
+        {
+            if (manager.bag.equippedItems[i] == nextItem)
+                return i;
+        }
+
+        return -1;
     }
 
     private void RefreshSlotItemIcons(BagItemUseManager manager)
@@ -134,9 +120,7 @@ public class BagCooldownUI : MonoBehaviour
             InventoryItem item = null;
 
             if (i < manager.bag.equippedItems.Count)
-            {
                 item = manager.bag.equippedItems[i];
-            }
 
             slotUIs[i].SetItem(item);
         }
@@ -147,19 +131,8 @@ public class BagCooldownUI : MonoBehaviour
         for (int i = 0; i < slotUIs.Count; i++)
         {
             if (slotUIs[i] != null)
-            {
                 slotUIs[i].SetNextUse(false);
-            }
         }
-    }
-
-    private void ClearCooldownUI()
-    {
-        if (bagCooldownFill != null)
-            bagCooldownFill.fillAmount = 0f;
-
-        if (bagCooldownText != null)
-            bagCooldownText.text = "";
     }
 
     private void ClearSlotUIsVisualOnly()
@@ -167,9 +140,7 @@ public class BagCooldownUI : MonoBehaviour
         for (int i = 0; i < slotUIs.Count; i++)
         {
             if (slotUIs[i] != null)
-            {
                 slotUIs[i].Clear();
-            }
         }
     }
 
@@ -178,9 +149,7 @@ public class BagCooldownUI : MonoBehaviour
         for (int i = slotUIs.Count - 1; i >= 0; i--)
         {
             if (slotUIs[i] != null)
-            {
                 Destroy(slotUIs[i].gameObject);
-            }
         }
 
         slotUIs.Clear();

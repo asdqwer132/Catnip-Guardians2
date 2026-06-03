@@ -2,56 +2,98 @@ using UnityEngine;
 
 public class BagCooldownUIController : MonoBehaviour
 {
-    [Header("UI")]
-    public BagCooldownUI[] bagCooldownUIs;
-
-    public void Init(BagSelectManager bagSelectManager)
+    [System.Serializable]
+    public class BagCooldownUIBinding
     {
-        BuildAllBagSlotUIs(bagSelectManager);
-        UpdateUI(bagSelectManager);
+        [Header("Target")]
+        public int bagIndex;
+
+        [Header("UI")]
+        public BagCooldownUI cooldownUI;
     }
 
-    public void BuildAllBagSlotUIs(BagSelectManager bagSelectManager)
+    [Header("UI Bindings")]
+    public BagCooldownUIBinding[] bindings;
+
+    private BagSelectManager bagSelectManager;
+
+    private void OnDisable()
     {
-        if (bagCooldownUIs == null)
+        Unsubscribe();
+    }
+
+    public void Init(BagSelectManager targetBagSelectManager)
+    {
+        Unsubscribe();
+
+        bagSelectManager = targetBagSelectManager;
+
+        Subscribe();
+        BuildAllBagSlotUIs();
+        RefreshSelection();
+    }
+
+    public void RefreshSelection()
+    {
+        if (bindings == null)
             return;
 
-        for (int i = 0; i < bagCooldownUIs.Length; i++)
+        for (int i = 0; i < bindings.Length; i++)
         {
-            if (bagCooldownUIs[i] == null)
+            BagCooldownUIBinding binding = bindings[i];
+
+            if (binding == null || binding.cooldownUI == null)
                 continue;
 
-            BagItemUseManager manager = null;
+            BagItemUseManager manager = GetManager(binding.bagIndex);
+            bool isSelected = bagSelectManager != null && binding.bagIndex == bagSelectManager.CurrentBagIndex;
 
-            if (bagSelectManager != null)
-            {
-                manager = bagSelectManager.GetBagUseManager(i);
-            }
-
-            bagCooldownUIs[i].BuildSlotUIs(manager);
+            binding.cooldownUI.RefreshUI(manager, isSelected);
         }
     }
 
-    public void UpdateUI(BagSelectManager bagSelectManager)
+    public void BuildAllBagSlotUIs()
     {
-        if (bagCooldownUIs == null)
+        if (bindings == null)
             return;
 
-        for (int i = 0; i < bagCooldownUIs.Length; i++)
+        for (int i = 0; i < bindings.Length; i++)
         {
-            if (bagCooldownUIs[i] == null)
+            BagCooldownUIBinding binding = bindings[i];
+
+            if (binding == null || binding.cooldownUI == null)
                 continue;
 
-            BagItemUseManager manager = null;
-            bool isSelected = false;
-
-            if (bagSelectManager != null)
-            {
-                manager = bagSelectManager.GetBagUseManager(i);
-                isSelected = i == bagSelectManager.CurrentBagIndex;
-            }
-
-            bagCooldownUIs[i].UpdateUI(manager, isSelected);
+            BagItemUseManager manager = GetManager(binding.bagIndex);
+            binding.cooldownUI.BuildSlotUIs(manager);
         }
+    }
+
+    private void Subscribe()
+    {
+        if (bagSelectManager != null)
+            bagSelectManager.OnBagSelected += HandleBagSelected;
+    }
+
+    private void Unsubscribe()
+    {
+        if (bagSelectManager != null)
+            bagSelectManager.OnBagSelected -= HandleBagSelected;
+    }
+
+    private void HandleBagSelected(int bagIndex)
+    {
+        RefreshSelection();
+    }
+
+    private BagItemUseManager GetManager(int bagIndex)
+    {
+        if (bagSelectManager == null)
+            return null;
+
+        if (bagIndex < 0)
+            return null;
+
+        return bagSelectManager.GetBagUseManager(bagIndex);
     }
 }
