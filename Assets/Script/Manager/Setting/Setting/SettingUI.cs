@@ -9,6 +9,7 @@ public class SettingUI : MonoBehaviour
 
     [Header("Pause")]
     public bool pauseWhenOpen = true;
+
     private float previousTimeScale = 1f;
     private bool isOpen = false;
 
@@ -31,6 +32,12 @@ public class SettingUI : MonoBehaviour
 
     private bool isInitialized = false;
 
+    private void OnEnable()
+    {
+        if (SettingManager.instance != null)
+            SettingManager.instance.RegisterSettingUI(this);
+    }
+
     private void Start()
     {
         Init();
@@ -39,6 +46,21 @@ public class SettingUI : MonoBehaviour
             settingPanel.SetActive(false);
 
         isOpen = false;
+    }
+
+    private void OnDisable()
+    {
+        if (SettingManager.instance != null)
+            SettingManager.instance.UnregisterSettingUI(this);
+    }
+
+    private void OnDestroy()
+    {
+        if (pauseWhenOpen && isOpen)
+            Time.timeScale = previousTimeScale <= 0f ? 1f : previousTimeScale;
+
+        if (SettingManager.instance != null)
+            SettingManager.instance.UnregisterSettingUI(this);
     }
 
     public void Init()
@@ -139,6 +161,9 @@ public class SettingUI : MonoBehaviour
 
     public void OpenSetting()
     {
+        if (isOpen)
+            return;
+
         if (settingPanel != null)
             settingPanel.SetActive(true);
 
@@ -153,15 +178,16 @@ public class SettingUI : MonoBehaviour
 
     public void CloseSetting()
     {
+        if (!isOpen)
+            return;
+
         if (settingPanel != null)
             settingPanel.SetActive(false);
 
         isOpen = false;
 
         if (pauseWhenOpen)
-        {
             Time.timeScale = previousTimeScale <= 0f ? 1f : previousTimeScale;
-        }
     }
 
     public void ToggleSetting()

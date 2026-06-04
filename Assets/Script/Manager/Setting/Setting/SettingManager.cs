@@ -11,14 +11,13 @@ public class SettingManager : MonoBehaviour
     public AudioManager audioManager;
     public CursorChanger cursorChanger;
 
+    private SettingUI currentSettingUI;
+
     private const string MASTER_VOLUME = "Setting_MasterVolume";
     private const string BGM_VOLUME = "Setting_BgmVolume";
     private const string SFX_VOLUME = "Setting_SfxVolume";
-
     private const string CURSOR_SCALE = "Setting_CursorScale";
-
     private const string INDICATOR_SPRITE_SIZE = "Setting_IndicatorSpriteSize";
-
     private const string SHOW_DAMAGE_POPUP = "Setting_ShowDamagePopup";
     private const string SHOW_HEALTH_BAR = "Setting_ShowHealthBar";
 
@@ -35,6 +34,47 @@ public class SettingManager : MonoBehaviour
 
         Load();
         ApplyAll();
+    }
+
+    public void RegisterSettingUI(SettingUI settingUI)
+    {
+        currentSettingUI = settingUI;
+    }
+
+    public void UnregisterSettingUI(SettingUI settingUI)
+    {
+        if (currentSettingUI == settingUI)
+            currentSettingUI = null;
+    }
+
+    public void OpenSetting()
+    {
+        if (currentSettingUI == null)
+        {
+            Debug.LogWarning("현재 씬에 SettingUI가 없습니다.");
+            return;
+        }
+
+        currentSettingUI.OpenSetting();
+    }
+
+    public void CloseSetting()
+    {
+        if (currentSettingUI == null)
+            return;
+
+        currentSettingUI.CloseSetting();
+    }
+
+    public void ToggleSetting()
+    {
+        if (currentSettingUI == null)
+        {
+            Debug.LogWarning("현재 씬에 SettingUI가 없습니다.");
+            return;
+        }
+
+        currentSettingUI.ToggleSetting();
     }
 
     public void Load()
@@ -72,10 +112,6 @@ public class SettingManager : MonoBehaviour
     {
         ApplyAudio();
         ApplyCursor();
-
-        // 중요:
-        // 여기서 TargetRangeIndicator를 찾지 않는다.
-        // 인디케이터는 프리팹 생성 시 자기 자신이 설정을 읽는다.
     }
 
     public GameSettingData GetSetting()
@@ -117,7 +153,6 @@ public class SettingManager : MonoBehaviour
         index = Mathf.Clamp(index, 0, 2);
 
         setting.indicatorSpriteSize = index;
-
         Save();
     }
 

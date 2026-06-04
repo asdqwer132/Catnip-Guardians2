@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8738251064908998243}
   - component: {fileID: 909076942226695116}
   - component: {fileID: 5474728719956599969}
+  - component: {fileID: 6783302575375445878}
   m_Layer: 5
   m_Name: Setting
   m_TagString: Untagged
@@ -106,7 +107,7 @@ MonoBehaviour:
     m_FadeDuration: 0.1
   m_SpriteState:
     m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 7525495488225210159, guid: 548424832e7d8e846b76af6ee4efe7ba, type: 3}
+    m_PressedSprite: {fileID: -912741352, guid: b9499dcac1bd5f34b8aeb0266a752306, type: 3}
     m_SelectedSprite: {fileID: 0}
     m_DisabledSprite: {fileID: 0}
   m_AnimationTriggers:
@@ -119,4 +120,28 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 909076942226695116}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6783302575375445878}
+        m_TargetAssemblyTypeName: SettingUIButton, Assembly-CSharp
+        m_MethodName: OpenSetting
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &6783302575375445878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6849762548010042203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd1d6c85f1225d242bdde8b4829cbb6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SettingUIButton
