@@ -49,10 +49,6 @@ public class RoundManager : MonoBehaviour
             upgradePanel.SetActive(true);
 
         CursorChanger.instance.SetCursor(CursorType.Default);
-
-        enemyManager.StopAllSpawners();
-        enemyManager.KillAllEnemies();
-
     }
 
     public void StartNextRound()

@@ -10,6 +10,7 @@ public class InitManager : MonoBehaviour
     public BuffSkillManager buffSkillManager;
     public ItemInitManager itemInitManager;
     public UnlockManager unlockManager;
+    public EnemyManager enemyManager;
 
     [Header("UI")]
     public SkillTreeUI skillTreeUI;
@@ -23,13 +24,15 @@ public class InitManager : MonoBehaviour
         shopManager.InitShop();
         buffManager.ClearAllBuffs();
         buffSkillManager.ExecuteAllRegisteredBuffItems(buffSkillManager.gameObject, 0);
-        EnemyManager enemyManager = EnemyManager.instance;
-        DamageArea.ClearAllActiveAreas();
         bagUIInitializer.InitAll();
-        enemyManager.KillAllEnemies();
         enemyManager.Init(plantManager.CurrentPlant);
     }
 
+    public void ResetEntity()
+    {
+        DamageArea.ClearAllActiveAreas();
+        enemyManager.KillAllEnemies();
+    }
     public void FirstInit()
     {
         unlockManager.Init();

@@ -144,7 +144,48 @@ public class EnemyManager : MonoBehaviour
         currentEnemies.Remove(enemy);
         RefreshEnemyCount();
     }
+    public void AllStop()
+    {
+        DisableAllEnemiesAction();
+        StopAllSpawners();
+    }
 
+    public void AllStart()
+    {
+        EnableAllEnemiesAction();
+        StartAllSpawners();
+    }
+
+    public void StopAllSpawners()
+    {
+        if (enemySpawners == null)
+            return;
+
+        for (int i = 0; i < enemySpawners.Length; i++)
+        {
+            if (enemySpawners[i] == null)
+                continue;
+
+            enemySpawners[i].StopSpawning();
+        }
+    }
+
+    public void StartAllSpawners()
+    {
+        if (enemySpawners == null)
+            return;
+
+        for (int i = 0; i < enemySpawners.Length; i++)
+        {
+            if (enemySpawners[i] == null)
+                continue;
+
+            if (!enemySpawners[i].gameObject.activeInHierarchy)
+                continue;
+
+            enemySpawners[i].StartSpawning();
+        }
+    }
     public void DisableAllEnemiesAction()
     {
         allEnemiesActionDisabled = true;
@@ -195,19 +236,6 @@ public class EnemyManager : MonoBehaviour
         RefreshEnemyCount();
     }
 
-    public void StopAllSpawners()
-    {
-        if (enemySpawners == null)
-            return;
-
-        for (int i = 0; i < enemySpawners.Length; i++)
-        {
-            if (enemySpawners[i] == null)
-                continue;
-
-            enemySpawners[i].StopSpawning();
-        }
-    }
 
     public void KillAllEnemies()
     {
