@@ -31,7 +31,7 @@ public class InitManager : MonoBehaviour
     public void ResetEntity()
     {
         DamageArea.ClearAllActiveAreas();
-        enemyManager.KillAllEnemies();
+        enemyManager.AllStop();
     }
     public void FirstInit()
     {

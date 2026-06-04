@@ -85,6 +85,8 @@ public class EnemyManager : MonoBehaviour
         if (logSpawnTime)
             Debug.Log("Enemy Spawn Init Time: 0.00√ ");
 
+        AllStart();
+
         RefreshEnemyCount();
     }
 

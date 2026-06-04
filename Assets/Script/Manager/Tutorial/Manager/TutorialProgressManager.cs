@@ -1,13 +1,6 @@
 using System;
 using UnityEngine;
-public enum TutorialProgress
-{
-    None = 0,
-    FirstItem = 1,
-    FirstEnemy = 2,
-    FirstBag = 3,
-    Finish = 100
-}
+
 public class TutorialProgressManager : MonoBehaviour
 {
     public static TutorialProgressManager instance;
@@ -63,12 +56,19 @@ public class TutorialProgressManager : MonoBehaviour
         NotifyProgressChanged(previousProgress, currentProgress);
     }
 
+    public void SetProgressByInt(int progress)
+    {
+        SetProgress((TutorialProgress)progress);
+    }
+
     public void ResetProgress()
     {
         TutorialSave.ResetProgress();
 
         TutorialProgress previousProgress = currentProgress;
-        currentProgress = TutorialProgress.None;
+        currentProgress = TutorialProgress.FirstEnemyAttack;
+
+        NotifyProgressChanged(previousProgress, currentProgress);
     }
 
     public bool IsProgress(TutorialProgress progress)

@@ -1,7 +1,7 @@
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
 using TMPro;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class SnapScroll : MonoBehaviour, IEndDragHandler
 {
@@ -11,6 +11,9 @@ public class SnapScroll : MonoBehaviour, IEndDragHandler
     [Header("Page")]
     public int pageCount = 1;
     public float snapSpeed = 10f;
+
+    [Header("Move Option")]
+    public bool instantMove = false;
 
     [Header("Loop")]
     public bool infiniteLoop = false;
@@ -53,24 +56,27 @@ public class SnapScroll : MonoBehaviour, IEndDragHandler
         {
             scrollRect.horizontalNormalizedPosition = targetPos;
             isSnapping = false;
-            UpdateButtons();
-            UpdatePageText();
         }
     }
 
     public void SetPageCount(int count)
     {
         pageCount = Mathf.Max(1, count);
-        currentPage = Mathf.Clamp(currentPage, 0, pageCount - 1);
+
+        if (currentPage >= pageCount)
+            currentPage = pageCount - 1;
+
+        if (currentPage < 0)
+            currentPage = 0;
 
         if (scrollRect != null)
-        {
-            scrollRect.horizontal = pageCount > 1;
-            scrollRect.StopMovement();
-            scrollRect.velocity = Vector2.zero;
-        }
+            scrollRect.enabled = pageCount > 1;
 
         SetTargetByPage(currentPage);
+
+        if (instantMove)
+            MoveToPageInstant(currentPage);
+
         UpdateButtons();
         UpdatePageText();
     }
@@ -80,22 +86,25 @@ public class SnapScroll : MonoBehaviour, IEndDragHandler
         if (pageCount <= 1)
             return;
 
-        MoveToPage(GetNearestPage());
+        int nearestPage = GetNearestPage();
+        MoveToPage(nearestPage);
     }
 
     public void MoveToPage(int pageIndex)
     {
-        if (scrollRect == null)
-            return;
-
         pageIndex = GetValidPageIndex(pageIndex);
 
         currentPage = pageIndex;
         SetTargetByPage(currentPage);
 
-        scrollRect.StopMovement();
-        scrollRect.velocity = Vector2.zero;
-        isSnapping = true;
+        if (instantMove)
+        {
+            ApplyTargetInstant();
+        }
+        else
+        {
+            isSnapping = true;
+        }
 
         UpdateButtons();
         UpdatePageText();
@@ -103,18 +112,11 @@ public class SnapScroll : MonoBehaviour, IEndDragHandler
 
     public void MoveToPageInstant(int pageIndex)
     {
-        if (scrollRect == null)
-            return;
-
         pageIndex = GetValidPageIndex(pageIndex);
 
         currentPage = pageIndex;
         SetTargetByPage(currentPage);
-
-        scrollRect.StopMovement();
-        scrollRect.velocity = Vector2.zero;
-        scrollRect.horizontalNormalizedPosition = targetPos;
-        isSnapping = false;
+        ApplyTargetInstant();
 
         UpdateButtons();
         UpdatePageText();
@@ -122,18 +124,20 @@ public class SnapScroll : MonoBehaviour, IEndDragHandler
 
     public void NextPage()
     {
-        if (pageCount <= 1)
-            return;
-
         MoveToPage(currentPage + 1);
     }
 
     public void PrevPage()
     {
-        if (pageCount <= 1)
-            return;
-
         MoveToPage(currentPage - 1);
+    }
+
+    private void ApplyTargetInstant()
+    {
+        isSnapping = false;
+
+        if (scrollRect != null)
+            scrollRect.horizontalNormalizedPosition = targetPos;
     }
 
     private int GetValidPageIndex(int pageIndex)
@@ -141,16 +145,18 @@ public class SnapScroll : MonoBehaviour, IEndDragHandler
         if (pageCount <= 1)
             return 0;
 
-        if (!infiniteLoop)
-            return Mathf.Clamp(pageIndex, 0, pageCount - 1);
+        if (infiniteLoop)
+        {
+            if (pageIndex < 0)
+                return pageCount - 1;
 
-        if (pageIndex < 0)
-            return pageCount - 1;
+            if (pageIndex >= pageCount)
+                return 0;
 
-        if (pageIndex >= pageCount)
-            return 0;
+            return pageIndex;
+        }
 
-        return pageIndex;
+        return Mathf.Clamp(pageIndex, 0, pageCount - 1);
     }
 
     private void SetTargetByPage(int pageIndex)
@@ -161,59 +167,57 @@ public class SnapScroll : MonoBehaviour, IEndDragHandler
             return;
         }
 
-        float pageSize = 1f / (pageCount - 1);
-        targetPos = pageIndex * pageSize;
+        targetPos = (float)pageIndex / (pageCount - 1);
     }
 
     private int GetNearestPage()
     {
-        if (pageCount <= 1 || scrollRect == null)
+        if (scrollRect == null)
+            return currentPage;
+
+        if (pageCount <= 1)
             return 0;
 
-        float pageSize = 1f / (pageCount - 1);
+        float position = scrollRect.horizontalNormalizedPosition;
+        int nearestPage = Mathf.RoundToInt(position * (pageCount - 1));
 
-        return Mathf.Clamp(
-            Mathf.RoundToInt(scrollRect.horizontalNormalizedPosition / pageSize),
-            0,
-            pageCount - 1
-        );
+        return GetValidPageIndex(nearestPage);
     }
 
     private void UpdateButtons()
     {
+        if (pageCount <= 1)
+        {
+            if (prevButton != null)
+                prevButton.interactable = false;
+
+            if (nextButton != null)
+                nextButton.interactable = false;
+
+            return;
+        }
+
         if (infiniteLoop)
         {
             if (prevButton != null)
-                prevButton.interactable = pageCount > 1;
+                prevButton.interactable = true;
 
             if (nextButton != null)
-                nextButton.interactable = pageCount > 1;
+                nextButton.interactable = true;
 
             return;
         }
 
         if (prevButton != null)
-            prevButton.interactable = pageCount > 1 && currentPage > 0;
+            prevButton.interactable = currentPage > 0;
 
         if (nextButton != null)
-            nextButton.interactable = pageCount > 1 && currentPage < pageCount - 1;
+            nextButton.interactable = currentPage < pageCount - 1;
     }
 
     private void UpdatePageText()
     {
-        if (pageCountText == null)
-            return;
-
-        pageCountText.text = $"{currentPage + 1}/{pageCount}";
-    }
-
-    public int GetCurrentPage()
-    {
-        return currentPage;
-    }
-
-    public int GetPageCount()
-    {
-        return pageCount;
+        if (pageCountText != null)
+            pageCountText.text = $"{currentPage + 1}/{pageCount}";
     }
 }

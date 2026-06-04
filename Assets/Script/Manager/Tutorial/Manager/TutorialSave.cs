@@ -8,7 +8,7 @@ public static class TutorialSave
     {
         int value = PlayerPrefs.GetInt(
             TutorialProgressKey,
-            (int)TutorialProgress.None
+            (int)TutorialProgress.FirstEnemyAttack
         );
 
         return (TutorialProgress)value;

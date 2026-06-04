@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour
 
         if (tutorialEventManager != null)
         {
-            tutorialEventManager.TryHandleProgressChanged(TutorialProgress.FirstItem);
+            tutorialEventManager.TryHandleProgressChanged(TutorialProgress.FirstItemEquip);
         }
     }
     public void StartNextRound()
@@ -43,16 +43,7 @@ public class GameManager : MonoBehaviour
 
         if (tutorialEventManager != null)
         {
-            if (tutorialEventManager.TryHandleProgressChanged(TutorialProgress.None))
-            {
-                EnemyManager.instance.AllStop();
-                Invoke(nameof(Test), 3f);
-            }
+            tutorialEventManager.TryHandleProgressChanged(TutorialProgress.FirstEnemyAttack);
         }
-    }
-    private void Test()
-    {
-        EnemyManager.instance.AllStart();
-
     }
 }
