@@ -62,10 +62,4 @@ public class DamagePopup : MonoBehaviour
         if (canvasGroup != null)
             canvasGroup.alpha = 1f;
     }
-
-    private void OnDestroy()
-    {
-        if (DamagePopupSpawnerManager.instance != null)
-            DamagePopupSpawnerManager.instance.UnregisterPopup(this);
-    }
 }

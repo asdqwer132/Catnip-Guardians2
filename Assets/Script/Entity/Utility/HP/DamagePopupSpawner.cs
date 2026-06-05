@@ -19,17 +19,11 @@ public class DamagePopupSpawner : MonoBehaviour
         if (damagePopupPrefab == null)
             return;
 
-        if (DamagePopupSpawnerManager.instance != null &&
-            !DamagePopupSpawnerManager.instance.CanShowDamagePopup())
-            return;
-
         Vector3 spawnPosition = GetSpawnPosition();
 
         DamagePopup popup = Instantiate(damagePopupPrefab, spawnPosition, Quaternion.identity);
         popup.Init(damage);
 
-        if (DamagePopupSpawnerManager.instance != null)
-            DamagePopupSpawnerManager.instance.RegisterPopup(popup);
     }
 
     private Vector3 GetSpawnPosition()

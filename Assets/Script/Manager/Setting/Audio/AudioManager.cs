@@ -163,7 +163,46 @@ public class AudioManager : MonoBehaviour
     {
         PlaySfx(category, soundName, 1f);
     }
+    public void PlaySfx(string category)
+    {
+        AudioClip clip = GetRandomClipByCategory(category);
 
+        if (clip == null)
+            return;
+
+        PlaySfx(clip);
+    }
+    private AudioClip GetRandomClipByCategory(string category)
+    {
+        if (audioLibrary == null || audioLibrary.clips == null)
+            return null;
+
+        string normalizedCategory = AudioLibrary.NormalizeKey(category);
+
+        List<AudioClip> matchedClips = new List<AudioClip>();
+
+        for (int i = 0; i < audioLibrary.clips.Count; i++)
+        {
+            AudioEntry entry = audioLibrary.clips[i];
+
+            if (entry == null || entry.clip == null)
+                continue;
+
+            if (AudioLibrary.NormalizeKey(entry.category) != normalizedCategory)
+                continue;
+
+            matchedClips.Add(entry.clip);
+        }
+
+        if (matchedClips.Count == 0)
+        {
+            Debug.LogWarning($"해당 카테고리의 오디오 클립이 없습니다: {category}");
+            return null;
+        }
+
+        int randomIndex = Random.Range(0, matchedClips.Count);
+        return matchedClips[randomIndex];
+    }
     public void PlaySfx(string category, string soundName, float volumeScale)
     {
         AudioClip clip = GetClip(category, soundName);

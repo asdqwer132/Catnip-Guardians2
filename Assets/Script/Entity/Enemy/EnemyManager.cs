@@ -107,12 +107,7 @@ public class EnemyManager : MonoBehaviour
             Enemy enemy = currentEnemies[i];
 
             if (enemy == null || !enemy.gameObject.activeInHierarchy)
-            {
                 currentEnemies.RemoveAt(i);
-
-                if (EnemyStatusManager.instance != null && enemy != null)
-                    EnemyStatusManager.instance.RemoveEnemy(enemy);
-            }
         }
 
         currentAliveEnemyCount = currentEnemies.Count;
@@ -132,9 +127,6 @@ public class EnemyManager : MonoBehaviour
         if (!currentEnemies.Contains(enemy))
             currentEnemies.Add(enemy);
 
-        if (EnemyStatusManager.instance != null)
-            EnemyStatusManager.instance.RegisterEnemy(enemy);
-
         if (allEnemiesActionDisabled)
             enemy.DisableAction();
 
@@ -147,9 +139,6 @@ public class EnemyManager : MonoBehaviour
             return;
 
         currentEnemies.Remove(enemy);
-
-        if (EnemyStatusManager.instance != null)
-            EnemyStatusManager.instance.RemoveEnemy(enemy);
 
         RefreshEnemyCount();
     }
@@ -246,9 +235,6 @@ public class EnemyManager : MonoBehaviour
         }
 
         currentEnemies.Clear();
-
-        if (EnemyStatusManager.instance != null)
-            EnemyStatusManager.instance.Clear();
 
         RefreshEnemyCount();
     }

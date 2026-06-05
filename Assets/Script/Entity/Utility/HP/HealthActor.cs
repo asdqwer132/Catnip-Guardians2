@@ -19,6 +19,7 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
     private bool isDying = false;
     private Coroutine deathCoroutine;
     private bool healthBarVisibleBySetting = true;
+    private string tag;
 
     protected virtual void Awake()
     {
@@ -33,6 +34,8 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
 
         if (damagePopupSpawner == null)
             damagePopupSpawner = GetComponent<DamagePopupSpawner>();
+
+        tag = gameObject.tag;
 
         ConnectHealthUI();
         ApplyHealthBarVisibleBySetting();
@@ -252,7 +255,9 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
         health.TakeDamage(damage);
 
         if (AudioManager.instance != null)
-            AudioManager.instance.PlaySfx("Effect", "pyro");
+        {
+            AudioManager.instance.PlaySfx(gameObject.tag);
+        }
     }
 
     public virtual void Heal(float amount)
