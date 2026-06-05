@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class SettingManager : MonoBehaviour
@@ -11,8 +12,8 @@ public class SettingManager : MonoBehaviour
     public AudioManager audioManager;
     public CursorChanger cursorChanger;
 
-    private SettingUI currentSettingUI;
-    private AudioSettingUI currentAudioSettingUI;
+    [Header("Setting Change Listeners")]
+    [SerializeField] private List<MonoBehaviour> settingListeners = new List<MonoBehaviour>();
 
     private const string MASTER_VOLUME = "Setting_MasterVolume";
     private const string BGM_VOLUME = "Setting_BgmVolume";
@@ -39,6 +40,38 @@ public class SettingManager : MonoBehaviour
     private void Start()
     {
         ApplyAll();
+        BroadcastSettingChanged(SettingChangeType.All);
+        SettingWindowController.instance.CloseSetting();
+    }
+
+    public GameSettingData GetSetting()
+    {
+        return setting;
+    }
+
+    public void AddListener(MonoBehaviour listener)
+    {
+        if (listener == null)
+            return;
+
+        if (listener is not ISettingChangeListener settingListener)
+        {
+            Debug.LogWarning($"{listener.name}은 ISettingChangeListener를 구현하지 않았습니다.");
+            return;
+        }
+
+        if (!settingListeners.Contains(listener))
+            settingListeners.Add(listener);
+
+        settingListener.OnSettingChanged(setting, SettingChangeType.All);
+    }
+
+    public void RemoveListener(MonoBehaviour listener)
+    {
+        if (listener == null)
+            return;
+
+        settingListeners.Remove(listener);
     }
 
     public void RegisterAudioManager(AudioManager manager)
@@ -51,69 +84,6 @@ public class SettingManager : MonoBehaviour
     {
         cursorChanger = changer;
         ApplyCursor();
-    }
-
-    public void RegisterSettingUI(SettingUI settingUI)
-    {
-        currentSettingUI = settingUI;
-
-        if (currentSettingUI != null)
-            currentSettingUI.RefreshFromSetting(setting);
-    }
-
-    public void UnregisterSettingUI(SettingUI settingUI)
-    {
-        if (currentSettingUI == settingUI)
-            currentSettingUI = null;
-    }
-
-    public void RegisterAudioSettingUI(AudioSettingUI audioSettingUI)
-    {
-        currentAudioSettingUI = audioSettingUI;
-
-        if (currentAudioSettingUI != null)
-            currentAudioSettingUI.RefreshFromSetting(setting);
-    }
-
-    public void UnregisterAudioSettingUI(AudioSettingUI audioSettingUI)
-    {
-        if (currentAudioSettingUI == audioSettingUI)
-            currentAudioSettingUI = null;
-    }
-
-    public void OpenSetting()
-    {
-        if (currentSettingUI == null)
-        {
-            Debug.LogWarning("현재 씬에 SettingUI가 없습니다.");
-            return;
-        }
-
-        currentSettingUI.OpenSetting();
-    }
-
-    public void CloseSetting()
-    {
-        if (currentSettingUI == null)
-            return;
-
-        currentSettingUI.CloseSetting();
-    }
-
-    public void ToggleSetting()
-    {
-        if (currentSettingUI == null)
-        {
-            Debug.LogWarning("현재 씬에 SettingUI가 없습니다.");
-            return;
-        }
-
-        currentSettingUI.ToggleSetting();
-    }
-
-    public GameSettingData GetSetting()
-    {
-        return setting;
     }
 
     public void Load()
@@ -151,56 +121,58 @@ public class SettingManager : MonoBehaviour
     {
         ApplyAudio();
         ApplyCursor();
-        RefreshAllSettingUI();
-    }
-
-    private void RefreshAllSettingUI()
-    {
-        if (currentSettingUI != null)
-            currentSettingUI.RefreshFromSetting(setting);
-
-        if (currentAudioSettingUI != null)
-            currentAudioSettingUI.RefreshFromSetting(setting);
     }
 
     public void SetMasterVolume(float value)
     {
-        setting.masterVolume = Mathf.Clamp01(value);
+        float newValue = Mathf.Clamp01(value);
+
+        if (Mathf.Approximately(setting.masterVolume, newValue))
+            return;
+
+        setting.masterVolume = newValue;
         ApplyAudio();
         Save();
-
-        if (currentAudioSettingUI != null)
-            currentAudioSettingUI.RefreshFromSetting(setting);
+        BroadcastSettingChanged(SettingChangeType.MasterVolume);
     }
 
     public void SetBgmVolume(float value)
     {
-        setting.bgmVolume = Mathf.Clamp01(value);
+        float newValue = Mathf.Clamp01(value);
+
+        if (Mathf.Approximately(setting.bgmVolume, newValue))
+            return;
+
+        setting.bgmVolume = newValue;
         ApplyAudio();
         Save();
-
-        if (currentAudioSettingUI != null)
-            currentAudioSettingUI.RefreshFromSetting(setting);
+        BroadcastSettingChanged(SettingChangeType.BgmVolume);
     }
 
     public void SetSfxVolume(float value)
     {
-        setting.sfxVolume = Mathf.Clamp01(value);
+        float newValue = Mathf.Clamp01(value);
+
+        if (Mathf.Approximately(setting.sfxVolume, newValue))
+            return;
+
+        setting.sfxVolume = newValue;
         ApplyAudio();
         Save();
-
-        if (currentAudioSettingUI != null)
-            currentAudioSettingUI.RefreshFromSetting(setting);
+        BroadcastSettingChanged(SettingChangeType.SfxVolume);
     }
 
     public void SetCursorScale(float value)
     {
-        setting.cursorScale = Mathf.Clamp(value, 0.5f, 3f);
+        float newValue = Mathf.Clamp(value, 0.5f, 3f);
+
+        if (Mathf.Approximately(setting.cursorScale, newValue))
+            return;
+
+        setting.cursorScale = newValue;
         ApplyCursor();
         Save();
-
-        if (currentSettingUI != null)
-            currentSettingUI.RefreshFromSetting(setting);
+        BroadcastSettingChanged(SettingChangeType.CursorScale);
     }
 
     public void SetIndicatorSpriteSize(float value)
@@ -208,11 +180,12 @@ public class SettingManager : MonoBehaviour
         int index = Mathf.RoundToInt(value);
         index = Mathf.Clamp(index, 0, 2);
 
+        if (setting.indicatorSpriteSize == index)
+            return;
+
         setting.indicatorSpriteSize = index;
         Save();
-
-        if (currentSettingUI != null)
-            currentSettingUI.RefreshFromSetting(setting);
+        BroadcastSettingChanged(SettingChangeType.IndicatorSpriteSize);
     }
 
     public IndicatorSpriteSize GetIndicatorSpriteSize()
@@ -223,20 +196,22 @@ public class SettingManager : MonoBehaviour
 
     public void SetShowDamagePopup(bool value)
     {
+        if (setting.showDamagePopup == value)
+            return;
+
         setting.showDamagePopup = value;
         Save();
-
-        if (currentSettingUI != null)
-            currentSettingUI.RefreshFromSetting(setting);
+        BroadcastSettingChanged(SettingChangeType.ShowDamagePopup);
     }
 
     public void SetShowHealthBar(bool value)
     {
+        if (setting.showHealthBar == value)
+            return;
+
         setting.showHealthBar = value;
         Save();
-
-        if (currentSettingUI != null)
-            currentSettingUI.RefreshFromSetting(setting);
+        BroadcastSettingChanged(SettingChangeType.ShowHealthBar);
     }
 
     private void ApplyAudio()
@@ -261,5 +236,28 @@ public class SettingManager : MonoBehaviour
             return;
 
         cursorChanger.SetCursorScale(setting.cursorScale);
+    }
+
+    private void BroadcastSettingChanged(SettingChangeType changeType)
+    {
+        for (int i = settingListeners.Count - 1; i >= 0; i--)
+        {
+            MonoBehaviour listener = settingListeners[i];
+
+            if (listener == null)
+            {
+                settingListeners.RemoveAt(i);
+                continue;
+            }
+
+            if (listener is ISettingChangeListener settingListener)
+            {
+                settingListener.OnSettingChanged(setting, changeType);
+            }
+            else
+            {
+                Debug.LogWarning($"{listener.name}은 ISettingChangeListener를 구현하지 않았습니다.");
+            }
+        }
     }
 }

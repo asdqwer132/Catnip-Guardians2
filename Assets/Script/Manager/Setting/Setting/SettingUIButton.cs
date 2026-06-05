@@ -4,34 +4,23 @@ public class SettingUIButton : MonoBehaviour
 {
     public void OpenSetting()
     {
-        if (SettingManager.instance == null)
+        if (SettingWindowController.instance == null)
         {
-            Debug.LogWarning("SettingManager가 없습니다.");
+            Debug.LogWarning("SettingWindowController가 없습니다.");
             return;
         }
 
-        SettingManager.instance.OpenSetting();
+        SettingWindowController.instance.OpenSetting();
     }
 
     public void CloseSetting()
     {
-        if (SettingManager.instance == null)
+        if (SettingWindowController.instance == null)
         {
-            Debug.LogWarning("SettingManager가 없습니다.");
+            Debug.LogWarning("SettingWindowController가 없습니다.");
             return;
         }
 
-        SettingManager.instance.CloseSetting();
-    }
-
-    public void ToggleSetting()
-    {
-        if (SettingManager.instance == null)
-        {
-            Debug.LogWarning("SettingManager가 없습니다.");
-            return;
-        }
-
-        SettingManager.instance.ToggleSetting();
+        SettingWindowController.instance.CloseSetting();
     }
 }

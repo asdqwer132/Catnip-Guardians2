@@ -18,6 +18,7 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
 
     private bool isDying = false;
     private Coroutine deathCoroutine;
+    private bool healthBarVisibleBySetting = true;
 
     protected virtual void Awake()
     {
@@ -34,11 +35,13 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
             damagePopupSpawner = GetComponent<DamagePopupSpawner>();
 
         ConnectHealthUI();
+        ApplyHealthBarVisibleBySetting();
     }
 
     protected virtual void OnEnable()
     {
         SubscribeHealth();
+        ApplyHealthBarVisibleBySetting();
     }
 
     protected virtual void OnDisable()
@@ -57,24 +60,18 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
         health.Init(maxHp, fillHp);
 
         ConnectHealthUI();
-        ShowHealthBar();
+        ApplyHealthBarVisibleBySetting();
     }
-
-    #region Pool / Reuse
 
     protected virtual void ResetActorStateForReuse()
     {
         ResetDeathState();
 
-        ShowHealthBar();
+        ApplyHealthBarVisibleBySetting();
 
         if (visual != null)
             visual.ResetVisual();
     }
-
-    #endregion
-
-    #region SetLive
 
     public virtual void Revive(float maxHp, bool fillHp = true)
     {
@@ -89,7 +86,7 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
         health.Init(maxHp, fillHp);
 
         ConnectHealthUI();
-        ShowHealthBar();
+        ApplyHealthBarVisibleBySetting();
 
         OnRevived();
     }
@@ -100,7 +97,7 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
         isDying = false;
     }
 
-    IEnumerator DeathRoutine()
+    private IEnumerator DeathRoutine()
     {
         OnDeathStarted();
 
@@ -127,11 +124,7 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
         }
     }
 
-    #endregion
-
-    #region SetUI
-
-    void ConnectHealthUI()
+    private void ConnectHealthUI()
     {
         if (healthBarUI == null)
             return;
@@ -142,13 +135,34 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
         healthBarUI.SetTarget(health);
     }
 
+    public void SetHealthBarVisibleBySetting(bool visible)
+    {
+        healthBarVisibleBySetting = visible;
+        ApplyHealthBarVisibleBySetting();
+    }
+
+    private void ApplyHealthBarVisibleBySetting()
+    {
+        if (healthBarUI == null)
+            return;
+
+        if (IsDead && hideHealthBarOnDeath)
+        {
+            healthBarUI.SetPanelVisibleBySetting(false);
+            return;
+        }
+
+        healthBarUI.SetPanelVisibleBySetting(healthBarVisibleBySetting);
+        healthBarUI.SetTarget(health);
+    }
+
     protected virtual void ShowHealthBar()
     {
         if (healthBarUI == null)
             return;
 
-        healthBarUI.gameObject.SetActive(true);
         healthBarUI.SetTarget(health);
+        ApplyHealthBarVisibleBySetting();
     }
 
     protected virtual void HideHealthBar()
@@ -156,10 +170,10 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
         if (healthBarUI == null)
             return;
 
-        healthBarUI.gameObject.SetActive(false);
+        healthBarUI.SetPanelVisibleBySetting(false);
     }
 
-    void ShowDamagePopup(float damage)
+    private void ShowDamagePopup(float damage)
     {
         if (!useDamagePopup)
             return;
@@ -167,14 +181,14 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
         if (damagePopupSpawner == null)
             return;
 
-        damagePopupSpawner.ShowDamage(damage);
+        if (SettingManager.instance != null &&
+            SettingManager.instance.setting.showDamagePopup)
+        {
+            damagePopupSpawner.ShowDamage(damage);
+        }
     }
 
-    #endregion
-
-    #region SetHealthComponnet
-
-    void SubscribeHealth()
+    private void SubscribeHealth()
     {
         if (health == null)
             return;
@@ -189,7 +203,7 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
         health.OnDead += HandleDeadInternal;
     }
 
-    void UnsubscribeHealth()
+    private void UnsubscribeHealth()
     {
         if (health == null)
             return;
@@ -199,7 +213,7 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
         health.OnDead -= HandleDeadInternal;
     }
 
-    void HandleDamagedInternal(float damage)
+    private void HandleDamagedInternal(float damage)
     {
         if (isDying)
             return;
@@ -208,7 +222,7 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
         OnDamaged(damage);
     }
 
-    void HandleHealedInternal(float amount)
+    private void HandleHealedInternal(float amount)
     {
         if (isDying)
             return;
@@ -216,7 +230,7 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
         OnHealed(amount);
     }
 
-    void HandleDeadInternal()
+    private void HandleDeadInternal()
     {
         if (isDying)
             return;
@@ -226,10 +240,6 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
         StopDeathRoutine();
         deathCoroutine = StartCoroutine(DeathRoutine());
     }
-
-    #endregion
-
-    #region Event
 
     public virtual void TakeDamage(float damage)
     {
@@ -241,7 +251,8 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
 
         health.TakeDamage(damage);
 
-        AudioManager.instance.PlaySfx("Effect", "pyro");
+        if (AudioManager.instance != null)
+            AudioManager.instance.PlaySfx("Effect", "pyro");
     }
 
     public virtual void Heal(float amount)
@@ -255,15 +266,9 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
         health.Heal(amount);
     }
 
-    #endregion
-
-    #region OnEvent
-
     protected virtual void OnDamaged(float damage) { }
     protected virtual void OnHealed(float amount) { }
     protected virtual void OnDeathStarted() { }
     protected virtual void OnDeathFinished() { }
     protected virtual void OnRevived() { }
-
-    #endregion
 }

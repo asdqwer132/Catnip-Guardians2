@@ -189,7 +189,7 @@ public class Enemy : HealthActor, IPoolable
         }
 
         if (EnemyManager.instance != null)
-            EnemyManager.instance.RemoveEnemy(gameObject);
+            EnemyManager.instance.RemoveEnemy(this);
     }
 
     #endregion
@@ -218,7 +218,7 @@ public class Enemy : HealthActor, IPoolable
     void ReturnSelfToPool()
     {
         if (EnemyManager.instance != null)
-            EnemyManager.instance.RemoveEnemy(gameObject);
+            EnemyManager.instance.RemoveEnemy(this);
 
         if (ObjectPoolManager.instance != null)
         {

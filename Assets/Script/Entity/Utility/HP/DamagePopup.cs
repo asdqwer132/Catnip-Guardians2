@@ -18,17 +18,18 @@ public class DamagePopup : MonoBehaviour
     private float timer;
     private CanvasGroup canvasGroup;
 
-    void Awake()
+    private void Awake()
     {
         if (damageText == null)
             damageText = GetComponentInChildren<TextMeshProUGUI>();
 
         canvasGroup = GetComponent<CanvasGroup>();
+
         if (canvasGroup == null)
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
     }
 
-    void Update()
+    private void Update()
     {
         timer += Time.deltaTime;
 
@@ -60,5 +61,11 @@ public class DamagePopup : MonoBehaviour
 
         if (canvasGroup != null)
             canvasGroup.alpha = 1f;
+    }
+
+    private void OnDestroy()
+    {
+        if (DamagePopupSpawnerManager.instance != null)
+            DamagePopupSpawnerManager.instance.UnregisterPopup(this);
     }
 }

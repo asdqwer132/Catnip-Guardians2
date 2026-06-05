@@ -2,13 +2,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SettingUI : MonoBehaviour
+public class SettingUI : MonoBehaviour, ISettingChangeListener
 {
     [Header("Panel")]
     public GameObject settingPanel;
-
-    [Header("Pause")]
-    public bool pauseWhenOpen = true;
 
     [Header("Cursor")]
     public Slider cursorScaleSlider;
@@ -18,76 +15,88 @@ public class SettingUI : MonoBehaviour
     public Slider indicatorSpriteSizeSlider;
     public TextMeshProUGUI indicatorSpriteSizeText;
 
-    [Header("Gameplay")]
-    public Toggle damagePopupToggle;
-    public Toggle healthBarToggle;
+    [Header("Display")]
+    public Toggle showDamagePopupToggle;
+    public Toggle showHealthBarToggle;
 
-    private float previousTimeScale = 1f;
-    private bool isOpen = false;
-    private bool isInitialized = false;
+    private bool isInitialized;
 
-    private void OnEnable()
+    private void Awake()
     {
         BindEvents();
-
-        if (SettingManager.instance != null)
-            SettingManager.instance.RegisterSettingUI(this);
     }
 
     private void Start()
     {
         Init();
-
-        if (settingPanel != null)
-            settingPanel.SetActive(false);
-
-        isOpen = false;
     }
 
-    private void OnDisable()
+    private void BindEvents()
     {
-        if (SettingManager.instance != null)
-            SettingManager.instance.UnregisterSettingUI(this);
-    }
+        if (isInitialized)
+            return;
 
-    private void OnDestroy()
-    {
-        if (pauseWhenOpen && isOpen)
-            Time.timeScale = previousTimeScale <= 0f ? 1f : previousTimeScale;
+        if (cursorScaleSlider != null)
+            cursorScaleSlider.onValueChanged.AddListener(OnCursorScaleChanged);
 
-        if (SettingManager.instance != null)
-            SettingManager.instance.UnregisterSettingUI(this);
+        if (indicatorSpriteSizeSlider != null)
+            indicatorSpriteSizeSlider.onValueChanged.AddListener(OnIndicatorSpriteSizeChanged);
+
+        if (showDamagePopupToggle != null)
+            showDamagePopupToggle.onValueChanged.AddListener(OnShowDamagePopupChanged);
+
+        if (showHealthBarToggle != null)
+            showHealthBarToggle.onValueChanged.AddListener(OnShowHealthBarChanged);
+
+        isInitialized = true;
     }
 
     public void Init()
     {
         if (SettingManager.instance == null)
-        {
-            Debug.LogWarning("SettingManager가 없습니다.");
             return;
-        }
 
-        SetupSliderRanges();
-        BindEvents();
         RefreshFromSetting(SettingManager.instance.GetSetting());
-
-        isInitialized = true;
     }
 
-    private void SetupSliderRanges()
+    public void OpenSetting()
     {
-        if (cursorScaleSlider != null)
-        {
-            cursorScaleSlider.minValue = 0.5f;
-            cursorScaleSlider.maxValue = 3f;
-            cursorScaleSlider.wholeNumbers = false;
-        }
+        if (settingPanel != null)
+            settingPanel.SetActive(true);
 
-        if (indicatorSpriteSizeSlider != null)
+        if (SettingManager.instance != null)
+            RefreshFromSetting(SettingManager.instance.GetSetting());
+    }
+
+    public void CloseSetting()
+    {
+        if (settingPanel != null)
+            settingPanel.SetActive(false);
+    }
+
+    public void ToggleSetting()
+    {
+        if (settingPanel == null)
+            return;
+
+        bool nextState = !settingPanel.activeSelf;
+        settingPanel.SetActive(nextState);
+
+        if (nextState && SettingManager.instance != null)
+            RefreshFromSetting(SettingManager.instance.GetSetting());
+    }
+
+    public void OnSettingChanged(GameSettingData setting, SettingChangeType changeType)
+    {
+        switch (changeType)
         {
-            indicatorSpriteSizeSlider.minValue = 0;
-            indicatorSpriteSizeSlider.maxValue = 2;
-            indicatorSpriteSizeSlider.wholeNumbers = true;
+            case SettingChangeType.All:
+            case SettingChangeType.CursorScale:
+            case SettingChangeType.IndicatorSpriteSize:
+            case SettingChangeType.ShowDamagePopup:
+            case SettingChangeType.ShowHealthBar:
+                RefreshFromSetting(setting);
+                break;
         }
     }
 
@@ -96,165 +105,79 @@ public class SettingUI : MonoBehaviour
         if (setting == null)
             return;
 
-        bool previousInitialized = isInitialized;
-        isInitialized = false;
+        SetSliderWithoutNotify(cursorScaleSlider, setting.cursorScale);
+        SetSliderWithoutNotify(indicatorSpriteSizeSlider, setting.indicatorSpriteSize);
 
-        if (cursorScaleSlider != null)
-            cursorScaleSlider.SetValueWithoutNotify(setting.cursorScale);
+        SetToggleWithoutNotify(showDamagePopupToggle, setting.showDamagePopup);
+        SetToggleWithoutNotify(showHealthBarToggle, setting.showHealthBar);
 
-        if (indicatorSpriteSizeSlider != null)
-            indicatorSpriteSizeSlider.SetValueWithoutNotify(setting.indicatorSpriteSize);
+        if (cursorScaleText != null)
+            cursorScaleText.text = $"{setting.cursorScale:0.0}";
 
-        if (damagePopupToggle != null)
-            damagePopupToggle.SetIsOnWithoutNotify(setting.showDamagePopup);
-
-        if (healthBarToggle != null)
-            healthBarToggle.SetIsOnWithoutNotify(setting.showHealthBar);
-
-        UpdateCursorScaleText(setting.cursorScale);
-        UpdateIndicatorSpriteSizeText(setting.indicatorSpriteSize);
-
-        isInitialized = previousInitialized;
-    }
-
-    private void BindEvents()
-    {
-        if (cursorScaleSlider != null)
-        {
-            cursorScaleSlider.onValueChanged.RemoveListener(OnCursorScaleChanged);
-            cursorScaleSlider.onValueChanged.AddListener(OnCursorScaleChanged);
-        }
-
-        if (indicatorSpriteSizeSlider != null)
-        {
-            indicatorSpriteSizeSlider.onValueChanged.RemoveListener(OnIndicatorSpriteSizeChanged);
-            indicatorSpriteSizeSlider.onValueChanged.AddListener(OnIndicatorSpriteSizeChanged);
-        }
-
-        if (damagePopupToggle != null)
-        {
-            damagePopupToggle.onValueChanged.RemoveListener(OnDamagePopupChanged);
-            damagePopupToggle.onValueChanged.AddListener(OnDamagePopupChanged);
-        }
-
-        if (healthBarToggle != null)
-        {
-            healthBarToggle.onValueChanged.RemoveListener(OnHealthBarChanged);
-            healthBarToggle.onValueChanged.AddListener(OnHealthBarChanged);
-        }
-    }
-
-    public void OpenSetting()
-    {
-        if (isOpen)
-            return;
-
-        if (settingPanel != null)
-            settingPanel.SetActive(true);
-
-        isOpen = true;
-
-        if (pauseWhenOpen)
-        {
-            previousTimeScale = Time.timeScale;
-            Time.timeScale = 0f;
-        }
-    }
-
-    public void CloseSetting()
-    {
-        if (!isOpen)
-            return;
-
-        if (settingPanel != null)
-            settingPanel.SetActive(false);
-
-        isOpen = false;
-
-        if (pauseWhenOpen)
-            Time.timeScale = previousTimeScale <= 0f ? 1f : previousTimeScale;
-    }
-
-    public void ToggleSetting()
-    {
-        if (isOpen)
-            CloseSetting();
-        else
-            OpenSetting();
+        if (indicatorSpriteSizeText != null)
+            indicatorSpriteSizeText.text = GetIndicatorSizeText(setting.indicatorSpriteSize);
     }
 
     private void OnCursorScaleChanged(float value)
     {
-        if (!isInitialized)
+        if (SettingManager.instance == null)
             return;
 
-        if (SettingManager.instance != null)
-            SettingManager.instance.SetCursorScale(value);
-
-        UpdateCursorScaleText(value);
+        SettingManager.instance.SetCursorScale(value);
     }
 
     private void OnIndicatorSpriteSizeChanged(float value)
     {
-        if (!isInitialized)
+        if (SettingManager.instance == null)
             return;
 
-        int index = Mathf.RoundToInt(value);
-
-        if (SettingManager.instance != null)
-            SettingManager.instance.SetIndicatorSpriteSize(index);
-
-        UpdateIndicatorSpriteSizeText(index);
+        SettingManager.instance.SetIndicatorSpriteSize(value);
     }
 
-    private void OnDamagePopupChanged(bool value)
+    private void OnShowDamagePopupChanged(bool value)
     {
-        if (!isInitialized)
+        if (SettingManager.instance == null)
             return;
 
-        if (SettingManager.instance != null)
-            SettingManager.instance.SetShowDamagePopup(value);
+        SettingManager.instance.SetShowDamagePopup(value);
     }
 
-    private void OnHealthBarChanged(bool value)
+    private void OnShowHealthBarChanged(bool value)
     {
-        if (!isInitialized)
+        if (SettingManager.instance == null)
             return;
 
-        if (SettingManager.instance != null)
-            SettingManager.instance.SetShowHealthBar(value);
+        SettingManager.instance.SetShowHealthBar(value);
     }
 
-    private void UpdateCursorScaleText(float value)
+    private void SetSliderWithoutNotify(Slider slider, float value)
     {
-        if (cursorScaleText == null)
+        if (slider == null)
             return;
 
-        cursorScaleText.text = Mathf.RoundToInt(value * 100f) + "%";
+        slider.SetValueWithoutNotify(value);
     }
 
-    private void UpdateIndicatorSpriteSizeText(int index)
+    private void SetToggleWithoutNotify(Toggle toggle, bool value)
     {
-        if (indicatorSpriteSizeText == null)
+        if (toggle == null)
             return;
 
+        toggle.SetIsOnWithoutNotify(value);
+    }
+
+    private string GetIndicatorSizeText(int index)
+    {
         switch (index)
         {
             case 0:
-                indicatorSpriteSizeText.text = "S";
-                break;
-
+                return "S";
             case 1:
-                indicatorSpriteSizeText.text = "M";
-                break;
-
+                return "M";
             case 2:
-                indicatorSpriteSizeText.text = "B";
-                break;
-
+                return "L";
             default:
-                indicatorSpriteSizeText.text = "M";
-                break;
+                return "M";
         }
     }
 }

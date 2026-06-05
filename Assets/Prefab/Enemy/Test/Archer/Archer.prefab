@@ -79,7 +79,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthBarUI
   health: {fileID: 8243966129480628730}
-  hpSlider: {fileID: 9222845647152455465}
+  pannel: {fileID: 8639864238512502697}
+  hpFill: {fileID: 0}
   hideWhenFullHp: 0
   hideWhenDead: 1
 --- !u!1 &5831428086637394887
@@ -221,10 +222,13 @@ MonoBehaviour:
   visual: {fileID: 7063470980320774977}
   damagePopupSpawner: {fileID: 6645173589337704241}
   useDamagePopup: 1
+  hideHealthBarOnDeath: 1
   statData: {fileID: 11400000, guid: 33c92b38104528642babb1e42ece34dc, type: 2}
   actorTarget: {fileID: 1506509451877719227}
   mover: {fileID: 7500191993510811139}
   attack: {fileID: 2430655365351377237}
+  buffManager: {fileID: 0}
+  statRefreshInterval: 0.1
 --- !u!114 &7500191993510811139
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -253,6 +257,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ActorVisual
   animator: {fileID: 1451514569049703972}
   spriteRenderer: {fileID: 5335311948501192886}
+  defaultFaceLeft: 0
   walkingBoolName: IsWalking
   attackTriggerName: Attack
   hitTriggerName: Hit
@@ -272,6 +277,7 @@ MonoBehaviour:
   damage: 5
   attackRange: 1.5
   attackCooldown: 1
+  attackDistanceTolerance: 0.15
   target: {fileID: 1506509451877719227}
   visual: {fileID: 7063470980320774977}
 --- !u!114 &1506509451877719227
@@ -456,14 +462,8 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 5186795204256957725, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
   m_PrefabInstance: {fileID: 8310913712941043610}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &9222845647152455465 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 912096286570811571, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
+--- !u!1 &8639864238512502697 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 337978065884117043, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
   m_PrefabInstance: {fileID: 8310913712941043610}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider

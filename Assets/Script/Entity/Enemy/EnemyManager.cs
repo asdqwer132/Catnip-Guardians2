@@ -18,7 +18,8 @@ public class EnemyManager : MonoBehaviour
     public bool logSpawnTime = true;
     [SerializeField] private int currentAliveEnemyCount;
 
-    private List<GameObject> currentEnemies = new List<GameObject>();
+    private List<Enemy> currentEnemies = new List<Enemy>();
+
     private bool allEnemiesActionDisabled = false;
     private bool loggedThousandEnemies = false;
     private float spawnStartTime;
@@ -86,7 +87,6 @@ public class EnemyManager : MonoBehaviour
             Debug.Log("Enemy Spawn Init Time: 0.00ÃÊ");
 
         AllStart();
-
         RefreshEnemyCount();
     }
 
@@ -104,10 +104,15 @@ public class EnemyManager : MonoBehaviour
     {
         for (int i = currentEnemies.Count - 1; i >= 0; i--)
         {
-            GameObject enemyObject = currentEnemies[i];
+            Enemy enemy = currentEnemies[i];
 
-            if (enemyObject == null || !enemyObject.activeInHierarchy)
+            if (enemy == null || !enemy.gameObject.activeInHierarchy)
+            {
                 currentEnemies.RemoveAt(i);
+
+                if (EnemyStatusManager.instance != null && enemy != null)
+                    EnemyStatusManager.instance.RemoveEnemy(enemy);
+            }
         }
 
         currentAliveEnemyCount = currentEnemies.Count;
@@ -119,7 +124,7 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
-    public void RegisterEnemy(GameObject enemy)
+    public void RegisterEnemy(Enemy enemy)
     {
         if (enemy == null)
             return;
@@ -127,25 +132,28 @@ public class EnemyManager : MonoBehaviour
         if (!currentEnemies.Contains(enemy))
             currentEnemies.Add(enemy);
 
-        if (allEnemiesActionDisabled)
-        {
-            Enemy enemyComponent = enemy.GetComponent<Enemy>();
+        if (EnemyStatusManager.instance != null)
+            EnemyStatusManager.instance.RegisterEnemy(enemy);
 
-            if (enemyComponent != null)
-                enemyComponent.DisableAction();
-        }
+        if (allEnemiesActionDisabled)
+            enemy.DisableAction();
 
         RefreshEnemyCount();
     }
 
-    public void RemoveEnemy(GameObject enemy)
+    public void RemoveEnemy(Enemy enemy)
     {
         if (enemy == null)
             return;
 
         currentEnemies.Remove(enemy);
+
+        if (EnemyStatusManager.instance != null)
+            EnemyStatusManager.instance.RemoveEnemy(enemy);
+
         RefreshEnemyCount();
     }
+
     public void AllStop()
     {
         DisableAllEnemiesAction();
@@ -188,24 +196,20 @@ public class EnemyManager : MonoBehaviour
             enemySpawners[i].StartSpawning();
         }
     }
+
     public void DisableAllEnemiesAction()
     {
         allEnemiesActionDisabled = true;
 
         for (int i = currentEnemies.Count - 1; i >= 0; i--)
         {
-            GameObject enemyObject = currentEnemies[i];
+            Enemy enemy = currentEnemies[i];
 
-            if (enemyObject == null)
+            if (enemy == null)
             {
                 currentEnemies.RemoveAt(i);
                 continue;
             }
-
-            Enemy enemy = enemyObject.GetComponent<Enemy>();
-
-            if (enemy == null)
-                continue;
 
             enemy.DisableAction();
         }
@@ -219,18 +223,13 @@ public class EnemyManager : MonoBehaviour
 
         for (int i = currentEnemies.Count - 1; i >= 0; i--)
         {
-            GameObject enemyObject = currentEnemies[i];
+            Enemy enemy = currentEnemies[i];
 
-            if (enemyObject == null)
+            if (enemy == null)
             {
                 currentEnemies.RemoveAt(i);
                 continue;
             }
-
-            Enemy enemy = enemyObject.GetComponent<Enemy>();
-
-            if (enemy == null)
-                continue;
 
             enemy.EnableAction();
         }
@@ -238,16 +237,19 @@ public class EnemyManager : MonoBehaviour
         RefreshEnemyCount();
     }
 
-
     public void KillAllEnemies()
     {
         for (int i = currentEnemies.Count - 1; i >= 0; i--)
         {
             if (currentEnemies[i] != null)
-                Destroy(currentEnemies[i]);
+                Destroy(currentEnemies[i].gameObject);
         }
 
         currentEnemies.Clear();
+
+        if (EnemyStatusManager.instance != null)
+            EnemyStatusManager.instance.Clear();
+
         RefreshEnemyCount();
     }
 }

@@ -151,7 +151,7 @@ public class EnemySpawner : MonoBehaviour
             enemy.Init(targetPlant, buffManager);
 
         if (EnemyManager.instance != null)
-            EnemyManager.instance.RegisterEnemy(spawnedEnemy);
+            EnemyManager.instance.RegisterEnemy(enemy);
 
         LogSpawnTime(info, usedInterval);
     }

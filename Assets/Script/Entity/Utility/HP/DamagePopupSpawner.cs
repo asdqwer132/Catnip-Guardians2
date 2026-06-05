@@ -19,6 +19,21 @@ public class DamagePopupSpawner : MonoBehaviour
         if (damagePopupPrefab == null)
             return;
 
+        if (DamagePopupSpawnerManager.instance != null &&
+            !DamagePopupSpawnerManager.instance.CanShowDamagePopup())
+            return;
+
+        Vector3 spawnPosition = GetSpawnPosition();
+
+        DamagePopup popup = Instantiate(damagePopupPrefab, spawnPosition, Quaternion.identity);
+        popup.Init(damage);
+
+        if (DamagePopupSpawnerManager.instance != null)
+            DamagePopupSpawnerManager.instance.RegisterPopup(popup);
+    }
+
+    private Vector3 GetSpawnPosition()
+    {
         Vector3 spawnPosition;
 
         if (popupPoint != null)
@@ -32,8 +47,6 @@ public class DamagePopupSpawner : MonoBehaviour
             spawnPosition.y += Random.Range(0f, randomYRange);
         }
 
-        DamagePopup popup = Instantiate(damagePopupPrefab, spawnPosition, Quaternion.identity);
-
-        popup.Init(damage);
+        return spawnPosition;
     }
 }

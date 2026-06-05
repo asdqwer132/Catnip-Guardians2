@@ -4,6 +4,7 @@ public class HealthBarUI : MonoBehaviour
 {
     [Header("Target")]
     public Health health;
+    public GameObject pannel;
 
     [Header("UI")]
     public ImageFillUI hpFill;
@@ -12,6 +13,8 @@ public class HealthBarUI : MonoBehaviour
     public bool hideWhenFullHp = false;
     public bool hideWhenDead = true;
 
+    private bool panelVisibleBySetting = true;
+
     private void Awake()
     {
         if (health == null)
@@ -19,12 +22,15 @@ public class HealthBarUI : MonoBehaviour
 
         if (hpFill == null)
             hpFill = GetComponentInChildren<ImageFillUI>();
+
+        ApplyPanelVisible();
     }
 
     private void OnEnable()
     {
         Subscribe();
         Refresh();
+        ApplyPanelVisible();
     }
 
     private void OnDisable()
@@ -32,7 +38,20 @@ public class HealthBarUI : MonoBehaviour
         Unsubscribe();
     }
 
-    #region Setting
+    public void SetPanelVisibleBySetting(bool visible)
+    {
+        panelVisibleBySetting = visible;
+        ApplyPanelVisible();
+        Refresh();
+    }
+
+    private void ApplyPanelVisible()
+    {
+        if (pannel != null)
+            pannel.SetActive(panelVisibleBySetting);
+        else
+            gameObject.SetActive(panelVisibleBySetting);
+    }
 
     public void SetTarget(Health targetHealth)
     {
@@ -42,6 +61,7 @@ public class HealthBarUI : MonoBehaviour
 
         Subscribe();
         Refresh();
+        ApplyPanelVisible();
     }
 
     private void Subscribe()
@@ -65,10 +85,6 @@ public class HealthBarUI : MonoBehaviour
         health.OnDead -= HandleDead;
     }
 
-    #endregion
-
-    #region Refresh
-
     private void Refresh()
     {
         if (health == null)
@@ -87,11 +103,13 @@ public class HealthBarUI : MonoBehaviour
         if (hideWhenFullHp)
         {
             bool isFull = hp >= maxHp;
-            hpFill.SetVisible(!isFull);
+            hpFill.SetVisible(!isFull && panelVisibleBySetting);
+        }
+        else
+        {
+            hpFill.SetVisible(panelVisibleBySetting);
         }
     }
-
-    #endregion
 
     private void HandleDead()
     {
