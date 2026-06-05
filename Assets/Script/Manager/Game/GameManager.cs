@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
             initManager.FirstInit();
 
         StartNextRound();
+        AudioManager.instance.PlayBgm("Ambient 1");
     }
 
     public void Victory()

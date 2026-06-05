@@ -12,6 +12,7 @@ public class SettingManager : MonoBehaviour
     public CursorChanger cursorChanger;
 
     private SettingUI currentSettingUI;
+    private AudioSettingUI currentAudioSettingUI;
 
     private const string MASTER_VOLUME = "Setting_MasterVolume";
     private const string BGM_VOLUME = "Setting_BgmVolume";
@@ -33,18 +34,51 @@ public class SettingManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         Load();
+    }
+
+    private void Start()
+    {
         ApplyAll();
+    }
+
+    public void RegisterAudioManager(AudioManager manager)
+    {
+        audioManager = manager;
+        ApplyAudio();
+    }
+
+    public void RegisterCursorChanger(CursorChanger changer)
+    {
+        cursorChanger = changer;
+        ApplyCursor();
     }
 
     public void RegisterSettingUI(SettingUI settingUI)
     {
         currentSettingUI = settingUI;
+
+        if (currentSettingUI != null)
+            currentSettingUI.RefreshFromSetting(setting);
     }
 
     public void UnregisterSettingUI(SettingUI settingUI)
     {
         if (currentSettingUI == settingUI)
             currentSettingUI = null;
+    }
+
+    public void RegisterAudioSettingUI(AudioSettingUI audioSettingUI)
+    {
+        currentAudioSettingUI = audioSettingUI;
+
+        if (currentAudioSettingUI != null)
+            currentAudioSettingUI.RefreshFromSetting(setting);
+    }
+
+    public void UnregisterAudioSettingUI(AudioSettingUI audioSettingUI)
+    {
+        if (currentAudioSettingUI == audioSettingUI)
+            currentAudioSettingUI = null;
     }
 
     public void OpenSetting()
@@ -77,6 +111,11 @@ public class SettingManager : MonoBehaviour
         currentSettingUI.ToggleSetting();
     }
 
+    public GameSettingData GetSetting()
+    {
+        return setting;
+    }
+
     public void Load()
     {
         setting.masterVolume = PlayerPrefs.GetFloat(MASTER_VOLUME, 1f);
@@ -84,6 +123,7 @@ public class SettingManager : MonoBehaviour
         setting.sfxVolume = PlayerPrefs.GetFloat(SFX_VOLUME, 1f);
 
         setting.cursorScale = PlayerPrefs.GetFloat(CURSOR_SCALE, 1f);
+        setting.cursorScale = Mathf.Clamp(setting.cursorScale, 0.5f, 3f);
 
         setting.indicatorSpriteSize = PlayerPrefs.GetInt(INDICATOR_SPRITE_SIZE, 1);
         setting.indicatorSpriteSize = Mathf.Clamp(setting.indicatorSpriteSize, 0, 2);
@@ -101,7 +141,6 @@ public class SettingManager : MonoBehaviour
         PlayerPrefs.SetFloat(CURSOR_SCALE, setting.cursorScale);
 
         PlayerPrefs.SetInt(INDICATOR_SPRITE_SIZE, setting.indicatorSpriteSize);
-
         PlayerPrefs.SetInt(SHOW_DAMAGE_POPUP, setting.showDamagePopup ? 1 : 0);
         PlayerPrefs.SetInt(SHOW_HEALTH_BAR, setting.showHealthBar ? 1 : 0);
 
@@ -112,11 +151,16 @@ public class SettingManager : MonoBehaviour
     {
         ApplyAudio();
         ApplyCursor();
+        RefreshAllSettingUI();
     }
 
-    public GameSettingData GetSetting()
+    private void RefreshAllSettingUI()
     {
-        return setting;
+        if (currentSettingUI != null)
+            currentSettingUI.RefreshFromSetting(setting);
+
+        if (currentAudioSettingUI != null)
+            currentAudioSettingUI.RefreshFromSetting(setting);
     }
 
     public void SetMasterVolume(float value)
@@ -124,6 +168,9 @@ public class SettingManager : MonoBehaviour
         setting.masterVolume = Mathf.Clamp01(value);
         ApplyAudio();
         Save();
+
+        if (currentAudioSettingUI != null)
+            currentAudioSettingUI.RefreshFromSetting(setting);
     }
 
     public void SetBgmVolume(float value)
@@ -131,6 +178,9 @@ public class SettingManager : MonoBehaviour
         setting.bgmVolume = Mathf.Clamp01(value);
         ApplyAudio();
         Save();
+
+        if (currentAudioSettingUI != null)
+            currentAudioSettingUI.RefreshFromSetting(setting);
     }
 
     public void SetSfxVolume(float value)
@@ -138,6 +188,9 @@ public class SettingManager : MonoBehaviour
         setting.sfxVolume = Mathf.Clamp01(value);
         ApplyAudio();
         Save();
+
+        if (currentAudioSettingUI != null)
+            currentAudioSettingUI.RefreshFromSetting(setting);
     }
 
     public void SetCursorScale(float value)
@@ -145,6 +198,9 @@ public class SettingManager : MonoBehaviour
         setting.cursorScale = Mathf.Clamp(value, 0.5f, 3f);
         ApplyCursor();
         Save();
+
+        if (currentSettingUI != null)
+            currentSettingUI.RefreshFromSetting(setting);
     }
 
     public void SetIndicatorSpriteSize(float value)
@@ -154,6 +210,9 @@ public class SettingManager : MonoBehaviour
 
         setting.indicatorSpriteSize = index;
         Save();
+
+        if (currentSettingUI != null)
+            currentSettingUI.RefreshFromSetting(setting);
     }
 
     public IndicatorSpriteSize GetIndicatorSpriteSize()
@@ -166,12 +225,18 @@ public class SettingManager : MonoBehaviour
     {
         setting.showDamagePopup = value;
         Save();
+
+        if (currentSettingUI != null)
+            currentSettingUI.RefreshFromSetting(setting);
     }
 
     public void SetShowHealthBar(bool value)
     {
         setting.showHealthBar = value;
         Save();
+
+        if (currentSettingUI != null)
+            currentSettingUI.RefreshFromSetting(setting);
     }
 
     private void ApplyAudio()

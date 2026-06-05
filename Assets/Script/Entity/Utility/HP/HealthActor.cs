@@ -240,6 +240,8 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
             return;
 
         health.TakeDamage(damage);
+
+        AudioManager.instance.PlaySfx("Effect", "pyro");
     }
 
     public virtual void Heal(float amount)

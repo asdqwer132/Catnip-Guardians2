@@ -10,14 +10,6 @@ public class SettingUI : MonoBehaviour
     [Header("Pause")]
     public bool pauseWhenOpen = true;
 
-    private float previousTimeScale = 1f;
-    private bool isOpen = false;
-
-    [Header("Audio Sliders")]
-    public Slider masterVolumeSlider;
-    public Slider bgmVolumeSlider;
-    public Slider sfxVolumeSlider;
-
     [Header("Cursor")]
     public Slider cursorScaleSlider;
     public TextMeshProUGUI cursorScaleText;
@@ -30,10 +22,14 @@ public class SettingUI : MonoBehaviour
     public Toggle damagePopupToggle;
     public Toggle healthBarToggle;
 
+    private float previousTimeScale = 1f;
+    private bool isOpen = false;
     private bool isInitialized = false;
 
     private void OnEnable()
     {
+        BindEvents();
+
         if (SettingManager.instance != null)
             SettingManager.instance.RegisterSettingUI(this);
     }
@@ -71,25 +67,20 @@ public class SettingUI : MonoBehaviour
             return;
         }
 
-        GameSettingData setting = SettingManager.instance.GetSetting();
+        SetupSliderRanges();
+        BindEvents();
+        RefreshFromSetting(SettingManager.instance.GetSetting());
 
-        isInitialized = false;
+        isInitialized = true;
+    }
 
-        if (masterVolumeSlider != null)
-            masterVolumeSlider.value = setting.masterVolume;
-
-        if (bgmVolumeSlider != null)
-            bgmVolumeSlider.value = setting.bgmVolume;
-
-        if (sfxVolumeSlider != null)
-            sfxVolumeSlider.value = setting.sfxVolume;
-
+    private void SetupSliderRanges()
+    {
         if (cursorScaleSlider != null)
         {
             cursorScaleSlider.minValue = 0.5f;
             cursorScaleSlider.maxValue = 3f;
             cursorScaleSlider.wholeNumbers = false;
-            cursorScaleSlider.value = setting.cursorScale;
         }
 
         if (indicatorSpriteSizeSlider != null)
@@ -97,43 +88,37 @@ public class SettingUI : MonoBehaviour
             indicatorSpriteSizeSlider.minValue = 0;
             indicatorSpriteSizeSlider.maxValue = 2;
             indicatorSpriteSizeSlider.wholeNumbers = true;
-            indicatorSpriteSizeSlider.value = setting.indicatorSpriteSize;
         }
+    }
+
+    public void RefreshFromSetting(GameSettingData setting)
+    {
+        if (setting == null)
+            return;
+
+        bool previousInitialized = isInitialized;
+        isInitialized = false;
+
+        if (cursorScaleSlider != null)
+            cursorScaleSlider.SetValueWithoutNotify(setting.cursorScale);
+
+        if (indicatorSpriteSizeSlider != null)
+            indicatorSpriteSizeSlider.SetValueWithoutNotify(setting.indicatorSpriteSize);
 
         if (damagePopupToggle != null)
-            damagePopupToggle.isOn = setting.showDamagePopup;
+            damagePopupToggle.SetIsOnWithoutNotify(setting.showDamagePopup);
 
         if (healthBarToggle != null)
-            healthBarToggle.isOn = setting.showHealthBar;
+            healthBarToggle.SetIsOnWithoutNotify(setting.showHealthBar);
 
         UpdateCursorScaleText(setting.cursorScale);
         UpdateIndicatorSpriteSizeText(setting.indicatorSpriteSize);
 
-        BindEvents();
-
-        isInitialized = true;
+        isInitialized = previousInitialized;
     }
 
     private void BindEvents()
     {
-        if (masterVolumeSlider != null)
-        {
-            masterVolumeSlider.onValueChanged.RemoveListener(OnMasterVolumeChanged);
-            masterVolumeSlider.onValueChanged.AddListener(OnMasterVolumeChanged);
-        }
-
-        if (bgmVolumeSlider != null)
-        {
-            bgmVolumeSlider.onValueChanged.RemoveListener(OnBgmVolumeChanged);
-            bgmVolumeSlider.onValueChanged.AddListener(OnBgmVolumeChanged);
-        }
-
-        if (sfxVolumeSlider != null)
-        {
-            sfxVolumeSlider.onValueChanged.RemoveListener(OnSfxVolumeChanged);
-            sfxVolumeSlider.onValueChanged.AddListener(OnSfxVolumeChanged);
-        }
-
         if (cursorScaleSlider != null)
         {
             cursorScaleSlider.onValueChanged.RemoveListener(OnCursorScaleChanged);
@@ -196,33 +181,6 @@ public class SettingUI : MonoBehaviour
             CloseSetting();
         else
             OpenSetting();
-    }
-
-    private void OnMasterVolumeChanged(float value)
-    {
-        if (!isInitialized)
-            return;
-
-        if (SettingManager.instance != null)
-            SettingManager.instance.SetMasterVolume(value);
-    }
-
-    private void OnBgmVolumeChanged(float value)
-    {
-        if (!isInitialized)
-            return;
-
-        if (SettingManager.instance != null)
-            SettingManager.instance.SetBgmVolume(value);
-    }
-
-    private void OnSfxVolumeChanged(float value)
-    {
-        if (!isInitialized)
-            return;
-
-        if (SettingManager.instance != null)
-            SettingManager.instance.SetSfxVolume(value);
     }
 
     private void OnCursorScaleChanged(float value)
