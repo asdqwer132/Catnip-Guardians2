@@ -14,10 +14,7 @@ public class ActorMover : MonoBehaviour
             visual = GetComponent<ActorVisual>();
     }
 
-    public void SetSpeed(float newSpeed)
-    {
-        speed = newSpeed;
-    }
+    public void SetSpeed(float newSpeed) { speed = newSpeed; }
 
     #region Move
     public void MoveTo(Transform target)

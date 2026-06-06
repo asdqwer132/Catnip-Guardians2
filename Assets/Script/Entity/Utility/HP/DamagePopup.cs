@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 
+//최적화 = 코루틴으로 바꿔 볼것
 public class DamagePopup : MonoBehaviour
 {
     [Header("UI")]

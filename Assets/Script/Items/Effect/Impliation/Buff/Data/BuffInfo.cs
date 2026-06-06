@@ -4,30 +4,27 @@ using UnityEngine;
 [Serializable]
 public class BuffInfo : IGameStat<BuffInfo>
 {
-    [Header("Stackable")]
+    [Header("Stack")]
     public BuffStackMode stackMode = BuffStackMode.Refresh;
-    [Min(1)]
-    public int maxStack = 1;
+    [Min(1)] public int maxStack = 1;
 
-    [Header("Use Limit")]
+    [Header("Timing")]
     public BuffApplyTiming applyTiming = BuffApplyTiming.Snapshot;
+
+    [Header("Limit")]
     public BuffUseLimitType useLimitType = BuffUseLimitType.Time;
-    [Min(0.01f)]
-    public float duration = 1f;
-    [Min(1)]
-    public int maxUseCount = 1;
+    [Min(0.01f)] public float duration = 1f;
+    [Min(1)] public int maxUseCount = 1;
 
     public BuffInfo Clone()
     {
         return new BuffInfo
         {
-            duration = duration,
-
             stackMode = stackMode,
             maxStack = maxStack,
-
             applyTiming = applyTiming,
             useLimitType = useLimitType,
+            duration = duration,
             maxUseCount = maxUseCount
         };
     }
@@ -40,24 +37,5 @@ public class BuffInfo : IGameStat<BuffInfo>
 
         if (stackMode == BuffStackMode.Refresh)
             maxStack = 1;
-    }
-}
-
-[Serializable]
-public class BuffInfoBuffStat : IBuffStat<BuffInfo>
-{
-    [Header("Duration")]
-    public float duration = 0f;
-    public float durationM = 0f;
-
-    public void ApplyTo(BuffInfo target)
-    {
-        if (target == null)
-            return;
-
-        target.duration += duration;
-        target.duration *= 1f + durationM;
-
-        target.Clamp();
     }
 }

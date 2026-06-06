@@ -22,8 +22,10 @@ public class ToggleCheckmarkAnimation : MonoBehaviour
     {
         if (checkmarkAnimator == null)
             return;
+
         slectedImage.SetActive(isOn);
         checkmarkAnimator.gameObject.SetActive(isOn);
+
         if (isOn)
         {
             checkmarkAnimator.Rebind();

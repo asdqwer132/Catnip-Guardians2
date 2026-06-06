@@ -24,7 +24,8 @@ public class ImpactVfxInstance : MonoBehaviour
             Destroy(gameObject);
     }
 
-    public void Init(
+    public void Init
+    (
         ItemEffectData effectData,
         ItemEffectContext context,
         Vector3 baseScale,

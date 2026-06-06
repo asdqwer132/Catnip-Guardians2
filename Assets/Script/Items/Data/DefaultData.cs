@@ -2,14 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum language
-{
-    english,
-    korean
-}
-
 [Serializable]
-public class LanguageData
+public class Description
 {
     public language language;
     public string dataName;
@@ -22,7 +16,7 @@ public class DefaultData : ScriptableObject, IUnlockable
 {
     [Header("Basic Info")]
     public Sprite icon;
-    public LanguageData[] data;
+    public Description[] data;
 
     [Header("Id Info")]
     public string dataId;
@@ -33,11 +27,12 @@ public class DefaultData : ScriptableObject, IUnlockable
     public DataType UnlockType => dataType;
     public string UnlockId => dataId;
 
-    private Dictionary<language, LanguageData> languageDataMap;
+    private Dictionary<language, Description> languageDataMap;
+
     public string GetDataName() => GetDataName(LanguageManager.instance.selectedLan);
     public string GetDataName(language targetLanguage)
     {
-        LanguageData languageData = GetLanguageData(targetLanguage);
+        Description languageData = GetLanguageData(targetLanguage);
 
         if (languageData == null)
             return null;
@@ -48,7 +43,7 @@ public class DefaultData : ScriptableObject, IUnlockable
 
     public string GetDescription(language targetLanguage)
     {
-        LanguageData languageData = GetLanguageData(targetLanguage);
+        Description languageData = GetLanguageData(targetLanguage);
 
         if (languageData == null)
             return null;
@@ -56,11 +51,11 @@ public class DefaultData : ScriptableObject, IUnlockable
         return languageData.description;
     }
 
-    public LanguageData GetLanguageData(language targetLanguage)
+    public Description GetLanguageData(language targetLanguage)
     {
         EnsureLanguageDataMap();
 
-        if (languageDataMap.TryGetValue(targetLanguage, out LanguageData languageData))
+        if (languageDataMap.TryGetValue(targetLanguage, out Description languageData))
             return languageData;
 
         return null;
@@ -71,14 +66,14 @@ public class DefaultData : ScriptableObject, IUnlockable
         if (languageDataMap != null)
             return;
 
-        languageDataMap = new Dictionary<language, LanguageData>();
+        languageDataMap = new Dictionary<language, Description>();
 
         if (data == null)
             return;
 
         for (int i = 0; i < data.Length; i++)
         {
-            LanguageData languageData = data[i];
+            Description languageData = data[i];
 
             if (languageData == null)
                 continue;

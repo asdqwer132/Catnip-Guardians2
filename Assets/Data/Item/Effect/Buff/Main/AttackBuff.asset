@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b250f045bef3cf34fbfec8a0516c81f9, type: 3}
+  m_Name: AttackBuff
+  m_EditorClassIdentifier: Assembly-CSharp::BuffBagItemsEffect
+  impactVfxPrefab: {fileID: 7370820554304283871, guid: 6bb8e448b33213a4a8e2504f77930ae6, type: 3}
+  impactBaseScale: {x: 1, y: 1, z: 1}
+  scaleImpactVfxByRadius: 1
+  useAnimatorClipLifeTime: 1
+  impactVfxLifeTime: 1
+  targetResolver: {fileID: 11400000, guid: 18a6dc79178fd3f4b90e4f249652a0f4, type: 2}
+  buffInfo:
+    stackMode: 0
+    maxStack: 30
+    applyTiming: 1
+    useLimitType: 0
+    duration: 5
+    maxUseCount: 2
+  includeSelf: 0
+  showInUI: 1
+  modifiers:
+  - {fileID: 11400000, guid: 554bc0a55be01bc41a269a28bf536b71, type: 2}

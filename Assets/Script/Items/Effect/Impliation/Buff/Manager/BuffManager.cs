@@ -9,35 +9,24 @@ public class BuffManager : MonoBehaviour
 
     [Header("Debug")]
     [SerializeField] private bool useDebugInspector = true;
-
-    [SerializeField]
-    private List<ActiveBuff> debugAllActiveBuffs =
-        new List<ActiveBuff>();
-
-    [SerializeField]
-    private List<DebugBuffGroup> debugBuffGroups =
-        new List<DebugBuffGroup>();
+    [SerializeField] private List<ActiveBuff> debugAllActiveBuffs = new List<ActiveBuff>();
+    [SerializeField] private List<DebugBuffGroup> debugBuffGroups = new List<DebugBuffGroup>();
 
     private BuffStorage storage;
     private BuffTicker ticker;
-    private BuffStatCalculator calculator;
-    private BuffRegistrar registrar;
     private BuffQuery query;
 
-    private readonly List<IDynamicBuffReceiver> dynamicBuffReceivers =
-        new List<IDynamicBuffReceiver>();
+    private readonly List<IDynamicBuffReceiver> dynamicBuffReceivers = new List<IDynamicBuffReceiver>();
+    private readonly List<BuffTargetHandle> resolvedTargetsBuffer = new List<BuffTargetHandle>();
+    private readonly List<ActiveBuff> consumedBuffer = new List<ActiveBuff>();
 
     public BuffStorage Storage => storage;
 
     private void Awake()
     {
         storage = new BuffStorage();
-
-        calculator = new BuffStatCalculator(storage);
-        registrar = new BuffRegistrar(storage, calculator);
         ticker = new BuffTicker(storage);
         query = new BuffQuery(storage);
-
         RefreshDebugInspector();
     }
 
@@ -47,174 +36,230 @@ public class BuffManager : MonoBehaviour
             return;
 
         bool changed = ticker.Tick(Time.deltaTime);
-
         if (changed)
-            NotifyBuffChanged();
+            NotifyBuffChanged(BuffNotifyScope.All);
 
         if (useDebugInspector)
             RefreshDebugInspector();
     }
 
-    public void RegisterBuff(
-        BuffEffect effect,
-        ItemEffectContext context
-    )
+    public void RegisterBuff(BuffEffect effect, ItemEffectContext itemContext)
     {
-        if (registrar == null)
+        if (effect == null || itemContext == null)
             return;
 
-        registrar.RegisterBuff(effect, context);
+        if (!effect.HasValidModifier())
+            return;
 
-        NotifyBuffChanged();
+        BuffRegisterContext context = new BuffRegisterContext(itemContext, this);
+
+        BuffInfo finalInfo = GetBuffedBuffInfo(effect.buffInfo, context.sourceItemData, context.sourceBag);
+        if (finalInfo == null)
+            return;
+
+        finalInfo.Clamp();
+
+        resolvedTargetsBuffer.Clear();
+        List<BuffTargetHandle> targets = effect.ResolveTargets(context);
+        if (targets == null || targets.Count <= 0)
+            return;
+
+        BuffNotifyScope notifyScope = BuffNotifyScope.Item;
+
+        for (int i = 0; i < targets.Count; i++)
+        {
+            BuffTargetHandle target = targets[i];
+            if (target == null)
+                continue;
+
+            ActiveBuff activeBuff = new ActiveBuff(
+                effect.modifiers,
+                finalInfo,
+                context.sourceItemData,
+                context.sourceBag,
+                context.sourceEffectData,
+                target,
+                effect.includeSelf,
+                effect.showInUI
+            );
+
+            storage.AddOrRefresh(activeBuff, finalInfo);
+            notifyScope = MergeNotifyScope(notifyScope, GetNotifyScope(target));
+        }
+
+        NotifyBuffChanged(notifyScope);
     }
 
-    public AttackStat GetBuffedAttackStat(
-        AttackStat baseStat,
-        ItemData targetItemData,
-        EquipmentBag targetBag
-    )
+    public T GetBuffedStat<T>(T baseStat, BuffQueryContext context, BuffCalculationMode calculationMode = BuffCalculationMode.All, bool consumeUseCount = false) where T : class, IGameStat<T>
     {
-        if (calculator == null)
-            return baseStat;
+        if (baseStat == null)
+            return null;
 
-        return calculator.GetBuffedAttackStat(
-            baseStat,
-            targetItemData,
-            targetBag
-        );
-    }
-    public EnemySpawnerStat GetBuffedEnemySpawnerStat(EnemySpawnerStat baseStat, EnemySpawner spawner)
-    {
-        if (calculator == null)
-            return baseStat;
-
-        return calculator.GetBuffedEnemySpawnerStat(baseStat, spawner);
-    }
-
-    public void RegisterEnemySpawner(EnemySpawner spawner)
-    {
         if (storage == null)
-            return;
-
-        storage.RegisterEnemySpawner(spawner);
-
-        if (spawner != null)
-            spawner.RefreshBuffedStat();
-
-        RefreshDebugInspector();
-    }
-
-    public void UnregisterEnemySpawner(EnemySpawner spawner)
-    {
-        if (storage == null)
-            return;
-
-        storage.UnregisterEnemySpawner(spawner);
-
-        NotifyBuffChanged();
-    }
-    public AttackStat GetSnapshotAttackStatAndConsume(
-        AttackStat baseStat,
-        ItemData targetItemData,
-        EquipmentBag targetBag
-    )
-    {
-        if (calculator == null)
             return baseStat;
 
-        AttackStat result = calculator.GetBuffedAttackStat(
-            baseStat,
-            targetItemData,
-            targetBag,
-            BuffCalculationMode.SnapshotOnly,
-            true
-        );
-        
-        if (ticker != null)
+        T result = baseStat.Clone();
+        if (result == null)
+            return baseStat;
+
+        consumedBuffer.Clear();
+
+        for (int i = 0; i < storage.activeBuffs.Count; i++)
+        {
+            ActiveBuff buff = storage.activeBuffs[i];
+            if (!CanUseBuff(buff, context, calculationMode))
+                continue;
+
+            ApplyModifiers(buff, result, context);
+
+            if (consumeUseCount && buff.useLimitType == BuffUseLimitType.UseCount)
+                consumedBuffer.Add(buff);
+        }
+
+        for (int i = 0; i < consumedBuffer.Count; i++)
+            consumedBuffer[i].ConsumeUse();
+
+        if (consumeUseCount && consumedBuffer.Count > 0)
+        {
             ticker.Tick(0f);
+            NotifyBuffChanged(BuffNotifyScope.DynamicOnly);
+        }
 
-        NotifyBuffChanged();
-
+        result.Clamp();
         return result;
     }
 
-    public AttackStat GetDynamicAttackStat(
-        AttackStat baseStat,
-        ItemData targetItemData,
-        EquipmentBag targetBag
-    )
+    private void ApplyModifiers<T>(ActiveBuff buff, T stat, BuffQueryContext context) where T : class
     {
-        if (calculator == null)
-            return baseStat;
+        if (buff == null || buff.modifiers == null || stat == null)
+            return;
 
-        return calculator.GetBuffedAttackStat(
-            baseStat,
-            targetItemData,
-            targetBag,
-            BuffCalculationMode.DynamicOnly,
-            false
-        );
+        for (int i = 0; i < buff.modifiers.Length; i++)
+        {
+            BuffModifier modifier = buff.modifiers[i];
+            if (modifier == null)
+                continue;
+
+            if (!modifier.CanApplyTo(stat, context))
+                continue;
+
+            modifier.ApplyTo(stat, Mathf.Max(1, buff.stack), context);
+        }
     }
 
-    public BuffInfo GetBuffedBuffInfo(
-        BuffInfo baseInfo,
-        ItemData targetItemData,
-        EquipmentBag targetBag
-    )
+    private bool CanUseBuff(ActiveBuff buff, BuffQueryContext context, BuffCalculationMode calculationMode)
     {
-        if (calculator == null)
-            return baseInfo;
+        if (buff == null || buff.IsExpired)
+            return false;
 
-        return calculator.GetBuffedBuffInfo(
-            baseInfo,
-            targetItemData,
-            targetBag
-        );
+        if (buff.modifiers == null || buff.modifiers.Length <= 0)
+            return false;
+
+        if (!CanUseByCalculationMode(buff, calculationMode))
+            return false;
+
+        if (!buff.MatchesQuery(context))
+            return false;
+
+        return true;
     }
 
-    public EnemyStat GetBuffedEnemyStat(
-        EnemyStat baseStat,
-        Enemy enemy
-    )
+    private bool CanUseByCalculationMode(ActiveBuff buff, BuffCalculationMode calculationMode)
     {
-        if (calculator == null)
-            return baseStat;
+        if (calculationMode == BuffCalculationMode.All)
+            return true;
 
-        return calculator.GetBuffedEnemyStat(
-            baseStat,
-            enemy
-        );
+        if (calculationMode == BuffCalculationMode.SnapshotOnly)
+            return buff.applyTiming == BuffApplyTiming.Snapshot;
+
+        if (calculationMode == BuffCalculationMode.DynamicOnly)
+            return buff.applyTiming == BuffApplyTiming.Dynamic;
+
+        return true;
     }
+
+    #region Legucy
+
+    public AttackStat GetBuffedAttackStat(AttackStat baseStat, ItemData targetItemData, EquipmentBag targetBag)
+    {
+        return GetBuffedStat(baseStat, BuffQueryContext.ForItem(targetItemData, targetBag));
+    }
+
+    public AttackStat GetSnapshotAttackStatAndConsume(AttackStat baseStat, ItemData targetItemData, EquipmentBag targetBag)
+    {
+        return GetBuffedStat(baseStat, BuffQueryContext.ForItem(targetItemData, targetBag), BuffCalculationMode.SnapshotOnly, true);
+    }
+
+    public AttackStat GetDynamicAttackStat(AttackStat baseStat, ItemData targetItemData, EquipmentBag targetBag)
+    {
+        return GetBuffedStat(baseStat, BuffQueryContext.ForItem(targetItemData, targetBag), BuffCalculationMode.DynamicOnly, false);
+    }
+
+    public BuffInfo GetBuffedBuffInfo(BuffInfo baseInfo, ItemData targetItemData, EquipmentBag targetBag)
+    {
+        return GetBuffedStat(baseInfo, BuffQueryContext.ForItem(targetItemData, targetBag), BuffCalculationMode.All, false);
+    }
+
+    public EnemyStat GetBuffedEnemyStat(EnemyStat baseStat, Enemy enemy)
+    {
+        return GetBuffedStat(baseStat, BuffQueryContext.ForEnemy(enemy), BuffCalculationMode.All, false);
+    }
+
+    public EnemySpawnerStat GetBuffedEnemySpawnerStat(EnemySpawnerStat baseStat, EnemySpawner spawner)
+    {
+        return GetBuffedStat(baseStat, BuffQueryContext.ForEnemySpawner(spawner), BuffCalculationMode.All, false);
+    }
+    #endregion
 
     public void RegisterEnemy(Enemy enemy)
     {
-        if (storage == null)
+        if (storage == null || enemy == null)
             return;
 
         storage.RegisterEnemy(enemy);
-
-        if (enemy != null)
-            enemy.RefreshBuffedStat();
-
+        enemy.RefreshBuffedStat();
         RefreshDebugInspector();
     }
 
     public void UnregisterEnemy(Enemy enemy)
     {
-        if (storage == null)
+        if (storage == null || enemy == null)
             return;
 
         storage.UnregisterEnemy(enemy);
+        NotifyBuffChanged(BuffNotifyScope.Enemy);
+    }
 
-        NotifyBuffChanged();
+    public void RegisterEnemySpawner(EnemySpawner spawner)
+    {
+        if (storage == null || spawner == null)
+            return;
+
+        storage.RegisterEnemySpawner(spawner);
+        spawner.RefreshBuffedStat();
+        RefreshDebugInspector();
+    }
+
+    public void UnregisterEnemySpawner(EnemySpawner spawner)
+    {
+        if (storage == null || spawner == null)
+            return;
+
+        storage.UnregisterEnemySpawner(spawner);
+        NotifyBuffChanged(BuffNotifyScope.EnemySpawner);
+    }
+
+    public List<Enemy> GetRegisteredEnemiesUnsafe()
+    {
+        if (storage == null)
+            return new List<Enemy>();
+
+        return storage.registeredEnemies;
     }
 
     public void RegisterDynamicBuffReceiver(IDynamicBuffReceiver receiver)
     {
-        if (receiver == null)
-            return;
-
-        if (dynamicBuffReceivers.Contains(receiver))
+        if (receiver == null || dynamicBuffReceivers.Contains(receiver))
             return;
 
         dynamicBuffReceivers.Add(receiver);
@@ -228,99 +273,27 @@ public class BuffManager : MonoBehaviour
         dynamicBuffReceivers.Remove(receiver);
     }
 
-    public List<ActiveBuff> GetAllActiveBuffs()
-    {
-        if (query == null)
-            return new List<ActiveBuff>();
-
-        return query.GetAllActiveBuffs();
-    }
-
-    public List<ActiveBuff> GetAllVisibleBuffs()
-    {
-        if (query == null)
-            return new List<ActiveBuff>();
-
-        return query.GetAllVisibleBuffs();
-    }
-
-    public List<ActiveBuff> GetBagBuffsAsList(EquipmentBag bag)
-    {
-        if (query == null)
-            return new List<ActiveBuff>();
-
-        return query.GetBagBuffsAsList(bag);
-    }
-
-    public List<ActiveBuff> GetVisibleBagBuffsAsList(EquipmentBag bag)
-    {
-        if (query == null)
-            return new List<ActiveBuff>();
-
-        return query.GetBagBuffsAsList(bag, true);
-    }
-
-    public List<ActiveBuff> GetItemBuffsAsList(ItemData itemData)
-    {
-        if (query == null)
-            return new List<ActiveBuff>();
-
-        return query.GetItemBuffsAsList(itemData);
-    }
-
-    public List<ActiveBuff> GetVisibleItemBuffsAsList(ItemData itemData)
-    {
-        if (query == null)
-            return new List<ActiveBuff>();
-
-        return query.GetItemBuffsAsList(itemData, true);
-    }
-
-    public List<ActiveBuff> GetItemSeriesBuffsAsList(ItemSeries series)
-    {
-        if (query == null)
-            return new List<ActiveBuff>();
-
-        return query.GetItemSeriesBuffsAsList(series);
-    }
-
-    public List<ActiveBuff> GetVisibleItemSeriesBuffsAsList(ItemSeries series)
-    {
-        if (query == null)
-            return new List<ActiveBuff>();
-
-        return query.GetItemSeriesBuffsAsList(series, true);
-    }
-
-    public List<ActiveBuff> GetEnemyBuffsAsList(Enemy enemy)
-    {
-        if (query == null)
-            return new List<ActiveBuff>();
-
-        return query.GetEnemyBuffsAsList(enemy);
-    }
-
-    public List<ActiveBuff> GetVisibleEnemyBuffsAsList(Enemy enemy)
-    {
-        if (query == null)
-            return new List<ActiveBuff>();
-
-        return query.GetEnemyBuffsAsList(enemy, true);
-    }
+    public List<ActiveBuff> GetAllActiveBuffs() => query != null ? query.GetAllActiveBuffs() : new List<ActiveBuff>();
+    public List<ActiveBuff> GetAllVisibleBuffs() => query != null ? query.GetAllVisibleBuffs() : new List<ActiveBuff>();
+    public List<ActiveBuff> GetBagBuffsAsList(EquipmentBag bag) => query != null ? query.GetBagBuffsAsList(bag) : new List<ActiveBuff>();
+    public List<ActiveBuff> GetVisibleBagBuffsAsList(EquipmentBag bag) => query != null ? query.GetBagBuffsAsList(bag, true) : new List<ActiveBuff>();
+    public List<ActiveBuff> GetItemBuffsAsList(ItemData itemData) => query != null ? query.GetItemBuffsAsList(itemData) : new List<ActiveBuff>();
+    public List<ActiveBuff> GetVisibleItemBuffsAsList(ItemData itemData) => query != null ? query.GetItemBuffsAsList(itemData, true) : new List<ActiveBuff>();
+    public List<ActiveBuff> GetItemSeriesBuffsAsList(ItemSeries series) => query != null ? query.GetItemSeriesBuffsAsList(series) : new List<ActiveBuff>();
+    public List<ActiveBuff> GetVisibleItemSeriesBuffsAsList(ItemSeries series) => query != null ? query.GetItemSeriesBuffsAsList(series, true) : new List<ActiveBuff>();
+    public List<ActiveBuff> GetEnemyBuffsAsList(Enemy enemy) => query != null ? query.GetEnemyBuffsAsList(enemy) : new List<ActiveBuff>();
+    public List<ActiveBuff> GetVisibleEnemyBuffsAsList(Enemy enemy) => query != null ? query.GetEnemyBuffsAsList(enemy, true) : new List<ActiveBuff>();
+    public List<ActiveBuff> GetEnemySpawnerBuffsAsList(EnemySpawner spawner) => query != null ? query.GetEnemySpawnerBuffsAsList(spawner) : new List<ActiveBuff>();
+    public List<ActiveBuff> GetVisibleEnemySpawnerBuffsAsList(EnemySpawner spawner) => query != null ? query.GetEnemySpawnerBuffsAsList(spawner, true) : new List<ActiveBuff>();
 
     public void ClearEnemyBuffs(Enemy enemy)
     {
-        if (storage == null)
+        if (storage == null || enemy == null)
             return;
 
-        if (enemy == null)
-            return;
-
-        storage.enemyBuffs.Remove(enemy);
-
+        storage.RemoveBuffsForEnemy(enemy);
         enemy.RefreshBuffedStat();
-
-        NotifyBuffChanged();
+        NotifyBuffChanged(BuffNotifyScope.Enemy);
     }
 
     public void ClearAllBuffs()
@@ -329,50 +302,47 @@ public class BuffManager : MonoBehaviour
             return;
 
         storage.ClearAll();
-
-        NotifyBuffChanged();
+        NotifyBuffChanged(BuffNotifyScope.All);
     }
 
-    private void NotifyBuffChanged()
+    private BuffNotifyScope GetNotifyScope(BuffTargetHandle target)
     {
-        RefreshAllRegisteredEnemyStats();
-        RefreshAllRegisteredEnemySpawnerStats();
+        if (target == null)
+            return BuffNotifyScope.All;
+
+        if (target.kind == BuffTargetKind.Enemy || target.kind == BuffTargetKind.AllEnemiesIncludingFuture)
+            return BuffNotifyScope.Enemy;
+
+        if (target.kind == BuffTargetKind.EnemySpawner || target.kind == BuffTargetKind.AllEnemySpawners)
+            return BuffNotifyScope.EnemySpawner;
+
+        return BuffNotifyScope.Item;
+    }
+
+    private BuffNotifyScope MergeNotifyScope(BuffNotifyScope a, BuffNotifyScope b)
+    {
+        if (a == b)
+            return a;
+
+        if (a == BuffNotifyScope.All || b == BuffNotifyScope.All)
+            return BuffNotifyScope.All;
+
+        return BuffNotifyScope.All;
+    }
+
+    private void NotifyBuffChanged(BuffNotifyScope scope)
+    {
+        if (scope == BuffNotifyScope.All || scope == BuffNotifyScope.Enemy)
+            RefreshAllRegisteredEnemyStats();
+
+        if (scope == BuffNotifyScope.All || scope == BuffNotifyScope.EnemySpawner)
+            RefreshAllRegisteredEnemySpawnerStats();
+
+        if (scope == BuffNotifyScope.All || scope == BuffNotifyScope.Item || scope == BuffNotifyScope.DynamicOnly)
+            NotifyDynamicBuffReceivers();
+
         RefreshUI();
         RefreshDebugInspector();
-        NotifyDynamicBuffReceivers();
-    }
-    private void RefreshAllRegisteredEnemySpawnerStats()
-    {
-        if (storage == null)
-            return;
-
-        for (int i = storage.registeredEnemySpawners.Count - 1; i >= 0; i--)
-        {
-            EnemySpawner spawner = storage.registeredEnemySpawners[i];
-
-            if (spawner == null)
-            {
-                storage.registeredEnemySpawners.RemoveAt(i);
-                continue;
-            }
-
-            spawner.RefreshBuffedStat();
-        }
-    }
-    private void NotifyDynamicBuffReceivers()
-    {
-        for (int i = dynamicBuffReceivers.Count - 1; i >= 0; i--)
-        {
-            IDynamicBuffReceiver receiver = dynamicBuffReceivers[i];
-
-            if (receiver == null)
-            {
-                dynamicBuffReceivers.RemoveAt(i);
-                continue;
-            }
-
-            receiver.OnDynamicBuffChanged();
-        }
     }
 
     private void RefreshAllRegisteredEnemyStats()
@@ -383,7 +353,6 @@ public class BuffManager : MonoBehaviour
         for (int i = storage.registeredEnemies.Count - 1; i >= 0; i--)
         {
             Enemy enemy = storage.registeredEnemies[i];
-
             if (enemy == null)
             {
                 storage.registeredEnemies.RemoveAt(i);
@@ -394,95 +363,90 @@ public class BuffManager : MonoBehaviour
         }
     }
 
-    private void RefreshUI()
+    private void RefreshAllRegisteredEnemySpawnerStats()
     {
-        if (buffUIManager == null)
+        if (storage == null)
             return;
 
-        buffUIManager.RefreshCurrentMode();
+        for (int i = storage.registeredEnemySpawners.Count - 1; i >= 0; i--)
+        {
+            EnemySpawner spawner = storage.registeredEnemySpawners[i];
+            if (spawner == null)
+            {
+                storage.registeredEnemySpawners.RemoveAt(i);
+                continue;
+            }
+
+            spawner.RefreshBuffedStat();
+        }
     }
 
-    #region Debug
+    private void NotifyDynamicBuffReceivers()
+    {
+        for (int i = dynamicBuffReceivers.Count - 1; i >= 0; i--)
+        {
+            IDynamicBuffReceiver receiver = dynamicBuffReceivers[i];
+            if (receiver == null)
+            {
+                dynamicBuffReceivers.RemoveAt(i);
+                continue;
+            }
+
+            receiver.OnDynamicBuffChanged();
+        }
+    }
+
+    private void RefreshUI()
+    {
+        if (buffUIManager != null)
+            buffUIManager.RefreshCurrentMode();
+    }
 
     private void RefreshDebugInspector()
     {
-        if (!useDebugInspector)
-            return;
-
-        if (storage == null)
+        if (!useDebugInspector || storage == null)
             return;
 
         debugAllActiveBuffs.Clear();
         debugBuffGroups.Clear();
 
-        AddDebugGroup("Global", "All", storage.globalBuffs);
-        AddDebugGroup("Enemy Spawner Future", "All Spawners", storage.globalEnemySpawnerBuffs);
-
-        AddDebugGroup("Enemy Future", "All Current + Future", storage.futureEnemyBuffs);
-
-        foreach (KeyValuePair<EquipmentBag, List<ActiveBuff>> pair in storage.bagBuffs)
+        for (int i = 0; i < storage.activeBuffs.Count; i++)
         {
-            string targetName = pair.Key != null ? pair.Key.name : "Null Bag";
-            AddDebugGroup("Bag", targetName, pair.Value);
-        }
-        foreach (KeyValuePair<EnemySpawner, List<ActiveBuff>> pair in storage.enemySpawnerBuffs)
-        {
-            string targetName = pair.Key != null ? pair.Key.name : "Null Spawner";
-            AddDebugGroup("Enemy Spawner", targetName, pair.Value);
-        }
-        foreach (KeyValuePair<ItemData, List<ActiveBuff>> pair in storage.itemBuffs)
-        {
-            string targetName = pair.Key != null ? pair.Key.GetDataName() : "Null Item";
-            AddDebugGroup("Item", targetName, pair.Value);
-        }
-
-        foreach (KeyValuePair<ItemSeries, List<ActiveBuff>> pair in storage.itemSeriesBuffs)
-        {
-            AddDebugGroup("Item Series", pair.Key.ToString(), pair.Value);
-        }
-
-        foreach (KeyValuePair<Enemy, List<ActiveBuff>> pair in storage.enemyBuffs)
-        {
-            string targetName = pair.Key != null ? pair.Key.name : "Null Enemy";
-            AddDebugGroup("Enemy", targetName, pair.Value);
-        }
-    }
-
-    private void AddDebugGroup(
-        string groupType,
-        string targetName,
-        List<ActiveBuff> buffs
-    )
-    {
-        if (buffs == null)
-            return;
-
-        if (buffs.Count <= 0)
-            return;
-
-        DebugBuffGroup group = new DebugBuffGroup();
-        group.groupType = groupType;
-        group.targetName = targetName;
-
-        for (int i = 0; i < buffs.Count; i++)
-        {
-            ActiveBuff buff = buffs[i];
-
-            if (buff == null)
+            ActiveBuff buff = storage.activeBuffs[i];
+            if (buff == null || buff.IsExpired)
                 continue;
 
-            if (buff.IsExpired)
-                continue;
-
-            group.buffs.Add(buff);
             debugAllActiveBuffs.Add(buff);
+            AddDebugGroup(buff);
         }
-
-        if (group.buffs.Count > 0)
-            debugBuffGroups.Add(group);
     }
 
-    #endregion
+    private void AddDebugGroup(ActiveBuff buff)
+    {
+        if (buff == null || buff.target == null)
+            return;
+
+        string groupType = buff.target.kind.ToString();
+        string targetName = buff.target.GetDebugName();
+
+        DebugBuffGroup group = null;
+        for (int i = 0; i < debugBuffGroups.Count; i++)
+        {
+            if (debugBuffGroups[i].groupType == groupType && debugBuffGroups[i].targetName == targetName)
+            {
+                group = debugBuffGroups[i];
+                break;
+            }
+        }
+
+        if (group == null)
+        {
+            group = new DebugBuffGroup { groupType = groupType, targetName = targetName };
+            debugBuffGroups.Add(group);
+        }
+
+        group.buffs.Add(buff);
+    }
 }
 
 [Serializable]

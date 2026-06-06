@@ -17,12 +17,11 @@ public class Enemy : HealthActor, IPoolable
 
     private EnemyStat baseStat;
     private EnemyStat currentStat;
-    private float statRefreshTimer;
-    private bool isInitialized = false;
-
-    private bool isActionDisabled = false;
     private Animator cachedAnimator;
+    private float statRefreshTimer;
     private float previousAnimatorSpeed = 1f;
+    private bool isInitialized = false;
+    private bool isActionDisabled = false;
 
     public bool IsActionDisabled => isActionDisabled;
 

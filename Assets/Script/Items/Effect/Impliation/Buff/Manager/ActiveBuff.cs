@@ -1,60 +1,34 @@
 using System;
 using UnityEngine;
 
-/// <summary>
-/// ActiveBuff
-/// 
-/// 역할:
-/// - 실제 게임 중 적용 중인 버프 한 개를 표현한다.
-/// - 원본 BuffEffect가 아니라, 남은 시간/남은 횟수/중첩 수를 가진 런타임 인스턴스다.
-/// 
-/// 책임:
-/// - 남은 시간 감소.
-/// - 사용 횟수 감소.
-/// - 같은 버프 재등록 시 갱신/중첩 처리.
-/// - UI 표시용 진행률 제공.
-/// 
-/// 주의:
-/// - 이 클래스는 버프를 직접 적용하지 않는다.
-/// - 실제 스탯 적용은 BuffStatCalculator가 담당한다.
-/// </summary>
 [Serializable]
 public class ActiveBuff
 {
-    [Header("Buff")]
-    public BuffStat buffStat;
-    public bool includeSelf;
-    public bool showInUI = true;
-
-    [Header("Source Info")]
+    [Header("Source")]
     public ItemData sourceItemData;
     public EquipmentBag sourceBag;
     public ItemEffectData sourceEffectData;
 
-    [Header("Target Debug")]
-    public BuffTarget targetScope;
-    public ItemData targetItemData;
-    public EquipmentBag targetBag;
-    public ItemSeries targetSeries = ItemSeries.None;
-    public Enemy targetEnemy;
-    public EnemySpawner targetEnemySpawner;
+    [Header("Target")]
+    public BuffTargetHandle target = new BuffTargetHandle();
+    public bool includeSelf;
+    public bool showInUI = true;
 
-    [Header("Apply Timing")]
+    [Header("Runtime")]
     public BuffApplyTiming applyTiming = BuffApplyTiming.Snapshot;
     public BuffUseLimitType useLimitType = BuffUseLimitType.Time;
+    public BuffStackMode stackMode = BuffStackMode.Refresh;
 
-    [Header("Use Count")]
-    public int maxUseCount = 1;
-    public int remainUseCount = 1;
+    [Min(1)] public int stack = 1;
+    [Min(1)] public int maxStack = 1;
 
-    [Header("Time")]
-    public float maxTime;
-    public float remainTime;
+    [Min(0.01f)] public float maxTime = 1f;
+    [Min(0f)] public float remainTime = 1f;
 
-    [Header("Stack")]
-    public BuffStackMode stackMode;
-    public int stack = 1;
-    public int maxStack = 1;
+    [Min(1)] public int maxUseCount = 1;
+    [Min(0)] public int remainUseCount = 1;
+
+    [NonSerialized] public BuffModifier[] modifiers;
 
     public bool IsExpired
     {
@@ -68,51 +42,60 @@ public class ActiveBuff
     }
 
     public ActiveBuff(
-        BuffStat buffStat,
-        BuffInfo buffInfo,
+        BuffModifier[] modifiers,
+        BuffInfo info,
         ItemData sourceItemData,
         EquipmentBag sourceBag,
         ItemEffectData sourceEffectData,
+        BuffTargetHandle target,
         bool includeSelf,
-        bool showInUI,
-        BuffTarget targetScope = BuffTarget.Bag,
-        ItemData targetItemData = null,
-        EquipmentBag targetBag = null,
-        ItemSeries targetSeries = ItemSeries.None,
-        Enemy targetEnemy = null,
-        EnemySpawner targetEnemySpawner = null
+        bool showInUI
     )
     {
-        this.buffStat = buffStat;
+        this.modifiers = modifiers;
         this.sourceItemData = sourceItemData;
         this.sourceBag = sourceBag;
         this.sourceEffectData = sourceEffectData;
+        this.target = target;
         this.includeSelf = includeSelf;
         this.showInUI = showInUI;
 
-        this.targetScope = targetScope;
-        this.targetItemData = targetItemData;
-        this.targetBag = targetBag;
-        this.targetSeries = targetSeries;
-        this.targetEnemy = targetEnemy;
-        this.targetEnemySpawner = targetEnemySpawner;
+        ApplyInfo(info);
+    }
 
-        stackMode = buffInfo != null ? buffInfo.stackMode : BuffStackMode.Refresh;
-        maxStack = buffInfo != null ? Mathf.Max(1, buffInfo.maxStack) : 1;
+    public void ApplyInfo(BuffInfo info)
+    {
+        if (info == null)
+            info = new BuffInfo();
+
+        info.Clamp();
+
+        applyTiming = info.applyTiming;
+        useLimitType = info.useLimitType;
+        stackMode = info.stackMode;
+        maxStack = Mathf.Max(1, info.maxStack);
 
         if (stackMode == BuffStackMode.Refresh)
             maxStack = 1;
 
-        stack = 1;
-
-        maxTime = buffInfo != null ? Mathf.Max(0.01f, buffInfo.duration) : 0.01f;
+        maxTime = Mathf.Max(0.01f, info.duration);
         remainTime = maxTime;
 
-        applyTiming = buffInfo != null ? buffInfo.applyTiming : BuffApplyTiming.Snapshot;
-        useLimitType = buffInfo != null ? buffInfo.useLimitType : BuffUseLimitType.Time;
-
-        maxUseCount = buffInfo != null ? Mathf.Max(1, buffInfo.maxUseCount) : 1;
+        maxUseCount = Mathf.Max(1, info.maxUseCount);
         remainUseCount = maxUseCount;
+
+        if (stack <= 0)
+            stack = 1;
+    }
+
+    public void RegisterAgain(BuffInfo info)
+    {
+        ApplyInfo(info);
+
+        if (stackMode == BuffStackMode.Stack)
+            stack = Mathf.Min(stack + 1, maxStack);
+        else
+            stack = 1;
     }
 
     public void Tick(float deltaTime)
@@ -121,14 +104,8 @@ public class ActiveBuff
             return;
 
         remainTime -= deltaTime;
-
         if (remainTime < 0f)
             remainTime = 0f;
-    }
-
-    public void RefreshTime()
-    {
-        remainTime = maxTime;
     }
 
     public void ConsumeUse()
@@ -136,63 +113,45 @@ public class ActiveBuff
         if (useLimitType != BuffUseLimitType.UseCount)
             return;
 
-        remainUseCount--;
-
-        if (remainUseCount < 0)
-            remainUseCount = 0;
-    }
-
-    public void ApplyRegisterAgain(BuffInfo buffInfo)
-    {
-        if (buffInfo != null)
-        {
-            maxTime = Mathf.Max(0.01f, buffInfo.duration);
-            maxStack = Mathf.Max(1, buffInfo.maxStack);
-            stackMode = buffInfo.stackMode;
-            applyTiming = buffInfo.applyTiming;
-            useLimitType = buffInfo.useLimitType;
-            maxUseCount = Mathf.Max(1, buffInfo.maxUseCount);
-
-            if (stackMode == BuffStackMode.Refresh)
-                maxStack = 1;
-        }
-
-        if (stackMode == BuffStackMode.Stack)
-        {
-            stack++;
-
-            if (stack > maxStack)
-                stack = maxStack;
-        }
-        else
-        {
-            stack = 1;
-        }
-
-        RefreshTime();
-
-        if (useLimitType == BuffUseLimitType.UseCount)
-            remainUseCount = maxUseCount;
+        remainUseCount = Mathf.Max(0, remainUseCount - 1);
     }
 
     public float GetTimeRate()
     {
         if (useLimitType == BuffUseLimitType.UseCount)
-        {
-            if (maxUseCount <= 0)
-                return 0f;
+            return maxUseCount <= 0 ? 0f : (float)remainUseCount / maxUseCount;
 
-            return (float)remainUseCount / maxUseCount;
-        }
-
-        if (maxTime <= 0f)
-            return 0f;
-
-        return remainTime / maxTime;
+        return maxTime <= 0f ? 0f : remainTime / maxTime;
     }
 
-    public bool IsSameBuff(ItemData itemData, EquipmentBag bag, ItemEffectData effectData)
+    public bool MatchesQuery(BuffQueryContext query)
     {
-        return sourceItemData == itemData && sourceBag == bag && sourceEffectData == effectData;
+        if (target == null)
+            return false;
+
+        if (!target.Matches(query))
+            return false;
+
+        if (!includeSelf && query != null && query.itemData != null && sourceItemData == query.itemData)
+            return false;
+
+        return true;
+    }
+
+    public bool IsSameBuff(ItemData sourceItemData, EquipmentBag sourceBag, ItemEffectData sourceEffectData, BuffTargetHandle target)
+    {
+        if (this.sourceItemData != sourceItemData)
+            return false;
+
+        if (this.sourceBag != sourceBag)
+            return false;
+
+        if (this.sourceEffectData != sourceEffectData)
+            return false;
+
+        if (this.target == null)
+            return target == null;
+
+        return this.target.SameTarget(target);
     }
 }

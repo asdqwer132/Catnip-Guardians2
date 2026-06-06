@@ -5,8 +5,6 @@ public class EnemySpawner : MonoBehaviour
 {
     [Header("Setting")]
     public EnemySpawnInfo[] enemyInfos;
-
-    [Header("Base Stat")]
     public EnemySpawnerStat baseStat = new EnemySpawnerStat();
 
     [Header("Runtime Stat")]

@@ -6,12 +6,10 @@ public class EnemyManager : MonoBehaviour
     public static EnemyManager instance;
 
     [Header("Target")]
-    public Plant plant;
+    public Plant Target;
 
     [Header("Spawners")]
     public EnemySpawner[] enemySpawners;
-
-    [Header("Enemy Limit")]
     public int maxAliveEnemyCount = 50;
 
     [Header("Debug")]
@@ -20,19 +18,10 @@ public class EnemyManager : MonoBehaviour
 
     private List<Enemy> currentEnemies = new List<Enemy>();
 
-    private bool allEnemiesActionDisabled = false;
-    private bool loggedThousandEnemies = false;
     private float spawnStartTime;
+    private bool allEnemiesActionDisabled = false;
 
-    public bool AllEnemiesActionDisabled => allEnemiesActionDisabled;
-    public int CurrentAliveEnemyCount => currentAliveEnemyCount;
-    public int MaxAliveEnemyCount => maxAliveEnemyCount;
-    public float SpawnStartTime => spawnStartTime;
-
-    private void Awake()
-    {
-        instance = this;
-    }
+    private void Awake() { instance = this; }
 
     public void Init(PlantData plantData)
     {
@@ -40,26 +29,16 @@ public class EnemyManager : MonoBehaviour
         KillAllEnemies();
 
         allEnemiesActionDisabled = false;
-        loggedThousandEnemies = false;
         spawnStartTime = Time.time;
 
-        if (plant == null)
-        {
-            Debug.LogWarning("EnemyManager에 Plant가 연결되지 않았습니다.");
+        if (Target == null)
             return;
-        }
-
         if (plantData == null)
             return;
-
         if (plantData.enemies == null || plantData.enemies.Length == 0)
             return;
-
         if (enemySpawners == null || enemySpawners.Length == 0)
-        {
-            Debug.LogWarning("EnemySpawner가 없습니다.");
             return;
-        }
 
         int useSpawnerCount = Mathf.Clamp(plantData.spawnCount, 0, enemySpawners.Length);
 
@@ -80,7 +59,7 @@ public class EnemyManager : MonoBehaviour
                 continue;
 
             enemySpawners[i].gameObject.SetActive(true);
-            enemySpawners[i].SetSpawner(plantData.enemies, plant, i, spawnStartTime);
+            enemySpawners[i].SetSpawner(plantData.enemies, Target, i, spawnStartTime);
         }
 
         if (logSpawnTime)
@@ -111,12 +90,6 @@ public class EnemyManager : MonoBehaviour
         }
 
         currentAliveEnemyCount = currentEnemies.Count;
-
-        if (!loggedThousandEnemies && currentAliveEnemyCount >= 1000)
-        {
-            loggedThousandEnemies = true;
-            Debug.Log("현재 적 수가 1000마리에 도달했습니다.");
-        }
     }
 
     public void RegisterEnemy(Enemy enemy)
@@ -178,7 +151,6 @@ public class EnemyManager : MonoBehaviour
         {
             if (enemySpawners[i] == null)
                 continue;
-
             if (!enemySpawners[i].gameObject.activeInHierarchy)
                 continue;
 

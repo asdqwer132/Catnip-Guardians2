@@ -3,17 +3,15 @@ using UnityEngine;
 public class ItemEffectContext
 {
     public GameObject owner;
-
     public ItemData sourceItemData;
     public EquipmentBag sourceBag;
     public ItemEffectData currentEffectData;
-
     public BuffManager buffManager;
-
     public Vector3 usePosition;
     public Vector3 targetPosition;
 
-    public ItemEffectContext(
+    public ItemEffectContext
+    (
         GameObject owner,
         ItemData sourceItemData,
         Vector3 usePosition,

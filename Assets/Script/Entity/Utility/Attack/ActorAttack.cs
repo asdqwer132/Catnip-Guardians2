@@ -22,7 +22,6 @@ public class ActorAttack : MonoBehaviour
     {
         if (target == null)
             target = GetComponent<ActorTarget>();
-
         if (visual == null)
             visual = GetComponent<ActorVisual>();
     }
@@ -97,8 +96,7 @@ public class ActorAttack : MonoBehaviour
     #endregion
 
     #region Event
-    // 애니메이션 이벤트에서 호출
-    public void ApplyAttackDamage()
+    public void ApplyAttackDamage() // 애니메이션 이벤트에서 호출
     {
         if (target == null)
             return;

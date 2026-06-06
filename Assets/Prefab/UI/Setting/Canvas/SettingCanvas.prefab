@@ -2141,6 +2141,7 @@ GameObject:
   - component: {fileID: 949721183603724194}
   - component: {fileID: 7229240054088499936}
   - component: {fileID: 1637009092441634066}
+  - component: {fileID: 1957379953267608000}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -2207,6 +2208,21 @@ MonoBehaviour:
   masterVolume: 1
   bgmVolume: 1
   sfxVolume: 1
+--- !u!114 &1957379953267608000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3173714376795116732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9424f4ed8a8e5247aec966d5ec37c3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SceneBgmManager
+  sceneBgms: []
+  playOnStart: 1
+  stopWhenNoMatch: 0
 --- !u!1 &3542090805522693509
 GameObject:
   m_ObjectHideFlags: 0
@@ -5716,6 +5732,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae7fe78b2c2a59847b4f8229d305624d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SettingInjecter
+  targetCamera: {fileID: 0}
+  damagePopupLayerName: DamagePopup
+  hpBarLayerName: HpBar
 --- !u!1 &8434535146954051490
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,14 +3,30 @@ using UnityEngine;
 
 public class BuffUIManager : MonoBehaviour
 {
+    [Header("References")]
     public BuffManager buffManager;
     public Transform contentParent;
     public BuffUISlot slotPrefab;
-    public BuffTarget displayMode = BuffTarget.All;
+
+    [Header("Display")]
+    public BuffUIDisplayMode displayMode = BuffUIDisplayMode.All;
+    public bool refreshOnEnable = true;
+
+    [Header("Targets")]
     public EquipmentBag targetBag;
     public ItemData targetItemData;
+    public ItemSeries targetItemSeries = ItemSeries.None;
+    public Enemy targetEnemy;
+    public EnemySpawner targetEnemySpawner;
 
     private readonly List<BuffUISlot> spawnedSlots = new List<BuffUISlot>();
+
+
+    private void OnEnable()
+    {
+        if (refreshOnEnable)
+            RefreshCurrentMode();
+    }
 
     private void Start()
     {
@@ -27,11 +43,20 @@ public class BuffUIManager : MonoBehaviour
 
         switch (displayMode)
         {
-            case BuffTarget.Bag:
+            case BuffUIDisplayMode.Bag:
                 DisplayBagBuffs(targetBag);
                 break;
-            case BuffTarget.Item:
+            case BuffUIDisplayMode.Item:
                 DisplayItemBuffs(targetItemData);
+                break;
+            case BuffUIDisplayMode.ItemSeries:
+                DisplayItemSeriesBuffs(targetItemSeries);
+                break;
+            case BuffUIDisplayMode.Enemy:
+                DisplayEnemyBuffs(targetEnemy);
+                break;
+            case BuffUIDisplayMode.EnemySpawner:
+                DisplayEnemySpawnerBuffs(targetEnemySpawner);
                 break;
             default:
                 DisplayAllBuffs();
@@ -42,46 +67,119 @@ public class BuffUIManager : MonoBehaviour
     public void DisplayAllBuffs()
     {
         if (buffManager == null)
+        {
+            ClearSlots();
             return;
+        }
 
-        displayMode = BuffTarget.All;
-        RefreshSlots(buffManager.GetAllVisibleBuffs(), "¿¸√º πˆ«¡");
+        displayMode = BuffUIDisplayMode.All;
+        RefreshSlots(buffManager.GetAllVisibleBuffs(), "Ï†ÑÏ≤¥ Î≤ÑÌîÑ");
     }
 
     public void DisplayBagBuffs(EquipmentBag bag)
     {
         if (buffManager == null)
+        {
+            ClearSlots();
             return;
+        }
 
-        displayMode = BuffTarget.Bag;
+        displayMode = BuffUIDisplayMode.Bag;
         targetBag = bag;
-        RefreshSlots(buffManager.GetVisibleBagBuffsAsList(bag), bag != null ? "∞°πÊ πˆ«¡: " + bag.name : "∞°πÊ πˆ«¡");
+        string label = bag != null ? "Í∞ÄÎ∞© Î≤ÑÌîÑ: " + bag.name : "Í∞ÄÎ∞© Î≤ÑÌîÑ";
+        RefreshSlots(buffManager.GetVisibleBagBuffsAsList(bag), label);
     }
 
     public void DisplayItemBuffs(ItemData itemData)
     {
         if (buffManager == null)
+        {
+            ClearSlots();
             return;
+        }
 
-        displayMode = BuffTarget.Item;
+        displayMode = BuffUIDisplayMode.Item;
         targetItemData = itemData;
-        RefreshSlots(buffManager.GetVisibleItemBuffsAsList(itemData), itemData != null ? "æ∆¿Ã≈€ πˆ«¡: " + itemData.GetDataName() : "æ∆¿Ã≈€ πˆ«¡");
+        string itemName = itemData != null ? itemData.GetDataName() : "";
+        string label = itemData != null ? "ÏïÑÏù¥ÌÖú Î≤ÑÌîÑ: " + itemName : "ÏïÑÏù¥ÌÖú Î≤ÑÌîÑ";
+        RefreshSlots(buffManager.GetVisibleItemBuffsAsList(itemData), label);
+    }
+
+    public void DisplayItemSeriesBuffs(ItemSeries series)
+    {
+        if (buffManager == null)
+        {
+            ClearSlots();
+            return;
+        }
+
+        displayMode = BuffUIDisplayMode.ItemSeries;
+        targetItemSeries = series;
+        string label = series != ItemSeries.None ? "ÏãúÎ¶¨Ï¶à Î≤ÑÌîÑ: " + series : "ÏãúÎ¶¨Ï¶à Î≤ÑÌîÑ";
+        RefreshSlots(buffManager.GetVisibleItemSeriesBuffsAsList(series), label);
+    }
+
+    public void DisplayEnemyBuffs(Enemy enemy)
+    {
+        if (buffManager == null)
+        {
+            ClearSlots();
+            return;
+        }
+
+        displayMode = BuffUIDisplayMode.Enemy;
+        targetEnemy = enemy;
+        string label = enemy != null ? "Ï†Å Î≤ÑÌîÑ: " + enemy.name : "Ï†Å Î≤ÑÌîÑ";
+        RefreshSlots(buffManager.GetVisibleEnemyBuffsAsList(enemy), label);
+    }
+
+    public void DisplayEnemySpawnerBuffs(EnemySpawner spawner)
+    {
+        if (buffManager == null)
+        {
+            ClearSlots();
+            return;
+        }
+
+        displayMode = BuffUIDisplayMode.EnemySpawner;
+        targetEnemySpawner = spawner;
+        string label = spawner != null ? "Ïä§Ìè¨ÎÑà Î≤ÑÌîÑ: " + spawner.name : "Ïä§Ìè¨ÎÑà Î≤ÑÌîÑ";
+        RefreshSlots(buffManager.GetVisibleEnemySpawnerBuffsAsList(spawner), label);
     }
 
     public void SetTargetBag(EquipmentBag bag)
     {
         targetBag = bag;
-
-        if (displayMode == BuffTarget.Bag)
+        if (displayMode == BuffUIDisplayMode.Bag)
             DisplayBagBuffs(targetBag);
     }
 
     public void SetTargetItem(ItemData itemData)
     {
         targetItemData = itemData;
-
-        if (displayMode == BuffTarget.Item)
+        if (displayMode == BuffUIDisplayMode.Item)
             DisplayItemBuffs(targetItemData);
+    }
+
+    public void SetTargetItemSeries(ItemSeries series)
+    {
+        targetItemSeries = series;
+        if (displayMode == BuffUIDisplayMode.ItemSeries)
+            DisplayItemSeriesBuffs(targetItemSeries);
+    }
+
+    public void SetTargetEnemy(Enemy enemy)
+    {
+        targetEnemy = enemy;
+        if (displayMode == BuffUIDisplayMode.Enemy)
+            DisplayEnemyBuffs(targetEnemy);
+    }
+
+    public void SetTargetEnemySpawner(EnemySpawner spawner)
+    {
+        targetEnemySpawner = spawner;
+        if (displayMode == BuffUIDisplayMode.EnemySpawner)
+            DisplayEnemySpawnerBuffs(targetEnemySpawner);
     }
 
     private void RefreshSlots(IReadOnlyList<ActiveBuff> buffs, string displayLabel)

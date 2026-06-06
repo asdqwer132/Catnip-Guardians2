@@ -17,9 +17,8 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
     public bool IsDead => health != null && health.IsDead;
 
     private bool isDying = false;
-    private Coroutine deathCoroutine;
     private bool healthBarVisibleBySetting = true;
-    private string tag;
+    private Coroutine deathCoroutine;
 
     protected virtual void Awake()
     {
@@ -76,24 +75,6 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
             visual.ResetVisual();
     }
 
-    public virtual void Revive(float maxHp, bool fillHp = true)
-    {
-        if (health == null)
-        {
-            Debug.LogWarning(name + " Health가 없습니다.");
-            return;
-        }
-
-        ResetActorStateForReuse();
-
-        health.Init(maxHp, fillHp);
-
-        ConnectHealthUI();
-        ApplyHealthBarVisibleBySetting();
-
-        OnRevived();
-    }
-
     public virtual void ResetDeathState()
     {
         StopDeathRoutine();
@@ -127,6 +108,22 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
         }
     }
 
+    public virtual void Revive(float maxHp, bool fillHp = true)
+    {
+        if (health == null)
+            return;
+
+        ResetActorStateForReuse();
+
+        health.Init(maxHp, fillHp);
+
+        ConnectHealthUI();
+        ApplyHealthBarVisibleBySetting();
+
+        OnRevived();
+    }
+
+    #region UI
     private void ConnectHealthUI()
     {
         if (healthBarUI == null)
@@ -136,12 +133,6 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
             return;
 
         healthBarUI.SetTarget(health);
-    }
-
-    public void SetHealthBarVisibleBySetting(bool visible)
-    {
-        healthBarVisibleBySetting = visible;
-        ApplyHealthBarVisibleBySetting();
     }
 
     private void ApplyHealthBarVisibleBySetting()
@@ -159,14 +150,6 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
         healthBarUI.SetTarget(health);
     }
 
-    protected virtual void ShowHealthBar()
-    {
-        if (healthBarUI == null)
-            return;
-
-        healthBarUI.SetTarget(health);
-        ApplyHealthBarVisibleBySetting();
-    }
 
     protected virtual void HideHealthBar()
     {
@@ -190,6 +173,7 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
             damagePopupSpawner.ShowDamage(damage);
         }
     }
+    #endregion
 
     private void SubscribeHealth()
     {

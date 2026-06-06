@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class ObjectPoolManager : MonoBehaviour
@@ -20,11 +19,7 @@ public class ObjectPoolManager : MonoBehaviour
             poolParent = transform;
     }
 
-    public GameObject Spawn(
-        GameObject prefab,
-        Vector3 position,
-        Quaternion rotation
-    )
+    public GameObject Spawn(GameObject prefab, Vector3 position, Quaternion rotation)
     {
         if (prefab == null)
             return null;
@@ -33,13 +28,10 @@ public class ObjectPoolManager : MonoBehaviour
             poolDictionary[prefab] = new Queue<GameObject>();
 
         GameObject obj = null;
-
         Queue<GameObject> pool = poolDictionary[prefab];
 
         while (pool.Count > 0 && obj == null)
-        {
             obj = pool.Dequeue();
-        }
 
         if (obj == null)
         {
@@ -55,9 +47,7 @@ public class ObjectPoolManager : MonoBehaviour
         IPoolable[] poolables = obj.GetComponentsInChildren<IPoolable>(true);
 
         for (int i = 0; i < poolables.Length; i++)
-        {
             poolables[i].OnSpawnedFromPool();
-        }
 
         return obj;
     }
@@ -83,9 +73,7 @@ public class ObjectPoolManager : MonoBehaviour
         IPoolable[] poolables = obj.GetComponentsInChildren<IPoolable>(true);
 
         for (int i = 0; i < poolables.Length; i++)
-        {
             poolables[i].OnReturnedToPool();
-        }
 
         obj.SetActive(false);
         obj.transform.SetParent(poolParent);
@@ -101,24 +89,5 @@ public class ObjectPoolManager : MonoBehaviour
             pooledObject = obj.AddComponent<PooledObject>();
 
         pooledObject.SetOriginalPrefab(prefab);
-    }
-
-    public void Prewarm(GameObject prefab, int count)
-    {
-        if (prefab == null)
-            return;
-
-        if (!poolDictionary.ContainsKey(prefab))
-            poolDictionary[prefab] = new Queue<GameObject>();
-
-        for (int i = 0; i < count; i++)
-        {
-            GameObject obj = Instantiate(prefab, poolParent);
-            RegisterPooledObject(obj, prefab);
-
-            obj.SetActive(false);
-
-            poolDictionary[prefab].Enqueue(obj);
-        }
     }
 }

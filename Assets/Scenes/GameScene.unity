@@ -2163,7 +2163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69c49e7518ae9114e9d626c6c2a83d82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyManager
-  plant: {fileID: 1230235210}
+  Target: {fileID: 1230235210}
   enemySpawners:
   - {fileID: 148239024}
   - {fileID: 640045740}
@@ -4581,9 +4581,13 @@ MonoBehaviour:
   buffManager: {fileID: 511510869}
   contentParent: {fileID: 657041885}
   slotPrefab: {fileID: 1722376472968725201, guid: c284b47c6cd0f4349869d2c29dda09db, type: 3}
-  displayMode: 4
+  displayMode: 0
+  refreshOnEnable: 1
   targetBag: {fileID: 0}
   targetItemData: {fileID: 0}
+  targetItemSeries: 0
+  targetEnemy: {fileID: 0}
+  targetEnemySpawner: {fileID: 0}
 --- !u!114 &511510869
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23015,7 +23019,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrowManager
   growthFill: {fileID: 286708701}
-  plantUI: {fileID: 1230235213}
   gameManager: {fileID: 1318438114}
 --- !u!1 &1234898587
 GameObject:

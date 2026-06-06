@@ -13,7 +13,6 @@ public class GameManager : MonoBehaviour
             initManager.FirstInit();
 
         StartNextRound();
-        AudioManager.instance.PlayBgm("Ambient 1");
     }
 
     public void Victory()
@@ -33,6 +32,7 @@ public class GameManager : MonoBehaviour
         {
             tutorialEventManager.TryHandleProgressChanged(TutorialProgress.FirstItemEquip);
         }
+        AudioManager.instance.PlayBgm("Ambient 6 ");
     }
     public void StartNextRound()
     {
@@ -46,5 +46,8 @@ public class GameManager : MonoBehaviour
         {
             tutorialEventManager.TryHandleProgressChanged(TutorialProgress.FirstEnemyAttack);
         }
+
+
+        AudioManager.instance.PlayBgm("Ambient 7 ");
     }
 }

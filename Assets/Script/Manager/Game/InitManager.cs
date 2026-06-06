@@ -19,7 +19,7 @@ public class InitManager : MonoBehaviour
 
     public void InitAll()
     {
-        plantManager.SetPlaints();
+        plantManager.SetPlants();
         itemUseManager.Init();
         shopManager.InitShop();
         buffManager.ClearAllBuffs();

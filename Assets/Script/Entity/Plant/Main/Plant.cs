@@ -35,7 +35,6 @@ public class Plant : HealthActor
     {
         if (growManager != null)
             growManager.StopGrowth();
-
         if (gameManager != null)
             gameManager.GameOver();
     }

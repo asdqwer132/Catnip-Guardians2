@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 public class BuffQuery
 {
-    private BuffStorage storage;
+    private readonly BuffStorage storage;
 
     public BuffQuery(BuffStorage storage)
     {
@@ -12,146 +12,83 @@ public class BuffQuery
     public List<ActiveBuff> GetAllActiveBuffs()
     {
         List<ActiveBuff> result = new List<ActiveBuff>();
-
-        AddBuffsToList(result, storage.globalBuffs);
-        AddBuffsToList(result, storage.futureEnemyBuffs);
-        AddBuffsToList(result, storage.globalEnemySpawnerBuffs);
-
-        foreach (KeyValuePair<EquipmentBag, List<ActiveBuff>> pair in storage.bagBuffs)
-            AddBuffsToList(result, pair.Value);
-        foreach (KeyValuePair<ItemData, List<ActiveBuff>> pair in storage.itemBuffs)
-            AddBuffsToList(result, pair.Value);
-        foreach (KeyValuePair<ItemSeries, List<ActiveBuff>> pair in storage.itemSeriesBuffs)
-            AddBuffsToList(result, pair.Value);
-        foreach (KeyValuePair<Enemy, List<ActiveBuff>> pair in storage.enemyBuffs)
-            AddBuffsToList(result, pair.Value);
-        foreach (KeyValuePair<EnemySpawner, List<ActiveBuff>> pair in storage.enemySpawnerBuffs)
-            AddBuffsToList(result, pair.Value);
-
+        AddBuffsToList(result, storage.activeBuffs, false);
         return result;
     }
 
     public List<ActiveBuff> GetAllVisibleBuffs()
     {
         List<ActiveBuff> result = new List<ActiveBuff>();
-
-        AddUniqueBuffsToList(result, storage.globalBuffs, true);
-        AddUniqueBuffsToList(result, storage.futureEnemyBuffs, true);
-        AddUniqueBuffsToList(result, storage.globalEnemySpawnerBuffs, true);
-
-        foreach (KeyValuePair<EquipmentBag, List<ActiveBuff>> pair in storage.bagBuffs)
-            AddUniqueBuffsToList(result, pair.Value, true);
-        foreach (KeyValuePair<ItemData, List<ActiveBuff>> pair in storage.itemBuffs)
-            AddUniqueBuffsToList(result, pair.Value, true);
-        foreach (KeyValuePair<ItemSeries, List<ActiveBuff>> pair in storage.itemSeriesBuffs)
-            AddUniqueBuffsToList(result, pair.Value, true);
-        foreach (KeyValuePair<EnemySpawner, List<ActiveBuff>> pair in storage.enemySpawnerBuffs)
-            AddUniqueBuffsToList(result, pair.Value, true);
-        foreach (KeyValuePair<Enemy, List<ActiveBuff>> pair in storage.enemyBuffs)
-            AddUniqueBuffsToList(result, pair.Value, true);
-
+        AddBuffsToList(result, storage.activeBuffs, true);
         return result;
     }
 
     public List<ActiveBuff> GetBagBuffsAsList(EquipmentBag bag, bool visibleOnly = false)
     {
-        List<ActiveBuff> result = new List<ActiveBuff>();
-        if (bag == null)
-            return result;
-        if (storage.bagBuffs.TryGetValue(bag, out List<ActiveBuff> buffs))
-            AddBuffsToList(result, buffs, visibleOnly);
-        return result;
+        return GetBuffsByPredicate(buff => buff.target != null && buff.target.kind == BuffTargetKind.Bag && buff.target.bag == bag, visibleOnly);
     }
 
     public List<ActiveBuff> GetItemBuffsAsList(ItemData itemData, bool visibleOnly = false)
     {
-        List<ActiveBuff> result = new List<ActiveBuff>();
-        if (itemData == null)
-            return result;
-        if (storage.itemBuffs.TryGetValue(itemData, out List<ActiveBuff> buffs))
-            AddBuffsToList(result, buffs, visibleOnly);
-        return result;
+        return GetBuffsByPredicate(buff => buff.target != null && buff.target.kind == BuffTargetKind.Item && buff.target.itemData == itemData, visibleOnly);
     }
 
     public List<ActiveBuff> GetItemSeriesBuffsAsList(ItemSeries series, bool visibleOnly = false)
     {
-        List<ActiveBuff> result = new List<ActiveBuff>();
-        if (series == ItemSeries.None)
-            return result;
-        if (storage.itemSeriesBuffs.TryGetValue(series, out List<ActiveBuff> buffs))
-            AddBuffsToList(result, buffs, visibleOnly);
-        return result;
+        return GetBuffsByPredicate(buff => buff.target != null && buff.target.kind == BuffTargetKind.ItemSeries && buff.target.itemSeries == series, visibleOnly);
     }
 
     public List<ActiveBuff> GetEnemyBuffsAsList(Enemy enemy, bool visibleOnly = false)
     {
+        return GetBuffsByPredicate(buff => buff.target != null && buff.target.MatchesEnemy(enemy), visibleOnly);
+    }
+
+    public List<ActiveBuff> GetEnemySpawnerBuffsAsList(EnemySpawner spawner, bool visibleOnly = false)
+    {
+        return GetBuffsByPredicate(buff => buff.target != null && buff.target.MatchesEnemySpawner(spawner), visibleOnly);
+    }
+
+    private List<ActiveBuff> GetBuffsByPredicate(System.Predicate<ActiveBuff> predicate, bool visibleOnly)
+    {
         List<ActiveBuff> result = new List<ActiveBuff>();
-        if (enemy == null)
+
+        if (storage == null || predicate == null)
             return result;
 
-        AddBuffsToList(result, storage.futureEnemyBuffs, visibleOnly);
+        for (int i = 0; i < storage.activeBuffs.Count; i++)
+        {
+            ActiveBuff buff = storage.activeBuffs[i];
+            if (!CanAdd(buff, visibleOnly))
+                continue;
 
-        if (storage.enemyBuffs.TryGetValue(enemy, out List<ActiveBuff> buffs))
-            AddBuffsToList(result, buffs, visibleOnly);
+            if (predicate(buff))
+                result.Add(buff);
+        }
 
         return result;
     }
 
-    private void AddBuffsToList(List<ActiveBuff> target, List<ActiveBuff> source, bool visibleOnly = false)
+    private void AddBuffsToList(List<ActiveBuff> result, List<ActiveBuff> source, bool visibleOnly)
     {
-        if (target == null || source == null)
+        if (result == null || source == null)
             return;
 
         for (int i = 0; i < source.Count; i++)
         {
             ActiveBuff buff = source[i];
-            if (!CanAddBuff(buff, visibleOnly))
-                continue;
-
-            target.Add(buff);
+            if (CanAdd(buff, visibleOnly))
+                result.Add(buff);
         }
     }
 
-    private void AddUniqueBuffsToList(List<ActiveBuff> target, List<ActiveBuff> source, bool visibleOnly = false)
+    private bool CanAdd(ActiveBuff buff, bool visibleOnly)
     {
-        if (target == null || source == null)
-            return;
-
-        for (int i = 0; i < source.Count; i++)
-        {
-            ActiveBuff buff = source[i];
-            if (!CanAddBuff(buff, visibleOnly))
-                continue;
-            if (ContainsSameVisibleBuff(target, buff))
-                continue;
-
-            target.Add(buff);
-        }
-    }
-
-    private bool CanAddBuff(ActiveBuff buff, bool visibleOnly)
-    {
-        if (buff == null)
+        if (buff == null || buff.IsExpired)
             return false;
-        if (buff.IsExpired)
-            return false;
+
         if (visibleOnly && !buff.showInUI)
             return false;
 
         return true;
-    }
-
-    private bool ContainsSameVisibleBuff(List<ActiveBuff> list, ActiveBuff buff)
-    {
-        for (int i = 0; i < list.Count; i++)
-        {
-            ActiveBuff other = list[i];
-            if (other == null)
-                continue;
-            if (other.sourceItemData == buff.sourceItemData && other.sourceBag == buff.sourceBag && other.sourceEffectData == buff.sourceEffectData)
-                return true;
-        }
-
-        return false;
     }
 }

@@ -7,22 +7,16 @@ public class GrowManager : MonoBehaviour
     [Header("UI")]
     public ImageFillUI growthFill;
 
-    [Header("Plant UI")]
-    public PlantUI plantUI;
-
     [Header("Managers")]
     public GameManager gameManager;
 
+    private PlantUI plantUI;
     private PlantData plantData;
     private float growValue;
     private bool isGrowing = false;
-
     private int currentGrowingIndex = -1;
 
-    private void Awake()
-    {
-        instance = this;
-    }
+    private void Awake() { instance = this; }
 
     private void Update()
     {
@@ -70,10 +64,8 @@ public class GrowManager : MonoBehaviour
     {
         if (!isGrowing)
             return;
-
         if (plantData == null)
             return;
-
         if (amount <= 0f)
             return;
 
@@ -96,7 +88,6 @@ public class GrowManager : MonoBehaviour
     {
         if (growthFill == null)
             return;
-
         if (plantData == null)
         {
             growthFill.SetFill01(0f);
@@ -110,10 +101,8 @@ public class GrowManager : MonoBehaviour
     {
         if (plantUI == null)
             return;
-
         if (plantData == null)
             return;
-
         if (plantData.growing == null || plantData.growing.Length == 0)
             return;
 
@@ -130,30 +119,23 @@ public class GrowManager : MonoBehaviour
     {
         if (plantData == null)
             return 0;
-
         if (plantData.growing == null || plantData.growing.Length == 0)
             return 0;
-
         if (plantData.growTime <= 0f)
             return plantData.growing.Length - 1;
 
         float progress = growValue / plantData.growTime;
-
         int index = Mathf.FloorToInt(progress * plantData.growing.Length);
 
         if (index < 0)
             index = 0;
-
         if (index >= plantData.growing.Length)
             index = plantData.growing.Length - 1;
 
         return index;
     }
 
-    public void StopGrowth()
-    {
-        isGrowing = false;
-    }
+    public void StopGrowth() { isGrowing = false; }
 
     public void ResetGrowth()
     {
