@@ -27,6 +27,7 @@ public class BuffManager : MonoBehaviour
         storage = new BuffStorage();
         ticker = new BuffTicker(storage);
         query = new BuffQuery(storage);
+
         RefreshDebugInspector();
     }
 
@@ -36,6 +37,7 @@ public class BuffManager : MonoBehaviour
             return;
 
         bool changed = ticker.Tick(Time.deltaTime);
+
         if (changed)
             NotifyBuffChanged(BuffNotifyScope.All);
 
@@ -53,14 +55,21 @@ public class BuffManager : MonoBehaviour
 
         BuffRegisterContext context = new BuffRegisterContext(itemContext, this);
 
-        BuffInfo finalInfo = GetBuffedBuffInfo(effect.buffInfo, context.sourceItemData, context.sourceBag);
+        BuffInfo finalInfo = GetBuffedBuffInfo(
+            effect.buffInfo,
+            context.sourceItemData,
+            context.sourceBag
+        );
+
         if (finalInfo == null)
             return;
 
         finalInfo.Clamp();
 
         resolvedTargetsBuffer.Clear();
+
         List<BuffTargetHandle> targets = effect.ResolveTargets(context);
+
         if (targets == null || targets.Count <= 0)
             return;
 
@@ -69,6 +78,7 @@ public class BuffManager : MonoBehaviour
         for (int i = 0; i < targets.Count; i++)
         {
             BuffTargetHandle target = targets[i];
+
             if (target == null)
                 continue;
 
@@ -90,7 +100,12 @@ public class BuffManager : MonoBehaviour
         NotifyBuffChanged(notifyScope);
     }
 
-    public T GetBuffedStat<T>(T baseStat, BuffQueryContext context, BuffCalculationMode calculationMode = BuffCalculationMode.All, bool consumeUseCount = false) where T : class, IGameStat<T>
+    public T GetBuffedStat<T>(
+        T baseStat,
+        BuffQueryContext context,
+        BuffCalculationMode calculationMode = BuffCalculationMode.All,
+        bool consumeUseCount = false
+    ) where T : class, IGameStat<T>
     {
         if (baseStat == null)
             return null;
@@ -99,6 +114,7 @@ public class BuffManager : MonoBehaviour
             return baseStat;
 
         T result = baseStat.Clone();
+
         if (result == null)
             return baseStat;
 
@@ -107,6 +123,7 @@ public class BuffManager : MonoBehaviour
         for (int i = 0; i < storage.activeBuffs.Count; i++)
         {
             ActiveBuff buff = storage.activeBuffs[i];
+
             if (!CanUseBuff(buff, context, calculationMode))
                 continue;
 
@@ -137,6 +154,7 @@ public class BuffManager : MonoBehaviour
         for (int i = 0; i < buff.modifiers.Length; i++)
         {
             BuffModifier modifier = buff.modifiers[i];
+
             if (modifier == null)
                 continue;
 
@@ -147,7 +165,11 @@ public class BuffManager : MonoBehaviour
         }
     }
 
-    private bool CanUseBuff(ActiveBuff buff, BuffQueryContext context, BuffCalculationMode calculationMode)
+    private bool CanUseBuff(
+        ActiveBuff buff,
+        BuffQueryContext context,
+        BuffCalculationMode calculationMode
+    )
     {
         if (buff == null || buff.IsExpired)
             return false;
@@ -164,7 +186,10 @@ public class BuffManager : MonoBehaviour
         return true;
     }
 
-    private bool CanUseByCalculationMode(ActiveBuff buff, BuffCalculationMode calculationMode)
+    private bool CanUseByCalculationMode(
+        ActiveBuff buff,
+        BuffCalculationMode calculationMode
+    )
     {
         if (calculationMode == BuffCalculationMode.All)
             return true;
@@ -178,38 +203,98 @@ public class BuffManager : MonoBehaviour
         return true;
     }
 
-    #region Legucy
+    #region Stat Query
 
-    public AttackStat GetBuffedAttackStat(AttackStat baseStat, ItemData targetItemData, EquipmentBag targetBag)
+    public AttackStat GetBuffedAttackStat(
+        AttackStat baseStat,
+        ItemData targetItemData,
+        EquipmentBag targetBag
+    )
     {
-        return GetBuffedStat(baseStat, BuffQueryContext.ForItem(targetItemData, targetBag));
+        return GetBuffedStat(
+            baseStat,
+            BuffQueryContext.ForItem(targetItemData, targetBag)
+        );
     }
 
-    public AttackStat GetSnapshotAttackStatAndConsume(AttackStat baseStat, ItemData targetItemData, EquipmentBag targetBag)
+    public AttackStat GetSnapshotAttackStatAndConsume(
+        AttackStat baseStat,
+        ItemData targetItemData,
+        EquipmentBag targetBag
+    )
     {
-        return GetBuffedStat(baseStat, BuffQueryContext.ForItem(targetItemData, targetBag), BuffCalculationMode.SnapshotOnly, true);
+        return GetBuffedStat(
+            baseStat,
+            BuffQueryContext.ForItem(targetItemData, targetBag),
+            BuffCalculationMode.SnapshotOnly,
+            true
+        );
     }
 
-    public AttackStat GetDynamicAttackStat(AttackStat baseStat, ItemData targetItemData, EquipmentBag targetBag)
+    public AttackStat GetDynamicAttackStat(
+        AttackStat baseStat,
+        ItemData targetItemData,
+        EquipmentBag targetBag
+    )
     {
-        return GetBuffedStat(baseStat, BuffQueryContext.ForItem(targetItemData, targetBag), BuffCalculationMode.DynamicOnly, false);
+        return GetBuffedStat(
+            baseStat,
+            BuffQueryContext.ForItem(targetItemData, targetBag),
+            BuffCalculationMode.DynamicOnly,
+            false
+        );
     }
 
-    public BuffInfo GetBuffedBuffInfo(BuffInfo baseInfo, ItemData targetItemData, EquipmentBag targetBag)
+    public BuffInfo GetBuffedBuffInfo(
+        BuffInfo baseInfo,
+        ItemData targetItemData,
+        EquipmentBag targetBag
+    )
     {
-        return GetBuffedStat(baseInfo, BuffQueryContext.ForItem(targetItemData, targetBag), BuffCalculationMode.All, false);
+        return GetBuffedStat(
+            baseInfo,
+            BuffQueryContext.ForItem(targetItemData, targetBag),
+            BuffCalculationMode.All,
+            false
+        );
     }
 
     public EnemyStat GetBuffedEnemyStat(EnemyStat baseStat, Enemy enemy)
     {
-        return GetBuffedStat(baseStat, BuffQueryContext.ForEnemy(enemy), BuffCalculationMode.All, false);
+        return GetBuffedStat(
+            baseStat,
+            BuffQueryContext.ForEnemy(enemy),
+            BuffCalculationMode.All,
+            false
+        );
     }
 
-    public EnemySpawnerStat GetBuffedEnemySpawnerStat(EnemySpawnerStat baseStat, EnemySpawner spawner)
+    public EnemySpawnerStat GetBuffedEnemySpawnerStat(
+        EnemySpawnerStat baseStat,
+        EnemySpawner spawner
+    )
     {
-        return GetBuffedStat(baseStat, BuffQueryContext.ForEnemySpawner(spawner), BuffCalculationMode.All, false);
+        return GetBuffedStat(
+            baseStat,
+            BuffQueryContext.ForEnemySpawner(spawner),
+            BuffCalculationMode.All,
+            false
+        );
     }
+
+    public PlayerStat GetBuffedPlayerStat(PlayerStat baseStat, Player player)
+    {
+        return GetBuffedStat(
+            baseStat,
+            BuffQueryContext.ForPlayer(player),
+            BuffCalculationMode.All,
+            false
+        );
+    }
+
     #endregion
+
+    #region Enemy Register
 
     public void RegisterEnemy(Enemy enemy)
     {
@@ -218,6 +303,7 @@ public class BuffManager : MonoBehaviour
 
         storage.RegisterEnemy(enemy);
         enemy.RefreshBuffedStat();
+
         RefreshDebugInspector();
     }
 
@@ -230,6 +316,29 @@ public class BuffManager : MonoBehaviour
         NotifyBuffChanged(BuffNotifyScope.Enemy);
     }
 
+    public void ClearEnemyBuffs(Enemy enemy)
+    {
+        if (storage == null || enemy == null)
+            return;
+
+        storage.RemoveBuffsForEnemy(enemy);
+        enemy.RefreshBuffedStat();
+
+        NotifyBuffChanged(BuffNotifyScope.Enemy);
+    }
+
+    public List<Enemy> GetRegisteredEnemiesUnsafe()
+    {
+        if (storage == null)
+            return new List<Enemy>();
+
+        return storage.registeredEnemies;
+    }
+
+    #endregion
+
+    #region Enemy Spawner Register
+
     public void RegisterEnemySpawner(EnemySpawner spawner)
     {
         if (storage == null || spawner == null)
@@ -237,6 +346,7 @@ public class BuffManager : MonoBehaviour
 
         storage.RegisterEnemySpawner(spawner);
         spawner.RefreshBuffedStat();
+
         RefreshDebugInspector();
     }
 
@@ -249,13 +359,44 @@ public class BuffManager : MonoBehaviour
         NotifyBuffChanged(BuffNotifyScope.EnemySpawner);
     }
 
-    public List<Enemy> GetRegisteredEnemiesUnsafe()
-    {
-        if (storage == null)
-            return new List<Enemy>();
+    #endregion
 
-        return storage.registeredEnemies;
+    #region Player Register
+
+    public void RegisterPlayer(Player player)
+    {
+        if (storage == null || player == null)
+            return;
+
+        storage.RegisterPlayer(player);
+        player.RefreshBuffedStat();
+
+        RefreshDebugInspector();
     }
+
+    public void UnregisterPlayer(Player player)
+    {
+        if (storage == null || player == null)
+            return;
+
+        storage.UnregisterPlayer(player);
+        NotifyBuffChanged(BuffNotifyScope.Player);
+    }
+
+    public void ClearPlayerBuffs(Player player)
+    {
+        if (storage == null || player == null)
+            return;
+
+        storage.RemoveBuffsForPlayer(player);
+        player.RefreshBuffedStat();
+
+        NotifyBuffChanged(BuffNotifyScope.Player);
+    }
+
+    #endregion
+
+    #region Dynamic Receiver
 
     public void RegisterDynamicBuffReceiver(IDynamicBuffReceiver receiver)
     {
@@ -273,28 +414,71 @@ public class BuffManager : MonoBehaviour
         dynamicBuffReceivers.Remove(receiver);
     }
 
-    public List<ActiveBuff> GetAllActiveBuffs() => query != null ? query.GetAllActiveBuffs() : new List<ActiveBuff>();
-    public List<ActiveBuff> GetAllVisibleBuffs() => query != null ? query.GetAllVisibleBuffs() : new List<ActiveBuff>();
-    public List<ActiveBuff> GetBagBuffsAsList(EquipmentBag bag) => query != null ? query.GetBagBuffsAsList(bag) : new List<ActiveBuff>();
-    public List<ActiveBuff> GetVisibleBagBuffsAsList(EquipmentBag bag) => query != null ? query.GetBagBuffsAsList(bag, true) : new List<ActiveBuff>();
-    public List<ActiveBuff> GetItemBuffsAsList(ItemData itemData) => query != null ? query.GetItemBuffsAsList(itemData) : new List<ActiveBuff>();
-    public List<ActiveBuff> GetVisibleItemBuffsAsList(ItemData itemData) => query != null ? query.GetItemBuffsAsList(itemData, true) : new List<ActiveBuff>();
-    public List<ActiveBuff> GetItemSeriesBuffsAsList(ItemSeries series) => query != null ? query.GetItemSeriesBuffsAsList(series) : new List<ActiveBuff>();
-    public List<ActiveBuff> GetVisibleItemSeriesBuffsAsList(ItemSeries series) => query != null ? query.GetItemSeriesBuffsAsList(series, true) : new List<ActiveBuff>();
-    public List<ActiveBuff> GetEnemyBuffsAsList(Enemy enemy) => query != null ? query.GetEnemyBuffsAsList(enemy) : new List<ActiveBuff>();
-    public List<ActiveBuff> GetVisibleEnemyBuffsAsList(Enemy enemy) => query != null ? query.GetEnemyBuffsAsList(enemy, true) : new List<ActiveBuff>();
-    public List<ActiveBuff> GetEnemySpawnerBuffsAsList(EnemySpawner spawner) => query != null ? query.GetEnemySpawnerBuffsAsList(spawner) : new List<ActiveBuff>();
-    public List<ActiveBuff> GetVisibleEnemySpawnerBuffsAsList(EnemySpawner spawner) => query != null ? query.GetEnemySpawnerBuffsAsList(spawner, true) : new List<ActiveBuff>();
+    #endregion
 
-    public void ClearEnemyBuffs(Enemy enemy)
+    #region Buff Query List
+
+    public List<ActiveBuff> GetAllActiveBuffs()
     {
-        if (storage == null || enemy == null)
-            return;
-
-        storage.RemoveBuffsForEnemy(enemy);
-        enemy.RefreshBuffedStat();
-        NotifyBuffChanged(BuffNotifyScope.Enemy);
+        return query != null ? query.GetAllActiveBuffs() : new List<ActiveBuff>();
     }
+
+    public List<ActiveBuff> GetAllVisibleBuffs()
+    {
+        return query != null ? query.GetAllVisibleBuffs() : new List<ActiveBuff>();
+    }
+
+    public List<ActiveBuff> GetBagBuffsAsList(EquipmentBag bag)
+    {
+        return query != null ? query.GetBagBuffsAsList(bag) : new List<ActiveBuff>();
+    }
+
+    public List<ActiveBuff> GetVisibleBagBuffsAsList(EquipmentBag bag)
+    {
+        return query != null ? query.GetBagBuffsAsList(bag, true) : new List<ActiveBuff>();
+    }
+
+    public List<ActiveBuff> GetItemBuffsAsList(ItemData itemData)
+    {
+        return query != null ? query.GetItemBuffsAsList(itemData) : new List<ActiveBuff>();
+    }
+
+    public List<ActiveBuff> GetVisibleItemBuffsAsList(ItemData itemData)
+    {
+        return query != null ? query.GetItemBuffsAsList(itemData, true) : new List<ActiveBuff>();
+    }
+
+    public List<ActiveBuff> GetItemSeriesBuffsAsList(ItemSeries series)
+    {
+        return query != null ? query.GetItemSeriesBuffsAsList(series) : new List<ActiveBuff>();
+    }
+
+    public List<ActiveBuff> GetVisibleItemSeriesBuffsAsList(ItemSeries series)
+    {
+        return query != null ? query.GetItemSeriesBuffsAsList(series, true) : new List<ActiveBuff>();
+    }
+
+    public List<ActiveBuff> GetEnemyBuffsAsList(Enemy enemy)
+    {
+        return query != null ? query.GetEnemyBuffsAsList(enemy) : new List<ActiveBuff>();
+    }
+
+    public List<ActiveBuff> GetVisibleEnemyBuffsAsList(Enemy enemy)
+    {
+        return query != null ? query.GetEnemyBuffsAsList(enemy, true) : new List<ActiveBuff>();
+    }
+
+    public List<ActiveBuff> GetEnemySpawnerBuffsAsList(EnemySpawner spawner)
+    {
+        return query != null ? query.GetEnemySpawnerBuffsAsList(spawner) : new List<ActiveBuff>();
+    }
+
+    public List<ActiveBuff> GetVisibleEnemySpawnerBuffsAsList(EnemySpawner spawner)
+    {
+        return query != null ? query.GetEnemySpawnerBuffsAsList(spawner, true) : new List<ActiveBuff>();
+    }
+
+    #endregion
 
     public void ClearAllBuffs()
     {
@@ -310,11 +494,23 @@ public class BuffManager : MonoBehaviour
         if (target == null)
             return BuffNotifyScope.All;
 
-        if (target.kind == BuffTargetKind.Enemy || target.kind == BuffTargetKind.AllEnemiesIncludingFuture)
+        if (target.kind == BuffTargetKind.Enemy ||
+            target.kind == BuffTargetKind.AllEnemiesIncludingFuture)
+        {
             return BuffNotifyScope.Enemy;
+        }
 
-        if (target.kind == BuffTargetKind.EnemySpawner || target.kind == BuffTargetKind.AllEnemySpawners)
+        if (target.kind == BuffTargetKind.EnemySpawner ||
+            target.kind == BuffTargetKind.AllEnemySpawners)
+        {
             return BuffNotifyScope.EnemySpawner;
+        }
+
+        if (target.kind == BuffTargetKind.Player ||
+            target.kind == BuffTargetKind.AllPlayers)
+        {
+            return BuffNotifyScope.Player;
+        }
 
         return BuffNotifyScope.Item;
     }
@@ -338,8 +534,15 @@ public class BuffManager : MonoBehaviour
         if (scope == BuffNotifyScope.All || scope == BuffNotifyScope.EnemySpawner)
             RefreshAllRegisteredEnemySpawnerStats();
 
-        if (scope == BuffNotifyScope.All || scope == BuffNotifyScope.Item || scope == BuffNotifyScope.DynamicOnly)
+        if (scope == BuffNotifyScope.All || scope == BuffNotifyScope.Player)
+            RefreshAllRegisteredPlayerStats();
+
+        if (scope == BuffNotifyScope.All ||
+            scope == BuffNotifyScope.Item ||
+            scope == BuffNotifyScope.DynamicOnly)
+        {
             NotifyDynamicBuffReceivers();
+        }
 
         RefreshUI();
         RefreshDebugInspector();
@@ -353,6 +556,7 @@ public class BuffManager : MonoBehaviour
         for (int i = storage.registeredEnemies.Count - 1; i >= 0; i--)
         {
             Enemy enemy = storage.registeredEnemies[i];
+
             if (enemy == null)
             {
                 storage.registeredEnemies.RemoveAt(i);
@@ -371,6 +575,7 @@ public class BuffManager : MonoBehaviour
         for (int i = storage.registeredEnemySpawners.Count - 1; i >= 0; i--)
         {
             EnemySpawner spawner = storage.registeredEnemySpawners[i];
+
             if (spawner == null)
             {
                 storage.registeredEnemySpawners.RemoveAt(i);
@@ -381,11 +586,31 @@ public class BuffManager : MonoBehaviour
         }
     }
 
+    private void RefreshAllRegisteredPlayerStats()
+    {
+        if (storage == null)
+            return;
+
+        for (int i = storage.registeredPlayers.Count - 1; i >= 0; i--)
+        {
+            Player player = storage.registeredPlayers[i];
+
+            if (player == null)
+            {
+                storage.registeredPlayers.RemoveAt(i);
+                continue;
+            }
+
+            player.RefreshBuffedStat();
+        }
+    }
+
     private void NotifyDynamicBuffReceivers()
     {
         for (int i = dynamicBuffReceivers.Count - 1; i >= 0; i--)
         {
             IDynamicBuffReceiver receiver = dynamicBuffReceivers[i];
+
             if (receiver == null)
             {
                 dynamicBuffReceivers.RemoveAt(i);
@@ -413,6 +638,7 @@ public class BuffManager : MonoBehaviour
         for (int i = 0; i < storage.activeBuffs.Count; i++)
         {
             ActiveBuff buff = storage.activeBuffs[i];
+
             if (buff == null || buff.IsExpired)
                 continue;
 
@@ -430,9 +656,11 @@ public class BuffManager : MonoBehaviour
         string targetName = buff.target.GetDebugName();
 
         DebugBuffGroup group = null;
+
         for (int i = 0; i < debugBuffGroups.Count; i++)
         {
-            if (debugBuffGroups[i].groupType == groupType && debugBuffGroups[i].targetName == targetName)
+            if (debugBuffGroups[i].groupType == groupType &&
+                debugBuffGroups[i].targetName == targetName)
             {
                 group = debugBuffGroups[i];
                 break;
@@ -441,7 +669,12 @@ public class BuffManager : MonoBehaviour
 
         if (group == null)
         {
-            group = new DebugBuffGroup { groupType = groupType, targetName = targetName };
+            group = new DebugBuffGroup
+            {
+                groupType = groupType,
+                targetName = targetName
+            };
+
             debugBuffGroups.Add(group);
         }
 

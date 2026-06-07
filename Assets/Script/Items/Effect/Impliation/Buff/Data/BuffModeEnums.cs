@@ -32,7 +32,9 @@ public enum BuffTargetKind
     Enemy,
     AllEnemiesIncludingFuture,
     EnemySpawner,
-    AllEnemySpawners
+    AllEnemySpawners,
+    Player,
+    AllPlayers
 }
 
 public enum BuffNotifyScope
@@ -41,5 +43,6 @@ public enum BuffNotifyScope
     Item,
     Enemy,
     EnemySpawner,
-    DynamicOnly
+    DynamicOnly,
+    Player
 }

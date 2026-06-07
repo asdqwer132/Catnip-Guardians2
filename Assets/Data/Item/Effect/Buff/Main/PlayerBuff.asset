@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b250f045bef3cf34fbfec8a0516c81f9, type: 3}
-  m_Name: AttackBuff 1
+  m_Name: PlayerBuff
   m_EditorClassIdentifier: Assembly-CSharp::BuffBagItemsEffect
   impactVfxPrefab: {fileID: 7370820554304283871, guid: 6bb8e448b33213a4a8e2504f77930ae6, type: 3}
   impactBaseScale: {x: 1, y: 1, z: 1}
   scaleImpactVfxByRadius: 1
   useAnimatorClipLifeTime: 1
   impactVfxLifeTime: 1
-  targetResolver: {fileID: 11400000, guid: 18a6dc79178fd3f4b90e4f249652a0f4, type: 2}
+  targetResolver: {fileID: 11400000, guid: 2f582125e9ff4de4fbc31e85e72d98b7, type: 2}
   buffInfo:
     stackMode: 0
     maxStack: 30
@@ -28,4 +28,4 @@ MonoBehaviour:
   includeSelf: 0
   showInUI: 1
   modifiers:
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 673a4e5c1c0ce1642824793b9b94f3e2, type: 2}

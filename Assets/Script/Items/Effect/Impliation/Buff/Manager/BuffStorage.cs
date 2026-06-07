@@ -5,13 +5,20 @@ public class BuffStorage
     public readonly List<ActiveBuff> activeBuffs = new List<ActiveBuff>();
     public readonly List<Enemy> registeredEnemies = new List<Enemy>();
     public readonly List<EnemySpawner> registeredEnemySpawners = new List<EnemySpawner>();
+    public readonly List<Player> registeredPlayers = new List<Player>();
 
     public void AddOrRefresh(ActiveBuff newBuff, BuffInfo info)
     {
         if (newBuff == null)
             return;
 
-        ActiveBuff same = FindSameBuff(newBuff.sourceItemData, newBuff.sourceBag, newBuff.sourceEffectData, newBuff.target);
+        ActiveBuff same = FindSameBuff(
+            newBuff.sourceItemData,
+            newBuff.sourceBag,
+            newBuff.sourceEffectData,
+            newBuff.target
+        );
+
         if (same != null)
         {
             same.modifiers = newBuff.modifiers;
@@ -24,11 +31,17 @@ public class BuffStorage
         activeBuffs.Add(newBuff);
     }
 
-    public ActiveBuff FindSameBuff(ItemData sourceItemData, EquipmentBag sourceBag, ItemEffectData sourceEffectData, BuffTargetHandle target)
+    public ActiveBuff FindSameBuff(
+        ItemData sourceItemData,
+        EquipmentBag sourceBag,
+        ItemEffectData sourceEffectData,
+        BuffTargetHandle target
+    )
     {
         for (int i = 0; i < activeBuffs.Count; i++)
         {
             ActiveBuff buff = activeBuffs[i];
+
             if (buff == null || buff.IsExpired)
                 continue;
 
@@ -75,13 +88,37 @@ public class BuffStorage
         RemoveBuffsForEnemySpawner(spawner);
     }
 
+    public void RegisterPlayer(Player player)
+    {
+        if (player == null)
+            return;
+
+        if (!registeredPlayers.Contains(player))
+            registeredPlayers.Add(player);
+    }
+
+    public void UnregisterPlayer(Player player)
+    {
+        if (player == null)
+            return;
+
+        registeredPlayers.Remove(player);
+        RemoveBuffsForPlayer(player);
+    }
+
     public void RemoveBuffsForEnemy(Enemy enemy)
     {
         for (int i = activeBuffs.Count - 1; i >= 0; i--)
         {
             ActiveBuff buff = activeBuffs[i];
-            if (buff != null && buff.target != null && buff.target.kind == BuffTargetKind.Enemy && buff.target.enemy == enemy)
+
+            if (buff != null &&
+                buff.target != null &&
+                buff.target.kind == BuffTargetKind.Enemy &&
+                buff.target.enemy == enemy)
+            {
                 activeBuffs.RemoveAt(i);
+            }
         }
     }
 
@@ -90,8 +127,30 @@ public class BuffStorage
         for (int i = activeBuffs.Count - 1; i >= 0; i--)
         {
             ActiveBuff buff = activeBuffs[i];
-            if (buff != null && buff.target != null && buff.target.kind == BuffTargetKind.EnemySpawner && buff.target.enemySpawner == spawner)
+
+            if (buff != null &&
+                buff.target != null &&
+                buff.target.kind == BuffTargetKind.EnemySpawner &&
+                buff.target.enemySpawner == spawner)
+            {
                 activeBuffs.RemoveAt(i);
+            }
+        }
+    }
+
+    public void RemoveBuffsForPlayer(Player player)
+    {
+        for (int i = activeBuffs.Count - 1; i >= 0; i--)
+        {
+            ActiveBuff buff = activeBuffs[i];
+
+            if (buff != null &&
+                buff.target != null &&
+                buff.target.kind == BuffTargetKind.Player &&
+                buff.target.player == player)
+            {
+                activeBuffs.RemoveAt(i);
+            }
         }
     }
 
@@ -112,6 +171,12 @@ public class BuffStorage
         {
             if (registeredEnemySpawners[i] == null)
                 registeredEnemySpawners.RemoveAt(i);
+        }
+
+        for (int i = registeredPlayers.Count - 1; i >= 0; i--)
+        {
+            if (registeredPlayers[i] == null)
+                registeredPlayers.RemoveAt(i);
         }
     }
 }

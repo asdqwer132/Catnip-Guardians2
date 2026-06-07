@@ -10,6 +10,7 @@ public class BuffTargetHandle
     public ItemSeries itemSeries = ItemSeries.None;
     public Enemy enemy;
     public EnemySpawner enemySpawner;
+    public Player player;
 
     public static BuffTargetHandle Item(ItemData itemData)
     {
@@ -51,10 +52,23 @@ public class BuffTargetHandle
         return new BuffTargetHandle { kind = BuffTargetKind.AllEnemySpawners };
     }
 
+    public static BuffTargetHandle Player(Player player)
+    {
+        return new BuffTargetHandle { kind = BuffTargetKind.Player, player = player };
+    }
+
+    public static BuffTargetHandle AllPlayers()
+    {
+        return new BuffTargetHandle { kind = BuffTargetKind.AllPlayers };
+    }
+
     public bool Matches(BuffQueryContext query)
     {
         if (query == null)
             return false;
+
+        if (query.player != null)
+            return MatchesPlayer(query.player);
 
         if (query.enemy != null)
             return MatchesEnemy(query.enemy);
@@ -113,6 +127,20 @@ public class BuffTargetHandle
         return false;
     }
 
+    public bool MatchesPlayer(Player targetPlayer)
+    {
+        if (targetPlayer == null)
+            return false;
+
+        if (kind == BuffTargetKind.AllPlayers)
+            return true;
+
+        if (kind == BuffTargetKind.Player)
+            return player != null && player == targetPlayer;
+
+        return false;
+    }
+
     public bool SameTarget(BuffTargetHandle other)
     {
         if (other == null)
@@ -125,7 +153,8 @@ public class BuffTargetHandle
             && bag == other.bag
             && itemSeries == other.itemSeries
             && enemy == other.enemy
-            && enemySpawner == other.enemySpawner;
+            && enemySpawner == other.enemySpawner
+            && player == other.player;
     }
 
     public string GetDebugName()
@@ -144,6 +173,9 @@ public class BuffTargetHandle
 
         if (kind == BuffTargetKind.EnemySpawner)
             return enemySpawner != null ? enemySpawner.name : "Null EnemySpawner";
+
+        if (kind == BuffTargetKind.Player)
+            return player != null ? player.name : "Null Player";
 
         return kind.ToString();
     }

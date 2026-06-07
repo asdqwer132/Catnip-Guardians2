@@ -4,6 +4,7 @@ public class BuffQueryContext
     public EquipmentBag bag;
     public Enemy enemy;
     public EnemySpawner enemySpawner;
+    public Player player;
 
     public static BuffQueryContext ForItem(ItemData itemData, EquipmentBag bag)
     {
@@ -27,6 +28,14 @@ public class BuffQueryContext
         return new BuffQueryContext
         {
             enemySpawner = enemySpawner
+        };
+    }
+
+    public static BuffQueryContext ForPlayer(Player player)
+    {
+        return new BuffQueryContext
+        {
+            player = player
         };
     }
 }

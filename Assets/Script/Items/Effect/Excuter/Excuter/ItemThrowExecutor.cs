@@ -18,7 +18,6 @@ public class ItemThrowExecutor : MonoBehaviour
         ItemData inventoryItem,
         Vector3 startPosition,
         Vector3 targetPosition,
-        Vector3 direction,
         GameObject owner,
         EquipmentBag currentBag,
         int currentCycleId
@@ -32,7 +31,15 @@ public class ItemThrowExecutor : MonoBehaviour
 
         startPosition.z = 0f;
         targetPosition.z = 0f;
+
+        Vector3 direction = targetPosition - startPosition;
+
+        if (direction.sqrMagnitude <= 0.0001f)
+            return;
         direction.z = 0f;
+
+        direction.Normalize();
+
 
         ItemThrowMover mover = CreateThrowMover(startPosition);
 

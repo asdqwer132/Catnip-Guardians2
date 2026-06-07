@@ -83,15 +83,6 @@ public class BagItemUseManager : MonoBehaviour
         if (cooldownController.IsSlotCoolingDown(slotIndex))
             return false;
 
-        startPosition.z = 0f;
-        targetPosition.z = 0f;
-
-        Vector3 direction = targetPosition - startPosition;
-
-        if (direction.sqrMagnitude <= 0.0001f)
-            return false;
-
-        direction.Normalize();
 
         if (throwExecutor == null)
             return false;
@@ -100,7 +91,6 @@ public class BagItemUseManager : MonoBehaviour
             inventoryItem,
             startPosition,
             targetPosition,
-            direction,
             owner,
             bag,
             useCycle.CurrentCycleId
