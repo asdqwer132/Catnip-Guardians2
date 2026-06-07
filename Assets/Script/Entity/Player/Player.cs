@@ -9,6 +9,9 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver
 
     [Header("Reference")]
     public BuffManager buffManager;
+    public ActorMover mover;
+    public MovePingController movePingController;
+    public PlayerRangeIndicatorController rangeIndicatorController;
 
     [Header("Move")]
     public bool canMove = true;
@@ -18,9 +21,25 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver
     private Vector3 moveTargetPosition;
     private bool hasMoveTarget;
 
+    public Vector3 CurrentPosition => transform.position;
+    public float MinRange => currentStat != null ? currentStat.minRange : 0f;
+    public float MaxRange => currentStat != null ? currentStat.maxRange : 0f;
+    public Vector3 MoveTargetPosition => moveTargetPosition;
+    public bool HasMoveTarget => hasMoveTarget;
+
     private void Awake()
     {
         mainCamera = Camera.main;
+
+        if (mover == null)
+            mover = GetComponent<ActorMover>();
+
+        if (movePingController == null)
+            movePingController = GetComponent<MovePingController>();
+
+        if (rangeIndicatorController == null)
+            rangeIndicatorController = GetComponent<PlayerRangeIndicatorController>();
+
         moveTargetPosition = transform.position;
 
         RefreshBuffedStat();
@@ -66,16 +85,31 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver
             return;
 
         if (buffManager == null)
-        {
             currentStat = baseStat.Clone();
-            currentStat.Clamp();
-            return;
+        else
+        {
+            PlayerStat buffedStat = buffManager.GetBuffedPlayerStat(baseStat, this);
+            currentStat = buffedStat != null ? buffedStat : baseStat.Clone();
         }
 
-        PlayerStat buffedStat = buffManager.GetBuffedPlayerStat(baseStat, this);
-
-        currentStat = buffedStat != null ? buffedStat : baseStat.Clone();
         currentStat.Clamp();
+
+        ApplyStatToMover();
+        RefreshRangeIndicator();
+    }
+
+    private void ApplyStatToMover()
+    {
+        if (mover == null || currentStat == null)
+            return;
+
+        mover.SetSpeed(currentStat.moveSpeed);
+    }
+
+    private void RefreshRangeIndicator()
+    {
+        if (rangeIndicatorController != null)
+            rangeIndicatorController.RefreshRange();
     }
 
     public void OnDynamicBuffChanged()
@@ -110,44 +144,57 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver
         Vector3 mouseWorldPosition = mainCamera.ScreenToWorldPoint(mouseScreenPosition);
         mouseWorldPosition.z = transform.position.z;
 
-        moveTargetPosition = mouseWorldPosition;
+        SetMoveTarget(mouseWorldPosition);
+    }
+
+    public void SetMoveTarget(Vector3 targetPosition)
+    {
+        targetPosition.z = transform.position.z;
+
+        moveTargetPosition = targetPosition;
         hasMoveTarget = true;
+
+        if (movePingController != null)
+            movePingController.ShowPing(moveTargetPosition);
     }
 
     private void MoveToTarget()
     {
         if (!canMove)
+        {
+            StopMove();
             return;
+        }
 
         if (!hasMoveTarget)
+            return;
+
+        if (mover == null)
             return;
 
         float distance = Vector3.Distance(transform.position, moveTargetPosition);
 
         if (distance <= stopDistance)
         {
-            hasMoveTarget = false;
+            StopMove();
             return;
         }
 
-        float moveDistance = currentStat.moveSpeed * Time.deltaTime;
-
-        transform.position = Vector3.MoveTowards(
-            transform.position,
-            moveTargetPosition,
-            moveDistance
-        );
+        mover.MoveToPosition(moveTargetPosition, stopDistance);
     }
 
     public void StopMove()
     {
         hasMoveTarget = false;
         moveTargetPosition = transform.position;
+
+        if (mover != null)
+            mover.Stop();
     }
 
     public bool IsInUsableRange(Vector3 targetPosition)
     {
         float distance = Vector3.Distance(transform.position, targetPosition);
-        return distance >= currentStat.minRange && distance <= currentStat.maxRange;
+        return distance >= MinRange && distance <= MaxRange;
     }
 }

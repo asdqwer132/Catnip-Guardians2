@@ -18,7 +18,7 @@ public class ActorVisual : MonoBehaviour
     private Color defaultColor;
     private Vector3 defaultLocalScale;
 
-    void Awake()
+    protected virtual void Awake()
     {
         if (animator == null)
             animator = GetComponent<Animator>();
@@ -35,7 +35,7 @@ public class ActorVisual : MonoBehaviour
         defaultLocalScale = transform.localScale;
     }
 
-    public void ResetVisual()
+    public virtual void ResetVisual()
     {
         if (spriteRenderer != null)
         {
@@ -45,20 +45,19 @@ public class ActorVisual : MonoBehaviour
 
         transform.localScale = defaultLocalScale;
 
-        if (animator != null)
-        {
-            animator.ResetTrigger(attackTriggerName);
-            animator.ResetTrigger(hitTriggerName);
-            animator.ResetTrigger(dieTriggerName);
+        if (animator == null)
+            return;
 
-            animator.SetBool(walkingBoolName, false);
+        animator.ResetTrigger(attackTriggerName);
+        animator.ResetTrigger(hitTriggerName);
+        animator.ResetTrigger(dieTriggerName);
+        animator.SetBool(walkingBoolName, false);
 
-            animator.Rebind();
-            animator.Update(0f);
-        }
+        animator.Rebind();
+        animator.Update(0f);
     }
 
-    public void LookDirection(Vector2 direction)
+    public virtual void LookDirection(Vector2 direction)
     {
         if (spriteRenderer == null)
             return;
@@ -74,17 +73,7 @@ public class ActorVisual : MonoBehaviour
             spriteRenderer.flipX = faceLeft;
     }
 
-    #region PlayAnimation
-
-    public void StopMove()
-    {
-        if (animator == null)
-            return;
-
-        animator.SetBool(walkingBoolName, false);
-    }
-
-    public void PlayMove()
+    public virtual void PlayMove()
     {
         if (animator == null)
             return;
@@ -93,7 +82,26 @@ public class ActorVisual : MonoBehaviour
         animator.SetBool(walkingBoolName, true);
     }
 
-    public void PlayAttack()
+    public virtual void PlayMove(Vector2 direction)
+    {
+        PlayMove();
+        LookDirection(direction);
+    }
+
+    public virtual void StopMove()
+    {
+        if (animator == null)
+            return;
+
+        animator.SetBool(walkingBoolName, false);
+    }
+
+    public virtual void StopMove(Vector2 lastMoveDirection)
+    {
+        StopMove();
+    }
+
+    public virtual void PlayAttack()
     {
         if (animator == null)
             return;
@@ -104,25 +112,48 @@ public class ActorVisual : MonoBehaviour
         animator.SetTrigger(attackTriggerName);
     }
 
-    public void PlayHit()
+    public virtual void PlayAttack(Vector2 attackDirection)
+    {
+        PlayAttack();
+        LookDirection(attackDirection);
+    }
+
+    public virtual void PlayHit()
     {
         if (animator == null)
             return;
 
         animator.SetBool(walkingBoolName, false);
         animator.ResetTrigger(attackTriggerName);
+        animator.ResetTrigger(dieTriggerName);
         animator.SetTrigger(hitTriggerName);
     }
 
-    public void PlayDie()
+    public virtual void PlayDie()
     {
         if (animator == null)
             return;
 
         animator.SetBool(walkingBoolName, false);
-        animator.ResetTrigger(hitTriggerName);
         animator.ResetTrigger(attackTriggerName);
+        animator.ResetTrigger(hitTriggerName);
         animator.SetTrigger(dieTriggerName);
+    }
+
+    public virtual void PauseAnimation()
+    {
+        if (animator == null)
+            return;
+
+        animator.speed = 0f;
+    }
+
+    public virtual void ResumeAnimation()
+    {
+        if (animator == null)
+            return;
+
+        animator.speed = 1f;
     }
 
     public IEnumerator WaitCurrentAnimationEnd()
@@ -133,9 +164,6 @@ public class ActorVisual : MonoBehaviour
         yield return null;
 
         AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
-
         yield return new WaitForSeconds(stateInfo.length);
     }
-
-    #endregion
 }

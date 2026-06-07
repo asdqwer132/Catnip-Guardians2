@@ -8,15 +8,19 @@ public class ActorMover : MonoBehaviour
     [Header("Components")]
     public ActorVisual visual;
 
-    void Awake()
+    private Vector2 lastMoveDirection;
+
+    private void Awake()
     {
         if (visual == null)
             visual = GetComponent<ActorVisual>();
     }
 
-    public void SetSpeed(float newSpeed) { speed = newSpeed; }
+    public void SetSpeed(float newSpeed)
+    {
+        speed = newSpeed;
+    }
 
-    #region Move
     public void MoveTo(Transform target)
     {
         if (target == null)
@@ -28,6 +32,20 @@ public class ActorMover : MonoBehaviour
         Vector2 direction = target.position - transform.position;
         MoveDirection(direction);
     }
+
+    public void MoveToPosition(Vector3 targetPosition, float stopDistance = 0.03f)
+    {
+        Vector2 toTarget = targetPosition - transform.position;
+
+        if (toTarget.magnitude <= stopDistance)
+        {
+            Stop();
+            return;
+        }
+
+        MoveDirection(toTarget);
+    }
+
     public void MoveToDistanceFromTarget(Transform target, float targetDistance, float tolerance)
     {
         if (target == null)
@@ -41,7 +59,7 @@ public class ActorMover : MonoBehaviour
 
         if (currentDistance <= 0.0001f)
         {
-            MoveDirection(Vector2.right);
+            Stop();
             return;
         }
 
@@ -60,6 +78,7 @@ public class ActorMover : MonoBehaviour
         else
             MoveDirection(-directionToTarget);
     }
+
     public void MoveDirection(Vector2 direction)
     {
         if (direction.sqrMagnitude <= 0.0001f)
@@ -69,19 +88,17 @@ public class ActorMover : MonoBehaviour
         }
 
         direction.Normalize();
+        lastMoveDirection = direction;
 
         if (visual != null)
-        {
-            visual.PlayMove();
-            visual.LookDirection(direction);
-        }
+            visual.PlayMove(direction);
 
         transform.position += (Vector3)(direction * speed * Time.deltaTime);
     }
+
     public void Stop()
     {
         if (visual != null)
-            visual.StopMove();
+            visual.StopMove(lastMoveDirection);
     }
-    #endregion
 }

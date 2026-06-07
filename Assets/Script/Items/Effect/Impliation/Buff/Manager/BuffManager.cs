@@ -17,7 +17,6 @@ public class BuffManager : MonoBehaviour
     private BuffQuery query;
 
     private readonly List<IDynamicBuffReceiver> dynamicBuffReceivers = new List<IDynamicBuffReceiver>();
-    private readonly List<BuffTargetHandle> resolvedTargetsBuffer = new List<BuffTargetHandle>();
     private readonly List<ActiveBuff> consumedBuffer = new List<ActiveBuff>();
 
     public BuffStorage Storage => storage;
@@ -36,9 +35,7 @@ public class BuffManager : MonoBehaviour
         if (ticker == null)
             return;
 
-        bool changed = ticker.Tick(Time.deltaTime);
-
-        if (changed)
+        if (ticker.Tick(Time.deltaTime))
             NotifyBuffChanged(BuffNotifyScope.All);
 
         if (useDebugInspector)
@@ -54,19 +51,12 @@ public class BuffManager : MonoBehaviour
             return;
 
         BuffRegisterContext context = new BuffRegisterContext(itemContext, this);
-
-        BuffInfo finalInfo = GetBuffedBuffInfo(
-            effect.buffInfo,
-            context.sourceItemData,
-            context.sourceBag
-        );
+        BuffInfo finalInfo = GetBuffedBuffInfo(effect.buffInfo, context.sourceItemData, context.sourceBag);
 
         if (finalInfo == null)
             return;
 
         finalInfo.Clamp();
-
-        resolvedTargetsBuffer.Clear();
 
         List<BuffTargetHandle> targets = effect.ResolveTargets(context);
 
@@ -165,11 +155,7 @@ public class BuffManager : MonoBehaviour
         }
     }
 
-    private bool CanUseBuff(
-        ActiveBuff buff,
-        BuffQueryContext context,
-        BuffCalculationMode calculationMode
-    )
+    private bool CanUseBuff(ActiveBuff buff, BuffQueryContext context, BuffCalculationMode calculationMode)
     {
         if (buff == null || buff.IsExpired)
             return false;
@@ -180,16 +166,10 @@ public class BuffManager : MonoBehaviour
         if (!CanUseByCalculationMode(buff, calculationMode))
             return false;
 
-        if (!buff.MatchesQuery(context))
-            return false;
-
-        return true;
+        return buff.MatchesQuery(context);
     }
 
-    private bool CanUseByCalculationMode(
-        ActiveBuff buff,
-        BuffCalculationMode calculationMode
-    )
+    private bool CanUseByCalculationMode(ActiveBuff buff, BuffCalculationMode calculationMode)
     {
         if (calculationMode == BuffCalculationMode.All)
             return true;
@@ -205,23 +185,12 @@ public class BuffManager : MonoBehaviour
 
     #region Stat Query
 
-    public AttackStat GetBuffedAttackStat(
-        AttackStat baseStat,
-        ItemData targetItemData,
-        EquipmentBag targetBag
-    )
+    public AttackStat GetBuffedAttackStat(AttackStat baseStat, ItemData targetItemData, EquipmentBag targetBag)
     {
-        return GetBuffedStat(
-            baseStat,
-            BuffQueryContext.ForItem(targetItemData, targetBag)
-        );
+        return GetBuffedStat(baseStat, BuffQueryContext.ForItem(targetItemData, targetBag));
     }
 
-    public AttackStat GetSnapshotAttackStatAndConsume(
-        AttackStat baseStat,
-        ItemData targetItemData,
-        EquipmentBag targetBag
-    )
+    public AttackStat GetSnapshotAttackStatAndConsume(AttackStat baseStat, ItemData targetItemData, EquipmentBag targetBag)
     {
         return GetBuffedStat(
             baseStat,
@@ -231,65 +200,33 @@ public class BuffManager : MonoBehaviour
         );
     }
 
-    public AttackStat GetDynamicAttackStat(
-        AttackStat baseStat,
-        ItemData targetItemData,
-        EquipmentBag targetBag
-    )
+    public AttackStat GetDynamicAttackStat(AttackStat baseStat, ItemData targetItemData, EquipmentBag targetBag)
     {
         return GetBuffedStat(
             baseStat,
             BuffQueryContext.ForItem(targetItemData, targetBag),
-            BuffCalculationMode.DynamicOnly,
-            false
+            BuffCalculationMode.DynamicOnly
         );
     }
 
-    public BuffInfo GetBuffedBuffInfo(
-        BuffInfo baseInfo,
-        ItemData targetItemData,
-        EquipmentBag targetBag
-    )
+    public BuffInfo GetBuffedBuffInfo(BuffInfo baseInfo, ItemData targetItemData, EquipmentBag targetBag)
     {
-        return GetBuffedStat(
-            baseInfo,
-            BuffQueryContext.ForItem(targetItemData, targetBag),
-            BuffCalculationMode.All,
-            false
-        );
+        return GetBuffedStat(baseInfo, BuffQueryContext.ForItem(targetItemData, targetBag));
     }
 
     public EnemyStat GetBuffedEnemyStat(EnemyStat baseStat, Enemy enemy)
     {
-        return GetBuffedStat(
-            baseStat,
-            BuffQueryContext.ForEnemy(enemy),
-            BuffCalculationMode.All,
-            false
-        );
+        return GetBuffedStat(baseStat, BuffQueryContext.ForEnemy(enemy));
     }
 
-    public EnemySpawnerStat GetBuffedEnemySpawnerStat(
-        EnemySpawnerStat baseStat,
-        EnemySpawner spawner
-    )
+    public EnemySpawnerStat GetBuffedEnemySpawnerStat(EnemySpawnerStat baseStat, EnemySpawner spawner)
     {
-        return GetBuffedStat(
-            baseStat,
-            BuffQueryContext.ForEnemySpawner(spawner),
-            BuffCalculationMode.All,
-            false
-        );
+        return GetBuffedStat(baseStat, BuffQueryContext.ForEnemySpawner(spawner));
     }
 
     public PlayerStat GetBuffedPlayerStat(PlayerStat baseStat, Player player)
     {
-        return GetBuffedStat(
-            baseStat,
-            BuffQueryContext.ForPlayer(player),
-            BuffCalculationMode.All,
-            false
-        );
+        return GetBuffedStat(baseStat, BuffQueryContext.ForPlayer(player));
     }
 
     #endregion
@@ -303,7 +240,6 @@ public class BuffManager : MonoBehaviour
 
         storage.RegisterEnemy(enemy);
         enemy.RefreshBuffedStat();
-
         RefreshDebugInspector();
     }
 
@@ -323,16 +259,12 @@ public class BuffManager : MonoBehaviour
 
         storage.RemoveBuffsForEnemy(enemy);
         enemy.RefreshBuffedStat();
-
         NotifyBuffChanged(BuffNotifyScope.Enemy);
     }
 
     public List<Enemy> GetRegisteredEnemiesUnsafe()
     {
-        if (storage == null)
-            return new List<Enemy>();
-
-        return storage.registeredEnemies;
+        return storage != null ? storage.registeredEnemies : new List<Enemy>();
     }
 
     #endregion
@@ -346,7 +278,6 @@ public class BuffManager : MonoBehaviour
 
         storage.RegisterEnemySpawner(spawner);
         spawner.RefreshBuffedStat();
-
         RefreshDebugInspector();
     }
 
@@ -370,7 +301,6 @@ public class BuffManager : MonoBehaviour
 
         storage.RegisterPlayer(player);
         player.RefreshBuffedStat();
-
         RefreshDebugInspector();
     }
 
@@ -390,7 +320,6 @@ public class BuffManager : MonoBehaviour
 
         storage.RemoveBuffsForPlayer(player);
         player.RefreshBuffedStat();
-
         NotifyBuffChanged(BuffNotifyScope.Player);
     }
 
@@ -494,23 +423,14 @@ public class BuffManager : MonoBehaviour
         if (target == null)
             return BuffNotifyScope.All;
 
-        if (target.kind == BuffTargetKind.Enemy ||
-            target.kind == BuffTargetKind.AllEnemiesIncludingFuture)
-        {
+        if (target.kind == BuffTargetKind.Enemy || target.kind == BuffTargetKind.AllEnemiesIncludingFuture)
             return BuffNotifyScope.Enemy;
-        }
 
-        if (target.kind == BuffTargetKind.EnemySpawner ||
-            target.kind == BuffTargetKind.AllEnemySpawners)
-        {
+        if (target.kind == BuffTargetKind.EnemySpawner || target.kind == BuffTargetKind.AllEnemySpawners)
             return BuffNotifyScope.EnemySpawner;
-        }
 
-        if (target.kind == BuffTargetKind.Player ||
-            target.kind == BuffTargetKind.AllPlayers)
-        {
+        if (target.kind == BuffTargetKind.Player || target.kind == BuffTargetKind.AllPlayers)
             return BuffNotifyScope.Player;
-        }
 
         return BuffNotifyScope.Item;
     }
@@ -537,12 +457,8 @@ public class BuffManager : MonoBehaviour
         if (scope == BuffNotifyScope.All || scope == BuffNotifyScope.Player)
             RefreshAllRegisteredPlayerStats();
 
-        if (scope == BuffNotifyScope.All ||
-            scope == BuffNotifyScope.Item ||
-            scope == BuffNotifyScope.DynamicOnly)
-        {
+        if (scope == BuffNotifyScope.All || scope == BuffNotifyScope.Item || scope == BuffNotifyScope.DynamicOnly)
             NotifyDynamicBuffReceivers();
-        }
 
         RefreshUI();
         RefreshDebugInspector();
@@ -654,17 +570,18 @@ public class BuffManager : MonoBehaviour
 
         string groupType = buff.target.kind.ToString();
         string targetName = buff.target.GetDebugName();
-
         DebugBuffGroup group = null;
 
         for (int i = 0; i < debugBuffGroups.Count; i++)
         {
-            if (debugBuffGroups[i].groupType == groupType &&
-                debugBuffGroups[i].targetName == targetName)
-            {
-                group = debugBuffGroups[i];
-                break;
-            }
+            if (debugBuffGroups[i].groupType != groupType)
+                continue;
+
+            if (debugBuffGroups[i].targetName != targetName)
+                continue;
+
+            group = debugBuffGroups[i];
+            break;
         }
 
         if (group == null)
