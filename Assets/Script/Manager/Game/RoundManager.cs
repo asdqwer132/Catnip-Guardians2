@@ -16,8 +16,7 @@ public class RoundManager : MonoBehaviour
         CurrencyManager.instance.AddCurrency(plantManager.CurrentPlant.reward);
 
         //º∫¿Â ±‚πÕ
-        enemyManager.StopAllSpawners();
-        enemyManager.DisableAllEnemiesAction();
+        enemyManager.AllStop();
 
         plantManager.PlayGrown();
 
@@ -30,6 +29,7 @@ public class RoundManager : MonoBehaviour
         {
             enemyManager.KillAllEnemies();
             enemyManager.Init(plantManager.CurrentPlant);
+            enemyManager.AllStart();
         }
         else
         {
@@ -39,6 +39,8 @@ public class RoundManager : MonoBehaviour
 
     public void GameOver()
     {
+        GrowManager.instance.StopGrowth();
+        enemyManager.AllStop();
         ReadyUpgrade();
     }
 

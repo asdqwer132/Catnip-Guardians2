@@ -7,6 +7,7 @@ public class BaseItemSlotUI : MonoBehaviour
     [Header("Base Item UI")]
     public Image icon;
     public TextMeshProUGUI nameText;
+    public GameObject amountImage;
     public TextMeshProUGUI amountText;
     public TextMeshProUGUI gradeText;
 
@@ -44,6 +45,8 @@ public class BaseItemSlotUI : MonoBehaviour
 
         if (nameText != null)
             nameText.text = itemData.GetDataName();
+        if (amountImage != null)
+            amountImage.SetActive(true);
 
         if (amountText != null)
             amountText.text = "" + amount;
@@ -65,6 +68,8 @@ public class BaseItemSlotUI : MonoBehaviour
         if (nameText != null)
             nameText.text = "";
 
+        if (amountImage != null)
+            amountImage.SetActive(false);
         if (amountText != null)
             amountText.text = "";
 

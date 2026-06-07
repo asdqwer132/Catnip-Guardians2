@@ -72,7 +72,9 @@ public class InventoryUI : MonoBehaviour
             pages.Add(pageObj.transform);
         }
 
-        for (int i = 0; i < validItems.Count; i++)
+        int totalSlotCount = pageCount * quickSlotsPerPage;
+
+        for (int i = 0; i < totalSlotCount; i++)
         {
             int pageIndex = i / quickSlotsPerPage;
 
@@ -83,8 +85,13 @@ public class InventoryUI : MonoBehaviour
 
             BaseItemSlotUI slotUI = slotObj.GetComponent<BaseItemSlotUI>();
 
-            if (slotUI != null)
+            if (slotUI == null)
+                continue;
+
+            if (i < validItems.Count)
                 slotUI.SetSlot(validItems[i]);
+            else
+                slotUI.SetSlot(null);
         }
 
         if (snapScroll != null)
