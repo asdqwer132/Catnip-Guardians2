@@ -2917,7 +2917,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2045318516}
@@ -2970,8 +2970,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_MaskInteraction: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+  m_MaskInteraction: 2
+  m_Sprite: {fileID: 7091095262819006777, guid: 7398c04f7813f05499c09bd4ac890c19, type: 3}
   m_Color: {r: 0, g: 0.55321586, b: 1, a: 0.5019608}
   m_FlipX: 0
   m_FlipY: 0
@@ -3052,6 +3052,7 @@ GameObject:
   m_Component:
   - component: {fileID: 324137115}
   - component: {fileID: 324137116}
+  - component: {fileID: 324137117}
   m_Layer: 0
   m_Name: MinRange
   m_TagString: Untagged
@@ -3067,7 +3068,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 324137114}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3122,9 +3123,9 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_MaskInteraction: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 1, g: 0, b: 0, a: 0.5019608}
+  m_MaskInteraction: 2
+  m_Sprite: {fileID: 7091095262819006777, guid: 7398c04f7813f05499c09bd4ac890c19, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -3133,6 +3134,65 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!331 &324137117
+SpriteMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 324137114}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 15d0c3709176029428a0da2f8cecf0b5, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 7091095262819006777, guid: 7398c04f7813f05499c09bd4ac890c19, type: 3}
+  m_MaskAlphaCutoff: 1
+  m_FrontSortingLayerID: 0
+  m_BackSortingLayerID: 0
+  m_FrontSortingLayer: 0
+  m_BackSortingLayer: 0
+  m_FrontSortingOrder: 0
+  m_BackSortingOrder: 0
+  m_IsCustomRangeActive: 0
+  m_SpriteSortPoint: 0
+  m_MaskSource: 0
 --- !u!114 &324430685 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4874984119699361045, guid: bd4e4cd47a3d37b4891e124612d1c9b0, type: 3}
@@ -3649,7 +3709,6 @@ MonoBehaviour:
   positionProvider: {fileID: 378844628}
   cooldownUIController: {fileID: 378844627}
   useResetCooldownKey: 1
-  resetAllCooldownKey: 114
 --- !u!4 &378844624
 Transform:
   m_ObjectHideFlags: 0
@@ -4569,6 +4628,53 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &446490480
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 446490481}
+  - component: {fileID: 446490482}
+  m_Layer: 0
+  m_Name: InputManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &446490481
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 446490480}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &446490482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 446490480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a48354dec9698d479515e3d96f85fe8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameInputManager
+  blockType: 0
+  resetAllCooldownKey: 32
+  logInput: 0
 --- !u!1 &457523614
 GameObject:
   m_ObjectHideFlags: 0
@@ -12385,6 +12491,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7271275385720007911, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
   m_PrefabInstance: {fileID: 548801657}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &548801660 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1929784432285699454, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
+  m_PrefabInstance: {fileID: 548801657}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 548801659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd896b871a4ba59479c106217bb1d150, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryUI
 --- !u!1 &556036736
 GameObject:
   m_ObjectHideFlags: 0
@@ -21441,6 +21558,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7271275385720007911, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
   m_PrefabInstance: {fileID: 992270696}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &992270699 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1929784432285699454, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
+  m_PrefabInstance: {fileID: 992270696}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 992270698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd896b871a4ba59479c106217bb1d150, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryUI
 --- !u!1 &1015326517
 GameObject:
   m_ObjectHideFlags: 0
@@ -26612,6 +26740,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7271275385720007911, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
   m_PrefabInstance: {fileID: 1036132133}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1036132136 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1929784432285699454, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
+  m_PrefabInstance: {fileID: 1036132133}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1036132135}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd896b871a4ba59479c106217bb1d150, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryUI
 --- !u!1 &1052976369 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3164287039007559380, guid: 00c2b20bce7d27b46915ebf4abf735de, type: 3}
@@ -27356,6 +27495,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1132715075}
   - component: {fileID: 1132715074}
+  - component: {fileID: 1132715076}
   m_Layer: 0
   m_Name: MovePing
   m_TagString: Untagged
@@ -27413,7 +27553,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 0.5019608}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -27437,6 +27577,33 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1132715076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1132715073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a33bdd9320ea529479b42ee311d5d3e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TargetRangeIndicator
+  rangeVisual: {fileID: 1132715075}
+  spriteRenderer: {fileID: 1132715074}
+  indicatorSprites:
+  - size: 0
+    sprite: {fileID: 21300000, guid: 2272cccbd3f4eab40a47c7cf1d860ee9, type: 3}
+    sizeMultiplier: 0.05
+    baseSpriteDiameter: 1
+  - size: 1
+    sprite: {fileID: 21300000, guid: ddc96b435c85687408b276f9f9a40737, type: 3}
+    sizeMultiplier: 0.1
+    baseSpriteDiameter: 1
+  - size: 2
+    sprite: {fileID: 21300000, guid: d24576ba02fee13479ea52d733b387cb, type: 3}
+    sizeMultiplier: 0.15
+    baseSpriteDiameter: 1
 --- !u!1 &1140265984
 GameObject:
   m_ObjectHideFlags: 0
@@ -32523,6 +32690,13 @@ MonoBehaviour:
   skillTreeUI: {fileID: 428193924}
   bagUIInitializer: {fileID: 1389380999}
   selectedBagPreviewUI: {fileID: 1561321923}
+  buffUIManager: {fileID: 511510868}
+  inventoryUIs:
+  - {fileID: 548801660}
+  - {fileID: 1724297552}
+  - {fileID: 1036132136}
+  - {fileID: 992270699}
+  - {fileID: 1778085662}
 --- !u!114 &1473317465
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -39727,6 +39901,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7271275385720007911, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
   m_PrefabInstance: {fileID: 1724297549}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1724297552 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1929784432285699454, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
+  m_PrefabInstance: {fileID: 1724297549}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1724297551}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd896b871a4ba59479c106217bb1d150, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryUI
 --- !u!224 &1727542989 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8309996326249904806, guid: 754aeecdac4dde6499098caed6c311c5, type: 3}
@@ -44967,6 +45152,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7271275385720007911, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
   m_PrefabInstance: {fileID: 1778085659}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1778085662 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1929784432285699454, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
+  m_PrefabInstance: {fileID: 1778085659}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1778085661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd896b871a4ba59479c106217bb1d150, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryUI
 --- !u!1 &1782736198
 GameObject:
   m_ObjectHideFlags: 0
@@ -45332,9 +45528,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
   baseStat:
-    moveSpeed: 5
+    moveSpeed: 1
     maxMoveSpeed: 10
-    minRange: 1
+    minRange: 3
     maxRange: 5
   currentStat:
     moveSpeed: 5
@@ -47873,12 +48069,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5cd3f47755036e46b0d579b51081604, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerRangeIndicatorController
-  player: {fileID: 1836332726}
   indicatorRoot: {fileID: 2045318514}
   minRangeIndicator: {fileID: 324137115}
   maxRangeIndicator: {fileID: 321839807}
   baseSpriteDiameter: 1
-  showOnStart: 1
+  showOnStart: 0
   refreshOnEnable: 1
 --- !u!4 &2045318516
 Transform:
@@ -47909,7 +48104,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80a2462c3b4e917488db20a995d80048, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MovePingSpawner
-  pingObject: {fileID: 1132715073}
+  pingObject: {fileID: 1132715076}
   matchPlayerZ: 1
   restartAnimatorOnPing: 1
 --- !u!1 &2047434819
@@ -48947,5 +49142,6 @@ SceneRoots:
   - {fileID: 1318438115}
   - {fileID: 378844624}
   - {fileID: 542858357}
+  - {fileID: 446490481}
   - {fileID: 2058885512}
   - {fileID: 1749361164}

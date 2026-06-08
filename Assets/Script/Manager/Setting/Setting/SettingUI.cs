@@ -59,21 +59,6 @@ public class SettingUI : MonoBehaviour, ISettingChangeListener
         RefreshFromSetting(SettingManager.instance.GetSetting());
     }
 
-    public void OpenSetting()
-    {
-        if (settingPanel != null)
-            settingPanel.SetActive(true);
-
-        if (SettingManager.instance != null)
-            RefreshFromSetting(SettingManager.instance.GetSetting());
-    }
-
-    public void CloseSetting()
-    {
-        if (settingPanel != null)
-            settingPanel.SetActive(false);
-    }
-
     public void ToggleSetting()
     {
         if (settingPanel == null)

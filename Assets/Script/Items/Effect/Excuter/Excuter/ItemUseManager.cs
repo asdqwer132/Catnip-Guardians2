@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
 
 public class ItemUseManager : MonoBehaviour
 {
@@ -14,9 +13,6 @@ public class ItemUseManager : MonoBehaviour
 
     [Header("Debug Input")]
     public bool useResetCooldownKey = true;
-
-    [Tooltip("»õ Input System¿ë Å°")]
-    public Key resetAllCooldownKey = Key.R;
 
     private void Awake()
     {
@@ -32,12 +28,11 @@ public class ItemUseManager : MonoBehaviour
         if (cooldownUIController == null)
             cooldownUIController = GetComponent<BagCooldownUIController>();
     }
+    
 
-    private void Update()
+    private void OnDisable()
     {
-        HandleBagSelectInput();
-        HandleUseInput();
-        HandleResetCooldownInput();
+        UnsubscribeInput();
     }
 
     public void Init()
@@ -50,24 +45,41 @@ public class ItemUseManager : MonoBehaviour
 
         ResetAllCooldowns();
         RefreshSelectUI();
+
+        SubscribeInput();
     }
 
-    private void HandleBagSelectInput()
+    private void SubscribeInput()
+    {
+        if (GameInputManager.instance == null)
+            return;
+
+        GameInputManager.instance.OnUseItemPressed += HandleUseInput;
+        GameInputManager.instance.OnNumberPressed += HandleBagSelectInput;
+        GameInputManager.instance.OnResetAllCooldownPressed += HandleResetCooldownInput;
+    }
+
+    private void UnsubscribeInput()
+    {
+        if (GameInputManager.instance == null)
+            return;
+
+        GameInputManager.instance.OnUseItemPressed -= HandleUseInput;
+        GameInputManager.instance.OnNumberPressed -= HandleBagSelectInput;
+        GameInputManager.instance.OnResetAllCooldownPressed -= HandleResetCooldownInput;
+    }
+
+    private void HandleBagSelectInput(int index)
     {
         if (bagSelectManager == null)
             return;
 
         bagSelectManager.HandleBagSelectInput();
+        RefreshSelectUI();
     }
 
     private void HandleUseInput()
     {
-        if (Mouse.current == null)
-            return;
-
-        if (!Mouse.current.leftButton.wasPressedThisFrame)
-            return;
-
         if (IsPointerOverUI())
             return;
 
@@ -77,12 +89,6 @@ public class ItemUseManager : MonoBehaviour
     private void HandleResetCooldownInput()
     {
         if (!useResetCooldownKey)
-            return;
-
-        if (Keyboard.current == null)
-            return;
-
-        if (!Keyboard.current[resetAllCooldownKey].wasPressedThisFrame)
             return;
 
         ResetAllCooldowns();

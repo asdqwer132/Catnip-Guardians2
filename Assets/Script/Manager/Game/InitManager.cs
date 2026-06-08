@@ -16,6 +16,8 @@ public class InitManager : MonoBehaviour
     public SkillTreeUI skillTreeUI;
     public BagUIInitializer bagUIInitializer;
     public SelectedBagPreviewUI selectedBagPreviewUI;
+    public BuffUIManager buffUIManager;
+    public InventoryUI[] inventoryUIs;
 
     public void InitAll()
     {
@@ -36,9 +38,21 @@ public class InitManager : MonoBehaviour
     public void FirstInit()
     {
         unlockManager.Init();
+        EquipmentBagManager.instance.Init();
+       
+        itemInitManager.ApplyDefaultInventoryItems();
+
+        UIInit();
+    }
+    private void UIInit()
+    {
         selectedBagPreviewUI.Init();
         skillTreeUI.Init();
-        EquipmentBagManager.instance.Init();
-        itemInitManager.ApplyDefaultInventoryItems();
+        buffUIManager.Init();
+
+        foreach (var item in inventoryUIs)
+        {
+            item.Init();
+        }
     }
 }

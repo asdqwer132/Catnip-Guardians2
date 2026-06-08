@@ -18,21 +18,12 @@ public class InventoryUI : MonoBehaviour
     public Transform detailSlotParent;
     public GameObject detailSlotPrefab;
 
-    [Header("Option")]
-    public bool refreshOnEnable = true;
-
-    private void Start()
+    public void Init()
     {
         if (InventoryManager.instance != null)
             InventoryManager.instance.onInventoryChanged += RefreshUI;
 
         RefreshUI();
-    }
-
-    private void OnEnable()
-    {
-        if (refreshOnEnable)
-            RefreshUI();
     }
 
     private void OnDestroy()

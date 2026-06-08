@@ -2,9 +2,6 @@ using UnityEngine;
 
 public class PlayerRangeIndicatorController : MonoBehaviour
 {
-    [Header("Reference")]
-    public Player player;
-
     [Header("Root")]
     public GameObject indicatorRoot;
 
@@ -21,25 +18,15 @@ public class PlayerRangeIndicatorController : MonoBehaviour
 
     private bool isVisible;
 
-    private void Awake()
+    private void Start()
     {
-        if (player == null)
-            player = GetComponent<Player>();
-
-        SetVisible(showOnStart);
-        RefreshRange();
+        if(!showOnStart) Hide();
     }
 
-    private void OnEnable()
-    {
-        if (refreshOnEnable)
-            RefreshRange();
-    }
-
-    public void Show()
+    public void Show(float max, float min)
     {
         SetVisible(true);
-        RefreshRange();
+        RefreshRange(max, min);
     }
 
     public void Hide()
@@ -47,12 +34,12 @@ public class PlayerRangeIndicatorController : MonoBehaviour
         SetVisible(false);
     }
 
-    public void Toggle()
+    public void Toggle(float max, float min)
     {
         SetVisible(!isVisible);
 
         if (isVisible)
-            RefreshRange();
+            RefreshRange(max, min);
     }
 
     public void SetVisible(bool visible)
@@ -64,13 +51,10 @@ public class PlayerRangeIndicatorController : MonoBehaviour
         return;
     }
 
-    public void RefreshRange()
+    public void RefreshRange(float max, float min)
     {
-        if (player == null)
-            return;
-
-        ApplyRangeScale(minRangeIndicator, player.MinRange);
-        ApplyRangeScale(maxRangeIndicator, player.MaxRange);
+        ApplyRangeScale(minRangeIndicator, min);
+        ApplyRangeScale(maxRangeIndicator, max);
     }
 
     private void ApplyRangeScale(Transform indicator, float radius)

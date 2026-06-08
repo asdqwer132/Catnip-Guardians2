@@ -16,10 +16,6 @@ public class SelectedBagPreviewUI : MonoBehaviour
     private int lastBagIndex = -999;
     private int lastNextSlotIndex = -999;
 
-    private void OnEnable()
-    {
-        Subscribe();
-    }
 
     private void OnDisable()
     {

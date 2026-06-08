@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour, IDynamicBuffReceiver
 {
@@ -17,7 +16,6 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver
     public bool canMove = true;
     public float stopDistance = 0.03f;
 
-    private Camera mainCamera;
     private Vector3 moveTargetPosition;
     private bool hasMoveTarget;
 
@@ -29,8 +27,6 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver
 
     private void Awake()
     {
-        mainCamera = Camera.main;
-
         if (mover == null)
             mover = GetComponent<ActorMover>();
 
@@ -48,16 +44,17 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver
     private void OnEnable()
     {
         RegisterToBuffManager();
+        SubscribeInput();
     }
 
     private void OnDisable()
     {
         UnregisterFromBuffManager();
+        UnsubscribeInput();
     }
 
     private void Update()
     {
-        HandleMoveInput();
         MoveToTarget();
     }
 
@@ -77,6 +74,24 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver
 
         buffManager.UnregisterPlayer(this);
         buffManager.UnregisterDynamicBuffReceiver(this);
+    }
+
+    private void SubscribeInput()
+    {
+        if (GameInputManager.instance == null)
+            return;
+
+        GameInputManager.instance.OnMovePressed += SetMoveTargetFromInput;
+        GameInputManager.instance.OnPlayerRangePressed += ToggleIndicator;
+    }
+
+    private void UnsubscribeInput()
+    {
+        if (GameInputManager.instance == null)
+            return;
+
+        GameInputManager.instance.OnMovePressed -= SetMoveTargetFromInput;
+        GameInputManager.instance.OnPlayerRangePressed -= ToggleIndicator;
     }
 
     public void RefreshBuffedStat()
@@ -109,39 +124,30 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver
     private void RefreshRangeIndicator()
     {
         if (rangeIndicatorController != null)
-            rangeIndicatorController.RefreshRange();
+            rangeIndicatorController.RefreshRange(currentStat.maxRange, currentStat.minRange);
     }
-
+    private void ToggleIndicator()
+    {
+        if (rangeIndicatorController != null)
+        {
+            rangeIndicatorController.Toggle(currentStat.maxRange, currentStat.minRange);
+            RefreshRangeIndicator();
+        }
+    }
     public void OnDynamicBuffChanged()
     {
         RefreshBuffedStat();
     }
 
-    private void HandleMoveInput()
+    private void SetMoveTargetFromInput()
     {
         if (!canMove)
             return;
 
-        if (Mouse.current == null)
+        if (GameInputManager.instance == null)
             return;
 
-        if (!Mouse.current.rightButton.wasPressedThisFrame)
-            return;
-
-        SetMoveTargetFromMouse();
-    }
-
-    private void SetMoveTargetFromMouse()
-    {
-        if (mainCamera == null)
-            mainCamera = Camera.main;
-
-        if (mainCamera == null)
-            return;
-
-        Vector2 mouseScreenPosition = Mouse.current.position.ReadValue();
-
-        Vector3 mouseWorldPosition = mainCamera.ScreenToWorldPoint(mouseScreenPosition);
+        Vector3 mouseWorldPosition = GameInputManager.instance.MouseWorldPosition;
         mouseWorldPosition.z = transform.position.z;
 
         SetMoveTarget(mouseWorldPosition);

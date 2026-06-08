@@ -48,6 +48,17 @@ public class TargetRangeIndicator : MonoBehaviour
         ApplyRadiusScale();
     }
 
+    public void Show()
+    {
+        transform.gameObject.SetActive(true);
+        ApplySettingSprite();
+        ApplyRadiusScale();
+    }
+
+    public void Hide()
+    {
+        transform.gameObject.SetActive(false);
+    }
     #region Sprite
     public void SetIndicatorSprite(IndicatorSpriteSize size)
     {

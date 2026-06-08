@@ -3,7 +3,7 @@ using UnityEngine;
 public class MovePingController : MonoBehaviour
 {
     [Header("Ping Object")]
-    public GameObject pingObject;
+    public TargetRangeIndicator pingObject;
 
     [Header("Option")]
     public bool matchPlayerZ = true;
@@ -29,8 +29,7 @@ public class MovePingController : MonoBehaviour
 
         pingObject.transform.position = position;
 
-        if (!pingObject.activeSelf)
-            pingObject.SetActive(true);
+        pingObject.Show();
 
         if (restartAnimatorOnPing)
             RestartAnimator();
@@ -41,7 +40,7 @@ public class MovePingController : MonoBehaviour
         if (pingObject == null)
             return;
 
-        pingObject.SetActive(false);
+        pingObject.Hide();
     }
 
     private void RestartAnimator()

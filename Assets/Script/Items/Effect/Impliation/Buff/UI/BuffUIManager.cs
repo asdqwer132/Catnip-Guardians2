@@ -22,13 +22,8 @@ public class BuffUIManager : MonoBehaviour
     private readonly List<BuffUISlot> spawnedSlots = new List<BuffUISlot>();
 
 
-    private void OnEnable()
-    {
-        if (refreshOnEnable)
-            RefreshCurrentMode();
-    }
 
-    private void Start()
+    public void Init()
     {
         RefreshCurrentMode();
     }
