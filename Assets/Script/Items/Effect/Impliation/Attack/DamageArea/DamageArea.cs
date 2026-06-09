@@ -8,49 +8,41 @@ public enum DamageApplyMode
     Periodic
 }
 
-public class DamageArea : MonoBehaviour, IDynamicBuffReceiver
+public class DamageArea : AttackObject<DamageAreaAttackStat>
 {
-    private static readonly List<DamageArea> activeAreas =
+    private static readonly List<DamageArea> activeDamageAreas =
         new List<DamageArea>();
 
-    [Header("Componnet")]
+    [Header("Component")]
     public CircleCollider2D circleCollider;
     public Transform rangeVisual;
 
-    [Header("Refference")]
-    public float lifeTime = 0.2f;
+    [Header("Damage")]
     public DamageApplyMode damageApplyMode = DamageApplyMode.HitOnce;
 
+    [Header("Runtime Stat")]
+    [SerializeField] private float damage = 10f;
+
     [Min(0.01f)]
-    public float damageInterval = 0.5f;
+    [SerializeField] private float damageInterval = 0.5f;
 
-    public GameObject owner;
+    [SerializeField] private float radius = 1f;
+    [SerializeField] private float lifeTime = 0.2f;
 
-    private float damage = 10f;
-    private float radius = 1f;
     private float timer;
-    private bool useSnapshotAndDynamicBuff;
 
-    private readonly HashSet<GameObject> hitObjects =
-        new HashSet<GameObject>();
-
+    private readonly HashSet<GameObject> hitObjects = new HashSet<GameObject>();
     private readonly Dictionary<GameObject, float> periodicTimers =
         new Dictionary<GameObject, float>();
 
-    private AttackStat snapshotAttackStat;
-    private ItemData sourceItemData;
-    private EquipmentBag sourceBag;
-    private BuffManager buffManager;
-
-    private void Awake()
+    protected virtual void Awake()
     {
         if (circleCollider == null)
             circleCollider = GetComponent<CircleCollider2D>();
 
         if (rangeVisual == null)
         {
-            SpriteRenderer spriteRenderer =
-                GetComponentInChildren<SpriteRenderer>();
+            SpriteRenderer spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
             if (spriteRenderer != null)
                 rangeVisual = spriteRenderer.transform;
@@ -59,19 +51,27 @@ public class DamageArea : MonoBehaviour, IDynamicBuffReceiver
         ApplyRadius();
     }
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
-        if (!activeAreas.Contains(this))
-            activeAreas.Add(this);
+        base.OnEnable();
+
+        if (!activeDamageAreas.Contains(this))
+            activeDamageAreas.Add(this);
+
+        timer = 0f;
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
-        activeAreas.Remove(this);
-        UnregisterDynamicBuffReceiver();
+        activeDamageAreas.Remove(this);
+
+        hitObjects.Clear();
+        periodicTimers.Clear();
+
+        base.OnDisable();
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         timer += Time.deltaTime;
 
@@ -79,84 +79,38 @@ public class DamageArea : MonoBehaviour, IDynamicBuffReceiver
             Destroy(gameObject);
     }
 
-    #region Init
-
-    public void InitWithSnapshotAndDynamicBuff(
-        AttackStat snapshotAttackStat,
+    public override void InitWithSnapshotAndDynamicBuff(
+        DamageAreaAttackStat snapshotAttackStat,
         ItemData sourceItemData,
         EquipmentBag sourceBag,
         BuffManager buffManager,
         GameObject owner
     )
     {
-        UnregisterDynamicBuffReceiver();
-
-        useSnapshotAndDynamicBuff = true;
-
-        this.snapshotAttackStat = snapshotAttackStat;
-        this.sourceItemData = sourceItemData;
-        this.sourceBag = sourceBag;
-        this.buffManager = buffManager;
-        this.owner = owner;
-
         timer = 0f;
         hitObjects.Clear();
         periodicTimers.Clear();
 
-        RegisterDynamicBuffReceiver();
+        base.InitWithSnapshotAndDynamicBuff(
+            snapshotAttackStat,
+            sourceItemData,
+            sourceBag,
+            buffManager,
+            owner
+        );
 
-        OnDynamicBuffChanged();
         ApplyRadius();
     }
 
-    private void RegisterDynamicBuffReceiver()
+    protected override void ApplyStat(DamageAreaAttackStat currentStat)
     {
-        if (buffManager == null)
+        if (currentStat == null)
             return;
 
-        buffManager.RegisterDynamicBuffReceiver(this);
-    }
-
-    private void UnregisterDynamicBuffReceiver()
-    {
-        if (buffManager == null)
-            return;
-
-        buffManager.UnregisterDynamicBuffReceiver(this);
-    }
-
-    public void OnDynamicBuffChanged()
-    {
-        if (!useSnapshotAndDynamicBuff)
-            return;
-
-        RefreshStatFromSnapshotAndDynamicBuff();
-    }
-
-    private void RefreshStatFromSnapshotAndDynamicBuff()
-    {
-        if (snapshotAttackStat == null)
-            return;
-
-        AttackStat currentStat = snapshotAttackStat;
-
-        if (buffManager != null)
-        {
-            AttackStat dynamicBuffedStat =
-                buffManager.GetDynamicAttackStat(
-                    snapshotAttackStat,
-                    sourceItemData,
-                    sourceBag
-                );
-
-            if (dynamicBuffedStat != null)
-                currentStat = dynamicBuffedStat;
-        }
-
-        damage = currentStat.attackPower;
-        radius = Mathf.Max(0.01f, currentStat.attackRange);
-        lifeTime = Mathf.Max(0.01f, currentStat.attackLifeTime);
-        damageInterval = Mathf.Max(0.01f, currentStat.damageInterval);
+        damage = currentStat.damageAreaPower;
+        damageInterval = Mathf.Max(0.01f, currentStat.damageAreaInterval);
+        radius = Mathf.Max(0.01f, currentStat.damageAreaRange);
+        lifeTime = Mathf.Max(0.01f, currentStat.damageAreaLifeTime);
 
         ApplyRadius();
     }
@@ -164,15 +118,6 @@ public class DamageArea : MonoBehaviour, IDynamicBuffReceiver
     private void ApplyRadius()
     {
         radius = Mathf.Max(0.01f, radius);
-
-        if (circleCollider == null)
-            circleCollider = GetComponent<CircleCollider2D>();
-
-        if (circleCollider != null)
-        {
-            circleCollider.radius = radius;
-            circleCollider.isTrigger = true;
-        }
 
         if (rangeVisual != null)
         {
@@ -183,44 +128,35 @@ public class DamageArea : MonoBehaviour, IDynamicBuffReceiver
             );
         }
 
+        if (circleCollider == null)
+            circleCollider = GetComponent<CircleCollider2D>();
+
+        if (circleCollider != null)
+        {
+            circleCollider.radius = radius;
+            circleCollider.isTrigger = true;
+        }
+
         transform.localScale = Vector3.one;
     }
 
-    public static void ClearAllActiveAreas()
-    {
-        for (int i = activeAreas.Count - 1; i >= 0; i--)
-        {
-            DamageArea area = activeAreas[i];
-
-            if (area == null)
-            {
-                activeAreas.RemoveAt(i);
-                continue;
-            }
-
-            if (area.circleCollider != null)
-                area.circleCollider.enabled = false;
-
-            area.UnregisterDynamicBuffReceiver();
-
-            area.gameObject.SetActive(false);
-            Destroy(area.gameObject);
-        }
-
-        activeAreas.Clear();
-    }
-
-    #endregion
-
-    #region SetAttackMode
+    #region Trigger
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (damageApplyMode == DamageApplyMode.HitOnce)
+        {
             TryHitOnce(other);
-        else if (damageApplyMode == DamageApplyMode.EveryEnter)
+            return;
+        }
+
+        if (damageApplyMode == DamageApplyMode.EveryEnter)
+        {
             TryHitAlways(other);
-        else if (damageApplyMode == DamageApplyMode.Periodic)
+            return;
+        }
+
+        if (damageApplyMode == DamageApplyMode.Periodic)
             TryHitPeriodicEnter(other);
     }
 
@@ -372,6 +308,32 @@ public class DamageArea : MonoBehaviour, IDynamicBuffReceiver
             return enemy.gameObject;
 
         return other.gameObject;
+    }
+
+    #endregion
+
+    #region Clear
+
+    public static void ClearAllActiveDamageAreas()
+    {
+        for (int i = activeDamageAreas.Count - 1; i >= 0; i--)
+        {
+            DamageArea area = activeDamageAreas[i];
+
+            if (area == null)
+            {
+                activeDamageAreas.RemoveAt(i);
+                continue;
+            }
+
+            if (area.circleCollider != null)
+                area.circleCollider.enabled = false;
+
+            area.gameObject.SetActive(false);
+            Destroy(area.gameObject);
+        }
+
+        activeDamageAreas.Clear();
     }
 
     #endregion

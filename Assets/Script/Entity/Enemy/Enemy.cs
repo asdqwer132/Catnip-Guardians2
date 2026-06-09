@@ -307,7 +307,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         EnemyStat nextStat = null;
 
         if (buffManager != null)
-            nextStat = buffManager.GetBuffedTargetStat(baseStat, this);
+            nextStat = buffManager.GetBuffedStatForTarget(baseStat, this);
 
         if (nextStat == null)
             nextStat = baseStat.Clone();

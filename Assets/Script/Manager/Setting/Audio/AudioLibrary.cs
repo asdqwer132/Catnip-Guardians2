@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-[CreateAssetMenu(fileName = "AudioLibrary", menuName = "Game/Audio/Audio Library")]
+[CreateAssetMenu(fileName = "AudioLibrary", menuName = "Game/Audio Library")]
 public class AudioLibrary : ScriptableObject
 {
     [Header("Scan Root")]

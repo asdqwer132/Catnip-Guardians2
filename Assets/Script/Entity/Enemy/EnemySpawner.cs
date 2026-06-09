@@ -87,7 +87,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
             return;
 
         if (buffManager != null)
-            currentStat = buffManager.GetBuffedTargetStat(baseStat, this);
+            currentStat = buffManager.GetBuffedStatForTarget(baseStat, this);
         else
             currentStat = baseStat.Clone();
 

@@ -29,7 +29,7 @@ public class ItemEffectExecutor : MonoBehaviour
             targetPosition: targetPosition,
             sourceBag: sourceBag,
             currentEffectData: null,
-            buffManager: buffManager
+            buffManager: buffManager != null ? buffManager : BuffManager.instance
         );
 
         ExecuteItemEffectDatas(itemData, context);

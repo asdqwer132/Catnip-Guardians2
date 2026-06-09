@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "BuffEffect", menuName = "Game/Item Effect/Buff V2")]
+[CreateAssetMenu(fileName = "BuffEffect", menuName = "Game/Item Effect/BuffEffect")]
 public class BuffEffect : ItemEffectData
 {
     [Header("Target")]

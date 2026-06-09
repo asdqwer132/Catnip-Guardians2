@@ -7,7 +7,7 @@ public class GachaItemInfo
     public int weight = 1;
 }
 
-[CreateAssetMenu(fileName = "Box", menuName = "Game/Box")]
+[CreateAssetMenu(fileName = "Box", menuName = "Game/Item/Box")]
 public class ItemBoxData : DefaultData
 {
     [Header("Price")]

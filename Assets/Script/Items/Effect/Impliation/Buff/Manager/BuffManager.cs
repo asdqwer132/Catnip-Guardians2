@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BuffManager : MonoBehaviour
 {
+    public static BuffManager instance;
     [Header("UI")]
     public BuffUIManager buffUIManager;
 
@@ -23,6 +24,7 @@ public class BuffManager : MonoBehaviour
 
     private void Awake()
     {
+        instance = this;
         storage = new BuffStorage();
         ticker = new BuffTicker(storage);
         query = new BuffQuery(storage);
@@ -51,7 +53,7 @@ public class BuffManager : MonoBehaviour
             return;
 
         BuffRegisterContext context = new BuffRegisterContext(itemContext, this);
-        BuffInfo finalInfo = GetBuffedBuffInfo(effect.buffInfo, context.sourceItemData, context.sourceBag);
+        BuffInfo finalInfo = GetBuffedStatForItem(effect.buffInfo, context.sourceItemData, context.sourceBag);
 
         if (finalInfo == null)
             return;
@@ -185,39 +187,41 @@ public class BuffManager : MonoBehaviour
 
     #region Stat Query
 
-    public AttackStat GetBuffedAttackStat(AttackStat baseStat, ItemData targetItemData, EquipmentBag targetBag)
-    {
-        return GetBuffedStat(baseStat, BuffQueryContext.ForItem(targetItemData, targetBag));
-    }
 
-    public AttackStat GetSnapshotAttackStatAndConsume(AttackStat baseStat, ItemData targetItemData, EquipmentBag targetBag)
+    #region Stat Query
+
+    public T GetBuffedStatForItem<T>(
+        T baseStat,
+        ItemData targetItemData,
+        EquipmentBag targetBag,
+        BuffCalculationMode calculationMode = BuffCalculationMode.All,
+        bool consumeUseCount = false
+    ) where T : class, IGameStat<T>
     {
         return GetBuffedStat(
             baseStat,
             BuffQueryContext.ForItem(targetItemData, targetBag),
-            BuffCalculationMode.SnapshotOnly,
-            true
+            calculationMode,
+            consumeUseCount
         );
     }
 
-    public AttackStat GetDynamicAttackStat(AttackStat baseStat, ItemData targetItemData, EquipmentBag targetBag)
+    public T GetBuffedStatForTarget<T>(
+        T baseStat,
+        IBuffTarget target,
+        BuffCalculationMode calculationMode = BuffCalculationMode.All,
+        bool consumeUseCount = false
+    ) where T : class, IGameStat<T>
     {
         return GetBuffedStat(
             baseStat,
-            BuffQueryContext.ForItem(targetItemData, targetBag),
-            BuffCalculationMode.DynamicOnly
+            BuffQueryContext.ForTarget(target),
+            calculationMode,
+            consumeUseCount
         );
     }
 
-    public BuffInfo GetBuffedBuffInfo(BuffInfo baseInfo, ItemData targetItemData, EquipmentBag targetBag)
-    {
-        return GetBuffedStat(baseInfo, BuffQueryContext.ForItem(targetItemData, targetBag));
-    }
-
-    public T GetBuffedTargetStat<T>(T baseStat, IBuffTarget target) where T : class, IGameStat<T>
-    {
-        return GetBuffedStat(baseStat, BuffQueryContext.ForTarget(target));
-    }
+    #endregion
 
     #endregion
 

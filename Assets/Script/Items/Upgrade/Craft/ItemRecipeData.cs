@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Recipe", menuName = "Game/Recipe")]
+[CreateAssetMenu(fileName = "Recipe", menuName = "Game/Item/Recipe")]
 public class ItemRecipeData : ScriptableObject
 {
     public RecipeMaterial[] materials;

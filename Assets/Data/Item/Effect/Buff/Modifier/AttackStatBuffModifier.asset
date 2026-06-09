@@ -13,11 +13,19 @@ MonoBehaviour:
   m_Name: AttackStatBuffModifier
   m_EditorClassIdentifier: Assembly-CSharp::AttackStatBuffModifier
   targetStatTypeName: AttackStat
-  attackPowerAdd: 3
-  attackPowerMultiply: 0
-  damageIntervalAdd: 0
-  damageIntervalMultiply: 0
-  attackRangeAdd: 6
-  attackRangeMultiply: 0
-  attackLifeTimeAdd: 0
-  attackLifeTimeMultiply: 0
+  damageAreaPowerAdd: 0
+  damageAreaPowerMultiply: 0
+  damageAreaIntervalAdd: 0
+  damageAreaIntervalMultiply: 0
+  damageAreaRangeAdd: 2
+  damageAreaRangeMultiply: 0
+  damageAreaLifeTimeAdd: 0
+  damageAreaLifeTimeMultiply: 0
+  summonAttackPowerAdd: 0
+  summonAttackPowerMultiply: 0
+  summonThrowIntervalAdd: 0
+  summonThrowIntervalMultiply: 0
+  summonAttackRangeAdd: 0
+  summonAttackRangeMultiply: 0
+  summonLifeTimeAdd: 0
+  summonLifeTimeMultiply: 0

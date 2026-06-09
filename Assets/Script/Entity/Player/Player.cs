@@ -107,7 +107,7 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver, IBuffTarget
             currentStat = baseStat.Clone();
         else
         {
-            PlayerStat buffedStat = buffManager.GetBuffedTargetStat(baseStat, this);
+            PlayerStat buffedStat = buffManager.GetBuffedStatForTarget(baseStat, this);
             currentStat = buffedStat != null ? buffedStat : baseStat.Clone();
         }
 

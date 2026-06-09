@@ -89,7 +89,7 @@ public class GameInputManager : MonoBehaviour
         {
             if (Mouse.current.leftButton.wasPressedThisFrame)
             {
-                Debug.Log("Use Item Pressed");
+                //Debug.Log("Use Item Pressed");
                 OnUseItemPressed?.Invoke();
             }
 
