@@ -5,61 +5,82 @@ using UnityEngine;
 public class BuffTargetHandle
 {
     public BuffTargetKind kind;
+
+    [Header("Item Target")]
     public ItemData itemData;
     public EquipmentBag bag;
     public ItemSeries itemSeries = ItemSeries.None;
-    public Enemy enemy;
-    public EnemySpawner enemySpawner;
-    public Player player;
+
+    [Header("Object Target")]
+    public UnityEngine.Object targetObject;
+    public string targetGroup;
+
+    [NonSerialized] private IBuffTarget cachedTarget;
 
     public static BuffTargetHandle Item(ItemData itemData)
     {
-        return new BuffTargetHandle { kind = BuffTargetKind.Item, itemData = itemData };
+        return new BuffTargetHandle
+        {
+            kind = BuffTargetKind.Item,
+            itemData = itemData
+        };
     }
 
     public static BuffTargetHandle Bag(EquipmentBag bag)
     {
-        return new BuffTargetHandle { kind = BuffTargetKind.Bag, bag = bag };
+        return new BuffTargetHandle
+        {
+            kind = BuffTargetKind.Bag,
+            bag = bag
+        };
     }
 
     public static BuffTargetHandle GetItemSeries(ItemSeries itemSeries)
     {
-        return new BuffTargetHandle { kind = BuffTargetKind.ItemSeries, itemSeries = itemSeries };
+        return new BuffTargetHandle
+        {
+            kind = BuffTargetKind.ItemSeries,
+            itemSeries = itemSeries
+        };
     }
 
     public static BuffTargetHandle AllItems()
     {
-        return new BuffTargetHandle { kind = BuffTargetKind.AllItems };
+        return new BuffTargetHandle
+        {
+            kind = BuffTargetKind.AllItems
+        };
     }
 
-    public static BuffTargetHandle Enemy(Enemy enemy)
+    public static BuffTargetHandle Target(IBuffTarget target)
     {
-        return new BuffTargetHandle { kind = BuffTargetKind.Enemy, enemy = enemy };
+        if (target == null)
+            return null;
+
+        UnityEngine.Object targetObject = target.BuffTargetObject;
+
+        if (targetObject == null)
+            return null;
+
+        return new BuffTargetHandle
+        {
+            kind = BuffTargetKind.Target,
+            targetObject = targetObject,
+            targetGroup = target.BuffTargetGroup,
+            cachedTarget = target
+        };
     }
 
-    public static BuffTargetHandle AllEnemiesIncludingFuture()
+    public static BuffTargetHandle Group(string targetGroup)
     {
-        return new BuffTargetHandle { kind = BuffTargetKind.AllEnemiesIncludingFuture };
-    }
+        if (string.IsNullOrEmpty(targetGroup))
+            return null;
 
-    public static BuffTargetHandle EnemySpawner(EnemySpawner enemySpawner)
-    {
-        return new BuffTargetHandle { kind = BuffTargetKind.EnemySpawner, enemySpawner = enemySpawner };
-    }
-
-    public static BuffTargetHandle AllEnemySpawners()
-    {
-        return new BuffTargetHandle { kind = BuffTargetKind.AllEnemySpawners };
-    }
-
-    public static BuffTargetHandle Player(Player player)
-    {
-        return new BuffTargetHandle { kind = BuffTargetKind.Player, player = player };
-    }
-
-    public static BuffTargetHandle AllPlayers()
-    {
-        return new BuffTargetHandle { kind = BuffTargetKind.AllPlayers };
+        return new BuffTargetHandle
+        {
+            kind = BuffTargetKind.Group,
+            targetGroup = targetGroup
+        };
     }
 
     public bool Matches(BuffQueryContext query)
@@ -67,14 +88,8 @@ public class BuffTargetHandle
         if (query == null)
             return false;
 
-        if (query.player != null)
-            return MatchesPlayer(query.player);
-
-        if (query.enemy != null)
-            return MatchesEnemy(query.enemy);
-
-        if (query.enemySpawner != null)
-            return MatchesEnemySpawner(query.enemySpawner);
+        if (query.buffTarget != null)
+            return MatchesTarget(query.buffTarget);
 
         return MatchesItem(query.itemData, query.bag);
     }
@@ -99,44 +114,16 @@ public class BuffTargetHandle
         return false;
     }
 
-    public bool MatchesEnemy(Enemy targetEnemy)
+    public bool MatchesTarget(IBuffTarget target)
     {
-        if (targetEnemy == null)
+        if (target == null)
             return false;
 
-        if (kind == BuffTargetKind.AllEnemiesIncludingFuture)
-            return true;
+        if (kind == BuffTargetKind.Group)
+            return !string.IsNullOrEmpty(targetGroup) && target.BuffTargetGroup == targetGroup;
 
-        if (kind == BuffTargetKind.Enemy)
-            return enemy != null && enemy == targetEnemy;
-
-        return false;
-    }
-
-    public bool MatchesEnemySpawner(EnemySpawner targetEnemySpawner)
-    {
-        if (targetEnemySpawner == null)
-            return false;
-
-        if (kind == BuffTargetKind.AllEnemySpawners)
-            return true;
-
-        if (kind == BuffTargetKind.EnemySpawner)
-            return enemySpawner != null && enemySpawner == targetEnemySpawner;
-
-        return false;
-    }
-
-    public bool MatchesPlayer(Player targetPlayer)
-    {
-        if (targetPlayer == null)
-            return false;
-
-        if (kind == BuffTargetKind.AllPlayers)
-            return true;
-
-        if (kind == BuffTargetKind.Player)
-            return player != null && player == targetPlayer;
+        if (kind == BuffTargetKind.Target)
+            return targetObject != null && target.BuffTargetObject == targetObject;
 
         return false;
     }
@@ -152,9 +139,29 @@ public class BuffTargetHandle
         return itemData == other.itemData
             && bag == other.bag
             && itemSeries == other.itemSeries
-            && enemy == other.enemy
-            && enemySpawner == other.enemySpawner
-            && player == other.player;
+            && targetObject == other.targetObject
+            && targetGroup == other.targetGroup;
+    }
+
+    public IBuffTarget GetCachedTarget()
+    {
+        if (cachedTarget != null)
+            return cachedTarget;
+
+        if (targetObject == null)
+            return null;
+
+        cachedTarget = targetObject as IBuffTarget;
+
+        if (cachedTarget != null)
+            return cachedTarget;
+
+        Component component = targetObject as Component;
+
+        if (component != null)
+            cachedTarget = component.GetComponent<IBuffTarget>();
+
+        return cachedTarget;
     }
 
     public string GetDebugName()
@@ -168,14 +175,18 @@ public class BuffTargetHandle
         if (kind == BuffTargetKind.ItemSeries)
             return itemSeries.ToString();
 
-        if (kind == BuffTargetKind.Enemy)
-            return enemy != null ? enemy.name : "Null Enemy";
+        if (kind == BuffTargetKind.Target)
+        {
+            IBuffTarget target = GetCachedTarget();
 
-        if (kind == BuffTargetKind.EnemySpawner)
-            return enemySpawner != null ? enemySpawner.name : "Null EnemySpawner";
+            if (target != null)
+                return target.BuffTargetDebugName;
 
-        if (kind == BuffTargetKind.Player)
-            return player != null ? player.name : "Null Player";
+            return targetObject != null ? targetObject.name : "Null Target";
+        }
+
+        if (kind == BuffTargetKind.Group)
+            return string.IsNullOrEmpty(targetGroup) ? "Null Group" : targetGroup;
 
         return kind.ToString();
     }

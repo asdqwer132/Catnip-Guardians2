@@ -1,7 +1,6 @@
 
 using System.Reflection;
 using UnityEngine;
-
 [CreateAssetMenu(fileName = "Float Field Buff Modifier", menuName = "Game/Buff/Modifier/Float Field")]
 public class FloatFieldBuffModifier : BuffModifier
 {

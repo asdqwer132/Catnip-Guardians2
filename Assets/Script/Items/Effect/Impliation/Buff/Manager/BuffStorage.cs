@@ -3,9 +3,7 @@ using System.Collections.Generic;
 public class BuffStorage
 {
     public readonly List<ActiveBuff> activeBuffs = new List<ActiveBuff>();
-    public readonly List<Enemy> registeredEnemies = new List<Enemy>();
-    public readonly List<EnemySpawner> registeredEnemySpawners = new List<EnemySpawner>();
-    public readonly List<Player> registeredPlayers = new List<Player>();
+    public readonly List<IBuffTarget> registeredTargets = new List<IBuffTarget>();
 
     public void AddOrRefresh(ActiveBuff newBuff, BuffInfo info)
     {
@@ -52,105 +50,43 @@ public class BuffStorage
         return null;
     }
 
-    public void RegisterEnemy(Enemy enemy)
+    public void RegisterTarget(IBuffTarget target)
     {
-        if (enemy == null)
+        if (target == null)
             return;
 
-        if (!registeredEnemies.Contains(enemy))
-            registeredEnemies.Add(enemy);
+        if (!registeredTargets.Contains(target))
+            registeredTargets.Add(target);
     }
 
-    public void UnregisterEnemy(Enemy enemy)
+    public void UnregisterTarget(IBuffTarget target)
     {
-        if (enemy == null)
+        if (target == null)
             return;
 
-        registeredEnemies.Remove(enemy);
-        RemoveBuffsForEnemy(enemy);
+        registeredTargets.Remove(target);
+        RemoveBuffsForTarget(target);
     }
 
-    public void RegisterEnemySpawner(EnemySpawner spawner)
+    public void RemoveBuffsForTarget(IBuffTarget target)
     {
-        if (spawner == null)
+        if (target == null)
             return;
 
-        if (!registeredEnemySpawners.Contains(spawner))
-            registeredEnemySpawners.Add(spawner);
-    }
+        UnityEngine.Object targetObject = target.BuffTargetObject;
 
-    public void UnregisterEnemySpawner(EnemySpawner spawner)
-    {
-        if (spawner == null)
-            return;
-
-        registeredEnemySpawners.Remove(spawner);
-        RemoveBuffsForEnemySpawner(spawner);
-    }
-
-    public void RegisterPlayer(Player player)
-    {
-        if (player == null)
-            return;
-
-        if (!registeredPlayers.Contains(player))
-            registeredPlayers.Add(player);
-    }
-
-    public void UnregisterPlayer(Player player)
-    {
-        if (player == null)
-            return;
-
-        registeredPlayers.Remove(player);
-        RemoveBuffsForPlayer(player);
-    }
-
-    public void RemoveBuffsForEnemy(Enemy enemy)
-    {
         for (int i = activeBuffs.Count - 1; i >= 0; i--)
         {
             ActiveBuff buff = activeBuffs[i];
 
-            if (buff != null &&
-                buff.target != null &&
-                buff.target.kind == BuffTargetKind.Enemy &&
-                buff.target.enemy == enemy)
-            {
+            if (buff == null || buff.target == null)
+                continue;
+
+            if (buff.target.kind != BuffTargetKind.Target)
+                continue;
+
+            if (buff.target.targetObject == targetObject)
                 activeBuffs.RemoveAt(i);
-            }
-        }
-    }
-
-    public void RemoveBuffsForEnemySpawner(EnemySpawner spawner)
-    {
-        for (int i = activeBuffs.Count - 1; i >= 0; i--)
-        {
-            ActiveBuff buff = activeBuffs[i];
-
-            if (buff != null &&
-                buff.target != null &&
-                buff.target.kind == BuffTargetKind.EnemySpawner &&
-                buff.target.enemySpawner == spawner)
-            {
-                activeBuffs.RemoveAt(i);
-            }
-        }
-    }
-
-    public void RemoveBuffsForPlayer(Player player)
-    {
-        for (int i = activeBuffs.Count - 1; i >= 0; i--)
-        {
-            ActiveBuff buff = activeBuffs[i];
-
-            if (buff != null &&
-                buff.target != null &&
-                buff.target.kind == BuffTargetKind.Player &&
-                buff.target.player == player)
-            {
-                activeBuffs.RemoveAt(i);
-            }
         }
     }
 
@@ -161,22 +97,12 @@ public class BuffStorage
 
     public void RemoveNullRegisters()
     {
-        for (int i = registeredEnemies.Count - 1; i >= 0; i--)
+        for (int i = registeredTargets.Count - 1; i >= 0; i--)
         {
-            if (registeredEnemies[i] == null)
-                registeredEnemies.RemoveAt(i);
-        }
+            IBuffTarget target = registeredTargets[i];
 
-        for (int i = registeredEnemySpawners.Count - 1; i >= 0; i--)
-        {
-            if (registeredEnemySpawners[i] == null)
-                registeredEnemySpawners.RemoveAt(i);
-        }
-
-        for (int i = registeredPlayers.Count - 1; i >= 0; i--)
-        {
-            if (registeredPlayers[i] == null)
-                registeredPlayers.RemoveAt(i);
+            if (target == null || target.BuffTargetObject == null)
+                registeredTargets.RemoveAt(i);
         }
     }
 }

@@ -1,45 +1,49 @@
-
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Attack Stat Buff Modifier", menuName = "Game/Buff/Modifier/Attack Stat")]
+[CreateAssetMenu(fileName = "AttackStatBuffModifier", menuName = "Game/Buff Modifier/Attack Stat")]
 public class AttackStatBuffModifier : BuffModifier
 {
-    [Header("Add")]
-    public float attackPower;
-    public float damageInterval;
-    public float attackRange;
-    public float attackLifeTime;
+    [Header("Attack Power")]
+    public float attackPowerAdd;
+    public float attackPowerMultiply;
 
-    [Header("Multiply")]
-    public float attackPowerM;
-    public float damageIntervalM;
-    public float attackRangeM;
-    public float attackLifeTimeM;
+    [Header("Damage Interval")]
+    public float damageIntervalAdd;
+    public float damageIntervalMultiply;
 
-    public override bool CanApplyTo(object stat, BuffQueryContext query)
+    [Header("Attack Range")]
+    public float attackRangeAdd;
+    public float attackRangeMultiply;
+
+    [Header("Attack Life Time")]
+    public float attackLifeTimeAdd;
+    public float attackLifeTimeMultiply;
+
+    public override bool CanApplyTo(object stat, BuffQueryContext context)
     {
         return stat is AttackStat;
     }
 
-    public override void ApplyTo(object stat, int stack, BuffQueryContext query)
+    public override void ApplyTo(object stat, int stack, BuffQueryContext context)
     {
-        AttackStat target = stat as AttackStat;
-        if (target == null)
+        AttackStat attackStat = stat as AttackStat;
+
+        if (attackStat == null)
             return;
 
-        for (int i = 0; i < Mathf.Max(1, stack); i++)
-        {
-            target.attackPower += attackPower;
-            target.damageInterval += damageInterval;
-            target.attackRange += attackRange;
-            target.attackLifeTime += attackLifeTime;
+        int safeStack = Mathf.Max(1, stack);
 
-            target.attackPower *= 1f + attackPowerM;
-            target.damageInterval *= 1f + damageIntervalM;
-            target.attackRange *= 1f + attackRangeM;
-            target.attackLifeTime *= 1f + attackLifeTimeM;
-        }
+        ApplyFloat(ref attackStat.attackPower, attackPowerAdd, attackPowerMultiply, safeStack);
+        ApplyFloat(ref attackStat.damageInterval, damageIntervalAdd, damageIntervalMultiply, safeStack);
+        ApplyFloat(ref attackStat.attackRange, attackRangeAdd, attackRangeMultiply, safeStack);
+        ApplyFloat(ref attackStat.attackLifeTime, attackLifeTimeAdd, attackLifeTimeMultiply, safeStack);
 
-        target.Clamp();
+        attackStat.Clamp();
+    }
+
+    private void ApplyFloat(ref float value, float add, float multiply, int stack)
+    {
+        value += add * stack;
+        value *= 1f + multiply * stack;
     }
 }

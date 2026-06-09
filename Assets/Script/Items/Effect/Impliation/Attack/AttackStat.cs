@@ -37,31 +37,3 @@ public class AttackStat : IGameStat<AttackStat>
             attackLifeTime = 0.01f;
     }
 }
-
-[Serializable]
-public class AttackBuffStat : AttackStat, IBuffStat<AttackStat>
-{
-    [Header("Multiplier")]
-    public float attackPowerM = 0f;
-    public float damageIntervalM = 0f;
-    public float attackRangeM = 0f;
-    public float attackLifeTimeM = 0f;
-
-    public void ApplyTo(AttackStat target)
-    {
-        if (target == null)
-            return;
-
-        target.attackPower += attackPower;
-        target.damageInterval += damageInterval;
-        target.attackRange += attackRange;
-        target.attackLifeTime += attackLifeTime;
-
-        target.attackPower *= 1f + attackPowerM;
-        target.damageInterval *= 1f + damageIntervalM;
-        target.attackRange *= 1f + attackRangeM;
-        target.attackLifeTime *= 1f + attackLifeTimeM;
-
-        target.Clamp();
-    }
-}

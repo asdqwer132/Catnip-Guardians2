@@ -11,6 +11,10 @@ public class ItemData : DefaultData
     [Header("Effects")]
     public float weight = 1f;
     public float cooldown = 0.5f;
+
+    public float Cooldown => cooldown;
+
+
     public ItemEffectData[] effectDatas;
 }
 public enum ItemGrade

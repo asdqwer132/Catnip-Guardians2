@@ -12,16 +12,26 @@ public class BuffUIManager : MonoBehaviour
     public BuffUIDisplayMode displayMode = BuffUIDisplayMode.All;
     public bool refreshOnEnable = true;
 
-    [Header("Targets")]
+    [Header("Item Targets")]
     public EquipmentBag targetBag;
     public ItemData targetItemData;
     public ItemSeries targetItemSeries = ItemSeries.None;
-    public Enemy targetEnemy;
-    public EnemySpawner targetEnemySpawner;
 
+    [Header("Buff Target")]
+    [Tooltip("IBuffTarget을 구현한 MonoBehaviour를 넣으면 됨. Enemy, Player, EnemySpawner, Plant, Tower 등")]
+    public MonoBehaviour targetBuffTargetObject;
+
+    [Tooltip("Enemy, Player, EnemySpawner, Plant, Tower 같은 그룹 이름")]
+    public string targetGroup;
+
+    private IBuffTarget targetBuffTarget;
     private readonly List<BuffUISlot> spawnedSlots = new List<BuffUISlot>();
 
-
+    private void OnEnable()
+    {
+        if (refreshOnEnable)
+            RefreshCurrentMode();
+    }
 
     public void Init()
     {
@@ -36,23 +46,30 @@ public class BuffUIManager : MonoBehaviour
             return;
         }
 
+        CacheTargetBuffTarget();
+
         switch (displayMode)
         {
             case BuffUIDisplayMode.Bag:
                 DisplayBagBuffs(targetBag);
                 break;
+
             case BuffUIDisplayMode.Item:
                 DisplayItemBuffs(targetItemData);
                 break;
+
             case BuffUIDisplayMode.ItemSeries:
                 DisplayItemSeriesBuffs(targetItemSeries);
                 break;
-            case BuffUIDisplayMode.Enemy:
-                DisplayEnemyBuffs(targetEnemy);
+
+            case BuffUIDisplayMode.Target:
+                DisplayTargetBuffs(targetBuffTarget);
                 break;
-            case BuffUIDisplayMode.EnemySpawner:
-                DisplayEnemySpawnerBuffs(targetEnemySpawner);
+
+            case BuffUIDisplayMode.Group:
+                DisplayGroupBuffs(targetGroup);
                 break;
+
             default:
                 DisplayAllBuffs();
                 break;
@@ -81,6 +98,7 @@ public class BuffUIManager : MonoBehaviour
 
         displayMode = BuffUIDisplayMode.Bag;
         targetBag = bag;
+
         string label = bag != null ? "가방 버프: " + bag.name : "가방 버프";
         RefreshSlots(buffManager.GetVisibleBagBuffsAsList(bag), label);
     }
@@ -95,8 +113,10 @@ public class BuffUIManager : MonoBehaviour
 
         displayMode = BuffUIDisplayMode.Item;
         targetItemData = itemData;
+
         string itemName = itemData != null ? itemData.GetDataName() : "";
         string label = itemData != null ? "아이템 버프: " + itemName : "아이템 버프";
+
         RefreshSlots(buffManager.GetVisibleItemBuffsAsList(itemData), label);
     }
 
@@ -110,11 +130,12 @@ public class BuffUIManager : MonoBehaviour
 
         displayMode = BuffUIDisplayMode.ItemSeries;
         targetItemSeries = series;
+
         string label = series != ItemSeries.None ? "시리즈 버프: " + series : "시리즈 버프";
         RefreshSlots(buffManager.GetVisibleItemSeriesBuffsAsList(series), label);
     }
 
-    public void DisplayEnemyBuffs(Enemy enemy)
+    public void DisplayTargetBuffs(IBuffTarget target)
     {
         if (buffManager == null)
         {
@@ -122,13 +143,17 @@ public class BuffUIManager : MonoBehaviour
             return;
         }
 
-        displayMode = BuffUIDisplayMode.Enemy;
-        targetEnemy = enemy;
-        string label = enemy != null ? "적 버프: " + enemy.name : "적 버프";
-        RefreshSlots(buffManager.GetVisibleEnemyBuffsAsList(enemy), label);
+        displayMode = BuffUIDisplayMode.Target;
+        targetBuffTarget = target;
+
+        string label = target != null
+            ? "대상 버프: " + target.BuffTargetDebugName
+            : "대상 버프";
+
+        RefreshSlots(buffManager.GetVisibleTargetBuffsAsList(target), label);
     }
 
-    public void DisplayEnemySpawnerBuffs(EnemySpawner spawner)
+    public void DisplayGroupBuffs(string group)
     {
         if (buffManager == null)
         {
@@ -136,15 +161,20 @@ public class BuffUIManager : MonoBehaviour
             return;
         }
 
-        displayMode = BuffUIDisplayMode.EnemySpawner;
-        targetEnemySpawner = spawner;
-        string label = spawner != null ? "스포너 버프: " + spawner.name : "스포너 버프";
-        RefreshSlots(buffManager.GetVisibleEnemySpawnerBuffsAsList(spawner), label);
+        displayMode = BuffUIDisplayMode.Group;
+        targetGroup = group;
+
+        string label = !string.IsNullOrEmpty(group)
+            ? "그룹 버프: " + group
+            : "그룹 버프";
+
+        RefreshSlots(buffManager.GetVisibleTargetGroupBuffsAsList(group), label);
     }
 
     public void SetTargetBag(EquipmentBag bag)
     {
         targetBag = bag;
+
         if (displayMode == BuffUIDisplayMode.Bag)
             DisplayBagBuffs(targetBag);
     }
@@ -152,6 +182,7 @@ public class BuffUIManager : MonoBehaviour
     public void SetTargetItem(ItemData itemData)
     {
         targetItemData = itemData;
+
         if (displayMode == BuffUIDisplayMode.Item)
             DisplayItemBuffs(targetItemData);
     }
@@ -159,22 +190,58 @@ public class BuffUIManager : MonoBehaviour
     public void SetTargetItemSeries(ItemSeries series)
     {
         targetItemSeries = series;
+
         if (displayMode == BuffUIDisplayMode.ItemSeries)
             DisplayItemSeriesBuffs(targetItemSeries);
     }
 
-    public void SetTargetEnemy(Enemy enemy)
+    public void SetTargetBuffTargetObject(MonoBehaviour targetObject)
     {
-        targetEnemy = enemy;
-        if (displayMode == BuffUIDisplayMode.Enemy)
-            DisplayEnemyBuffs(targetEnemy);
+        targetBuffTargetObject = targetObject;
+        CacheTargetBuffTarget();
+
+        if (displayMode == BuffUIDisplayMode.Target)
+            DisplayTargetBuffs(targetBuffTarget);
     }
 
-    public void SetTargetEnemySpawner(EnemySpawner spawner)
+    public void SetTargetBuffTarget(IBuffTarget target)
     {
-        targetEnemySpawner = spawner;
-        if (displayMode == BuffUIDisplayMode.EnemySpawner)
-            DisplayEnemySpawnerBuffs(targetEnemySpawner);
+        targetBuffTarget = target;
+        targetBuffTargetObject = null;
+
+        if (target != null)
+        {
+            if (target.BuffTargetObject is MonoBehaviour mono)
+                targetBuffTargetObject = mono;
+            else if (target.BuffTargetObject is GameObject go)
+                targetBuffTargetObject = go.GetComponent<MonoBehaviour>();
+        }
+
+        if (displayMode == BuffUIDisplayMode.Target)
+            DisplayTargetBuffs(targetBuffTarget);
+    }
+
+    public void SetTargetGroup(string group)
+    {
+        targetGroup = group;
+
+        if (displayMode == BuffUIDisplayMode.Group)
+            DisplayGroupBuffs(targetGroup);
+    }
+
+    private void CacheTargetBuffTarget()
+    {
+        targetBuffTarget = null;
+
+        if (targetBuffTargetObject == null)
+            return;
+
+        targetBuffTarget = targetBuffTargetObject as IBuffTarget;
+
+        if (targetBuffTarget != null)
+            return;
+
+        targetBuffTarget = targetBuffTargetObject.GetComponent<IBuffTarget>();
     }
 
     private void RefreshSlots(IReadOnlyList<ActiveBuff> buffs, string displayLabel)
@@ -187,6 +254,7 @@ public class BuffUIManager : MonoBehaviour
         for (int i = 0; i < buffs.Count; i++)
         {
             ActiveBuff buff = buffs[i];
+
             if (buff == null || buff.IsExpired)
                 continue;
 

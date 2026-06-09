@@ -38,14 +38,17 @@ public class BuffQuery
         return GetBuffsByPredicate(buff => buff.target != null && buff.target.kind == BuffTargetKind.ItemSeries && buff.target.itemSeries == series, visibleOnly);
     }
 
-    public List<ActiveBuff> GetEnemyBuffsAsList(Enemy enemy, bool visibleOnly = false)
+    public List<ActiveBuff> GetTargetBuffsAsList(IBuffTarget target, bool visibleOnly = false)
     {
-        return GetBuffsByPredicate(buff => buff.target != null && buff.target.MatchesEnemy(enemy), visibleOnly);
+        return GetBuffsByPredicate(buff => buff.target != null && buff.target.MatchesTarget(target), visibleOnly);
     }
 
-    public List<ActiveBuff> GetEnemySpawnerBuffsAsList(EnemySpawner spawner, bool visibleOnly = false)
+    public List<ActiveBuff> GetTargetGroupBuffsAsList(string targetGroup, bool visibleOnly = false)
     {
-        return GetBuffsByPredicate(buff => buff.target != null && buff.target.MatchesEnemySpawner(spawner), visibleOnly);
+        return GetBuffsByPredicate(
+            buff => buff.target != null && buff.target.kind == BuffTargetKind.Group && buff.target.targetGroup == targetGroup,
+            visibleOnly
+        );
     }
 
     private List<ActiveBuff> GetBuffsByPredicate(System.Predicate<ActiveBuff> predicate, bool visibleOnly)

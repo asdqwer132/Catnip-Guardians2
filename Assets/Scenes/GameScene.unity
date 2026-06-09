@@ -1638,6 +1638,15 @@ MonoBehaviour:
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
+  enableSpawnDebug: 1
+  debugNextEnemyName: 
+  debugSpawnInterval: 0
+  debugSpawnRemainingTime: 0
+  debugSpawnProgress01: 0
+  debugSelectedSpawnRate: 0
+  debugSelectedSpawnWeight: 0
+  debugSpawnIntervalText: 
+  debugSpawnRemainingTimeText: 
   buffManager: {fileID: 511510869}
 --- !u!1 &153855117
 GameObject:
@@ -4980,8 +4989,8 @@ MonoBehaviour:
   targetBag: {fileID: 0}
   targetItemData: {fileID: 0}
   targetItemSeries: 0
-  targetEnemy: {fileID: 0}
-  targetEnemySpawner: {fileID: 0}
+  targetBuffTargetObject: {fileID: 0}
+  targetGroup: 
 --- !u!114 &511510869
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4995,7 +5004,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuffManager
   buffUIManager: {fileID: 511510868}
-  useDebugInspector: 0
+  useDebugInspector: 1
   debugAllActiveBuffs: []
   debugBuffGroups: []
 --- !u!1 &519420028
@@ -5186,6 +5195,15 @@ MonoBehaviour:
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
+  enableSpawnDebug: 1
+  debugNextEnemyName: 
+  debugSpawnInterval: 0
+  debugSpawnRemainingTime: 0
+  debugSpawnProgress01: 0
+  debugSelectedSpawnRate: 0
+  debugSelectedSpawnWeight: 0
+  debugSpawnIntervalText: 
+  debugSpawnRemainingTimeText: 
   buffManager: {fileID: 511510869}
 --- !u!1 &538777694
 GameObject:
@@ -12848,6 +12866,15 @@ MonoBehaviour:
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
+  enableSpawnDebug: 1
+  debugNextEnemyName: 
+  debugSpawnInterval: 0
+  debugSpawnRemainingTime: 0
+  debugSpawnProgress01: 0
+  debugSelectedSpawnRate: 0
+  debugSelectedSpawnWeight: 0
+  debugSpawnIntervalText: 
+  debugSpawnRemainingTimeText: 
   buffManager: {fileID: 511510869}
 --- !u!1 &617701541
 GameObject:
@@ -13065,6 +13092,15 @@ MonoBehaviour:
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
+  enableSpawnDebug: 1
+  debugNextEnemyName: 
+  debugSpawnInterval: 0
+  debugSpawnRemainingTime: 0
+  debugSpawnProgress01: 0
+  debugSelectedSpawnRate: 0
+  debugSelectedSpawnWeight: 0
+  debugSpawnIntervalText: 
+  debugSpawnRemainingTimeText: 
   buffManager: {fileID: 511510869}
 --- !u!1 &657041884
 GameObject:
@@ -14233,6 +14269,15 @@ MonoBehaviour:
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
+  enableSpawnDebug: 1
+  debugNextEnemyName: 
+  debugSpawnInterval: 0
+  debugSpawnRemainingTime: 0
+  debugSpawnProgress01: 0
+  debugSelectedSpawnRate: 0
+  debugSelectedSpawnWeight: 0
+  debugSpawnIntervalText: 
+  debugSpawnRemainingTimeText: 
   buffManager: {fileID: 511510869}
 --- !u!4 &726708667
 Transform:

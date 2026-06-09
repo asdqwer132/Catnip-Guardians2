@@ -29,20 +29,14 @@ public enum BuffTargetKind
     Bag,
     ItemSeries,
     AllItems,
-    Enemy,
-    AllEnemiesIncludingFuture,
-    EnemySpawner,
-    AllEnemySpawners,
-    Player,
-    AllPlayers
+    Target,
+    Group
 }
 
 public enum BuffNotifyScope
 {
     All,
     Item,
-    Enemy,
-    EnemySpawner,
-    DynamicOnly,
-    Player
+    Target,
+    DynamicOnly
 }

@@ -4,6 +4,6 @@ public enum BuffUIDisplayMode
     Bag,
     Item,
     ItemSeries,
-    Enemy,
-    EnemySpawner
+    Target,
+    Group
 }

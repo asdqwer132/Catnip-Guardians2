@@ -58,7 +58,7 @@ public class BagItemCooldownController
         if (slotPreparationStarted[slotIndex])
             return;
 
-        float cooldown = Mathf.Max(0f, item.cooldown);
+        float cooldown = Mathf.Max(0f, item.Cooldown);
 
         if (slotCooldownEndTimes != null && slotIndex >= 0 && slotIndex < slotCooldownEndTimes.Length)
             slotCooldownEndTimes[slotIndex] = Time.time + cooldown;
@@ -111,7 +111,7 @@ public class BagItemCooldownController
         if (item == null || item.itemData == null)
             return 0f;
 
-        float cooldown = Mathf.Max(0f, item.itemData.cooldown);
+        float cooldown = Mathf.Max(0f, item.itemData.Cooldown);
         if (cooldown <= 0f)
             return 0f;
 

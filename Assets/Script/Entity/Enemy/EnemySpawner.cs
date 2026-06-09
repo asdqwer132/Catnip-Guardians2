@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class EnemySpawner : MonoBehaviour
+public class EnemySpawner : MonoBehaviour, IBuffTarget
 {
     [Header("Setting")]
     public EnemySpawnInfo[] enemyInfos;
@@ -10,23 +10,50 @@ public class EnemySpawner : MonoBehaviour
     [Header("Runtime Stat")]
     [SerializeField] private EnemySpawnerStat currentStat = new EnemySpawnerStat();
 
+    [Header("Spawn Debug Only")]
+    [SerializeField] private bool enableSpawnDebug = true;
+    [SerializeField] private string debugNextEnemyName;
+    [SerializeField] private float debugSpawnInterval;
+    [SerializeField] private float debugSpawnRemainingTime;
+    [SerializeField] private float debugSpawnProgress01;
+    [SerializeField] private float debugSelectedSpawnRate;
+    [SerializeField] private float debugSelectedSpawnWeight;
+
+    [Header("Spawn Debug Display")]
+    [SerializeField] private string debugSpawnIntervalText;
+    [SerializeField] private string debugSpawnRemainingTimeText;
+
     [Header("Managers")]
     public BuffManager buffManager;
 
     private Plant targetPlant;
     private Coroutine spawnCoroutine;
+    private Coroutine spawnDebugCoroutine;
     private bool isSpawning;
     private int spawnerIndex = -1;
     private float spawnStartTime;
 
     public EnemySpawnerStat CurrentStat => currentStat;
 
+    public string DebugNextEnemyName => debugNextEnemyName;
+    public float DebugSpawnInterval => debugSpawnInterval;
+    public float DebugSpawnRemainingTime => debugSpawnRemainingTime;
+    public float DebugSpawnProgress01 => debugSpawnProgress01;
+    public float DebugSelectedSpawnRate => debugSelectedSpawnRate;
+    public float DebugSelectedSpawnWeight => debugSelectedSpawnWeight;
+    public string DebugSpawnIntervalText => debugSpawnIntervalText;
+    public string DebugSpawnRemainingTimeText => debugSpawnRemainingTimeText;
+
+    public UnityEngine.Object BuffTargetObject => this;
+    public string BuffTargetGroup => "EnemySpawner";
+    public string BuffTargetDebugName => name;
+
     private void OnDisable()
     {
         StopSpawning();
 
         if (buffManager != null)
-            buffManager.UnregisterEnemySpawner(this);
+            buffManager.UnregisterBuffTarget(this);
     }
 
     public void SetSpawner(EnemySpawnInfo[] infos, Plant plant)
@@ -48,7 +75,7 @@ public class EnemySpawner : MonoBehaviour
         buffManager = manager;
 
         if (buffManager != null)
-            buffManager.RegisterEnemySpawner(this);
+            buffManager.RegisterBuffTarget(this);
 
         RefreshBuffedStat();
         StartSpawning();
@@ -60,7 +87,7 @@ public class EnemySpawner : MonoBehaviour
             return;
 
         if (buffManager != null)
-            currentStat = buffManager.GetBuffedEnemySpawnerStat(baseStat, this);
+            currentStat = buffManager.GetBuffedTargetStat(baseStat, this);
         else
             currentStat = baseStat.Clone();
 
@@ -84,6 +111,9 @@ public class EnemySpawner : MonoBehaviour
     public void StopSpawning()
     {
         isSpawning = false;
+
+        StopSpawnDebugTimer();
+        ClearSpawnDebug();
 
         if (spawnCoroutine == null)
             return;
@@ -113,10 +143,105 @@ public class EnemySpawner : MonoBehaviour
 
             interval = Mathf.Max(0.01f, interval);
 
+            StartSpawnDebugTimer(selectedInfo, interval);
+
             yield return new WaitForSeconds(interval);
+
+            StopSpawnDebugTimer();
+            SetSpawnDebugCompleted();
 
             SpawnEnemy(selectedInfo, interval);
         }
+    }
+
+    private void StartSpawnDebugTimer(EnemySpawnInfo info, float interval)
+    {
+        if (!enableSpawnDebug)
+            return;
+
+        StopSpawnDebugTimer();
+
+        SetSpawnDebug(info, interval);
+        spawnDebugCoroutine = StartCoroutine(SpawnDebugTimerRoutine(interval));
+    }
+
+    private void StopSpawnDebugTimer()
+    {
+        if (spawnDebugCoroutine == null)
+            return;
+
+        StopCoroutine(spawnDebugCoroutine);
+        spawnDebugCoroutine = null;
+    }
+
+    private IEnumerator SpawnDebugTimerRoutine(float interval)
+    {
+        float safeInterval = Mathf.Max(0.01f, interval);
+        float startTime = Time.time;
+
+        while (isSpawning)
+        {
+            float elapsed = Time.time - startTime;
+            float remaining = Mathf.Max(0f, safeInterval - elapsed);
+
+            debugSpawnRemainingTime = RoundToOneDecimal(remaining);
+            debugSpawnRemainingTimeText = debugSpawnRemainingTime.ToString("F1") + "ì´ˆ";
+            debugSpawnProgress01 = Mathf.Clamp01(elapsed / safeInterval);
+
+            if (remaining <= 0f)
+                break;
+
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        debugSpawnRemainingTime = 0f;
+        debugSpawnRemainingTimeText = "0.0ì´ˆ";
+        debugSpawnProgress01 = 1f;
+    }
+
+    private void SetSpawnDebug(EnemySpawnInfo info, float interval)
+    {
+        debugNextEnemyName = info != null && info.enemyPrefab != null
+            ? info.enemyPrefab.name
+            : "None";
+
+        debugSpawnInterval = RoundToOneDecimal(interval);
+        debugSpawnRemainingTime = RoundToOneDecimal(interval);
+        debugSpawnProgress01 = 0f;
+
+        debugSpawnIntervalText = debugSpawnInterval.ToString("F1") + "ì´ˆ";
+        debugSpawnRemainingTimeText = debugSpawnRemainingTime.ToString("F1") + "ì´ˆ";
+
+        debugSelectedSpawnRate = info != null ? info.spawnRate : 0f;
+        debugSelectedSpawnWeight = info != null ? info.spawnWeight : 0f;
+    }
+
+    private void SetSpawnDebugCompleted()
+    {
+        if (!enableSpawnDebug)
+            return;
+
+        debugSpawnRemainingTime = 0f;
+        debugSpawnRemainingTimeText = "0.0ì´ˆ";
+        debugSpawnProgress01 = 1f;
+    }
+
+    private void ClearSpawnDebug()
+    {
+        debugNextEnemyName = "";
+        debugSpawnInterval = 0f;
+        debugSpawnRemainingTime = 0f;
+        debugSpawnProgress01 = 0f;
+        debugSelectedSpawnRate = 0f;
+        debugSelectedSpawnWeight = 0f;
+
+        debugSpawnIntervalText = "0.0ì´ˆ";
+        debugSpawnRemainingTimeText = "0.0ì´ˆ";
+    }
+
+    private float RoundToOneDecimal(float value)
+    {
+        return Mathf.Round(Mathf.Max(0f, value) * 10f) / 10f;
     }
 
     private void SpawnEnemy(EnemySpawnInfo info, float usedInterval)
@@ -170,10 +295,10 @@ public class EnemySpawner : MonoBehaviour
 
         Debug.Log(
             "[Spawner " + spawnerIndex + "] " +
-            elapsedTime.ToString("F2") + "ÃÊ °æ°ú / " +
-            enemyName + " ¼ÒÈ¯ / " +
-            "»ç¿ëµÈ SpawnRate: " + info.spawnRate.ToString("F2") + " / " +
-            "½ÇÁ¦ ´ë±â½Ã°£: " + usedInterval.ToString("F2")
+            elapsedTime.ToString("F1") + "ì´ˆ ê²½ê³¼ / " +
+            enemyName + " ì†Œí™˜ / " +
+            "ì‚¬ìš©ëœ SpawnRate: " + info.spawnRate.ToString("F1") + " / " +
+            "ì‹¤ì œ ëŒ€ê¸°ì‹œê°„: " + usedInterval.ToString("F1")
         );
     }
 

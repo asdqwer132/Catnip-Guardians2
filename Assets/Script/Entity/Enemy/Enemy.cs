@@ -1,7 +1,7 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Enemy : HealthActor, IPoolable
+public class Enemy : HealthActor, IPoolable, IBuffTarget
 {
     [Header("Data")]
     public EnemyStatData statData;
@@ -16,6 +16,7 @@ public class Enemy : HealthActor, IPoolable
     public float statRefreshInterval = 0.1f;
 
     private EnemyStat baseStat;
+    [SerializeField]
     private EnemyStat currentStat;
     private Animator cachedAnimator;
     private float statRefreshTimer;
@@ -24,6 +25,10 @@ public class Enemy : HealthActor, IPoolable
     private bool isActionDisabled = false;
 
     public bool IsActionDisabled => isActionDisabled;
+
+    public UnityEngine.Object BuffTargetObject => this;
+    public string BuffTargetGroup => "Enemy";
+    public string BuffTargetDebugName => name;
 
     #region Control
 
@@ -46,7 +51,7 @@ public class Enemy : HealthActor, IPoolable
     private void OnDestroy()
     {
         if (buffManager != null)
-            buffManager.UnregisterEnemy(this);
+            buffManager.UnregisterBuffTarget(this);
     }
 
     void Update()
@@ -183,8 +188,8 @@ public class Enemy : HealthActor, IPoolable
 
         if (buffManager != null)
         {
-            buffManager.ClearEnemyBuffs(this);
-            buffManager.UnregisterEnemy(this);
+            buffManager.ClearBuffsForTarget(this);
+            buffManager.UnregisterBuffTarget(this);
         }
 
         if (EnemyManager.instance != null)
@@ -209,7 +214,7 @@ public class Enemy : HealthActor, IPoolable
             actorTarget.SetTarget(target);
 
         if (buffManager != null)
-            buffManager.RegisterEnemy(this);
+            buffManager.RegisterBuffTarget(this);
 
         isInitialized = true;
     }
@@ -302,7 +307,7 @@ public class Enemy : HealthActor, IPoolable
         EnemyStat nextStat = null;
 
         if (buffManager != null)
-            nextStat = buffManager.GetBuffedEnemyStat(baseStat, this);
+            nextStat = buffManager.GetBuffedTargetStat(baseStat, this);
 
         if (nextStat == null)
             nextStat = baseStat.Clone();
@@ -354,7 +359,7 @@ public class Enemy : HealthActor, IPoolable
         ResumeAnimation();
 
         if (buffManager != null)
-            buffManager.ClearEnemyBuffs(this);
+            buffManager.ClearBuffsForTarget(this);
 
         GiveReward();
     }

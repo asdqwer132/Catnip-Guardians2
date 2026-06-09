@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Player : MonoBehaviour, IDynamicBuffReceiver
+public class Player : MonoBehaviour, IDynamicBuffReceiver, IBuffTarget
 {
     [Header("Stat")]
     public PlayerStat baseStat = new PlayerStat();
@@ -24,6 +24,10 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver
     public float MaxRange => currentStat != null ? currentStat.maxRange : 0f;
     public Vector3 MoveTargetPosition => moveTargetPosition;
     public bool HasMoveTarget => hasMoveTarget;
+
+    public UnityEngine.Object BuffTargetObject => this;
+    public string BuffTargetGroup => "Player";
+    public string BuffTargetDebugName => name;
 
     private void Awake()
     {
@@ -63,7 +67,7 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver
         if (buffManager == null)
             return;
 
-        buffManager.RegisterPlayer(this);
+        buffManager.RegisterBuffTarget(this);
         buffManager.RegisterDynamicBuffReceiver(this);
     }
 
@@ -72,7 +76,7 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver
         if (buffManager == null)
             return;
 
-        buffManager.UnregisterPlayer(this);
+        buffManager.UnregisterBuffTarget(this);
         buffManager.UnregisterDynamicBuffReceiver(this);
     }
 
@@ -103,7 +107,7 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver
             currentStat = baseStat.Clone();
         else
         {
-            PlayerStat buffedStat = buffManager.GetBuffedPlayerStat(baseStat, this);
+            PlayerStat buffedStat = buffManager.GetBuffedTargetStat(baseStat, this);
             currentStat = buffedStat != null ? buffedStat : baseStat.Clone();
         }
 

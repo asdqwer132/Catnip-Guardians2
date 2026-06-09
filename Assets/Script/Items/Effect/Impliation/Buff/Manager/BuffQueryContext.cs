@@ -2,9 +2,7 @@ public class BuffQueryContext
 {
     public ItemData itemData;
     public EquipmentBag bag;
-    public Enemy enemy;
-    public EnemySpawner enemySpawner;
-    public Player player;
+    public IBuffTarget buffTarget;
 
     public static BuffQueryContext ForItem(ItemData itemData, EquipmentBag bag)
     {
@@ -15,27 +13,11 @@ public class BuffQueryContext
         };
     }
 
-    public static BuffQueryContext ForEnemy(Enemy enemy)
+    public static BuffQueryContext ForTarget(IBuffTarget target)
     {
         return new BuffQueryContext
         {
-            enemy = enemy
-        };
-    }
-
-    public static BuffQueryContext ForEnemySpawner(EnemySpawner enemySpawner)
-    {
-        return new BuffQueryContext
-        {
-            enemySpawner = enemySpawner
-        };
-    }
-
-    public static BuffQueryContext ForPlayer(Player player)
-    {
-        return new BuffQueryContext
-        {
-            player = player
+            buffTarget = target
         };
     }
 }
