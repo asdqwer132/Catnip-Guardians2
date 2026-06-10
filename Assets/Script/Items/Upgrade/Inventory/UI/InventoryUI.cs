@@ -18,6 +18,9 @@ public class InventoryUI : MonoBehaviour
     public Transform detailSlotParent;
     public GameObject detailSlotPrefab;
 
+    [Header("Search")]
+    [SerializeField] private InventorySearchFilter searchFilter = new InventorySearchFilter();
+
     public void Init()
     {
         if (InventoryManager.instance != null)
@@ -41,6 +44,35 @@ public class InventoryUI : MonoBehaviour
 
         RefreshQuickInventory(validItems);
         RefreshDetailInventory(validItems);
+    }
+
+    public void SetSearchFilter(InventorySearchFilter filter)
+    {
+        if (filter == null)
+        {
+            ClearSearchFilter();
+            return;
+        }
+
+        searchFilter.useCategory = filter.useCategory;
+        searchFilter.category = filter.category;
+
+        searchFilter.useSeries = filter.useSeries;
+        searchFilter.series = filter.series;
+
+        searchFilter.useGrade = filter.useGrade;
+        searchFilter.grade = filter.grade;
+
+        RefreshUI();
+    }
+
+    public void ClearSearchFilter()
+    {
+        if (searchFilter == null)
+            searchFilter = new InventorySearchFilter();
+
+        searchFilter.Clear();
+        RefreshUI();
     }
 
     private void RefreshQuickInventory(List<InventoryItem> validItems)
@@ -117,9 +149,15 @@ public class InventoryUI : MonoBehaviour
     {
         List<InventoryItem> result = new List<InventoryItem>();
 
+        if (InventoryManager.instance == null)
+            return result;
+
         foreach (InventoryItem item in InventoryManager.instance.items)
         {
             if (item == null || item.itemData == null)
+                continue;
+
+            if (searchFilter != null && !searchFilter.IsMatch(item))
                 continue;
 
             result.Add(item);

@@ -11,4 +11,5 @@ public class InventoryItem
         this.itemData = itemData;
         this.amount = amount;
     }
+    public ItemCategory GetItemCategory() { return itemData.category; } 
 }

@@ -187,6 +187,7 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver, IBuffTarget
         if (distance <= stopDistance)
         {
             StopMove();
+            movePingController.HidePing();
             return;
         }
 

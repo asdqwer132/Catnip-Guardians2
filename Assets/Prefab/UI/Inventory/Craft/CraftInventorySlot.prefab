@@ -204,7 +204,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 2089382225, guid: 89d6b9627a3a13b48948eca9d1c6f9f5, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -321,8 +321,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 7851367508911752299}
   - {fileID: 1973018712262061203}
+  - {fileID: 7851367508911752299}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -381,6 +381,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CraftInventorySlotUI
   icon: {fileID: 4047147333766088748}
+  nameText: {fileID: 0}
   amountImage: {fileID: 6617219172577598094}
   amountText: {fileID: 7320215863083533165}
   gradeText: {fileID: 0}
