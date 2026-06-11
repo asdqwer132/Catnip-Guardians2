@@ -8,6 +8,7 @@ public class InitManager : MonoBehaviour
     public ShopManager shopManager;
     public BuffManager buffManager;
     public BuffSkillManager buffSkillManager;
+    public SubPlantManager subPlantManager;
     public ItemInitManager itemInitManager;
     public UnlockManager unlockManager;
     public EnemyManager enemyManager;
@@ -19,15 +20,23 @@ public class InitManager : MonoBehaviour
     public BuffUIManager buffUIManager;
     public InventoryUI[] inventoryUIs;
 
+
     public void InitAll()
     {
-        plantManager.SetPlants();
-        itemUseManager.Init();
+
+        //?
         shopManager.InitShop();
-        buffManager.ClearAllBuffs();
-        buffSkillManager.ExecuteAllRegisteredBuffItems(buffSkillManager.gameObject, 0);
-        bagUIInitializer.InitAll();
+
+        plantManager.SetPlants();
         enemyManager.Init(plantManager.CurrentPlant);
+
+
+        itemUseManager.Init();
+        buffManager.ClearAllBuffs();
+        itemInitManager.ApplyDefaultInventoryItems();
+        buffSkillManager.ExecuteAllRegisteredBuffItems(buffSkillManager.gameObject, 0);
+
+        subPlantManager.ThrowAllItems();
     }
 
     public void ResetEntity()
@@ -39,13 +48,12 @@ public class InitManager : MonoBehaviour
     {
         unlockManager.Init();
         EquipmentBagManager.instance.Init();
-       
-        itemInitManager.ApplyDefaultInventoryItems();
 
         UIInit();
     }
     private void UIInit()
     {
+        bagUIInitializer.InitAll();
         selectedBagPreviewUI.Init();
         skillTreeUI.Init();
         buffUIManager.Init();

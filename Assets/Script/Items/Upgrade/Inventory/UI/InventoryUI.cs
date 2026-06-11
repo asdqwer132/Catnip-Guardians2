@@ -45,7 +45,13 @@ public class InventoryUI : MonoBehaviour
         RefreshQuickInventory(validItems);
         RefreshDetailInventory(validItems);
     }
+    public InventorySearchFilter GetSearchFilter()
+    {
+        if (searchFilter == null)
+            searchFilter = new InventorySearchFilter();
 
+        return searchFilter;
+    }
     public void SetSearchFilter(InventorySearchFilter filter)
     {
         if (filter == null)

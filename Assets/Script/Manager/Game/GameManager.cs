@@ -7,10 +7,12 @@ public class GameManager : MonoBehaviour
     public RoundManager roundManager;
     public TutorialEventManager tutorialEventManager;
 
+
     private void Start()
     {
         if (initManager != null)
             initManager.FirstInit();
+
 
         StartNextRound();
     }

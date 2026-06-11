@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,6 +16,11 @@ public class InventorySearchUI : MonoBehaviour
     [Header("Button")]
     public Button resetButton;
 
+    [Header("Reset Option")]
+    public bool resetCategory = true;
+    public bool resetSeries = true;
+    public bool resetGrade = true;
+
     private bool isInitialized;
     private readonly InventorySearchFilter filter = new InventorySearchFilter();
 
@@ -29,6 +33,7 @@ public class InventorySearchUI : MonoBehaviour
 
     private void OnEnable()
     {
+        Init();
         ApplyFilter();
     }
 
@@ -49,11 +54,105 @@ public class InventorySearchUI : MonoBehaviour
         SetupDropdown<ItemSeries>(seriesDropdown);
         SetupDropdown<ItemGrade>(gradeDropdown);
 
+        InitFilterFromInventoryUI();
+        ApplyDropdownValueFromFilter();
+
         BindEvents();
 
         isInitialized = true;
 
         ApplyFilter();
+    }
+
+    private void InitFilterFromInventoryUI()
+    {
+        if (inventoryUI == null)
+        {
+            filter.Clear();
+            return;
+        }
+
+        InventorySearchFilter defaultFilter = inventoryUI.GetSearchFilter();
+
+        if (defaultFilter == null)
+        {
+            filter.Clear();
+            return;
+        }
+
+        filter.useCategory = defaultFilter.useCategory;
+        filter.category = defaultFilter.category;
+
+        filter.useSeries = defaultFilter.useSeries;
+        filter.series = defaultFilter.series;
+
+        filter.useGrade = defaultFilter.useGrade;
+        filter.grade = defaultFilter.grade;
+    }
+
+    private void ApplyDropdownValueFromFilter()
+    {
+        SetDropdownValueWithoutNotify(
+            categoryDropdown,
+            filter.useCategory,
+            ConvertEnumToDropdownIndex(filter.category)
+        );
+
+        SetDropdownValueWithoutNotify(
+            seriesDropdown,
+            filter.useSeries,
+            ConvertEnumToDropdownIndex(filter.series)
+        );
+
+        SetDropdownValueWithoutNotify(
+            gradeDropdown,
+            filter.useGrade,
+            ConvertEnumToDropdownIndex(filter.grade)
+        );
+    }
+
+    private void SetDropdownValueWithoutNotify(
+        TMP_Dropdown dropdown,
+        bool useFilter,
+        int enumIndex
+    )
+    {
+        if (dropdown == null)
+            return;
+
+        int dropdownIndex = useFilter ? enumIndex + 1 : AllIndex;
+        dropdownIndex = Mathf.Clamp(dropdownIndex, 0, dropdown.options.Count - 1);
+
+        dropdown.SetValueWithoutNotify(dropdownIndex);
+    }
+
+    private int ConvertEnumToDropdownIndex<TEnum>(TEnum value)
+        where TEnum : Enum
+    {
+        Array values = Enum.GetValues(typeof(TEnum));
+        int index = Array.IndexOf(values, value);
+
+        if (index < 0)
+            return 0;
+
+        return index;
+    }
+
+    private void SetupDropdown<TEnum>(TMP_Dropdown dropdown)
+        where TEnum : Enum
+    {
+        if (dropdown == null)
+            return;
+
+        dropdown.ClearOptions();
+        dropdown.options.Add(new TMP_Dropdown.OptionData("ALL"));
+
+        string[] names = Enum.GetNames(typeof(TEnum));
+
+        for (int i = 0; i < names.Length; i++)
+            dropdown.options.Add(new TMP_Dropdown.OptionData(names[i]));
+
+        dropdown.RefreshShownValue();
     }
 
     private void BindEvents()
@@ -68,7 +167,7 @@ public class InventorySearchUI : MonoBehaviour
             gradeDropdown.onValueChanged.AddListener(OnGradeChanged);
 
         if (resetButton != null)
-            resetButton.onClick.AddListener(ResetSearch);
+            resetButton.onClick.AddListener(ResetFilter);
     }
 
     private void UnbindEvents()
@@ -83,27 +182,7 @@ public class InventorySearchUI : MonoBehaviour
             gradeDropdown.onValueChanged.RemoveListener(OnGradeChanged);
 
         if (resetButton != null)
-            resetButton.onClick.RemoveListener(ResetSearch);
-    }
-
-    private void SetupDropdown<TEnum>(TMP_Dropdown dropdown) where TEnum : Enum
-    {
-        if (dropdown == null)
-            return;
-
-        dropdown.ClearOptions();
-
-        List<string> options = new List<string>();
-        options.Add("ALL");
-
-        Array values = Enum.GetValues(typeof(TEnum));
-
-        for (int i = 0; i < values.Length; i++)
-            options.Add(values.GetValue(i).ToString());
-
-        dropdown.AddOptions(options);
-        dropdown.SetValueWithoutNotify(AllIndex);
-        dropdown.RefreshShownValue();
+            resetButton.onClick.RemoveListener(ResetFilter);
     }
 
     private void OnCategoryChanged(int index)
@@ -111,7 +190,7 @@ public class InventorySearchUI : MonoBehaviour
         filter.useCategory = index != AllIndex;
 
         if (filter.useCategory)
-            filter.category = GetEnumByDropdownIndex<ItemCategory>(index);
+            filter.category = ConvertDropdownIndexToEnum<ItemCategory>(index);
 
         ApplyFilter();
     }
@@ -121,7 +200,7 @@ public class InventorySearchUI : MonoBehaviour
         filter.useSeries = index != AllIndex;
 
         if (filter.useSeries)
-            filter.series = GetEnumByDropdownIndex<ItemSeries>(index);
+            filter.series = ConvertDropdownIndexToEnum<ItemSeries>(index);
 
         ApplyFilter();
     }
@@ -131,17 +210,21 @@ public class InventorySearchUI : MonoBehaviour
         filter.useGrade = index != AllIndex;
 
         if (filter.useGrade)
-            filter.grade = GetEnumByDropdownIndex<ItemGrade>(index);
+            filter.grade = ConvertDropdownIndexToEnum<ItemGrade>(index);
 
         ApplyFilter();
     }
 
-    private TEnum GetEnumByDropdownIndex<TEnum>(int dropdownIndex) where TEnum : Enum
+    private TEnum ConvertDropdownIndexToEnum<TEnum>(int dropdownIndex)
+        where TEnum : Enum
     {
         Array values = Enum.GetValues(typeof(TEnum));
 
-        int enumIndex = dropdownIndex - 1;
-        enumIndex = Mathf.Clamp(enumIndex, 0, values.Length - 1);
+        int enumIndex = Mathf.Clamp(
+            dropdownIndex - 1,
+            0,
+            values.Length - 1
+        );
 
         return (TEnum)values.GetValue(enumIndex);
     }
@@ -154,28 +237,60 @@ public class InventorySearchUI : MonoBehaviour
         inventoryUI.SetSearchFilter(filter);
     }
 
-    public void ResetSearch()
+    public void ResetFilter()
     {
-        filter.Clear();
+        ResetCategoryFilter();
+        ResetSeriesFilter();
+        ResetGradeFilter();
+
+        ApplyFilter();
+    }
+
+    private void ResetCategoryFilter()
+    {
+        if (!CanResetCategory())
+            return;
+
+        filter.useCategory = false;
 
         if (categoryDropdown != null)
             categoryDropdown.SetValueWithoutNotify(AllIndex);
+    }
+
+    private void ResetSeriesFilter()
+    {
+        if (!CanResetSeries())
+            return;
+
+        filter.useSeries = false;
 
         if (seriesDropdown != null)
             seriesDropdown.SetValueWithoutNotify(AllIndex);
+    }
+
+    private void ResetGradeFilter()
+    {
+        if (!CanResetGrade())
+            return;
+
+        filter.useGrade = false;
 
         if (gradeDropdown != null)
             gradeDropdown.SetValueWithoutNotify(AllIndex);
+    }
 
-        if (categoryDropdown != null)
-            categoryDropdown.RefreshShownValue();
+    private bool CanResetCategory()
+    {
+        return resetCategory;
+    }
 
-        if (seriesDropdown != null)
-            seriesDropdown.RefreshShownValue();
+    private bool CanResetSeries()
+    {
+        return resetSeries;
+    }
 
-        if (gradeDropdown != null)
-            gradeDropdown.RefreshShownValue();
-
-        ApplyFilter();
+    private bool CanResetGrade()
+    {
+        return resetGrade;
     }
 }

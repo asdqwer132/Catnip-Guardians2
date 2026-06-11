@@ -1,31 +1,31 @@
 using UnityEngine;
 
-public class CraftUIManager : MonoBehaviour
+public class SubPlantUIManager : MonoBehaviour
 {
-    public ItemCombinationManager ItemCombinationManager;
-    public CraftMaterialSlotUI[] slots;
+    public SubPlantManager subplantmanager;
+    public SubPlantMaterialSlotUI[] slots;
 
     void Start()
     {
         RefreshUI();
 
-        if (ItemCombinationManager != null)
+        if (subplantmanager != null)
         {
-            ItemCombinationManager.onMaterialChanged += RefreshUI;
+            subplantmanager.onMaterialChanged += RefreshUI;
         }
     }
 
     void OnDestroy()
     {
-        if (ItemCombinationManager != null)
+        if (subplantmanager != null)
         {
-            ItemCombinationManager.onMaterialChanged -= RefreshUI;
+            subplantmanager.onMaterialChanged -= RefreshUI;
         }
     }
 
     public void RefreshUI()
     {
-        var materials = ItemCombinationManager.currentMaterials;
+        var materials = subplantmanager.currentMaterials;
 
         for (int i = 0; i < slots.Length; i++)
         {
