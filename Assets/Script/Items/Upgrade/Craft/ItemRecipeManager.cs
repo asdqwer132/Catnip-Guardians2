@@ -6,6 +6,9 @@ public class ItemRecipeManager : MonoBehaviour
     [Header("Recipes")]
     public List<ItemRecipeData> recipes = new List<ItemRecipeData>();
     public List<InventoryItem> currentMaterials = new List<InventoryItem>();
+    public ItemData resultItem;
+    public ItemData failedItem;
+    public bool returnFailedItem = true;
 
     public System.Action onMaterialChanged;
 
@@ -107,15 +110,18 @@ public class ItemRecipeManager : MonoBehaviour
         if (recipe == null)
         {
             //Debug.Log("조합 실패");
+            resultItem = returnFailedItem ? failedItem : null;
             return;
         }
+        else
+        {
+            resultItem = recipe.resultItem;
+        }
 
-        InventoryManager.instance.AddItem(recipe.resultItem, 1);
 
-        ClearMaterials();
     }
 
-    ItemRecipeData FindRecipe()
+    protected ItemRecipeData FindRecipe()
     {
         foreach (var recipe in recipes)
         {

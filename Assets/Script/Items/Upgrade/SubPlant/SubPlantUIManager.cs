@@ -4,6 +4,7 @@ public class SubPlantUIManager : MonoBehaviour
 {
     public SubPlantManager subplantmanager;
     public SubPlantMaterialSlotUI[] slots;
+    public InventorySlotUI resultSlot;
 
     void Start()
     {
@@ -38,5 +39,7 @@ public class SubPlantUIManager : MonoBehaviour
                 slots[i].ClearSlot();
             }
         }
+        subplantmanager.Combine();
+        resultSlot.SetSlot(new InventoryItem(subplantmanager.resultItem, 1));
     }
 }

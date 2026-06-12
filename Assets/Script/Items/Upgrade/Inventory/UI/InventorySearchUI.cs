@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,6 +14,11 @@ public class InventorySearchUI : MonoBehaviour
     public TMP_Dropdown seriesDropdown;
     public TMP_Dropdown gradeDropdown;
 
+    [Header("Search Mask")]
+    public ItemCategory[] categoryMask;
+    public ItemSeries[] seriesMask;
+    public ItemGrade[] gradeMask;
+
     [Header("Button")]
     public Button resetButton;
 
@@ -23,6 +29,10 @@ public class InventorySearchUI : MonoBehaviour
 
     private bool isInitialized;
     private readonly InventorySearchFilter filter = new InventorySearchFilter();
+
+    private readonly List<ItemCategory> categoryDropdownValues = new List<ItemCategory>();
+    private readonly List<ItemSeries> seriesDropdownValues = new List<ItemSeries>();
+    private readonly List<ItemGrade> gradeDropdownValues = new List<ItemGrade>();
 
     private const int AllIndex = 0;
 
@@ -50,11 +60,12 @@ public class InventorySearchUI : MonoBehaviour
         if (inventoryUI == null)
             inventoryUI = GetComponentInParent<InventoryUI>();
 
-        SetupDropdown<ItemCategory>(categoryDropdown);
-        SetupDropdown<ItemSeries>(seriesDropdown);
-        SetupDropdown<ItemGrade>(gradeDropdown);
+        SetupCategoryDropdown();
+        SetupSeriesDropdown();
+        SetupGradeDropdown();
 
         InitFilterFromInventoryUI();
+        RemoveMaskedFilterValue();
         ApplyDropdownValueFromFilter();
 
         BindEvents();
@@ -90,69 +101,218 @@ public class InventorySearchUI : MonoBehaviour
         filter.grade = defaultFilter.grade;
     }
 
+    private void RemoveMaskedFilterValue()
+    {
+        if (filter.useCategory && IsCategoryMasked(filter.category))
+            filter.useCategory = false;
+
+        if (filter.useSeries && IsSeriesMasked(filter.series))
+            filter.useSeries = false;
+
+        if (filter.useGrade && IsGradeMasked(filter.grade))
+            filter.useGrade = false;
+    }
+
+    private void SetupCategoryDropdown()
+    {
+        categoryDropdownValues.Clear();
+
+        if (categoryDropdown == null)
+            return;
+
+        categoryDropdown.ClearOptions();
+        categoryDropdown.options.Add(new TMP_Dropdown.OptionData("ALL"));
+
+        Array values = Enum.GetValues(typeof(ItemCategory));
+
+        for (int i = 0; i < values.Length; i++)
+        {
+            ItemCategory value = (ItemCategory)values.GetValue(i);
+
+            if (IsCategoryMasked(value))
+                continue;
+
+            categoryDropdownValues.Add(value);
+            categoryDropdown.options.Add(new TMP_Dropdown.OptionData(value.ToString()));
+        }
+
+        categoryDropdown.RefreshShownValue();
+    }
+
+    private void SetupSeriesDropdown()
+    {
+        seriesDropdownValues.Clear();
+
+        if (seriesDropdown == null)
+            return;
+
+        seriesDropdown.ClearOptions();
+        seriesDropdown.options.Add(new TMP_Dropdown.OptionData("ALL"));
+
+        Array values = Enum.GetValues(typeof(ItemSeries));
+
+        for (int i = 0; i < values.Length; i++)
+        {
+            ItemSeries value = (ItemSeries)values.GetValue(i);
+
+            if (IsSeriesMasked(value))
+                continue;
+
+            seriesDropdownValues.Add(value);
+            seriesDropdown.options.Add(new TMP_Dropdown.OptionData(value.ToString()));
+        }
+
+        seriesDropdown.RefreshShownValue();
+    }
+
+    private void SetupGradeDropdown()
+    {
+        gradeDropdownValues.Clear();
+
+        if (gradeDropdown == null)
+            return;
+
+        gradeDropdown.ClearOptions();
+        gradeDropdown.options.Add(new TMP_Dropdown.OptionData("ALL"));
+
+        Array values = Enum.GetValues(typeof(ItemGrade));
+
+        for (int i = 0; i < values.Length; i++)
+        {
+            ItemGrade value = (ItemGrade)values.GetValue(i);
+
+            if (IsGradeMasked(value))
+                continue;
+
+            gradeDropdownValues.Add(value);
+            gradeDropdown.options.Add(new TMP_Dropdown.OptionData(value.ToString()));
+        }
+
+        gradeDropdown.RefreshShownValue();
+    }
+
+    private bool IsCategoryMasked(ItemCategory value)
+    {
+        if (categoryMask == null)
+            return false;
+
+        for (int i = 0; i < categoryMask.Length; i++)
+        {
+            if (categoryMask[i].Equals(value))
+                return true;
+        }
+
+        return false;
+    }
+
+    private bool IsSeriesMasked(ItemSeries value)
+    {
+        if (seriesMask == null)
+            return false;
+
+        for (int i = 0; i < seriesMask.Length; i++)
+        {
+            if (seriesMask[i].Equals(value))
+                return true;
+        }
+
+        return false;
+    }
+
+    private bool IsGradeMasked(ItemGrade value)
+    {
+        if (gradeMask == null)
+            return false;
+
+        for (int i = 0; i < gradeMask.Length; i++)
+        {
+            if (gradeMask[i].Equals(value))
+                return true;
+        }
+
+        return false;
+    }
+
     private void ApplyDropdownValueFromFilter()
     {
-        SetDropdownValueWithoutNotify(
-            categoryDropdown,
-            filter.useCategory,
-            ConvertEnumToDropdownIndex(filter.category)
-        );
-
-        SetDropdownValueWithoutNotify(
-            seriesDropdown,
-            filter.useSeries,
-            ConvertEnumToDropdownIndex(filter.series)
-        );
-
-        SetDropdownValueWithoutNotify(
-            gradeDropdown,
-            filter.useGrade,
-            ConvertEnumToDropdownIndex(filter.grade)
-        );
+        SetCategoryDropdownValue();
+        SetSeriesDropdownValue();
+        SetGradeDropdownValue();
     }
 
-    private void SetDropdownValueWithoutNotify(
-        TMP_Dropdown dropdown,
-        bool useFilter,
-        int enumIndex
-    )
+    private void SetCategoryDropdownValue()
     {
-        if (dropdown == null)
+        if (categoryDropdown == null)
             return;
 
-        int dropdownIndex = useFilter ? enumIndex + 1 : AllIndex;
-        dropdownIndex = Mathf.Clamp(dropdownIndex, 0, dropdown.options.Count - 1);
+        int index = AllIndex;
 
-        dropdown.SetValueWithoutNotify(dropdownIndex);
+        if (filter.useCategory)
+            index = FindCategoryDropdownIndex(filter.category);
+
+        categoryDropdown.SetValueWithoutNotify(index);
+        categoryDropdown.RefreshShownValue();
     }
 
-    private int ConvertEnumToDropdownIndex<TEnum>(TEnum value)
-        where TEnum : Enum
+    private void SetSeriesDropdownValue()
     {
-        Array values = Enum.GetValues(typeof(TEnum));
-        int index = Array.IndexOf(values, value);
-
-        if (index < 0)
-            return 0;
-
-        return index;
-    }
-
-    private void SetupDropdown<TEnum>(TMP_Dropdown dropdown)
-        where TEnum : Enum
-    {
-        if (dropdown == null)
+        if (seriesDropdown == null)
             return;
 
-        dropdown.ClearOptions();
-        dropdown.options.Add(new TMP_Dropdown.OptionData("ALL"));
+        int index = AllIndex;
 
-        string[] names = Enum.GetNames(typeof(TEnum));
+        if (filter.useSeries)
+            index = FindSeriesDropdownIndex(filter.series);
 
-        for (int i = 0; i < names.Length; i++)
-            dropdown.options.Add(new TMP_Dropdown.OptionData(names[i]));
+        seriesDropdown.SetValueWithoutNotify(index);
+        seriesDropdown.RefreshShownValue();
+    }
 
-        dropdown.RefreshShownValue();
+    private void SetGradeDropdownValue()
+    {
+        if (gradeDropdown == null)
+            return;
+
+        int index = AllIndex;
+
+        if (filter.useGrade)
+            index = FindGradeDropdownIndex(filter.grade);
+
+        gradeDropdown.SetValueWithoutNotify(index);
+        gradeDropdown.RefreshShownValue();
+    }
+
+    private int FindCategoryDropdownIndex(ItemCategory value)
+    {
+        for (int i = 0; i < categoryDropdownValues.Count; i++)
+        {
+            if (categoryDropdownValues[i].Equals(value))
+                return i + 1;
+        }
+
+        return AllIndex;
+    }
+
+    private int FindSeriesDropdownIndex(ItemSeries value)
+    {
+        for (int i = 0; i < seriesDropdownValues.Count; i++)
+        {
+            if (seriesDropdownValues[i].Equals(value))
+                return i + 1;
+        }
+
+        return AllIndex;
+    }
+
+    private int FindGradeDropdownIndex(ItemGrade value)
+    {
+        for (int i = 0; i < gradeDropdownValues.Count; i++)
+        {
+            if (gradeDropdownValues[i].Equals(value))
+                return i + 1;
+        }
+
+        return AllIndex;
     }
 
     private void BindEvents()
@@ -190,7 +350,7 @@ public class InventorySearchUI : MonoBehaviour
         filter.useCategory = index != AllIndex;
 
         if (filter.useCategory)
-            filter.category = ConvertDropdownIndexToEnum<ItemCategory>(index);
+            filter.category = GetCategoryByDropdownIndex(index);
 
         ApplyFilter();
     }
@@ -200,7 +360,7 @@ public class InventorySearchUI : MonoBehaviour
         filter.useSeries = index != AllIndex;
 
         if (filter.useSeries)
-            filter.series = ConvertDropdownIndexToEnum<ItemSeries>(index);
+            filter.series = GetSeriesByDropdownIndex(index);
 
         ApplyFilter();
     }
@@ -210,23 +370,27 @@ public class InventorySearchUI : MonoBehaviour
         filter.useGrade = index != AllIndex;
 
         if (filter.useGrade)
-            filter.grade = ConvertDropdownIndexToEnum<ItemGrade>(index);
+            filter.grade = GetGradeByDropdownIndex(index);
 
         ApplyFilter();
     }
 
-    private TEnum ConvertDropdownIndexToEnum<TEnum>(int dropdownIndex)
-        where TEnum : Enum
+    private ItemCategory GetCategoryByDropdownIndex(int dropdownIndex)
     {
-        Array values = Enum.GetValues(typeof(TEnum));
+        int valueIndex = Mathf.Clamp(dropdownIndex - 1, 0, categoryDropdownValues.Count - 1);
+        return categoryDropdownValues[valueIndex];
+    }
 
-        int enumIndex = Mathf.Clamp(
-            dropdownIndex - 1,
-            0,
-            values.Length - 1
-        );
+    private ItemSeries GetSeriesByDropdownIndex(int dropdownIndex)
+    {
+        int valueIndex = Mathf.Clamp(dropdownIndex - 1, 0, seriesDropdownValues.Count - 1);
+        return seriesDropdownValues[valueIndex];
+    }
 
-        return (TEnum)values.GetValue(enumIndex);
+    private ItemGrade GetGradeByDropdownIndex(int dropdownIndex)
+    {
+        int valueIndex = Mathf.Clamp(dropdownIndex - 1, 0, gradeDropdownValues.Count - 1);
+        return gradeDropdownValues[valueIndex];
     }
 
     private void ApplyFilter()
@@ -234,6 +398,7 @@ public class InventorySearchUI : MonoBehaviour
         if (inventoryUI == null)
             return;
 
+        RemoveMaskedFilterValue();
         inventoryUI.SetSearchFilter(filter);
     }
 
@@ -254,7 +419,10 @@ public class InventorySearchUI : MonoBehaviour
         filter.useCategory = false;
 
         if (categoryDropdown != null)
+        {
             categoryDropdown.SetValueWithoutNotify(AllIndex);
+            categoryDropdown.RefreshShownValue();
+        }
     }
 
     private void ResetSeriesFilter()
@@ -265,7 +433,10 @@ public class InventorySearchUI : MonoBehaviour
         filter.useSeries = false;
 
         if (seriesDropdown != null)
+        {
             seriesDropdown.SetValueWithoutNotify(AllIndex);
+            seriesDropdown.RefreshShownValue();
+        }
     }
 
     private void ResetGradeFilter()
@@ -276,7 +447,10 @@ public class InventorySearchUI : MonoBehaviour
         filter.useGrade = false;
 
         if (gradeDropdown != null)
+        {
             gradeDropdown.SetValueWithoutNotify(AllIndex);
+            gradeDropdown.RefreshShownValue();
+        }
     }
 
     private bool CanResetCategory()

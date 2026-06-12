@@ -12,5 +12,9 @@ public class ItemCombinationManager : ItemRecipeManager
     public override void Combine()
     {
         base.Combine();
+
+        InventoryManager.instance.AddItem(resultItem, 1);
+
+        ClearMaterials();
     }
 }

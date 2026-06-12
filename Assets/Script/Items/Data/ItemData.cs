@@ -19,15 +19,15 @@ public class ItemData : DefaultData
 }
 public enum ItemGrade
 {
-    Common,
-    Rare,
-    Epic,
-    Legendary
+    Common = 0,
+    Rare = 1,
+    Epic = 2,
+    Legendary = 3,
 }
 public enum ItemCategory
 {
     Attack,
-    Heal,
+    Heal, 
     Buff,
     Debuff,
     Utility,
@@ -36,6 +36,7 @@ public enum ItemCategory
 }
 public enum ItemSeries
 {
-    None,
-    Weapon
+    None = 0,
+    Weapon = 1,
+    Potions = 2
 }

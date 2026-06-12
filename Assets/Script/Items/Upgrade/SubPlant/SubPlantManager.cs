@@ -1,23 +1,32 @@
 using TMPro;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class SubPlantManager : ItemRecipeManager
 {
     public static SubPlantManager instance;
 
+
     [Header("Throw")]
     public ItemThrowExecutor throwExecutor;
+    
 
     [Header("Item Pos")]
     public Transform startPos;
     public Transform[] itemPosis;
+    public Transform craftedItemPos;
 
     private void Awake()
     {
         instance = this;
     }
 
-    public override void Combine() { }
+    public override void Combine()
+    {
+        base.Combine();
+
+
+    }
 
     public void ThrowAllItems()
     {
@@ -39,6 +48,9 @@ public class SubPlantManager : ItemRecipeManager
             return;
         }
 
+        Vector3 throwStartPos = startPos.position;
+        throwStartPos.z = 0f;
+
         for (int i = 0; i < currentMaterials.Count; i++)
         {
             if (currentMaterials[i] == null || currentMaterials[i].itemData == null)
@@ -46,8 +58,6 @@ public class SubPlantManager : ItemRecipeManager
 
             ItemData item = currentMaterials[i].itemData;
 
-            Vector3 throwStartPos = startPos.position;
-            throwStartPos.z = 0f;
 
             Transform targetTransform = itemPosis[i % itemPosis.Length];
 
@@ -71,5 +81,18 @@ public class SubPlantManager : ItemRecipeManager
 
             Debug.Log($"[SubPlantManager] Throw Result: {result}");
         }
+
+        Vector3 craftedTaget = craftedItemPos.position;
+        craftedTaget.z = 0f;
+
+        throwExecutor.Throw(
+                resultItem,
+                throwStartPos,
+                craftedTaget,
+                gameObject,
+                null,
+                0
+            );
     }
+
 }
