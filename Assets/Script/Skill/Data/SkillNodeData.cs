@@ -25,4 +25,11 @@ public class SkillNodeData : ScriptableObject
 
     [Header("Rewards")]
     public List<SkillRewardData> rewards = new List<SkillRewardData>();
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (string.IsNullOrEmpty(skillId))
+            skillId = name;
+    }
+#endif
 }

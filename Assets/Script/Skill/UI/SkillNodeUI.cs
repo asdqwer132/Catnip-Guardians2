@@ -7,6 +7,7 @@ public class SkillNodeUI : MonoBehaviour
     [SerializeField] private SkillNodeData skillNodeData;
 
     [Header("UI")]
+    [SerializeField] private GameObject[] lines;
     [SerializeField] private GameObject nodeRootObject;
     [SerializeField] private Button button;
     [SerializeField] private Image iconImage;
@@ -32,6 +33,10 @@ public class SkillNodeUI : MonoBehaviour
         if (lockImage != null)
             lockImage.raycastTarget = false;
 
+        foreach (var line in lines)
+        {
+            line.gameObject.SetActive(false);
+        }
         Refresh();
     }
 
@@ -98,6 +103,10 @@ public class SkillNodeUI : MonoBehaviour
         if (lockImage != null)
             lockImage.gameObject.SetActive(isCanClick);
 
+        foreach (var line in lines)
+        {
+            line.gameObject.SetActive(false);
+        }
         if (isUnlockedState)
         {
             if (button != null)
@@ -105,6 +114,11 @@ public class SkillNodeUI : MonoBehaviour
 
             if (lockImage != null)
                 lockImage.gameObject.SetActive(false);
+
+            foreach(var line in lines)
+            {
+                line.gameObject.SetActive(true);
+            }
         }
     }
 
