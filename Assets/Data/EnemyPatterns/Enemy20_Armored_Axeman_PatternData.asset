@@ -1,0 +1,195 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63180772ace108e43ad7723d98c1bde7, type: 3}
+  m_Name: Enemy20_Armored_Axeman_PatternData
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyPatternData
+  random1Interval: 4
+  random2Interval: 7
+  useRandom2OnlyBelowHp: 0
+  random2HpRatio: 0.5
+  showLog: 0
+  patterns:
+  - patternName: Pattern 1
+    memo: "\uC2DD\uBB3C\uC5D0\uAC8C \uB290\uB9AC\uAC8C \uC811\uADFC \uD6C4 \uB3C4\uB07C
+      \uACF5\uACA9"
+    enabled: 1
+    pickGroup: 1
+    conditionType: 0
+    weight: 1
+    chance: 1
+    cooldown: 3
+    consumeOnce: 0
+    blockDefaultAI: 0
+    hpRatio: 0.5
+    distance: 2
+    actionType: 0
+    telegraphTime: 0.35
+    duration: 0.6
+    interval: 0.2
+    repeatCount: 1
+    speed: 5
+    range: 4
+    radius: 1.2
+    damage: 0
+    damageMultiplier: 1
+    additionalDamage: 0
+    retreatDistance: 1.5
+    circleAngle: 180
+    zigzagAmplitude: 0.8
+    zigzagFrequency: 8
+    teleportDistanceFromTarget: 1
+    moveSpeedMultiplier: 1
+    attackDamageMultiplier: 1
+    attackCooldownMultiplier: 1
+    attackRangeMultiplier: 1
+    incomingDamageMultiplier: 1
+    targetLayerMask:
+      serializedVersion: 2
+      m_Bits: 4294967295
+    healAmount: 0
+    spawnPrefab: {fileID: 0}
+    spawnCount: 1
+    spawnSpreadRadius: 0.5
+    telegraphPrefab: {fileID: 0}
+    effectPrefab: {fileID: 0}
+    projectilePrefab: {fileID: 0}
+  - patternName: Pattern 2
+    memo: "\uB3C4\uB07C\uB97C \uB04C\uBA70 \uC2DD\uBB3C \uBC29\uD5A5\uC73C\uB85C
+      \uB3CC\uC9C4. \uACBD\uB85C \uC608\uACE0 \uD45C\uC2DC"
+    enabled: 1
+    pickGroup: 1
+    conditionType: 0
+    weight: 1
+    chance: 1
+    cooldown: 3
+    consumeOnce: 0
+    blockDefaultAI: 1
+    hpRatio: 0.5
+    distance: 2
+    actionType: 3
+    telegraphTime: 0.35
+    duration: 0.55
+    interval: 0.2
+    repeatCount: 1
+    speed: 7
+    range: 4
+    radius: 1
+    damage: 0
+    damageMultiplier: 1.2
+    additionalDamage: 0
+    retreatDistance: 1.5
+    circleAngle: 180
+    zigzagAmplitude: 0.8
+    zigzagFrequency: 8
+    teleportDistanceFromTarget: 1
+    moveSpeedMultiplier: 1
+    attackDamageMultiplier: 1
+    attackCooldownMultiplier: 1
+    attackRangeMultiplier: 1
+    incomingDamageMultiplier: 1
+    targetLayerMask:
+      serializedVersion: 2
+      m_Bits: 4294967295
+    healAmount: 0
+    spawnPrefab: {fileID: 0}
+    spawnCount: 1
+    spawnSpreadRadius: 0.5
+    telegraphPrefab: {fileID: 0}
+    effectPrefab: {fileID: 0}
+    projectilePrefab: {fileID: 0}
+  - patternName: Pattern 3
+    memo: "\uC2DD\uBB3C \uADFC\uCC98\uC5D0\uC11C \uB3C4\uB07C \uD68C\uC804 \uACF5\uACA9"
+    enabled: 1
+    pickGroup: 2
+    conditionType: 0
+    weight: 1
+    chance: 1
+    cooldown: 6
+    consumeOnce: 0
+    blockDefaultAI: 1
+    hpRatio: 0.5
+    distance: 2
+    actionType: 8
+    telegraphTime: 0.35
+    duration: 0.6
+    interval: 0.2
+    repeatCount: 1
+    speed: 5
+    range: 4
+    radius: 1.2
+    damage: 0
+    damageMultiplier: 1.1
+    additionalDamage: 0
+    retreatDistance: 1.5
+    circleAngle: 180
+    zigzagAmplitude: 0.8
+    zigzagFrequency: 8
+    teleportDistanceFromTarget: 1
+    moveSpeedMultiplier: 1
+    attackDamageMultiplier: 1
+    attackCooldownMultiplier: 1
+    attackRangeMultiplier: 1
+    incomingDamageMultiplier: 1
+    targetLayerMask:
+      serializedVersion: 2
+      m_Bits: 4294967295
+    healAmount: 0
+    spawnPrefab: {fileID: 0}
+    spawnCount: 1
+    spawnSpreadRadius: 0.5
+    telegraphPrefab: {fileID: 0}
+    effectPrefab: {fileID: 0}
+    projectilePrefab: {fileID: 0}
+  - patternName: Pattern 4
+    memo: "\uC810\uD504 \uB0B4\uB824\uCC0D\uAE30 \uD6C4 \uC2DD\uBB3C \uBC29\uD5A5\uC73C\uB85C
+      \uCDA9\uACA9\uD30C 2\uAC08\uB798 \uC0DD\uC131"
+    enabled: 1
+    pickGroup: 2
+    conditionType: 0
+    weight: 1
+    chance: 1
+    cooldown: 6
+    consumeOnce: 0
+    blockDefaultAI: 1
+    hpRatio: 0.5
+    distance: 2
+    actionType: 4
+    telegraphTime: 0.35
+    duration: 0.55
+    interval: 0.2
+    repeatCount: 1
+    speed: 5
+    range: 4
+    radius: 1.2
+    damage: 0
+    damageMultiplier: 1.25
+    additionalDamage: 0
+    retreatDistance: 1.5
+    circleAngle: 180
+    zigzagAmplitude: 0.8
+    zigzagFrequency: 8
+    teleportDistanceFromTarget: 1
+    moveSpeedMultiplier: 1
+    attackDamageMultiplier: 1
+    attackCooldownMultiplier: 1
+    attackRangeMultiplier: 1
+    incomingDamageMultiplier: 1
+    targetLayerMask:
+      serializedVersion: 2
+      m_Bits: 4294967295
+    healAmount: 0
+    spawnPrefab: {fileID: 0}
+    spawnCount: 1
+    spawnSpreadRadius: 0.5
+    telegraphPrefab: {fileID: 0}
+    effectPrefab: {fileID: 0}
+    projectilePrefab: {fileID: 0}

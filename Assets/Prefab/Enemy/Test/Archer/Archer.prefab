@@ -100,6 +100,7 @@ GameObject:
   - component: {fileID: 2430655365351377237}
   - component: {fileID: 1506509451877719227}
   - component: {fileID: 2261896026362960400}
+  - component: {fileID: 1957350056589882901}
   m_Layer: 0
   m_Name: Archer
   m_TagString: Enemy
@@ -227,8 +228,15 @@ MonoBehaviour:
   actorTarget: {fileID: 1506509451877719227}
   mover: {fileID: 7500191993510811139}
   attack: {fileID: 2430655365351377237}
+  patternRunner: {fileID: 0}
   buffManager: {fileID: 0}
   statRefreshInterval: 0.1
+  currentStat:
+    speed: 2
+    maxHp: 10
+    damage: 5
+    attackRange: 1.5
+    attackCooldown: 1
 --- !u!114 &7500191993510811139
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -339,6 +347,27 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.5, y: 0.5}
   m_EdgeRadius: 0
+--- !u!114 &1957350056589882901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5831428086637394887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00c318430d18f2e49a316a8d37f7ee58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyPatternRunner
+  patternData: {fileID: 11400000, guid: 1516f594be8f44a478a4e8ad9c039386, type: 2}
+  enemy: {fileID: -4853661844404500515}
+  actorTarget: {fileID: 1506509451877719227}
+  mover: {fileID: 7500191993510811139}
+  attack: {fileID: 2430655365351377237}
+  visual: {fileID: 7063470980320774977}
+  currentPatternName: None
+  isExecuting: 0
+  isBlockingDefaultAI: 0
 --- !u!1001 &8310913712941043610
 PrefabInstance:
   m_ObjectHideFlags: 0

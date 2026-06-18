@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InventoryUI : MonoBehaviour
+public class InventoryUI : ItemSearchFilterTargetUI
 {
     [Header("Quick Inventory Page")]
     public Transform quickPageParent;
@@ -18,9 +18,6 @@ public class InventoryUI : MonoBehaviour
     public Transform detailSlotParent;
     public GameObject detailSlotPrefab;
 
-    [Header("Search")]
-    [SerializeField] private InventorySearchFilter searchFilter = new InventorySearchFilter();
-
     public void Init()
     {
         if (InventoryManager.instance != null)
@@ -35,6 +32,11 @@ public class InventoryUI : MonoBehaviour
             InventoryManager.instance.onInventoryChanged -= RefreshUI;
     }
 
+    protected override void OnSearchFilterChanged()
+    {
+        RefreshUI();
+    }
+
     public void RefreshUI()
     {
         if (InventoryManager.instance == null)
@@ -45,40 +47,23 @@ public class InventoryUI : MonoBehaviour
         RefreshQuickInventory(validItems);
         RefreshDetailInventory(validItems);
     }
-    public InventorySearchFilter GetSearchFilter()
-    {
-        if (searchFilter == null)
-            searchFilter = new InventorySearchFilter();
 
-        return searchFilter;
-    }
-    public void SetSearchFilter(InventorySearchFilter filter)
+    private List<InventoryItem> GetValidItems()
     {
-        if (filter == null)
+        List<InventoryItem> result = new List<InventoryItem>();
+
+        if (InventoryManager.instance == null)
+            return result;
+
+        foreach (InventoryItem item in InventoryManager.instance.items)
         {
-            ClearSearchFilter();
-            return;
+            if (!IsInventoryItemVisible(item))
+                continue;
+
+            result.Add(item);
         }
 
-        searchFilter.useCategory = filter.useCategory;
-        searchFilter.category = filter.category;
-
-        searchFilter.useSeries = filter.useSeries;
-        searchFilter.series = filter.series;
-
-        searchFilter.useGrade = filter.useGrade;
-        searchFilter.grade = filter.grade;
-
-        RefreshUI();
-    }
-
-    public void ClearSearchFilter()
-    {
-        if (searchFilter == null)
-            searchFilter = new InventorySearchFilter();
-
-        searchFilter.Clear();
-        RefreshUI();
+        return result;
     }
 
     private void RefreshQuickInventory(List<InventoryItem> validItems)
@@ -149,27 +134,6 @@ public class InventoryUI : MonoBehaviour
             if (slotUI != null)
                 slotUI.SetSlot(validItems[i]);
         }
-    }
-
-    private List<InventoryItem> GetValidItems()
-    {
-        List<InventoryItem> result = new List<InventoryItem>();
-
-        if (InventoryManager.instance == null)
-            return result;
-
-        foreach (InventoryItem item in InventoryManager.instance.items)
-        {
-            if (item == null || item.itemData == null)
-                continue;
-
-            if (searchFilter != null && !searchFilter.IsMatch(item))
-                continue;
-
-            result.Add(item);
-        }
-
-        return result;
     }
 
     private void ClearChildren(Transform parent)

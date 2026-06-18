@@ -17,6 +17,12 @@ public class SkillNodeUI : MonoBehaviour
 
     public SkillNodeData SkillNodeData => skillNodeData;
 
+    public void SetData(SkillNodeData skillNodeData, GameObject[] lines)
+    {
+        this.skillNodeData = skillNodeData;
+        this.lines = lines;
+    }
+
     public void Init(SkillTreeUI owner)
     {
         ownerUI = owner;

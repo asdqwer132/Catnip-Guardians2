@@ -2,22 +2,17 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class InventorySearchUI : MonoBehaviour
 {
-    [Header("Target")]
-    public InventoryUI inventoryUI;
+    [Header("Target")][FormerlySerializedAs("inventoryUI")] public ItemSearchFilterTargetUI targetUI;
 
     [Header("Dropdown")]
     public TMP_Dropdown categoryDropdown;
     public TMP_Dropdown seriesDropdown;
     public TMP_Dropdown gradeDropdown;
-
-    [Header("Search Mask")]
-    public ItemCategory[] categoryMask;
-    public ItemSeries[] seriesMask;
-    public ItemGrade[] gradeMask;
 
     [Header("Button")]
     public Button resetButton;
@@ -44,6 +39,11 @@ public class InventorySearchUI : MonoBehaviour
     private void OnEnable()
     {
         Init();
+
+        RebuildDropdowns();
+        InitFilterFromTarget();
+        RemoveMaskedFilterValue();
+        ApplyDropdownValueFromFilter();
         ApplyFilter();
     }
 
@@ -57,14 +57,11 @@ public class InventorySearchUI : MonoBehaviour
         if (isInitialized)
             return;
 
-        if (inventoryUI == null)
-            inventoryUI = GetComponentInParent<InventoryUI>();
+        ResolveTarget();
 
-        SetupCategoryDropdown();
-        SetupSeriesDropdown();
-        SetupGradeDropdown();
+        RebuildDropdowns();
 
-        InitFilterFromInventoryUI();
+        InitFilterFromTarget();
         RemoveMaskedFilterValue();
         ApplyDropdownValueFromFilter();
 
@@ -75,15 +72,35 @@ public class InventorySearchUI : MonoBehaviour
         ApplyFilter();
     }
 
-    private void InitFilterFromInventoryUI()
+    private void ResolveTarget()
     {
-        if (inventoryUI == null)
+        if (targetUI != null)
+            return;
+
+        targetUI = GetComponentInParent<ItemSearchFilterTargetUI>(true);
+
+        if (targetUI == null)
+            Debug.LogWarning("[InventorySearchUI] ItemSearchFilterTargetUI를 찾지 못했습니다.");
+    }
+
+    private void RebuildDropdowns()
+    {
+        ResolveTarget();
+
+        SetupCategoryDropdown();
+        SetupSeriesDropdown();
+        SetupGradeDropdown();
+    }
+
+    private void InitFilterFromTarget()
+    {
+        if (targetUI == null)
         {
             filter.Clear();
             return;
         }
 
-        InventorySearchFilter defaultFilter = inventoryUI.GetSearchFilter();
+        InventorySearchFilter defaultFilter = targetUI.GetSearchFilter();
 
         if (defaultFilter == null)
         {
@@ -103,13 +120,16 @@ public class InventorySearchUI : MonoBehaviour
 
     private void RemoveMaskedFilterValue()
     {
-        if (filter.useCategory && IsCategoryMasked(filter.category))
+        if (targetUI == null)
+            return;
+
+        if (filter.useCategory && targetUI.IsCategoryMasked(filter.category))
             filter.useCategory = false;
 
-        if (filter.useSeries && IsSeriesMasked(filter.series))
+        if (filter.useSeries && targetUI.IsSeriesMasked(filter.series))
             filter.useSeries = false;
 
-        if (filter.useGrade && IsGradeMasked(filter.grade))
+        if (filter.useGrade && targetUI.IsGradeMasked(filter.grade))
             filter.useGrade = false;
     }
 
@@ -129,7 +149,7 @@ public class InventorySearchUI : MonoBehaviour
         {
             ItemCategory value = (ItemCategory)values.GetValue(i);
 
-            if (IsCategoryMasked(value))
+            if (targetUI != null && targetUI.IsCategoryMasked(value))
                 continue;
 
             categoryDropdownValues.Add(value);
@@ -155,7 +175,7 @@ public class InventorySearchUI : MonoBehaviour
         {
             ItemSeries value = (ItemSeries)values.GetValue(i);
 
-            if (IsSeriesMasked(value))
+            if (targetUI != null && targetUI.IsSeriesMasked(value))
                 continue;
 
             seriesDropdownValues.Add(value);
@@ -181,7 +201,7 @@ public class InventorySearchUI : MonoBehaviour
         {
             ItemGrade value = (ItemGrade)values.GetValue(i);
 
-            if (IsGradeMasked(value))
+            if (targetUI != null && targetUI.IsGradeMasked(value))
                 continue;
 
             gradeDropdownValues.Add(value);
@@ -189,48 +209,6 @@ public class InventorySearchUI : MonoBehaviour
         }
 
         gradeDropdown.RefreshShownValue();
-    }
-
-    private bool IsCategoryMasked(ItemCategory value)
-    {
-        if (categoryMask == null)
-            return false;
-
-        for (int i = 0; i < categoryMask.Length; i++)
-        {
-            if (categoryMask[i].Equals(value))
-                return true;
-        }
-
-        return false;
-    }
-
-    private bool IsSeriesMasked(ItemSeries value)
-    {
-        if (seriesMask == null)
-            return false;
-
-        for (int i = 0; i < seriesMask.Length; i++)
-        {
-            if (seriesMask[i].Equals(value))
-                return true;
-        }
-
-        return false;
-    }
-
-    private bool IsGradeMasked(ItemGrade value)
-    {
-        if (gradeMask == null)
-            return false;
-
-        for (int i = 0; i < gradeMask.Length; i++)
-        {
-            if (gradeMask[i].Equals(value))
-                return true;
-        }
-
-        return false;
     }
 
     private void ApplyDropdownValueFromFilter()
@@ -395,11 +373,15 @@ public class InventorySearchUI : MonoBehaviour
 
     private void ApplyFilter()
     {
-        if (inventoryUI == null)
+        ResolveTarget();
+
+        if (targetUI == null)
             return;
 
         RemoveMaskedFilterValue();
-        inventoryUI.SetSearchFilter(filter);
+        ApplyDropdownValueFromFilter();
+
+        targetUI.SetSearchFilter(filter);
     }
 
     public void ResetFilter()
@@ -413,7 +395,7 @@ public class InventorySearchUI : MonoBehaviour
 
     private void ResetCategoryFilter()
     {
-        if (!CanResetCategory())
+        if (!resetCategory)
             return;
 
         filter.useCategory = false;
@@ -427,7 +409,7 @@ public class InventorySearchUI : MonoBehaviour
 
     private void ResetSeriesFilter()
     {
-        if (!CanResetSeries())
+        if (!resetSeries)
             return;
 
         filter.useSeries = false;
@@ -441,7 +423,7 @@ public class InventorySearchUI : MonoBehaviour
 
     private void ResetGradeFilter()
     {
-        if (!CanResetGrade())
+        if (!resetGrade)
             return;
 
         filter.useGrade = false;
@@ -453,18 +435,4 @@ public class InventorySearchUI : MonoBehaviour
         }
     }
 
-    private bool CanResetCategory()
-    {
-        return resetCategory;
-    }
-
-    private bool CanResetSeries()
-    {
-        return resetSeries;
-    }
-
-    private bool CanResetGrade()
-    {
-        return resetGrade;
-    }
 }

@@ -10,6 +10,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     public ActorTarget actorTarget;
     public ActorMover mover;
     public ActorAttack attack;
+    public EnemyPatternRunner patternRunner;
 
     [Header("Buff")]
     public BuffManager buffManager;
@@ -44,6 +45,9 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
         if (attack == null)
             attack = GetComponent<ActorAttack>();
+
+        if (patternRunner == null)
+            patternRunner = GetComponent<EnemyPatternRunner>();
 
         cachedAnimator = GetComponentInChildren<Animator>();
     }
@@ -86,6 +90,9 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
             CancelAttack();
             return;
         }
+
+        if (patternRunner != null && patternRunner.TickPattern())
+            return;
 
         if (attack == null)
         {
@@ -170,6 +177,9 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         isActionDisabled = false;
         previousAnimatorSpeed = 1f;
 
+        if (patternRunner != null)
+            patternRunner.ResetRunner();
+
         ResumeAnimation();
     }
 
@@ -182,6 +192,9 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
         StopMove();
         CancelAttack();
+
+        if (patternRunner != null)
+            patternRunner.ResetRunner();
 
         if (actorTarget != null)
             actorTarget.SetTarget(null);
@@ -212,6 +225,9 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
         if (actorTarget != null)
             actorTarget.SetTarget(target);
+
+        if (patternRunner != null)
+            patternRunner.Init(this);
 
         if (buffManager != null)
             buffManager.RegisterBuffTarget(this);
@@ -324,17 +340,45 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
         stat.Clamp();
 
+        float speed = stat.speed;
+        float damage = stat.damage;
+        float attackRange = stat.attackRange;
+        float attackCooldown = stat.attackCooldown;
+
+        if (patternRunner != null)
+        {
+            speed = patternRunner.ModifyMoveSpeed(speed);
+            damage = patternRunner.ModifyAttackDamage(damage);
+            attackRange = patternRunner.ModifyAttackRange(attackRange);
+            attackCooldown = patternRunner.ModifyAttackCooldown(attackCooldown);
+        }
+
         if (mover != null)
-            mover.SetSpeed(stat.speed);
+            mover.SetSpeed(speed);
 
         if (attack != null)
         {
             attack.SetAttackStat(
-                stat.damage,
-                stat.attackRange,
-                stat.attackCooldown
+                damage,
+                attackRange,
+                attackCooldown
             );
         }
+    }
+
+    #endregion
+
+    #region Damage
+
+    public override void TakeDamage(float damage)
+    {
+        if (patternRunner != null)
+            damage = patternRunner.ModifyIncomingDamage(damage);
+
+        if (patternRunner != null && patternRunner.TryHandleLethalDamage(damage))
+            return;
+
+        base.TakeDamage(damage);
     }
 
     #endregion
@@ -348,12 +392,18 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
         if (visual != null)
             visual.PlayHit();
+
+        if (patternRunner != null)
+            patternRunner.NotifyDamaged(damage);
     }
 
     protected override void OnDeathStarted()
     {
         StopMove();
         CancelAttack();
+
+        if (patternRunner != null)
+            patternRunner.StopPattern();
 
         isActionDisabled = false;
         ResumeAnimation();

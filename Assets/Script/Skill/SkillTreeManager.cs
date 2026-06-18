@@ -141,8 +141,14 @@ public class SkillTreeManager : MonoBehaviour
 
     private bool HasRequiredSkills(SkillNodeData node)
     {
-        if (node.requiredSkills == null)
+        if (node == null)
+            return false;
+
+        // 요구 스킬이 없으면 시작 노드이므로 해금 가능
+        if (node.requiredSkills == null || node.requiredSkills.Count == 0)
             return true;
+
+        bool hasValidRequiredSkill = false;
 
         for (int i = 0; i < node.requiredSkills.Count; i++)
         {
@@ -154,11 +160,18 @@ public class SkillTreeManager : MonoBehaviour
             if (string.IsNullOrEmpty(requiredSkill.skillId))
                 continue;
 
-            if (!IsUnlocked(requiredSkill.skillId))
-                return false;
+            hasValidRequiredSkill = true;
+
+            // 하나라도 해금되어 있으면 통과
+            if (IsUnlocked(requiredSkill.skillId))
+                return true;
         }
 
-        return true;
+        // requiredSkills 리스트는 있는데 유효한 요구 스킬이 하나도 없으면 시작 노드처럼 처리
+        if (!hasValidRequiredSkill)
+            return true;
+
+        return false;
     }
 
     private void ApplyRewards(SkillNodeData node)

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [System.Serializable]
-public class InventoryItem
+public class InventoryItem : ISearchable
 {
     public ItemData itemData;
     public int amount = 1;
@@ -11,5 +11,10 @@ public class InventoryItem
         this.itemData = itemData;
         this.amount = amount;
     }
-    public ItemCategory GetItemCategory() { return itemData.category; } 
+
+
+    public ItemGrade GetGrade() { return itemData.grade; }
+    public ItemCategory GetItemCategory() { return itemData.category; }
+    public ItemSeries GetItemSeries() { return itemData.series; }
+
 }
