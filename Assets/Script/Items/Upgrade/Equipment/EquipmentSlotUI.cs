@@ -11,7 +11,7 @@ public class EquipmentSlotUI : ClickableItemSlotUI,
     [Header("Drag Icon Option")]
     public Vector2 dragIconOffset = Vector2.zero;
 
-    private int slotIndex;
+    [SerializeField]private int slotIndex;
     private EquipmentBagUI bagUI;
 
     private bool isDragging;
@@ -28,11 +28,11 @@ public class EquipmentSlotUI : ClickableItemSlotUI,
         base.Awake();
     }
 
-    public void Init(EquipmentBagUI ownerUI, Image sharedDragIconImage)
+    public void Init(EquipmentBagUI ownerUI, Image sharedDragIconImage, int index)
     {
         bagUI = ownerUI;
         dragIconImage = sharedDragIconImage;
-
+        slotIndex = index;
         if (dragIconImage != null)
         {
             dragIconRect = dragIconImage.GetComponent<RectTransform>();
@@ -45,7 +45,6 @@ public class EquipmentSlotUI : ClickableItemSlotUI,
     {
         slotIndex = index;
         bagUI = ownerUI;
-
         SetSlot(item);
     }
 
@@ -65,6 +64,11 @@ public class EquipmentSlotUI : ClickableItemSlotUI,
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if(IsLocked)
+        {
+            Debug.Log("¿·±‰ ΩΩ∑‘ Ω√¿€");
+            return;
+        }
         if (currentItem == null || currentItem.itemData == null)
             return;
 
@@ -113,6 +117,11 @@ public class EquipmentSlotUI : ClickableItemSlotUI,
         if (draggedSlot == this)
             return;
 
+        if (IsLocked)
+        {
+            Debug.Log("¿·±‰ ΩΩ∑‘");
+            return;
+        }
         if (bagUI == null)
             return;
 
@@ -122,6 +131,7 @@ public class EquipmentSlotUI : ClickableItemSlotUI,
             return;
         }
 
+        Debug.Log("µµ¬¯ ΩΩ∑‘ " + name);
         bagUI.SwapSlots(draggedSlot.SlotIndex, slotIndex);
     }
 

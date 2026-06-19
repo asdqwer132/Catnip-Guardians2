@@ -10,6 +10,8 @@ public class BaseItemSlotUI : MonoBehaviour
     public GameObject amountImage;
     public TextMeshProUGUI amountText;
     public TextMeshProUGUI gradeText;
+    public GameObject locked;
+    public bool IsLocked = false;
 
     [Header("Referrence")]
     public InventoryItem currentItem;
@@ -53,8 +55,17 @@ public class BaseItemSlotUI : MonoBehaviour
 
         if (gradeText != null)
             gradeText.text = itemData.grade.ToString();
-    }
+        if (locked != null) locked.SetActive(false);
 
+        IsLocked = false;
+    }
+    public virtual void LockSlot()
+    {
+        ClearSlot();
+
+        IsLocked = true;
+        if (locked != null) locked.SetActive(true);
+    }
     public virtual void ClearSlot()
     {
         currentItem = null;
@@ -75,6 +86,8 @@ public class BaseItemSlotUI : MonoBehaviour
 
         if (gradeText != null)
             gradeText.text = "";
+        if (locked != null) locked.SetActive(false);
+        IsLocked = false;
     }
 
     public InventoryItem GetCurrentItem() { return currentItem; }

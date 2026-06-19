@@ -1,44 +1,80 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EquipmentBag : MonoBehaviour
+public class EquipmentBag : RefreshListener
 {
     [Header("Bag Info")]
     public BagData bagData;
 
     [Header("Slot Settings")]
-    public int slotCount = 5;
+    public int slotCount = 12;
+    public int openSlotCount = 4;
+    public int currentSlotCount = 0;
 
     [Header("UI")]
     public EquipmentBagUI bagUI;
 
+    [Header("Lock")]
+    public List<LockInfo> locks = new List<LockInfo>();
+
+    [Header("Runtime")]
     public List<InventoryItem> equippedItems = new List<InventoryItem>();
-    public int GetEquippedCount()
-    {
-        int count = 0;
-        foreach (InventoryItem item in equippedItems)
-        {
-            count += item.itemData == null ? 0 : 1;
-        }
-        return count;  
-    }
+
     public void Init()
     {
         equippedItems.Clear();
 
         for (int i = 0; i < slotCount; i++)
         {
-            equippedItems.Add(new InventoryItem(null, 0));
+            equippedItems.Add(CreateEmptyItem());
         }
+
+        UpdateCurrentSlotCount();
+        RefreshUI();
+    }
+
+    protected override void Refresh(RefreshType refreshType)
+    {
+        RefreshLocks();
+        UpdateCurrentSlotCount();
+        RefreshUI();
+    }
+
+    public bool EquipItem(InventoryItem item)
+    {
+        if (!CanEquipItem(item))
+            return false;
+
+        int emptyIndex = GetEmptySlotIndex();
+
+        if (emptyIndex == -1)
+            return false;
+
+        equippedItems[emptyIndex] = new InventoryItem(item.itemData, 1);
+
+        RefreshUI();
+        return true;
+    }
+
+    public void UnequipItem(int slotIndex)
+    {
+        if (!IsValidSlotIndex(slotIndex))
+            return;
+
+        if (!HasItem(slotIndex))
+            return;
+
+        equippedItems[slotIndex] = CreateEmptyItem();
 
         RefreshUI();
     }
+
     public void SwapItems(int fromIndex, int toIndex)
     {
-        if (fromIndex < 0 || fromIndex >= equippedItems.Count)
+        if (!IsValidCurrentSlotIndex(fromIndex))
             return;
 
-        if (toIndex < 0 || toIndex >= equippedItems.Count)
+        if (!IsValidCurrentSlotIndex(toIndex))
             return;
 
         if (fromIndex == toIndex)
@@ -50,95 +86,82 @@ public class EquipmentBag : MonoBehaviour
 
         RefreshUI();
     }
-    public bool EquipItem(InventoryItem item)
-    {
-        if (item == null || item.itemData == null)
-        {
-            Debug.LogWarning("장착할 아이템이 없습니다.");
-            return false;
-        }
-
-        if (item.amount <= 0)
-        {
-            Debug.LogWarning("아이템 수량이 없습니다.");
-            return false;
-        }
-
-        if (bagData == null)
-        {
-            Debug.LogWarning("가방 데이터가 없습니다.");
-            return false;
-        }
-
-        int emptyIndex = GetEmptySlotIndex();
-
-        if (emptyIndex == -1)
-        {
-            //Debug.LogWarning(bagData.bagName + "에 빈 슬롯이 없습니다.");
-            return false;
-        }
-
-        float currentWeight = GetCurrentWeight();
-        float itemWeight = item.itemData.weight;
-        float maxWeight = bagData.maxWeight;
-
-        if (currentWeight + itemWeight > maxWeight)
-        {
-            //Debug.LogWarning(
-            //    bagData.bagName + "의 최대 무게를 초과합니다. " +
-            //    "현재 무게: " + currentWeight +
-            //    " / 추가 무게: " + itemWeight +
-            //    " / 최대 무게: " + maxWeight
-            //);
-            return false;
-        }
-
-        InventoryItem equipItem = new InventoryItem(item.itemData, 1);
-
-        equippedItems[emptyIndex] = equipItem;
-
-        RefreshUI();
-
-        //Debug.Log(
-        //    bagData.bagName + "에 장착됨: " + item.itemData.itemName +
-        //    " / 현재 무게: " + GetCurrentWeight() +
-        //    " / 최대 무게: " + maxWeight
-        //);
-
-        return true;
-    }
 
     public void ClearAllSlots()
     {
         for (int i = 0; i < equippedItems.Count; i++)
         {
-            equippedItems[i] = new InventoryItem(null, 0);
+            equippedItems[i] = CreateEmptyItem();
         }
 
         RefreshUI();
     }
 
-    public void UnequipItem(int slotIndex)
+    public bool HasItem(int slotIndex)
     {
-        if (slotIndex < 0 || slotIndex >= equippedItems.Count)
-            return;
+        if (!IsValidSlotIndex(slotIndex))
+            return false;
 
         InventoryItem item = equippedItems[slotIndex];
 
-        if (item == null || item.itemData == null)
-            return;
-
-        equippedItems[slotIndex] = new InventoryItem(null, 0);
-
-        RefreshUI();
+        return item != null &&
+               item.itemData != null &&
+               item.amount > 0;
     }
 
     public InventoryItem GetItem(int slotIndex)
     {
-        if (slotIndex < 0 || slotIndex >= equippedItems.Count)
+        if (!IsValidSlotIndex(slotIndex))
             return null;
 
         return equippedItems[slotIndex];
+    }
+
+    public int GetEquippedCount()
+    {
+        int count = 0;
+
+        for (int i = 0; i < equippedItems.Count; i++)
+        {
+            if (HasItem(i))
+                count++;
+        }
+
+        return count;
+    }
+
+    public int GetCurrentEquippedCount()
+    {
+        int count = 0;
+
+        int max = Mathf.Min(currentSlotCount, equippedItems.Count);
+
+        for (int i = 0; i < max; i++)
+        {
+            if (HasItem(i))
+                count++;
+        }
+
+        return count;
+    }
+
+    public int GetCurrentOpenSlotCount()
+    {
+        if (locks == null)
+            return 0;
+
+        int count = 0;
+
+        foreach (LockInfo lockInfo in locks)
+        {
+            if (lockInfo == null)
+                continue;
+
+            if (!lockInfo.locked)
+                count++;
+        }
+
+        return count;
     }
 
     public float GetCurrentWeight()
@@ -166,36 +189,113 @@ public class EquipmentBag : MonoBehaviour
         return bagData.maxWeight;
     }
 
-    //public bool CanAddItem(InventoryItem item)
-    //{
-    //    if (item == null || item.itemData == null)
-    //        return false;
-
-    //    if (bagData == null)
-    //        return false;
-
-    //    if (GetEmptySlotIndex() == -1)
-    //        return false;
-
-    //    float nextWeight = GetCurrentWeight() + item.itemData.weight;
-
-    //    return nextWeight <= bagData.maxWeight;
-    //}
-
     public void RefreshUI()
     {
         if (bagUI != null)
             bagUI.Refresh(this);
     }
 
+    private bool CanEquipItem(InventoryItem item)
+    {
+        if (item == null || item.itemData == null)
+        {
+            Debug.LogWarning("장착할 아이템이 없습니다.");
+            return false;
+        }
+
+        if (item.amount <= 0)
+        {
+            Debug.LogWarning("아이템 수량이 없습니다.");
+            return false;
+        }
+
+        if (bagData == null)
+        {
+            Debug.LogWarning("가방 데이터가 없습니다.");
+            return false;
+        }
+
+        if (GetCurrentEquippedCount() >= currentSlotCount)
+        {
+            Debug.Log("가방 슬롯이 가득 찼습니다.");
+            return false;
+        }
+
+        if (!CanAddWeight(item))
+        {
+            Debug.Log("가방 최대 무게를 초과합니다.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool CanAddWeight(InventoryItem item)
+    {
+        if (item == null || item.itemData == null)
+            return false;
+
+        if (bagData == null)
+            return false;
+
+        float nextWeight = GetCurrentWeight() + item.itemData.weight;
+
+        return nextWeight <= bagData.maxWeight;
+    }
+
     private int GetEmptySlotIndex()
     {
-        for (int i = 0; i < equippedItems.Count; i++)
+        int max = Mathf.Min(currentSlotCount, equippedItems.Count);
+
+        for (int i = 0; i < max; i++)
         {
-            if (equippedItems[i] == null || equippedItems[i].amount <= 0 || equippedItems[i].itemData == null)
+            if (!HasItem(i))
                 return i;
         }
 
         return -1;
+    }
+
+    private void RefreshLocks()
+    {
+        if (locks == null)
+            return;
+
+        foreach (LockInfo lockInfo in locks)
+        {
+            if (lockInfo == null)
+                continue;
+
+            if (UnlockCheckUtility.CanUse(lockInfo))
+            {
+                lockInfo.locked = false;
+            }
+        }
+    }
+
+    private void UpdateCurrentSlotCount()
+    {
+        int unlockedExtraSlotCount = GetCurrentOpenSlotCount();
+
+        currentSlotCount = openSlotCount + unlockedExtraSlotCount;
+        currentSlotCount = Mathf.Clamp(currentSlotCount, 0, slotCount);
+    }
+
+    private bool IsValidSlotIndex(int slotIndex)
+    {
+        return slotIndex >= 0 &&
+               slotIndex < equippedItems.Count;
+    }
+
+    private bool IsValidCurrentSlotIndex(int slotIndex)
+    {
+        return slotIndex >= 0 &&
+               slotIndex < currentSlotCount &&
+               slotIndex < equippedItems.Count;
+    }
+
+    private InventoryItem CreateEmptyItem()
+    {
+        return new InventoryItem(null, 0);
     }
 }

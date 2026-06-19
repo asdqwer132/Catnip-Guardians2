@@ -254,7 +254,7 @@ public class EquipmentBagManager : RefreshListener
         return -1;
     }
 
-    protected override void RefreshUI(RefreshType refreshType)
+    protected override void Refresh(RefreshType refreshType)
     {
         //Debug.Log("¹æ¼Ûµé¾î¿È");
         RefreshUI();

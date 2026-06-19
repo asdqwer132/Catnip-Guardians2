@@ -35,7 +35,7 @@ public class EquipmentBagUI : MonoBehaviour
         for (int i = 0; i < slots.Length; i++)
         {
             if (slots[i] != null)
-                slots[i].Init(this, dragIconImage);
+                slots[i].Init(this, dragIconImage, i);
         }
     }
 
@@ -54,15 +54,23 @@ public class EquipmentBagUI : MonoBehaviour
 
         InitSlots();
 
+        int currentCount = bag.currentSlotCount;
         for (int i = 0; i < slots.Length; i++)
         {
-            if (i < bag.equippedItems.Count)
+            if (bag.HasItem(i))
             {
                 slots[i].SetSlot(i, bag.GetItem(i), this);
             }
             else
             {
-                slots[i].ClearSlot();
+                if(i < currentCount)
+                {
+                    slots[i].ClearSlot();
+                }
+                else
+                {
+                    slots[i].LockSlot();
+                }
             }
         }
 
@@ -127,6 +135,8 @@ public class EquipmentBagUI : MonoBehaviour
     {
         if (bag == null)
             return;
+
+        Debug.Log("스왑 시도");
 
         bag.SwapItems(fromIndex, toIndex);
         bag.RefreshUI();

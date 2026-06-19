@@ -35,7 +35,7 @@ public abstract class RefreshListener : MonoBehaviour
             return;
         }
 
-        RefreshBroadcaster.Instance.OnRefreshRequested += RefreshUI;
+        RefreshBroadcaster.Instance.OnRefreshRequested += Refresh;
         subscribed = true;
     }
     private void HandleRefresh(RefreshType refreshType)
@@ -43,8 +43,8 @@ public abstract class RefreshListener : MonoBehaviour
         if ((refreshType & listenType) == 0)
             return;
 
-        RefreshUI(refreshType);
+        Refresh(refreshType);
     }
 
-    protected abstract void RefreshUI(RefreshType refreshType);
+    protected abstract void Refresh(RefreshType refreshType);
 }

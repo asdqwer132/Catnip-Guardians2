@@ -17,6 +17,24 @@ public class ClickableItemSlotUI : BaseItemSlotUI
             Debug.LogWarning(name + " 슬롯에 Button이 없습니다.");
     }
 
+    public override void ClearSlot()
+    {
+        base.ClearSlot();
+        slotButton.interactable = false;
+    }
+    public override void LockSlot()
+    {
+        base.LockSlot();
+        slotButton.interactable = false;
+    }
+    public override void SetSlot(InventoryItem item)
+    {
+        base.SetSlot(item);
+        slotButton.interactable = true;
+
+    }
+
+
     protected virtual void OnDestroy()
     {
         if (slotButton != null)

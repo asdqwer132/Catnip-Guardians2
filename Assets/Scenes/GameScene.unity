@@ -21030,6 +21030,22 @@ PrefabInstance:
       propertyPath: bagData
       value: 
       objectReference: {fileID: 11400000, guid: 70749facc170b6444944a57caf00f0a7, type: 2}
+    - target: {fileID: 6655386588844478430, guid: 58625170834ed164d94aa7afe0e5a3e3, type: 3}
+      propertyPath: locks.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6655386588844478430, guid: 58625170834ed164d94aa7afe0e5a3e3, type: 3}
+      propertyPath: equippedItems.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6655386588844478430, guid: 58625170834ed164d94aa7afe0e5a3e3, type: 3}
+      propertyPath: locks.Array.data[0].locked
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6655386588844478430, guid: 58625170834ed164d94aa7afe0e5a3e3, type: 3}
+      propertyPath: locks.Array.data[0].unlockId
+      value: bag1Slot1
+      objectReference: {fileID: 0}
     - target: {fileID: 6697386906437981932, guid: 58625170834ed164d94aa7afe0e5a3e3, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
