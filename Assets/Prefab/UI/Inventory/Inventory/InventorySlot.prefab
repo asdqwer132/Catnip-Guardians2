@@ -300,7 +300,7 @@ GameObject:
   - component: {fileID: 4782993209970507118}
   - component: {fileID: 682089836361810639}
   - component: {fileID: 7472003251290356747}
-  - component: {fileID: -5983328767419363731}
+  - component: {fileID: 6635109283628608330}
   m_Layer: 5
   m_Name: InventorySlot
   m_TagString: Untagged
@@ -380,13 +380,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventorySlotUI
   icon: {fileID: 4047147333766088748}
+  nameText: {fileID: 0}
   amountImage: {fileID: 5366187518327195211}
   amountText: {fileID: 1198034459698669673}
   gradeText: {fileID: 0}
+  locked: {fileID: 0}
+  IsLocked: 0
   currentItem:
     itemData: {fileID: 0}
     amount: 0
---- !u!114 &-5983328767419363731
+--- !u!114 &6635109283628608330
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -395,6 +398,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 7991120730881528602}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1240a2862ccb89444a056fe4de5356b5, type: 3}
+  m_Script: {fileID: 11500000, guid: 3f811147cfbd52a4b8cf7877b3eb1bc0, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ItemSlotTooltipTrigger
+  m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipTrigger
+  tooltipUI: {fileID: 0}
+  slot: {fileID: 7472003251290356747}

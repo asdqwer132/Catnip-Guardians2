@@ -1,14 +1,14 @@
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class ItemTooltipUI : MonoBehaviour
 {
-    public static ItemTooltipUI instance;
-
     [Header("Tooltip Option")]
     public bool useTooltip = true;
+    public Vector2 offset = new Vector2(0f, 20f);
+    public bool clampToParent = true;
 
     [Header("Tooltip Objects")]
     public GameObject tooltipPanel;
@@ -20,87 +20,70 @@ public class ItemTooltipUI : MonoBehaviour
     public TextMeshProUGUI amountText;
     public TextMeshProUGUI descriptionText;
 
-    [Header("Follow Mouse")]
-    public Vector2 offset = new Vector2(20f, -20f);
+    private BaseItemSlotUI currentSlot;
+    private RectTransform currentSlotRect;
 
-    private Canvas canvas;
-    private CanvasGroup canvasGroup;
     private RectTransform tooltipRect;
     private RectTransform parentRect;
+    private Canvas rootCanvas;
+    private Camera uiCamera;
 
-    private bool isShowing = false;
 
     private void Awake()
     {
-        instance = this;
+        if (tooltipPanel == null)
+            tooltipPanel = gameObject;
 
-        canvas = GetComponentInParent<Canvas>();
+        tooltipRect = tooltipPanel.GetComponent<RectTransform>();
+        parentRect = tooltipRect.parent as RectTransform;
 
-        canvasGroup = GetComponent<CanvasGroup>();
+        rootCanvas = tooltipPanel.GetComponentInParent<Canvas>();
 
-        if (canvasGroup == null)
-            canvasGroup = gameObject.AddComponent<CanvasGroup>();
-
-        canvasGroup.blocksRaycasts = false;
-        canvasGroup.interactable = false;
-
-        if (tooltipPanel != null)
-        {
-            tooltipRect = tooltipPanel.GetComponent<RectTransform>();
-            parentRect = tooltipRect.parent as RectTransform;
-        }
-
-        DisableChildRaycasts();
+        if (rootCanvas != null && rootCanvas.renderMode != RenderMode.ScreenSpaceOverlay)
+            uiCamera = rootCanvas.worldCamera;
 
         Hide();
     }
 
-    private void LateUpdate()
-    {
-        if (!isShowing)
-            return;
-
-        UpdateTooltipPosition();
-    }
-
-    public void ToggleTooltip()
-    {
-        useTooltip = !useTooltip;
-
-        if (!useTooltip)
-            Hide();
-
-        Debug.Log("ÅøÆÁ »óÅÂ: " + (useTooltip ? "ÄÑÁü" : "²¨Áü"));
-    }
-
-    public void Show(InventoryItem item)
+    public void Show(BaseItemSlotUI slot)
     {
         if (!useTooltip)
-        {
-            Hide();
             return;
-        }
 
-        if (item == null || item.itemData == null)
-        {
-            Hide();
+        if (slot == null)
             return;
-        }
+
+        if (slot.currentItem == null || slot.currentItem.itemData == null)
+            return;
+
+        currentSlot = slot;
+        currentSlotRect = slot.GetComponent<RectTransform>();
+
+        ApplyItem(slot.currentItem);
+
+        tooltipPanel.SetActive(true);
+
+        UpdatePosition();
+    }
+
+    public void Hide()
+    {
+        currentSlot = null;
+        currentSlotRect = null;
 
         if (tooltipPanel != null)
-            tooltipPanel.SetActive(true);
-
-        SetData(item);
-
-        isShowing = true;
-
-        if (tooltipRect != null)
-            LayoutRebuilder.ForceRebuildLayoutImmediate(tooltipRect);
-
-        UpdateTooltipPosition();
+            tooltipPanel.SetActive(false);
     }
 
-    private void SetData(InventoryItem item)
+    public void Hide(BaseItemSlotUI slot)
+    {
+        if (currentSlot != slot)
+            return;
+
+        Hide();
+    }
+
+    private void ApplyItem(InventoryItem item)
     {
         ItemData itemData = item.itemData;
 
@@ -117,78 +100,62 @@ public class ItemTooltipUI : MonoBehaviour
             gradeText.text = itemData.grade.ToString();
 
         if (amountText != null)
-            amountText.text = "x " + item.amount;
+        {
+            bool showAmount = item.amount > 1;
+            amountText.gameObject.SetActive(showAmount);
+            amountText.text = showAmount ? $"x{item.amount}" : "";
+        }
 
         if (descriptionText != null)
             descriptionText.text = itemData.GetDescription();
     }
 
-    public void Hide()
+    private void UpdatePosition()
     {
-        isShowing = false;
-
-        if (tooltipPanel != null)
-            tooltipPanel.SetActive(false);
-    }
-
-    private void UpdateTooltipPosition()
-    {
-        if (tooltipRect == null || parentRect == null)
+        if (currentSlotRect == null || tooltipRect == null || parentRect == null)
             return;
 
-        if (Mouse.current == null)
-            return;
+        Vector3[] corners = new Vector3[4];
+        currentSlotRect.GetWorldCorners(corners);
 
-        Camera uiCamera = null;
+        // ½½·ÔÀÇ À§ÂÊ Áß¾Ó À§Ä¡
+        Vector3 topCenterWorld = (corners[1] + corners[2]) * 0.5f;
 
-        if (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay)
-            uiCamera = canvas.worldCamera;
-
-        Vector2 mousePos = Mouse.current.position.ReadValue();
-
-        Vector2 finalScreenPos = mousePos + offset;
-
-        tooltipRect.pivot = new Vector2(0.5f, 0.5f);
-
-        LayoutRebuilder.ForceRebuildLayoutImmediate(tooltipRect);
-
-        Vector2 tooltipSize = tooltipRect.rect.size;
-
-        if (canvas != null)
-            tooltipSize *= canvas.scaleFactor;
-
-        float halfWidth = tooltipSize.x * 0.5f;
-        float halfHeight = tooltipSize.y * 0.5f;
-
-        if (finalScreenPos.x + halfWidth > Screen.width)
-            finalScreenPos.x = mousePos.x - offset.x;
-
-        if (finalScreenPos.x - halfWidth < 0f)
-            finalScreenPos.x = mousePos.x - offset.x;
-
-        if (finalScreenPos.y + halfHeight > Screen.height)
-            finalScreenPos.y = mousePos.y - offset.y;
-
-        if (finalScreenPos.y - halfHeight < 0f)
-            finalScreenPos.y = mousePos.y - offset.y;
+        Vector2 screenPos = RectTransformUtility.WorldToScreenPoint(uiCamera, topCenterWorld);
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             parentRect,
-            finalScreenPos,
+            screenPos,
             uiCamera,
-            out Vector2 localPoint
+            out Vector2 localPos
         );
 
-        tooltipRect.anchoredPosition = localPoint;
+        Vector2 targetPos = localPos + offset;
+
+        if (clampToParent)
+            targetPos = ClampToParent(targetPos);
+
+        tooltipRect.anchoredPosition = targetPos;
     }
 
-    private void DisableChildRaycasts()
+    private Vector2 ClampToParent(Vector2 targetPos)
     {
-        Graphic[] graphics = GetComponentsInChildren<Graphic>(true);
+        if (parentRect == null || tooltipRect == null)
+            return targetPos;
 
-        foreach (Graphic graphic in graphics)
-        {
-            graphic.raycastTarget = false;
-        }
+        Rect parent = parentRect.rect;
+        Vector2 tooltipSize = tooltipRect.rect.size;
+        Vector2 pivot = tooltipRect.pivot;
+
+        float minX = parent.xMin + tooltipSize.x * pivot.x;
+        float maxX = parent.xMax - tooltipSize.x * (1f - pivot.x);
+
+        float minY = parent.yMin + tooltipSize.y * pivot.y;
+        float maxY = parent.yMax - tooltipSize.y * (1f - pivot.y);
+
+        targetPos.x = Mathf.Clamp(targetPos.x, minX, maxX);
+        targetPos.y = Mathf.Clamp(targetPos.y, minY, maxY);
+
+        return targetPos;
     }
 }

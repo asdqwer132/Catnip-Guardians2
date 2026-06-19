@@ -300,7 +300,6 @@ GameObject:
   - component: {fileID: 4782993209970507118}
   - component: {fileID: 682089836361810639}
   - component: {fileID: 3690437026643880915}
-  - component: {fileID: 8886227326780680702}
   - component: {fileID: 7953636109103637074}
   m_Layer: 5
   m_Name: SubPlantInventorySlot
@@ -412,18 +411,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &8886227326780680702
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7991120730881528602}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1240a2862ccb89444a056fe4de5356b5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ItemSlotTooltipTrigger
 --- !u!114 &7953636109103637074
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -441,6 +428,8 @@ MonoBehaviour:
   amountImage: {fileID: 6617219172577598094}
   amountText: {fileID: 7320215863083533165}
   gradeText: {fileID: 0}
+  locked: {fileID: 0}
+  IsLocked: 0
   currentItem:
     itemData: {fileID: 0}
     amount: 0

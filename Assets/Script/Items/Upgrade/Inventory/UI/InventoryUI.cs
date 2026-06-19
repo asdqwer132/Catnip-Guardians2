@@ -18,6 +18,8 @@ public class InventoryUI : ItemSearchFilterTargetUI
     public Transform detailSlotParent;
     public GameObject detailSlotPrefab;
 
+    public ItemTooltipUI tooltipUI; 
+
     public void Init()
     {
         if (InventoryManager.instance != null)
@@ -98,14 +100,18 @@ public class InventoryUI : ItemSearchFilterTargetUI
             );
 
             BaseItemSlotUI slotUI = slotObj.GetComponent<BaseItemSlotUI>();
+            ItemTooltipTrigger tooltipTrigger = slotObj.GetComponent<ItemTooltipTrigger>();
 
             if (slotUI == null)
                 continue;
+            if (tooltipTrigger != null)
+                tooltipTrigger.Init(tooltipUI);
 
             if (i < validItems.Count)
                 slotUI.SetSlot(validItems[i]);
             else
                 slotUI.SetSlot(null);
+
         }
 
         if (snapScroll != null)

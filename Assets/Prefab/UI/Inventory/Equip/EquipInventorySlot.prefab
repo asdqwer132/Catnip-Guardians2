@@ -301,7 +301,6 @@ GameObject:
   - component: {fileID: 682089836361810639}
   - component: {fileID: 3690437026643880915}
   - component: {fileID: 505544831197227433}
-  - component: {fileID: 840993985296193358}
   m_Layer: 5
   m_Name: EquipInventorySlot
   m_TagString: Untagged
@@ -429,19 +428,9 @@ MonoBehaviour:
   amountImage: {fileID: 4510505376441883959}
   amountText: {fileID: 2385345862634179079}
   gradeText: {fileID: 0}
+  locked: {fileID: 0}
+  IsLocked: 0
   currentItem:
     itemData: {fileID: 0}
     amount: 0
   slotButton: {fileID: 3690437026643880915}
---- !u!114 &840993985296193358
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7991120730881528602}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1240a2862ccb89444a056fe4de5356b5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ItemSlotTooltipTrigger

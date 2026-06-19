@@ -10404,6 +10404,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1929784432285699454, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
+      propertyPath: tooltipUI
+      value: 
+      objectReference: {fileID: 1859563739}
+    - target: {fileID: 1929784432285699454, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
       propertyPath: slotPrefab
       value: 
       objectReference: {fileID: 7991120730881528602, guid: 24fccadfc7916614d837ae7f1a3be073, type: 3}
@@ -16664,7 +16668,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 781001843681307953, guid: 3a6816c280a710a44a402a9a8fe8cb91, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2663343342365515177, guid: 3a6816c280a710a44a402a9a8fe8cb91, type: 3}
       propertyPath: m_fontSize
@@ -22635,6 +22639,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1929784432285699454, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
+      propertyPath: tooltipUI
+      value: 
+      objectReference: {fileID: 1859563739}
     - target: {fileID: 1929784432285699454, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
       propertyPath: slotsPerPage
       value: 3
@@ -28858,6 +28866,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1929784432285699454, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
+      propertyPath: tooltipUI
+      value: 
+      objectReference: {fileID: 1859563739}
     - target: {fileID: 1929784432285699454, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
       propertyPath: slotsPerPage
       value: 3
@@ -44417,6 +44429,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1929784432285699454, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
+      propertyPath: tooltipUI
+      value: 
+      objectReference: {fileID: 1859563739}
+    - target: {fileID: 1929784432285699454, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
       propertyPath: slotPrefab
       value: 
       objectReference: {fileID: 7991120730881528602, guid: 3f974c3bbc45d55499ed1269a8360474, type: 3}
@@ -51121,6 +51137,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1929784432285699454, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
+      propertyPath: tooltipUI
+      value: 
+      objectReference: {fileID: 1859563739}
+    - target: {fileID: 1929784432285699454, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
       propertyPath: gradeMask.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -56691,6 +56711,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1852585867}
   m_CullTransparentMesh: 1
+--- !u!114 &1859563739 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5120260377383995738, guid: 3a6816c280a710a44a402a9a8fe8cb91, type: 3}
+  m_PrefabInstance: {fileID: 695925075}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2496adaf7d1069943a771ae27d7e6843, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipUI
 --- !u!1 &1867758351
 GameObject:
   m_ObjectHideFlags: 0
