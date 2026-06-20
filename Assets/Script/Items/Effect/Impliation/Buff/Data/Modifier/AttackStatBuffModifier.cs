@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "AttackStatBuffModifier", menuName = "Game/Buff/Modifier/Attack Stat")]
+[CreateAssetMenu(fileName = "AttackStatBuffModifier", menuName = "GameData/Buff/Modifier/Attack Stat")]
 public class AttackStatBuffModifier : BuffModifier
 {
     [Header("Damage Area Power")]

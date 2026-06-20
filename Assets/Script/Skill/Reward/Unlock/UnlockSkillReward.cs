@@ -2,7 +2,7 @@ using UnityEngine;
 
 [CreateAssetMenu(
     fileName = "UnlockSkillReward",
-    menuName = "Game/Skill Tree/Reward/Unlock"
+    menuName = "GameData/Skill Tree/Reward/Unlock"
 )]
 public class UnlockSkillReward : SkillRewardData
 {

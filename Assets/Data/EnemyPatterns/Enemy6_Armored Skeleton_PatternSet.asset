@@ -1,0 +1,182 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-5166284736323671808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55641c8f7f12cd44e987cd2d334449c4, type: 3}
+  m_Name: Armored Skeleton_Pattern2_Telegraph
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyTelegraphAction
+  actionMemo: 
+  telegraphPrefab: {fileID: 0}
+  pointType: 0
+  duration: 0.4
+  distance: 1
+  randomRadius: 1.5
+  parentToEnemy: 0
+  faceTarget: 1
+  stopMove: 1
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24df223de31c82f4e826ed2876d7d235, type: 3}
+  m_Name: Enemy6_Armored Skeleton_PatternSet
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyPatternSetData
+  random1Interval: 4.8
+  random2Interval: 8
+  useRandom2OnlyBelowHp: 0
+  random2HpRatio: 0.65
+  cancelDefaultAttackOnPatternStart: 1
+  stopMoveOnPatternStart: 0
+  showLog: 0
+  patterns:
+  - patternName: Armored Skeleton_Pattern1
+    memo: "Role: \uB2E8\uC21C \uD328\uD134 / \uBB3C\uB7C9 \uC555\uBC15\nCondition:
+      \uB79C\uB364 1\nEffect: \uBA54\uC778 \uC2DD\uBB3C\uC5D0\uAC8C \uB290\uB9AC\uAC8C
+      \uC811\uADFC \uD6C4 \uAC80 \uACF5\uACA9"
+    enabled: 1
+    pickGroup: 1
+    blockDefaultAI: 0
+    weight: 2
+    chance: 1
+    cooldown: 3
+    consumeOnce: 0
+    conditions:
+    - conditionType: 0
+      hpRatio: 0.5
+      distance: 3
+    actions:
+    - {fileID: 7764288954636919578}
+  - patternName: Armored Skeleton_Pattern2
+    memo: "Role: \uB2E8\uC21C \uD328\uD134 / \uBB3C\uB7C9 \uC555\uBC15\nCondition:
+      \uB79C\uB364 1\nEffect: \uBC29\uD328\uB97C \uB4E4\uC5B4 \uC77C\uC815 \uC2DC\uAC04
+      \uD53C\uD574 \uAC10\uC18C"
+    enabled: 1
+    pickGroup: 1
+    blockDefaultAI: 1
+    weight: 2
+    chance: 1
+    cooldown: 3
+    consumeOnce: 0
+    conditions:
+    - conditionType: 0
+      hpRatio: 0.5
+      distance: 3
+    actions:
+    - {fileID: -5166284736323671808}
+    - {fileID: 7821986565191561884}
+  - patternName: Armored Skeleton_Pattern3
+    memo: "Role: \uB2E8\uC21C \uD328\uD134 / \uBB3C\uB7C9 \uC555\uBC15\nCondition:
+      \uB79C\uB364 2\nEffect: \uACF5\uACA9\uBC1B\uC73C\uBA74 \uBF08\uAC00 \uD769\uC5B4\uC84C\uB2E4\uAC00
+      \uB2E4\uC2DC \uC870\uB9BD\uB418\uBA70 \uC811\uADFC"
+    enabled: 1
+    pickGroup: 2
+    blockDefaultAI: 0
+    weight: 1
+    chance: 1
+    cooldown: 6
+    consumeOnce: 0
+    conditions:
+    - conditionType: 0
+      hpRatio: 0.5
+      distance: 3
+    actions:
+    - {fileID: 6474106909113739534}
+  - patternName: Armored Skeleton_Pattern4
+    memo: "Role: \uB2E8\uC21C \uD328\uD134 / \uBB3C\uB7C9 \uC555\uBC15\nCondition:
+      \uB79C\uB364 2\nEffect: \uC8FD\uC744 \uB54C \uBF08\uB354\uBBF8 \uC7A5\uC560\uBB3C\uC744
+      \uB0A8\uACA8 \uC544\uC774\uD15C \uD22C\uCC99 \uACBD\uB85C\uB97C \uC7A0\uAE50
+      \uBC29\uD574"
+    enabled: 1
+    pickGroup: 4
+    blockDefaultAI: 1
+    weight: 1
+    chance: 1
+    cooldown: 6
+    consumeOnce: 1
+    conditions:
+    - conditionType: 6
+      hpRatio: 0.5
+      distance: 3
+    actions:
+    - {fileID: 7353135432691539162}
+--- !u!114 &6474106909113739534
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a26788e3def0e3a4b88f403734ec5414, type: 3}
+  m_Name: Armored Skeleton_Pattern3_Wait
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyWaitAction
+  actionMemo: 
+  duration: 0.25
+  stopMove: 0
+--- !u!114 &7353135432691539162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c93be569138579e4384b2cce906abe77, type: 3}
+  m_Name: Armored Skeleton_Pattern4_Spawn
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawnPrefabAction
+  actionMemo: 
+  spawnPrefab: {fileID: 0}
+  pointType: 4
+  count: 1
+  interval: 0.08
+  distance: 0
+  spreadRadius: 0.6
+--- !u!114 &7764288954636919578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a26788e3def0e3a4b88f403734ec5414, type: 3}
+  m_Name: Armored Skeleton_Pattern1_Wait
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyWaitAction
+  actionMemo: 
+  duration: 0.25
+  stopMove: 0
+--- !u!114 &7821986565191561884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09d717016e1248c44bc8aaa8622d193f, type: 3}
+  m_Name: Armored Skeleton_Pattern2_DamageReduction
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyStatModifierAction
+  actionMemo: 
+  duration: 1.5
+  moveSpeedMultiplier: 1
+  attackDamageMultiplier: 1
+  attackCooldownMultiplier: 1
+  attackRangeMultiplier: 1
+  incomingDamageMultiplier: 0.45
+  waitUntilEnd: 1

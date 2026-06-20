@@ -1,33 +1,41 @@
 using UnityEngine;
 
-[System.Serializable]
 public class EnemyPatternRuntime
 {
-    public EnemyPatternInfo info;
-    public float cooldownTimer;
-    public bool consumed;
+    public EnemyPatternEntry Entry { get; private set; }
+    public float CooldownTimer { get; private set; }
+    public bool Consumed { get; private set; }
 
-    public EnemyPatternRuntime(EnemyPatternInfo info)
+    public EnemyPatternRuntime(EnemyPatternEntry entry)
     {
-        this.info = info;
-        cooldownTimer = 0f;
-        consumed = false;
+        Entry = entry;
     }
 
     public void Tick(float deltaTime)
     {
-        if (cooldownTimer > 0f)
-            cooldownTimer -= deltaTime;
+        if (CooldownTimer <= 0f)
+            return;
+
+        CooldownTimer -= deltaTime;
+
+        if (CooldownTimer < 0f)
+            CooldownTimer = 0f;
     }
 
     public void StartCooldown()
     {
-        if (info == null)
+        if (Entry == null)
             return;
 
-        cooldownTimer = Mathf.Max(0f, info.cooldown);
+        CooldownTimer = Mathf.Max(0f, Entry.cooldown);
 
-        if (info.consumeOnce)
-            consumed = true;
+        if (Entry.consumeOnce)
+            Consumed = true;
+    }
+
+    public void Reset()
+    {
+        CooldownTimer = 0f;
+        Consumed = false;
     }
 }

@@ -8,7 +8,7 @@ public class EnemySpawnInfo
     public float spawnRate = 1f;
 }
 
-[CreateAssetMenu(menuName = "Game/Plant Data")]
+[CreateAssetMenu(menuName = "GameData/Plant Data")]
 public class PlantData : DefaultData
 {
     [Header("Visual")]

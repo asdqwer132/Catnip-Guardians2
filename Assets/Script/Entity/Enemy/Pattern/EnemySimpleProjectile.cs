@@ -8,9 +8,15 @@ public class EnemySimpleProjectile : MonoBehaviour
     [SerializeField] private float lifeTime;
     [SerializeField] private LayerMask targetLayerMask;
 
+    [Header("Option")]
+    public bool destroyOnHit = true;
+    public bool canPierce = false;
+    [Min(1)] public int pierceCount = 1;
+
     private Vector2 direction;
     private GameObject owner;
     private bool initialized;
+    private int hitCount;
 
     public void Init(GameObject ownerObject, Vector2 shootDirection, float projectileDamage, float projectileSpeed, float projectileLifeTime, LayerMask hitLayerMask)
     {
@@ -21,6 +27,7 @@ public class EnemySimpleProjectile : MonoBehaviour
         lifeTime = Mathf.Max(0.05f, projectileLifeTime);
         targetLayerMask = hitLayerMask;
         initialized = true;
+        hitCount = 0;
 
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
@@ -52,6 +59,9 @@ public class EnemySimpleProjectile : MonoBehaviour
             return;
 
         damageable.TakeDamage(damage);
-        Destroy(gameObject);
+        hitCount++;
+
+        if (!canPierce || destroyOnHit || hitCount >= pierceCount)
+            Destroy(gameObject);
     }
 }

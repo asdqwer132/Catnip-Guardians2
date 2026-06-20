@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DamagePopupSpawner
   damagePopupPrefab: {fileID: 2401740305231073992, guid: 90a8963889acb9b41805551146ab46ab, type: 3}
-  popupPoint: {fileID: 2908922505298017052}
+  popupPoint: {fileID: 0}
   offset: {x: 0, y: 0.25, z: 0}
   useRandomOffset: 1
   randomXRange: 0.25
@@ -79,7 +79,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthBarUI
   health: {fileID: 8243966129480628730}
-  hpSlider: {fileID: 9222845647152455465}
+  pannel: {fileID: 0}
+  hpFill: {fileID: 0}
   hideWhenFullHp: 0
   hideWhenDead: 1
 --- !u!1 &5831428086637394887
@@ -93,12 +94,13 @@ GameObject:
   - component: {fileID: 8319794836907226570}
   - component: {fileID: 5335311948501192886}
   - component: {fileID: 1451514569049703972}
+  - component: {fileID: 2261896026362960400}
   - component: {fileID: -4853661844404500515}
   - component: {fileID: 7500191993510811139}
   - component: {fileID: 7063470980320774977}
   - component: {fileID: 2430655365351377237}
   - component: {fileID: 1506509451877719227}
-  - component: {fileID: 2261896026362960400}
+  - component: {fileID: 2148724508074491466}
   m_Layer: 0
   m_Name: Armored Orc
   m_TagString: Enemy
@@ -204,89 +206,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &-4853661844404500515
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5831428086637394887}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b559e5cbf9fb62e4c9e2e250e94430ed, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Enemy
-  health: {fileID: 8243966129480628730}
-  healthBarUI: {fileID: 1698829534388872154}
-  visual: {fileID: 7063470980320774977}
-  damagePopupSpawner: {fileID: 6645173589337704241}
-  useDamagePopup: 1
-  statData: {fileID: 11400000, guid: ba6154aabdeac894eaddc359ebf7b7f4, type: 2}
-  actorTarget: {fileID: 1506509451877719227}
-  mover: {fileID: 7500191993510811139}
-  attack: {fileID: 2430655365351377237}
---- !u!114 &7500191993510811139
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5831428086637394887}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 39c329b6b511cc045a056f1c21bfc072, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ActorMover
-  speed: 2
-  visual: {fileID: 7063470980320774977}
---- !u!114 &7063470980320774977
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5831428086637394887}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c703176cdc697ac44a852bcc39c3ce1c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ActorVisual
-  animator: {fileID: 1451514569049703972}
-  spriteRenderer: {fileID: 5335311948501192886}
-  walkingBoolName: IsWalking
-  attackTriggerName: Attack
-  hitTriggerName: Hit
-  dieTriggerName: Die
---- !u!114 &2430655365351377237
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5831428086637394887}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e71953995e40de047b08ef316b603f31, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ActorAttack
-  damage: 5
-  attackRange: 1.5
-  attackCooldown: 1
-  target: {fileID: 1506509451877719227}
-  visual: {fileID: 7063470980320774977}
---- !u!114 &1506509451877719227
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5831428086637394887}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d360c64c3ee80046bf3070fd131b24c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ActorTarget
-  targetName: None
 --- !u!61 &2261896026362960400
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -333,6 +252,125 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.5, y: 0.5}
   m_EdgeRadius: 0
+--- !u!114 &-4853661844404500515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5831428086637394887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b559e5cbf9fb62e4c9e2e250e94430ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Enemy
+  health: {fileID: 8243966129480628730}
+  healthBarUI: {fileID: 1698829534388872154}
+  visual: {fileID: 7063470980320774977}
+  damagePopupSpawner: {fileID: 6645173589337704241}
+  useDamagePopup: 1
+  hideHealthBarOnDeath: 1
+  statData: {fileID: 11400000, guid: ba6154aabdeac894eaddc359ebf7b7f4, type: 2}
+  actorTarget: {fileID: 1506509451877719227}
+  mover: {fileID: 7500191993510811139}
+  attack: {fileID: 2430655365351377237}
+  patternRunner: {fileID: 2148724508074491466}
+  buffManager: {fileID: 0}
+  statRefreshInterval: 0.1
+  currentStat:
+    speed: 2
+    maxHp: 10
+    damage: 5
+    attackRange: 1.5
+    attackCooldown: 1
+--- !u!114 &7500191993510811139
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5831428086637394887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39c329b6b511cc045a056f1c21bfc072, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ActorMover
+  speed: 2
+  visual: {fileID: 7063470980320774977}
+--- !u!114 &7063470980320774977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5831428086637394887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c703176cdc697ac44a852bcc39c3ce1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ActorVisual
+  animator: {fileID: 1451514569049703972}
+  spriteRenderer: {fileID: 5335311948501192886}
+  defaultFaceLeft: 0
+  walkingBoolName: IsWalking
+  attackTriggerName: Attack
+  hitTriggerName: Hit
+  dieTriggerName: Die
+--- !u!114 &2430655365351377237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5831428086637394887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e71953995e40de047b08ef316b603f31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ActorAttack
+  damage: 5
+  attackRange: 1.5
+  attackCooldown: 1
+  attackDistanceTolerance: 0.15
+  target: {fileID: 1506509451877719227}
+  visual: {fileID: 7063470980320774977}
+--- !u!114 &1506509451877719227
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5831428086637394887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d360c64c3ee80046bf3070fd131b24c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ActorTarget
+  targetName: None
+--- !u!114 &2148724508074491466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5831428086637394887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00c318430d18f2e49a316a8d37f7ee58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyPatternRunner
+  patternData: {fileID: 11400000, guid: 7fba50a146a2e824bae0fc7051cdaf0a, type: 2}
+  enemy: {fileID: -4853661844404500515}
+  actorTarget: {fileID: 1506509451877719227}
+  mover: {fileID: 7500191993510811139}
+  attack: {fileID: 2430655365351377237}
+  visual: {fileID: 7063470980320774977}
+  currentPatternName: None
+  isExecuting: 0
+  isBlockingDefaultAI: 0
+  nextPatternRemainingTime: 0
+  nextPatternState: Ready
+  runtimeModifierCount: 0
 --- !u!1001 &8310913712941043610
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -342,11 +380,35 @@ PrefabInstance:
     m_TransformParent: {fileID: 8319794836907226570}
     m_Modifications:
     - target: {fileID: 1995457126076436292, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1995457126076436292, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1995457126076436292, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
       propertyPath: m_AnchorMax.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1995457126076436292, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1995457126076436292, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 1995457126076436292, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1995457126076436292, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1995457126076436292, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
+      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2089078029472460550, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
@@ -446,24 +508,8 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
---- !u!224 &2908922505298017052 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 6559732989384422534, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
-  m_PrefabInstance: {fileID: 8310913712941043610}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &3795823362948303495 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5186795204256957725, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
   m_PrefabInstance: {fileID: 8310913712941043610}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &9222845647152455465 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 912096286570811571, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
-  m_PrefabInstance: {fileID: 8310913712941043610}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider

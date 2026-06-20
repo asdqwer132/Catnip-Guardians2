@@ -1252,7 +1252,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2803265597309381574
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1520,7 +1520,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 585, y: 75}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1527532140424789797
 MonoBehaviour:
@@ -3691,6 +3691,7 @@ MonoBehaviour:
   snapScroll: {fileID: 8145092684037970303}
   detailSlotParent: {fileID: 6238954942032819028}
   detailSlotPrefab: {fileID: 7991120730881528602, guid: c563a8252d3aecf44a37ca972feb2a71, type: 3}
+  tooltipUI: {fileID: 0}
 --- !u!1 &7295542853457921503
 GameObject:
   m_ObjectHideFlags: 0
@@ -3815,9 +3816,9 @@ RectTransform:
   - {fileID: 6639919272829114616}
   m_Father: {fileID: 8078180821454523352}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 292.5, y: -37.5}
   m_SizeDelta: {x: 585, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8848581753084921611

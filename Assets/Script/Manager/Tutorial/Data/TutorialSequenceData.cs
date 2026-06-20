@@ -2,7 +2,7 @@ using UnityEngine;
 
 [CreateAssetMenu(
     fileName = "TutorialSequenceData",
-    menuName = "Game/Tutoria; Sequence Data"
+    menuName = "GameData/Tutoria Sequence Data"
 )]
 public class TutorialSequenceData : ScriptableObject
 {

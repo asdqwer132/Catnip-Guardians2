@@ -82,7 +82,8 @@ public class ActorAttack : MonoBehaviour
 
         if (visual != null)
         {
-            visual.PlayAttack();
+            Vector2 toTarget = target.TargetTransform.position - transform.position;
+            visual.PlayAttack(toTarget.normalized);
             yield return visual.WaitCurrentAnimationEnd();
         }
         else

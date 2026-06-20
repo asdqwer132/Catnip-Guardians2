@@ -3,7 +3,7 @@ using UnityEngine;
 
 [CreateAssetMenu(
     fileName = "SkillNodeData",
-    menuName = "Game/Skill Tree/Skill Node"
+    menuName = "GameData/Skill Tree/Skill Node"
 )]
 public class SkillNodeData : ScriptableObject
 {

@@ -2,7 +2,7 @@ using UnityEngine;
 
 [CreateAssetMenu(
     fileName = "BuffSkillReward",
-    menuName = "Game/Skill Tree/Reward/Buff"
+    menuName = "GameData/Skill Tree/Reward/Buff"
 )]
 public class BuffSkillReward : SkillRewardData
 {

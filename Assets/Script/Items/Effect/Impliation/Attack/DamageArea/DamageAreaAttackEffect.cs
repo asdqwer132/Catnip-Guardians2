@@ -2,7 +2,7 @@ using UnityEngine;
 
 [CreateAssetMenu(
     fileName = "DamageAreaAttackEffect",
-    menuName = "Game/Item Effect/DamageAreaAttackEffect"
+    menuName = "GameData/Item/Item Effect/DamageAreaAttackEffect"
 )]
 public class DamageAreaAttackEffect : ItemEffectData
 {

@@ -2,7 +2,7 @@ using UnityEngine;
 
 [CreateAssetMenu(
     fileName = "SummonAttackEffect",
-    menuName = "Game/Item Effect/SummonAttackEffect"
+    menuName = "GameData/Item/Item Effect/SummonAttackEffect"
 )]
 public class SummonAttackEffect : ItemEffectData
 {

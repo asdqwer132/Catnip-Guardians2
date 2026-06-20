@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Item", menuName = "Game/Item/ItemData")]
+[CreateAssetMenu(fileName = "Item", menuName = "GameData/Item/ItemData")]
 public class ItemData : DefaultData
 {
     [Header("Item Class")]

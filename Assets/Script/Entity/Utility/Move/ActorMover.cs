@@ -8,7 +8,14 @@ public class ActorMover : MonoBehaviour
     [Header("Components")]
     public ActorVisual visual;
 
-    private Vector2 lastMoveDirection;
+    private Vector2 lastMoveDirection = Vector2.down;
+    private Vector2 currentMoveDirection;
+
+    private bool isMoving;
+    private bool isMoveLocked;
+
+    public bool IsMoving => isMoving;
+    public bool IsMoveLocked => isMoveLocked;
 
     private void Awake()
     {
@@ -19,6 +26,22 @@ public class ActorMover : MonoBehaviour
     public void SetSpeed(float newSpeed)
     {
         speed = newSpeed;
+    }
+
+    public void LockMove()
+    {
+        isMoveLocked = true;
+        Stop();
+    }
+
+    public void UnlockMove()
+    {
+        isMoveLocked = false;
+        if (visual != null)
+        {
+            Vector2 tmp = lastMoveDirection.normalized;
+            visual.PlayMove(tmp);
+        }
     }
 
     public void MoveTo(Transform target)
@@ -81,6 +104,12 @@ public class ActorMover : MonoBehaviour
 
     public void MoveDirection(Vector2 direction)
     {
+        if (isMoveLocked)
+        {
+            Stop();
+            return;
+        }
+
         if (direction.sqrMagnitude <= 0.0001f)
         {
             Stop();
@@ -88,7 +117,10 @@ public class ActorMover : MonoBehaviour
         }
 
         direction.Normalize();
+
+        currentMoveDirection = direction;
         lastMoveDirection = direction;
+        isMoving = true;
 
         if (visual != null)
             visual.PlayMove(direction);
@@ -98,6 +130,9 @@ public class ActorMover : MonoBehaviour
 
     public void Stop()
     {
+        isMoving = false;
+        currentMoveDirection = Vector2.zero;
+
         if (visual != null)
             visual.StopMove(lastMoveDirection);
     }

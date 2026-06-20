@@ -114,6 +114,7 @@ public class ActorVisual : MonoBehaviour
 
     public virtual void PlayAttack(Vector2 attackDirection)
     {
+        Debug.Log("ท่ " + attackDirection);
         PlayAttack();
         LookDirection(attackDirection);
     }
