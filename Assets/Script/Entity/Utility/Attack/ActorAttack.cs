@@ -9,19 +9,29 @@ public class ActorAttack : MonoBehaviour
     public float attackCooldown = 1f;
     public float attackDistanceTolerance = 0.15f;
 
+    [Header("Facing")]
+    public bool faceTargetWhileInAttackRange = true;
+    public bool faceTargetBeforeDamage = true;
+
     [Header("Components")]
     public ActorTarget target;
     public ActorVisual visual;
 
+    [Header("Debug")]
+    [SerializeField] private bool isAttackStopped;
+
     public bool IsAttacking { get; private set; }
+    public bool IsAttackStopped => isAttackStopped;
 
     private float attackTimer = 0f;
     private Coroutine attackCoroutine;
+    private Vector2 currentAttackDirection = Vector2.right;
 
-    void Awake()
+    private void Awake()
     {
         if (target == null)
             target = GetComponent<ActorTarget>();
+
         if (visual == null)
             visual = GetComponent<ActorVisual>();
     }
@@ -33,7 +43,31 @@ public class ActorAttack : MonoBehaviour
         attackCooldown = Mathf.Max(0.01f, newCooldown);
     }
 
-    #region SetRange
+    #region Stop State
+
+    public void SetAttackStopped(bool stopped)
+    {
+        if (isAttackStopped == stopped)
+            return;
+
+        isAttackStopped = stopped;
+
+        if (isAttackStopped)
+            ForceStop();
+    }
+
+    public void ForceStop()
+    {
+        CancelAttack();
+
+        if (visual != null)
+            visual.ForceIdle(GetAttackDirection(), true, false);
+    }
+
+    #endregion
+
+    #region Range
+
     public float GetDistanceToTarget()
     {
         if (target == null)
@@ -53,11 +87,16 @@ public class ActorAttack : MonoBehaviour
         float distance = GetDistanceToTarget();
         return Mathf.Abs(distance - attackRange) <= attackDistanceTolerance;
     }
+
     #endregion
 
     #region Attack
+
     public void TickAttack()
     {
+        if (isAttackStopped)
+            return;
+
         if (IsAttacking)
             return;
 
@@ -66,6 +105,9 @@ public class ActorAttack : MonoBehaviour
 
         if (!IsTargetAtAttackDistance())
             return;
+
+        if (faceTargetWhileInAttackRange)
+            FaceTarget();
 
         attackTimer -= Time.deltaTime;
 
@@ -76,14 +118,15 @@ public class ActorAttack : MonoBehaviour
         attackTimer = attackCooldown;
     }
 
-    IEnumerator AttackRoutine()
+    private IEnumerator AttackRoutine()
     {
         IsAttacking = true;
 
+        currentAttackDirection = GetAttackDirection();
+
         if (visual != null)
         {
-            Vector2 toTarget = target.TargetTransform.position - transform.position;
-            visual.PlayAttack(toTarget.normalized);
+            visual.PlayAttack(currentAttackDirection);
             yield return visual.WaitCurrentAnimationEnd();
         }
         else
@@ -94,11 +137,42 @@ public class ActorAttack : MonoBehaviour
         IsAttacking = false;
         attackCoroutine = null;
     }
+
+    public void FaceTarget()
+    {
+        if (visual == null)
+            return;
+
+        Vector2 attackDirection = GetAttackDirection();
+
+        if (attackDirection.sqrMagnitude <= 0.0001f)
+            return;
+
+        visual.LookDirection(attackDirection);
+    }
+
+    private Vector2 GetAttackDirection()
+    {
+        if (target == null || !target.HasTarget || target.TargetTransform == null)
+            return currentAttackDirection.sqrMagnitude > 0.0001f ? currentAttackDirection : Vector2.right;
+
+        Vector2 direction = target.TargetTransform.position - transform.position;
+
+        if (direction.sqrMagnitude <= 0.0001f)
+            return currentAttackDirection.sqrMagnitude > 0.0001f ? currentAttackDirection : Vector2.right;
+
+        return direction.normalized;
+    }
+
     #endregion
 
     #region Event
-    public void ApplyAttackDamage() // 애니메이션 이벤트에서 호출
+
+    public void ApplyAttackDamage()
     {
+        if (isAttackStopped)
+            return;
+
         if (target == null)
             return;
 
@@ -107,6 +181,9 @@ public class ActorAttack : MonoBehaviour
 
         if (!IsTargetAtAttackDistance())
             return;
+
+        if (faceTargetBeforeDamage)
+            FaceTarget();
 
         target.DamageTarget(damage);
     }
@@ -121,5 +198,6 @@ public class ActorAttack : MonoBehaviour
             attackCoroutine = null;
         }
     }
+
     #endregion
 }

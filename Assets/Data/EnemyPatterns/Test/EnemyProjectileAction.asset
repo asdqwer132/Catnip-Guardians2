@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5b2c37d4f34a9f499d093a48441c51f, type: 3}
+  m_Name: EnemyProjectileAction
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyProjectileAction
+  actionMemo: 
+  projectilePrefab: {fileID: -3363418897951746939, guid: ab48bd3e8e6dd6c47854a83bf76a3ba5, type: 3}
+  spawnPointType: 0
+  speed: 1
+  lifeTime: 10
+  damage: 50
+  damageMultiplier: 1
+  targetLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  count: 1
+  interval: 0.15
+  spreadAngle: 0
+  spawnDistance: 0.2

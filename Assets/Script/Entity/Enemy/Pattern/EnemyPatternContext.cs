@@ -18,10 +18,12 @@ public class EnemyPatternContext
         get
         {
             Transform target = GetTargetTransform();
+
             if (Enemy == null || target == null)
                 return Vector2.zero;
 
             Vector2 direction = target.position - Enemy.transform.position;
+
             if (direction.sqrMagnitude <= 0.0001f)
                 return Vector2.zero;
 
@@ -54,6 +56,8 @@ public class EnemyPatternContext
         Visual = Enemy.visual != null ? Enemy.visual : Enemy.GetComponent<ActorVisual>();
     }
 
+    #region Target
+
     public Transform GetTargetTransform()
     {
         if (Target == null || !Target.HasTarget)
@@ -65,6 +69,7 @@ public class EnemyPatternContext
     public IDamageable GetTargetDamageable()
     {
         Transform target = GetTargetTransform();
+
         if (target == null)
             return null;
 
@@ -79,12 +84,17 @@ public class EnemyPatternContext
         return Target.GetDistanceFrom(Enemy.transform);
     }
 
+    #endregion
+
+    #region Stat
+
     public float GetHpRatio()
     {
         if (Enemy == null || Enemy.health == null)
             return 1f;
 
         float maxHp = Enemy.health.MaxHp;
+
         if (maxHp <= 0f)
             return 1f;
 
@@ -118,16 +128,148 @@ public class EnemyPatternContext
         return 1f;
     }
 
+    #endregion
+
+    #region Move Command
+
     public void StopMove()
     {
         if (Mover != null)
-            Mover.LockMove();
+            Mover.Stop();
     }
-    public void UnLockMove()
+
+    public void MoveDirection(Vector2 direction, float speed)
     {
         if (Mover != null)
-            Mover.UnlockMove();
+        {
+            Mover.MoveDirection(direction, speed);
+            return;
+        }
+
+        if (Enemy == null)
+            return;
+
+        if (direction.sqrMagnitude <= 0.0001f || speed <= 0f)
+        {
+            StopMove();
+            return;
+        }
+
+        Vector2 delta = direction.normalized * speed * Time.deltaTime;
+        Enemy.transform.position += (Vector3)delta;
+
+        if (Visual != null)
+            Visual.PlayMove(direction.normalized);
     }
+
+    public void MoveBy(Vector2 delta)
+    {
+        if (Mover != null)
+        {
+            Mover.MoveBy(delta);
+            return;
+        }
+
+        if (Enemy == null)
+            return;
+
+        if (delta.sqrMagnitude <= 0.0000001f)
+        {
+            StopMove();
+            return;
+        }
+
+        Enemy.transform.position += (Vector3)delta;
+
+        if (Visual != null)
+            Visual.PlayMove(delta.normalized);
+    }
+
+    // 이전 액션 코드 호환용
+    public void MoveBy(Vector2 delta, bool playMove)
+    {
+        MoveBy(delta);
+    }
+
+    public void MoveToPosition(Vector3 targetPosition, float speed, float stopDistance = 0.03f)
+    {
+        if (Mover != null)
+        {
+            Mover.MoveToPositionWithSpeed(targetPosition, speed, stopDistance);
+            return;
+        }
+
+        if (Enemy == null)
+            return;
+
+        Vector2 toTarget = targetPosition - Enemy.transform.position;
+
+        if (toTarget.magnitude <= stopDistance)
+        {
+            StopMove();
+            return;
+        }
+
+        MoveDirection(toTarget, speed);
+    }
+
+    public void SetPosition(Vector3 position)
+    {
+        if (Mover != null)
+        {
+            Mover.SetPosition(position);
+            return;
+        }
+
+        if (Enemy != null)
+            Enemy.transform.position = position;
+    }
+
+    public void Teleport(Vector3 position, Vector2 lookDirection)
+    {
+        if (Mover != null)
+        {
+            Mover.Teleport(position, lookDirection);
+            return;
+        }
+
+        if (Enemy != null)
+            Enemy.transform.position = position;
+
+        if (Visual != null)
+            Visual.LookDirection(lookDirection);
+    }
+
+    public void FaceDirection(Vector2 direction)
+    {
+        if (Mover != null)
+        {
+            Mover.FaceDirection(direction);
+            return;
+        }
+
+        if (Visual != null)
+            Visual.LookDirection(direction);
+    }
+
+    // 이전 액션 코드 호환용
+    public void LookDirection(Vector2 direction)
+    {
+        FaceDirection(direction);
+    }
+
+    // 이전 액션 코드 호환용
+    public void PlayMove(Vector2 direction)
+    {
+        if (Mover != null)
+            Mover.MoveDirection(direction, 0f);
+        else if (Visual != null)
+            Visual.PlayMove(direction);
+    }
+
+    #endregion
+
+    #region Attack / Visual
 
     public void CancelDefaultAttack()
     {
@@ -135,16 +277,12 @@ public class EnemyPatternContext
             Attack.CancelAttack();
     }
 
-    public void LookDirection(Vector2 direction)
+    public void TickDefaultAttack()
     {
-        if (Visual != null)
-            Visual.LookDirection(direction);
-    }
+        if (Attack == null)
+            return;
 
-    public void PlayMove(Vector2 direction)
-    {
-        if (Visual != null)
-            Visual.PlayMove(direction);
+        Attack.TickAttack();
     }
 
     public void PlayAttack(Vector2 direction)
@@ -159,46 +297,14 @@ public class EnemyPatternContext
             Visual.PlayHit();
     }
 
-    public void MoveBy(Vector2 delta, bool playMove = true)
-    {
-        if (Enemy == null)
-            return;
+    #endregion
 
-        if (playMove && delta.sqrMagnitude > 0.0001f)
-            PlayMove(delta.normalized);
-
-        Enemy.transform.position += (Vector3)delta;
-    }
-
-    public void MoveDirection(Vector2 direction, float speed)
-    {
-        if (direction.sqrMagnitude <= 0.0001f)
-        {
-            StopMove();
-            return;
-        }
-
-        MoveBy(direction.normalized * speed * Time.deltaTime, true);
-    }
-
-    public void MoveToPosition(Vector3 targetPosition, float speed, float stopDistance = 0.03f)
-    {
-        if (Enemy == null)
-            return;
-
-        Vector2 toTarget = targetPosition - Enemy.transform.position;
-        if (toTarget.magnitude <= stopDistance)
-        {
-            StopMove();
-            return;
-        }
-
-        MoveDirection(toTarget, speed);
-    }
+    #region Damage
 
     public bool IsTargetInRadius(float radius)
     {
         Transform target = GetTargetTransform();
+
         if (Enemy == null || target == null)
             return false;
 
@@ -210,6 +316,10 @@ public class EnemyPatternContext
         if (Target != null)
             Target.DamageTarget(damage);
     }
+
+    #endregion
+
+    #region Point
 
     public Vector3 ResolvePoint(EnemyPatternPointType pointType, float distance = 0f, float radius = 0f)
     {
@@ -223,12 +333,14 @@ public class EnemyPatternContext
                 return targetPosition;
 
             case EnemyPatternPointType.InFrontOfSelf:
-            {
-                Vector2 dir = DirectionToTarget;
-                if (dir.sqrMagnitude <= 0.0001f)
-                    dir = Vector2.right;
-                return selfPosition + (Vector3)(dir.normalized * distance);
-            }
+                {
+                    Vector2 direction = DirectionToTarget;
+
+                    if (direction.sqrMagnitude <= 0.0001f)
+                        direction = Vector2.right;
+
+                    return selfPosition + (Vector3)(direction.normalized * distance);
+                }
 
             case EnemyPatternPointType.RandomAroundTarget:
                 return targetPosition + (Vector3)(Random.insideUnitCircle * Mathf.Max(0f, radius));
@@ -242,9 +354,17 @@ public class EnemyPatternContext
         }
     }
 
+    #endregion
+
+
+
+    #region Runtime Modifier
+
     public void AddRuntimeModifier(EnemyPatternRuntimeModifier modifier)
     {
         if (Runner != null)
             Runner.AddRuntimeModifier(modifier);
     }
+
+    #endregion
 }

@@ -21,11 +21,13 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     private Animator cachedAnimator;
     private float statRefreshTimer;
     private float previousAnimatorSpeed = 1f;
-
     private bool isInitialized = false;
     private bool isActionDisabled = false;
 
+    [SerializeField] private bool isFullyStopped = false;
+
     public bool IsActionDisabled => isActionDisabled;
+    public bool IsFullyStopped => isFullyStopped;
 
     public UnityEngine.Object BuffTargetObject => this;
     public string BuffTargetGroup => "Enemy";
@@ -45,6 +47,9 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
         if (attack == null)
             attack = GetComponent<ActorAttack>();
+
+        if (visual == null)
+            visual = GetComponent<ActorVisual>();
 
         if (patternRunner == null)
             patternRunner = GetComponent<EnemyPatternRunner>();
@@ -66,10 +71,12 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         if (IsDead)
             return;
 
+        if (isFullyStopped)
+            return;
+
         if (isActionDisabled)
         {
-            StopMove();
-            CancelAttack();
+            FullStop();
             return;
         }
 
@@ -94,6 +101,11 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         if (patternRunner != null && patternRunner.TickPattern())
             return;
 
+        TickDefaultAI(targetTransform);
+    }
+
+    private void TickDefaultAI(Transform targetTransform)
+    {
         if (attack == null)
         {
             MoveToTarget(targetTransform);
@@ -109,7 +121,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
             return;
         }
 
-        StopMove();
+        StopMoveLookTarget(targetTransform);
         attack.TickAttack();
     }
 
@@ -117,16 +129,58 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     #region Action Control
 
+    public void FullStop()
+    {
+        if (isFullyStopped)
+            return;
+
+        isFullyStopped = true;
+        ApplyFullStopState();
+    }
+
+    public void ReleaseFullStop()
+    {
+        if (!isFullyStopped)
+            return;
+
+        isFullyStopped = false;
+
+        if (mover != null)
+            mover.SetMoveStopped(false);
+
+        if (attack != null)
+            attack.SetAttackStopped(false);
+
+        ResumeAnimation();
+    }
+
+    private void ApplyFullStopState()
+    {
+        if (patternRunner != null)
+            patternRunner.ForceStopPattern();
+
+        if (mover != null)
+            mover.SetMoveStopped(true);
+
+        if (attack != null)
+            attack.SetAttackStopped(true);
+
+        if (visual != null)
+        {
+            Vector2 lookDirection = mover != null ? mover.LastMoveDirection : Vector2.zero;
+            visual.ForceIdle(lookDirection, true, false);
+        }
+
+        ResumeAnimation();
+    }
+
     public void DisableAction()
     {
         if (isActionDisabled)
             return;
 
         isActionDisabled = true;
-
-        LockMove();
-        CancelAttack();
-        PauseAnimation();
+        FullStop();
     }
 
     public void EnableAction()
@@ -135,9 +189,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
             return;
 
         isActionDisabled = false;
-
-        UnlockMove();
-        ResumeAnimation();
+        ReleaseFullStop();
     }
 
     private void PauseAnimation()
@@ -175,10 +227,14 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         isInitialized = false;
         statRefreshTimer = 0f;
         isActionDisabled = false;
+        isFullyStopped = false;
         previousAnimatorSpeed = 1f;
 
-        UnlockMove();
-        StopMove();
+        if (mover != null)
+            mover.SetMoveStopped(false);
+
+        if (attack != null)
+            attack.SetAttackStopped(false);
 
         if (patternRunner != null)
             patternRunner.ResetRunner();
@@ -190,11 +246,21 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     {
         isInitialized = false;
         isActionDisabled = false;
+        isFullyStopped = false;
 
-        UnlockMove();
         ResumeAnimation();
-        StopMove();
-        CancelAttack();
+
+        if (mover != null)
+        {
+            mover.SetMoveStopped(false);
+            mover.Stop();
+        }
+
+        if (attack != null)
+        {
+            attack.SetAttackStopped(false);
+            attack.CancelAttack();
+        }
 
         if (patternRunner != null)
             patternRunner.ResetRunner();
@@ -221,9 +287,15 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         buffManager = injectedBuffManager;
 
         isActionDisabled = false;
+        isFullyStopped = false;
         previousAnimatorSpeed = 1f;
 
-        UnlockMove();
+        if (mover != null)
+            mover.SetMoveStopped(false);
+
+        if (attack != null)
+            attack.SetAttackStopped(false);
+
         ResumeAnimation();
 
         ApplyBaseStat();
@@ -254,6 +326,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     #endregion
 
     #region Move and Attack
+
     private void MoveToAttackDistance(Transform targetTransform)
     {
         if (mover == null || attack == null)
@@ -280,16 +353,20 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
             mover.Stop();
     }
 
-    private void LockMove()
+    private void StopMoveLookTarget(Transform targetTransform)
     {
-        if (mover != null)
-            mover.LockMove();
-    }
+        if (mover == null)
+            return;
 
-    private void UnlockMove()
-    {
-        if (mover != null)
-            mover.UnlockMove();
+        if (targetTransform != null)
+        {
+            Vector2 lookDirection = targetTransform.position - transform.position;
+
+            if (lookDirection.sqrMagnitude > 0.0001f)
+                mover.FaceDirection(lookDirection);
+        }
+
+        mover.Stop();
     }
 
     private void CancelAttack()
@@ -380,13 +457,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
             mover.SetSpeed(speed);
 
         if (attack != null)
-        {
-            attack.SetAttackStat(
-                damage,
-                attackRange,
-                attackCooldown
-            );
-        }
+            attack.SetAttackStat(damage, attackRange, attackCooldown);
     }
 
     #endregion
@@ -427,13 +498,21 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     protected override void OnDeathStarted()
     {
-        LockMove();
+        StopMove();
         CancelAttack();
 
         if (patternRunner != null)
             patternRunner.StopPattern();
 
         isActionDisabled = false;
+        isFullyStopped = false;
+
+        if (mover != null)
+            mover.SetMoveStopped(false);
+
+        if (attack != null)
+            attack.SetAttackStopped(false);
+
         ResumeAnimation();
 
         if (buffManager != null)

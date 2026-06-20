@@ -79,8 +79,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthBarUI
   health: {fileID: 8243966129480628730}
-  pannel: {fileID: 0}
-  hpFill: {fileID: 0}
+  pannel: {fileID: 663579815802718840}
+  hpFill: {fileID: 5440641532502159826}
   hideWhenFullHp: 0
   hideWhenDead: 1
 --- !u!1 &5831428086637394887
@@ -237,6 +237,7 @@ MonoBehaviour:
     damage: 5
     attackRange: 1.5
     attackCooldown: 1
+  isFullyStopped: 0
 --- !u!114 &7500191993510811139
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -250,8 +251,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActorMover
   speed: 2
+  stopDistance: 0.03
   visual: {fileID: 7063470980320774977}
+  attack: {fileID: 0}
   isMoving: 0
+  isMoveStopped: 0
+  currentMoveDirection: {x: 0, y: 0}
+  lastMoveDirection: {x: 1, y: 0}
 --- !u!114 &7063470980320774977
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -271,6 +277,7 @@ MonoBehaviour:
   attackTriggerName: Attack
   hitTriggerName: Hit
   dieTriggerName: Die
+  idleStateName: Idle
 --- !u!114 &2430655365351377237
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -287,8 +294,11 @@ MonoBehaviour:
   attackRange: 1.5
   attackCooldown: 1
   attackDistanceTolerance: 0.15
+  faceTargetWhileInAttackRange: 1
+  faceTargetBeforeDamage: 1
   target: {fileID: 1506509451877719227}
   visual: {fileID: 7063470980320774977}
+  isAttackStopped: 0
 --- !u!114 &1506509451877719227
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -501,8 +511,24 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
+--- !u!1 &663579815802718840 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8819114246694258146, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
+  m_PrefabInstance: {fileID: 8310913712941043610}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &3795823362948303495 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5186795204256957725, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
   m_PrefabInstance: {fileID: 8310913712941043610}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5440641532502159826 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4095814235647458888, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
+  m_PrefabInstance: {fileID: 8310913712941043610}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 663579815802718840}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c46a78e3ff26f449ba6144d17b9793f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ImageFillUI

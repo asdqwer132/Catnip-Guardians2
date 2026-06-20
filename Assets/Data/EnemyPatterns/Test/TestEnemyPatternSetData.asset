@@ -19,9 +19,9 @@ MonoBehaviour:
   stopMoveOnPatternStart: 0
   showLog: 0
   patterns:
-  - patternName: TestAction
+  - patternName: CircleMove
     memo: 
-    enabled: 1
+    enabled: 0
     pickGroup: 1
     blockDefaultAI: 0
     weight: 1
@@ -31,6 +31,177 @@ MonoBehaviour:
     conditions:
     - conditionType: 0
       hpRatio: 0
-      distance: 0
+      distance: 2
+    actions:
+    - {fileID: 11400000, guid: c68b5df0e158a8c4a884f75d4c4360ff, type: 2}
+  - patternName: Wait
+    memo: 
+    enabled: 0
+    pickGroup: 1
+    blockDefaultAI: 0
+    weight: 1
+    chance: 1
+    cooldown: 5
+    consumeOnce: 0
+    conditions:
+    - conditionType: 3
+      hpRatio: 0
+      distance: 2
+    actions:
+    - {fileID: 11400000, guid: 269f9a33fa00d30469cd852caf911eed, type: 2}
+  - patternName: Retreat
+    memo: 
+    enabled: 0
+    pickGroup: 1
+    blockDefaultAI: 0
+    weight: 1
+    chance: 1
+    cooldown: 5
+    consumeOnce: 0
+    conditions:
+    - conditionType: 3
+      hpRatio: 0
+      distance: 2
+    actions:
+    - {fileID: 11400000, guid: 96ff61d3498dfb145a0c04188f641e35, type: 2}
+  - patternName: Stat
+    memo: 
+    enabled: 0
+    pickGroup: 1
+    blockDefaultAI: 0
+    weight: 1
+    chance: 1
+    cooldown: 5
+    consumeOnce: 0
+    conditions:
+    - conditionType: 0
+      hpRatio: 0
+      distance: 2
     actions:
     - {fileID: 11400000, guid: 51e50222e0944b94eae94cc6d2fce774, type: 2}
+  - patternName: Teleport
+    memo: 
+    enabled: 0
+    pickGroup: 1
+    blockDefaultAI: 0
+    weight: 1
+    chance: 1
+    cooldown: 5
+    consumeOnce: 0
+    conditions:
+    - conditionType: 3
+      hpRatio: 0
+      distance: 1.75
+    actions:
+    - {fileID: 11400000, guid: cdfd9d86fa0748c4da98c811c1093e1f, type: 2}
+  - patternName: Charge
+    memo: 
+    enabled: 0
+    pickGroup: 1
+    blockDefaultAI: 1
+    weight: 1
+    chance: 1
+    cooldown: 5
+    consumeOnce: 0
+    conditions:
+    - conditionType: 3
+      hpRatio: 0
+      distance: 3
+    - conditionType: 4
+      hpRatio: 0
+      distance: 1
+    actions:
+    - {fileID: 11400000, guid: c0a1060a44ee60f45b93f3887e0a3f53, type: 2}
+  - patternName: Spawn
+    memo: 
+    enabled: 0
+    pickGroup: 1
+    blockDefaultAI: 0
+    weight: 1
+    chance: 1
+    cooldown: 5
+    consumeOnce: 0
+    conditions:
+    - conditionType: 3
+      hpRatio: 0
+      distance: 3
+    - conditionType: 4
+      hpRatio: 0
+      distance: 1
+    actions:
+    - {fileID: 11400000, guid: 21c540db6ce91d94aa6e6f3548f84683, type: 2}
+  - patternName: ZigZag
+    memo: 
+    enabled: 0
+    pickGroup: 1
+    blockDefaultAI: 0
+    weight: 1
+    chance: 1
+    cooldown: 5
+    consumeOnce: 0
+    conditions:
+    - conditionType: 0
+      hpRatio: 0
+      distance: 3
+    actions:
+    - {fileID: 11400000, guid: e9b128633fd50854abdcc6dd09728854, type: 2}
+  - patternName: Jump
+    memo: no
+    enabled: 0
+    pickGroup: 1
+    blockDefaultAI: 0
+    weight: 1
+    chance: 1
+    cooldown: 5
+    consumeOnce: 0
+    conditions:
+    - conditionType: 0
+      hpRatio: 0
+      distance: 4
+    actions:
+    - {fileID: 11400000, guid: bcd7ba1b87519fd46a016d1831184d8e, type: 2}
+  - patternName: Projectile
+    memo: 
+    enabled: 0
+    pickGroup: 1
+    blockDefaultAI: 0
+    weight: 1
+    chance: 1
+    cooldown: 5
+    consumeOnce: 0
+    conditions:
+    - conditionType: 3
+      hpRatio: 0
+      distance: 3
+    actions:
+    - {fileID: 11400000, guid: 777891030f14db04bb8fad9d84a5ad61, type: 2}
+  - patternName: Heal
+    memo: 
+    enabled: 0
+    pickGroup: 1
+    blockDefaultAI: 0
+    weight: 1
+    chance: 1
+    cooldown: 5
+    consumeOnce: 0
+    conditions:
+    - conditionType: 3
+      hpRatio: 0
+      distance: 3
+    actions:
+    - {fileID: 11400000, guid: 63ad2cf85c5765343a5afbfca91bed41, type: 2}
+  - patternName: Telegraph
+    memo: 
+    enabled: 1
+    pickGroup: 1
+    blockDefaultAI: 0
+    weight: 1
+    chance: 1
+    cooldown: 5
+    consumeOnce: 0
+    conditions:
+    - conditionType: 3
+      hpRatio: 0
+      distance: 3
+    actions:
+    - {fileID: 11400000, guid: 1c348d46c94048e4385a33a85ec50e07, type: 2}

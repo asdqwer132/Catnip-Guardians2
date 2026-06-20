@@ -9,12 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a26788e3def0e3a4b88f403734ec5414, type: 3}
-  m_Name: EnemyWaitAction
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyWaitAction
+  m_Script: {fileID: 11500000, guid: a7b6e36055979a043a85a8bf6ccd20ad, type: 3}
+  m_Name: EnemyZigzagMoveAction
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyZigzagMoveAction
   actionMemo: 
-  duration: 5
-  stopMove: 1
-  stopAttack: 1
-  forceIdle: 1
-  tickDefaultAttack: 0
+  speed: 3
+  duration: 2
+  amplitude: 0.8
+  frequency: 8

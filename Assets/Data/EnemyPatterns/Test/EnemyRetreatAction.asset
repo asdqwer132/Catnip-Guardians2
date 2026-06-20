@@ -9,12 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a26788e3def0e3a4b88f403734ec5414, type: 3}
-  m_Name: EnemyWaitAction
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyWaitAction
+  m_Script: {fileID: 11500000, guid: ecf166c1f3d054b408df7ae52ea87d3d, type: 3}
+  m_Name: EnemyRetreatAction
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyRetreatAction
   actionMemo: 
-  duration: 5
-  stopMove: 1
-  stopAttack: 1
-  forceIdle: 1
-  tickDefaultAttack: 0
+  speed: 3
+  duration: 1
+  updateDirectionEveryFrame: 0
+  tickDefaultAttack: 1

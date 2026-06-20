@@ -184,8 +184,6 @@ public static class EnemyPatternActionCsvImporter
         if (ContainsAny(effect, "화살", "마법탄", "검기", "충격파", "발사"))
             entry.actions.Add(CreateProjectileAction(owner, entry, effect));
 
-        if (ContainsAny(effect, "장판", "바닥", "랜덤 위치", "폭발", "착지 공격"))
-            entry.actions.Add(CreateAreaDamageAction(owner, entry, effect));
 
         if (ContainsAny(effect, "방패", "피해 감소", "막기", "자세"))
             entry.actions.Add(CreateDamageReductionAction(owner, entry, effect));
@@ -287,17 +285,6 @@ public static class EnemyPatternActionCsvImporter
         return action;
     }
 
-    private static EnemyAreaDamageAction CreateAreaDamageAction(EnemyPatternSetData owner, EnemyPatternEntry entry, string effect)
-    {
-        EnemyAreaDamageAction action = CreateSubAction<EnemyAreaDamageAction>(owner, entry, "AreaDamage");
-        action.pointType = ContainsAny(effect, "랜덤") ? EnemyPatternPointType.RandomAroundTarget : EnemyPatternPointType.Target;
-        action.radius = ContainsAny(effect, "큰", "강") ? 1.5f : 1f;
-        action.damageMultiplier = ContainsAny(effect, "강", "폭발") ? 1.4f : 1.1f;
-        action.count = ContainsAny(effect, "3곳", "세 곳") ? 3 : ExtractCount(effect, 1);
-        action.interval = 0.15f;
-        action.randomRadius = 2f;
-        return action;
-    }
 
     private static EnemyStatModifierAction CreateDamageReductionAction(EnemyPatternSetData owner, EnemyPatternEntry entry, string effect)
     {

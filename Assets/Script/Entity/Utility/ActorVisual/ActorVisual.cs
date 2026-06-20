@@ -14,6 +14,9 @@ public class ActorVisual : MonoBehaviour
     public string hitTriggerName = "Hit";
     public string dieTriggerName = "Die";
 
+    [Header("Animator State")]
+    public string idleStateName = "Idle";
+
     private bool defaultFlipX;
     private Color defaultColor;
     private Vector3 defaultLocalScale;
@@ -45,16 +48,13 @@ public class ActorVisual : MonoBehaviour
 
         transform.localScale = defaultLocalScale;
 
-        if (animator == null)
-            return;
+        if (animator != null)
+        {
+            animator.Rebind();
+            animator.Update(0f);
+        }
 
-        animator.ResetTrigger(attackTriggerName);
-        animator.ResetTrigger(hitTriggerName);
-        animator.ResetTrigger(dieTriggerName);
-        animator.SetBool(walkingBoolName, false);
-
-        animator.Rebind();
-        animator.Update(0f);
+        ForceIdle(Vector2.zero, false, true);
     }
 
     public virtual void LookDirection(Vector2 direction)
@@ -78,6 +78,7 @@ public class ActorVisual : MonoBehaviour
         if (animator == null)
             return;
 
+        animator.speed = 1f;
         animator.ResetTrigger(attackTriggerName);
         animator.SetBool(walkingBoolName, true);
     }
@@ -99,6 +100,9 @@ public class ActorVisual : MonoBehaviour
     public virtual void StopMove(Vector2 lastMoveDirection)
     {
         StopMove();
+
+        if (lastMoveDirection.sqrMagnitude > 0.0001f)
+            LookDirection(lastMoveDirection);
     }
 
     public virtual void PlayAttack()
@@ -106,6 +110,7 @@ public class ActorVisual : MonoBehaviour
         if (animator == null)
             return;
 
+        animator.speed = 1f;
         animator.SetBool(walkingBoolName, false);
         animator.ResetTrigger(hitTriggerName);
         animator.ResetTrigger(dieTriggerName);
@@ -114,7 +119,6 @@ public class ActorVisual : MonoBehaviour
 
     public virtual void PlayAttack(Vector2 attackDirection)
     {
-        Debug.Log("ท่ " + attackDirection);
         PlayAttack();
         LookDirection(attackDirection);
     }
@@ -124,6 +128,7 @@ public class ActorVisual : MonoBehaviour
         if (animator == null)
             return;
 
+        animator.speed = 1f;
         animator.SetBool(walkingBoolName, false);
         animator.ResetTrigger(attackTriggerName);
         animator.ResetTrigger(dieTriggerName);
@@ -135,10 +140,46 @@ public class ActorVisual : MonoBehaviour
         if (animator == null)
             return;
 
+        animator.speed = 1f;
         animator.SetBool(walkingBoolName, false);
         animator.ResetTrigger(attackTriggerName);
         animator.ResetTrigger(hitTriggerName);
         animator.SetTrigger(dieTriggerName);
+    }
+
+    public virtual void ForceIdle(Vector2 lookDirection, bool keepDirection = true, bool restartIdleAnimation = false)
+    {
+        if (keepDirection && lookDirection.sqrMagnitude > 0.0001f)
+            LookDirection(lookDirection);
+
+        if (animator == null)
+            return;
+
+        animator.speed = 1f;
+
+        animator.ResetTrigger(attackTriggerName);
+        animator.ResetTrigger(hitTriggerName);
+        animator.ResetTrigger(dieTriggerName);
+        animator.SetBool(walkingBoolName, false);
+
+        if (string.IsNullOrEmpty(idleStateName))
+            return;
+
+        int idleHash = Animator.StringToHash(idleStateName);
+
+        if (!animator.HasState(0, idleHash))
+            return;
+
+        AnimatorStateInfo currentState = animator.GetCurrentAnimatorStateInfo(0);
+        bool isAlreadyIdle =
+            currentState.shortNameHash == idleHash ||
+            currentState.fullPathHash == idleHash;
+
+        if (isAlreadyIdle && !restartIdleAnimation)
+            return;
+
+        animator.Play(idleHash, 0, restartIdleAnimation ? 0f : currentState.normalizedTime);
+        animator.Update(0f);
     }
 
     public virtual void PauseAnimation()

@@ -4,73 +4,124 @@ public class ActorMover : MonoBehaviour
 {
     [Header("Move")]
     public float speed = 2f;
+    public float stopDistance = 0.03f;
 
     [Header("Components")]
     public ActorVisual visual;
+    public ActorAttack attack;
 
-    private Vector2 lastMoveDirection = Vector2.down;
-    private Vector2 currentMoveDirection;
-
-    private bool isMoving;
-    private bool isMoveLocked;
+    [Header("Debug")]
+    [SerializeField] private bool isMoving;
+    [SerializeField] private bool isMoveStopped;
+    [SerializeField] private Vector2 currentMoveDirection;
+    [SerializeField] private Vector2 lastMoveDirection = Vector2.right;
 
     public bool IsMoving => isMoving;
-    public bool IsMoveLocked => isMoveLocked;
+    public bool IsMoveStopped => isMoveStopped;
+    public Vector2 CurrentMoveDirection => currentMoveDirection;
+    public Vector2 LastMoveDirection => lastMoveDirection;
 
     private void Awake()
     {
         if (visual == null)
             visual = GetComponent<ActorVisual>();
+
+        if (attack == null)
+            attack = GetComponent<ActorAttack>();
     }
 
     public void SetSpeed(float newSpeed)
     {
-        speed = newSpeed;
+        speed = Mathf.Max(0f, newSpeed);
     }
 
-    public void LockMove()
+    #region Stop State
+
+    public void SetMoveStopped(bool stopped)
     {
-        isMoveLocked = true;
-        Stop();
+        if (isMoveStopped == stopped)
+            return;
+
+        isMoveStopped = stopped;
+
+        if (isMoveStopped)
+            ForceStop();
     }
 
-    public void UnlockMove()
+    public void ForceStop()
     {
-        isMoveLocked = false;
+        isMoving = false;
+        currentMoveDirection = Vector2.zero;
+
         if (visual != null)
-        {
-            Vector2 tmp = lastMoveDirection.normalized;
-            visual.PlayMove(tmp);
-        }
+            visual.ForceIdle(lastMoveDirection, true, false);
     }
+
+    private bool CanMove()
+    {
+        return !isMoveStopped;
+    }
+
+    #endregion
+
+    #region Basic Move
 
     public void MoveTo(Transform target)
     {
+        if (!CanMove())
+            return;
+
         if (target == null)
         {
             Stop();
             return;
         }
 
-        Vector2 direction = target.position - transform.position;
-        MoveDirection(direction);
+        MoveToPosition(target.position, stopDistance);
     }
 
-    public void MoveToPosition(Vector3 targetPosition, float stopDistance = 0.03f)
+    public void MoveToPosition(Vector3 targetPosition)
     {
+        MoveToPosition(targetPosition, stopDistance);
+    }
+
+    public void MoveToPosition(Vector3 targetPosition, float customStopDistance)
+    {
+        if (!CanMove())
+            return;
+
         Vector2 toTarget = targetPosition - transform.position;
 
-        if (toTarget.magnitude <= stopDistance)
+        if (toTarget.magnitude <= customStopDistance)
         {
             Stop();
             return;
         }
 
-        MoveDirection(toTarget);
+        MoveDirection(toTarget, speed);
+    }
+
+    public void MoveToPositionWithSpeed(Vector3 targetPosition, float moveSpeed, float customStopDistance = 0.03f)
+    {
+        if (!CanMove())
+            return;
+
+        Vector2 toTarget = targetPosition - transform.position;
+
+        if (toTarget.magnitude <= customStopDistance)
+        {
+            Stop();
+            return;
+        }
+
+        MoveDirection(toTarget, moveSpeed);
     }
 
     public void MoveToDistanceFromTarget(Transform target, float targetDistance, float tolerance)
     {
+        if (!CanMove())
+            return;
+
         if (target == null)
         {
             Stop();
@@ -97,35 +148,97 @@ public class ActorMover : MonoBehaviour
         Vector2 directionToTarget = toTarget.normalized;
 
         if (distanceDifference > 0f)
-            MoveDirection(directionToTarget);
+            MoveDirection(directionToTarget, speed);
         else
-            MoveDirection(-directionToTarget);
+            MoveDirection(-directionToTarget, speed);
     }
 
     public void MoveDirection(Vector2 direction)
     {
-        if (isMoveLocked)
+        MoveDirection(direction, speed);
+    }
+
+    public void MoveDirection(Vector2 direction, float moveSpeed)
+    {
+        if (!CanMove())
+            return;
+
+        if (direction.sqrMagnitude <= 0.0001f || moveSpeed <= 0f)
         {
             Stop();
             return;
         }
 
-        if (direction.sqrMagnitude <= 0.0001f)
+        Vector2 delta = direction.normalized * moveSpeed * Time.deltaTime;
+        MoveBy(delta);
+    }
+
+    public void MoveBy(Vector2 delta)
+    {
+        if (!CanMove())
+            return;
+
+        if (delta.sqrMagnitude <= 0.0000001f)
         {
             Stop();
             return;
         }
 
-        direction.Normalize();
+        Vector2 direction = delta.normalized;
 
+        isMoving = true;
         currentMoveDirection = direction;
         lastMoveDirection = direction;
-        isMoving = true;
+
+        transform.position += (Vector3)delta;
+
+        PlayMoveVisual(direction);
+    }
+
+    #endregion
+
+    #region Position
+
+    public void SetPosition(Vector3 position)
+    {
+        transform.position = position;
+    }
+
+    public void Teleport(Vector3 position, Vector2 lookDirection)
+    {
+        transform.position = position;
+
+        if (lookDirection.sqrMagnitude > 0.0001f)
+            FaceDirection(lookDirection);
+
+        Stop();
+    }
+
+    #endregion
+
+    #region Visual
+
+    public void FaceDirection(Vector2 direction)
+    {
+        if (direction.sqrMagnitude <= 0.0001f)
+            return;
+
+        Vector2 normalizedDirection = direction.normalized;
+        lastMoveDirection = normalizedDirection;
 
         if (visual != null)
-            visual.PlayMove(direction);
+            visual.LookDirection(normalizedDirection);
+    }
 
-        transform.position += (Vector3)(direction * speed * Time.deltaTime);
+    private void PlayMoveVisual(Vector2 direction)
+    {
+        if (visual == null)
+            return;
+
+        if (attack != null && attack.IsAttacking)
+            return;
+
+        visual.PlayMove(direction);
     }
 
     public void Stop()
@@ -136,4 +249,6 @@ public class ActorMover : MonoBehaviour
         if (visual != null)
             visual.StopMove(lastMoveDirection);
     }
+
+    #endregion
 }

@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7220232f2c7d0074fa9dfd5d4a7c72ea, type: 3}
+  m_Name: EnemyHealNearbyAction
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealNearbyAction
+  actionMemo: 
+  radius: 2
+  healAmount: 5
+  targetLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  includeSelf: 1
+  effectPrefab: {fileID: 0}

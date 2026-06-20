@@ -2032,6 +2032,12 @@ MonoBehaviour:
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
+  drawSpawnGizmo: 1
+  drawSpawnGizmoOnlySelected: 1
+  spawnGizmoColor: {r: 1, g: 0.35, b: 0.1, a: 0.9}
+  spawnGizmoSegments: 64
+  drawSpawnCenterPoint: 1
+  drawSpawnerToCenterLine: 1
   enableSpawnDebug: 1
   debugNextEnemyName: 
   debugSpawnInterval: 0
@@ -6497,6 +6503,12 @@ MonoBehaviour:
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
+  drawSpawnGizmo: 1
+  drawSpawnGizmoOnlySelected: 1
+  spawnGizmoColor: {r: 1, g: 0.35, b: 0.1, a: 0.9}
+  spawnGizmoSegments: 64
+  drawSpawnCenterPoint: 1
+  drawSpawnerToCenterLine: 1
   enableSpawnDebug: 1
   debugNextEnemyName: 
   debugSpawnInterval: 0
@@ -15581,6 +15593,12 @@ MonoBehaviour:
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
+  drawSpawnGizmo: 1
+  drawSpawnGizmoOnlySelected: 1
+  spawnGizmoColor: {r: 1, g: 0.35, b: 0.1, a: 0.9}
+  spawnGizmoSegments: 64
+  drawSpawnCenterPoint: 1
+  drawSpawnerToCenterLine: 1
   enableSpawnDebug: 1
   debugNextEnemyName: 
   debugSpawnInterval: 0
@@ -16064,6 +16082,12 @@ MonoBehaviour:
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
+  drawSpawnGizmo: 1
+  drawSpawnGizmoOnlySelected: 1
+  spawnGizmoColor: {r: 1, g: 0.35, b: 0.1, a: 0.9}
+  spawnGizmoSegments: 64
+  drawSpawnCenterPoint: 1
+  drawSpawnerToCenterLine: 1
   enableSpawnDebug: 1
   debugNextEnemyName: 
   debugSpawnInterval: 0
@@ -17766,6 +17790,12 @@ MonoBehaviour:
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
+  drawSpawnGizmo: 1
+  drawSpawnGizmoOnlySelected: 1
+  spawnGizmoColor: {r: 1, g: 0.35, b: 0.1, a: 0.9}
+  spawnGizmoSegments: 64
+  drawSpawnCenterPoint: 1
+  drawSpawnerToCenterLine: 1
   enableSpawnDebug: 1
   debugNextEnemyName: 
   debugSpawnInterval: 0
@@ -35869,7 +35899,7 @@ GameObject:
   m_Layer: 0
   m_Name: MainPlant
   m_TagString: Plant
-  m_Icon: {fileID: -5397416234189338067, guid: 0000000000000000d000000000000000, type: 0}
+  m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -36111,6 +36141,7 @@ MonoBehaviour:
   attackTriggerName: Attack
   hitTriggerName: Hit
   dieTriggerName: Die
+  idleStateName: Idle
 --- !u!114 &1230235218
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56478,7 +56509,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActorMover
   speed: 2
+  stopDistance: 0.03
   visual: {fileID: 1836332731}
+  attack: {fileID: 0}
+  isMoving: 0
+  isMoveStopped: 0
+  currentMoveDirection: {x: 0, y: 0}
+  lastMoveDirection: {x: 0, y: -1}
 --- !u!114 &1836332731
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56498,6 +56535,7 @@ MonoBehaviour:
   attackTriggerName: Attack
   hitTriggerName: Hit
   dieTriggerName: Die
+  idleStateName: Idle
   moveXFloatName: MoveX
   moveYFloatName: MoveY
   idleXFloatName: IdleX

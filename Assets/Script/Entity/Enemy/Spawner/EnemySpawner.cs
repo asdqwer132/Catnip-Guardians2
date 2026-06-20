@@ -11,7 +11,13 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
 
     [Header("Runtime Stat")]
     [SerializeField] private EnemySpawnerStat currentStat = new EnemySpawnerStat();
-
+    [Header("Spawn Gizmo")]
+    [SerializeField] private bool drawSpawnGizmo = true;
+    [SerializeField] private bool drawSpawnGizmoOnlySelected = true;
+    [SerializeField] private Color spawnGizmoColor = new Color(1f, 0.35f, 0.1f, 0.9f);
+    [SerializeField, Min(8)] private int spawnGizmoSegments = 64;
+    [SerializeField] private bool drawSpawnCenterPoint = true;
+    [SerializeField] private bool drawSpawnerToCenterLine = true;
     [Header("Spawn Debug Only")]
     [SerializeField] private bool enableSpawnDebug = true;
     [SerializeField] private string debugNextEnemyName;
@@ -384,5 +390,84 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         }
 
         return null;
+    }
+    private void OnDrawGizmos()
+    {
+        if (drawSpawnGizmoOnlySelected)
+            return;
+
+        DrawSpawnGizmo();
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (!drawSpawnGizmoOnlySelected)
+            return;
+
+        DrawSpawnGizmo();
+    }
+
+    private void DrawSpawnGizmo()
+    {
+        if (!drawSpawnGizmo)
+            return;
+
+        float distance = GetGizmoSpawnDistance();
+
+        if (distance <= 0f)
+            return;
+
+        // 현재 실제 스폰 코드가 spawnPos = dir * distance 이므로
+        // 월드 원점 기준으로 기즈모를 그림
+        Vector3 center = Vector3.zero;
+
+        Gizmos.color = spawnGizmoColor;
+
+        DrawWireCircle(center, distance, spawnGizmoSegments);
+
+        if (drawSpawnCenterPoint)
+        {
+            float centerSize = Mathf.Max(0.1f, distance * 0.03f);
+            Gizmos.DrawSphere(center, centerSize);
+        }
+
+        if (drawSpawnerToCenterLine)
+        {
+            Gizmos.DrawLine(transform.position, center);
+        }
+    }
+
+    private float GetGizmoSpawnDistance()
+    {
+        if (Application.isPlaying && currentStat != null)
+            return currentStat.spawnDistance;
+
+        if (baseStat != null)
+            return baseStat.spawnDistance;
+
+        return 8f;
+    }
+
+    private void DrawWireCircle(Vector3 center, float radius, int segments)
+    {
+        segments = Mathf.Max(8, segments);
+
+        float angleStep = Mathf.PI * 2f / segments;
+
+        Vector3 prevPoint = center + new Vector3(radius, 0f, 0f);
+
+        for (int i = 1; i <= segments; i++)
+        {
+            float angle = angleStep * i;
+
+            Vector3 nextPoint = center + new Vector3(
+                Mathf.Cos(angle) * radius,
+                Mathf.Sin(angle) * radius,
+                0f
+            );
+
+            Gizmos.DrawLine(prevPoint, nextPoint);
+            prevPoint = nextPoint;
+        }
     }
 }

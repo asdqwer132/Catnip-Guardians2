@@ -122,7 +122,8 @@ public class EnemyPatternRunner : MonoBehaviour
     {
         if (!initialized)
             return false;
-
+        if (enemy != null && enemy.IsFullyStopped)
+            return false;
         if (patternData == null)
             return false;
 
@@ -399,16 +400,42 @@ public class EnemyPatternRunner : MonoBehaviour
         if (patternCoroutine != null)
             StopCoroutine(patternCoroutine);
 
+        PreparePatternState(runtime.Entry);
         patternCoroutine = StartCoroutine(RunPattern(runtime));
+    }
+
+    private void PreparePatternState(EnemyPatternEntry entry)
+    {
+        isExecuting = true;
+        isBlockingDefaultAI = ShouldBlockDefaultAI(entry);
+        currentPatternName = string.IsNullOrEmpty(entry.patternName) ? entry.pickGroup.ToString() : entry.patternName;
+    }
+
+    private bool ShouldBlockDefaultAI(EnemyPatternEntry entry)
+    {
+        if (entry == null)
+            return false;
+
+        if (entry.blockDefaultAI)
+            return true;
+
+        if (entry.actions == null)
+            return false;
+
+        for (int i = 0; i < entry.actions.Count; i++)
+        {
+            EnemyPatternAction action = entry.actions[i];
+
+            if (action != null && action.ForceBlockDefaultAI)
+                return true;
+        }
+
+        return false;
     }
 
     private IEnumerator RunPattern(EnemyPatternRuntime runtime)
     {
         EnemyPatternEntry entry = runtime.Entry;
-
-        isExecuting = true;
-        isBlockingDefaultAI = entry.blockDefaultAI;
-        currentPatternName = string.IsNullOrEmpty(entry.patternName) ? entry.pickGroup.ToString() : entry.patternName;
 
         if (patternData != null)
         {
@@ -456,7 +483,16 @@ public class EnemyPatternRunner : MonoBehaviour
         if (isHandlingLethalDamage)
             FinishLethalDamagePattern();
     }
+    public void ForceStopPattern()
+    {
+        StopPattern();
 
+        queuedReactivePattern = null;
+        queuedDeathPattern = null;
+
+        isHandlingLethalDamage = false;
+        pendingLethalDamage = 0f;
+    }
     public void StopPattern()
     {
         if (patternCoroutine != null)
