@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "EnemyWaitAction", menuName = "GameData/Enemy/Enemy Pattern/Action/Wait")]
@@ -6,6 +7,8 @@ public class EnemyWaitAction : EnemyPatternAction
 {
     [Header("Wait")]
     [Min(0f)] public float duration = 0.3f;
+
+    public string animationName;
 
     [Header("Stop Option")]
     public bool stopMove = true;
@@ -33,10 +36,17 @@ public class EnemyWaitAction : EnemyPatternAction
         if (stopAttack && attack != null)
             attack.SetAttackStopped(true);
 
-        if (forceIdle && visual != null)
+        if (visual != null)
         {
-            Vector2 lookDirection = mover != null ? mover.LastMoveDirection : Vector2.zero;
-            visual.ForceIdle(lookDirection, true, false);
+            if (forceIdle)
+            {
+                Vector2 lookDirection = mover != null ? mover.LastMoveDirection : Vector2.zero;
+                visual.ForceIdle(lookDirection, true, false);
+            }
+            else if (!string.IsNullOrEmpty(animationName))
+            {
+                visual.PlayAnimationByName(animationName);
+            }
         }
 
         float timer = 0f;

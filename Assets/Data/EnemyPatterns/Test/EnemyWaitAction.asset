@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: EnemyWaitAction
   m_EditorClassIdentifier: Assembly-CSharp::EnemyWaitAction
   actionMemo: 
-  duration: 5
+  duration: 10
+  animationName: DefaultEnemy-Test
   stopMove: 1
   stopAttack: 1
-  forceIdle: 1
+  forceIdle: 0
   tickDefaultAttack: 0

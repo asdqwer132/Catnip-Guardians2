@@ -25,11 +25,9 @@ public class ItemThrowExecutor : MonoBehaviour
     {
         if (inventoryItem == null)
             return false;
-        Debug.Log("정보 부족 아이템");
 
         if (itemEffectExecutor == null)
             return false;
-        Debug.Log("정보 부족");
 
         startPosition.z = 0f;
         targetPosition.z = 0f;
@@ -40,14 +38,12 @@ public class ItemThrowExecutor : MonoBehaviour
         direction.z = 0f;
 
         direction.Normalize();
-        Debug.Log("거리 부족");
 
         ItemThrowMover mover = CreateThrowMover(startPosition);
 
         if (mover == null)
             return false;
 
-        Debug.Log("무버 부족");
         Sprite itemSprite = inventoryItem.icon;
 
         TargetRangeIndicator rangeIndicator = CreateTargetRangeIndicator(
