@@ -8,7 +8,6 @@ public class EnemyWaitAction : EnemyPatternAction
     [Header("Wait")]
     [Min(0f)] public float duration = 0.3f;
 
-    public string animationName;
 
     [Header("Stop Option")]
     public bool stopMove = true;
@@ -36,17 +35,10 @@ public class EnemyWaitAction : EnemyPatternAction
         if (stopAttack && attack != null)
             attack.SetAttackStopped(true);
 
-        if (visual != null)
+        if (forceIdle && visual != null)
         {
-            if (forceIdle)
-            {
-                Vector2 lookDirection = mover != null ? mover.LastMoveDirection : Vector2.zero;
-                visual.ForceIdle(lookDirection, true, false);
-            }
-            else if (!string.IsNullOrEmpty(animationName))
-            {
-                visual.PlayAnimationByName(animationName);
-            }
+            Vector2 lookDirection = mover != null ? mover.LastMoveDirection : Vector2.zero;
+            visual.ForceIdle(lookDirection, true, false);
         }
 
         float timer = 0f;

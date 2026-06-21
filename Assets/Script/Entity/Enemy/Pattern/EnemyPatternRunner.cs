@@ -20,6 +20,7 @@ public class EnemyPatternRunner : MonoBehaviour
     [SerializeField] private bool isBlockingDefaultAI;
 
     [Header("Pattern Cooldown Debug")]
+    [DecimalPlaces(1)]
     [SerializeField] private float nextPatternRemainingTime;
     [SerializeField] private string nextPatternState = "Ready";
 
@@ -432,7 +433,6 @@ public class EnemyPatternRunner : MonoBehaviour
 
         return false;
     }
-
     private IEnumerator RunPattern(EnemyPatternRuntime runtime)
     {
         EnemyPatternEntry entry = runtime.Entry;
@@ -452,22 +452,21 @@ public class EnemyPatternRunner : MonoBehaviour
         if (entry.actions != null)
         {
             for (int i = 0; i < entry.actions.Count; i++)
-                entry.actions[i]?.OnPatternStart(context, entry);
-
-            for (int i = 0; i < entry.actions.Count; i++)
             {
                 EnemyPatternAction action = entry.actions[i];
+
                 if (action == null)
                     continue;
 
+                action.OnPatternStart(context, entry);
+
                 yield return action.Execute(context, entry);
+
+                action.OnPatternEnd(context, entry);
 
                 if (enemy == null || enemy.IsDead)
                     break;
             }
-
-            for (int i = entry.actions.Count - 1; i >= 0; i--)
-                entry.actions[i]?.OnPatternEnd(context, entry);
         }
 
         runtime.StartCooldown();
