@@ -14,9 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyBasicAttackAction
   actionMemo: attack
   animationByName: Armored Orc-Pattern1_2
+  audioByName:
+    categoryName: 
+    clipName: 
   beforeEffectPrefab: {fileID: 0}
   afterEffectPrefab: {fileID: 5279586035596983242, guid: 557021c028d95854697b500198d0af1a, type: 3}
-  actionDamage: 10
+  actionDamage: 1
   addBaseAttackDamage: 0
   baseAttackDamageMultiplier: 1
   attackDelay: 1

@@ -5,32 +5,49 @@ public class RoundManager : MonoBehaviour
     [Header("Manager")]
     public EnemyManager enemyManager;
     public PlantManager plantManager;
-
-
-    [Header("UI")]
-    public GameObject upgradePanel;
+    public GameEndManager endManager;
 
     public void Victory()
     {
-        if ((CurrencyManager.instance == null)) Debug.LogWarning("null1");
-        if ((plantManager.CurrentPlant == null)) Debug.LogWarning("null2");
+        if (CurrencyManager.instance == null)
+        {
+            Debug.LogWarning("CurrencyManager is null");
+            return;
+        }
+
+        if (plantManager == null || plantManager.CurrentPlant == null)
+        {
+            Debug.LogWarning("CurrentPlant is null");
+            GameOver();
+            return;
+        }
+
         CurrencyManager.instance.AddCurrency(plantManager.CurrentPlant.reward);
 
-        //º∫¿Â ±‚πÕ
-        enemyManager.AllStop();
+        if (enemyManager != null)
+            enemyManager.AllStop();
 
         plantManager.PlayGrown();
 
-        Invoke(nameof(Next), 2);
-        
+        Invoke(nameof(Next), 2f);
     }
-    public void Next()
+
+    private void Next()
     {
+        if (plantManager == null)
+        {
+            GameOver();
+            return;
+        }
+
         if (plantManager.UpIndex())
         {
-            enemyManager.KillAllEnemies();
-            enemyManager.Init(plantManager.CurrentPlant);
-            enemyManager.AllStart();
+            if (enemyManager != null)
+            {
+                enemyManager.KillAllEnemies();
+                enemyManager.Init(plantManager.CurrentPlant);
+                enemyManager.AllStart();
+            }
         }
         else
         {
@@ -40,25 +57,13 @@ public class RoundManager : MonoBehaviour
 
     public void GameOver()
     {
-        GrowManager.instance.StopGrowth();
-        enemyManager.AllStop();
-        ReadyUpgrade();
-    }
+        if (GrowManager.instance != null)
+            GrowManager.instance.StopGrowth();
 
+        if (enemyManager != null)
+            enemyManager.AllStop();
 
-    void ReadyUpgrade()
-    {
-        if (upgradePanel != null)
-            upgradePanel.SetActive(true);
-
-        CursorChanger.instance.SetCursor(CursorType.Default);
-    }
-
-    public void StartNextRound()
-    {
-        if (upgradePanel != null)
-            upgradePanel.SetActive(false);
-
-        CursorChanger.instance.SetCursor(CursorType.Attack);
+        if (endManager != null)
+            endManager.LoseGame();
     }
 }
