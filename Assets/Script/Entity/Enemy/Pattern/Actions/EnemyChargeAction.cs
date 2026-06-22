@@ -27,9 +27,6 @@ public class EnemyChargeAction : EnemyPatternAction
     public bool forceBlockDefaultAI = true;
     public bool keepFacingChargeDirection = true;
 
-    [Tooltip("구버전 호환 필드입니다. 차지 액션에서는 기존 ActorAttack을 틱하지 않습니다.")]
-    public bool tickDefaultAttack = false;
-
     public override bool ForceBlockDefaultAI => forceBlockDefaultAI;
 
     public override IEnumerator Execute(EnemyPatternContext context, EnemyPatternEntry pattern)

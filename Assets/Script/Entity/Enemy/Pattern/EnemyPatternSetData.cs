@@ -4,12 +4,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "EnemyPatternSetData", menuName = "GameData/Enemy/Enemy Pattern/Enemy Pattern Set Data")]
 public class EnemyPatternSetData : ScriptableObject
 {
-    [Header("Pattern Cooldown")]
-    [Min(0.05f)] public float patternCooldown = 4f;
-
-    [Header("Random2 Option")]
-    public bool useRandom2OnlyBelowHp = false;
-    [Range(0f, 1f)] public float random2HpRatio = 0.5f;
+    [Header("Pattern Cooldown Random")]
+    [Min(0.05f)] public float minPatternCooldown = 3f;
+    [Min(0.05f)] public float maxPatternCooldown = 5f;
 
     [Header("Execution")]
     public bool cancelDefaultAttackOnPatternStart = true;
@@ -20,4 +17,12 @@ public class EnemyPatternSetData : ScriptableObject
 
     [Header("Patterns")]
     public List<EnemyPatternEntry> patterns = new List<EnemyPatternEntry>();
+
+    private void OnValidate()
+    {
+        minPatternCooldown = Mathf.Max(0.05f, minPatternCooldown);
+        maxPatternCooldown = Mathf.Max(0.05f, maxPatternCooldown);
+
+    }
+
 }

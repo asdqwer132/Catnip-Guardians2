@@ -14,17 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyBasicAttackAction
   actionMemo: attack
   animationByName: Armored Orc-Pattern1_2
+  beforeEffectPrefab: {fileID: 0}
+  afterEffectPrefab: {fileID: 5279586035596983242, guid: 557021c028d95854697b500198d0af1a, type: 3}
   actionDamage: 10
   addBaseAttackDamage: 0
   baseAttackDamageMultiplier: 1
-  attackDelay: 0.25
+  attackDelay: 1
   afterDamageDelay: 0
   waitAnimationEnd: 1
   useCustomAttackRange: 0
-  customAttackRange: 1.5
+  customAttackRange: 5
   customAttackDistanceTolerance: 0.15
-  requireRangeBeforeStart: 1
-  checkRangeBeforeDamage: 1
+  requireRangeBeforeStart: 0
+  checkRangeBeforeDamage: 0
   faceTargetBeforeStart: 1
   faceTargetBeforeDamage: 1
   forceBlockDefaultAI: 1

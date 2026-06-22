@@ -14,8 +14,6 @@ public class EnemyWaitAction : EnemyPatternAction
     public bool stopAttack = false;
     public bool forceIdle = true;
 
-    [Header("During Wait")]
-    public bool tickDefaultAttack = false;
 
     public override IEnumerator Execute(EnemyPatternContext context, EnemyPatternEntry pattern)
     {
@@ -53,9 +51,6 @@ public class EnemyWaitAction : EnemyPatternAction
 
             if (context.Enemy.IsFullyStopped)
                 break;
-
-            if (tickDefaultAttack && !stopAttack)
-                context.TickDefaultAttack();
 
             timer += Time.deltaTime;
             yield return null;

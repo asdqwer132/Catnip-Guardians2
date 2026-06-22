@@ -6,8 +6,6 @@ public class EnemyTeleportAction : EnemyPatternAction
 {
     [Min(0f)] public float distanceFromTarget = 1f;
     public bool behindTargetFromEnemy = true;
-    public GameObject beforeEffectPrefab;
-    public GameObject afterEffectPrefab;
 
     public override IEnumerator Execute(EnemyPatternContext context, EnemyPatternEntry pattern)
     {
@@ -18,8 +16,6 @@ public class EnemyTeleportAction : EnemyPatternAction
         if (target == null)
             yield break;
 
-        if (beforeEffectPrefab != null)
-            Instantiate(beforeEffectPrefab, context.Position, Quaternion.identity);
 
         Vector2 direction;
 
@@ -41,8 +37,6 @@ public class EnemyTeleportAction : EnemyPatternAction
         context.Enemy.transform.position = teleportPosition;
         context.LookDirection(-direction);
 
-        if (afterEffectPrefab != null)
-            Instantiate(afterEffectPrefab, teleportPosition, Quaternion.identity);
 
         yield return null;
     }

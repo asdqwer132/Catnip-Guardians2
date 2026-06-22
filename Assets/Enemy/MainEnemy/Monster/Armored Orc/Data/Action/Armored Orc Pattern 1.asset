@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 24df223de31c82f4e826ed2876d7d235, type: 3}
-  m_Name: Armored Orc Pattern
+  m_Name: Armored Orc Pattern 1
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPatternSetData
   minPatternCooldown: 5
   maxPatternCooldown: 10
@@ -20,7 +20,7 @@ MonoBehaviour:
   patterns:
   - patternName: action1
     memo: 
-    enabled: 0
+    enabled: 1
     pickGroup: 1
     blockDefaultAI: 0
     weight: 1
@@ -37,7 +37,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 7afdc9cff24149d4eb1519fde3ee85c3, type: 2}
   - patternName: action2
     memo: 
-    enabled: 1
+    enabled: 0
     pickGroup: 1
     blockDefaultAI: 0
     weight: 1

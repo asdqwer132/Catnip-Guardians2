@@ -537,6 +537,6 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
             CurrencyManager.instance.AddCurrency(statData.reward);
 
         if (GrowManager.instance != null)
-            GrowManager.instance.AddGrowth(statData.growEx);
+            GrowManager.instance.AddGrowth(baseStat.growEx);
     }
 }

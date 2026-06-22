@@ -1,88 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3253643326911382687
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1230819951618593370}
-  - component: {fileID: 6645173589337704241}
-  - component: {fileID: 8243966129480628730}
-  - component: {fileID: 1698829534388872154}
-  m_Layer: 0
-  m_Name: Health
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1230819951618593370
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3253643326911382687}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8319794836907226570}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6645173589337704241
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3253643326911382687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b6df663bf9a3df4b8267d08461dd38b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DamagePopupSpawner
-  damagePopupPrefab: {fileID: 2401740305231073992, guid: 90a8963889acb9b41805551146ab46ab, type: 3}
-  popupPoint: {fileID: 0}
-  offset: {x: 0, y: 0.25, z: 0}
-  useRandomOffset: 1
-  randomXRange: 0.25
-  randomYRange: 0.15
---- !u!114 &8243966129480628730
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3253643326911382687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c9ce1731c768c049b9fe5c40e0d1765, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Health
-  hp: 0
-  maxHp: 0
---- !u!114 &1698829534388872154
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3253643326911382687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd038496d724962468ae9d2e4799b22c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HealthBarUI
-  health: {fileID: 8243966129480628730}
-  pannel: {fileID: 0}
-  hpFill: {fileID: 0}
-  hideWhenFullHp: 0
-  hideWhenDead: 1
 --- !u!1 &5831428086637394887
 GameObject:
   m_ObjectHideFlags: 0
@@ -101,8 +18,9 @@ GameObject:
   - component: {fileID: 2430655365351377237}
   - component: {fileID: 1506509451877719227}
   - component: {fileID: 2148724508074491466}
+  - component: {fileID: -7241566837999169237}
   m_Layer: 0
-  m_Name: Armored Orc
+  m_Name: Armored Orc Overdrive
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -122,7 +40,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3795823362948303495}
-  - {fileID: 1230819951618593370}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &5335311948501192886
@@ -174,7 +91,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 3799508404887519019, guid: 7b4aa390d3184284cab965cb3b850f9f, type: 3}
+  m_Sprite: {fileID: 2912446813672376553, guid: fa2f769dfb5aabf4180f5a3d6804fc21, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -264,10 +181,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b559e5cbf9fb62e4c9e2e250e94430ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
-  health: {fileID: 8243966129480628730}
-  healthBarUI: {fileID: 1698829534388872154}
+  health: {fileID: 4578612022304807253}
+  deathTime: 2
+  healthBarUI: {fileID: 3179627762192719126}
   visual: {fileID: 7063470980320774977}
-  damagePopupSpawner: {fileID: 6645173589337704241}
+  damagePopupSpawner: {fileID: 132660525539928221}
   useDamagePopup: 1
   hideHealthBarOnDeath: 1
   statData: {fileID: 11400000, guid: ba6154aabdeac894eaddc359ebf7b7f4, type: 2}
@@ -283,6 +201,7 @@ MonoBehaviour:
     damage: 5
     attackRange: 1.5
     attackCooldown: 1
+    growEx: 10
   isFullyStopped: 0
 --- !u!114 &7500191993510811139
 MonoBehaviour:
@@ -345,6 +264,7 @@ MonoBehaviour:
   target: {fileID: 1506509451877719227}
   visual: {fileID: 7063470980320774977}
   isAttackStopped: 0
+  isActionAttackPlaying: 0
 --- !u!114 &1506509451877719227
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -370,7 +290,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00c318430d18f2e49a316a8d37f7ee58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPatternRunner
-  patternData: {fileID: 11400000, guid: ed09668aa7be02941ba57b940a592046, type: 2}
+  patternData: {fileID: 11400000, guid: d83a1e0cea339c448be166e84ac2b170, type: 2}
+  patternCooldown: 0
   enemy: {fileID: -4853661844404500515}
   actorTarget: {fileID: 1506509451877719227}
   mover: {fileID: 7500191993510811139}
@@ -382,6 +303,19 @@ MonoBehaviour:
   nextPatternRemainingTime: 0
   nextPatternState: Ready
   runtimeModifierCount: 0
+--- !u!114 &-7241566837999169237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5831428086637394887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3e7630b991b882459d6cafd09e6e0ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PooledObject
+  poolGroup: 1
 --- !u!1001 &8310913712941043610
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -519,8 +453,41 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
+--- !u!114 &132660525539928221 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8250882549362992903, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
+  m_PrefabInstance: {fileID: 8310913712941043610}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b6df663bf9a3df4b8267d08461dd38b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamagePopupSpawner
+--- !u!114 &3179627762192719126 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6878691422165373580, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
+  m_PrefabInstance: {fileID: 8310913712941043610}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd038496d724962468ae9d2e4799b22c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HealthBarUI
 --- !u!224 &3795823362948303495 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5186795204256957725, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
   m_PrefabInstance: {fileID: 8310913712941043610}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4578612022304807253 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5538359490992772815, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
+  m_PrefabInstance: {fileID: 8310913712941043610}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9ce1731c768c049b9fe5c40e0d1765, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Health

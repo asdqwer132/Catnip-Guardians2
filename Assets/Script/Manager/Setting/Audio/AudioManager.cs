@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,6 +24,15 @@ public class AudioManager : MonoBehaviour
     public int initialSfxSourceCount = 10;
     public bool expandSfxPool = true;
 
+    [Header("SFX Category Limit")]
+    public bool useSfxCategoryLimit = true;
+    [Min(1)] public int defaultCategoryMaxSimultaneous = 10;
+    public List<SfxCategoryLimit> sfxCategoryLimits = new List<SfxCategoryLimit>();
+
+    [Header("SFX Same Clip Limit")]
+    public bool preventSameSfxOverlap = false;
+    [Min(0f)] public float sameSfxMinInterval = 0.05f;
+
     [Header("BGM")]
     public float bgmFadeDuration = 0.5f;
 
@@ -32,13 +42,26 @@ public class AudioManager : MonoBehaviour
     [Range(0f, 1f)] public float sfxVolume = 1f;
 
     private readonly List<AudioSource> sfxSources = new List<AudioSource>();
-    private readonly Dictionary<string, AudioClip> clipCache = new Dictionary<string, AudioClip>();
+
+    private readonly Dictionary<string, AudioClip> clipCache =
+        new Dictionary<string, AudioClip>();
+
+    private readonly Dictionary<string, List<AudioClip>> categoryClipCache =
+        new Dictionary<string, List<AudioClip>>();
+
+    private readonly Dictionary<AudioSource, string> sfxSourceCategories =
+        new Dictionary<AudioSource, string>();
+
+    private readonly Dictionary<AudioClip, float> lastSfxPlayTimes =
+        new Dictionary<AudioClip, float>();
 
     private Coroutine bgmFadeCoroutine;
 
     private const string MASTER_VOLUME_PARAM = "MasterVolume";
     private const string BGM_VOLUME_PARAM = "BgmVolume";
     private const string SFX_VOLUME_PARAM = "SfxVolume";
+
+    private const string DEFAULT_CATEGORY = "Default";
 
     private void Awake()
     {
@@ -59,9 +82,7 @@ public class AudioManager : MonoBehaviour
     private void SetupBgmSource()
     {
         if (bgmSource == null)
-        {
             bgmSource = gameObject.AddComponent<AudioSource>();
-        }
 
         bgmSource.playOnAwake = false;
         bgmSource.loop = true;
@@ -72,6 +93,7 @@ public class AudioManager : MonoBehaviour
     private void BuildCache()
     {
         clipCache.Clear();
+        categoryClipCache.Clear();
 
         if (audioLibrary == null)
         {
@@ -79,28 +101,48 @@ public class AudioManager : MonoBehaviour
             return;
         }
 
-        for (int i = 0; i < audioLibrary.clips.Count; i++)
+        if (audioLibrary.categories == null)
+            return;
+
+        for (int i = 0; i < audioLibrary.categories.Count; i++)
         {
-            AudioEntry entry = audioLibrary.clips[i];
+            AudioCategoryGroup group = audioLibrary.categories[i];
 
-            if (entry == null || entry.clip == null)
+            if (group == null)
                 continue;
 
-            string key = MakeKey(entry.category, entry.soundName);
+            string normalizedCategory = AudioLibrary.NormalizeKey(group.categoryName);
 
-            if (clipCache.ContainsKey(key))
+            if (!categoryClipCache.ContainsKey(normalizedCategory))
+                categoryClipCache[normalizedCategory] = new List<AudioClip>();
+
+            if (group.clips == null)
+                continue;
+
+            for (int j = 0; j < group.clips.Count; j++)
             {
-                Debug.LogWarning($"중복 오디오 키가 있습니다: {entry.category}/{entry.soundName}");
-                continue;
-            }
+                AudioClipEntry entry = group.clips[j];
 
-            clipCache.Add(key, entry.clip);
+                if (entry == null || entry.clip == null)
+                    continue;
+
+                string key = MakeKey(group.categoryName, entry.soundName);
+
+                if (clipCache.ContainsKey(key))
+                {
+                    Debug.LogWarning($"중복 오디오 키가 있습니다: {group.categoryName}/{entry.soundName}");
+                    continue;
+                }
+
+                clipCache.Add(key, entry.clip);
+                categoryClipCache[normalizedCategory].Add(entry.clip);
+            }
         }
     }
-
     private void CreateSfxPool()
     {
         sfxSources.Clear();
+        sfxSourceCategories.Clear();
 
         for (int i = 0; i < initialSfxSourceCount; i++)
         {
@@ -122,6 +164,8 @@ public class AudioManager : MonoBehaviour
 
         return source;
     }
+
+    #region Volume
 
     public void SetMasterVolume(float value)
     {
@@ -159,10 +203,15 @@ public class AudioManager : MonoBehaviour
         return Mathf.Log10(volume) * 20f;
     }
 
+    #endregion
+
+    #region SFX
+
     public void PlaySfx(string category, string soundName)
     {
         PlaySfx(category, soundName, 1f);
     }
+
     public void PlaySfx(string category)
     {
         AudioClip clip = GetRandomClipByCategory(category);
@@ -170,39 +219,9 @@ public class AudioManager : MonoBehaviour
         if (clip == null)
             return;
 
-        PlaySfx(clip);
+        PlaySfx(category, clip, 1f);
     }
-    private AudioClip GetRandomClipByCategory(string category)
-    {
-        if (audioLibrary == null || audioLibrary.clips == null)
-            return null;
 
-        string normalizedCategory = AudioLibrary.NormalizeKey(category);
-
-        List<AudioClip> matchedClips = new List<AudioClip>();
-
-        for (int i = 0; i < audioLibrary.clips.Count; i++)
-        {
-            AudioEntry entry = audioLibrary.clips[i];
-
-            if (entry == null || entry.clip == null)
-                continue;
-
-            if (AudioLibrary.NormalizeKey(entry.category) != normalizedCategory)
-                continue;
-
-            matchedClips.Add(entry.clip);
-        }
-
-        if (matchedClips.Count == 0)
-        {
-            Debug.LogWarning($"해당 카테고리의 오디오 클립이 없습니다: {category}");
-            return null;
-        }
-
-        int randomIndex = Random.Range(0, matchedClips.Count);
-        return matchedClips[randomIndex];
-    }
     public void PlaySfx(string category, string soundName, float volumeScale)
     {
         AudioClip clip = GetClip(category, soundName);
@@ -210,17 +229,33 @@ public class AudioManager : MonoBehaviour
         if (clip == null)
             return;
 
-        PlaySfx(clip, volumeScale);
+        PlaySfx(category, clip, volumeScale);
     }
 
     public void PlaySfx(AudioClip clip)
     {
-        PlaySfx(clip, 1f);
+        PlaySfx(DEFAULT_CATEGORY, clip, 1f);
     }
 
     public void PlaySfx(AudioClip clip, float volumeScale)
     {
+        PlaySfx(DEFAULT_CATEGORY, clip, volumeScale);
+    }
+
+    public void PlaySfx(string category, AudioClip clip, float volumeScale = 1f)
+    {
         if (clip == null)
+            return;
+
+        string normalizedCategory = AudioLibrary.NormalizeKey(category);
+
+        if (string.IsNullOrEmpty(normalizedCategory))
+            normalizedCategory = AudioLibrary.NormalizeKey(DEFAULT_CATEGORY);
+
+        if (!CanPlaySfxCategory(normalizedCategory))
+            return;
+
+        if (!CanPlaySameClip(clip))
             return;
 
         AudioSource source = GetAvailableSfxSource();
@@ -228,8 +263,139 @@ public class AudioManager : MonoBehaviour
         if (source == null)
             return;
 
+        sfxSourceCategories[source] = normalizedCategory;
+
         source.PlayOneShot(clip, Mathf.Clamp01(volumeScale));
+
+        if (preventSameSfxOverlap)
+            lastSfxPlayTimes[clip] = Time.unscaledTime;
     }
+
+    private bool CanPlaySfxCategory(string normalizedCategory)
+    {
+        if (!useSfxCategoryLimit)
+            return true;
+
+        int currentCount = GetPlayingSfxCountByCategory(normalizedCategory);
+        int maxCount = GetMaxSfxCountByCategory(normalizedCategory);
+
+        return currentCount < maxCount;
+    }
+
+    private int GetPlayingSfxCountByCategory(string normalizedCategory)
+    {
+        int count = 0;
+
+        for (int i = 0; i < sfxSources.Count; i++)
+        {
+            AudioSource source = sfxSources[i];
+
+            if (source == null)
+                continue;
+
+            if (!source.isPlaying)
+                continue;
+
+            if (!sfxSourceCategories.TryGetValue(source, out string sourceCategory))
+                continue;
+
+            if (sourceCategory == normalizedCategory)
+                count++;
+        }
+
+        return count;
+    }
+
+    private int GetMaxSfxCountByCategory(string normalizedCategory)
+    {
+        for (int i = 0; i < sfxCategoryLimits.Count; i++)
+        {
+            SfxCategoryLimit limit = sfxCategoryLimits[i];
+
+            if (limit == null)
+                continue;
+
+            string limitCategory = AudioLibrary.NormalizeKey(limit.category);
+
+            if (limitCategory == normalizedCategory)
+                return Mathf.Max(1, limit.maxSimultaneous);
+        }
+
+        return Mathf.Max(1, defaultCategoryMaxSimultaneous);
+    }
+
+    private bool CanPlaySameClip(AudioClip clip)
+    {
+        if (!preventSameSfxOverlap)
+            return true;
+
+        if (clip == null)
+            return false;
+
+        if (!lastSfxPlayTimes.TryGetValue(clip, out float lastPlayTime))
+            return true;
+
+        return Time.unscaledTime - lastPlayTime >= sameSfxMinInterval;
+    }
+
+    private AudioSource GetAvailableSfxSource()
+    {
+        for (int i = 0; i < sfxSources.Count; i++)
+        {
+            AudioSource source = sfxSources[i];
+
+            if (source != null && !source.isPlaying)
+                return source;
+        }
+
+        if (!expandSfxPool)
+            return null;
+
+        AudioSource newSource = CreateSfxSource();
+        sfxSources.Add(newSource);
+
+        return newSource;
+    }
+
+    private AudioClip GetRandomClipByCategory(string category)
+    {
+        string normalizedCategory = AudioLibrary.NormalizeKey(category);
+
+        if (!categoryClipCache.TryGetValue(normalizedCategory, out List<AudioClip> matchedClips))
+        {
+            Debug.LogWarning($"해당 카테고리의 오디오 클립이 없습니다: {category}");
+            return null;
+        }
+
+        if (matchedClips == null || matchedClips.Count == 0)
+        {
+            Debug.LogWarning($"해당 카테고리의 오디오 클립이 없습니다: {category}");
+            return null;
+        }
+
+        int randomIndex = UnityEngine.Random.Range(0, matchedClips.Count);
+        return matchedClips[randomIndex];
+    }
+
+    public void StopAllSfx()
+    {
+        for (int i = 0; i < sfxSources.Count; i++)
+        {
+            AudioSource source = sfxSources[i];
+
+            if (source == null)
+                continue;
+
+            source.Stop();
+
+            if (sfxSourceCategories.ContainsKey(source))
+                sfxSourceCategories[source] = string.Empty;
+        }
+    }
+
+    #endregion
+
+    #region BGM
 
     public void PlayBgm(string soundName)
     {
@@ -281,21 +447,6 @@ public class AudioManager : MonoBehaviour
             return;
 
         bgmSource.UnPause();
-    }
-
-    public void StopAllSfx()
-    {
-        for (int i = 0; i < sfxSources.Count; i++)
-        {
-            if (sfxSources[i] != null)
-                sfxSources[i].Stop();
-        }
-    }
-
-    public void StopAllAudio()
-    {
-        StopBgm();
-        StopAllSfx();
     }
 
     private IEnumerator ChangeBgmRoutine(AudioClip nextClip)
@@ -352,21 +503,14 @@ public class AudioManager : MonoBehaviour
         bgmFadeCoroutine = null;
     }
 
-    private AudioSource GetAvailableSfxSource()
+    #endregion
+
+    #region Common
+
+    public void StopAllAudio()
     {
-        for (int i = 0; i < sfxSources.Count; i++)
-        {
-            if (sfxSources[i] != null && !sfxSources[i].isPlaying)
-                return sfxSources[i];
-        }
-
-        if (!expandSfxPool)
-            return null;
-
-        AudioSource source = CreateSfxSource();
-        sfxSources.Add(source);
-
-        return source;
+        StopBgm();
+        StopAllSfx();
     }
 
     private AudioClip GetClip(string category, string soundName)
@@ -384,4 +528,13 @@ public class AudioManager : MonoBehaviour
     {
         return $"{AudioLibrary.NormalizeKey(category)}/{AudioLibrary.NormalizeKey(soundName)}";
     }
+
+    #endregion
+}
+
+[Serializable]
+public class SfxCategoryLimit
+{
+    public string category;
+    [Min(1)] public int maxSimultaneous = 5;
 }

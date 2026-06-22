@@ -5,6 +5,7 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
 {
     [Header("Health")]
     public Health health;
+    public float deathTime = 0.5f;
 
     [Header("Visual")]
     public HealthBarUI healthBarUI;
@@ -92,6 +93,7 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
         {
             visual.PlayDie();
             yield return visual.WaitCurrentAnimationEnd();
+            yield return new WaitForSeconds(deathTime);
         }
 
         deathCoroutine = null;

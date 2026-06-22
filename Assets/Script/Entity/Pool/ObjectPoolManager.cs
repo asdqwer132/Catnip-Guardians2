@@ -5,11 +5,19 @@ public class ObjectPoolManager : MonoBehaviour
 {
     public static ObjectPoolManager instance;
 
-    [Header("Parent")]
+    [Header("Default Parent")]
     public Transform poolParent;
 
-    private readonly Dictionary<GameObject, Queue<GameObject>> poolDictionary =
-        new Dictionary<GameObject, Queue<GameObject>>();
+    [Header("Active Parents")]
+    public Transform enemyActiveParent;
+    public Transform effectActiveParent;
+
+    [Header("Inactive Pool Parents")]
+    public Transform enemyPoolParent;
+    public Transform effectPoolParent;
+
+    private readonly Dictionary<GameObject, Queue<PooledObject>> poolDictionary =
+        new Dictionary<GameObject, Queue<PooledObject>>();
 
     private void Awake()
     {
@@ -17,6 +25,12 @@ public class ObjectPoolManager : MonoBehaviour
 
         if (poolParent == null)
             poolParent = transform;
+
+        if (enemyPoolParent == null)
+            enemyPoolParent = poolParent;
+
+        if (effectPoolParent == null)
+            effectPoolParent = poolParent;
     }
 
     public GameObject Spawn(GameObject prefab, Vector3 position, Quaternion rotation)
@@ -25,26 +39,28 @@ public class ObjectPoolManager : MonoBehaviour
             return null;
 
         if (!poolDictionary.ContainsKey(prefab))
-            poolDictionary[prefab] = new Queue<GameObject>();
+            poolDictionary[prefab] = new Queue<PooledObject>();
 
-        GameObject obj = null;
-        Queue<GameObject> pool = poolDictionary[prefab];
+        PooledObject pooledObject = null;
+        Queue<PooledObject> pool = poolDictionary[prefab];
 
-        while (pool.Count > 0 && obj == null)
-            obj = pool.Dequeue();
+        while (pool.Count > 0 && pooledObject == null)
+            pooledObject = pool.Dequeue();
 
-        if (obj == null)
+        if (pooledObject == null)
         {
-            obj = Instantiate(prefab);
-            RegisterPooledObject(obj, prefab);
+            pooledObject = CreateNewObject(prefab);
         }
 
-        obj.transform.SetParent(null);
-        obj.transform.position = position;
-        obj.transform.rotation = rotation;
+        GameObject obj = pooledObject.gameObject;
+
+        Transform activeParent = GetActiveParent(pooledObject.PoolGroup);
+
+        obj.transform.SetParent(activeParent);
+        obj.transform.SetPositionAndRotation(position, rotation);
         obj.SetActive(true);
 
-        IPoolable[] poolables = obj.GetComponentsInChildren<IPoolable>(true);
+        IPoolable[] poolables = pooledObject.GetPoolables();
 
         for (int i = 0; i < poolables.Length; i++)
             poolables[i].OnSpawnedFromPool();
@@ -68,26 +84,62 @@ public class ObjectPoolManager : MonoBehaviour
         GameObject prefab = pooledObject.OriginalPrefab;
 
         if (!poolDictionary.ContainsKey(prefab))
-            poolDictionary[prefab] = new Queue<GameObject>();
+            poolDictionary[prefab] = new Queue<PooledObject>();
 
-        IPoolable[] poolables = obj.GetComponentsInChildren<IPoolable>(true);
+        IPoolable[] poolables = pooledObject.GetPoolables();
 
         for (int i = 0; i < poolables.Length; i++)
             poolables[i].OnReturnedToPool();
 
         obj.SetActive(false);
-        obj.transform.SetParent(poolParent);
 
-        poolDictionary[prefab].Enqueue(obj);
+        Transform inactiveParent = GetInactiveParent(pooledObject.PoolGroup);
+        obj.transform.SetParent(inactiveParent);
+
+        poolDictionary[prefab].Enqueue(pooledObject);
     }
 
-    private void RegisterPooledObject(GameObject obj, GameObject prefab)
+    private PooledObject CreateNewObject(GameObject prefab)
     {
+        GameObject obj = Instantiate(prefab);
+
         PooledObject pooledObject = obj.GetComponent<PooledObject>();
 
         if (pooledObject == null)
             pooledObject = obj.AddComponent<PooledObject>();
 
         pooledObject.SetOriginalPrefab(prefab);
+
+        return pooledObject;
+    }
+
+    private Transform GetActiveParent(PoolObjectGroup group)
+    {
+        switch (group)
+        {
+            case PoolObjectGroup.Enemy:
+                return enemyActiveParent;
+
+            case PoolObjectGroup.Effect:
+                return effectActiveParent;
+
+            default:
+                return null;
+        }
+    }
+
+    private Transform GetInactiveParent(PoolObjectGroup group)
+    {
+        switch (group)
+        {
+            case PoolObjectGroup.Enemy:
+                return enemyPoolParent != null ? enemyPoolParent : poolParent;
+
+            case PoolObjectGroup.Effect:
+                return effectPoolParent != null ? effectPoolParent : poolParent;
+
+            default:
+                return poolParent;
+        }
     }
 }

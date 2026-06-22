@@ -27,8 +27,11 @@ MonoBehaviour:
   growTime: 6000
   reward: []
   buyCosts: []
-  spawnCount: 1
+  spawnCount: 10
   enemies:
   - enemyPrefab: {fileID: 5831428086637394887, guid: b386e62b44e11c34fbd77ca939961cef, type: 3}
+    spawnWeight: 2
+    spawnRate: 100
+  - enemyPrefab: {fileID: 5831428086637394887, guid: 3ad66d3c344e47c43bcc034c79b1386e, type: 3}
     spawnWeight: 2
     spawnRate: 100

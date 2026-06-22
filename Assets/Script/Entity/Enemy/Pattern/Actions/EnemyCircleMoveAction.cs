@@ -10,8 +10,6 @@ public class EnemyCircleMoveAction : EnemyPatternAction
     [Min(0f)] public float radius = 1.5f;
     public bool clockwise = true;
 
-    [Header("Option")]
-    public bool tickDefaultAttack = true;
 
     public override IEnumerator Execute(EnemyPatternContext context, EnemyPatternEntry pattern)
     {
@@ -52,9 +50,6 @@ public class EnemyCircleMoveAction : EnemyPatternAction
             Vector2 delta = nextPosition - context.Position;
 
             context.MoveBy(delta);
-
-            if (tickDefaultAttack)
-                context.TickDefaultAttack();
 
             timer += Time.deltaTime;
             yield return null;

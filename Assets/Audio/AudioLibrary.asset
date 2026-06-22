@@ -12,44 +12,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5431f371299bf248b4fb9a161c7877f, type: 3}
   m_Name: AudioLibrary
   m_EditorClassIdentifier: Assembly-CSharp::AudioLibrary
+  sourceFolder: {fileID: 102900000, guid: d330941708c287e4a92c7197df44dd13, type: 3}
   rootAssetFolder: Assets/Audio/Source
-  clips:
-  - category: Bgm
-    soundName: Ambient 1
-    clip: {fileID: 8300000, guid: b5b4621374029c2468226afa6705b353, type: 3}
-  - category: Bgm
-    soundName: Ambient 10
-    clip: {fileID: 8300000, guid: fd410f3087d6109418e6f052d503546c, type: 3}
-  - category: Bgm
-    soundName: Ambient 2
-    clip: {fileID: 8300000, guid: 562a9c0987445ad4289c8a1f7e26cc4c, type: 3}
-  - category: Bgm
-    soundName: Ambient 3
-    clip: {fileID: 8300000, guid: 1c85bf41ad1f79f41a5841fbbc97d9b2, type: 3}
-  - category: Bgm
-    soundName: Ambient 4
-    clip: {fileID: 8300000, guid: dec914fc49d0cc74cafc28ee22eb1117, type: 3}
-  - category: Bgm
-    soundName: Ambient 5
-    clip: {fileID: 8300000, guid: 1dfb74f4d62c9084b9ec9b08b4129342, type: 3}
-  - category: Bgm
-    soundName: Ambient 6
-    clip: {fileID: 8300000, guid: 3d6526dc3382dc645bab6935fc4b734d, type: 3}
-  - category: Bgm
-    soundName: 'Ambient 7 '
-    clip: {fileID: 8300000, guid: 05b35f8e94f5b6f4188dfd16a5c83e0d, type: 3}
-  - category: Bgm
-    soundName: Ambient 8
-    clip: {fileID: 8300000, guid: f8af3ce5d13b79c40a09362c1d88295b, type: 3}
-  - category: Bgm
-    soundName: Ambient 9
-    clip: {fileID: 8300000, guid: 433820bf836bd5b45a96d7089811716e, type: 3}
-  - category: Item
-    soundName: thud
-    clip: {fileID: 8300000, guid: c7baed41edb2c3646a72b31a23980ae6, type: 3}
-  - category: Plant
-    soundName: pyro
-    clip: {fileID: 8300000, guid: 7b08a4c75b94ffd489375fa59f8002f8, type: 3}
-  - category: Enemy
-    soundName: pyro
-    clip: {fileID: 8300000, guid: 7b08a4c75b94ffd489375fa59f8002f8, type: 3}
+  categories:
+  - categoryName: Bgm
+    clips:
+    - soundName: Ambient 1
+      clip: {fileID: 8300000, guid: b5b4621374029c2468226afa6705b353, type: 3}
+    - soundName: Ambient 10
+      clip: {fileID: 8300000, guid: fd410f3087d6109418e6f052d503546c, type: 3}
+    - soundName: Ambient 2
+      clip: {fileID: 8300000, guid: 562a9c0987445ad4289c8a1f7e26cc4c, type: 3}
+    - soundName: Ambient 3
+      clip: {fileID: 8300000, guid: 1c85bf41ad1f79f41a5841fbbc97d9b2, type: 3}
+    - soundName: Ambient 4
+      clip: {fileID: 8300000, guid: dec914fc49d0cc74cafc28ee22eb1117, type: 3}
+    - soundName: Ambient 5
+      clip: {fileID: 8300000, guid: 1dfb74f4d62c9084b9ec9b08b4129342, type: 3}
+    - soundName: Ambient 6
+      clip: {fileID: 8300000, guid: 3d6526dc3382dc645bab6935fc4b734d, type: 3}
+    - soundName: 'Ambient 7 '
+      clip: {fileID: 8300000, guid: 05b35f8e94f5b6f4188dfd16a5c83e0d, type: 3}
+    - soundName: Ambient 8
+      clip: {fileID: 8300000, guid: f8af3ce5d13b79c40a09362c1d88295b, type: 3}
+    - soundName: Ambient 9
+      clip: {fileID: 8300000, guid: 433820bf836bd5b45a96d7089811716e, type: 3}
+  - categoryName: Enemy
+    clips:
+    - soundName: thud
+      clip: {fileID: 8300000, guid: c7baed41edb2c3646a72b31a23980ae6, type: 3}
+  - categoryName: Item
+    clips:
+    - soundName: pyro
+      clip: {fileID: 8300000, guid: 7b08a4c75b94ffd489375fa59f8002f8, type: 3}
+  - categoryName: SFX
+    clips:
+    - soundName: pyro
+      clip: {fileID: 8300000, guid: 7b08a4c75b94ffd489375fa59f8002f8, type: 3}

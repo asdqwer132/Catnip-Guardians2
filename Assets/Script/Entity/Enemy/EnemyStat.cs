@@ -15,6 +15,9 @@ public class EnemyStat : IGameStat<EnemyStat>
     public float attackRange = 1.5f;
     public float attackCooldown = 1f;
 
+    [Header("Reward")]
+    public float growEx = 10f;
+
     public EnemyStat Clone()
     {
         return new EnemyStat
@@ -23,7 +26,8 @@ public class EnemyStat : IGameStat<EnemyStat>
             maxHp = maxHp,
             damage = damage,
             attackRange = attackRange,
-            attackCooldown = attackCooldown
+            attackCooldown = attackCooldown,
+            growEx = growEx
         };
     }
 
@@ -31,13 +35,20 @@ public class EnemyStat : IGameStat<EnemyStat>
     {
         if (speed < 0f)
             speed = 0f;
+
         if (maxHp < 1f)
             maxHp = 1f;
+
         if (damage < 0f)
             damage = 0f;
+
         if (attackRange < 0f)
             attackRange = 0f;
+
         if (attackCooldown < 0.01f)
             attackCooldown = 0.01f;
+
+        if (growEx < 0f)
+            growEx = 0f;
     }
 }

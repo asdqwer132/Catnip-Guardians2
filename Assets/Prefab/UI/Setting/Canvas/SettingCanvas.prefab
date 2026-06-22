@@ -2204,6 +2204,13 @@ MonoBehaviour:
   sfxSourceParent: {fileID: 3579098002836103844}
   initialSfxSourceCount: 10
   expandSfxPool: 1
+  useSfxCategoryLimit: 1
+  defaultCategoryMaxSimultaneous: 10
+  sfxCategoryLimits:
+  - category: 
+    maxSimultaneous: 0
+  preventSameSfxOverlap: 1
+  sameSfxMinInterval: 0.25
   bgmFadeDuration: 0.5
   masterVolume: 1
   bgmVolume: 1

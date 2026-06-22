@@ -9,29 +9,92 @@ using UnityEditor;
 [CreateAssetMenu(fileName = "AudioLibrary", menuName = "GameData/Audio Library")]
 public class AudioLibrary : ScriptableObject
 {
-    [Header("Scan Root")]
-    public string rootAssetFolder = "Assets/Audio";
+#if UNITY_EDITOR
+    [Header("Source Folder")]
+    [Tooltip("여기에 Assets 안의 오디오 루트 폴더를 드래그하세요.")]
+    public DefaultAsset sourceFolder;
+#endif
 
-    [Header("Clips")]
-    public List<AudioEntry> clips = new List<AudioEntry>();
+    [Header("Scan Root Path")]
+    [SerializeField] private string rootAssetFolder = "Assets/Audio";
+
+    [Header("Categories")]
+    public List<AudioCategoryGroup> categories = new List<AudioCategoryGroup>();
+
+    public string RootAssetFolder => rootAssetFolder;
 
     public AudioClip GetClip(string category, string soundName)
     {
         string keyCategory = NormalizeKey(category);
         string keyName = NormalizeKey(soundName);
 
-        for (int i = 0; i < clips.Count; i++)
+        for (int i = 0; i < categories.Count; i++)
         {
-            AudioEntry entry = clips[i];
+            AudioCategoryGroup group = categories[i];
 
-            if (entry == null)
+            if (group == null)
                 continue;
 
-            if (NormalizeKey(entry.category) == keyCategory &&
-                NormalizeKey(entry.soundName) == keyName)
+            if (NormalizeKey(group.categoryName) != keyCategory)
+                continue;
+
+            if (group.clips == null)
+                continue;
+
+            for (int j = 0; j < group.clips.Count; j++)
             {
-                return entry.clip;
+                AudioClipEntry entry = group.clips[j];
+
+                if (entry == null)
+                    continue;
+
+                if (NormalizeKey(entry.soundName) == keyName)
+                    return entry.clip;
             }
+        }
+
+        return null;
+    }
+
+    public AudioClip GetRandomClipByCategory(string category)
+    {
+        AudioCategoryGroup group = GetCategoryGroup(category);
+
+        if (group == null || group.clips == null || group.clips.Count == 0)
+            return null;
+
+        List<AudioClip> validClips = new List<AudioClip>();
+
+        for (int i = 0; i < group.clips.Count; i++)
+        {
+            AudioClipEntry entry = group.clips[i];
+
+            if (entry == null || entry.clip == null)
+                continue;
+
+            validClips.Add(entry.clip);
+        }
+
+        if (validClips.Count == 0)
+            return null;
+
+        int randomIndex = UnityEngine.Random.Range(0, validClips.Count);
+        return validClips[randomIndex];
+    }
+
+    public AudioCategoryGroup GetCategoryGroup(string category)
+    {
+        string keyCategory = NormalizeKey(category);
+
+        for (int i = 0; i < categories.Count; i++)
+        {
+            AudioCategoryGroup group = categories[i];
+
+            if (group == null)
+                continue;
+
+            if (NormalizeKey(group.categoryName) == keyCategory)
+                return group;
         }
 
         return null;
@@ -46,77 +109,186 @@ public class AudioLibrary : ScriptableObject
     }
 
 #if UNITY_EDITOR
-    [ContextMenu("Rebuild Audio Library From Root Folder")]
-    public void Rebuild()
-    {
-        clips.Clear();
 
-        if (!AssetDatabase.IsValidFolder(rootAssetFolder))
+    private void OnValidate()
+    {
+        UpdateRootPathFromSourceFolder();
+    }
+
+    private void UpdateRootPathFromSourceFolder()
+    {
+        if (sourceFolder == null)
+            return;
+
+        string path = AssetDatabase.GetAssetPath(sourceFolder);
+
+        if (string.IsNullOrEmpty(path))
+            return;
+
+        if (!AssetDatabase.IsValidFolder(path))
         {
-            Debug.LogWarning($"오디오 루트 폴더가 없습니다: {rootAssetFolder}");
+            Debug.LogWarning($"선택한 에셋은 폴더가 아닙니다: {path}", this);
             return;
         }
 
-        string[] guids = AssetDatabase.FindAssets("t:AudioClip", new[] { rootAssetFolder });
+        rootAssetFolder = path;
+    }
 
-        for (int i = 0; i < guids.Length; i++)
+    [ContextMenu("Rebuild Audio Library From Source Folder")]
+    public void Rebuild()
+    {
+        UpdateRootPathFromSourceFolder();
+
+        categories.Clear();
+
+        if (string.IsNullOrEmpty(rootAssetFolder))
         {
-            string path = AssetDatabase.GUIDToAssetPath(guids[i]);
-            AudioClip clip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
-
-            if (clip == null)
-                continue;
-
-            string category = GetCategoryFromPath(path);
-            string soundName = clip.name;
-
-            clips.Add(new AudioEntry
-            {
-                category = category,
-                soundName = soundName,
-                clip = clip
-            });
+            Debug.LogWarning("오디오 루트 폴더가 비어있습니다.", this);
+            return;
         }
 
-        clips.Sort((a, b) =>
+        if (!AssetDatabase.IsValidFolder(rootAssetFolder))
         {
-            int categoryCompare = string.Compare(a.category, b.category, StringComparison.OrdinalIgnoreCase);
+            Debug.LogWarning($"오디오 루트 폴더가 없습니다: {rootAssetFolder}", this);
+            return;
+        }
 
-            if (categoryCompare != 0)
-                return categoryCompare;
+        string[] subFolders = AssetDatabase.GetSubFolders(rootAssetFolder);
 
-            return string.Compare(a.soundName, b.soundName, StringComparison.OrdinalIgnoreCase);
-        });
+        for (int i = 0; i < subFolders.Length; i++)
+        {
+            string categoryFolderPath = subFolders[i];
+            string categoryName = GetFolderName(categoryFolderPath);
+
+            AudioCategoryGroup group = new AudioCategoryGroup
+            {
+                categoryName = categoryName,
+                clips = new List<AudioClipEntry>()
+            };
+
+            AddClipsFromFolder(group, categoryFolderPath);
+
+            if (group.clips.Count > 0)
+                categories.Add(group);
+        }
+
+        SortCategoriesAndClips();
 
         EditorUtility.SetDirty(this);
         AssetDatabase.SaveAssets();
 
-        Debug.Log($"AudioLibrary 재빌드 완료. 등록된 클립 수: {clips.Count}");
+        Debug.Log($"AudioLibrary 재빌드 완료. Root: {rootAssetFolder}, 카테고리 수: {categories.Count}", this);
     }
 
-    private string GetCategoryFromPath(string path)
+    private void AddClipsFromFolder(AudioCategoryGroup group, string folderPath)
     {
-        string fixedRoot = rootAssetFolder.Replace("\\", "/").TrimEnd('/');
-        string fixedPath = path.Replace("\\", "/");
+        if (group == null)
+            return;
 
-        if (!fixedPath.StartsWith(fixedRoot))
-            return "Default";
+        if (string.IsNullOrEmpty(folderPath))
+            return;
 
-        string relativePath = fixedPath.Substring(fixedRoot.Length).TrimStart('/');
-        string[] parts = relativePath.Split('/');
+        string[] guids = AssetDatabase.FindAssets("t:AudioClip", new[] { folderPath });
 
-        if (parts.Length <= 1)
-            return "Default";
+        for (int i = 0; i < guids.Length; i++)
+        {
+            string clipPath = AssetDatabase.GUIDToAssetPath(guids[i]);
+            AudioClip clip = AssetDatabase.LoadAssetAtPath<AudioClip>(clipPath);
 
-        return parts[0];
+            if (clip == null)
+                continue;
+
+            if (ContainsClip(group, clip))
+                continue;
+
+            group.clips.Add(new AudioClipEntry
+            {
+                soundName = clip.name,
+                clip = clip
+            });
+        }
     }
+
+    private bool ContainsClip(AudioCategoryGroup group, AudioClip clip)
+    {
+        if (group == null || group.clips == null || clip == null)
+            return false;
+
+        for (int i = 0; i < group.clips.Count; i++)
+        {
+            AudioClipEntry entry = group.clips[i];
+
+            if (entry == null)
+                continue;
+
+            if (entry.clip == clip)
+                return true;
+        }
+
+        return false;
+    }
+
+    private void SortCategoriesAndClips()
+    {
+        categories.Sort((a, b) =>
+        {
+            string aName = a != null ? a.categoryName : string.Empty;
+            string bName = b != null ? b.categoryName : string.Empty;
+
+            return string.Compare(aName, bName, StringComparison.OrdinalIgnoreCase);
+        });
+
+        for (int i = 0; i < categories.Count; i++)
+        {
+            AudioCategoryGroup group = categories[i];
+
+            if (group == null || group.clips == null)
+                continue;
+
+            group.clips.Sort((a, b) =>
+            {
+                string aName = a != null ? a.soundName : string.Empty;
+                string bName = b != null ? b.soundName : string.Empty;
+
+                return string.Compare(aName, bName, StringComparison.OrdinalIgnoreCase);
+            });
+        }
+    }
+
+    private string GetFolderName(string path)
+    {
+        if (string.IsNullOrEmpty(path))
+            return "Default";
+
+        string fixedPath = path.Replace("\\", "/").TrimEnd('/');
+        int lastSlashIndex = fixedPath.LastIndexOf('/');
+
+        if (lastSlashIndex < 0)
+            return fixedPath;
+
+        return fixedPath.Substring(lastSlashIndex + 1);
+    }
+
 #endif
 }
 
 [Serializable]
-public class AudioEntry
+public class AudioClipNameWithCategory
 {
-    public string category;
+    public string categoryName;
+    public string clipName;
+}
+
+[Serializable]
+public class AudioCategoryGroup
+{
+    public string categoryName;
+    public List<AudioClipEntry> clips = new List<AudioClipEntry>();
+}
+
+[Serializable]
+public class AudioClipEntry
+{
     public string soundName;
     public AudioClip clip;
 }

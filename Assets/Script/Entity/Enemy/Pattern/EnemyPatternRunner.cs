@@ -6,6 +6,7 @@ public class EnemyPatternRunner : MonoBehaviour
 {
     [Header("Data")]
     public EnemyPatternSetData patternData;
+    public float patternCooldown;
 
     [Header("Components")]
     public Enemy enemy;
@@ -92,6 +93,7 @@ public class EnemyPatternRunner : MonoBehaviour
         StopPattern();
         BuildRuntimeList();
         ClearRuntimeModifiers();
+        patternCooldown = Random.Range(patternData.minPatternCooldown, patternData.maxPatternCooldown);
         patternCooldownTimer = 0f;
         nextPatternRemainingTime = 0f;
         nextPatternState = "Ready";
@@ -205,8 +207,9 @@ public class EnemyPatternRunner : MonoBehaviour
         if (nextPattern == null)
             return null;
 
-        patternCooldownTimer = Mathf.Max(0.05f, patternData.patternCooldown);
-        UpdatePatternCooldownDebug();
+        // 여기서 쿨타임 걸면 안 됨.
+        // 패턴 실행 시간이 긴 경우 실행 중에 쿨타임이 다 닳아서
+        // 두 번째 패턴이 또 같이 나감.
 
         return nextPattern;
     }
@@ -257,23 +260,8 @@ public class EnemyPatternRunner : MonoBehaviour
         if (group == EnemyPatternPickGroup.Random1)
             return true;
 
-        if (group == EnemyPatternPickGroup.Random2)
-            return CanUseRandom2Group();
 
         return false;
-    }
-    private bool CanUseRandom2Group()
-    {
-        if (patternData == null)
-            return false;
-
-        if (!patternData.useRandom2OnlyBelowHp)
-            return true;
-
-        if (context == null)
-            return false;
-
-        return context.GetHpRatio() <= patternData.random2HpRatio;
     }
     private void UpdatePatternCooldownDebug()
     {
@@ -471,6 +459,8 @@ public class EnemyPatternRunner : MonoBehaviour
 
         runtime.StartCooldown();
 
+        SetNextPatternCooldown();
+
         if (patternData != null && patternData.showLog)
             Debug.Log($"[EnemyPatternRunner] End Pattern: {currentPatternName}", this);
 
@@ -481,6 +471,23 @@ public class EnemyPatternRunner : MonoBehaviour
 
         if (isHandlingLethalDamage)
             FinishLethalDamagePattern();
+    }
+    private void SetNextPatternCooldown()
+    {
+        patternCooldown = GetRandomPatternCooldown();
+        patternCooldownTimer = Mathf.Max(0.05f, patternCooldown);
+        UpdatePatternCooldownDebug();
+    }
+
+    private float GetRandomPatternCooldown()
+    {
+        if (patternData == null)
+            return 0.05f;
+
+        float min = Mathf.Min(patternData.minPatternCooldown, patternData.maxPatternCooldown);
+        float max = Mathf.Max(patternData.minPatternCooldown, patternData.maxPatternCooldown);
+
+        return Random.Range(min, max);
     }
     public void ForceStopPattern()
     {

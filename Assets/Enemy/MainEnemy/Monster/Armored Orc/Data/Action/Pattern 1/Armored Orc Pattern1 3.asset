@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyWaitAction
   actionMemo: wait
   animationByName: 
+  beforeEffectPrefab: {fileID: 0}
+  afterEffectPrefab: {fileID: 0}
   duration: 2
   stopMove: 1
   stopAttack: 1
   forceIdle: 1
-  tickDefaultAttack: 0

@@ -8,9 +8,6 @@ public class EnemyRetreatAction : EnemyPatternAction
     [Min(0f)] public float speed = 3f;
     [Min(0f)] public float duration = 0.4f;
 
-    [Header("Option")]
-    public bool updateDirectionEveryFrame = true;
-    public bool tickDefaultAttack = false;
 
     public override IEnumerator Execute(EnemyPatternContext context, EnemyPatternEntry pattern)
     {
@@ -29,13 +26,10 @@ public class EnemyRetreatAction : EnemyPatternAction
             if (target == null)
                 break;
 
-            if (updateDirectionEveryFrame)
-                direction = GetRetreatDirection(context, target, direction);
+            //if (updateDirectionEveryFrame)
+            //    direction = GetRetreatDirection(context, target, direction);
 
             context.MoveDirection(direction, speed);
-
-            if (tickDefaultAttack)
-                context.TickDefaultAttack();
 
             timer += Time.deltaTime;
             yield return null;

@@ -46,9 +46,8 @@ public static class EnemyPatternActionCsvImporter
 
             EnemyPatternSetData data = ScriptableObject.CreateInstance<EnemyPatternSetData>();
             data.name = $"PatternSet_{enemyId}_{enemyName}";
-            data.patternCooldown = GetDefaultPatternCooldown(enemyClass);
-            data.useRandom2OnlyBelowHp = enemyClass.Contains("Boss");
-            data.random2HpRatio = 0.65f;
+            data.maxPatternCooldown = GetDefaultPatternCooldown(enemyClass);
+            data.minPatternCooldown = GetDefaultPatternCooldown(enemyClass);
             data.showLog = false;
 
             string fileName = SanitizeFileName($"{enemyId}_{enemyName}_PatternSet.asset");
