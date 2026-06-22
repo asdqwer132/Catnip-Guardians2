@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c03ac8fbbdbe2d040b6477441562e610, type: 3}
+  m_Name: Orc Pattern2 2
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyBasicAttackAction
+  actionMemo: attack
+  animationByName: Orc-Pattern2_2
+  audioByName:
+    categoryName: 
+    clipName: 
+  beforeEffectPrefab: {fileID: 0}
+  afterEffectPrefab: {fileID: 5279586035596983242, guid: 557021c028d95854697b500198d0af1a, type: 3}
+  actionDamage: 10
+  addBaseAttackDamage: 0
+  baseAttackDamageMultiplier: 1
+  attackDelay: 1
+  afterDamageDelay: 0
+  waitAnimationEnd: 1
+  useCustomAttackRange: 0
+  customAttackRange: 5
+  customAttackDistanceTolerance: 0.15
+  requireRangeBeforeStart: 0
+  checkRangeBeforeDamage: 0
+  faceTargetBeforeStart: 1
+  faceTargetBeforeDamage: 1
+  forceBlockDefaultAI: 1

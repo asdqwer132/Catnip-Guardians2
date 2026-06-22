@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a26788e3def0e3a4b88f403734ec5414, type: 3}
+  m_Name: Orc Pattern2 1
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyWaitAction
+  actionMemo: wait
+  animationByName: Orc-Pattern2_1
+  audioByName:
+    categoryName: SFX
+    clipName: pyro
+  beforeEffectPrefab: {fileID: 0}
+  afterEffectPrefab: {fileID: 0}
+  duration: 5
+  stopMove: 1
+  stopAttack: 1
+  forceIdle: 0

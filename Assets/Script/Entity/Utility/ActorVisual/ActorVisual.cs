@@ -7,7 +7,18 @@ public class ActorVisual : MonoBehaviour
     public Animator animator;
     public SpriteRenderer spriteRenderer;
     public bool defaultFaceLeft = false;
+    [SerializeField] private bool setOrder = true;
+    [SerializeField] private int baseOrder = 0;
+    [SerializeField] private int orderMultiplier = 100;
 
+
+    private void LateUpdate()
+    {
+        if (spriteRenderer == null)
+            return;
+        if(setOrder)
+            spriteRenderer.sortingOrder = baseOrder + Mathf.RoundToInt(-transform.position.y * orderMultiplier);
+    }
     [Header("Animator Params")]
     public string walkingBoolName = "IsWalking";
     public string attackTriggerName = "Attack";

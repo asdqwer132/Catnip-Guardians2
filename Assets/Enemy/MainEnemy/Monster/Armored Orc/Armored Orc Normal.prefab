@@ -87,8 +87,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 174312507
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 2912446813672376553, guid: fa2f769dfb5aabf4180f5a3d6804fc21, type: 3}
@@ -181,9 +181,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b559e5cbf9fb62e4c9e2e250e94430ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
-  health: {fileID: 4578612022304807253}
+  health: {fileID: 0}
   deathTime: 2
-  healthBarUI: {fileID: 3179627762192719126}
+  healthBarUI: {fileID: 0}
   visual: {fileID: 7063470980320774977}
   damagePopupSpawner: {fileID: 0}
   useDamagePopup: 1
@@ -453,30 +453,8 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
---- !u!114 &3179627762192719126 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6878691422165373580, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
-  m_PrefabInstance: {fileID: 8310913712941043610}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd038496d724962468ae9d2e4799b22c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HealthBarUI
 --- !u!224 &3795823362948303495 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5186795204256957725, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
   m_PrefabInstance: {fileID: 8310913712941043610}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4578612022304807253 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5538359490992772815, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
-  m_PrefabInstance: {fileID: 8310913712941043610}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c9ce1731c768c049b9fe5c40e0d1765, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Health

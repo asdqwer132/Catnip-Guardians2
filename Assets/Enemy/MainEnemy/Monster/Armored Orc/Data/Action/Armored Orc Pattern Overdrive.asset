@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24df223de31c82f4e826ed2876d7d235, type: 3}
+  m_Name: Armored Orc Pattern Overdrive
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyPatternSetData
+  minPatternCooldown: 5
+  maxPatternCooldown: 10
+  cancelDefaultAttackOnPatternStart: 1
+  stopMoveOnPatternStart: 0
+  showLog: 0
+  patterns:
+  - patternName: action1
+    memo: 
+    enabled: 1
+    pickGroup: 1
+    blockDefaultAI: 0
+    weight: 1
+    chance: 1
+    cooldown: 5
+    consumeOnce: 0
+    conditions:
+    - conditionType: 3
+      hpRatio: 0
+      distance: 3
+    actions:
+    - {fileID: 11400000, guid: 8ec1854064f25dd4991e40faa68fa998, type: 2}
+    - {fileID: 11400000, guid: c29bb946b8d7cfe4995944941b110014, type: 2}
+    - {fileID: 11400000, guid: 7afdc9cff24149d4eb1519fde3ee85c3, type: 2}
+  - patternName: action2
+    memo: 
+    enabled: 0
+    pickGroup: 1
+    blockDefaultAI: 0
+    weight: 1
+    chance: 1
+    cooldown: 5
+    consumeOnce: 0
+    conditions:
+    - conditionType: 3
+      hpRatio: 0
+      distance: 3
+    actions:
+    - {fileID: 11400000, guid: e909d62ea45ffdd418b621ef361ddd8f, type: 2}
+    - {fileID: 11400000, guid: b124454642bc8244984428c6241a8c6b, type: 2}

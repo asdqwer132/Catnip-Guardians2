@@ -136,6 +136,7 @@ public class ActorAttack : MonoBehaviour
         {
             visual.PlayAttack(currentAttackDirection);
             yield return visual.WaitCurrentAnimationEnd();
+            ApplyAttackDamage();
         }
         else
         {
