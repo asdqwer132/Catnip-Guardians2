@@ -66,20 +66,22 @@ public class BuffTargetHandle
         {
             kind = BuffTargetKind.Target,
             targetObject = targetObject,
-            targetGroup = target.BuffTargetGroup,
+            targetGroup = NormalizeGroup(target.BuffTargetGroup),
             cachedTarget = target
         };
     }
 
     public static BuffTargetHandle Group(string targetGroup)
     {
-        if (string.IsNullOrEmpty(targetGroup))
+        string normalizedGroup = NormalizeGroup(targetGroup);
+
+        if (string.IsNullOrEmpty(normalizedGroup))
             return null;
 
         return new BuffTargetHandle
         {
             kind = BuffTargetKind.Group,
-            targetGroup = targetGroup
+            targetGroup = normalizedGroup
         };
     }
 
@@ -120,12 +122,29 @@ public class BuffTargetHandle
             return false;
 
         if (kind == BuffTargetKind.Group)
-            return !string.IsNullOrEmpty(targetGroup) && target.BuffTargetGroup == targetGroup;
+            return MatchesGroup(target.BuffTargetGroup);
 
         if (kind == BuffTargetKind.Target)
             return targetObject != null && target.BuffTargetObject == targetObject;
 
         return false;
+    }
+
+    private bool MatchesGroup(string targetObjectGroup)
+    {
+        string buffGroup = NormalizeGroup(targetGroup);
+        string objectGroup = NormalizeGroup(targetObjectGroup);
+
+        if (string.IsNullOrEmpty(buffGroup))
+            return false;
+
+        if (string.IsNullOrEmpty(objectGroup))
+            return false;
+
+        if (objectGroup == buffGroup)
+            return true;
+
+        return objectGroup.StartsWith(buffGroup + "/", StringComparison.Ordinal);
     }
 
     public bool SameTarget(BuffTargetHandle other)
@@ -140,7 +159,7 @@ public class BuffTargetHandle
             && bag == other.bag
             && itemSeries == other.itemSeries
             && targetObject == other.targetObject
-            && targetGroup == other.targetGroup;
+            && NormalizeGroup(targetGroup) == NormalizeGroup(other.targetGroup);
     }
 
     public IBuffTarget GetCachedTarget()
@@ -189,5 +208,21 @@ public class BuffTargetHandle
             return string.IsNullOrEmpty(targetGroup) ? "Null Group" : targetGroup;
 
         return kind.ToString();
+    }
+
+    private static string NormalizeGroup(string group)
+    {
+        if (string.IsNullOrWhiteSpace(group))
+            return string.Empty;
+
+        group = group.Trim();
+        group = group.Replace("\\", "/");
+
+        while (group.Contains("//"))
+            group = group.Replace("//", "/");
+
+        group = group.Trim('/');
+
+        return group;
     }
 }

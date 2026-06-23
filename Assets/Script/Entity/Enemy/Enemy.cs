@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Enemy : HealthActor, IPoolable, IBuffTarget
 {
-    [Header("Data")]
+    [Header("Data")] 
     public EnemyStatData statData;
 
     [Header("Components")]
@@ -30,7 +30,8 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     public bool IsFullyStopped => isFullyStopped;
 
     public UnityEngine.Object BuffTargetObject => this;
-    public string BuffTargetGroup => "Enemy";
+    private string buffTargetGroup = "Enemy";
+    public string BuffTargetGroup => buffTargetGroup;
     public string BuffTargetDebugName => name;
 
     #region Control
@@ -299,6 +300,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         ResumeAnimation();
 
         ApplyBaseStat();
+        buffTargetGroup = "Enemy/" + statData.enemyClass;
 
         if (actorTarget != null)
             actorTarget.SetTarget(target);

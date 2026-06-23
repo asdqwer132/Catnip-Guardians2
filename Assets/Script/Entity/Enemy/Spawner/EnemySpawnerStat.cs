@@ -7,7 +7,7 @@ public class EnemySpawnerStat : IGameStat<EnemySpawnerStat>
     [Header("Spawn")]
     public float spawnInterval = 1.5f;
     public float spawnDistance = 8f;
-
+    
     public EnemySpawnerStat Clone()
     {
         return new EnemySpawnerStat

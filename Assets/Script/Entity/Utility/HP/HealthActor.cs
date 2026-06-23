@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public abstract class HealthActor : MonoBehaviour, IDamageable
@@ -20,7 +21,6 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
     private bool isDying = false;
     private bool healthBarVisibleBySetting = true;
     private Coroutine deathCoroutine;
-
     protected virtual void Awake()
     {
         if (health == null)
@@ -53,6 +53,10 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
         StopDeathRoutine();
     }
 
+    protected void InitHealthOwner(string owner)
+    {
+        health.buffTargetGroup = owner;
+    }
     protected void InitHealth(float maxHp, bool fillHp = true)
     {
         if (health == null)

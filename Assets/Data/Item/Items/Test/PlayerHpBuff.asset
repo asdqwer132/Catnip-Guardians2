@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
-  m_Name: EnemyBuffItem
+  m_Name: PlayerHpBuff
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 690328823, guid: 465bcc97d4a18034d8d50bd3f9c5a697, type: 3}
+  icon: {fileID: -6678538919003259926, guid: 742921efca2fb894cad8c322fd44e709, type: 3}
   data:
   - language: 0
     dataName: item
     description: ddd
-  dataId: EnemyBuffItem
+  dataId: PlayerHpBuff
   dataType: 0
   requireUnlock: 0
   grade: 0
@@ -26,4 +26,4 @@ MonoBehaviour:
   weight: 0.01
   cooldown: 0.5
   effectDatas:
-  - {fileID: 11400000, guid: 2efa9bf8940ea0d41ac39fb79214715e, type: 2}
+  - {fileID: 11400000, guid: 56c6bb4911127be44846c224e9babd1f, type: 2}

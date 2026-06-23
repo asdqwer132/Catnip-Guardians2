@@ -1,70 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &886585091223248719
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5078367484502615388}
-  - component: {fileID: 8046000552895318384}
-  - component: {fileID: 4645311147116308582}
-  m_Layer: 0
-  m_Name: EnemyComponnent
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5078367484502615388
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 886585091223248719}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8319794836907226570}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8046000552895318384
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 886585091223248719}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b6df663bf9a3df4b8267d08461dd38b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DamagePopupSpawner
-  damagePopupPrefab: {fileID: 2401740305231073992, guid: 90a8963889acb9b41805551146ab46ab, type: 3}
-  popupPoint: {fileID: 7559013051555954910}
-  offset: {x: 0, y: 0.25, z: 0}
-  useRandomOffset: 1
-  randomXRange: 0.25
-  randomYRange: 0.15
---- !u!114 &4645311147116308582
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 886585091223248719}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c9ce1731c768c049b9fe5c40e0d1765, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Health
-  hp: 0
-  maxHp: 0
 --- !u!1 &5831428086637394887
 GameObject:
   m_ObjectHideFlags: 0
@@ -105,7 +40,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3795823362948303495}
-  - {fileID: 5078367484502615388}
+  - {fileID: 3200243173578336696}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &5335311948501192886
@@ -247,14 +182,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b559e5cbf9fb62e4c9e2e250e94430ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
-  health: {fileID: 4645311147116308582}
+  health: {fileID: 6141022903696664317}
   deathTime: 2
   healthBarUI: {fileID: 1312758534004120794}
   visual: {fileID: 7063470980320774977}
-  damagePopupSpawner: {fileID: 8046000552895318384}
+  damagePopupSpawner: {fileID: 412451792270476692}
   useDamagePopup: 1
   hideHealthBarOnDeath: 1
-  statData: {fileID: 0}
+  statData: {fileID: 11400000, guid: f879e708a0d6edc41876e55ec671f4e9, type: 2}
   actorTarget: {fileID: 1506509451877719227}
   mover: {fileID: 7500191993510811139}
   attack: {fileID: 2430655365351377237}
@@ -304,6 +239,9 @@ MonoBehaviour:
   animator: {fileID: 1451514569049703972}
   spriteRenderer: {fileID: 5335311948501192886}
   defaultFaceLeft: 0
+  setOrder: 1
+  baseOrder: 0
+  orderMultiplier: 100
   walkingBoolName: IsWalking
   attackTriggerName: Attack
   hitTriggerName: Hit
@@ -382,6 +320,94 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PooledObject
   poolGroup: 1
+--- !u!1001 &5215225404695743293
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 8319794836907226570}
+    m_Modifications:
+    - target: {fileID: 3331972996395047062, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: m_Name
+      value: HealthComponent
+      objectReference: {fileID: 0}
+    - target: {fileID: 5609621908077858473, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: popupPoint
+      value: 
+      objectReference: {fileID: 7559013051555954910}
+    - target: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+--- !u!114 &412451792270476692 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5609621908077858473, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+  m_PrefabInstance: {fileID: 5215225404695743293}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b6df663bf9a3df4b8267d08461dd38b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamagePopupSpawner
+--- !u!4 &3200243173578336696 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+  m_PrefabInstance: {fileID: 5215225404695743293}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6141022903696664317 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: -7108518506947465792, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+  m_PrefabInstance: {fileID: 5215225404695743293}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9ce1731c768c049b9fe5c40e0d1765, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Health
 --- !u!1001 &8310913712941043610
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -521,7 +547,7 @@ PrefabInstance:
     - target: {fileID: 7017049206517633856, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
       propertyPath: health
       value: 
-      objectReference: {fileID: 4645311147116308582}
+      objectReference: {fileID: 6141022903696664317}
     - target: {fileID: 8819114246694258146, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
       propertyPath: m_Name
       value: Canvas

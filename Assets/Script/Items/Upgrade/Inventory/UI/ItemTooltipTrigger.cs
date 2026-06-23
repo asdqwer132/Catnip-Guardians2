@@ -29,7 +29,6 @@ public class ItemTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerE
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Debug.Log("åÅ");
         if (tooltipUI == null || slot == null)
             return;
 

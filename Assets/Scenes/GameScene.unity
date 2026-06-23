@@ -1565,6 +1565,73 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 77556845}
   m_CullTransparentMesh: 1
+--- !u!1 &81909751
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 81909753}
+  - component: {fileID: 81909752}
+  m_Layer: 0
+  m_Name: BossSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &81909752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 81909751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 613e1bfde2dc93b448b8fe52c131dc52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
+  enemyInfos: []
+  baseStat:
+    spawnInterval: 1.5
+    spawnDistance: 8
+  spawnImmediatelyOnStart: 1
+  overSpawn: 1
+  currentStat:
+    spawnInterval: 1.5
+    spawnDistance: 8
+  drawSpawnGizmo: 1
+  drawSpawnGizmoOnlySelected: 1
+  spawnGizmoColor: {r: 1, g: 0.35, b: 0.1, a: 0.9}
+  spawnGizmoSegments: 64
+  drawSpawnCenterPoint: 1
+  drawSpawnerToCenterLine: 1
+  enableSpawnDebug: 1
+  debugNextEnemyName: 
+  debugSpawnInterval: 0
+  debugSpawnRemainingTime: 0
+  debugSpawnProgress01: 0
+  debugSelectedSpawnRate: 0
+  debugSelectedSpawnWeight: 0
+  buffManager: {fileID: 511510869}
+--- !u!4 &81909753
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 81909751}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 197801882}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &92768898
 GameObject:
   m_ObjectHideFlags: 0
@@ -2029,6 +2096,7 @@ MonoBehaviour:
     spawnInterval: 1.5
     spawnDistance: 8
   spawnImmediatelyOnStart: 1
+  overSpawn: 0
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -2045,8 +2113,6 @@ MonoBehaviour:
   debugSpawnProgress01: 0
   debugSelectedSpawnRate: 0
   debugSelectedSpawnWeight: 0
-  debugSpawnIntervalText: 
-  debugSpawnRemainingTimeText: 
   buffManager: {fileID: 511510869}
 --- !u!1 &153855117
 GameObject:
@@ -2512,6 +2578,67 @@ MonoBehaviour:
   toggle: {fileID: 0}
   onSprite: {fileID: 0}
   offSprite: {fileID: 0}
+--- !u!1001 &176345783
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1230235209}
+    m_Modifications:
+    - target: {fileID: 3331972996395047062, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: m_Name
+      value: HealthComponent
+      objectReference: {fileID: 0}
+    - target: {fileID: 5609621908077858473, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: popupPoint
+      value: 
+      objectReference: {fileID: 1230235209}
+    - target: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1.49746
+      objectReference: {fileID: 0}
+    - target: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.44199
+      objectReference: {fileID: 0}
+    - target: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
 --- !u!224 &183573786 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2101994538291146305, guid: 0a6c2d538fb4fb542b5e628aff5e879a, type: 3}
@@ -2667,6 +2794,8 @@ Transform:
   - {fileID: 524226287}
   - {fileID: 596179851}
   - {fileID: 726708667}
+  - {fileID: 1193780218}
+  - {fileID: 81909753}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &197801883
@@ -2688,7 +2817,9 @@ MonoBehaviour:
   - {fileID: 524226288}
   - {fileID: 596179852}
   - {fileID: 726708666}
-  maxAliveEnemyCount: 300
+  middleBossSpanwer: {fileID: 1193780219}
+  bossSpanwer: {fileID: 81909752}
+  maxAliveEnemyCount: 3
   logSpawnTime: 0
   currentAliveEnemyCount: 0
 --- !u!114 &197801884
@@ -4021,6 +4152,75 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
   m_HorizontalFit: 2
   m_VerticalFit: 2
+--- !u!1 &329843152
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 329843153}
+  - component: {fileID: 329843155}
+  - component: {fileID: 329843154}
+  m_Layer: 0
+  m_Name: UIComponnent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &329843153
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 329843152}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1230235209}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &329843154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 329843152}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c703176cdc697ac44a852bcc39c3ce1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ActorVisual
+  animator: {fileID: 0}
+  spriteRenderer: {fileID: 1230235208}
+  defaultFaceLeft: 0
+  setOrder: 1
+  baseOrder: 0
+  orderMultiplier: 100
+  walkingBoolName: IsWalking
+  attackTriggerName: Attack
+  hitTriggerName: Hit
+  dieTriggerName: Die
+  idleStateName: Idle
+--- !u!114 &329843155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 329843152}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cb5a3d544eff124388ff6fc5be9c0dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlantUI
+  spriteRenderer: {fileID: 1230235208}
 --- !u!1 &332667244
 GameObject:
   m_ObjectHideFlags: 0
@@ -5713,6 +5913,33 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2101994538291146305, guid: 4c660fe539212584f831df393b052c4b, type: 3}
   m_PrefabInstance: {fileID: 429208571}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &430141811 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: -7108518506947465792, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+  m_PrefabInstance: {fileID: 176345783}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c9ce1731c768c049b9fe5c40e0d1765, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Health
+--- !u!114 &430141812 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5609621908077858473, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+  m_PrefabInstance: {fileID: 176345783}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b6df663bf9a3df4b8267d08461dd38b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamagePopupSpawner
+--- !u!4 &430141813 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+  m_PrefabInstance: {fileID: 176345783}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &436287420
 GameObject:
   m_ObjectHideFlags: 0
@@ -6500,6 +6727,7 @@ MonoBehaviour:
     spawnInterval: 1.5
     spawnDistance: 8
   spawnImmediatelyOnStart: 1
+  overSpawn: 0
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -6516,8 +6744,6 @@ MonoBehaviour:
   debugSpawnProgress01: 0
   debugSelectedSpawnRate: 0
   debugSelectedSpawnWeight: 0
-  debugSpawnIntervalText: 
-  debugSpawnRemainingTimeText: 
   buffManager: {fileID: 511510869}
 --- !u!1 &527441245
 GameObject:
@@ -15811,6 +16037,7 @@ MonoBehaviour:
     spawnInterval: 1.5
     spawnDistance: 8
   spawnImmediatelyOnStart: 1
+  overSpawn: 0
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -15827,8 +16054,6 @@ MonoBehaviour:
   debugSpawnProgress01: 0
   debugSelectedSpawnRate: 0
   debugSelectedSpawnWeight: 0
-  debugSpawnIntervalText: 
-  debugSpawnRemainingTimeText: 
   buffManager: {fileID: 511510869}
 --- !u!1 &599785475
 GameObject:
@@ -16199,7 +16424,7 @@ MonoBehaviour:
   m_Intensity: 1
   m_LightVolumeIntensity: 1
   m_LightVolumeEnabled: 0
-  m_ApplyToSortingLayers: 00000000
+  m_ApplyToSortingLayers: 000000003bcc630a
   m_LightCookieSprite: {fileID: 0}
   m_DeprecatedPointLightCookieSprite: {fileID: 0}
   m_LightOrder: 0
@@ -16331,6 +16556,7 @@ MonoBehaviour:
     spawnInterval: 1.5
     spawnDistance: 8
   spawnImmediatelyOnStart: 1
+  overSpawn: 0
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -16347,8 +16573,6 @@ MonoBehaviour:
   debugSpawnProgress01: 0
   debugSelectedSpawnRate: 0
   debugSelectedSpawnWeight: 0
-  debugSpawnIntervalText: 
-  debugSpawnRemainingTimeText: 
   buffManager: {fileID: 511510869}
 --- !u!1 &640384717
 GameObject:
@@ -18308,6 +18532,7 @@ MonoBehaviour:
     spawnInterval: 1.5
     spawnDistance: 8
   spawnImmediatelyOnStart: 1
+  overSpawn: 0
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -18324,8 +18549,6 @@ MonoBehaviour:
   debugSpawnProgress01: 0
   debugSelectedSpawnRate: 0
   debugSelectedSpawnWeight: 0
-  debugSpawnIntervalText: 
-  debugSpawnRemainingTimeText: 
   buffManager: {fileID: 511510869}
 --- !u!4 &726708667
 Transform:
@@ -36057,6 +36280,73 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 3266541233325102060, guid: 754aeecdac4dde6499098caed6c311c5, type: 3}
   m_PrefabInstance: {fileID: 1280215015}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1193780217
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1193780218}
+  - component: {fileID: 1193780219}
+  m_Layer: 0
+  m_Name: MiddleBossEnemySpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1193780218
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1193780217}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 197801882}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1193780219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1193780217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 613e1bfde2dc93b448b8fe52c131dc52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
+  enemyInfos: []
+  baseStat:
+    spawnInterval: 1.5
+    spawnDistance: 8
+  spawnImmediatelyOnStart: 1
+  overSpawn: 1
+  currentStat:
+    spawnInterval: 1.5
+    spawnDistance: 8
+  drawSpawnGizmo: 1
+  drawSpawnGizmoOnlySelected: 1
+  spawnGizmoColor: {r: 1, g: 0.35, b: 0.1, a: 0.9}
+  spawnGizmoSegments: 64
+  drawSpawnCenterPoint: 1
+  drawSpawnerToCenterLine: 1
+  enableSpawnDebug: 1
+  debugNextEnemyName: 
+  debugSpawnInterval: 0
+  debugSpawnRemainingTime: 0
+  debugSpawnProgress01: 0
+  debugSelectedSpawnRate: 0
+  debugSelectedSpawnWeight: 0
+  buffManager: {fileID: 511510869}
 --- !u!1001 &1198365256
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -36640,12 +36930,7 @@ GameObject:
   - component: {fileID: 1230235211}
   - component: {fileID: 1230235212}
   - component: {fileID: 1230235210}
-  - component: {fileID: 1230235213}
   - component: {fileID: 1230235214}
-  - component: {fileID: 1230235218}
-  - component: {fileID: 1230235216}
-  - component: {fileID: 1230235215}
-  - component: {fileID: 1230235219}
   m_Layer: 0
   m_Name: MainPlant
   m_TagString: Plant
@@ -36724,7 +37009,10 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 430141813}
+  - {fileID: 1571861291}
+  - {fileID: 329843153}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1230235210
@@ -36739,17 +37027,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de0ef65856498bf47ab159fe6561c7dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Plant
-  health: {fileID: 1230235218}
+  health: {fileID: 430141811}
   deathTime: 0.5
   healthBarUI: {fileID: 1719132429}
-  visual: {fileID: 1230235216}
-  damagePopupSpawner: {fileID: 1230235215}
+  visual: {fileID: 329843154}
+  damagePopupSpawner: {fileID: 430141812}
   useDamagePopup: 1
   hideHealthBarOnDeath: 0
-  plantUI: {fileID: 1230235213}
+  plantUI: {fileID: 329843155}
   plantData: {fileID: 0}
   gameManager: {fileID: 1318438114}
-  growManager: {fileID: 1230235219}
+  growManager: {fileID: 1571861292}
+  buffManager: {fileID: 511510869}
 --- !u!61 &1230235211
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -36823,19 +37112,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &1230235213
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1230235207}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9cb5a3d544eff124388ff6fc5be9c0dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlantUI
-  spriteRenderer: {fileID: 1230235208}
 --- !u!114 &1230235214
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36855,72 +37131,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5798d333d86e1544885fa8ef8234d041, type: 2}
   - {fileID: 11400000, guid: 380faa9c24503a34d9a1a48f381fca8e, type: 2}
   currentPlantIndex: 0
---- !u!114 &1230235215
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1230235207}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b6df663bf9a3df4b8267d08461dd38b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DamagePopupSpawner
-  damagePopupPrefab: {fileID: 2401740305231073992, guid: 90a8963889acb9b41805551146ab46ab, type: 3}
-  popupPoint: {fileID: 1230235209}
-  offset: {x: 0, y: 1, z: 0}
-  useRandomOffset: 1
-  randomXRange: 0.25
-  randomYRange: 0.15
---- !u!114 &1230235216
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1230235207}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c703176cdc697ac44a852bcc39c3ce1c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ActorVisual
-  animator: {fileID: 0}
-  spriteRenderer: {fileID: 0}
-  defaultFaceLeft: 0
-  walkingBoolName: IsWalking
-  attackTriggerName: Attack
-  hitTriggerName: Hit
-  dieTriggerName: Die
-  idleStateName: Idle
---- !u!114 &1230235218
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1230235207}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c9ce1731c768c049b9fe5c40e0d1765, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Health
-  hp: 0
-  maxHp: 0
---- !u!114 &1230235219
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1230235207}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 356a02d12a3a8ba4d969fb4f320d661d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GrowManager
-  growthFill: {fileID: 286708701}
-  gameManager: {fileID: 1318438114}
 --- !u!1 &1234898587
 GameObject:
   m_ObjectHideFlags: 0
@@ -41414,17 +41624,13 @@ MonoBehaviour:
     amount: 10
   - itemData: {fileID: 11400000, guid: 324d63b8b67ec8d469dd859a740a7330, type: 2}
     amount: 10
-  - itemData: {fileID: 11400000, guid: 324d63b8b67ec8d469dd859a740a7330, type: 2}
-    amount: 10
-  - itemData: {fileID: 11400000, guid: 324d63b8b67ec8d469dd859a740a7330, type: 2}
+  - itemData: {fileID: 11400000, guid: d3e2c05aead04d44bb918546ee1d4acc, type: 2}
     amount: 10
   - itemData: {fileID: 11400000, guid: 04e2ebbb841e84041833eaf4a134ff8e, type: 2}
     amount: 10
-  - itemData: {fileID: 11400000, guid: 324d63b8b67ec8d469dd859a740a7330, type: 2}
-    amount: 10
   - itemData: {fileID: 11400000, guid: 67e925f0edd66e14f999091fee583a6f, type: 2}
     amount: 10
-  - itemData: {fileID: 11400000, guid: 324d63b8b67ec8d469dd859a740a7330, type: 2}
+  - itemData: {fileID: 11400000, guid: 660fb7fb552461d48978ec1a31fcc35f, type: 2}
     amount: 10
   - itemData: {fileID: 11400000, guid: 92fd2e1927ea58b4ebf0b8d9dcb59f45, type: 2}
     amount: 10
@@ -42704,6 +42910,55 @@ MonoBehaviour:
   currentBagCooldownFill: {fileID: 0}
   nextItemCooldownFill: {fileID: 0}
   sharedCooldownFill: {fileID: 372742342}
+--- !u!1 &1571861290
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1571861291}
+  - component: {fileID: 1571861292}
+  m_Layer: 0
+  m_Name: GrowComponent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1571861291
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1571861290}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1230235209}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1571861292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1571861290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 356a02d12a3a8ba4d969fb4f320d661d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GrowManager
+  startGrowValue: 0
+  growValue: 0
+  maxGrowValue: 100
+  growthFill: {fileID: 286708701}
+  gameManager: {fileID: 1318438114}
 --- !u!1 &1583137647
 GameObject:
   m_ObjectHideFlags: 0
@@ -43982,7 +44237,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd038496d724962468ae9d2e4799b22c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthBarUI
-  health: {fileID: 1230235218}
+  health: {fileID: 430141811}
   pannel: {fileID: 0}
   hpFill: {fileID: 1719132428}
   hideWhenFullHp: 0
@@ -57448,6 +57703,9 @@ MonoBehaviour:
   animator: {fileID: 1355081021}
   spriteRenderer: {fileID: 1355081022}
   defaultFaceLeft: 0
+  setOrder: 1
+  baseOrder: 0
+  orderMultiplier: 100
   walkingBoolName: IsWalking
   attackTriggerName: Attack
   hitTriggerName: Hit

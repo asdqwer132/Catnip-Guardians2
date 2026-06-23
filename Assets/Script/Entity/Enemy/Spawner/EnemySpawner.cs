@@ -8,9 +8,11 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
     public EnemySpawnerStat baseStat = new EnemySpawnerStat();
     [Tooltip("켜면 스포너 시작 시 첫 번째 적은 대기시간 없이 바로 소환됩니다.")]
     public bool spawnImmediatelyOnStart = false;
+    public bool overSpawn = false;
 
     [Header("Runtime Stat")]
     [SerializeField] private EnemySpawnerStat currentStat = new EnemySpawnerStat();
+
     [Header("Spawn Gizmo")]
     [SerializeField] private bool drawSpawnGizmo = true;
     [SerializeField] private bool drawSpawnGizmoOnlySelected = true;
@@ -18,6 +20,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
     [SerializeField, Min(8)] private int spawnGizmoSegments = 64;
     [SerializeField] private bool drawSpawnCenterPoint = true;
     [SerializeField] private bool drawSpawnerToCenterLine = true;
+
     [Header("Spawn Debug Only")]
     [SerializeField] private bool enableSpawnDebug = true;
     [SerializeField] private string debugNextEnemyName;
@@ -26,10 +29,6 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
     [SerializeField] private float debugSpawnProgress01;
     [SerializeField] private float debugSelectedSpawnRate;
     [SerializeField] private float debugSelectedSpawnWeight;
-
-    [Header("Spawn Debug Display")]
-    [SerializeField] private string debugSpawnIntervalText;
-    [SerializeField] private string debugSpawnRemainingTimeText;
 
     [Header("Managers")]
     public BuffManager buffManager;
@@ -49,8 +48,6 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
     public float DebugSpawnProgress01 => debugSpawnProgress01;
     public float DebugSelectedSpawnRate => debugSelectedSpawnRate;
     public float DebugSelectedSpawnWeight => debugSelectedSpawnWeight;
-    public string DebugSpawnIntervalText => debugSpawnIntervalText;
-    public string DebugSpawnRemainingTimeText => debugSpawnRemainingTimeText;
 
     public UnityEngine.Object BuffTargetObject => this;
     public string BuffTargetGroup => "EnemySpawner";
@@ -201,7 +198,6 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
             float remaining = Mathf.Max(0f, safeInterval - elapsed);
 
             debugSpawnRemainingTime = RoundToOneDecimal(remaining);
-            debugSpawnRemainingTimeText = debugSpawnRemainingTime.ToString("F1") + "초";
             debugSpawnProgress01 = Mathf.Clamp01(elapsed / safeInterval);
 
             if (remaining <= 0f)
@@ -211,7 +207,6 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         }
 
         debugSpawnRemainingTime = 0f;
-        debugSpawnRemainingTimeText = "0.0초";
         debugSpawnProgress01 = 1f;
     }
 
@@ -225,8 +220,6 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         debugSpawnRemainingTime = RoundToOneDecimal(interval);
         debugSpawnProgress01 = 0f;
 
-        debugSpawnIntervalText = debugSpawnInterval.ToString("F1") + "초";
-        debugSpawnRemainingTimeText = debugSpawnRemainingTime.ToString("F1") + "초";
 
         debugSelectedSpawnRate = info != null ? info.spawnRate : 0f;
         debugSelectedSpawnWeight = info != null ? info.spawnWeight : 0f;
@@ -238,7 +231,6 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
             return;
 
         debugSpawnRemainingTime = 0f;
-        debugSpawnRemainingTimeText = "0.0초";
         debugSpawnProgress01 = 1f;
     }
 
@@ -251,8 +243,6 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         debugSelectedSpawnRate = 0f;
         debugSelectedSpawnWeight = 0f;
 
-        debugSpawnIntervalText = "0.0초";
-        debugSpawnRemainingTimeText = "0.0초";
     }
 
     private float RoundToOneDecimal(float value)
@@ -271,7 +261,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         if (targetPlant == null)
             return;
 
-        if (EnemyManager.instance != null && !EnemyManager.instance.CanSpawnMoreEnemies())
+        if (EnemyManager.instance != null && !EnemyManager.instance.CanSpawnMoreEnemies() && !overSpawn)
             return;
 
         float distance = currentStat != null ? currentStat.spawnDistance : 8f;

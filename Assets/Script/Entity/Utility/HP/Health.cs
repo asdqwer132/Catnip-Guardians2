@@ -1,14 +1,32 @@
 using System;
 using UnityEngine;
 
-public class Health : MonoBehaviour
+[Serializable]
+public class HealthStat : IGameStat<HealthStat>
 {
-    [Header("Runtime HP")]
-    [SerializeField] private float hp;
-    [SerializeField] private float maxHp;
+    [Header("Spawn")]
+    public float hp = 1.5f;
+    public float maxHp = 8f;
 
-    public float Hp => hp;
-    public float MaxHp => maxHp;
+    public HealthStat Clone()
+    {
+        return new HealthStat
+        {
+            hp = hp,
+            maxHp = maxHp
+        };
+    }
+
+    public void Clamp() { }
+}
+public class Health : MonoBehaviour, IBuffTarget
+{
+
+    [Header("Runtime HP")]
+    public HealthStat currentHealthStat;
+
+    public float Hp => currentHealthStat.hp;
+    public float MaxHp => currentHealthStat.maxHp;
     public bool IsDead { get; private set; }
 
     public event Action<float, float> OnHpChanged;
@@ -16,17 +34,26 @@ public class Health : MonoBehaviour
     public event Action<float> OnHealed;
     public event Action OnDead;
 
+    public UnityEngine.Object BuffTargetObject => this;
+    public string buffTargetGroup = "Health";
+    public string BuffTargetGroup => buffTargetGroup;
+    public string BuffTargetDebugName => name;
+
+    public void RefreshBuffedStat()
+    {
+        currentHealthStat = BuffManager.instance.GetBuffedStatForTarget(currentHealthStat, this);
+    }
     public void Init(float startMaxHp, bool fillHp = true)
     {
         if (startMaxHp <= 0f)
             startMaxHp = 1f;
 
-        maxHp = startMaxHp;
+        currentHealthStat.maxHp = startMaxHp;
 
         if (fillHp)
-            hp = maxHp;
+            currentHealthStat.hp = currentHealthStat.maxHp;
         else
-            hp = Mathf.Clamp(hp, 0f, maxHp);
+            currentHealthStat.hp = Mathf.Clamp(currentHealthStat.hp, 0f, currentHealthStat.maxHp);
 
         IsDead = false;
 
@@ -42,13 +69,13 @@ public class Health : MonoBehaviour
         if (damage <= 0f)
             return;
 
-        hp -= damage;
-        hp = Mathf.Clamp(hp, 0f, maxHp);
+        currentHealthStat.hp -= damage;
+        currentHealthStat.hp = Mathf.Clamp(currentHealthStat.hp, 0f, currentHealthStat.maxHp);
 
         OnDamaged?.Invoke(damage);
         BroadcastHpChanged();
 
-        if (hp <= 0f)
+        if (currentHealthStat.hp <= 0f)
             Die();
     }
 
@@ -60,8 +87,8 @@ public class Health : MonoBehaviour
         if (amount <= 0f)
             return;
 
-        hp += amount;
-        hp = Mathf.Clamp(hp, 0f, maxHp);
+        currentHealthStat.hp += amount;
+        currentHealthStat.hp = Mathf.Clamp(currentHealthStat.hp, 0f, currentHealthStat.maxHp);
 
         OnHealed?.Invoke(amount);
         BroadcastHpChanged();
@@ -72,7 +99,7 @@ public class Health : MonoBehaviour
             return;
 
         IsDead = true;
-        hp = 0f;
+        currentHealthStat.hp = 0f;
 
         BroadcastHpChanged();
         OnDead?.Invoke();
@@ -81,6 +108,6 @@ public class Health : MonoBehaviour
 
     void BroadcastHpChanged()
     {
-        OnHpChanged?.Invoke(hp, maxHp);
+        OnHpChanged?.Invoke(currentHealthStat.hp, currentHealthStat.maxHp);
     }
 }

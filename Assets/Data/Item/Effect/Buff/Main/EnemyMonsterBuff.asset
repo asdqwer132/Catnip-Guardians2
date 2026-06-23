@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b250f045bef3cf34fbfec8a0516c81f9, type: 3}
-  m_Name: EnemyBuff
+  m_Name: EnemyMonsterBuff
   m_EditorClassIdentifier: Assembly-CSharp::BuffEffect
   impactVfxPrefab: {fileID: 0}
   impactBaseScale: {x: 1, y: 1, z: 1}
   scaleImpactVfxByRadius: 1
   useAnimatorClipLifeTime: 1
   impactVfxLifeTime: 1
-  targetResolver: {fileID: 11400000, guid: bbe2b04115f83334aaceec1aca2e1900, type: 2}
+  targetResolver: {fileID: 11400000, guid: 4f8a8a4dfd2830742aeb68c1dcd41680, type: 2}
   buffInfo:
     stackMode: 0
     maxStack: 1
@@ -28,4 +28,4 @@ MonoBehaviour:
   includeSelf: 0
   showInUI: 1
   modifiers:
-  - {fileID: 11400000, guid: 485d583576e15314bb5f64b3aac4adcd, type: 2}
+  - {fileID: 11400000, guid: 110ca47cfac04c641941ef549862d2c8, type: 2}

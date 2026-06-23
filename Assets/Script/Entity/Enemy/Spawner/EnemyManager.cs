@@ -10,6 +10,8 @@ public class EnemyManager : MonoBehaviour
 
     [Header("Spawners")]
     public EnemySpawner[] enemySpawners;
+    public EnemySpawner middleBossSpanwer;
+    public EnemySpawner bossSpanwer;
     public int maxAliveEnemyCount = 50;
 
     [Header("Debug")]

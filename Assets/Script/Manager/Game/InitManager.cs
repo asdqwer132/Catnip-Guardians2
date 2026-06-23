@@ -30,7 +30,7 @@ public class InitManager : MonoBehaviour
 
         if (!isInited)
         {
-            FirstInit();
+            RoundInit();
             isInited = true;    
         }
     }
@@ -40,15 +40,18 @@ public class InitManager : MonoBehaviour
         DamageArea.ClearAllActiveAreas();
         enemyManager.AllStop();
     }
-    public void FirstInit()
+    public void GameInit()
+    {
+        itemInitManager.ApplyDefaultInventoryItems();
+        EquipmentBagManager.instance.Init();
+    }
+    public void RoundInit()
     {
         subPlantManager.ThrowAllItems();
         unlockManager.Init();
         itemUseManager.Init();
         buffManager.ClearAllBuffs();
-        itemInitManager.ApplyDefaultInventoryItems();
         buffSkillManager.ExecuteAllRegisteredBuffItems(buffSkillManager.gameObject, 0);
-        EquipmentBagManager.instance.Init();
 
         UIInit();
     }

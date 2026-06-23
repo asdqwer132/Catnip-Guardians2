@@ -3,6 +3,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "EnemyStatData", menuName = "GameData/Enemy/Enemy Stat Data")]
 public class EnemyStatData : ScriptableObject
 {
+    [Header("Class")]
+    public string enemyClass = "";
+
     [Header("Move")]
     public float speed = 2f;
 

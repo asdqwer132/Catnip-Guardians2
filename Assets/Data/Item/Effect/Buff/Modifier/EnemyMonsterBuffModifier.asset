@@ -9,7 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64a88f8cf9b86304eb25c309076665bc, type: 3}
-  m_Name: EnemyTarget
-  m_EditorClassIdentifier: Assembly-CSharp::BuffTargetGroupResolver
-  targetGroup: Enemy
+  m_Script: {fileID: 11500000, guid: 57bb8c5d3dc35cf4db784fd698670410, type: 3}
+  m_Name: EnemyMonsterBuffModifier
+  m_EditorClassIdentifier: Assembly-CSharp::FloatFieldBuffModifier
+  targetStatTypeName: EnemyStat
+  fieldName: damage
+  addValue: 15
+  multiplyValue: 0
