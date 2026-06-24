@@ -91,7 +91,6 @@ public class BuffManager : MonoBehaviour
 
         NotifyBuffChanged(notifyScope);
     }
-
     public T GetBuffedStat<T>(
         T baseStat,
         BuffQueryContext context,
@@ -112,6 +111,7 @@ public class BuffManager : MonoBehaviour
 
         consumedBuffer.Clear();
 
+        // 1. 더하기 계열 먼저 전부 적용
         for (int i = 0; i < storage.activeBuffs.Count; i++)
         {
             ActiveBuff buff = storage.activeBuffs[i];
@@ -119,10 +119,21 @@ public class BuffManager : MonoBehaviour
             if (!CanUseBuff(buff, context, calculationMode))
                 continue;
 
-            ApplyModifiers(buff, result, context);
+            ApplyModifiersAdditive(buff, result, context);
 
             if (consumeUseCount && buff.useLimitType == BuffUseLimitType.UseCount)
                 consumedBuffer.Add(buff);
+        }
+
+        // 2. 곱하기 계열 나중에 전부 적용
+        for (int i = 0; i < storage.activeBuffs.Count; i++)
+        {
+            ActiveBuff buff = storage.activeBuffs[i];
+
+            if (!CanUseBuff(buff, context, calculationMode))
+                continue;
+
+            ApplyModifiersMultiplicative(buff, result, context);
         }
 
         for (int i = 0; i < consumedBuffer.Count; i++)
@@ -138,7 +149,7 @@ public class BuffManager : MonoBehaviour
         return result;
     }
 
-    private void ApplyModifiers<T>(ActiveBuff buff, T stat, BuffQueryContext context) where T : class
+    private void ApplyModifiersAdditive<T>(ActiveBuff buff, T stat, BuffQueryContext context) where T : class
     {
         if (buff == null || buff.modifiers == null || stat == null)
             return;
@@ -153,7 +164,89 @@ public class BuffManager : MonoBehaviour
             if (!modifier.CanApplyTo(stat, context))
                 continue;
 
-            modifier.ApplyTo(stat, Mathf.Max(1, buff.stack), context);
+            modifier.ApplyAdditiveTo(stat, Mathf.Max(1, buff.stack), context);
+        }
+    }
+    public void ApplyBuffsToStat<T>(
+    T stat,
+    BuffQueryContext context,
+    BuffCalculationMode calculationMode = BuffCalculationMode.All,
+    bool consumeUseCount = false
+) where T : class, IGameStat<T>
+    {
+        if (stat == null)
+            return;
+
+        if (storage == null)
+            return;
+
+        consumedBuffer.Clear();
+
+        for (int i = 0; i < storage.activeBuffs.Count; i++)
+        {
+            ActiveBuff buff = storage.activeBuffs[i];
+
+            if (!CanUseBuff(buff, context, calculationMode))
+                continue;
+
+            ApplyModifiersAdditive(buff, stat, context);
+
+            if (consumeUseCount && buff.useLimitType == BuffUseLimitType.UseCount)
+                consumedBuffer.Add(buff);
+        }
+
+        for (int i = 0; i < storage.activeBuffs.Count; i++)
+        {
+            ActiveBuff buff = storage.activeBuffs[i];
+
+            if (!CanUseBuff(buff, context, calculationMode))
+                continue;
+
+            ApplyModifiersMultiplicative(buff, stat, context);
+        }
+
+        for (int i = 0; i < consumedBuffer.Count; i++)
+            consumedBuffer[i].ConsumeUse();
+
+        if (consumeUseCount && consumedBuffer.Count > 0)
+        {
+            ticker.Tick(0f);
+            NotifyBuffChanged(BuffNotifyScope.DynamicOnly);
+        }
+
+        stat.Clamp();
+    }
+
+    public void ApplyBuffsToStatForTarget<T>(
+        T stat,
+        IBuffTarget target,
+        BuffCalculationMode calculationMode = BuffCalculationMode.All,
+        bool consumeUseCount = false
+    ) where T : class, IGameStat<T>
+    {
+        ApplyBuffsToStat(
+            stat,
+            BuffQueryContext.ForTarget(target),
+            calculationMode,
+            consumeUseCount
+        );
+    }
+    private void ApplyModifiersMultiplicative<T>(ActiveBuff buff, T stat, BuffQueryContext context) where T : class
+    {
+        if (buff == null || buff.modifiers == null || stat == null)
+            return;
+
+        for (int i = 0; i < buff.modifiers.Length; i++)
+        {
+            BuffModifier modifier = buff.modifiers[i];
+
+            if (modifier == null)
+                continue;
+
+            if (!modifier.CanApplyTo(stat, context))
+                continue;
+
+            modifier.ApplyMultiplicativeTo(stat, Mathf.Max(1, buff.stack), context);
         }
     }
 

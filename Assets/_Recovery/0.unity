@@ -4201,6 +4201,9 @@ MonoBehaviour:
   animator: {fileID: 0}
   spriteRenderer: {fileID: 1230235208}
   defaultFaceLeft: 0
+  setOrder: 1
+  baseOrder: 0
+  orderMultiplier: 100
   walkingBoolName: IsWalking
   attackTriggerName: Attack
   hitTriggerName: Hit
@@ -6536,7 +6539,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuffManager
   buffUIManager: {fileID: 511510868}
-  useDebugInspector: 0
+  useDebugInspector: 1
   debugAllActiveBuffs: []
   debugBuffGroups: []
 --- !u!1 &519420028
@@ -57832,6 +57835,9 @@ MonoBehaviour:
   animator: {fileID: 1355081021}
   spriteRenderer: {fileID: 1355081022}
   defaultFaceLeft: 0
+  setOrder: 0
+  baseOrder: 0
+  orderMultiplier: 100
   walkingBoolName: IsWalking
   attackTriggerName: Attack
   hitTriggerName: Hit

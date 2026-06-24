@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class DamagePopupSpawner : MonoBehaviour
@@ -16,13 +17,13 @@ public class DamagePopupSpawner : MonoBehaviour
 
     public void ShowDamage(float damage)
     {
-        if (damagePopupPrefab == null)
-            return;
+        //if (damagePopupPrefab == null)
+        //    return;
 
-        Vector3 spawnPosition = GetSpawnPosition();
+        //Vector3 spawnPosition = GetSpawnPosition();
 
-        DamagePopup popup = Instantiate(damagePopupPrefab, spawnPosition, Quaternion.identity);
-        popup.Init(damage);
+        //DamagePopup popup = ObjectPoolManager.instance.Spawn(damagePopupPrefab.gameObject, spawnPosition, Quaternion.identity).GetComponent<DamagePopup>();
+        //popup.Init(damage);
 
     }
 

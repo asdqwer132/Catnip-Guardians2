@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eda0e8ff03735a14599958deea0a77a4, type: 3}
-  m_Name: TestTree
+  m_Name: TestSpanwnTree
   m_EditorClassIdentifier: Assembly-CSharp::PlantData
   icon: {fileID: -1773102970, guid: efe67b985d5838242bcaa783eeb0f150, type: 3}
   data: []
-  dataId: TestTree
+  dataId: TestSpawnTree
   dataType: 0
   requireUnlock: 0
   seed: {fileID: -1773102970, guid: efe67b985d5838242bcaa783eeb0f150, type: 3}
@@ -23,15 +23,21 @@ MonoBehaviour:
   - {fileID: -7528199513585423542, guid: be3f29b035713b846ba58326f559edca, type: 3}
   - {fileID: 1302930124755786175, guid: be3f29b035713b846ba58326f559edca, type: 3}
   grownUp: {fileID: -1773102970, guid: efe67b985d5838242bcaa783eeb0f150, type: 3}
-  maxHP: 1000
+  maxHP: 1e+14
   growTime: 500
   reward: []
   buyCosts: []
   spawnNormalEnemyCount: 5
   normalEnemies:
-  - enemyPrefab: {fileID: 5831428086637394887, guid: a2d343c7bf11818429e0b5719b4d2077, type: 3}
+  - enemyPrefab: {fileID: 5831428086637394887, guid: 470b5869f9a741e47a2b09b7727f0a1a, type: 3}
     spawnWeight: 50
-    spawnRate: 1000
+    spawnRate: 1
+  - enemyPrefab: {fileID: 5831428086637394887, guid: b386e62b44e11c34fbd77ca939961cef, type: 3}
+    spawnWeight: 30
+    spawnRate: 1
+  - enemyPrefab: {fileID: 5831428086637394887, guid: 7d1260930a0b5814089200d7b217987c, type: 3}
+    spawnWeight: 20
+    spawnRate: 1
   middleBossEnemies:
     enemyPrefab: {fileID: 5831428086637394887, guid: a2d343c7bf11818429e0b5719b4d2077, type: 3}
     spawnWeight: 1

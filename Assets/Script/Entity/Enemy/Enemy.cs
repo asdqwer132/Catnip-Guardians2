@@ -13,13 +13,13 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     [Header("Buff")]
     public BuffManager buffManager;
-    public float statRefreshInterval = 0.1f;
 
-    private EnemyStat baseStat;
-    [SerializeField] private EnemyStat currentStat;
+    [Header("Runtime Stat")]
+    [SerializeField] private EnemyStat currentStat = new EnemyStat();
+
+    private EnemyStat baseStat = new EnemyStat();
 
     private Animator cachedAnimator;
-    private float statRefreshTimer;
     private float previousAnimatorSpeed = 1f;
     private bool isInitialized = false;
     private bool isActionDisabled = false;
@@ -30,11 +30,12 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     public bool IsFullyStopped => isFullyStopped;
 
     public UnityEngine.Object BuffTargetObject => this;
+
     private string buffTargetGroup = "Enemy";
     public string BuffTargetGroup => buffTargetGroup;
     public string BuffTargetDebugName => name;
 
-    #region Control
+    #region Unity
 
     protected override void Awake()
     {
@@ -56,6 +57,8 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
             patternRunner = GetComponent<EnemyPatternRunner>();
 
         cachedAnimator = GetComponentInChildren<Animator>();
+
+        EnsureRuntimeStatInstances();
     }
 
     private void OnDestroy()
@@ -81,8 +84,6 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
             return;
         }
 
-        RefreshBuffedStatByTimer();
-
         if (actorTarget == null || !actorTarget.HasTarget)
         {
             StopMove();
@@ -105,6 +106,10 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         TickDefaultAI(targetTransform);
     }
 
+    #endregion
+
+    #region AI
+
     private void TickDefaultAI(Transform targetTransform)
     {
         if (attack == null)
@@ -122,13 +127,13 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
             return;
         }
 
-        StopMove();
-        attack.TickAttack();
+        if (mover != null && !mover.IsMoving)
+            attack.TickAttack();
     }
 
     #endregion
 
-    #region Action Control
+    #region Control
 
     public void FullStop()
     {
@@ -226,10 +231,11 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     public void OnSpawnedFromPool()
     {
         isInitialized = false;
-        statRefreshTimer = 0f;
         isActionDisabled = false;
         isFullyStopped = false;
         previousAnimatorSpeed = 1f;
+
+        EnsureRuntimeStatInstances();
 
         if (mover != null)
         {
@@ -295,6 +301,8 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         isFullyStopped = false;
         previousAnimatorSpeed = 1f;
 
+        EnsureRuntimeStatInstances();
+
         if (mover != null)
         {
             mover.SetMoveStopped(false);
@@ -308,7 +316,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
         ApplyBaseStat();
 
-        if (statData != null)
+        if (statData != null && !string.IsNullOrEmpty(statData.enemyClass))
             buffTargetGroup = "Enemy/" + statData.enemyClass;
         else
             buffTargetGroup = "Enemy";
@@ -366,7 +374,6 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
             mover.Stop();
     }
 
-
     private void CancelAttack()
     {
         if (attack != null && attack.IsAttacking)
@@ -391,27 +398,27 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     #region Stat
 
+    private void EnsureRuntimeStatInstances()
+    {
+        if (baseStat == null)
+            baseStat = new EnemyStat();
+
+        if (currentStat == null)
+            currentStat = new EnemyStat();
+    }
+
     private void ApplyBaseStat()
     {
         if (statData == null)
             return;
 
-        baseStat = statData.CreateStat();
-        currentStat = baseStat.Clone();
+        EnsureRuntimeStatInstances();
+
+        statData.CreateStatTo(baseStat);
+        currentStat.CopyFrom(baseStat);
 
         InitHealth(baseStat.maxHp, true);
         ApplyRuntimeStat(currentStat);
-    }
-
-    private void RefreshBuffedStatByTimer()
-    {
-        statRefreshTimer += Time.deltaTime;
-
-        if (statRefreshTimer < statRefreshInterval)
-            return;
-
-        statRefreshTimer = 0f;
-        RefreshBuffedStat();
     }
 
     public void RefreshBuffedStat()
@@ -419,15 +426,13 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         if (baseStat == null)
             return;
 
-        EnemyStat nextStat = null;
+        EnsureRuntimeStatInstances();
+
+        currentStat.CopyFrom(baseStat);
 
         if (buffManager != null)
-            nextStat = buffManager.GetBuffedStatForTarget(baseStat, this);
+            buffManager.ApplyBuffsToStatForTarget(currentStat, this);
 
-        if (nextStat == null)
-            nextStat = baseStat.Clone();
-
-        currentStat = nextStat;
         ApplyRuntimeStat(currentStat);
     }
 
@@ -480,7 +485,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     #endregion
 
-    #region OnEvent
+    #region Event
 
     protected override void OnDamaged(float damage)
     {
@@ -529,15 +534,22 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     #endregion
 
+    #region Reward
+
     private void GiveReward()
     {
         if (statData == null)
             return;
 
-        if (GameStatisticsManager.Instance != null)
+        if (GameStatisticsManager.Instance != null && statData.reward != null)
         {
-            foreach(var reward in statData.reward)
+            for (int i = 0; i < statData.reward.Length; i++)
             {
+                Cost reward = statData.reward[i];
+
+                if (reward == null)
+                    continue;
+
                 GameStatisticsManager.Instance.AddCurrency(reward.currencyType, reward.amount);
             }
         }
@@ -545,4 +557,6 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         if (GrowManager.instance != null && baseStat != null)
             GrowManager.instance.AddGrowth(baseStat.growEx);
     }
+
+    #endregion
 }

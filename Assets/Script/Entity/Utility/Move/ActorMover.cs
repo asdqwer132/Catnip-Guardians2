@@ -345,6 +345,7 @@ public class ActorMover : MonoBehaviour
         transform.position += (Vector3)delta;
 
         isMoving = true;
+
         currentMoveDirection = direction;
 
         if (CanFaceByMovement() && Mathf.Abs(direction.x) > FaceThreshold)

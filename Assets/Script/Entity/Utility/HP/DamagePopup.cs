@@ -49,7 +49,7 @@ public class DamagePopup : MonoBehaviour
         }
 
         if (timer >= lifeTime)
-            Destroy(gameObject);
+            ObjectPoolManager.instance.Release(gameObject);
     }
 
     public void Init(float damage)

@@ -218,12 +218,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ActorMover
   speed: 2
   stopDistance: 0.03
+  useAcceleration: 1
+  acceleration: 25
+  deceleration: 45
+  externalDamping: 10
+  stopVelocityThreshold: 0.02
   visual: {fileID: 7063470980320774977}
   attack: {fileID: 2430655365351377237}
   isMoving: 0
   isMoveStopped: 0
   currentMoveDirection: {x: 0, y: 0}
   lastMoveDirection: {x: 1, y: 0}
+  desiredBaseVelocity: {x: 0, y: 0}
+  currentBaseVelocity: {x: 0, y: 0}
+  externalVelocity: {x: 0, y: 0}
+  finalVelocity: {x: 0, y: 0}
 --- !u!114 &7063470980320774977
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -263,10 +272,9 @@ MonoBehaviour:
   attackRange: 1.5
   attackCooldown: 1
   attackDistanceTolerance: 0.15
-  faceTargetWhileInAttackRange: 1
-  faceTargetBeforeDamage: 1
   target: {fileID: 1506509451877719227}
   visual: {fileID: 7063470980320774977}
+  mover: {fileID: 7500191993510811139}
   isAttackStopped: 0
   isActionAttackPlaying: 0
 --- !u!114 &1506509451877719227

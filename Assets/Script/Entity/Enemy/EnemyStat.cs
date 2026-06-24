@@ -31,6 +31,19 @@ public class EnemyStat : IGameStat<EnemyStat>
         };
     }
 
+    public void CopyFrom(EnemyStat other)
+    {
+        if (other == null)
+            return;
+
+        speed = other.speed;
+        maxHp = other.maxHp;
+        damage = other.damage;
+        attackRange = other.attackRange;
+        attackCooldown = other.attackCooldown;
+        growEx = other.growEx;
+    }
+
     public void Clamp()
     {
         if (speed < 0f)

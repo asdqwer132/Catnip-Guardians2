@@ -2819,7 +2819,7 @@ MonoBehaviour:
   - {fileID: 726708666}
   middleBossSpawner: {fileID: 1193780219}
   bossSpawner: {fileID: 81909752}
-  maxAliveEnemyCount: 300
+  maxAliveEnemyCount: 100
   specialSpawnerIgnoresMaxAliveCount: 1
   logSpawnTime: 0
   currentAliveEnemyCount: 0
@@ -6536,7 +6536,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuffManager
   buffUIManager: {fileID: 511510868}
-  useDebugInspector: 0
+  useDebugInspector: 1
   debugAllActiveBuffs: []
   debugBuffGroups: []
 --- !u!1 &519420028

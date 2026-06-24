@@ -57,7 +57,21 @@ public class EnemyStatData : ScriptableObject
         a = b;
         b = temp;
     }
+    public void CreateStatTo(EnemyStat stat)
+    {
+        if (stat == null)
+            return;
 
+        stat.speed = speed;
+        stat.maxHp = maxHp;
+        stat.damage = damage;
+
+        stat.attackRange = Random.Range(minAttackRange, maxAttackRange);
+        stat.attackCooldown = Random.Range(minAttackCooldown, maxAttackCooldown);
+        stat.growEx = Random.Range(minGrowEx, maxGrowEx);
+
+        stat.Clamp();
+    }
     public EnemyStat CreateStat()
     {
         EnemyStat stat = new EnemyStat();

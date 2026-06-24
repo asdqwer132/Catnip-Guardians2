@@ -128,20 +128,15 @@ public class ActorAttack : MonoBehaviour
         IsAttacking = true;
         isActionAttackPlaying = false;
         FaceTarget();
-
         if (visual != null)
         {
             visual.PlayAttack();
             yield return visual.WaitCurrentAnimationEnd();
-
-            FaceTarget();
             ApplyAttackDamage();
         }
         else
         {
             yield return null;
-
-            FaceTarget();
             ApplyAttackDamage();
         }
 
@@ -331,7 +326,7 @@ public class ActorAttack : MonoBehaviour
         if (!IsTargetAtAttackDistance())
             return;
 
-        FaceTarget();
+        //FaceTarget();
 
         target.DamageTarget(damage);
     }

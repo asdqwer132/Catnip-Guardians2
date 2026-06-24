@@ -8,10 +8,6 @@ public class ActorVisual : MonoBehaviour
     public SpriteRenderer spriteRenderer;
     public bool defaultFaceLeft = false;
 
-    [Header("Sorting Order")]
-    [SerializeField] private bool setOrder = true;
-    [SerializeField] private int baseOrder = 0;
-    [SerializeField] private int orderMultiplier = 100;
 
     [Header("Animator Params")]
     public string walkingBoolName = "IsWalking";
@@ -40,7 +36,6 @@ public class ActorVisual : MonoBehaviour
     private int dieTriggerHash;
     private int idleStateHash;
 
-    private int lastSortingOrder;
 
     private const float FaceThreshold = 0.01f;
 
@@ -68,25 +63,8 @@ public class ActorVisual : MonoBehaviour
         dieTriggerHash = Animator.StringToHash(dieTriggerName);
         idleStateHash = string.IsNullOrEmpty(idleStateName) ? 0 : Animator.StringToHash(idleStateName);
 
-        lastSortingOrder = int.MinValue;
     }
 
-    private void LateUpdate()
-    {
-        if (spriteRenderer == null)
-            return;
-
-        if (!setOrder)
-            return;
-
-        int newOrder = baseOrder + Mathf.RoundToInt(-transform.position.y * orderMultiplier);
-
-        if (lastSortingOrder == newOrder)
-            return;
-
-        lastSortingOrder = newOrder;
-        spriteRenderer.sortingOrder = newOrder;
-    }
 
     public virtual void ResetVisual()
     {
