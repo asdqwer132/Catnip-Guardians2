@@ -1,7 +1,6 @@
 using TMPro;
 using UnityEngine;
 
-//최적화 = 코루틴으로 바꿔 볼것
 public class DamagePopup : MonoBehaviour
 {
     [Header("UI")]
@@ -18,6 +17,8 @@ public class DamagePopup : MonoBehaviour
 
     private float timer;
     private CanvasGroup canvasGroup;
+    private DamagePopupSpawner ownerSpawner;
+    private bool isReleased;
 
     private void Awake()
     {
@@ -32,6 +33,9 @@ public class DamagePopup : MonoBehaviour
 
     private void Update()
     {
+        if (isReleased)
+            return;
+
         timer += Time.deltaTime;
 
         transform.position += Vector3.up * moveSpeed * Time.deltaTime;
@@ -49,18 +53,36 @@ public class DamagePopup : MonoBehaviour
         }
 
         if (timer >= lifeTime)
-            ObjectPoolManager.instance.Release(gameObject);
+            Release();
     }
 
-    public void Init(float damage)
+    public void Init(float damage, DamagePopupSpawner owner)
     {
+        ownerSpawner = owner;
+        isReleased = false;
+        timer = 0f;
+
         if (damageText != null)
             damageText.text = Mathf.RoundToInt(damage).ToString();
 
-        timer = 0f;
         transform.localScale = Vector3.one * startScale;
 
         if (canvasGroup != null)
             canvasGroup.alpha = 1f;
+    }
+
+    public void Release()
+    {
+        if (isReleased)
+            return;
+
+        isReleased = true;
+
+        if (ownerSpawner != null)
+            ownerSpawner.OnPopupReleased(this);
+
+        ownerSpawner = null;
+
+        ObjectPoolManager.instance.Release(gameObject);
     }
 }

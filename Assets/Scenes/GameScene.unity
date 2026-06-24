@@ -2594,6 +2594,10 @@ PrefabInstance:
       propertyPath: popupPoint
       value: 
       objectReference: {fileID: 1230235209}
+    - target: {fileID: 5609621908077858473, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: maxActivePopupCount
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.49746
@@ -19648,6 +19652,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 838146427}
   m_CullTransparentMesh: 1
+--- !u!1 &852042488
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 852042489}
+  m_Layer: 0
+  m_Name: -- Spawners --
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &852042489
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 852042488}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1126.5253, y: 1536.0525, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &863500906
 GameObject:
   m_ObjectHideFlags: 0
@@ -59694,7 +59729,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5d094b1a626cdb2469a047be5ba092b9, type: 2}
   - {fileID: 11400000, guid: b7163e8fd8132f74194f41cfc80b5698, type: 2}
   timerSteps:
-  - 1000
+  - 2
   - 2
   playOnStart: 0
   loop: 0
@@ -66379,8 +66414,9 @@ SceneRoots:
   - {fileID: 653761687}
   - {fileID: 1836332728}
   - {fileID: 1132715075}
-  - {fileID: 129445879}
+  - {fileID: 852042489}
   - {fileID: 197801882}
+  - {fileID: 129445879}
   - {fileID: 1318438115}
   - {fileID: 378844624}
   - {fileID: 542858357}
