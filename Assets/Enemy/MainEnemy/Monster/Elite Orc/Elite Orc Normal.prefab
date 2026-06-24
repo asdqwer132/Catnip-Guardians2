@@ -216,14 +216,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39c329b6b511cc045a056f1c21bfc072, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ActorMover
-  speed: 2
+  speed: 0.25
   stopDistance: 0.03
+  useAcceleration: 1
+  acceleration: 25
+  deceleration: 45
+  externalDamping: 10
+  stopVelocityThreshold: 0.02
   visual: {fileID: 7063470980320774977}
   attack: {fileID: 2430655365351377237}
   isMoving: 0
   isMoveStopped: 0
   currentMoveDirection: {x: 0, y: 0}
   lastMoveDirection: {x: 1, y: 0}
+  desiredBaseVelocity: {x: 0, y: 0}
+  currentBaseVelocity: {x: 0, y: 0}
+  externalVelocity: {x: 0, y: 0}
+  finalVelocity: {x: 0, y: 0}
 --- !u!114 &7063470980320774977
 MonoBehaviour:
   m_ObjectHideFlags: 0

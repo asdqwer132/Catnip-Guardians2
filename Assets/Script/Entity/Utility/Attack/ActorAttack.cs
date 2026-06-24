@@ -9,13 +9,10 @@ public class ActorAttack : MonoBehaviour
     public float attackCooldown = 1f;
     public float attackDistanceTolerance = 0.15f;
 
-    [Header("Facing")]
-    public bool faceTargetWhileInAttackRange = true;
-    public bool faceTargetBeforeDamage = true;
-
     [Header("Components")]
     public ActorTarget target;
     public ActorVisual visual;
+    public ActorMover mover;
 
     [Header("Debug")]
     [SerializeField] private bool isAttackStopped;
@@ -27,7 +24,8 @@ public class ActorAttack : MonoBehaviour
 
     private float attackTimer = 0f;
     private Coroutine attackCoroutine;
-    private Vector2 currentAttackDirection = Vector2.right;
+
+    private const float FaceThreshold = 0.01f;
 
     private void Awake()
     {
@@ -36,6 +34,9 @@ public class ActorAttack : MonoBehaviour
 
         if (visual == null)
             visual = GetComponent<ActorVisual>();
+
+        if (mover == null)
+            mover = GetComponent<ActorMover>();
     }
 
     public void SetAttackStat(float newDamage, float newRange, float newCooldown)
@@ -63,7 +64,7 @@ public class ActorAttack : MonoBehaviour
         CancelAttack();
 
         if (visual != null)
-            visual.ForceIdle(GetAttackDirection(), true, false);
+            visual.ForceIdle(Vector2.zero, false, false);
     }
 
     #endregion
@@ -113,9 +114,6 @@ public class ActorAttack : MonoBehaviour
         if (!IsTargetAtAttackDistance())
             return;
 
-        if (faceTargetWhileInAttackRange)
-            FaceTarget();
-
         attackTimer -= Time.deltaTime;
 
         if (attackTimer > 0f)
@@ -129,18 +127,22 @@ public class ActorAttack : MonoBehaviour
     {
         IsAttacking = true;
         isActionAttackPlaying = false;
-
-        currentAttackDirection = GetAttackDirection();
+        FaceTarget();
 
         if (visual != null)
         {
-            visual.PlayAttack(currentAttackDirection);
+            visual.PlayAttack();
             yield return visual.WaitCurrentAnimationEnd();
+
+            FaceTarget();
             ApplyAttackDamage();
         }
         else
         {
             yield return null;
+
+            FaceTarget();
+            ApplyAttackDamage();
         }
 
         IsAttacking = false;
@@ -182,13 +184,11 @@ public class ActorAttack : MonoBehaviour
         isActionAttackPlaying = true;
         attackCoroutine = null;
 
-        currentAttackDirection = GetAttackDirection();
-
         if (faceTargetBeforeStart)
             FaceTarget();
 
         if (visual != null)
-            visual.PlayAttack(currentAttackDirection);
+            visual.PlayAttack();
 
         float safeAttackDelay = Mathf.Max(0f, attackDelay);
         float safeAfterDamageDelay = Mathf.Max(0f, afterDamageDelay);
@@ -209,7 +209,16 @@ public class ActorAttack : MonoBehaviour
 
                 if (!damaged && elapsed >= safeAttackDelay)
                 {
-                    ApplyActionDamage(actionDamage, checkRangeBeforeDamage, checkRange, checkTolerance, faceTargetBeforeActionDamage);
+                    if (faceTargetBeforeActionDamage)
+                        FaceTarget();
+
+                    ApplyActionDamage(
+                        actionDamage,
+                        checkRangeBeforeDamage,
+                        checkRange,
+                        checkTolerance
+                    );
+
                     damaged = true;
                 }
 
@@ -224,7 +233,17 @@ public class ActorAttack : MonoBehaviour
                 yield return new WaitForSeconds(safeAttackDelay);
 
             if (!isAttackStopped)
-                ApplyActionDamage(actionDamage, checkRangeBeforeDamage, checkRange, checkTolerance, faceTargetBeforeActionDamage);
+            {
+                if (faceTargetBeforeActionDamage)
+                    FaceTarget();
+
+                ApplyActionDamage(
+                    actionDamage,
+                    checkRangeBeforeDamage,
+                    checkRange,
+                    checkTolerance
+                );
+            }
         }
 
         if (safeAfterDamageDelay > 0f)
@@ -234,7 +253,11 @@ public class ActorAttack : MonoBehaviour
         isActionAttackPlaying = false;
     }
 
-    private void ApplyActionDamage(float actionDamage, bool checkRange, float checkRangeValue, float checkTolerance, bool faceBeforeDamage)
+    private void ApplyActionDamage(
+        float actionDamage,
+        bool checkRange,
+        float checkRangeValue,
+        float checkTolerance)
     {
         if (isAttackStopped)
             return;
@@ -245,9 +268,6 @@ public class ActorAttack : MonoBehaviour
         if (checkRange && !IsTargetAtAttackDistance(checkRangeValue, checkTolerance))
             return;
 
-        if (faceBeforeDamage)
-            FaceTarget();
-
         target.DamageTarget(Mathf.Max(0f, actionDamage));
     }
 
@@ -257,28 +277,37 @@ public class ActorAttack : MonoBehaviour
 
     public void FaceTarget()
     {
-        Vector2 attackDirection = GetAttackDirection();
-
-        if (attackDirection.sqrMagnitude <= 0.0001f)
+        if (!CanFaceByAttack())
             return;
 
-        currentAttackDirection = attackDirection;
+        if (target == null || !target.HasTarget)
+            return;
 
-        if (visual != null)
-            visual.LookDirection(attackDirection);
-    }
-
-    private Vector2 GetAttackDirection()
-    {
-        if (target == null || !target.HasTarget || target.TargetTransform == null)
-            return currentAttackDirection.sqrMagnitude > 0.0001f ? currentAttackDirection : Vector2.right;
+        if (target.TargetTransform == null)
+            return;
 
         Vector2 direction = target.TargetTransform.position - transform.position;
 
-        if (direction.sqrMagnitude <= 0.0001f)
-            return currentAttackDirection.sqrMagnitude > 0.0001f ? currentAttackDirection : Vector2.right;
+        if (Mathf.Abs(direction.x) <= FaceThreshold)
+            return;
 
-        return direction.normalized;
+        Vector2 horizontalDirection = direction.x < 0f
+            ? Vector2.left
+            : Vector2.right;
+
+        if (visual != null)
+            visual.LookDirection(horizontalDirection);
+    }
+
+    private bool CanFaceByAttack()
+    {
+        if (isAttackStopped)
+            return false;
+
+        if (mover != null && mover.IsMovingOrTryingToMove)
+            return false;
+
+        return true;
     }
 
     #endregion
@@ -290,8 +319,6 @@ public class ActorAttack : MonoBehaviour
         if (isAttackStopped)
             return;
 
-        // 패턴 액션 공격은 액션이 지정한 시간에 직접 데미지를 넣는다.
-        // 그래서 기존 공격 애니메이션 이벤트 데미지는 막아야 중복 데미지가 안 들어간다.
         if (isActionAttackPlaying)
             return;
 
@@ -304,8 +331,7 @@ public class ActorAttack : MonoBehaviour
         if (!IsTargetAtAttackDistance())
             return;
 
-        if (faceTargetBeforeDamage)
-            FaceTarget();
+        FaceTarget();
 
         target.DamageTarget(damage);
     }

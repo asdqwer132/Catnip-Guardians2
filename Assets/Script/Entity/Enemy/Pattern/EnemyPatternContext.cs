@@ -247,25 +247,8 @@ public class EnemyPatternContext
             Mover.FaceDirection(direction);
             return;
         }
-
-        if (Visual != null)
-            Visual.LookDirection(direction);
     }
 
-    // 이전 액션 코드 호환용
-    public void LookDirection(Vector2 direction)
-    {
-        FaceDirection(direction);
-    }
-
-    // 이전 액션 코드 호환용
-    public void PlayMove(Vector2 direction)
-    {
-        if (Mover != null)
-            Mover.MoveDirection(direction, 0f);
-        else if (Visual != null)
-            Visual.PlayMove(direction);
-    }
 
     #endregion
 

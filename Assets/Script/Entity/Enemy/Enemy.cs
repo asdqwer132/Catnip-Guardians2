@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Enemy : HealthActor, IPoolable, IBuffTarget
 {
-    [Header("Data")] 
+    [Header("Data")]
     public EnemyStatData statData;
 
     [Header("Components")]
@@ -122,7 +122,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
             return;
         }
 
-        StopMoveLookTarget(targetTransform);
+        StopMove();
         attack.TickAttack();
     }
 
@@ -232,7 +232,10 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         previousAnimatorSpeed = 1f;
 
         if (mover != null)
+        {
             mover.SetMoveStopped(false);
+            mover.ClearAllVelocity();
+        }
 
         if (attack != null)
             attack.SetAttackStopped(false);
@@ -254,6 +257,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         if (mover != null)
         {
             mover.SetMoveStopped(false);
+            mover.ClearAllVelocity();
             mover.Stop();
         }
 
@@ -292,7 +296,10 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         previousAnimatorSpeed = 1f;
 
         if (mover != null)
+        {
             mover.SetMoveStopped(false);
+            mover.ClearAllVelocity();
+        }
 
         if (attack != null)
             attack.SetAttackStopped(false);
@@ -300,7 +307,11 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         ResumeAnimation();
 
         ApplyBaseStat();
-        buffTargetGroup = "Enemy/" + statData.enemyClass;
+
+        if (statData != null)
+            buffTargetGroup = "Enemy/" + statData.enemyClass;
+        else
+            buffTargetGroup = "Enemy";
 
         if (actorTarget != null)
             actorTarget.SetTarget(target);
@@ -355,21 +366,6 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
             mover.Stop();
     }
 
-    private void StopMoveLookTarget(Transform targetTransform)
-    {
-        if (mover == null)
-            return;
-
-        if (targetTransform != null)
-        {
-            Vector2 lookDirection = targetTransform.position - transform.position;
-
-            if (lookDirection.sqrMagnitude > 0.0001f)
-                mover.FaceDirection(lookDirection);
-        }
-
-        mover.Stop();
-    }
 
     private void CancelAttack()
     {
@@ -503,6 +499,9 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         StopMove();
         CancelAttack();
 
+        if (mover != null)
+            mover.ClearAllVelocity();
+
         if (patternRunner != null)
             patternRunner.StopPattern();
 
@@ -535,10 +534,15 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         if (statData == null)
             return;
 
-        if (CurrencyManager.instance != null)
-            CurrencyManager.instance.AddCurrency(statData.reward);
+        if (GameStatisticsManager.Instance != null)
+        {
+            foreach(var reward in statData.reward)
+            {
+                GameStatisticsManager.Instance.AddCurrency(reward.currencyType, reward.amount);
+            }
+        }
 
-        if (GrowManager.instance != null)
+        if (GrowManager.instance != null && baseStat != null)
             GrowManager.instance.AddGrowth(baseStat.growEx);
     }
 }

@@ -218,12 +218,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ActorMover
   speed: 2
   stopDistance: 0.03
+  useAcceleration: 1
+  acceleration: 25
+  deceleration: 45
+  externalDamping: 10
+  stopVelocityThreshold: 0.02
   visual: {fileID: 7063470980320774977}
   attack: {fileID: 2430655365351377237}
   isMoving: 0
   isMoveStopped: 0
   currentMoveDirection: {x: 0, y: 0}
   lastMoveDirection: {x: 1, y: 0}
+  desiredBaseVelocity: {x: 0, y: 0}
+  currentBaseVelocity: {x: 0, y: 0}
+  externalVelocity: {x: 0, y: 0}
+  finalVelocity: {x: 0, y: 0}
 --- !u!114 &7063470980320774977
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -401,6 +410,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c9ce1731c768c049b9fe5c40e0d1765, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
+  currentHealthStat:
+    hp: 1.5
+    maxHp: 8
+  buffTargetGroup: Health
 --- !u!4 &5078367484502615388 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7208503691173356165, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}

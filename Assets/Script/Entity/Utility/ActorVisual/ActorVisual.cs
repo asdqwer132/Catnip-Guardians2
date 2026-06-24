@@ -7,18 +7,12 @@ public class ActorVisual : MonoBehaviour
     public Animator animator;
     public SpriteRenderer spriteRenderer;
     public bool defaultFaceLeft = false;
+
+    [Header("Sorting Order")]
     [SerializeField] private bool setOrder = true;
     [SerializeField] private int baseOrder = 0;
     [SerializeField] private int orderMultiplier = 100;
 
-
-    private void LateUpdate()
-    {
-        if (spriteRenderer == null)
-            return;
-        if(setOrder)
-            spriteRenderer.sortingOrder = baseOrder + Mathf.RoundToInt(-transform.position.y * orderMultiplier);
-    }
     [Header("Animator Params")]
     public string walkingBoolName = "IsWalking";
     public string attackTriggerName = "Attack";
@@ -35,6 +29,20 @@ public class ActorVisual : MonoBehaviour
     private Coroutine customAnimationRoutine;
     private bool isCustomAnimationLocked;
     private int currentCustomStateHash;
+
+    private bool currentFaceLeft;
+    private bool hasFaceDirection;
+    private bool isWalking;
+
+    private int walkingBoolHash;
+    private int attackTriggerHash;
+    private int hitTriggerHash;
+    private int dieTriggerHash;
+    private int idleStateHash;
+
+    private int lastSortingOrder;
+
+    private const float FaceThreshold = 0.01f;
 
     public bool IsCustomAnimationLocked => isCustomAnimationLocked;
 
@@ -53,6 +61,31 @@ public class ActorVisual : MonoBehaviour
         }
 
         defaultLocalScale = transform.localScale;
+
+        walkingBoolHash = Animator.StringToHash(walkingBoolName);
+        attackTriggerHash = Animator.StringToHash(attackTriggerName);
+        hitTriggerHash = Animator.StringToHash(hitTriggerName);
+        dieTriggerHash = Animator.StringToHash(dieTriggerName);
+        idleStateHash = string.IsNullOrEmpty(idleStateName) ? 0 : Animator.StringToHash(idleStateName);
+
+        lastSortingOrder = int.MinValue;
+    }
+
+    private void LateUpdate()
+    {
+        if (spriteRenderer == null)
+            return;
+
+        if (!setOrder)
+            return;
+
+        int newOrder = baseOrder + Mathf.RoundToInt(-transform.position.y * orderMultiplier);
+
+        if (lastSortingOrder == newOrder)
+            return;
+
+        lastSortingOrder = newOrder;
+        spriteRenderer.sortingOrder = newOrder;
     }
 
     public virtual void ResetVisual()
@@ -64,6 +97,10 @@ public class ActorVisual : MonoBehaviour
             spriteRenderer.flipX = defaultFlipX;
             spriteRenderer.color = defaultColor;
         }
+
+        currentFaceLeft = defaultFaceLeft;
+        hasFaceDirection = false;
+        isWalking = false;
 
         transform.localScale = defaultLocalScale;
 
@@ -81,10 +118,16 @@ public class ActorVisual : MonoBehaviour
         if (spriteRenderer == null)
             return;
 
-        if (Mathf.Abs(direction.x) < 0.01f)
+        if (Mathf.Abs(direction.x) <= FaceThreshold)
             return;
 
         bool faceLeft = direction.x < 0f;
+
+        if (hasFaceDirection && currentFaceLeft == faceLeft)
+            return;
+
+        hasFaceDirection = true;
+        currentFaceLeft = faceLeft;
 
         if (defaultFaceLeft)
             spriteRenderer.flipX = !faceLeft;
@@ -100,9 +143,14 @@ public class ActorVisual : MonoBehaviour
         if (animator == null)
             return;
 
+        if (isWalking)
+            return;
+
+        isWalking = true;
+
         animator.speed = 1f;
-        animator.ResetTrigger(attackTriggerName);
-        animator.SetBool(walkingBoolName, true);
+        animator.ResetTrigger(attackTriggerHash);
+        animator.SetBool(walkingBoolHash, true);
     }
 
     public virtual void PlayMove(Vector2 direction)
@@ -121,7 +169,11 @@ public class ActorVisual : MonoBehaviour
         if (animator == null)
             return;
 
-        animator.SetBool(walkingBoolName, false);
+        if (!isWalking)
+            return;
+
+        isWalking = false;
+        animator.SetBool(walkingBoolHash, false);
     }
 
     public virtual void StopMove(Vector2 lastMoveDirection)
@@ -143,11 +195,13 @@ public class ActorVisual : MonoBehaviour
         if (animator == null)
             return;
 
+        isWalking = false;
+
         animator.speed = 1f;
-        animator.SetBool(walkingBoolName, false);
-        animator.ResetTrigger(hitTriggerName);
-        animator.ResetTrigger(dieTriggerName);
-        animator.SetTrigger(attackTriggerName);
+        animator.SetBool(walkingBoolHash, false);
+        animator.ResetTrigger(hitTriggerHash);
+        animator.ResetTrigger(dieTriggerHash);
+        animator.SetTrigger(attackTriggerHash);
     }
 
     public virtual void PlayAttack(Vector2 attackDirection)
@@ -166,11 +220,13 @@ public class ActorVisual : MonoBehaviour
         if (animator == null)
             return;
 
+        isWalking = false;
+
         animator.speed = 1f;
-        animator.SetBool(walkingBoolName, false);
-        animator.ResetTrigger(attackTriggerName);
-        animator.ResetTrigger(dieTriggerName);
-        animator.SetTrigger(hitTriggerName);
+        animator.SetBool(walkingBoolHash, false);
+        animator.ResetTrigger(attackTriggerHash);
+        animator.ResetTrigger(dieTriggerHash);
+        animator.SetTrigger(hitTriggerHash);
     }
 
     public virtual void PlayDie()
@@ -180,11 +236,13 @@ public class ActorVisual : MonoBehaviour
         if (animator == null)
             return;
 
+        isWalking = false;
+
         animator.speed = 1f;
-        animator.SetBool(walkingBoolName, false);
-        animator.ResetTrigger(attackTriggerName);
-        animator.ResetTrigger(hitTriggerName);
-        animator.SetTrigger(dieTriggerName);
+        animator.SetBool(walkingBoolHash, false);
+        animator.ResetTrigger(attackTriggerHash);
+        animator.ResetTrigger(hitTriggerHash);
+        animator.SetTrigger(dieTriggerHash);
     }
 
     public virtual void ForceIdle(
@@ -202,17 +260,18 @@ public class ActorVisual : MonoBehaviour
         if (animator == null)
             return;
 
-        animator.speed = 1f;
+        isWalking = false;
 
-        animator.ResetTrigger(attackTriggerName);
-        animator.ResetTrigger(hitTriggerName);
-        animator.ResetTrigger(dieTriggerName);
-        animator.SetBool(walkingBoolName, false);
+        animator.speed = 1f;
+        animator.ResetTrigger(attackTriggerHash);
+        animator.ResetTrigger(hitTriggerHash);
+        animator.ResetTrigger(dieTriggerHash);
+        animator.SetBool(walkingBoolHash, false);
 
         if (string.IsNullOrEmpty(idleStateName))
             return;
 
-        int idleHash = Animator.StringToHash(idleStateName);
+        int idleHash = idleStateHash;
 
         if (!animator.HasState(0, idleHash))
         {
@@ -224,6 +283,7 @@ public class ActorVisual : MonoBehaviour
         }
 
         AnimatorStateInfo currentState = animator.GetCurrentAnimatorStateInfo(0);
+
         bool isAlreadyIdle =
             currentState.shortNameHash == idleHash ||
             currentState.fullPathHash == idleHash;
@@ -287,6 +347,7 @@ public class ActorVisual : MonoBehaviour
         }
 
         AnimatorStateInfo currentState = animator.GetCurrentAnimatorStateInfo(layer);
+
         bool isAlreadyPlaying =
             currentState.shortNameHash == stateHash ||
             currentState.fullPathHash == stateHash ||
@@ -300,7 +361,10 @@ public class ActorVisual : MonoBehaviour
         animator.speed = 1f;
 
         if (stopMove)
-            animator.SetBool(walkingBoolName, false);
+        {
+            isWalking = false;
+            animator.SetBool(walkingBoolHash, false);
+        }
 
         if (resetTriggers)
             ResetActionTriggers();
@@ -430,8 +494,8 @@ public class ActorVisual : MonoBehaviour
         if (animator == null)
             return;
 
-        animator.ResetTrigger(attackTriggerName);
-        animator.ResetTrigger(hitTriggerName);
-        animator.ResetTrigger(dieTriggerName);
+        animator.ResetTrigger(attackTriggerHash);
+        animator.ResetTrigger(hitTriggerHash);
+        animator.ResetTrigger(dieTriggerHash);
     }
 }

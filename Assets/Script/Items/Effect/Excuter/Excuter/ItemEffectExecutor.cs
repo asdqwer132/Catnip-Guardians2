@@ -4,7 +4,10 @@ public class ItemEffectExecutor : MonoBehaviour
 {
     [Header("Managers")]
     public BuffManager buffManager;
-
+    public void JustExcuteItem(ItemData itemData)
+    {
+        ExecuteItemEffect(itemData, Vector3.zero, Vector3.zero, Vector3.zero, gameObject, null, 0);
+    }
     public void ExecuteItemEffect(
         ItemData itemData,
         Vector3 usePosition,

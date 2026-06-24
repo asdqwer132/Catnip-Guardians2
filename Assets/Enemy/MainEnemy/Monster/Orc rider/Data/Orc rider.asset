@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9ea8079eb1299e42b8177ad1ed0068f, type: 3}
   m_Name: Orc rider
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStatData
+  enemyClass: 
   speed: 2
   maxHp: 10
   damage: 5
@@ -19,6 +20,8 @@ MonoBehaviour:
   maxAttackRange: 2
   minAttackCooldown: 0.8
   maxAttackCooldown: 1.2
-  reward: []
+  reward:
+  - currencyType: 0
+    amount: 10
   minGrowEx: 8
   maxGrowEx: 12

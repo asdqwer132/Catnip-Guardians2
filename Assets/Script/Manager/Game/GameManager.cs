@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     public ShopManager shopManager;
     public GameEndManager endManager;
     public RoundManager roundManager;
+    public GameStatisticsManager statisticsManager;
     public TutorialEventManager tutorialEventManager;
 
     private void Start()
@@ -68,7 +69,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// 엔딩 패널의 Upgrade 버튼에 연결.
     /// </summary>
-    public void OpenUpgradePanelFromEnd()
+    public void ConfirmEnd()
     {
         if (endManager == null)
             return;
@@ -77,6 +78,9 @@ public class GameManager : MonoBehaviour
             return;
 
         endManager.OpenUpgradePanelFromEnd();
+
+        if (statisticsManager != null)
+            statisticsManager.Confirm();
 
         if (shopManager != null)
             shopManager.InitShop();

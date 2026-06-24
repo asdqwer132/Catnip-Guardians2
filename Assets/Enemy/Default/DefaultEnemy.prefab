@@ -88,8 +88,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 174312507
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 2912446813672376553, guid: fa2f769dfb5aabf4180f5a3d6804fc21, type: 3}
@@ -218,12 +218,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ActorMover
   speed: 2
   stopDistance: 0.03
+  useAcceleration: 1
+  acceleration: 25
+  deceleration: 45
+  externalDamping: 10
+  stopVelocityThreshold: 0.02
   visual: {fileID: 7063470980320774977}
   attack: {fileID: 2430655365351377237}
   isMoving: 0
   isMoveStopped: 0
   currentMoveDirection: {x: 0, y: 0}
   lastMoveDirection: {x: 1, y: 0}
+  desiredBaseVelocity: {x: 0, y: 0}
+  currentBaseVelocity: {x: 0, y: 0}
+  externalVelocity: {x: 0, y: 0}
+  finalVelocity: {x: 0, y: 0}
 --- !u!114 &7063470980320774977
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -294,7 +303,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00c318430d18f2e49a316a8d37f7ee58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyPatternRunner
-  patternData: {fileID: 11400000, guid: ed09668aa7be02941ba57b940a592046, type: 2}
+  patternData: {fileID: 11400000, guid: e4e8163140f504045ba9b0525606ce0c, type: 2}
   patternCooldown: 0
   enemy: {fileID: -4853661844404500515}
   actorTarget: {fileID: 1506509451877719227}

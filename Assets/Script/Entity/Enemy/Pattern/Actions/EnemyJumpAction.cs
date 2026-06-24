@@ -19,41 +19,54 @@ public class EnemyJumpAction : EnemyPatternAction
 
     public override IEnumerator Execute(EnemyPatternContext context, EnemyPatternEntry pattern)
     {
-        if (context.Enemy == null)
+        if (context == null || !context.HasEnemy)
+            yield break;
+
+        ActorMover mover = context.Enemy.mover;
+        if (mover == null)
             yield break;
 
         Vector3 startPosition = context.Position;
         Vector3 targetPosition = context.ResolvePoint(targetPointType, 0f, 0f);
 
         Vector2 directionFromTarget = startPosition - targetPosition;
+
         if (directionFromTarget.sqrMagnitude <= 0.0001f)
             directionFromTarget = -context.DirectionToTarget;
+
         if (directionFromTarget.sqrMagnitude <= 0.0001f)
             directionFromTarget = Vector2.left;
 
         Vector3 endPosition = targetPosition + (Vector3)(directionFromTarget.normalized * endDistanceFromTarget);
         float timer = 0f;
 
-        context.LookDirection((Vector2)(endPosition - startPosition));
+        mover.Stop();
+        context.FaceDirection((Vector2)(endPosition - startPosition));
 
         while (timer < duration)
         {
+            float deltaTime = Time.deltaTime;
             float t = timer / Mathf.Max(0.0001f, duration);
-            Vector3 position = Vector3.Lerp(startPosition, endPosition, Mathf.SmoothStep(0f, 1f, t));
+            float smoothT = Mathf.SmoothStep(0f, 1f, t);
+
+            Vector3 position = Vector3.Lerp(startPosition, endPosition, smoothT);
             position.y += Mathf.Sin(t * Mathf.PI) * visualArcHeight;
 
-            context.Enemy.transform.position = position;
+            mover.SetPosition(position);
 
-            timer += Time.deltaTime;
+            timer += deltaTime;
             yield return null;
         }
 
-        context.Enemy.transform.position = endPosition;
-        context.StopMove();
+        mover.SetPosition(endPosition);
+        mover.Stop();
 
         if (damageOnLanding && hitRadius > 0f && context.IsTargetInRadius(hitRadius))
         {
-            float finalDamage = damage > 0f ? damage : context.GetAttackDamage() * damageMultiplier;
+            float finalDamage = damage > 0f
+                ? damage
+                : context.GetAttackDamage() * damageMultiplier;
+
             context.DamageTarget(finalDamage);
         }
     }

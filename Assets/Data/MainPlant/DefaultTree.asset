@@ -27,11 +27,22 @@ MonoBehaviour:
   growTime: 500
   reward: []
   buyCosts: []
-  spawnCount: 110
-  enemies:
+  spawnNormalEnemyCount: 5
+  normalEnemies:
+  - enemyPrefab: {fileID: 5831428086637394887, guid: 470b5869f9a741e47a2b09b7727f0a1a, type: 3}
+    spawnWeight: 50
+    spawnRate: 30
+  - enemyPrefab: {fileID: 5831428086637394887, guid: b386e62b44e11c34fbd77ca939961cef, type: 3}
+    spawnWeight: 30
+    spawnRate: 30
   - enemyPrefab: {fileID: 5831428086637394887, guid: 7d1260930a0b5814089200d7b217987c, type: 3}
-    spawnWeight: 2
-    spawnRate: 50
-  - enemyPrefab: {fileID: 5831428086637394887, guid: 98c46ef5203ac8747b5123a3552079f0, type: 3}
-    spawnWeight: 2
-    spawnRate: 50
+    spawnWeight: 20
+    spawnRate: 30
+  middleBossEnemies:
+    enemyPrefab: {fileID: 5831428086637394887, guid: a2d343c7bf11818429e0b5719b4d2077, type: 3}
+    spawnWeight: 1
+    spawnRate: 10
+  bossEnemies:
+    enemyPrefab: {fileID: 5831428086637394887, guid: 98c46ef5203ac8747b5123a3552079f0, type: 3}
+    spawnWeight: 1
+    spawnRate: 20

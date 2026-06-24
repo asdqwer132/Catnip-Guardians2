@@ -4,7 +4,11 @@ using UnityEngine;
 public class EnemySpawnInfo
 {
     public GameObject enemyPrefab;
+
+    [Tooltip("일반 적 배열에서 랜덤 선택될 확률입니다.")]
     public float spawnWeight = 1f;
+
+    [Tooltip("일반 스포너에서는 반복 스폰 간격, 미들보스/보스 스포너에서는 등장까지 대기 시간입니다.")]
     public float spawnRate = 1f;
 }
 
@@ -24,7 +28,11 @@ public class PlantData : DefaultData
     public Cost[] reward;
     public Cost[] buyCosts;
 
-    [Header("Spawn Enemies")]
-    public int spawnCount = 1;
-    public EnemySpawnInfo[] enemies;
+    [Header("Normal Enemy Spawn")]
+    public int spawnNormalEnemyCount = 1;
+    public EnemySpawnInfo[] normalEnemies;
+
+    [Header("Special Enemy Spawn")]
+    public EnemySpawnInfo middleBossEnemies;
+    public EnemySpawnInfo bossEnemies;
 }

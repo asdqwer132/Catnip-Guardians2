@@ -11,6 +11,7 @@ public class InitManager : MonoBehaviour
     public ItemInitManager itemInitManager;
     public UnlockManager unlockManager;
     public EnemyManager enemyManager;
+    public GameStatisticsManager statisticsManager;
 
     [Header("UI")]
     public SkillTreeUI skillTreeUI;
@@ -52,6 +53,7 @@ public class InitManager : MonoBehaviour
         itemUseManager.Init();
         buffManager.ClearAllBuffs();
         buffSkillManager.ExecuteAllRegisteredBuffItems(buffSkillManager.gameObject, 0);
+        statisticsManager.ResetRound();
 
         UIInit();
     }

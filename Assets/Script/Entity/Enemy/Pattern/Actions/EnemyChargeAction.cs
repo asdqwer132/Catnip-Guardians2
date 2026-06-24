@@ -34,6 +34,10 @@ public class EnemyChargeAction : EnemyPatternAction
         if (context == null || !context.HasEnemy || !context.HasTarget)
             yield break;
 
+        ActorMover mover = context.Enemy.mover;
+        if (mover == null)
+            yield break;
+
         Transform target = context.GetTargetTransform();
         if (target == null)
             yield break;
@@ -57,6 +61,7 @@ public class EnemyChargeAction : EnemyPatternAction
         float movedDistance = 0f;
         float damageTimer = 0f;
         bool damaged = false;
+
         float baseDuration = Mathf.Max(0.0001f, duration);
         float hardLimitDuration = duration + maxExtraDuration;
 
@@ -64,32 +69,31 @@ public class EnemyChargeAction : EnemyPatternAction
         {
             Vector3 previousPosition = context.Position;
 
+            float deltaTime = Time.deltaTime;
             float t = Mathf.Clamp01(timer / baseDuration);
             float curveMultiplier = GetCurveMultiplier(t);
             float currentSpeed = speed * curveMultiplier;
-            float moveDistance = currentSpeed * Time.deltaTime;
 
-            if (moveDistance <= 0f)
+            if (currentSpeed <= 0f)
                 break;
 
-            Vector2 delta = chargeDirection * moveDistance;
-            context.MoveBy(delta);
-            movedDistance += moveDistance;
-
-            Vector3 currentPosition = context.Position;
+            mover.MoveDirection(chargeDirection, currentSpeed);
 
             if (keepFacingChargeDirection)
                 context.FaceDirection(chargeDirection);
 
-            TickDamageTimer(ref damageTimer);
-            TryDamageTarget(context, previousPosition, currentPosition, ref damaged, ref damageTimer);
+            timer += deltaTime;
 
-
-            timer += Time.deltaTime;
             yield return null;
+
+            Vector3 currentPosition = context.Position;
+            movedDistance += Vector2.Distance(previousPosition, currentPosition);
+
+            TickDamageTimer(ref damageTimer, deltaTime);
+            TryDamageTarget(context, previousPosition, currentPosition, ref damaged, ref damageTimer);
         }
 
-        context.StopMove();
+        mover.Stop();
 
         if (keepFacingChargeDirection)
             context.FaceDirection(chargeDirection);
@@ -115,10 +119,10 @@ public class EnemyChargeAction : EnemyPatternAction
         return timer < hardLimitDuration;
     }
 
-    private void TickDamageTimer(ref float damageTimer)
+    private void TickDamageTimer(ref float damageTimer, float deltaTime)
     {
         if (damageTimer > 0f)
-            damageTimer -= Time.deltaTime;
+            damageTimer -= deltaTime;
     }
 
     private void TryDamageTarget(EnemyPatternContext context, Vector3 previousPosition, Vector3 currentPosition, ref bool damaged, ref float damageTimer)

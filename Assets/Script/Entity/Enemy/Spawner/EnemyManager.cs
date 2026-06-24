@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class EnemyManager : MonoBehaviour
 {
@@ -8,22 +9,38 @@ public class EnemyManager : MonoBehaviour
     [Header("Target")]
     public Plant Target;
 
-    [Header("Spawners")]
+    [Header("Normal Spawners")]
     public EnemySpawner[] enemySpawners;
-    public EnemySpawner middleBossSpanwer;
-    public EnemySpawner bossSpanwer;
+
+    [Header("Special Spawners")]
+    [FormerlySerializedAs("middleBossSpanwer")]
+    public EnemySpawner middleBossSpawner;
+
+    [FormerlySerializedAs("bossSpanwer")]
+    public EnemySpawner bossSpawner;
+
+    [Header("Spawn Limit")]
     public int maxAliveEnemyCount = 50;
+
+    [Tooltip("켜두면 미들보스/보스는 일반 적 최대 생존 수 제한을 무시하고 스폰됩니다.")]
+    public bool specialSpawnerIgnoresMaxAliveCount = true;
 
     [Header("Debug")]
     public bool logSpawnTime = true;
     [SerializeField] private int currentAliveEnemyCount;
 
-    private List<Enemy> currentEnemies = new List<Enemy>();
+    private readonly List<Enemy> currentEnemies = new List<Enemy>();
 
     private float spawnStartTime;
     private bool allEnemiesActionDisabled = false;
 
-    private void Awake() { instance = this; }
+    private const int MiddleBossSpawnerIndex = -100;
+    private const int BossSpawnerIndex = -200;
+
+    private void Awake()
+    {
+        instance = this;
+    }
 
     public void Init(PlantData plantData)
     {
@@ -35,14 +52,31 @@ public class EnemyManager : MonoBehaviour
 
         if (Target == null)
             return;
+
         if (plantData == null)
             return;
-        if (plantData.enemies == null || plantData.enemies.Length == 0)
-            return;
+
+        SetupNormalSpawners(plantData);
+        SetupSpecialSpawner(middleBossSpawner, plantData.middleBossEnemies, MiddleBossSpawnerIndex);
+        SetupSpecialSpawner(bossSpawner, plantData.bossEnemies, BossSpawnerIndex);
+
+        if (logSpawnTime)
+            Debug.Log("Enemy Spawn Init Time: 0.00초");
+
+        EnableAllEnemiesAction();
+        RefreshEnemyCount();
+    }
+
+    private void SetupNormalSpawners(PlantData plantData)
+    {
         if (enemySpawners == null || enemySpawners.Length == 0)
             return;
 
-        int useSpawnerCount = Mathf.Clamp(plantData.spawnCount, 0, enemySpawners.Length);
+        bool hasNormalEnemies = HasValidSpawnInfos(plantData.normalEnemies);
+
+        int useSpawnerCount = hasNormalEnemies
+            ? Mathf.Clamp(plantData.spawnNormalEnemyCount, 0, enemySpawners.Length)
+            : 0;
 
         for (int i = 0; i < enemySpawners.Length; i++)
         {
@@ -61,14 +95,55 @@ public class EnemyManager : MonoBehaviour
                 continue;
 
             enemySpawners[i].gameObject.SetActive(true);
-            enemySpawners[i].SetSpawner(plantData.enemies, Target, i, spawnStartTime);
+            enemySpawners[i].SetSpawner(
+                plantData.normalEnemies,
+                Target,
+                i,
+                spawnStartTime
+            );
+        }
+    }
+
+    private void SetupSpecialSpawner(EnemySpawner spawner, EnemySpawnInfo spawnInfo, int spawnerIndex)
+    {
+        if (spawner == null)
+            return;
+
+        spawner.StopSpawning();
+
+        bool hasSpawnInfo = HasValidSpawnInfo(spawnInfo);
+        spawner.gameObject.SetActive(hasSpawnInfo);
+
+        if (!hasSpawnInfo)
+            return;
+
+        spawner.overSpawn = specialSpawnerIgnoresMaxAliveCount;
+
+        spawner.SetSpawner(
+            new EnemySpawnInfo[] { spawnInfo },
+            Target,
+            spawnerIndex,
+            spawnStartTime
+        );
+    }
+
+    private bool HasValidSpawnInfos(EnemySpawnInfo[] infos)
+    {
+        if (infos == null || infos.Length == 0)
+            return false;
+
+        for (int i = 0; i < infos.Length; i++)
+        {
+            if (HasValidSpawnInfo(infos[i]))
+                return true;
         }
 
-        if (logSpawnTime)
-            Debug.Log("Enemy Spawn Init Time: 0.00초");
+        return false;
+    }
 
-        AllStart();
-        RefreshEnemyCount();
+    private bool HasValidSpawnInfo(EnemySpawnInfo info)
+    {
+        return info != null && info.enemyPrefab != null;
     }
 
     public bool CanSpawnMoreEnemies()
@@ -114,7 +189,6 @@ public class EnemyManager : MonoBehaviour
             return;
 
         currentEnemies.Remove(enemy);
-
         RefreshEnemyCount();
     }
 
@@ -132,32 +206,47 @@ public class EnemyManager : MonoBehaviour
 
     public void StopAllSpawners()
     {
-        if (enemySpawners == null)
-            return;
-
-        for (int i = 0; i < enemySpawners.Length; i++)
+        if (enemySpawners != null)
         {
-            if (enemySpawners[i] == null)
-                continue;
+            for (int i = 0; i < enemySpawners.Length; i++)
+            {
+                if (enemySpawners[i] == null)
+                    continue;
 
-            enemySpawners[i].StopSpawning();
+                enemySpawners[i].StopSpawning();
+            }
         }
+
+        if (middleBossSpawner != null)
+            middleBossSpawner.StopSpawning();
+
+        if (bossSpawner != null)
+            bossSpawner.StopSpawning();
     }
 
     public void StartAllSpawners()
     {
-        if (enemySpawners == null)
+        if (enemySpawners != null)
+        {
+            for (int i = 0; i < enemySpawners.Length; i++)
+            {
+                StartSpawnerIfActive(enemySpawners[i]);
+            }
+        }
+
+        StartSpawnerIfActive(middleBossSpawner);
+        StartSpawnerIfActive(bossSpawner);
+    }
+
+    private void StartSpawnerIfActive(EnemySpawner spawner)
+    {
+        if (spawner == null)
             return;
 
-        for (int i = 0; i < enemySpawners.Length; i++)
-        {
-            if (enemySpawners[i] == null)
-                continue;
-            if (!enemySpawners[i].gameObject.activeInHierarchy)
-                continue;
+        if (!spawner.gameObject.activeInHierarchy)
+            return;
 
-            enemySpawners[i].StartSpawning();
-        }
+        spawner.StartSpawning();
     }
 
     public void DisableAllEnemiesAction()
@@ -209,7 +298,6 @@ public class EnemyManager : MonoBehaviour
         }
 
         currentEnemies.Clear();
-
         RefreshEnemyCount();
     }
 }

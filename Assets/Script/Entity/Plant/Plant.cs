@@ -9,6 +9,7 @@ public class Plant : HealthActor
     [Header("Manager")]
     public GameManager gameManager;
     public GrowManager growManager;
+    public TimerManager timerManager;
     public BuffManager buffManager;
 
     public void Init(PlantData plantData)
@@ -21,6 +22,9 @@ public class Plant : HealthActor
 
         InitHealthOwner("PlantHealth");
         Revive(plantData.maxHP, true);
+
+        if(timerManager != null)
+            timerManager.RestartTimer();
 
         if (growManager != null)
         {

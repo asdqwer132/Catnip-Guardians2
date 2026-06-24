@@ -7,10 +7,17 @@ public class EnemyRetreatAction : EnemyPatternAction
     [Header("Move")]
     [Min(0f)] public float speed = 3f;
     [Min(0f)] public float duration = 0.4f;
-
+    public bool updateDirectionEveryFrame = false;
 
     public override IEnumerator Execute(EnemyPatternContext context, EnemyPatternEntry pattern)
     {
+        if (context == null || !context.HasEnemy)
+            yield break;
+
+        ActorMover mover = context.Enemy.mover;
+        if (mover == null)
+            yield break;
+
         Transform target = context.GetTargetTransform();
 
         if (target == null)
@@ -26,16 +33,16 @@ public class EnemyRetreatAction : EnemyPatternAction
             if (target == null)
                 break;
 
-            //if (updateDirectionEveryFrame)
-            //    direction = GetRetreatDirection(context, target, direction);
+            if (updateDirectionEveryFrame)
+                direction = GetRetreatDirection(context, target, direction);
 
-            context.MoveDirection(direction, speed);
+            mover.MoveDirection(direction, speed);
 
             timer += Time.deltaTime;
             yield return null;
         }
 
-        context.StopMove();
+        mover.Stop();
     }
 
     private Vector2 GetRetreatDirection(EnemyPatternContext context, Transform target, Vector2 fallback)

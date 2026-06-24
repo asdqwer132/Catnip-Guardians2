@@ -18,8 +18,7 @@ public class EnemyTelegraphAction : EnemyPatternAction
         if (stopMove)
             context.StopMove();
 
-        if (faceTarget)
-            context.LookDirection(context.DirectionToTarget);
+
 
         Vector3 position = context.ResolvePoint(pointType, distance, randomRadius);
         Transform parent = parentToEnemy && context.Enemy != null ? context.Enemy.transform : null;

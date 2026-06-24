@@ -11,11 +11,19 @@ public class EnemyZigzagMoveAction : EnemyPatternAction
 
     public override IEnumerator Execute(EnemyPatternContext context, EnemyPatternEntry pattern)
     {
+        if (context == null || !context.HasEnemy)
+            yield break;
+
+        ActorMover mover = context.Enemy.mover;
+        if (mover == null)
+            yield break;
+
         float timer = 0f;
 
         while (timer < duration)
         {
             Vector2 forward = context.DirectionToTarget;
+
             if (forward.sqrMagnitude <= 0.0001f)
                 forward = Vector2.right;
 
@@ -23,12 +31,12 @@ public class EnemyZigzagMoveAction : EnemyPatternAction
             float sidePower = Mathf.Sin(timer * frequency) * amplitude;
             Vector2 direction = (forward + side * sidePower).normalized;
 
-            context.MoveBy(direction * speed * Time.deltaTime, true);
+            mover.MoveDirection(direction, speed);
 
             timer += Time.deltaTime;
             yield return null;
         }
 
-        context.StopMove();
+        mover.Stop();
     }
 }
