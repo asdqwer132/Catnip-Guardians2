@@ -9,7 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6831811007825930877}
-  - component: {fileID: 8669335722277443612}
+  - component: {fileID: 2008328333360802405}
+  - component: {fileID: 323426453555177455}
+  - component: {fileID: 118884888068803407}
   m_Layer: 5
   m_Name: Gaguge
   m_TagString: Untagged
@@ -36,7 +38,15 @@ RectTransform:
   m_AnchoredPosition: {x: -37.5, y: 0}
   m_SizeDelta: {x: -105, y: -30}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &8669335722277443612
+--- !u!222 &2008328333360802405
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 353340153687358784}
+  m_CullTransparentMesh: 1
+--- !u!114 &323426453555177455
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -45,23 +55,42 @@ MonoBehaviour:
   m_GameObject: {fileID: 353340153687358784}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.HorizontalLayoutGroup
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 3
-  m_Spacing: 1.5
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 1
-  m_ChildControlHeight: 1
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: -8291952653730706277, guid: 6acf97bd5317049488ee72583144d9e7, type: 3}
+  m_Type: 3
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 0
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!114 &118884888068803407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 353340153687358784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c46a78e3ff26f449ba6144d17b9793f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ImageFillUI
+  fillImage: {fileID: 323426453555177455}
+  clampValue: 1
+  reverseFill: 0
 --- !u!1 &2542323582597201123
 GameObject:
   m_ObjectHideFlags: 0
@@ -301,6 +330,7 @@ GameObject:
   - component: {fileID: 324992814378724204}
   - component: {fileID: 3406760052808064324}
   - component: {fileID: 5680928924867634751}
+  - component: {fileID: 7594433211194132723}
   m_Layer: 5
   m_Name: currentItemIcon
   m_TagString: Untagged
@@ -356,7 +386,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 1389407878, guid: 89d6b9627a3a13b48948eca9d1c6f9f5, type: 3}
-  m_Type: 0
+  m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -365,6 +395,21 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7594433211194132723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4731383180480163206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c46a78e3ff26f449ba6144d17b9793f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ImageFillUI
+  fillImage: {fileID: 5680928924867634751}
+  clampValue: 1
+  reverseFill: 0
 --- !u!1 &4923009609744746948
 GameObject:
   m_ObjectHideFlags: 0
@@ -452,6 +497,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8309996326249904806}
   - component: {fileID: 8831576296251615385}
+  - component: {fileID: 4766069372231025773}
   m_Layer: 5
   m_Name: AllBagInBag
   m_TagString: Untagged
@@ -498,7 +544,23 @@ MonoBehaviour:
   bagIcon: {fileID: 5586008680824153328}
   equipmentBag: {fileID: 0}
   bagData: {fileID: 0}
-  count: {fileID: 8446577322471337998}
+  cooldownFillPreviewUI: {fileID: 4766069372231025773}
+--- !u!114 &4766069372231025773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6331700931395369447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ddb694a0d15aa845ab74dda81a818c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CooldownFillPreviewUI
+  useSharedCooldownFill: 0
+  currentBagCooldownFill: {fileID: 118884888068803407}
+  nextItemCooldownFill: {fileID: 7594433211194132723}
+  sharedCooldownFill: {fileID: 0}
 --- !u!1 &7000501813659638676
 GameObject:
   m_ObjectHideFlags: 0

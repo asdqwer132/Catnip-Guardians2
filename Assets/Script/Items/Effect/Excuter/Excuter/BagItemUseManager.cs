@@ -15,25 +15,24 @@ public class BagItemUseManager : MonoBehaviour
     private BagItemCooldownController cooldownController =
         new BagItemCooldownController();
 
-    void Awake()
+    private bool canTickCooldown = false;
+
+    private void Awake()
     {
         Init();
     }
 
-    void Update()
-    {
-        if (bag == null || bag.equippedItems == null)
-            return;
-
-        if (IsBagCoolingDown())
-            return;
-
-        StartPreparationForCurrentSlot();
-    }
-
     public BagData GetBagData()
     {
+        if (bag == null)
+            return null;
+
         return bag.bagData;
+    }
+
+    public void SetCooldownTickEnabled(bool enabled)
+    {
+        canTickCooldown = enabled;
     }
 
     public void Init()
@@ -47,6 +46,27 @@ public class BagItemUseManager : MonoBehaviour
         cooldownController.Init(slotCount);
 
         useCycle.Init(slotCount);
+
+        StartPreparationForCurrentSlot();
+    }
+
+    public void TickCooldown(float deltaTime)
+    {
+        if (!canTickCooldown)
+            return;
+
+        if (deltaTime <= 0f)
+            return;
+
+        if (bag == null || bag.equippedItems == null)
+            return;
+
+        SyncControllers();
+
+        cooldownController.TickCooldown(deltaTime);
+
+        if (IsBagCoolingDown())
+            return;
 
         StartPreparationForCurrentSlot();
     }
@@ -82,7 +102,6 @@ public class BagItemUseManager : MonoBehaviour
 
         if (cooldownController.IsSlotCoolingDown(slotIndex))
             return false;
-
 
         if (throwExecutor == null)
             return false;
@@ -178,11 +197,6 @@ public class BagItemUseManager : MonoBehaviour
         cooldownController.ResetSlotPreparation(slotCount);
 
         StartPreparationForCurrentSlot();
-
-        //Debug.Log(
-        //    "아이템 사용 위치가 초기화되고, 첫 아이템 준비가 시작되었습니다. Cycle: " +
-        //    useCycle.CurrentCycleId
-        //);
     }
 
     public void ResetAllCooldowns()

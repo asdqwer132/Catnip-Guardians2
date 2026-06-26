@@ -18,20 +18,64 @@ public class InventoryUI : ItemSearchFilterTargetUI
     public Transform detailSlotParent;
     public GameObject detailSlotPrefab;
 
-    public ItemTooltipUI tooltipUI; 
+    [Header("Tooltip")]
+    public ItemTooltipUI tooltipUI;
+
+    [Header("Option")]
+    public bool resetQuickPageOnRefresh = true;
+
+    private bool isInitialized;
+    private bool isEventBound;
+
+    private readonly List<InventoryItem> validItemsCache = new List<InventoryItem>();
+
+    private readonly List<GameObject> quickPageObjects = new List<GameObject>();
+    private readonly List<GameObject> quickSlotObjects = new List<GameObject>();
+    private readonly List<BaseItemSlotUI> quickSlotUIs = new List<BaseItemSlotUI>();
+
+    private readonly List<GameObject> detailSlotObjects = new List<GameObject>();
+    private readonly List<BaseItemSlotUI> detailSlotUIs = new List<BaseItemSlotUI>();
 
     public void Init()
     {
-        if (InventoryManager.instance != null)
-            InventoryManager.instance.onInventoryChanged += RefreshUI;
+        if (isInitialized)
+        {
+            RefreshUI();
+            return;
+        }
 
+        BindInventoryEvent();
+
+        isInitialized = true;
         RefreshUI();
     }
 
     private void OnDestroy()
     {
+        UnbindInventoryEvent();
+    }
+
+    private void BindInventoryEvent()
+    {
+        if (isEventBound)
+            return;
+
+        if (InventoryManager.instance == null)
+            return;
+
+        InventoryManager.instance.onInventoryChanged += RefreshUI;
+        isEventBound = true;
+    }
+
+    private void UnbindInventoryEvent()
+    {
+        if (!isEventBound)
+            return;
+
         if (InventoryManager.instance != null)
             InventoryManager.instance.onInventoryChanged -= RefreshUI;
+
+        isEventBound = false;
     }
 
     protected override void OnSearchFilterChanged()
@@ -44,18 +88,18 @@ public class InventoryUI : ItemSearchFilterTargetUI
         if (InventoryManager.instance == null)
             return;
 
-        List<InventoryItem> validItems = GetValidItems();
+        GetValidItems(validItemsCache);
 
-        RefreshQuickInventory(validItems);
-        RefreshDetailInventory(validItems);
+        RefreshQuickInventory(validItemsCache);
+        RefreshDetailInventory(validItemsCache);
     }
 
-    private List<InventoryItem> GetValidItems()
+    private void GetValidItems(List<InventoryItem> result)
     {
-        List<InventoryItem> result = new List<InventoryItem>();
+        result.Clear();
 
         if (InventoryManager.instance == null)
-            return result;
+            return;
 
         foreach (InventoryItem item in InventoryManager.instance.items)
         {
@@ -64,8 +108,6 @@ public class InventoryUI : ItemSearchFilterTargetUI
 
             result.Add(item);
         }
-
-        return result;
     }
 
     private void RefreshQuickInventory(List<InventoryItem> validItems)
@@ -73,51 +115,87 @@ public class InventoryUI : ItemSearchFilterTargetUI
         if (quickPageParent == null || quickPagePrefab == null || quickSlotPrefab == null)
             return;
 
-        ClearChildren(quickPageParent);
+        int safeSlotPerPage = Mathf.Max(1, quickSlotsPerPage);
 
         int pageCount = Mathf.Max(
             1,
-            Mathf.CeilToInt((float)validItems.Count / quickSlotsPerPage)
+            Mathf.CeilToInt((float)validItems.Count / safeSlotPerPage)
         );
 
-        List<Transform> pages = new List<Transform>();
+        int totalSlotCount = pageCount * safeSlotPerPage;
 
-        for (int i = 0; i < pageCount; i++)
+        EnsureQuickPages(pageCount);
+        EnsureQuickSlots(totalSlotCount, safeSlotPerPage);
+
+        for (int i = 0; i < quickSlotObjects.Count; i++)
         {
-            GameObject pageObj = Instantiate(quickPagePrefab, quickPageParent);
-            pages.Add(pageObj.transform);
-        }
+            bool active = i < totalSlotCount;
 
-        int totalSlotCount = pageCount * quickSlotsPerPage;
+            quickSlotObjects[i].SetActive(active);
 
-        for (int i = 0; i < totalSlotCount; i++)
-        {
-            int pageIndex = i / quickSlotsPerPage;
+            if (!active)
+            {
+                if (quickSlotUIs[i] != null)
+                    quickSlotUIs[i].SetSlot(null);
 
-            GameObject slotObj = Instantiate(
-                quickSlotPrefab,
-                pages[pageIndex]
-            );
-
-            BaseItemSlotUI slotUI = slotObj.GetComponent<BaseItemSlotUI>();
-            ItemTooltipTrigger tooltipTrigger = slotObj.GetComponent<ItemTooltipTrigger>();
-
-            if (slotUI == null)
                 continue;
-            if (tooltipTrigger != null)
-                tooltipTrigger.Init(tooltipUI);
+            }
+
+            int pageIndex = i / safeSlotPerPage;
+            Transform targetParent = quickPageObjects[pageIndex].transform;
+
+            if (quickSlotObjects[i].transform.parent != targetParent)
+                quickSlotObjects[i].transform.SetParent(targetParent, false);
+
+            if (quickSlotUIs[i] == null)
+                continue;
 
             if (i < validItems.Count)
-                slotUI.SetSlot(validItems[i]);
+                quickSlotUIs[i].SetSlot(validItems[i]);
             else
-                slotUI.SetSlot(null);
-
+                quickSlotUIs[i].SetSlot(null);
         }
 
         if (snapScroll != null)
         {
             snapScroll.SetPageCount(pageCount);
-            snapScroll.MoveToPageInstant(0);
+
+            if (resetQuickPageOnRefresh)
+                snapScroll.MoveToPageInstant(0);
+        }
+    }
+
+    private void EnsureQuickPages(int pageCount)
+    {
+        while (quickPageObjects.Count < pageCount)
+        {
+            GameObject pageObj = Instantiate(quickPagePrefab, quickPageParent);
+            quickPageObjects.Add(pageObj);
+        }
+
+        for (int i = 0; i < quickPageObjects.Count; i++)
+            quickPageObjects[i].SetActive(i < pageCount);
+    }
+
+    private void EnsureQuickSlots(int totalSlotCount, int slotPerPage)
+    {
+        while (quickSlotObjects.Count < totalSlotCount)
+        {
+            int index = quickSlotObjects.Count;
+            int pageIndex = index / slotPerPage;
+
+            Transform parent = quickPageObjects[pageIndex].transform;
+
+            GameObject slotObj = Instantiate(quickSlotPrefab, parent);
+
+            BaseItemSlotUI slotUI = slotObj.GetComponent<BaseItemSlotUI>();
+            ItemTooltipTrigger tooltipTrigger = slotObj.GetComponent<ItemTooltipTrigger>();
+
+            if (tooltipTrigger != null)
+                tooltipTrigger.Init(tooltipUI);
+
+            quickSlotObjects.Add(slotObj);
+            quickSlotUIs.Add(slotUI);
         }
     }
 
@@ -126,28 +204,38 @@ public class InventoryUI : ItemSearchFilterTargetUI
         if (detailSlotParent == null || detailSlotPrefab == null)
             return;
 
-        ClearChildren(detailSlotParent);
+        EnsureDetailSlots(validItems.Count);
 
-        for (int i = 0; i < validItems.Count; i++)
+        for (int i = 0; i < detailSlotObjects.Count; i++)
         {
-            GameObject slotObj = Instantiate(
-                detailSlotPrefab,
-                detailSlotParent
-            );
+            bool active = i < validItems.Count;
 
-            BaseItemSlotUI slotUI = slotObj.GetComponent<BaseItemSlotUI>();
+            detailSlotObjects[i].SetActive(active);
 
-            if (slotUI != null)
-                slotUI.SetSlot(validItems[i]);
+            if (detailSlotUIs[i] == null)
+                continue;
+
+            if (active)
+                detailSlotUIs[i].SetSlot(validItems[i]);
+            else
+                detailSlotUIs[i].SetSlot(null);
         }
     }
 
-    private void ClearChildren(Transform parent)
+    private void EnsureDetailSlots(int count)
     {
-        if (parent == null)
-            return;
+        while (detailSlotObjects.Count < count)
+        {
+            GameObject slotObj = Instantiate(detailSlotPrefab, detailSlotParent);
 
-        for (int i = parent.childCount - 1; i >= 0; i--)
-            Destroy(parent.GetChild(i).gameObject);
+            BaseItemSlotUI slotUI = slotObj.GetComponent<BaseItemSlotUI>();
+            ItemTooltipTrigger tooltipTrigger = slotObj.GetComponent<ItemTooltipTrigger>();
+
+            if (tooltipTrigger != null)
+                tooltipTrigger.Init(tooltipUI);
+
+            detailSlotObjects.Add(slotObj);
+            detailSlotUIs.Add(slotUI);
+        }
     }
 }

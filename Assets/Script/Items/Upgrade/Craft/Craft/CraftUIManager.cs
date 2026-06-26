@@ -32,10 +32,12 @@ public class CraftUIManager : MonoBehaviour
             if (i < materials.Count)
             {
                 slots[i].SetSlot(materials[i]);
+                slots[i].Pannel.SetActive(true);
             }
             else
             {
                 slots[i].ClearSlot();
+                slots[i].Pannel.SetActive(false);
             }
         }
     }

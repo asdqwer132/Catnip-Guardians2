@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8699dce0c4dd3846be4f88159460b12, type: 3}
+  m_Name: Recipe_Weapon_19
+  m_EditorClassIdentifier: Assembly-CSharp::ItemRecipeData
+  itemGrade: 1
+  itemSeries: 1
+  materials:
+  - itemData: {fileID: 11400000, guid: 1f6a467550afef74a8d3d841f15558b9, type: 2}
+    amount: 1
+  - itemData: {fileID: 11400000, guid: e49a8a0837320cf499edc4dc3a8f6f67, type: 2}
+    amount: 1
+  - itemData: {fileID: 11400000, guid: e49a8a0837320cf499edc4dc3a8f6f67, type: 2}
+    amount: 1
+  resultItem: {fileID: 11400000, guid: a4adbdfe41c1c784e8facc90d7d99902, type: 2}

@@ -1,8 +1,16 @@
+using System;
 using UnityEngine;
-
+[Serializable]
+public class TestItemSet
+{
+    public string memo;
+    public bool isUse;
+    public ItemData[] itemDatas;
+}
 public class ItemInitManager : MonoBehaviour
 {
-    public InventoryItem[] items;
+    public TestItemSet[] items;
+    public int setAmount = 99;
 
     public void ApplyDefaultInventoryItems()
     {
@@ -14,15 +22,19 @@ public class ItemInitManager : MonoBehaviour
             Debug.LogWarning("InventoryManager가 없습니다.");
             return;
         }
-
-        for (int i = 0; i < items.Length; i++)
+        foreach(var list in items)
         {
-            InventoryItem item = items[i];
-
-            if (item == null || item.itemData == null || item.amount <= 0)
+            if(!list.isUse) 
                 continue;
+            foreach(ItemData item in list.itemDatas)
+            {
+                InventoryItem added = new InventoryItem(item, setAmount);
 
-            InventoryManager.instance.AddItem(item.itemData, item.amount);
+                if (item == null || added == null)
+                    continue;
+
+                InventoryManager.instance.AddItem(added);
+            }
         }
     }
 }

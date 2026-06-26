@@ -4,6 +4,7 @@ using UnityEngine;
 public class EnemySpawner : MonoBehaviour, IBuffTarget
 {
     [Header("Setting")]
+    public GameObject enemyPrefab;
     public EnemySpawnInfo[] enemyInfos;
     public EnemySpawnerStat baseStat = new EnemySpawnerStat();
     [Tooltip("켜면 스포너 시작 시 첫 번째 적은 대기시간 없이 바로 소환됩니다.")]
@@ -212,8 +213,8 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
 
     private void SetSpawnDebug(EnemySpawnInfo info, float interval)
     {
-        debugNextEnemyName = info != null && info.enemyPrefab != null
-            ? info.enemyPrefab.name
+        debugNextEnemyName = info != null && info.dataSet != null
+            ? info.dataSet.name
             : "None";
 
         debugSpawnInterval = RoundToOneDecimal(interval);
@@ -255,7 +256,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         if (info == null)
             return;
 
-        if (info.enemyPrefab == null)
+        if (info.dataSet == null)
             return;
 
         if (targetPlant == null)
@@ -269,7 +270,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         Vector2 dir = Random.insideUnitCircle.normalized;
         Vector2 spawnPos = dir * distance;
 
-        GameObject spawnedEnemy = CreateEnemyObject(info.enemyPrefab, spawnPos);
+        GameObject spawnedEnemy = CreateEnemyObject(enemyPrefab, spawnPos);
 
         if (spawnedEnemy == null)
             return;
@@ -277,7 +278,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         Enemy enemy = spawnedEnemy.GetComponent<Enemy>();
 
         if (enemy != null)
-            enemy.Init(targetPlant, buffManager);
+            enemy.Init(targetPlant, buffManager, info.dataSet);
 
         if (EnemyManager.instance != null)
             EnemyManager.instance.RegisterEnemy(enemy);
@@ -295,8 +296,8 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
 
         float elapsedTime = Time.time - spawnStartTime;
 
-        string enemyName = info.enemyPrefab != null
-            ? info.enemyPrefab.name
+        string enemyName = info.dataSet != null
+            ? info.dataSet.name
             : "None";
 
         Debug.Log(
@@ -330,7 +331,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
             if (info == null)
                 continue;
 
-            if (info.enemyPrefab == null)
+            if (info.dataSet == null)
                 continue;
 
             totalWeight += Mathf.Max(0f, info.spawnWeight);
@@ -349,7 +350,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
             if (info == null)
                 continue;
 
-            if (info.enemyPrefab == null)
+            if (info.dataSet == null)
                 continue;
 
             currentWeight += Mathf.Max(0f, info.spawnWeight);
@@ -373,7 +374,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
             if (info == null)
                 continue;
 
-            if (info.enemyPrefab == null)
+            if (info.dataSet == null)
                 continue;
 
             return info;

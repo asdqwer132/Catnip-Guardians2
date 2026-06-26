@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class CraftMaterialSlotUI : ClickableItemSlotUI
 {
+    public GameObject Pannel;
     //UI ¿¬°á
     public override void OnClickSlot()
     {

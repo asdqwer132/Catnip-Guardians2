@@ -3,7 +3,7 @@ using UnityEngine;
 [System.Serializable]
 public class EnemySpawnInfo
 {
-    public GameObject enemyPrefab;
+    public EnemyDataSet dataSet;
 
     [Tooltip("일반 적 배열에서 랜덤 선택될 확률입니다.")]
     public float spawnWeight = 1f;

@@ -13,7 +13,13 @@ public class RecipeInvenUI : ItemSearchFilterTargetUI
     [Header("Option")]
     public bool initOnStart = true;
 
+    private bool isInitialized;
+
     private readonly List<ItemRecipeData> allRecipes = new List<ItemRecipeData>();
+    private readonly List<ItemRecipeData> validRecipesCache = new List<ItemRecipeData>();
+
+    private readonly List<GameObject> slotObjects = new List<GameObject>();
+    private readonly List<RecipeSlotUI> slotUIs = new List<RecipeSlotUI>();
 
     private void Start()
     {
@@ -23,6 +29,12 @@ public class RecipeInvenUI : ItemSearchFilterTargetUI
 
     public void Init()
     {
+        if (isInitialized)
+        {
+            RefreshUI();
+            return;
+        }
+
         if (recipeManager == null)
             recipeManager = GetComponentInParent<ItemRecipeManager>();
 
@@ -32,6 +44,7 @@ public class RecipeInvenUI : ItemSearchFilterTargetUI
         {
             Debug.LogWarning("[RecipeInvenUI] ItemRecipeManager가 없습니다.");
             RefreshUI();
+            isInitialized = true;
             return;
         }
 
@@ -40,6 +53,7 @@ public class RecipeInvenUI : ItemSearchFilterTargetUI
         if (recipes != null)
             allRecipes.AddRange(recipes);
 
+        isInitialized = true;
         RefreshUI();
     }
 
@@ -50,13 +64,13 @@ public class RecipeInvenUI : ItemSearchFilterTargetUI
 
     public void RefreshUI()
     {
-        List<ItemRecipeData> validRecipes = GetValidRecipes();
-        RefreshRecipeInventory(validRecipes);
+        GetValidRecipes(validRecipesCache);
+        RefreshRecipeInventory(validRecipesCache);
     }
 
-    private List<ItemRecipeData> GetValidRecipes()
+    private void GetValidRecipes(List<ItemRecipeData> result)
     {
-        List<ItemRecipeData> result = new List<ItemRecipeData>();
+        result.Clear();
 
         for (int i = 0; i < allRecipes.Count; i++)
         {
@@ -67,8 +81,6 @@ public class RecipeInvenUI : ItemSearchFilterTargetUI
 
             result.Add(recipe);
         }
-
-        return result;
     }
 
     private bool IsRecipeVisible(ItemRecipeData recipe)
@@ -87,31 +99,35 @@ public class RecipeInvenUI : ItemSearchFilterTargetUI
         if (detailSlotParent == null || detailSlotPrefab == null)
             return;
 
-        ClearChildren(detailSlotParent);
-
         if (recipes == null)
             return;
 
-        for (int i = 0; i < recipes.Count; i++)
+        EnsureSlots(recipes.Count);
+
+        for (int i = 0; i < slotObjects.Count; i++)
         {
-            GameObject slotObj = Instantiate(
-                detailSlotPrefab,
-                detailSlotParent
-            );
+            bool active = i < recipes.Count;
 
-            RecipeSlotUI slotUI = slotObj.GetComponent<RecipeSlotUI>();
+            slotObjects[i].SetActive(active);
 
-            if (slotUI != null)
-                slotUI.SetSlot(recipes[i], recipeManager);
+            if (slotUIs[i] == null)
+                continue;
+
+            if (active)
+                slotUIs[i].SetSlot(recipes[i], recipeManager);
         }
     }
 
-    private void ClearChildren(Transform parent)
+    private void EnsureSlots(int count)
     {
-        if (parent == null)
-            return;
+        while (slotObjects.Count < count)
+        {
+            GameObject slotObj = Instantiate(detailSlotPrefab, detailSlotParent);
 
-        for (int i = parent.childCount - 1; i >= 0; i--)
-            Destroy(parent.GetChild(i).gameObject);
+            RecipeSlotUI slotUI = slotObj.GetComponent<RecipeSlotUI>();
+
+            slotObjects.Add(slotObj);
+            slotUIs.Add(slotUI);
+        }
     }
 }

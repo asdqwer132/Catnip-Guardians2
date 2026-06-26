@@ -16,6 +16,8 @@ public class ItemData : DefaultData
 
 
     public ItemEffectData[] effectDatas;
+
+
 }
 public enum ItemGrade
 {
@@ -38,7 +40,9 @@ public enum ItemCategory
 }
 public enum ItemSeries
 {
+    Potions = -1,
     None = 0,
     Weapon = 1,
-    Potions = 2
+    Food = 2,
+
 }

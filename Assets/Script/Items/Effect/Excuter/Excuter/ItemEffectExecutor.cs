@@ -49,7 +49,7 @@ public class ItemEffectExecutor : MonoBehaviour
         if (itemData.effectDatas == null)
             return;
 
-        AudioManager.instance.PlaySfx("Item");
+        //AudioManager.instance.PlaySfx("Item");
 
         for (int i = 0; i < itemData.effectDatas.Length; i++)
         {

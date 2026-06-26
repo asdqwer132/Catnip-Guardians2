@@ -8,6 +8,7 @@ public class ItemUseManager : MonoBehaviour
 
     [Header("Managers")]
     public BagSelectManager bagSelectManager;
+    public BagCooldownManager bagCooldownManager;
     public ItemUsePositionProvider positionProvider;
     public BagCooldownUIController cooldownUIController;
 
@@ -22,23 +23,32 @@ public class ItemUseManager : MonoBehaviour
         if (bagSelectManager == null)
             bagSelectManager = GetComponent<BagSelectManager>();
 
+        if (bagCooldownManager == null)
+            bagCooldownManager = GetComponent<BagCooldownManager>();
+
+        if (bagCooldownManager == null)
+            bagCooldownManager = GetComponentInChildren<BagCooldownManager>(true);
+
         if (positionProvider == null)
             positionProvider = GetComponent<ItemUsePositionProvider>();
 
         if (cooldownUIController == null)
             cooldownUIController = GetComponent<BagCooldownUIController>();
     }
-    
 
     private void OnDisable()
     {
         UnsubscribeInput();
+        UnsubscribeCooldownManager();
     }
 
     public void Init()
     {
         if (bagSelectManager != null)
             bagSelectManager.Init();
+
+        if (bagCooldownManager != null)
+            bagCooldownManager.Init();
 
         if (cooldownUIController != null)
             cooldownUIController.Init(bagSelectManager);
@@ -47,12 +57,17 @@ public class ItemUseManager : MonoBehaviour
         RefreshSelectUI();
 
         SubscribeInput();
+        SubscribeCooldownManager();
     }
 
     private void SubscribeInput()
     {
         if (GameInputManager.instance == null)
             return;
+
+        GameInputManager.instance.OnUseItemPressed -= HandleUseInput;
+        GameInputManager.instance.OnNumberPressed -= HandleBagSelectInput;
+        GameInputManager.instance.OnResetAllCooldownPressed -= HandleResetCooldownInput;
 
         GameInputManager.instance.OnUseItemPressed += HandleUseInput;
         GameInputManager.instance.OnNumberPressed += HandleBagSelectInput;
@@ -67,6 +82,37 @@ public class ItemUseManager : MonoBehaviour
         GameInputManager.instance.OnUseItemPressed -= HandleUseInput;
         GameInputManager.instance.OnNumberPressed -= HandleBagSelectInput;
         GameInputManager.instance.OnResetAllCooldownPressed -= HandleResetCooldownInput;
+    }
+
+    private void SubscribeCooldownManager()
+    {
+        if (bagCooldownManager == null)
+            return;
+
+        bagCooldownManager.OnAnyCooldownChanged -= HandleAnyCooldownChanged;
+        bagCooldownManager.OnAnyCooldownReady -= HandleAnyCooldownReady;
+
+        bagCooldownManager.OnAnyCooldownChanged += HandleAnyCooldownChanged;
+        bagCooldownManager.OnAnyCooldownReady += HandleAnyCooldownReady;
+    }
+
+    private void UnsubscribeCooldownManager()
+    {
+        if (bagCooldownManager == null)
+            return;
+
+        bagCooldownManager.OnAnyCooldownChanged -= HandleAnyCooldownChanged;
+        bagCooldownManager.OnAnyCooldownReady -= HandleAnyCooldownReady;
+    }
+
+    private void HandleAnyCooldownChanged()
+    {
+        RefreshSelectUI();
+    }
+
+    private void HandleAnyCooldownReady(BagItemUseManager manager)
+    {
+        RefreshSelectUI();
     }
 
     private void HandleBagSelectInput(int index)
@@ -115,6 +161,13 @@ public class ItemUseManager : MonoBehaviour
 
     public void ResetAllCooldowns()
     {
+        if (bagCooldownManager != null)
+        {
+            bagCooldownManager.ResetAllCooldowns();
+            RefreshSelectUI();
+            return;
+        }
+
         if (bagSelectManager == null)
             return;
 

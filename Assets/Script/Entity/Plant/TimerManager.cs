@@ -121,15 +121,10 @@ public class TimerManager : MonoBehaviour
     private void ExecuteTimerAction(int index)
     {
         // 함수 A 실행
-        FunctionA(index);
-
+        itemEffectExecutor.JustExcuteItem(itemDatas[index]);
+        Debug.Log($"Timer Function A 실행 / Index: {index}");
         // 인스펙터에서 연결한 함수들도 실행
         onTimerTick?.Invoke(index);
     }
 
-    private void FunctionA(int index)
-    {
-        itemEffectExecutor.JustExcuteItem(itemDatas[index]);
-        Debug.Log($"Timer Function A 실행 / Index: {index}");
-    }
 }

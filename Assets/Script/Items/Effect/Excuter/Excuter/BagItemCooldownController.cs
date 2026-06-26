@@ -4,36 +4,89 @@ using UnityEngine;
 public class BagItemCooldownController
 {
     private float bagCooldown = 3f;
-    private float bagCooldownEndTime = 0f;
-    private float[] slotCooldownEndTimes;
+    private float bagCooldownRemain = 0f;
+    private float[] slotCooldownRemains;
     private bool[] slotPreparationStarted;
 
     public void Init(int slotCount)
     {
-        bagCooldownEndTime = 0f;
+        bagCooldownRemain = 0f;
 
         SyncSlotCount(slotCount);
         ClearSlotCooldowns();
         ClearSlotPreparation();
     }
 
-    public void SetBagCooldown(float value) { bagCooldown = Mathf.Max(0f, value); }
+    public void SetBagCooldown(float value)
+    {
+        bagCooldown = Mathf.Max(0f, value);
+    }
 
     public void SyncSlotCount(int slotCount)
     {
         if (slotCount < 0)
             slotCount = 0;
 
-        if (slotCooldownEndTimes == null || slotCooldownEndTimes.Length != slotCount)
-            slotCooldownEndTimes = new float[slotCount];
+        if (slotCooldownRemains == null)
+            slotCooldownRemains = new float[slotCount];
 
-        if (slotPreparationStarted == null || slotPreparationStarted.Length != slotCount)
+        if (slotPreparationStarted == null)
             slotPreparationStarted = new bool[slotCount];
+
+        if (slotCooldownRemains.Length != slotCount)
+        {
+            float[] newSlotCooldownRemains = new float[slotCount];
+            int copyCount = Mathf.Min(slotCooldownRemains.Length, newSlotCooldownRemains.Length);
+
+            for (int i = 0; i < copyCount; i++)
+                newSlotCooldownRemains[i] = slotCooldownRemains[i];
+
+            slotCooldownRemains = newSlotCooldownRemains;
+        }
+
+        if (slotPreparationStarted.Length != slotCount)
+        {
+            bool[] newSlotPreparationStarted = new bool[slotCount];
+            int copyCount = Mathf.Min(slotPreparationStarted.Length, newSlotPreparationStarted.Length);
+
+            for (int i = 0; i < copyCount; i++)
+                newSlotPreparationStarted[i] = slotPreparationStarted[i];
+
+            slotPreparationStarted = newSlotPreparationStarted;
+        }
+    }
+
+    public void TickCooldown(float deltaTime)
+    {
+        if (deltaTime <= 0f)
+            return;
+
+        if (bagCooldownRemain > 0f)
+        {
+            bagCooldownRemain -= deltaTime;
+
+            if (bagCooldownRemain < 0f)
+                bagCooldownRemain = 0f;
+        }
+
+        if (slotCooldownRemains == null)
+            return;
+
+        for (int i = 0; i < slotCooldownRemains.Length; i++)
+        {
+            if (slotCooldownRemains[i] <= 0f)
+                continue;
+
+            slotCooldownRemains[i] -= deltaTime;
+
+            if (slotCooldownRemains[i] < 0f)
+                slotCooldownRemains[i] = 0f;
+        }
     }
 
     public void ResetAllCooldowns(int slotCount)
     {
-        bagCooldownEndTime = 0f;
+        bagCooldownRemain = 0f;
 
         SyncSlotCount(slotCount);
         ClearSlotCooldowns();
@@ -49,7 +102,7 @@ public class BagItemCooldownController
 
     public void StartPreparationCooldownIfNeeded(int slotIndex, ItemData item)
     {
-        if (item == null || item == null)
+        if (item == null)
             return;
         if (slotPreparationStarted == null)
             return;
@@ -60,27 +113,36 @@ public class BagItemCooldownController
 
         float cooldown = Mathf.Max(0f, item.Cooldown);
 
-        if (slotCooldownEndTimes != null && slotIndex >= 0 && slotIndex < slotCooldownEndTimes.Length)
-            slotCooldownEndTimes[slotIndex] = Time.time + cooldown;
+        if (slotCooldownRemains != null && slotIndex >= 0 && slotIndex < slotCooldownRemains.Length)
+            slotCooldownRemains[slotIndex] = cooldown;
 
         slotPreparationStarted[slotIndex] = true;
     }
 
-    public void StartBagCooldown() { bagCooldownEndTime = Time.time + bagCooldown; }
+    public void StartBagCooldown()
+    {
+        bagCooldownRemain = bagCooldown;
+    }
 
-    public bool IsBagCoolingDown() { return Time.time < bagCooldownEndTime; }
+    public bool IsBagCoolingDown()
+    {
+        return bagCooldownRemain > 0f;
+    }
 
     public bool IsSlotCoolingDown(int slotIndex)
     {
-        if (slotCooldownEndTimes == null)
+        if (slotCooldownRemains == null)
             return false;
-        if (slotIndex < 0 || slotIndex >= slotCooldownEndTimes.Length)
+        if (slotIndex < 0 || slotIndex >= slotCooldownRemains.Length)
             return false;
 
-        return Time.time < slotCooldownEndTimes[slotIndex];
+        return slotCooldownRemains[slotIndex] > 0f;
     }
 
-    public float GetBagCooldownRemain() { return Mathf.Max(0f, bagCooldownEndTime - Time.time); }
+    public float GetBagCooldownRemain()
+    {
+        return Mathf.Max(0f, bagCooldownRemain);
+    }
 
     public float GetBagCooldownRatio()
     {
@@ -92,12 +154,12 @@ public class BagItemCooldownController
 
     public float GetSlotCooldownRemain(int slotIndex)
     {
-        if (slotCooldownEndTimes == null)
+        if (slotCooldownRemains == null)
             return 0f;
-        if (slotIndex < 0 || slotIndex >= slotCooldownEndTimes.Length)
+        if (slotIndex < 0 || slotIndex >= slotCooldownRemains.Length)
             return 0f;
 
-        return Mathf.Max(0f, slotCooldownEndTimes[slotIndex] - Time.time);
+        return Mathf.Max(0f, slotCooldownRemains[slotIndex]);
     }
 
     public float GetSlotCooldownRatio(EquipmentBag bag, int slotIndex)
@@ -120,11 +182,11 @@ public class BagItemCooldownController
 
     private void ClearSlotCooldowns()
     {
-        if (slotCooldownEndTimes == null)
+        if (slotCooldownRemains == null)
             return;
 
-        for (int i = 0; i < slotCooldownEndTimes.Length; i++)
-            slotCooldownEndTimes[i] = 0f;
+        for (int i = 0; i < slotCooldownRemains.Length; i++)
+            slotCooldownRemains[i] = 0f;
     }
 
     private void ClearSlotPreparation()

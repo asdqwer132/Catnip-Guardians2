@@ -7,6 +7,7 @@ public abstract class ItemEffectData : ScriptableObject
     public Vector3 impactBaseScale = Vector3.one;
     public bool scaleImpactVfxByRadius = true;
     public bool useAnimatorClipLifeTime = true;
+    public string audioSource;
     [Min(0.01f)]
     public float impactVfxLifeTime = 1f;
 
@@ -27,6 +28,8 @@ public abstract class ItemEffectData : ScriptableObject
     {
         if (impactVfxPrefab == null)
             return;
+
+        AudioManager.instance.PlaySfx(audioSource);
 
         Vector3 position = context.targetPosition;
         position.z = 0f;

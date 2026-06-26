@@ -11,10 +11,18 @@ public class InventoryManager : MonoBehaviour
 
     public Action onInventoryChanged;
 
-    void Awake()
+    private void Awake()
     {
         if (instance == null)
             instance = this;
+    }
+
+    public void AddItem(InventoryItem inventoryItem)
+    {
+        if (inventoryItem == null)
+            return;
+
+        AddItem(inventoryItem.itemData, inventoryItem.amount);
     }
 
     public void AddItem(ItemData itemData, int amount = 1)
@@ -37,7 +45,7 @@ public class InventoryManager : MonoBehaviour
             items.Add(newItem);
         }
 
-        //Debug.Log($"{itemData.itemName} 획득! 현재 수량: {GetItemAmount(itemData)}");
+        SortItemsByDataId();
 
         onInventoryChanged?.Invoke();
     }
@@ -53,23 +61,19 @@ public class InventoryManager : MonoBehaviour
         InventoryItem existingItem = items.Find(x => x.itemData == itemData);
 
         if (existingItem == null)
-        {
-            //Debug.Log("해당 아이템이 인벤토리에 없습니다.");
             return false;
-        }
 
         if (existingItem.amount < amount)
-        {
-            //Debug.Log("아이템 수량이 부족합니다.");
             return false;
-        }
 
         existingItem.amount -= amount;
 
-        if (existingItem.amount < 0)
-            existingItem.amount = 0;
+        if (existingItem.amount <= 0)
+        {
+            items.Remove(existingItem);
+        }
 
-        //Debug.Log($"{itemData.itemName} 사용됨! 남은 수량: {GetItemAmount(itemData)}");
+        SortItemsByDataId();
 
         onInventoryChanged?.Invoke();
 
@@ -89,5 +93,84 @@ public class InventoryManager : MonoBehaviour
         return item.amount;
     }
 
-    public bool HasItem(ItemData itemData, int amount = 1) { return GetItemAmount(itemData) >= amount; }
+    public bool HasItem(ItemData itemData, int amount = 1)
+    {
+        return GetItemAmount(itemData) >= amount;
+    }
+
+    private void SortItemsByDataId()
+    {
+        items.Sort(CompareInventoryItemByDataId);
+    }
+
+    private int CompareInventoryItemByDataId(InventoryItem a, InventoryItem b)
+    {
+        string idA = GetDataId(a);
+        string idB = GetDataId(b);
+
+        bool aEmpty = string.IsNullOrWhiteSpace(idA);
+        bool bEmpty = string.IsNullOrWhiteSpace(idB);
+
+        if (aEmpty && bEmpty) return 0;
+        if (aEmpty) return 1;
+        if (bEmpty) return -1;
+
+        string prefixA = GetIdPrefix(idA);
+        string prefixB = GetIdPrefix(idB);
+
+        int prefixCompare = string.Compare(prefixA, prefixB, StringComparison.OrdinalIgnoreCase);
+        if (prefixCompare != 0)
+            return prefixCompare;
+
+        int numberA = GetIdNumber(idA);
+        int numberB = GetIdNumber(idB);
+
+        if (numberA != numberB)
+            return numberA.CompareTo(numberB);
+
+        return string.Compare(idA, idB, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private string GetDataId(InventoryItem item)
+    {
+        if (item == null || item.itemData == null)
+            return "";
+
+        return item.itemData.dataId;
+    }
+
+    private string GetIdPrefix(string id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+            return "";
+
+        id = id.Trim();
+
+        int lastSpaceIndex = id.LastIndexOf(' ');
+
+        if (lastSpaceIndex < 0)
+            return id;
+
+        return id.Substring(0, lastSpaceIndex).Trim();
+    }
+
+    private int GetIdNumber(string id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+            return int.MaxValue;
+
+        id = id.Trim();
+
+        int lastSpaceIndex = id.LastIndexOf(' ');
+
+        if (lastSpaceIndex < 0)
+            return int.MaxValue;
+
+        string numberText = id.Substring(lastSpaceIndex + 1).Trim();
+
+        if (int.TryParse(numberText, out int number))
+            return number;
+
+        return int.MaxValue;
+    }
 }

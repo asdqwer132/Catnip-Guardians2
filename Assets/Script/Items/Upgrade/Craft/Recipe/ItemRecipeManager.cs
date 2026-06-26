@@ -1,13 +1,23 @@
+using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+[Serializable]
+public class ItemRecipeList
+{
+    public ItemSeries itemSeries;
+    public List<ItemRecipeData> recipes = new List<ItemRecipeData>();
+}
 
 public class ItemRecipeManager : MonoBehaviour
 {
     [Header("Recipes")]
-    public List<ItemRecipeData> recipes = new List<ItemRecipeData>();
+    public List<ItemRecipeList> recipes = new List<ItemRecipeList>();
     public List<InventoryItem> currentMaterials = new List<InventoryItem>();
+
     public ItemData resultItem;
     public ItemData failedItem;
+
     public bool returnFailedItem = true;
 
     public System.Action onMaterialChanged;
@@ -24,12 +34,14 @@ public class ItemRecipeManager : MonoBehaviour
     {
         List<ItemRecipeData> result = new List<ItemRecipeData>();
 
-        foreach (ItemRecipeData recipe in recipes)
+        foreach (ItemRecipeList list in recipes)
         {
-            if (recipe == null)
+            if (list == null)
                 continue;
-
-            result.Add(recipe);
+            foreach (var recipe in list.recipes)
+            {
+                result.Add(recipe);
+            }
         }
 
         return result;
@@ -265,10 +277,13 @@ public class ItemRecipeManager : MonoBehaviour
 
     protected ItemRecipeData FindRecipe()
     {
-        foreach (ItemRecipeData recipe in recipes)
+        foreach (ItemRecipeList list in recipes)
         {
-            if (IsRecipeMatch(recipe))
-                return recipe;
+            foreach (var recipe in list.recipes)
+            {
+                if (IsRecipeMatch(recipe))
+                    return recipe;
+            }
         }
 
         return null;

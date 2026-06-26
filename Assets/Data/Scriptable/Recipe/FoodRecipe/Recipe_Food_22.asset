@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8699dce0c4dd3846be4f88159460b12, type: 3}
+  m_Name: Recipe_Food_22
+  m_EditorClassIdentifier: Assembly-CSharp::ItemRecipeData
+  itemGrade: 1
+  itemSeries: 2
+  materials:
+  - itemData: {fileID: 11400000, guid: 571dcc99d3357bd43a8ed63de602d87e, type: 2}
+    amount: 1
+  - itemData: {fileID: 11400000, guid: 571dcc99d3357bd43a8ed63de602d87e, type: 2}
+    amount: 1
+  - itemData: {fileID: 11400000, guid: f4dbce6e4a5329147810c436218916e6, type: 2}
+    amount: 1
+  - itemData: {fileID: 11400000, guid: 188a29d9a6e9a0542b0bdf8ab42b6f5b, type: 2}
+    amount: 1
+  resultItem: {fileID: 11400000, guid: 8dd6f594225feb94991ca34b6a886a8b, type: 2}

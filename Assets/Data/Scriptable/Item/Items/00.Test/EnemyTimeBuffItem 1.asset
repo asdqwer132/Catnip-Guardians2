@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: EnemyTimeBuffItem 1
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 690328823, guid: 465bcc97d4a18034d8d50bd3f9c5a697, type: 3}
+  data:
+  - language: 0
+    dataName: item
+    description: ddd
+  dataId: 0.EnemyBuffItemT1
+  dataType: 0
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 0
+  category: 2
+  series: 0
+  weight: 0.01
+  cooldown: 1
+  effectDatas:
+  - {fileID: 11400000, guid: 21c6f2f96e751f74c84ae31369af7966, type: 2}

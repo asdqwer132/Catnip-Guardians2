@@ -101,7 +101,7 @@ public class GameEndManager : MonoBehaviour
         if (!isGameEnded)
             return;
 
-        Time.timeScale = 1f;
+        //Time.timeScale = 1f;
 
         HideResultPanel();
         ShowUpgradePanel();

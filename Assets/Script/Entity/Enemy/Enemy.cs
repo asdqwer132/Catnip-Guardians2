@@ -293,7 +293,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     #region Init
 
-    public void Init(IDamageable target, BuffManager injectedBuffManager)
+    public void Init(IDamageable target, BuffManager injectedBuffManager, EnemyDataSet dataSet)
     {
         buffManager = injectedBuffManager;
 
@@ -311,6 +311,11 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
         if (attack != null)
             attack.SetAttackStopped(false);
+
+        statData = dataSet.statData;
+        patternRunner.patternData = dataSet.patternData;
+        visual.animator.runtimeAnimatorController = dataSet.animatorController;
+
 
         ResumeAnimation();
 

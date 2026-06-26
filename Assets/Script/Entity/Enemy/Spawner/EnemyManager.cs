@@ -143,7 +143,7 @@ public class EnemyManager : MonoBehaviour
 
     private bool HasValidSpawnInfo(EnemySpawnInfo info)
     {
-        return info != null && info.enemyPrefab != null;
+        return info != null && info.dataSet != null;
     }
 
     public bool CanSpawnMoreEnemies()
