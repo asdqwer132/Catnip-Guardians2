@@ -84,6 +84,13 @@ public class UIPanelSwitcher : MonoBehaviour
             prevGroup.blocksRaycasts = false;
         }
 
+
+        if (prevPanel != null)
+        {
+            prevPanel.gameObject.SetActive(false);
+            prevPanel.anchoredPosition = originPositions[prevIndex];
+            prevGroup.alpha = 0f;
+        }
         float time = 0f;
 
         while (time < duration)
@@ -108,13 +115,6 @@ public class UIPanelSwitcher : MonoBehaviour
             nextGroup.alpha = Mathf.Lerp(0f, 1f, e);
 
             yield return null;
-        }
-
-        if (prevPanel != null)
-        {
-            prevPanel.gameObject.SetActive(false);
-            prevPanel.anchoredPosition = originPositions[prevIndex];
-            prevGroup.alpha = 0f;
         }
 
         nextPanel.anchoredPosition = nextOrigin;

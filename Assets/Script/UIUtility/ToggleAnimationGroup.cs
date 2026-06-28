@@ -1,14 +1,20 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ToggleAnimationGroup : MonoBehaviour
 {
-    [Header("Toggles")]
-    public Toggle[] toggles;
+    [Serializable]
+    public class ToggleMoveSet
+    {
+        public Toggle toggle;
+        public RectTransform[] moveTargets;
+    }
 
-    [Header("Move Target")]
-    public RectTransform[] moveTargets;
+    [Header("Toggle Sets")]
+    public ToggleMoveSet[] toggleSets;
 
     [Header("Move")]
     public float selectedXOffset = 20f;
@@ -18,34 +24,18 @@ public class ToggleAnimationGroup : MonoBehaviour
     public bool useOvershoot = true;
     public float overshootAmount = 6f;
 
-    private Toggle currentToggle;
-    private Vector2[] originPositions;
-    private Coroutine[] moveCoroutines;
+    private int currentIndex = -1;
+    private Action<bool>[] valueChangedActions;
     private bool isChanging;
+
+    private readonly Dictionary<RectTransform, Vector2> originPositionMap = new Dictionary<RectTransform, Vector2>();
+    private readonly Dictionary<RectTransform, Coroutine> coroutineMap = new Dictionary<RectTransform, Coroutine>();
 
     private void Awake()
     {
-        if (toggles == null || toggles.Length == 0)
-            toggles = GetComponentsInChildren<Toggle>(true);
-
-        InitMoveTargets();
+        AutoFindTogglesIfEmpty();
         CacheOriginPositions();
-
-        for (int i = 0; i < toggles.Length; i++)
-        {
-            Toggle toggle = toggles[i];
-
-            if (toggle == null)
-                continue;
-
-            int index = i;
-
-            toggle.onValueChanged.AddListener((isOn) =>
-            {
-                if (isOn)
-                    SelectToggle(index);
-            });
-        }
+        BindToggles();
     }
 
     private void Start()
@@ -54,53 +44,107 @@ public class ToggleAnimationGroup : MonoBehaviour
 
         if (firstIndex >= 0)
         {
-            currentToggle = toggles[firstIndex];
+            currentIndex = firstIndex;
             SetMoveInstant(firstIndex, true);
         }
     }
 
     private void OnDestroy()
     {
-        if (toggles == null)
+        if (toggleSets == null || valueChangedActions == null)
             return;
 
-        for (int i = 0; i < toggles.Length; i++)
+        for (int i = 0; i < toggleSets.Length; i++)
         {
-            if (toggles[i] != null)
-                toggles[i].onValueChanged.RemoveAllListeners();
+            if (toggleSets[i]?.toggle != null && valueChangedActions[i] != null)
+                toggleSets[i].toggle.onValueChanged.RemoveListener(valueChangedActions[i].Invoke);
         }
     }
 
-    private void InitMoveTargets()
+    private void AutoFindTogglesIfEmpty()
     {
-        if (moveTargets != null && moveTargets.Length == toggles.Length)
+        if (toggleSets != null && toggleSets.Length > 0)
             return;
 
-        moveTargets = new RectTransform[toggles.Length];
+        Toggle[] foundToggles = GetComponentsInChildren<Toggle>(true);
+        toggleSets = new ToggleMoveSet[foundToggles.Length];
 
-        for (int i = 0; i < toggles.Length; i++)
+        for (int i = 0; i < foundToggles.Length; i++)
         {
-            if (toggles[i] == null)
-                continue;
+            Toggle toggle = foundToggles[i];
 
-            Transform visual = toggles[i].transform.Find("Visual");
+            toggleSets[i] = new ToggleMoveSet();
+            toggleSets[i].toggle = toggle;
+
+            RectTransform target = null;
+            Transform visual = toggle.transform.Find("Visual");
 
             if (visual != null)
-                moveTargets[i] = visual.GetComponent<RectTransform>();
-            else
-                moveTargets[i] = toggles[i].GetComponent<RectTransform>();
+                target = visual as RectTransform;
+
+            if (target == null)
+                target = toggle.transform as RectTransform;
+
+            toggleSets[i].moveTargets = target != null
+                ? new[] { target }
+                : Array.Empty<RectTransform>();
         }
     }
 
     private void CacheOriginPositions()
     {
-        originPositions = new Vector2[moveTargets.Length];
-        moveCoroutines = new Coroutine[moveTargets.Length];
+        originPositionMap.Clear();
+        coroutineMap.Clear();
 
-        for (int i = 0; i < moveTargets.Length; i++)
+        if (toggleSets == null)
+            return;
+
+        for (int i = 0; i < toggleSets.Length; i++)
         {
-            if (moveTargets[i] != null)
-                originPositions[i] = moveTargets[i].anchoredPosition;
+            if (toggleSets[i] == null || toggleSets[i].moveTargets == null)
+                continue;
+
+            RectTransform[] targets = toggleSets[i].moveTargets;
+
+            for (int j = 0; j < targets.Length; j++)
+            {
+                RectTransform target = targets[j];
+
+                if (target == null)
+                    continue;
+
+                if (!originPositionMap.ContainsKey(target))
+                    originPositionMap.Add(target, target.anchoredPosition);
+
+                if (!coroutineMap.ContainsKey(target))
+                    coroutineMap.Add(target, null);
+            }
+        }
+    }
+
+    private void BindToggles()
+    {
+        valueChangedActions = new Action<bool>[toggleSets.Length];
+
+        for (int i = 0; i < toggleSets.Length; i++)
+        {
+            Toggle toggle = toggleSets[i].toggle;
+
+            if (toggle == null)
+                continue;
+
+            int index = i;
+
+            valueChangedActions[i] = (isOn) =>
+            {
+                if (isChanging)
+                    return;
+
+                if (isOn)
+                    SelectToggle(index);
+            };
+
+            toggle.onValueChanged.AddListener(valueChangedActions[i].Invoke);
         }
     }
 
@@ -109,58 +153,88 @@ public class ToggleAnimationGroup : MonoBehaviour
         if (isChanging)
             return;
 
-        if (selectedIndex < 0 || selectedIndex >= toggles.Length)
+        if (!IsValidIndex(selectedIndex))
             return;
 
-        Toggle selectedToggle = toggles[selectedIndex];
+        Toggle selectedToggle = toggleSets[selectedIndex].toggle;
 
         if (selectedToggle == null)
             return;
 
-        if (currentToggle == selectedToggle)
+        if (currentIndex == selectedIndex)
             return;
 
         isChanging = true;
 
-        int previousIndex = GetToggleIndex(currentToggle);
+        int previousIndex = currentIndex;
+        currentIndex = selectedIndex;
 
-        currentToggle = selectedToggle;
-
-        if (previousIndex >= 0)
+        if (previousIndex >= 0 && IsValidIndex(previousIndex))
         {
-            toggles[previousIndex].SetIsOnWithoutNotify(false);
-            MoveToggle(previousIndex, false);
+            Toggle previousToggle = toggleSets[previousIndex].toggle;
+
+            if (previousToggle != null)
+                previousToggle.SetIsOnWithoutNotify(false);
+
+            MoveSet(previousIndex, false, selectedIndex);
         }
 
         selectedToggle.SetIsOnWithoutNotify(true);
-        MoveToggle(selectedIndex, true);
+        MoveSet(selectedIndex, true, previousIndex);
 
         isChanging = false;
     }
 
-    private void MoveToggle(int index, bool selected)
+    private void MoveSet(int setIndex, bool selected, int compareIndex)
     {
-        if (index < 0 || index >= moveTargets.Length)
+        if (!IsValidIndex(setIndex))
             return;
 
-        if (moveTargets[index] == null)
+        RectTransform[] targets = toggleSets[setIndex].moveTargets;
+
+        if (targets == null)
             return;
 
-        if (moveCoroutines[index] != null)
-            StopCoroutine(moveCoroutines[index]);
+        for (int i = 0; i < targets.Length; i++)
+        {
+            RectTransform target = targets[i];
 
-        Vector2 targetPosition = originPositions[index];
+            if (target == null)
+                continue;
+
+            if (IsTargetSharedWithSet(target, compareIndex))
+                continue;
+
+            MoveTarget(target, selected);
+        }
+    }
+
+    private void MoveTarget(RectTransform target, bool selected)
+    {
+        if (target == null)
+            return;
+
+        if (!originPositionMap.ContainsKey(target))
+            originPositionMap.Add(target, target.anchoredPosition);
+
+        if (!coroutineMap.ContainsKey(target))
+            coroutineMap.Add(target, null);
+
+        Coroutine runningCoroutine = coroutineMap[target];
+
+        if (runningCoroutine != null)
+            StopCoroutine(runningCoroutine);
+
+        Vector2 targetPosition = originPositionMap[target];
 
         if (selected)
             targetPosition.x += selectedXOffset;
 
-        moveCoroutines[index] = StartCoroutine(MoveRoutine(index, targetPosition, selected));
+        coroutineMap[target] = StartCoroutine(MoveRoutine(target, targetPosition, selected));
     }
 
-    private IEnumerator MoveRoutine(int index, Vector2 targetPosition, bool selected)
+    private IEnumerator MoveRoutine(RectTransform target, Vector2 targetPosition, bool selected)
     {
-        RectTransform target = moveTargets[index];
-
         if (target == null)
             yield break;
 
@@ -168,12 +242,7 @@ public class ToggleAnimationGroup : MonoBehaviour
         Vector2 overshootPosition = targetPosition;
 
         if (useOvershoot)
-        {
-            if (selected)
-                overshootPosition.x += overshootAmount;
-            else
-                overshootPosition.x -= overshootAmount;
-        }
+            overshootPosition.x += selected ? overshootAmount : -overshootAmount;
 
         float firstDuration = useOvershoot ? moveDuration * 0.7f : moveDuration;
         float secondDuration = moveDuration * 0.3f;
@@ -184,11 +253,14 @@ public class ToggleAnimationGroup : MonoBehaviour
             yield return MoveTo(target, overshootPosition, targetPosition, secondDuration);
 
         target.anchoredPosition = targetPosition;
-        moveCoroutines[index] = null;
+        coroutineMap[target] = null;
     }
 
     private IEnumerator MoveTo(RectTransform target, Vector2 from, Vector2 to, float duration)
     {
+        if (target == null)
+            yield break;
+
         if (duration <= 0f)
         {
             target.anchoredPosition = to;
@@ -199,11 +271,12 @@ public class ToggleAnimationGroup : MonoBehaviour
 
         while (time < duration)
         {
+            if (target == null)
+                yield break;
+
             time += Time.unscaledDeltaTime;
 
-            float t = time / duration;
-            t = EaseOutCubic(t);
-
+            float t = EaseOutCubic(time / duration);
             target.anchoredPosition = Vector2.LerpUnclamped(from, to, t);
 
             yield return null;
@@ -215,51 +288,79 @@ public class ToggleAnimationGroup : MonoBehaviour
     private float EaseOutCubic(float t)
     {
         t = Mathf.Clamp01(t);
-        t = 1f - Mathf.Pow(1f - t, 3f);
-        return t;
+        return 1f - Mathf.Pow(1f - t, 3f);
     }
 
-    private void SetMoveInstant(int index, bool selected)
+    private void SetMoveInstant(int setIndex, bool selected)
     {
-        if (index < 0 || index >= moveTargets.Length)
+        if (!IsValidIndex(setIndex))
             return;
 
-        if (moveTargets[index] == null)
+        RectTransform[] targets = toggleSets[setIndex].moveTargets;
+
+        if (targets == null)
             return;
 
-        Vector2 position = originPositions[index];
+        for (int i = 0; i < targets.Length; i++)
+        {
+            RectTransform target = targets[i];
 
-        if (selected)
-            position.x += selectedXOffset;
+            if (target == null)
+                continue;
 
-        moveTargets[index].anchoredPosition = position;
+            if (!originPositionMap.ContainsKey(target))
+                originPositionMap.Add(target, target.anchoredPosition);
+
+            Vector2 position = originPositionMap[target];
+
+            if (selected)
+                position.x += selectedXOffset;
+
+            target.anchoredPosition = position;
+        }
+    }
+
+    private bool IsTargetSharedWithSet(RectTransform target, int setIndex)
+    {
+        if (target == null)
+            return false;
+
+        if (!IsValidIndex(setIndex))
+            return false;
+
+        RectTransform[] targets = toggleSets[setIndex].moveTargets;
+
+        if (targets == null)
+            return false;
+
+        for (int i = 0; i < targets.Length; i++)
+        {
+            if (targets[i] == target)
+                return true;
+        }
+
+        return false;
     }
 
     private int GetFirstOnIndex()
     {
-        if (toggles == null)
+        if (toggleSets == null)
             return -1;
 
-        for (int i = 0; i < toggles.Length; i++)
+        for (int i = 0; i < toggleSets.Length; i++)
         {
-            if (toggles[i] != null && toggles[i].isOn)
+            if (toggleSets[i]?.toggle != null && toggleSets[i].toggle.isOn)
                 return i;
         }
 
         return -1;
     }
 
-    private int GetToggleIndex(Toggle target)
+    private bool IsValidIndex(int index)
     {
-        if (target == null)
-            return -1;
-
-        for (int i = 0; i < toggles.Length; i++)
-        {
-            if (toggles[i] == target)
-                return i;
-        }
-
-        return -1;
+        return toggleSets != null &&
+               index >= 0 &&
+               index < toggleSets.Length &&
+               toggleSets[index] != null;
     }
 }

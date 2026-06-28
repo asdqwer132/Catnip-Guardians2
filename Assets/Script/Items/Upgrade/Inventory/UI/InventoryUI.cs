@@ -1,18 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class InventoryUI : ItemSearchFilterTargetUI
 {
-    [Header("Quick Inventory Page")]
-    public Transform quickPageParent;
-    public GameObject quickPagePrefab;
-    public int quickSlotsPerPage = 12;
+    [Header("Quick Inventory")]
+    [FormerlySerializedAs("quickPageParent")]
+    public Transform quickSlotParent;
 
     [Header("Quick Inventory Slot")]
     public GameObject quickSlotPrefab;
-
-    [Header("Quick Scroll")]
-    public SnapScroll snapScroll;
 
     [Header("Detail Inventory")]
     public Transform detailSlotParent;
@@ -21,15 +18,11 @@ public class InventoryUI : ItemSearchFilterTargetUI
     [Header("Tooltip")]
     public ItemTooltipUI tooltipUI;
 
-    [Header("Option")]
-    public bool resetQuickPageOnRefresh = true;
-
     private bool isInitialized;
     private bool isEventBound;
 
     private readonly List<InventoryItem> validItemsCache = new List<InventoryItem>();
 
-    private readonly List<GameObject> quickPageObjects = new List<GameObject>();
     private readonly List<GameObject> quickSlotObjects = new List<GameObject>();
     private readonly List<BaseItemSlotUI> quickSlotUIs = new List<BaseItemSlotUI>();
 
@@ -112,81 +105,32 @@ public class InventoryUI : ItemSearchFilterTargetUI
 
     private void RefreshQuickInventory(List<InventoryItem> validItems)
     {
-        if (quickPageParent == null || quickPagePrefab == null || quickSlotPrefab == null)
+        if (quickSlotParent == null || quickSlotPrefab == null)
             return;
 
-        int safeSlotPerPage = Mathf.Max(1, quickSlotsPerPage);
-
-        int pageCount = Mathf.Max(
-            1,
-            Mathf.CeilToInt((float)validItems.Count / safeSlotPerPage)
-        );
-
-        int totalSlotCount = pageCount * safeSlotPerPage;
-
-        EnsureQuickPages(pageCount);
-        EnsureQuickSlots(totalSlotCount, safeSlotPerPage);
+        EnsureQuickSlots(validItems.Count);
 
         for (int i = 0; i < quickSlotObjects.Count; i++)
         {
-            bool active = i < totalSlotCount;
+            bool active = i < validItems.Count;
 
             quickSlotObjects[i].SetActive(active);
-
-            if (!active)
-            {
-                if (quickSlotUIs[i] != null)
-                    quickSlotUIs[i].SetSlot(null);
-
-                continue;
-            }
-
-            int pageIndex = i / safeSlotPerPage;
-            Transform targetParent = quickPageObjects[pageIndex].transform;
-
-            if (quickSlotObjects[i].transform.parent != targetParent)
-                quickSlotObjects[i].transform.SetParent(targetParent, false);
 
             if (quickSlotUIs[i] == null)
                 continue;
 
-            if (i < validItems.Count)
+            if (active)
                 quickSlotUIs[i].SetSlot(validItems[i]);
             else
                 quickSlotUIs[i].SetSlot(null);
         }
-
-        if (snapScroll != null)
-        {
-            snapScroll.SetPageCount(pageCount);
-
-            if (resetQuickPageOnRefresh)
-                snapScroll.MoveToPageInstant(0);
-        }
     }
 
-    private void EnsureQuickPages(int pageCount)
+    private void EnsureQuickSlots(int count)
     {
-        while (quickPageObjects.Count < pageCount)
+        while (quickSlotObjects.Count < count)
         {
-            GameObject pageObj = Instantiate(quickPagePrefab, quickPageParent);
-            quickPageObjects.Add(pageObj);
-        }
-
-        for (int i = 0; i < quickPageObjects.Count; i++)
-            quickPageObjects[i].SetActive(i < pageCount);
-    }
-
-    private void EnsureQuickSlots(int totalSlotCount, int slotPerPage)
-    {
-        while (quickSlotObjects.Count < totalSlotCount)
-        {
-            int index = quickSlotObjects.Count;
-            int pageIndex = index / slotPerPage;
-
-            Transform parent = quickPageObjects[pageIndex].transform;
-
-            GameObject slotObj = Instantiate(quickSlotPrefab, parent);
+            GameObject slotObj = Instantiate(quickSlotPrefab, quickSlotParent);
 
             BaseItemSlotUI slotUI = slotObj.GetComponent<BaseItemSlotUI>();
             ItemTooltipTrigger tooltipTrigger = slotObj.GetComponent<ItemTooltipTrigger>();
