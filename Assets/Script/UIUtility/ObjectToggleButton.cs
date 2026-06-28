@@ -7,6 +7,9 @@ public class ObjectToggleButton : MonoBehaviour
     public GameObject[] targetObjects;
     public bool initClose = true;
 
+    [Header("Close Targets When Open")]
+    public GameObject[] closeTargetsWhenOpen;
+
     [Header("UI")]
     public Image buttonImage;
     public Button button;
@@ -65,6 +68,47 @@ public class ObjectToggleButton : MonoBehaviour
         SetObjectActive(!currentActive);
     }
 
+    public void SetObjectActive(bool active)
+    {
+        if (isChanging)
+            return;
+
+        isChanging = true;
+
+        if (targetObjects == null || targetObjects.Length == 0)
+        {
+            Debug.LogWarning("토글할 오브젝트가 없습니다." + name);
+            UpdateUIState();
+            isChanging = false;
+            return;
+        }
+
+        for (int i = 0; i < targetObjects.Length; i++)
+        {
+            if (targetObjects[i] != null)
+                targetObjects[i].SetActive(active);
+        }
+
+        if (active)
+            CloseOtherTargets();
+
+        UpdateUIState();
+
+        isChanging = false;
+    }
+
+    private void CloseOtherTargets()
+    {
+        if (closeTargetsWhenOpen == null)
+            return;
+
+        for (int i = 0; i < closeTargetsWhenOpen.Length; i++)
+        {
+            if (closeTargetsWhenOpen[i] != null)
+                closeTargetsWhenOpen[i].SetActive(false);
+        }
+    }
+
     private bool HasAnyActiveTarget()
     {
         if (targetObjects == null || targetObjects.Length == 0)
@@ -77,32 +121,6 @@ public class ObjectToggleButton : MonoBehaviour
         }
 
         return false;
-    }
-
-    public void SetObjectActive(bool active)
-    {
-        if (isChanging)
-            return;
-
-        isChanging = true;
-
-        if (targetObjects == null || targetObjects.Length == 0)
-        {
-            Debug.LogWarning("토글할 오브젝트가 없습니다.");
-            UpdateUIState();
-            isChanging = false;
-            return;
-        }
-
-        for (int i = 0; i < targetObjects.Length; i++)
-        {
-            if (targetObjects[i] != null)
-                targetObjects[i].SetActive(active);
-        }
-
-        UpdateUIState();
-
-        isChanging = false;
     }
 
     public void UpdateUIState()
