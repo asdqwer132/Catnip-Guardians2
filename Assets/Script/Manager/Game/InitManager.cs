@@ -24,8 +24,6 @@ public class InitManager : MonoBehaviour
 
     public void InitAll()
     {
-
-        //?
         plantManager.SetPlants();
         enemyManager.Init(plantManager.CurrentPlant);
 
@@ -54,6 +52,8 @@ public class InitManager : MonoBehaviour
         buffManager.ClearAllBuffs();
         buffSkillManager.ExecuteAllRegisteredBuffItems(buffSkillManager.gameObject, 0);
         statisticsManager.ResetRound();
+        if (ItemRuntimeObjectManager.Instance != null)
+            ItemRuntimeObjectManager.Instance.ClearAll();
 
         UIInit();
     }
@@ -63,6 +63,7 @@ public class InitManager : MonoBehaviour
         selectedBagPreviewUI.Init();
         skillTreeUI.Init();
         buffUIManager.Init();
+        OffscreenTargetIndicatorManager.Instance.ClearAll();
 
         foreach (var item in inventoryUIs)
         {

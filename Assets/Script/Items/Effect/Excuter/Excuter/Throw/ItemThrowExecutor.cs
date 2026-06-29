@@ -35,8 +35,8 @@ public class ItemThrowExecutor : MonoBehaviour
         Vector3 direction = targetPosition - startPosition;
         if (direction.sqrMagnitude <= 0.0001f)
             return false;
-        direction.z = 0f;
 
+        direction.z = 0f;
         direction.Normalize();
 
         ItemThrowMover mover = CreateThrowMover(startPosition);
@@ -44,11 +44,14 @@ public class ItemThrowExecutor : MonoBehaviour
         if (mover == null)
             return false;
 
+        RegisterRuntimeObject(mover);
+
         Sprite itemSprite = inventoryItem.icon;
 
-        TargetRangeIndicator rangeIndicator = CreateTargetRangeIndicator(
-            targetPosition
-        );
+        TargetRangeIndicator rangeIndicator = CreateTargetRangeIndicator(targetPosition);
+
+        if (rangeIndicator != null)
+            RegisterRuntimeObject(rangeIndicator);
 
         mover.Init(
             startPosition,
@@ -70,6 +73,7 @@ public class ItemThrowExecutor : MonoBehaviour
                 );
             }
         );
+
         return true;
     }
 
@@ -110,5 +114,16 @@ public class ItemThrowExecutor : MonoBehaviour
             indicator.SetRadius(defaultTargetRangeRadius);
 
         return indicator;
+    }
+
+    private void RegisterRuntimeObject(Component component)
+    {
+        if (component == null)
+            return;
+
+        if (ItemRuntimeObjectManager.Instance == null)
+            return;
+
+        ItemRuntimeObjectManager.Instance.Register(component);
     }
 }

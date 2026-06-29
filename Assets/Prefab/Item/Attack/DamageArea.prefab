@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: -3564356176302842844}
   - component: {fileID: -7001073237392144952}
   - component: {fileID: -7298374742604618283}
+  - component: {fileID: -4944945864860643887}
   m_Layer: 0
   m_Name: DamageArea
   m_TagString: Untagged
@@ -118,6 +119,19 @@ MonoBehaviour:
   damageInterval: 0.5
   radius: 1
   lifeTime: 10
+--- !u!114 &-4944945864860643887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3093583821147485359}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcc56a50e43c4d74d9607e822f12fae3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemRuntimeObjectAutoRegister
+  registerOnEnable: 1
 --- !u!1 &3147158496488106615
 GameObject:
   m_ObjectHideFlags: 0

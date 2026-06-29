@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 4251149784486190187}
   - component: {fileID: 147120439898794231}
   - component: {fileID: 8805053868143180266}
+  - component: {fileID: 5056258588554765397}
   m_Layer: 0
   m_Name: SummonedObject
   m_TagString: Untagged
@@ -162,6 +163,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemEffectExecutor
   buffManager: {fileID: 0}
+--- !u!114 &5056258588554765397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3093583821147485359}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcc56a50e43c4d74d9607e822f12fae3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemRuntimeObjectAutoRegister
+  registerOnEnable: 1
 --- !u!1 &3147158496488106615
 GameObject:
   m_ObjectHideFlags: 0
