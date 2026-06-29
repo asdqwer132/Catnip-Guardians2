@@ -18,20 +18,21 @@ public class SettingWindowController : MonoBehaviour
         instance = this;
     }
 
-    public void OpenSetting()
+    public void OpenSetting(bool isTimeStop)
     {
         if (settingPanel == null)
             return;
-
-        Time.timeScale = 0f;
+        if(isTimeStop)
+            Time.timeScale = 0f;
         settingPanel.SetActive(true);
     }
 
-    public void CloseSetting()
+    public void CloseSetting(bool isTimeStop)
     {
         if (settingPanel == null)
             return;
-        Time.timeScale = 1.0f;
+        if (isTimeStop)
+            Time.timeScale = 1.0f;
         settingPanel.SetActive(false);
     }
 

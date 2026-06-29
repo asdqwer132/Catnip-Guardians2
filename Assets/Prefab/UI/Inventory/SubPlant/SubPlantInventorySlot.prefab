@@ -302,6 +302,7 @@ GameObject:
   - component: {fileID: 3690437026643880915}
   - component: {fileID: 7953636109103637074}
   - component: {fileID: 112284016848460286}
+  - component: {fileID: 5950829455748439677}
   m_Layer: 5
   m_Name: SubPlantInventorySlot
   m_TagString: Untagged
@@ -448,4 +449,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipTrigger
   tooltipUI: {fileID: 0}
+  providerComponent: {fileID: 5950829455748439677}
+--- !u!114 &5950829455748439677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7991120730881528602}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 231b2d1c8c7747045aa0d46cd57f8cc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemSlotTooltipProvider
   slot: {fileID: 7953636109103637074}
+  anchorRect: {fileID: 8239930663799005487}

@@ -164,6 +164,8 @@ GameObject:
   - component: {fileID: 3794983566759181056}
   - component: {fileID: 7708288689008390349}
   - component: {fileID: 5548845191489271285}
+  - component: {fileID: 2966842718215824071}
+  - component: {fileID: 3115343476451736737}
   m_Layer: 5
   m_Name: EquipSimpleSlot
   m_TagString: Untagged
@@ -292,11 +294,13 @@ MonoBehaviour:
   amountText: {fileID: 0}
   gradeText: {fileID: 0}
   locked: {fileID: 2189932264547642441}
+  IsLocked: 0
   currentItem:
     itemData: {fileID: 0}
     amount: 0
   slotButton: {fileID: 3794983566759181056}
   dragIconOffset: {x: 0, y: 0}
+  slotIndex: 0
 --- !u!225 &5548845191489271285
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -309,3 +313,32 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &2966842718215824071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7499417304564441048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 231b2d1c8c7747045aa0d46cd57f8cc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemSlotTooltipProvider
+  slot: {fileID: 7708288689008390349}
+  anchorRect: {fileID: 2519819567434971660}
+--- !u!114 &3115343476451736737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7499417304564441048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f811147cfbd52a4b8cf7877b3eb1bc0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipTrigger
+  isPointer: 1
+  tooltipUI: {fileID: 0}
+  providerComponent: {fileID: 2966842718215824071}

@@ -37,7 +37,6 @@ public class ShopBoxInfoUI : MonoBehaviour
 
         if (boxIcon != null)
         {
-            Debug.Log("≥÷¿Ω" + boxData.icon == null);
             boxIcon.sprite = boxData.icon;
             boxIcon.enabled = boxData.icon != null;
         }

@@ -7,7 +7,9 @@ using UnityEngine.UI;
 
 public class InventorySearchUI : MonoBehaviour
 {
-    [Header("Target")][FormerlySerializedAs("inventoryUI")] public ItemSearchFilterTargetUI targetUI;
+    [Header("Target")]
+    [FormerlySerializedAs("inventoryUI")]
+    public ItemSearchFilterTargetUI targetUI;
 
     [Header("Dropdown")]
     public TMP_Dropdown categoryDropdown;
@@ -22,7 +24,12 @@ public class InventorySearchUI : MonoBehaviour
     public bool resetSeries = true;
     public bool resetGrade = true;
 
+    public event Action<InventorySearchUI, InventorySearchFilter> OnFilterChanged;
+
     private bool isInitialized;
+    private bool isEventBound;
+    private bool isApplyingExternalFilter;
+
     private readonly InventorySearchFilter filter = new InventorySearchFilter();
 
     private readonly List<ItemCategory> categoryDropdownValues = new List<ItemCategory>();
@@ -44,7 +51,8 @@ public class InventorySearchUI : MonoBehaviour
         InitFilterFromTarget();
         RemoveMaskedFilterValue();
         ApplyDropdownValueFromFilter();
-        ApplyFilter();
+
+        ApplyFilter(false);
     }
 
     private void OnDestroy()
@@ -69,7 +77,30 @@ public class InventorySearchUI : MonoBehaviour
 
         isInitialized = true;
 
-        ApplyFilter();
+        ApplyFilter(false);
+    }
+
+    public InventorySearchFilter GetCurrentFilterCopy()
+    {
+        InventorySearchFilter copy = new InventorySearchFilter();
+        CopyFilter(filter, copy);
+        return copy;
+    }
+
+    public void SetFilterFromExternal(InventorySearchFilter sourceFilter)
+    {
+        if (sourceFilter == null)
+            return;
+
+        Init();
+
+        isApplyingExternalFilter = true;
+
+        CopyFilter(sourceFilter, filter);
+
+        ApplyFilter(false);
+
+        isApplyingExternalFilter = false;
     }
 
     private void ResolveTarget()
@@ -80,7 +111,7 @@ public class InventorySearchUI : MonoBehaviour
         targetUI = GetComponentInParent<ItemSearchFilterTargetUI>(true);
 
         if (targetUI == null)
-            Debug.LogWarning("[InventorySearchUI] ItemSearchFilterTargetUI를 찾지 못했습니다.");
+            Debug.LogWarning("[InventorySearchUI] ItemSearchFilterTargetUI를 찾지 못했습니다.", this);
     }
 
     private void RebuildDropdowns()
@@ -108,14 +139,7 @@ public class InventorySearchUI : MonoBehaviour
             return;
         }
 
-        filter.useCategory = defaultFilter.useCategory;
-        filter.category = defaultFilter.category;
-
-        filter.useSeries = defaultFilter.useSeries;
-        filter.series = defaultFilter.series;
-
-        filter.useGrade = defaultFilter.useGrade;
-        filter.grade = defaultFilter.grade;
+        CopyFilter(defaultFilter, filter);
     }
 
     private void RemoveMaskedFilterValue()
@@ -295,6 +319,9 @@ public class InventorySearchUI : MonoBehaviour
 
     private void BindEvents()
     {
+        if (isEventBound)
+            return;
+
         if (categoryDropdown != null)
             categoryDropdown.onValueChanged.AddListener(OnCategoryChanged);
 
@@ -306,10 +333,15 @@ public class InventorySearchUI : MonoBehaviour
 
         if (resetButton != null)
             resetButton.onClick.AddListener(ResetFilter);
+
+        isEventBound = true;
     }
 
     private void UnbindEvents()
     {
+        if (!isEventBound)
+            return;
+
         if (categoryDropdown != null)
             categoryDropdown.onValueChanged.RemoveListener(OnCategoryChanged);
 
@@ -321,6 +353,8 @@ public class InventorySearchUI : MonoBehaviour
 
         if (resetButton != null)
             resetButton.onClick.RemoveListener(ResetFilter);
+
+        isEventBound = false;
     }
 
     private void OnCategoryChanged(int index)
@@ -330,7 +364,7 @@ public class InventorySearchUI : MonoBehaviour
         if (filter.useCategory)
             filter.category = GetCategoryByDropdownIndex(index);
 
-        ApplyFilter();
+        ApplyFilter(true);
     }
 
     private void OnSeriesChanged(int index)
@@ -340,7 +374,7 @@ public class InventorySearchUI : MonoBehaviour
         if (filter.useSeries)
             filter.series = GetSeriesByDropdownIndex(index);
 
-        ApplyFilter();
+        ApplyFilter(true);
     }
 
     private void OnGradeChanged(int index)
@@ -350,28 +384,37 @@ public class InventorySearchUI : MonoBehaviour
         if (filter.useGrade)
             filter.grade = GetGradeByDropdownIndex(index);
 
-        ApplyFilter();
+        ApplyFilter(true);
     }
 
     private ItemCategory GetCategoryByDropdownIndex(int dropdownIndex)
     {
+        if (categoryDropdownValues.Count == 0)
+            return default;
+
         int valueIndex = Mathf.Clamp(dropdownIndex - 1, 0, categoryDropdownValues.Count - 1);
         return categoryDropdownValues[valueIndex];
     }
 
     private ItemSeries GetSeriesByDropdownIndex(int dropdownIndex)
     {
+        if (seriesDropdownValues.Count == 0)
+            return default;
+
         int valueIndex = Mathf.Clamp(dropdownIndex - 1, 0, seriesDropdownValues.Count - 1);
         return seriesDropdownValues[valueIndex];
     }
 
     private ItemGrade GetGradeByDropdownIndex(int dropdownIndex)
     {
+        if (gradeDropdownValues.Count == 0)
+            return default;
+
         int valueIndex = Mathf.Clamp(dropdownIndex - 1, 0, gradeDropdownValues.Count - 1);
         return gradeDropdownValues[valueIndex];
     }
 
-    private void ApplyFilter()
+    private void ApplyFilter(bool notify)
     {
         ResolveTarget();
 
@@ -382,6 +425,9 @@ public class InventorySearchUI : MonoBehaviour
         ApplyDropdownValueFromFilter();
 
         targetUI.SetSearchFilter(filter);
+
+        if (notify && !isApplyingExternalFilter)
+            OnFilterChanged?.Invoke(this, GetCurrentFilterCopy());
     }
 
     public void ResetFilter()
@@ -390,7 +436,7 @@ public class InventorySearchUI : MonoBehaviour
         ResetSeriesFilter();
         ResetGradeFilter();
 
-        ApplyFilter();
+        ApplyFilter(true);
     }
 
     private void ResetCategoryFilter()
@@ -435,4 +481,18 @@ public class InventorySearchUI : MonoBehaviour
         }
     }
 
+    private void CopyFilter(InventorySearchFilter source, InventorySearchFilter target)
+    {
+        if (source == null || target == null)
+            return;
+
+        target.useCategory = source.useCategory;
+        target.category = source.category;
+
+        target.useSeries = source.useSeries;
+        target.series = source.series;
+
+        target.useGrade = source.useGrade;
+        target.grade = source.grade;
+    }
 }

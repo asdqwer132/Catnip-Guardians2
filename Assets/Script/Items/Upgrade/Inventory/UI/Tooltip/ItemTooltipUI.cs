@@ -1,5 +1,4 @@
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,19 +14,18 @@ public class ItemTooltipUI : MonoBehaviour
 
     [Header("UI")]
     public Image icon;
-    public TextMeshProUGUI nameText;
-    public TextMeshProUGUI gradeText;
+    public TextMeshProUGUI titleText;
+    public TextMeshProUGUI subTitleText;
     public TextMeshProUGUI amountText;
     public TextMeshProUGUI descriptionText;
 
-    private BaseItemSlotUI currentSlot;
-    private RectTransform currentSlotRect;
+    private object currentOwner;
+    private RectTransform currentAnchorRect;
 
     private RectTransform tooltipRect;
     private RectTransform parentRect;
     private Canvas rootCanvas;
     private Camera uiCamera;
-
 
     private void Awake()
     {
@@ -45,6 +43,45 @@ public class ItemTooltipUI : MonoBehaviour
         Hide();
     }
 
+    public void Show(ITooltipContentProvider provider)
+    {
+        if (!useTooltip)
+            return;
+
+        if (provider == null)
+            return;
+
+        if (!provider.TryGetTooltipData(out TooltipData data))
+            return;
+
+        RectTransform anchor = provider.GetTooltipAnchor();
+
+        if (anchor == null)
+            return;
+
+        Show(data, anchor, provider);
+    }
+
+    public void Show(TooltipData data, RectTransform anchor, object owner)
+    {
+        if (!useTooltip)
+            return;
+
+        if (data == null || anchor == null)
+            return;
+
+        currentOwner = owner;
+        currentAnchorRect = anchor;
+
+        ApplyData(data);
+
+        if (tooltipPanel != null)
+            tooltipPanel.SetActive(true);
+
+        UpdatePosition();
+    }
+
+    // 기존 ItemTooltipTrigger가 BaseItemSlotUI를 쓰고 있어도 안 깨지게 남겨둔 호환용 함수
     public void Show(BaseItemSlotUI slot)
     {
         if (!useTooltip)
@@ -56,69 +93,75 @@ public class ItemTooltipUI : MonoBehaviour
         if (slot.currentItem == null || slot.currentItem.itemData == null)
             return;
 
-        currentSlot = slot;
-        currentSlotRect = slot.GetComponent<RectTransform>();
+        InventoryItem item = slot.currentItem;
+        ItemData itemData = item.itemData;
 
-        ApplyItem(slot.currentItem);
+        TooltipData data = new TooltipData
+        {
+            icon = itemData.icon,
+            title = itemData.GetDataName(),
+            subTitle = itemData.grade.ToString(),
+            amountText = item.amount > 1 ? $"x{item.amount}" : "",
+            description = itemData.GetDescription()
+        };
 
-        tooltipPanel.SetActive(true);
-
-        UpdatePosition();
+        Show(data, slot.GetComponent<RectTransform>(), slot);
     }
 
     public void Hide()
     {
-        currentSlot = null;
-        currentSlotRect = null;
+        currentOwner = null;
+        currentAnchorRect = null;
 
         if (tooltipPanel != null)
             tooltipPanel.SetActive(false);
     }
 
-    public void Hide(BaseItemSlotUI slot)
+    public void Hide(object owner)
     {
-        if (currentSlot != slot)
+        if (currentOwner != owner)
             return;
 
         Hide();
     }
 
-    private void ApplyItem(InventoryItem item)
+    private void ApplyData(TooltipData data)
     {
-        ItemData itemData = item.itemData;
-
         if (icon != null)
         {
-            icon.sprite = itemData.icon;
-            icon.enabled = itemData.icon != null;
+            icon.sprite = data.icon;
+            icon.enabled = data.icon != null;
         }
 
-        if (nameText != null)
-            nameText.text = itemData.GetDataName();
+        if (titleText != null)
+            titleText.text = data.title ?? "";
 
-        if (gradeText != null)
-            gradeText.text = itemData.grade.ToString();
+        if (subTitleText != null)
+        {
+            bool hasSubTitle = !string.IsNullOrEmpty(data.subTitle);
+            subTitleText.gameObject.SetActive(hasSubTitle);
+            subTitleText.text = hasSubTitle ? data.subTitle : "";
+        }
 
         if (amountText != null)
         {
-            bool showAmount = item.amount > 1;
-            amountText.gameObject.SetActive(showAmount);
-            amountText.text = showAmount ? $"x{item.amount}" : "";
+            bool hasAmount = !string.IsNullOrEmpty(data.amountText);
+            amountText.gameObject.SetActive(hasAmount);
+            amountText.text = hasAmount ? data.amountText : "";
         }
 
         if (descriptionText != null)
-            descriptionText.text = itemData.GetDescription();
+            descriptionText.text = data.description ?? "";
     }
 
     private void UpdatePosition()
     {
-        if (currentSlotRect == null || tooltipRect == null || parentRect == null)
+        if (currentAnchorRect == null || tooltipRect == null || parentRect == null)
             return;
 
         Vector3[] corners = new Vector3[4];
-        currentSlotRect.GetWorldCorners(corners);
+        currentAnchorRect.GetWorldCorners(corners);
 
-        // 슬롯의 위쪽 중앙 위치
         Vector3 topCenterWorld = (corners[1] + corners[2]) * 0.5f;
 
         Vector2 screenPos = RectTransformUtility.WorldToScreenPoint(uiCamera, topCenterWorld);

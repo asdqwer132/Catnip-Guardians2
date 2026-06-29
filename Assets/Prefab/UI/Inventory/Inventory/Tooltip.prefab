@@ -54,8 +54,8 @@ MonoBehaviour:
   clampToParent: 1
   tooltipPanel: {fileID: 6332433096817834098}
   icon: {fileID: 545613454280400247}
-  nameText: {fileID: 323103887096993095}
-  gradeText: {fileID: 2663343342365515177}
+  titleText: {fileID: 323103887096993095}
+  subTitleText: {fileID: 2663343342365515177}
   amountText: {fileID: 1182234814775603246}
   descriptionText: {fileID: 8580365208336608250}
 --- !u!1 &2628580990834433947
@@ -244,7 +244,7 @@ GameObject:
   - component: {fileID: 7559232672921322326}
   - component: {fileID: 323103887096993095}
   m_Layer: 5
-  m_Name: name
+  m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -774,7 +774,7 @@ GameObject:
   - component: {fileID: 8284681359275005332}
   - component: {fileID: 2663343342365515177}
   m_Layer: 5
-  m_Name: grade
+  m_Name: SubTitle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

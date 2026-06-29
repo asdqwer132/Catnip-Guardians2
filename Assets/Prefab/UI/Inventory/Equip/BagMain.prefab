@@ -610,6 +610,8 @@ GameObject:
   - component: {fileID: 3122784836224356077}
   - component: {fileID: 6078117687374541442}
   - component: {fileID: 3755724204193973310}
+  - component: {fileID: 6251041170689024290}
+  - component: {fileID: 522976928194679661}
   m_Layer: 5
   m_Name: BagMain
   m_TagString: Untagged
@@ -650,11 +652,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfe83a1927e885c43bb0c5992585d2a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentBag
+  listenType: -1
   bagData: {fileID: 0}
   slotCount: 12
   openSlotCount: 4
-  limitController: {fileID: 0}
+  currentSlotCount: 0
   bagUI: {fileID: 3122784836224356077}
+  locks: []
   equippedItems: []
 --- !u!114 &3122784836224356077
 MonoBehaviour:
@@ -723,6 +727,42 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6251041170689024290
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8138935161185886700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b3417808d3826d48a038186f1c4ed2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BagTooltipProvider
+  equipmentBag: {fileID: 6655386588844478430}
+  bagData: {fileID: 0}
+  anchorRect: {fileID: 0}
+  bagTypeText: Bag
+  emptyDescriptionText: NoInfo.
+  showSlotInfo: 1
+  showWeightInfo: 1
+  showEquippedInfo: 1
+  showLockInfo: 1
+--- !u!114 &522976928194679661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8138935161185886700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f811147cfbd52a4b8cf7877b3eb1bc0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipTrigger
+  isPointer: 0
+  tooltipUI: {fileID: 0}
+  providerComponent: {fileID: 6251041170689024290}
 --- !u!1001 &1469166927458019052
 PrefabInstance:
   m_ObjectHideFlags: 0
