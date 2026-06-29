@@ -60,7 +60,6 @@ public class ItemRuntimeObjectManager : MonoBehaviour
     {
         isClearing = true;
 
-        Debug.Log(runtimeObjects.Count + "cleared");
         foreach (GameObject obj in runtimeObjects)
         {
             if (obj != null)

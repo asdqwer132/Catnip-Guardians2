@@ -6,7 +6,9 @@ public class ShopBoxButton : MonoBehaviour
     private ShopManager shopManager;
     private ItemBoxData boxData;
 
+
     [Header("UI")]
+    public ObjectToggleButton objectToggleButton;
     public Image icon;
     public Button button;
 

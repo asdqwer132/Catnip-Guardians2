@@ -286,6 +286,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b20c9dba5abe53248b3aad3047922a55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopBoxButton
+  objectToggleButton: {fileID: 6152245638607998803}
   icon: {fileID: 8655282150185658067}
   button: {fileID: 2209072485260810749}
 --- !u!114 &6152245638607998803
@@ -303,7 +304,7 @@ MonoBehaviour:
   targetObjects:
   - {fileID: 4367027614914013690}
   initClose: 1
-  buttonOnlyCloseObjects: []
+  closeTargetsWhenOpen: []
   buttonImage: {fileID: 0}
   button: {fileID: 0}
   toggle: {fileID: 0}
