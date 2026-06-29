@@ -10,6 +10,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
     [Tooltip("켜면 스포너 시작 시 첫 번째 적은 대기시간 없이 바로 소환됩니다.")]
     public bool spawnImmediatelyOnStart = false;
     public bool overSpawn = false;
+    public bool isBoss = false;
 
     [Header("Runtime Stat")]
     [SerializeField] private EnemySpawnerStat currentStat = new EnemySpawnerStat();
@@ -283,6 +284,8 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         if (EnemyManager.instance != null)
             EnemyManager.instance.RegisterEnemy(enemy);
 
+        if(isBoss)
+            OffscreenTargetIndicatorManager.Instance.ShowIndicator(spawnedEnemy);
         LogSpawnTime(info, usedInterval);
     }
 
