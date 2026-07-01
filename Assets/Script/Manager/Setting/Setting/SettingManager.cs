@@ -41,7 +41,7 @@ public class SettingManager : MonoBehaviour
     {
         ApplyAll();
         BroadcastSettingChanged(SettingChangeType.All);
-        SettingWindowController.instance.CloseSetting(false);
+        SettingWindowController.instance.CloseSetting();
     }
 
     public GameSettingData GetSetting()

@@ -5,6 +5,7 @@ public class SubPlantUIManager : MonoBehaviour
     public SubPlantManager subplantmanager;
     public SubPlantMaterialSlotUI[] slots;
     public InventorySlotUI resultSlot;
+    public PlantTooltipTrigger trigger;
 
     void Start()
     {
@@ -41,5 +42,10 @@ public class SubPlantUIManager : MonoBehaviour
         }
         subplantmanager.Combine();
         resultSlot.SetSlot(new InventoryItem(subplantmanager.resultItem, 1));
+
+        if (subplantmanager.isEmptyResult()) 
+            trigger.HideTooltip();
+        else
+            trigger.ShowTooltip();
     }
 }

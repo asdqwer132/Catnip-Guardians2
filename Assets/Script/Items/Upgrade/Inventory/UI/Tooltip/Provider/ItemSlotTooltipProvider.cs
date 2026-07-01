@@ -1,23 +1,19 @@
 using UnityEngine;
 
-public class ItemSlotTooltipProvider : MonoBehaviour, ITooltipContentProvider
+public class ItemSlotTooltipProvider : TooltipProvider
 {
     [Header("Target")]
     [SerializeField] private BaseItemSlotUI slot;
 
-    [Header("Anchor")]
-    [SerializeField] private RectTransform anchorRect;
-
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         if (slot == null)
             slot = GetComponent<BaseItemSlotUI>();
-
-        if (anchorRect == null)
-            anchorRect = transform as RectTransform;
     }
 
-    public bool TryGetTooltipData(out TooltipData data)
+    public override bool TryGetTooltipData(out TooltipData data)
     {
         data = null;
 
@@ -36,20 +32,33 @@ public class ItemSlotTooltipProvider : MonoBehaviour, ITooltipContentProvider
         data = new TooltipData
         {
             icon = itemData.icon,
-            title = itemData.GetDataName(),
+            title = GetItemName(itemData),
             subTitle = itemData.grade.ToString(),
             amountText = item.amount > 1 ? $"x{item.amount}" : "",
-            description = itemData.GetDescription()
+            description = GetItemDescription(itemData)
         };
 
         return true;
     }
 
-    public RectTransform GetTooltipAnchor()
+    private string GetItemName(ItemData itemData)
     {
-        if (anchorRect == null)
-            anchorRect = transform as RectTransform;
+        if (itemData == null)
+            return "";
 
-        return anchorRect;
+        string dataName = itemData.GetDataName();
+
+        if (!string.IsNullOrEmpty(dataName))
+            return dataName;
+
+        return itemData.name;
+    }
+
+    private string GetItemDescription(ItemData itemData)
+    {
+        if (itemData == null)
+            return "";
+
+        return itemData.GetDescription();
     }
 }

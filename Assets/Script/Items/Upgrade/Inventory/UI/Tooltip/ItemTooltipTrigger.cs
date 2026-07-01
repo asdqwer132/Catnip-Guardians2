@@ -10,22 +10,13 @@ public class ItemTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerE
     public ItemTooltipUI tooltipUI;
 
     [Header("Provider")]
-    [SerializeField] private MonoBehaviour providerComponent;
+    [SerializeField] private TooltipProvider providerComponent;
 
     private ITooltipContentProvider provider;
 
     private void Awake()
     {
         CacheProvider();
-    }
-
-    private void OnValidate()
-    {
-        if (providerComponent != null && providerComponent is not ITooltipContentProvider)
-        {
-            Debug.LogWarning($"{providerComponent.name} does not implement ITooltipContentProvider.", providerComponent);
-            providerComponent = null;
-        }
     }
 
     public void Init(ItemTooltipUI tooltipTrigger)
@@ -38,13 +29,13 @@ public class ItemTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerE
         HideTooltip();
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
+    public virtual void OnPointerEnter(PointerEventData eventData)
     {
-        if(isPointer)
+        if (isPointer)
             ShowTooltip();
     }
 
-    public void OnPointerExit(PointerEventData eventData)
+    public virtual void OnPointerExit(PointerEventData eventData)
     {
         if (isPointer)
             HideTooltip();
@@ -63,7 +54,7 @@ public class ItemTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerE
         tooltipUI.Show(provider);
     }
 
-    private void HideTooltip()
+    public void HideTooltip()
     {
         if (tooltipUI == null)
             return;

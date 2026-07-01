@@ -7,6 +7,8 @@ public class SettingWindowController : MonoBehaviour
     [Header("Panel")]
     public GameObject settingPanel;
 
+    private bool isTimeStoped = false;
+
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -24,15 +26,18 @@ public class SettingWindowController : MonoBehaviour
             return;
         if(isTimeStop)
             Time.timeScale = 0f;
+        isTimeStoped = isTimeStop;
         settingPanel.SetActive(true);
     }
 
-    public void CloseSetting(bool isTimeStop)
+    public void CloseSetting()
     {
         if (settingPanel == null)
             return;
-        if (isTimeStop)
-            Time.timeScale = 1.0f;
+
+        if (isTimeStoped)
+            Time.timeScale = 1f;
+        isTimeStoped = false ;
         settingPanel.SetActive(false);
     }
 

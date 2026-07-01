@@ -14,6 +14,10 @@ public class BagSelectManager : MonoBehaviour
     public event Action<int> OnBagSelected;
 
     public int CurrentBagIndex => currentBagIndex;
+    public EquipmentBag GetCurrentBag()
+    {
+        return bagUseManagers[currentBagIndex].bag;
+    }
 
     public BagItemUseManager CurrentBagUseManager
     {

@@ -5,15 +5,10 @@ using UnityEngine.Serialization;
 public class InventoryUI : ItemSearchFilterTargetUI
 {
     [Header("Quick Inventory")]
-    [FormerlySerializedAs("quickPageParent")]
-    public Transform quickSlotParent;
+    public Transform slotParent;
 
     [Header("Quick Inventory Slot")]
-    public GameObject quickSlotPrefab;
-
-    [Header("Detail Inventory")]
-    public Transform detailSlotParent;
-    public GameObject detailSlotPrefab;
+    public GameObject slotPrefab;
 
     [Header("Tooltip")]
     public ItemTooltipUI tooltipUI;
@@ -25,9 +20,6 @@ public class InventoryUI : ItemSearchFilterTargetUI
 
     private readonly List<GameObject> quickSlotObjects = new List<GameObject>();
     private readonly List<BaseItemSlotUI> quickSlotUIs = new List<BaseItemSlotUI>();
-
-    private readonly List<GameObject> detailSlotObjects = new List<GameObject>();
-    private readonly List<BaseItemSlotUI> detailSlotUIs = new List<BaseItemSlotUI>();
 
     public void Init()
     {
@@ -84,7 +76,6 @@ public class InventoryUI : ItemSearchFilterTargetUI
         GetValidItems(validItemsCache);
 
         RefreshQuickInventory(validItemsCache);
-        RefreshDetailInventory(validItemsCache);
     }
 
     private void GetValidItems(List<InventoryItem> result)
@@ -105,7 +96,7 @@ public class InventoryUI : ItemSearchFilterTargetUI
 
     private void RefreshQuickInventory(List<InventoryItem> validItems)
     {
-        if (quickSlotParent == null || quickSlotPrefab == null)
+        if (slotParent == null || slotPrefab == null)
             return;
 
         EnsureQuickSlots(validItems.Count);
@@ -130,7 +121,7 @@ public class InventoryUI : ItemSearchFilterTargetUI
     {
         while (quickSlotObjects.Count < count)
         {
-            GameObject slotObj = Instantiate(quickSlotPrefab, quickSlotParent);
+            GameObject slotObj = Instantiate(slotPrefab, slotParent);
 
             BaseItemSlotUI slotUI = slotObj.GetComponent<BaseItemSlotUI>();
             ItemTooltipTrigger tooltipTrigger = slotObj.GetComponent<ItemTooltipTrigger>();
@@ -140,46 +131,6 @@ public class InventoryUI : ItemSearchFilterTargetUI
 
             quickSlotObjects.Add(slotObj);
             quickSlotUIs.Add(slotUI);
-        }
-    }
-
-    private void RefreshDetailInventory(List<InventoryItem> validItems)
-    {
-        if (detailSlotParent == null || detailSlotPrefab == null)
-            return;
-
-        EnsureDetailSlots(validItems.Count);
-
-        for (int i = 0; i < detailSlotObjects.Count; i++)
-        {
-            bool active = i < validItems.Count;
-
-            detailSlotObjects[i].SetActive(active);
-
-            if (detailSlotUIs[i] == null)
-                continue;
-
-            if (active)
-                detailSlotUIs[i].SetSlot(validItems[i]);
-            else
-                detailSlotUIs[i].SetSlot(null);
-        }
-    }
-
-    private void EnsureDetailSlots(int count)
-    {
-        while (detailSlotObjects.Count < count)
-        {
-            GameObject slotObj = Instantiate(detailSlotPrefab, detailSlotParent);
-
-            BaseItemSlotUI slotUI = slotObj.GetComponent<BaseItemSlotUI>();
-            ItemTooltipTrigger tooltipTrigger = slotObj.GetComponent<ItemTooltipTrigger>();
-
-            if (tooltipTrigger != null)
-                tooltipTrigger.Init(tooltipUI);
-
-            detailSlotObjects.Add(slotObj);
-            detailSlotUIs.Add(slotUI);
         }
     }
 }

@@ -6,9 +6,9 @@ public class RecipeInvenUI : ItemSearchFilterTargetUI
     [Header("Recipe Manager")]
     public ItemRecipeManager recipeManager;
 
-    [Header("Detail Inventory")]
-    public Transform detailSlotParent;
-    public GameObject detailSlotPrefab;
+    [Header("Recipe Inventory")]
+    public Transform recipeSlotParent;
+    public GameObject recipeSlotPrefab;
 
     [Header("Option")]
     public bool initOnStart = true;
@@ -96,7 +96,7 @@ public class RecipeInvenUI : ItemSearchFilterTargetUI
 
     private void RefreshRecipeInventory(List<ItemRecipeData> recipes)
     {
-        if (detailSlotParent == null || detailSlotPrefab == null)
+        if (recipeSlotParent == null || recipeSlotPrefab == null)
             return;
 
         if (recipes == null)
@@ -122,7 +122,7 @@ public class RecipeInvenUI : ItemSearchFilterTargetUI
     {
         while (slotObjects.Count < count)
         {
-            GameObject slotObj = Instantiate(detailSlotPrefab, detailSlotParent);
+            GameObject slotObj = Instantiate(recipeSlotPrefab, recipeSlotParent);
 
             RecipeSlotUI slotUI = slotObj.GetComponent<RecipeSlotUI>();
 

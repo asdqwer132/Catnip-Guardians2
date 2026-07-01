@@ -81,33 +81,6 @@ public class ItemTooltipUI : MonoBehaviour
         UpdatePosition();
     }
 
-    // 기존 ItemTooltipTrigger가 BaseItemSlotUI를 쓰고 있어도 안 깨지게 남겨둔 호환용 함수
-    public void Show(BaseItemSlotUI slot)
-    {
-        if (!useTooltip)
-            return;
-
-        if (slot == null)
-            return;
-
-        if (slot.currentItem == null || slot.currentItem.itemData == null)
-            return;
-
-        InventoryItem item = slot.currentItem;
-        ItemData itemData = item.itemData;
-
-        TooltipData data = new TooltipData
-        {
-            icon = itemData.icon,
-            title = itemData.GetDataName(),
-            subTitle = itemData.grade.ToString(),
-            amountText = item.amount > 1 ? $"x{item.amount}" : "",
-            description = itemData.GetDescription()
-        };
-
-        Show(data, slot.GetComponent<RectTransform>(), slot);
-    }
-
     public void Hide()
     {
         currentOwner = null;
@@ -125,7 +98,7 @@ public class ItemTooltipUI : MonoBehaviour
         Hide();
     }
 
-    private void ApplyData(TooltipData data)
+    protected virtual void ApplyData(TooltipData data)
     {
         if (icon != null)
         {

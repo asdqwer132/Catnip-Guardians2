@@ -1,29 +1,25 @@
 using System.Text;
 using UnityEngine;
 
-public class SkillNodeTooltipProvider : MonoBehaviour, ITooltipContentProvider
+public class SkillNodeTooltipProvider : TooltipProvider
 {
     [Header("Target")]
     [SerializeField] private SkillNodeUI skillNodeUI;
 
-    [Header("Anchor")]
-    [SerializeField] private RectTransform anchorRect;
-
-    [Header("Option")]
+    [Header("Text")]
     [SerializeField] private string unlockedText = "Unlocked";
     [SerializeField] private string canUnlockText = "CanUnlock";
     [SerializeField] private string lockedText = "Locked";
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         if (skillNodeUI == null)
             skillNodeUI = GetComponent<SkillNodeUI>();
-
-        if (anchorRect == null)
-            anchorRect = transform as RectTransform;
     }
 
-    public bool TryGetTooltipData(out TooltipData data)
+    public override bool TryGetTooltipData(out TooltipData data)
     {
         data = null;
 
@@ -35,27 +31,16 @@ public class SkillNodeTooltipProvider : MonoBehaviour, ITooltipContentProvider
         if (nodeData == null)
             return false;
 
-        string statusText = GetStatusText(nodeData);
-        string description = BuildDescription(nodeData);
-
         data = new TooltipData
         {
             icon = nodeData.icon,
             title = GetSkillName(nodeData),
-            subTitle = statusText,
+            subTitle = GetStatusText(nodeData),
             amountText = "",
-            description = description
+            description = BuildDescription(nodeData)
         };
 
         return true;
-    }
-
-    public RectTransform GetTooltipAnchor()
-    {
-        if (anchorRect == null)
-            anchorRect = transform as RectTransform;
-
-        return anchorRect;
     }
 
     private string GetSkillName(SkillNodeData nodeData)
@@ -156,11 +141,5 @@ public class SkillNodeTooltipProvider : MonoBehaviour, ITooltipContentProvider
 
             sb.AppendLine("- " + reward.ToString());
         }
-    }
-
-    private void AppendSectionGap(StringBuilder sb)
-    {
-        if (sb.Length > 0)
-            sb.AppendLine();
     }
 }

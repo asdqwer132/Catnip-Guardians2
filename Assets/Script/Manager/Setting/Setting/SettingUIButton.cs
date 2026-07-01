@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class SettingUIButton : MonoBehaviour
 {
-    public bool isUISetting = false;
+    public bool isTimeStop = false;
     public void OpenSetting()
     {
         if (SettingWindowController.instance == null)
@@ -11,7 +11,7 @@ public class SettingUIButton : MonoBehaviour
             return;
         }
 
-        SettingWindowController.instance.OpenSetting(!isUISetting);
+        SettingWindowController.instance.OpenSetting(!isTimeStop);
     }
 
     public void CloseSetting()
@@ -22,6 +22,6 @@ public class SettingUIButton : MonoBehaviour
             return;
         }
 
-        SettingWindowController.instance.CloseSetting(!isUISetting);
+        SettingWindowController.instance.CloseSetting();
     }
 }

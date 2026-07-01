@@ -1,14 +1,11 @@
 using System.Text;
 using UnityEngine;
 
-public class BagTooltipProvider : MonoBehaviour, ITooltipContentProvider
+public class BagTooltipProvider : TooltipProvider
 {
     [Header("Target")]
     [SerializeField] private EquipmentBag equipmentBag;
     [SerializeField] private BagData bagData;
-
-    [Header("Anchor")]
-    [SerializeField] private RectTransform anchorRect;
 
     [Header("Text")]
     [SerializeField] private string bagTypeText = "Bag";
@@ -20,19 +17,18 @@ public class BagTooltipProvider : MonoBehaviour, ITooltipContentProvider
     [SerializeField] private bool showEquippedInfo = true;
     [SerializeField] private bool showLockInfo = true;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         if (equipmentBag == null)
             equipmentBag = GetComponent<EquipmentBag>();
-
-        if (anchorRect == null)
-            anchorRect = transform as RectTransform;
 
         if (bagData == null && equipmentBag != null)
             bagData = equipmentBag.bagData;
     }
 
-    public bool TryGetTooltipData(out TooltipData data)
+    public override bool TryGetTooltipData(out TooltipData data)
     {
         data = null;
 
@@ -53,14 +49,6 @@ public class BagTooltipProvider : MonoBehaviour, ITooltipContentProvider
         return true;
     }
 
-    public RectTransform GetTooltipAnchor()
-    {
-        if (anchorRect == null)
-            anchorRect = transform as RectTransform;
-
-        return anchorRect;
-    }
-
     private BagData GetTargetBagData()
     {
         if (equipmentBag != null && equipmentBag.bagData != null)
@@ -74,13 +62,10 @@ public class BagTooltipProvider : MonoBehaviour, ITooltipContentProvider
         if (targetBagData == null)
             return "";
 
-        if (LanguageManager.instance != null)
-        {
-            string dataName = targetBagData.GetDataName();
+        string dataName = targetBagData.GetDataName();
 
-            if (!string.IsNullOrEmpty(dataName))
-                return dataName;
-        }
+        if (!string.IsNullOrEmpty(dataName))
+            return dataName;
 
         return targetBagData.name;
     }
@@ -90,13 +75,10 @@ public class BagTooltipProvider : MonoBehaviour, ITooltipContentProvider
         if (targetBagData == null)
             return "";
 
-        if (LanguageManager.instance != null)
-        {
-            string description = targetBagData.GetDescription();
+        string description = targetBagData.GetDescription();
 
-            if (!string.IsNullOrEmpty(description))
-                return description;
-        }
+        if (!string.IsNullOrEmpty(description))
+            return description;
 
         return emptyDescriptionText;
     }
@@ -118,6 +100,9 @@ public class BagTooltipProvider : MonoBehaviour, ITooltipContentProvider
 
     private void AppendRuntimeInfo(StringBuilder sb, BagData targetBagData)
     {
+        if (!showSlotInfo && !showWeightInfo && !showEquippedInfo)
+            return;
+
         AppendSectionGap(sb);
         sb.AppendLine("[BagInfo]");
 
@@ -152,7 +137,7 @@ public class BagTooltipProvider : MonoBehaviour, ITooltipContentProvider
         if (showEquippedInfo && equipmentBag != null)
         {
             int currentEquippedCount = equipmentBag.GetCurrentEquippedCount();
-            sb.AppendLine($"- Equiped: {currentEquippedCount} / {equipmentBag.currentSlotCount}");
+            sb.AppendLine($"- Equipped: {currentEquippedCount} / {equipmentBag.currentSlotCount}");
         }
     }
 
@@ -181,12 +166,8 @@ public class BagTooltipProvider : MonoBehaviour, ITooltipContentProvider
         }
 
         AppendSectionGap(sb);
-        sb.AppendLine($"[Locked] : {unlockedCount} / {lockedCount}");
-    }
-
-    private void AppendSectionGap(StringBuilder sb)
-    {
-        if (sb.Length > 0)
-            sb.AppendLine();
+        sb.AppendLine("[LockInfo]");
+        sb.AppendLine($"- Unlocked: {unlockedCount}");
+        sb.AppendLine($"- Locked: {lockedCount}");
     }
 }

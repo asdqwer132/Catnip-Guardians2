@@ -17,10 +17,13 @@ public class ItemRecipeManager : MonoBehaviour
 
     public ItemData resultItem;
     public ItemData failedItem;
-
+    [Header("Material Option")]
+    public int maxMaterialCount = 4;
     public bool returnFailedItem = true;
 
     public System.Action onMaterialChanged;
+
+    public bool isEmptyResult() { return resultItem == null; }
     public int GetCurrentMaterialCount()
     {
         int count = 0;
@@ -29,6 +32,10 @@ public class ItemRecipeManager : MonoBehaviour
             if(material.itemData != null) count++;
         }
         return count;
+    }
+    public List<InventoryItem> GetMaterials()
+    {
+        return currentMaterials;
     }
     public List<ItemRecipeData> GetAllRecipe()
     {
@@ -51,6 +58,12 @@ public class ItemRecipeManager : MonoBehaviour
     {
         if (itemData == null)
             return;
+
+        if (GetCurrentMaterialCount() >= maxMaterialCount)
+        {
+            Debug.LogWarning($"[ItemRecipeManager] 재료 슬롯이 가득 찼습니다. {GetCurrentMaterialCount()} / {maxMaterialCount}");
+            return;
+        }
 
         if (InventoryManager.instance == null)
         {
@@ -87,6 +100,18 @@ public class ItemRecipeManager : MonoBehaviour
         if (recipe.materials == null || recipe.materials.Length <= 0)
         {
             Debug.LogWarning($"[ItemRecipeManager] 레시피에 재료가 없습니다. Recipe: {GetRecipeName(recipe)}");
+            return false;
+        }
+
+        int recipeMaterialCount = GetRecipeTotalMaterialCount(recipe);
+
+        if (recipeMaterialCount > maxMaterialCount)
+        {
+            Debug.LogWarning(
+                $"[ItemRecipeManager] 레시피 재료 개수가 최대 재료 개수를 초과합니다. " +
+                $"Recipe: {GetRecipeName(recipe)} / 필요: {recipeMaterialCount} / 최대: {maxMaterialCount}"
+            );
+
             return false;
         }
 
@@ -130,7 +155,25 @@ public class ItemRecipeManager : MonoBehaviour
         onMaterialChanged?.Invoke();
         return true;
     }
+    private int GetRecipeTotalMaterialCount(ItemRecipeData recipe)
+    {
+        if (recipe == null || recipe.materials == null)
+            return 0;
 
+        int count = 0;
+
+        for (int i = 0; i < recipe.materials.Length; i++)
+        {
+            RecipeMaterial material = recipe.materials[i];
+
+            if (material == null || material.itemData == null || material.amount <= 0)
+                continue;
+
+            count += material.amount;
+        }
+
+        return count;
+    }
     // 기존 RecipeSlotUI에서 TryFillRecipeOne을 부르고 있으면
     // 에러 안 나게 남겨둔다.
     public bool TryFillRecipeOne(ItemRecipeData recipe)
