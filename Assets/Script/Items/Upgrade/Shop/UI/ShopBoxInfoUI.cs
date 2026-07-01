@@ -7,6 +7,7 @@ public class ShopBoxInfoUI : MonoBehaviour
     [Header("Basic Info UI")]
     public GameObject pannel;
     public Image boxIcon;
+    public ShopBoxOpenAnimationUI boxOpenAnimationUI;
     public TextMeshProUGUI boxNameText;
     public TextMeshProUGUI priceText;
     public GameObject pickUpTitleText;
@@ -37,23 +38,31 @@ public class ShopBoxInfoUI : MonoBehaviour
             ClearInfo();
             return;
         }
-        if(pannel!=null)
+
+        if (pannel != null)
             pannel.SetActive(true);
-        if (boxIcon != null)
+
+        if (boxOpenAnimationUI != null)
+        {
+            boxOpenAnimationUI.SetBox(boxData);
+        }
+        else if (boxIcon != null)
         {
             boxIcon.sprite = boxData.icon;
             boxIcon.enabled = boxData.icon != null;
         }
+
         if (pickUpTitleText != null)
             pickUpTitleText.SetActive(true);
+
         if (boxNameText != null)
             boxNameText.text = boxData.GetDataName();
-
 
         RefreshRewardList(boxData);
 
         if (buyButton != null)
             buyButton.interactable = true;
+
         if (InvenToggle != null)
             InvenToggle.interactable = true;
     }
@@ -102,21 +111,30 @@ public class ShopBoxInfoUI : MonoBehaviour
             return;
         }
 
+        if (boxOpenAnimationUI != null)
+            boxOpenAnimationUI.PlayOpen();
+
         shopManager.BuySelectedBox();
     }
 
     public void ClearInfo()
     {
-        if (boxIcon != null)
+        if (boxOpenAnimationUI != null)
+        {
+            boxOpenAnimationUI.Clear();
+        }
+        else if (boxIcon != null)
         {
             boxIcon.sprite = null;
             boxIcon.enabled = false;
         }
+
         if (pannel != null)
             pannel.SetActive(false);
 
         if (pickUpTitleText != null)
             pickUpTitleText.SetActive(false);
+
         if (boxNameText != null)
             boxNameText.text = "";
 
@@ -127,6 +145,7 @@ public class ShopBoxInfoUI : MonoBehaviour
 
         if (buyButton != null)
             buyButton.interactable = false;
+
         if (InvenToggle != null)
             InvenToggle.interactable = false;
     }

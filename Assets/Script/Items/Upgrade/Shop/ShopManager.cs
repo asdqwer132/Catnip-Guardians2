@@ -16,6 +16,9 @@ public class ShopManager : MonoBehaviour
     public ShopBoxButton[] boxButtons;
     public ShopBoxInfoUI boxInfoUI;
 
+    [Header("Purchase Result")]
+    public ShopPurchaseResultPanelUI purchaseResultPanelUI;
+
     private List<ItemBoxData> currentShopBoxes = new List<ItemBoxData>();
     private ItemBoxData currentSelectedBox;
     private ShopBoxButton currentSelectedButton;
@@ -41,7 +44,7 @@ public class ShopManager : MonoBehaviour
 
         if (boxPoolManager == null)
         {
-            Debug.LogWarning("Box Pool Manager°¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
+            Debug.LogWarning("Box Pool Managerê°€ ì—°ê²°ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
             ClearButtons();
             return;
         }
@@ -51,7 +54,6 @@ public class ShopManager : MonoBehaviour
         ApplyBoxesToButtons();
     }
 
-    // UI ¹öÆ°¿¡ ¿¬°á
     public void RerollShop()
     {
         if (rerollManager == null)
@@ -108,13 +110,13 @@ public class ShopManager : MonoBehaviour
     {
         if (button == null)
         {
-            Debug.LogWarning("¼±ÅÃÇÒ ¹öÆ°ÀÌ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("ì„ íƒí•  ë²„íŠ¼ì´ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
         if (boxData == null)
         {
-            Debug.LogWarning("¼±ÅÃÇÒ »óÀÚ µ¥ÀÌÅÍ°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("ì„ íƒí•  ìƒì ë°ì´í„°ê°€ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
@@ -127,8 +129,9 @@ public class ShopManager : MonoBehaviour
 
     public void ClearSelectedBox()
     {
-        if (currentSelectedBox != null)
-        currentSelectedButton.objectToggleButton.SetObjectActive(false);
+        if (currentSelectedButton != null && currentSelectedButton.objectToggleButton != null)
+            currentSelectedButton.objectToggleButton.SetObjectActive(false);
+
         currentSelectedButton = null;
         currentSelectedBox = null;
 
@@ -140,7 +143,7 @@ public class ShopManager : MonoBehaviour
     {
         if (currentSelectedBox == null)
         {
-            Debug.LogWarning("¼±ÅÃµÈ »óÀÚ°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("ì„ íƒëœ ìƒìê°€ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
@@ -151,13 +154,13 @@ public class ShopManager : MonoBehaviour
     {
         if (boxData == null)
         {
-            Debug.LogWarning("»óÀÚ µ¥ÀÌÅÍ°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("ìƒì ë°ì´í„°ê°€ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
         if (CurrencyManager.instance == null)
         {
-            Debug.LogWarning("CurrencyManager°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("CurrencyManagerê°€ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
@@ -165,7 +168,7 @@ public class ShopManager : MonoBehaviour
 
         if (!canBuy)
         {
-            Debug.Log("ÀçÈ­°¡ ºÎÁ·ÇÕ´Ï´Ù.");
+            Debug.Log("ì¬í™”ê°€ ë¶€ì¡±í•©ë‹ˆë‹¤.");
             return;
         }
 
@@ -173,23 +176,24 @@ public class ShopManager : MonoBehaviour
 
         if (resultItem == null)
         {
-            Debug.LogWarning("°¡Ã­ °á°ú ¾ÆÀÌÅÛÀÌ ¾ø½À´Ï´Ù.");
-
-            // ¿©±â¼­ È¯ºÒÇÒ ¼öµµ ÀÖÀ½.
-            // Áö±İÀº ±âÁ¸ ±¸Á¶ À¯Áö ¶§¹®¿¡ È¯ºÒÀº ¾È ³ÖÀ½.
+            Debug.LogWarning("ê°€ì±  ê²°ê³¼ ì•„ì´í…œì´ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
         if (InventoryManager.instance == null)
         {
-            Debug.LogWarning("InventoryManager°¡ ¾ø½À´Ï´Ù.");
-
-            // ¿©±âµµ È¯ºÒ Ã³¸® °¡´É.
+            Debug.LogWarning("InventoryManagerê°€ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
         InventoryManager.instance.AddItem(resultItem, 1);
 
-        //Debug.Log("»óÀÚ ±¸¸Å ¿Ï·á: " + resultItem.dataName);
+        ShowPurchaseResult(resultItem, 1);
+    }
+
+    private void ShowPurchaseResult(ItemData resultItem, int count)
+    {
+        if (purchaseResultPanelUI != null)
+            purchaseResultPanelUI.ShowResult(resultItem, count);
     }
 }

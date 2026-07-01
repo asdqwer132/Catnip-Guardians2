@@ -16,6 +16,13 @@ public class ItemBoxData : DefaultData
     [Header("Gacha")]
     public GachaItemInfo[] gachaItems;
 
+    [Header("Box Animation")]
+    public AnimationClip idleClip;
+    public AnimationClip openClip;
+
+    [Tooltip("상자 열기 Trigger 이름")]
+    public string openTriggerName = "Open";
+
     public ItemData GetRandomItem()
     {
         if (gachaItems == null || gachaItems.Length == 0)
@@ -25,13 +32,7 @@ public class ItemBoxData : DefaultData
 
         foreach (var item in gachaItems)
         {
-            if (item == null)
-                continue;
-
-            if (item.itemData == null)
-                continue;
-
-            if (item.weight <= 0)
+            if (item == null || item.itemData == null || item.weight <= 0)
                 continue;
 
             totalWeight += item.weight;
@@ -45,21 +46,13 @@ public class ItemBoxData : DefaultData
 
         foreach (var item in gachaItems)
         {
-            if (item == null)
-                continue;
-
-            if (item.itemData == null)
-                continue;
-
-            if (item.weight <= 0)
+            if (item == null || item.itemData == null || item.weight <= 0)
                 continue;
 
             currentWeight += item.weight;
 
             if (randomValue < currentWeight)
-            {
                 return item.itemData;
-            }
         }
 
         return null;

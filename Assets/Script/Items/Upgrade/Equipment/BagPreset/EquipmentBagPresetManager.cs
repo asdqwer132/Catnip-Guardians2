@@ -57,6 +57,9 @@ public class EquipmentBagPresetManager : MonoBehaviour
 
         if (!allowEmptyPreset && !preset.HasAnyItem())
         {
+            //ErrorMessageManager.Show("아이템이 부족합니다.");
+            ErrorMessageManager.ShowNews("No Equip.", 180f);
+            //ErrorMessageManager.ShowFade("No Equip.", 1.5f, 0.4f);
             Debug.LogWarning("장착된 아이템이 없어 프리셋을 만들 수 없습니다.");
             return;
         }

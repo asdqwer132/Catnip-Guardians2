@@ -21,7 +21,6 @@ public class EnemyPatternRunner : MonoBehaviour
     [SerializeField] private bool isBlockingDefaultAI;
 
     [Header("Pattern Cooldown Debug")]
-    [DecimalPlaces(1)]
     [SerializeField] private float nextPatternRemainingTime;
     [SerializeField] private string nextPatternState = "Ready";
 
