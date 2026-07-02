@@ -21,12 +21,6 @@ public class SubPlantManager : ItemRecipeManager
         instance = this;
     }
 
-    public override void Combine()
-    {
-        base.Combine();
-
-
-    }
 
     public void ThrowAllItems()
     {

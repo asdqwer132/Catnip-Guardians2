@@ -1,9 +1,10 @@
+using NUnit.Framework.Interfaces;
 using UnityEngine;
 
 public class ItemCombinationManager : ItemRecipeManager
 {
     public static ItemCombinationManager instance;
-
+    public CraftSuccessEffectUI craftSuccessEffectUI;
     private void Awake()
     {
         instance = this;
@@ -34,5 +35,6 @@ public class ItemCombinationManager : ItemRecipeManager
         InventoryManager.instance.AddItem(resultItem, 1);
 
         ClearMaterials();
+        craftSuccessEffectUI.Play(resultItem.icon);
     }
 }

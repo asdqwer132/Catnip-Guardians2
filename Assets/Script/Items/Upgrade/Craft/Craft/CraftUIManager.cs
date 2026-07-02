@@ -4,7 +4,6 @@ public class CraftUIManager : MonoBehaviour
 {
     public ItemCombinationManager ItemCombinationManager;
     public CraftMaterialSlotUI[] slots;
-
     void Start()
     {
         RefreshUI();

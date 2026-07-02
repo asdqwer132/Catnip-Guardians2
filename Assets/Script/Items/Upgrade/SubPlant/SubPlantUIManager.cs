@@ -6,10 +6,14 @@ public class SubPlantUIManager : MonoBehaviour
     public SubPlantMaterialSlotUI[] slots;
     public InventorySlotUI resultSlot;
     public PlantTooltipTrigger trigger;
+    public CraftSuccessEffectUI successEffect;
+
+    public bool dynamicCombine = false;
 
     void Start()
     {
         RefreshUI();
+        resultSlot.ClearSlot();
 
         if (subplantmanager != null)
         {
@@ -27,6 +31,7 @@ public class SubPlantUIManager : MonoBehaviour
 
     public void RefreshUI()
     {
+
         var materials = subplantmanager.currentMaterials;
 
         for (int i = 0; i < slots.Length; i++)
@@ -41,11 +46,28 @@ public class SubPlantUIManager : MonoBehaviour
             }
         }
         subplantmanager.Combine();
-        resultSlot.SetSlot(new InventoryItem(subplantmanager.resultItem, 1));
+        Combine(dynamicCombine);
+    }
+    public void Combine(bool dynamic)
+    {
+        ItemData resultItem = subplantmanager.resultItem;
+        if (dynamic)
+        {
+            //제작 성공
+            resultSlot.SetSlot(new InventoryItem(resultItem, 1));
 
-        if (subplantmanager.isEmptyResult()) 
+            if (!subplantmanager.isEmptyResult())
+                successEffect.Play(resultItem.icon);
+        }
+        else
+            resultSlot.ClearSlot();
+
+        if (subplantmanager.isEmptyResult())
             trigger.HideTooltip();
         else
+        {
+
             trigger.ShowTooltip();
+        }
     }
 }

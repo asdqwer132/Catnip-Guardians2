@@ -316,6 +316,7 @@ public class ItemRecipeManager : MonoBehaviour
         }
 
         resultItem = recipe.resultItem;
+
     }
 
     protected ItemRecipeData FindRecipe()
