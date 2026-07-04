@@ -5,17 +5,12 @@ public class BagTooltipProvider : TooltipProvider
 {
     [Header("Target")]
     [SerializeField] private EquipmentBag equipmentBag;
-    [SerializeField] private BagData bagData;
+    private BagData bagData;
 
     [Header("Text")]
     [SerializeField] private string bagTypeText = "Bag";
     [SerializeField] private string emptyDescriptionText = "NoInfo.";
 
-    [Header("Option")]
-    [SerializeField] private bool showSlotInfo = true;
-    [SerializeField] private bool showWeightInfo = true;
-    [SerializeField] private bool showEquippedInfo = true;
-    [SerializeField] private bool showLockInfo = true;
 
     protected override void Awake()
     {
@@ -37,18 +32,27 @@ public class BagTooltipProvider : TooltipProvider
         if (targetBagData == null)
             return false;
 
-        data = new TooltipData
+        data = new BagTooltipData
         {
             icon = targetBagData.icon,
             title = GetBagName(targetBagData),
             subTitle = bagTypeText,
             amountText = "",
-            description = BuildDescription(targetBagData)
+            description = GetBagDescription(targetBagData),
+            weight = GetWeight(targetBagData),
+            slots = GetSlots(targetBagData)
         };
 
         return true;
     }
-
+    private string GetSlots(BagData targetBagData)
+    {
+        return equipmentBag.currentSlotCount + "/" + equipmentBag.maxSlotCount;
+    }
+    private string GetWeight(BagData targetBagData)
+    {
+        return targetBagData.maxWeight + "/" + targetBagData.maxWeight;
+    }
     private BagData GetTargetBagData()
     {
         if (equipmentBag != null && equipmentBag.bagData != null)
@@ -81,93 +85,5 @@ public class BagTooltipProvider : TooltipProvider
             return description;
 
         return emptyDescriptionText;
-    }
-
-    private string BuildDescription(BagData targetBagData)
-    {
-        StringBuilder sb = new StringBuilder();
-
-        string baseDescription = GetBagDescription(targetBagData);
-
-        if (!string.IsNullOrEmpty(baseDescription))
-            sb.AppendLine(baseDescription);
-
-        AppendRuntimeInfo(sb, targetBagData);
-        AppendLockInfo(sb);
-
-        return sb.ToString().TrimEnd();
-    }
-
-    private void AppendRuntimeInfo(StringBuilder sb, BagData targetBagData)
-    {
-        if (!showSlotInfo && !showWeightInfo && !showEquippedInfo)
-            return;
-
-        AppendSectionGap(sb);
-        sb.AppendLine("[BagInfo]");
-
-        if (showSlotInfo)
-        {
-            if (equipmentBag != null)
-            {
-                sb.AppendLine($"- Slot: {equipmentBag.currentSlotCount} / {equipmentBag.slotCount}");
-                sb.AppendLine($"- DefaultSlot: {equipmentBag.openSlotCount}");
-            }
-            else
-            {
-                sb.AppendLine($"- Slot: {targetBagData.slotCount}");
-            }
-        }
-
-        if (showWeightInfo)
-        {
-            if (equipmentBag != null)
-            {
-                float currentWeight = equipmentBag.GetCurrentWeight();
-                float maxWeight = equipmentBag.GetMaxWeight();
-
-                sb.AppendLine($"- Weight: {currentWeight:0.#} / {maxWeight:0.#}");
-            }
-            else
-            {
-                sb.AppendLine($"- MaxWeight: {targetBagData.maxWeight}");
-            }
-        }
-
-        if (showEquippedInfo && equipmentBag != null)
-        {
-            int currentEquippedCount = equipmentBag.GetCurrentEquippedCount();
-            sb.AppendLine($"- Equipped: {currentEquippedCount} / {equipmentBag.currentSlotCount}");
-        }
-    }
-
-    private void AppendLockInfo(StringBuilder sb)
-    {
-        if (!showLockInfo)
-            return;
-
-        if (equipmentBag == null || equipmentBag.locks == null || equipmentBag.locks.Count == 0)
-            return;
-
-        int lockedCount = 0;
-        int unlockedCount = 0;
-
-        for (int i = 0; i < equipmentBag.locks.Count; i++)
-        {
-            LockInfo lockInfo = equipmentBag.locks[i];
-
-            if (lockInfo == null)
-                continue;
-
-            if (lockInfo.locked)
-                lockedCount++;
-            else
-                unlockedCount++;
-        }
-
-        AppendSectionGap(sb);
-        sb.AppendLine("[LockInfo]");
-        sb.AppendLine($"- Unlocked: {unlockedCount}");
-        sb.AppendLine($"- Locked: {lockedCount}");
     }
 }

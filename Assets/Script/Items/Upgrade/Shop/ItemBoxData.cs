@@ -14,6 +14,7 @@ public class ItemBoxData : DefaultData
     public Cost[] costs;
 
     [Header("Gacha")]
+    public ItemSeries itemSeries;
     public GachaItemInfo[] gachaItems;
 
     [Header("Box Animation")]

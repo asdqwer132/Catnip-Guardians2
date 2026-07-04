@@ -68,7 +68,7 @@ MonoBehaviour:
       m_Calls: []
   m_Sprite: {fileID: 1062213429, guid: 35e40f95c5b8bf14c9c7f830a2ba0629, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -156,6 +156,11 @@ MonoBehaviour:
   showGlowImage: 1
   usePopEffect: 1
   useGlowEffect: 1
+  glowAnimator: {fileID: 0}
+  useGlowAnimator: 1
+  resetGlowAnimatorOnPlay: 1
+  glowAnimatorStateName: 
+  glowTriggerName: 
   displayDuration: 0.6
   fadeDuration: 0.15
   startScale: 0.8
@@ -245,9 +250,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 1784169712, guid: 89d6b9627a3a13b48948eca9d1c6f9f5, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1

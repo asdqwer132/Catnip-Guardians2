@@ -2,10 +2,11 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class PlantTooltipTrigger : ItemTooltipTrigger
+public class ToggleTooltipTrigger : ItemTooltipTrigger
 {
     public Toggle infoToggle;
     public Toggle invenToggle;
+    public bool isExitUse = false;
     public override void OnPointerEnter(PointerEventData eventData)
     {
         base.OnPointerEnter(eventData);
@@ -13,7 +14,8 @@ public class PlantTooltipTrigger : ItemTooltipTrigger
     }
     public override void OnPointerExit(PointerEventData eventData)
     {
-        invenToggle.isOn = true;
+        if(!isExitUse)
+            invenToggle.isOn = true;
 
     }
 }

@@ -1,7 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-
+using System;
+[Serializable]
+public class BoxCost
+{
+    public CurrencyType currencyType;
+    public GameObject costPanel;
+    public TextMeshProUGUI costText;
+}
 public class ShopBoxInfoUI : MonoBehaviour
 {
     [Header("Basic Info UI")]
@@ -9,10 +16,11 @@ public class ShopBoxInfoUI : MonoBehaviour
     public Image boxIcon;
     public ShopBoxOpenAnimationUI boxOpenAnimationUI;
     public TextMeshProUGUI boxNameText;
-    public TextMeshProUGUI priceText;
-    public GameObject pickUpTitleText;
+    public TextMeshProUGUI seriesText;
+    public BoxCost[] extraBoxCosts;
 
     [Header("Gacha Item List")]
+    public GameObject pickUpTitleText;
     public Transform itemListParent;
     public ShopBoxRewardSlotUI rewardSlotPrefab;
 
@@ -57,6 +65,23 @@ public class ShopBoxInfoUI : MonoBehaviour
 
         if (boxNameText != null)
             boxNameText.text = boxData.GetDataName();
+        if (seriesText != null)
+            seriesText.text = boxData.itemSeries.ToString();
+        if (extraBoxCosts != null)
+        {
+            foreach (var item in extraBoxCosts)
+            {
+                item.costPanel.SetActive(false);
+            }
+            foreach (var cost in boxData.costs)
+            {
+                BoxCost boxCost = GetBoxCost(cost.currencyType);
+                boxCost.costText.text = cost.amount.ToString();
+                boxCost.costPanel.SetActive(true);
+            }
+        }
+
+
 
         RefreshRewardList(boxData);
 
@@ -66,7 +91,17 @@ public class ShopBoxInfoUI : MonoBehaviour
         if (InvenToggle != null)
             InvenToggle.interactable = true;
     }
+    private BoxCost GetBoxCost(CurrencyType currencyType)
+    {
+        if (extraBoxCosts == null)
+            return null;
 
+        return Array.Find(
+            extraBoxCosts,
+            boxCost => boxCost != null &&
+                       boxCost.currencyType == currencyType
+        );
+    }
     private void RefreshRewardList(ItemBoxData boxData)
     {
         ClearRewardList();
@@ -138,8 +173,8 @@ public class ShopBoxInfoUI : MonoBehaviour
         if (boxNameText != null)
             boxNameText.text = "";
 
-        if (priceText != null)
-            priceText.text = "";
+        if (seriesText != null)
+            seriesText.text = "";
 
         ClearRewardList();
 

@@ -1,30 +1,25 @@
+using System;
 using UnityEngine;
 
 public class InventorySearchUISyncGroup : MonoBehaviour
 {
-    [Header("Targets")]
-    [SerializeField] private InventorySearchUI[] searchUIs;
+    [Header("Search UIs")]
+    [SerializeField] private ItemSearchUIBase[] searchUIs;
 
-    [Header("Option")]
-    [SerializeField] private bool autoFindInChildren = true;
-    [SerializeField] private bool includeInactive = true;
-    [SerializeField] private bool syncOnEnable = true;
-    [SerializeField] private int defaultSourceIndex = 0;
+    [Header("Initial Sync")]
+    [Tooltip("활성화될 때 첫 번째 검색 UI의 필터를 나머지 UI에 적용합니다.")]
+    [SerializeField] private bool syncFromFirstOnEnable = true;
 
+    private Action[] filterChangedActions;
+    private bool isBound;
     private bool isSyncing;
-
-    private void Awake()
-    {
-        RebuildTargets();
-    }
 
     private void OnEnable()
     {
-        RebuildTargets();
         BindEvents();
 
-        if (syncOnEnable)
-            SyncFromDefaultSource();
+        if (syncFromFirstOnEnable)
+            SyncFromFirstUI();
     }
 
     private void OnDisable()
@@ -32,109 +27,99 @@ public class InventorySearchUISyncGroup : MonoBehaviour
         UnbindEvents();
     }
 
-    [ContextMenu("Rebuild Targets")]
-    public void RebuildTargets()
+    public void SyncFromFirstUI()
     {
-        if (!autoFindInChildren)
+        if (searchUIs == null || searchUIs.Length == 0)
             return;
 
-        searchUIs = GetComponentsInChildren<InventorySearchUI>(includeInactive);
-    }
-
-    private void BindEvents()
-    {
-        if (searchUIs == null)
-            return;
+        ItemSearchUIBase source = null;
 
         for (int i = 0; i < searchUIs.Length; i++)
         {
-            InventorySearchUI searchUI = searchUIs[i];
-
-            if (searchUI == null)
+            if (searchUIs[i] == null)
                 continue;
 
-            searchUI.OnFilterChanged -= OnFilterChanged;
-            searchUI.OnFilterChanged += OnFilterChanged;
+            source = searchUIs[i];
+            break;
         }
-    }
 
-    private void UnbindEvents()
-    {
-        if (searchUIs == null)
+        if (source == null)
             return;
 
-        for (int i = 0; i < searchUIs.Length; i++)
-        {
-            InventorySearchUI searchUI = searchUIs[i];
-
-            if (searchUI == null)
-                continue;
-
-            searchUI.OnFilterChanged -= OnFilterChanged;
-        }
+        SyncFrom(source);
     }
 
-    private void OnFilterChanged(InventorySearchUI sourceUI, InventorySearchFilter sourceFilter)
+    public void SyncFrom(ItemSearchUIBase source)
     {
-        if (isSyncing)
-            return;
-
-        if (sourceUI == null || sourceFilter == null)
+        if (source == null || isSyncing || searchUIs == null)
             return;
 
         isSyncing = true;
 
+        InventorySearchFilter sourceFilter = source.GetCurrentFilter();
+
         for (int i = 0; i < searchUIs.Length; i++)
         {
-            InventorySearchUI targetUI = searchUIs[i];
+            ItemSearchUIBase target = searchUIs[i];
 
-            if (targetUI == null)
+            if (target == null || target == source)
                 continue;
 
-            if (targetUI == sourceUI)
-                continue;
-
-            targetUI.SetFilterFromExternal(sourceFilter);
+            target.SetFilterFromExternal(sourceFilter, false);
         }
 
         isSyncing = false;
     }
 
-    public void SyncFromDefaultSource()
+    private void BindEvents()
     {
-        if (searchUIs == null || searchUIs.Length == 0)
+        if (isBound || searchUIs == null)
             return;
 
-        int index = Mathf.Clamp(defaultSourceIndex, 0, searchUIs.Length - 1);
+        filterChangedActions = new Action[searchUIs.Length];
 
-        InventorySearchUI sourceUI = searchUIs[index];
+        for (int i = 0; i < searchUIs.Length; i++)
+        {
+            int index = i;
+            ItemSearchUIBase searchUI = searchUIs[index];
 
-        if (sourceUI == null)
-            return;
+            if (searchUI == null)
+                continue;
 
-        SyncFrom(sourceUI);
+            filterChangedActions[index] = () => OnFilterChanged(index);
+            searchUI.OnFilterChanged += filterChangedActions[index];
+        }
+
+        isBound = true;
     }
 
-    public void SyncFrom(InventorySearchUI sourceUI)
+    private void UnbindEvents()
     {
-        if (sourceUI == null)
+        if (!isBound || searchUIs == null || filterChangedActions == null)
             return;
 
-        InventorySearchFilter sourceFilter = sourceUI.GetCurrentFilterCopy();
+        int count = Mathf.Min(searchUIs.Length, filterChangedActions.Length);
 
-        OnFilterChanged(sourceUI, sourceFilter);
+        for (int i = 0; i < count; i++)
+        {
+            if (searchUIs[i] == null || filterChangedActions[i] == null)
+                continue;
+
+            searchUIs[i].OnFilterChanged -= filterChangedActions[i];
+        }
+
+        filterChangedActions = null;
+        isBound = false;
     }
 
-    public void ResetAll()
+    private void OnFilterChanged(int sourceIndex)
     {
-        if (searchUIs == null || searchUIs.Length == 0)
+        if (isSyncing ||
+            searchUIs == null ||
+            sourceIndex < 0 ||
+            sourceIndex >= searchUIs.Length)
             return;
 
-        InventorySearchUI sourceUI = searchUIs[0];
-
-        if (sourceUI == null)
-            return;
-
-        sourceUI.ResetFilter();
+        SyncFrom(searchUIs[sourceIndex]);
     }
 }

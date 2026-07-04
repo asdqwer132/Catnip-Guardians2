@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class ItemSearchFilterTargetUI : MonoBehaviour
+public abstract class ItemSearchFilterTargetUI : MonoBehaviour, IItemSearchFilterTarget
 {
     [Header("Search")]
     [SerializeField] protected InventorySearchFilter searchFilter = new InventorySearchFilter();
@@ -25,7 +25,7 @@ public abstract class ItemSearchFilterTargetUI : MonoBehaviour
         if (searchFilter == null)
             searchFilter = new InventorySearchFilter();
 
-        CopySearchFilter(filter, searchFilter);
+        InventorySearchFilterUtil.Copy(filter, searchFilter);
         ApplyMaskToSearchFilter();
         RemoveMaskedFilterValue();
 
@@ -147,24 +147,4 @@ public abstract class ItemSearchFilterTargetUI : MonoBehaviour
         return true;
     }
 
-    private void CopySearchFilter(InventorySearchFilter from, InventorySearchFilter to)
-    {
-        if (to == null)
-            return;
-
-        if (from == null)
-        {
-            to.Clear();
-            return;
-        }
-
-        to.useCategory = from.useCategory;
-        to.category = from.category;
-
-        to.useSeries = from.useSeries;
-        to.series = from.series;
-
-        to.useGrade = from.useGrade;
-        to.grade = from.grade;
-    }
 }

@@ -20,8 +20,24 @@ public class CraftSuccessEffectUI : MonoBehaviour
     [Tooltip("결과 아이템 이미지에 팝 애니메이션을 적용할지 여부")]
     public bool usePopEffect = true;
 
-    [Tooltip("글로우 이미지에 퍼지는 애니메이션을 적용할지 여부")]
+    [Tooltip("코드로 글로우 이미지에 퍼지는 애니메이션을 적용할지 여부")]
     public bool useGlowEffect = true;
+
+    [Header("Glow Animator")]
+    [Tooltip("글로우 이미지에 붙은 Animator. 비워두면 glowImage에서 자동으로 찾음")]
+    public Animator glowAnimator;
+
+    [Tooltip("글로우를 코드 애니메이션이 아니라 Animator로 재생할지 여부")]
+    public bool useGlowAnimator = true;
+
+    [Tooltip("Play 할 때마다 글로우 Animator를 처음부터 재생할지 여부")]
+    public bool resetGlowAnimatorOnPlay = true;
+
+    [Tooltip("처음부터 재생할 Animator State 이름. 비워두면 Rebind로 초기화")]
+    public string glowAnimatorStateName = "";
+
+    [Tooltip("Trigger 방식 Animator를 쓸 때의 Trigger 이름. 안 쓰면 비워둬도 됨")]
+    public string glowTriggerName = "";
 
     [Header("Display")]
     public float displayDuration = 0.6f;
@@ -56,7 +72,12 @@ public class CraftSuccessEffectUI : MonoBehaviour
             itemRect = itemIcon.rectTransform;
 
         if (glowImage != null)
+        {
             glowRect = glowImage.rectTransform;
+
+            if (glowAnimator == null)
+                glowAnimator = glowImage.GetComponent<Animator>();
+        }
 
         gameObject.SetActive(false);
     }
@@ -150,6 +171,19 @@ public class CraftSuccessEffectUI : MonoBehaviour
         if (!showGlowImage)
             return;
 
+        if (useGlowAnimator && glowAnimator != null)
+        {
+            glowAnimator.enabled = true;
+
+            if (resetGlowAnimatorOnPlay)
+                ResetGlowAnimator();
+
+            return;
+        }
+
+        if (glowAnimator != null)
+            glowAnimator.enabled = false;
+
         if (useGlowEffect)
         {
             SetImageAlpha(glowImage, 0f);
@@ -163,6 +197,31 @@ public class CraftSuccessEffectUI : MonoBehaviour
 
             if (glowRect != null)
                 glowRect.localScale = Vector3.one * staticGlowScale;
+        }
+    }
+
+    private void ResetGlowAnimator()
+    {
+        if (glowAnimator == null)
+            return;
+
+        glowAnimator.enabled = true;
+
+        if (!string.IsNullOrEmpty(glowAnimatorStateName))
+        {
+            glowAnimator.Play(glowAnimatorStateName, 0, 0f);
+            glowAnimator.Update(0f);
+        }
+        else
+        {
+            glowAnimator.Rebind();
+            glowAnimator.Update(0f);
+        }
+
+        if (!string.IsNullOrEmpty(glowTriggerName))
+        {
+            glowAnimator.ResetTrigger(glowTriggerName);
+            glowAnimator.SetTrigger(glowTriggerName);
         }
     }
 
@@ -203,6 +262,9 @@ public class CraftSuccessEffectUI : MonoBehaviour
     private void UpdateGlow(float progress)
     {
         if (!showGlowImage)
+            return;
+
+        if (useGlowAnimator && glowAnimator != null)
             return;
 
         if (!useGlowEffect)

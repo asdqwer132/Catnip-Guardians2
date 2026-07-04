@@ -1,6 +1,6 @@
 using UnityEngine;
-
-[System.Serializable]
+using System; 
+[Serializable]
 public class TooltipData
 {
     public Sprite icon;
@@ -10,4 +10,10 @@ public class TooltipData
 
     [TextArea]
     public string description;
+}
+[Serializable]
+public class BagTooltipData : TooltipData
+{
+    public string weight;
+    public string slots;
 }

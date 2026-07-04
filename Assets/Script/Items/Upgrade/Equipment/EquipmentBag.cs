@@ -7,7 +7,7 @@ public class EquipmentBag : RefreshListener
     public BagData bagData;
 
     [Header("Slot Settings")]
-    public int slotCount = 12;
+    public int maxSlotCount = 12;
     public int openSlotCount = 4;
     public int currentSlotCount = 0;
 
@@ -24,7 +24,7 @@ public class EquipmentBag : RefreshListener
     {
         equippedItems.Clear();
 
-        for (int i = 0; i < slotCount; i++)
+        for (int i = 0; i < maxSlotCount; i++)
         {
             equippedItems.Add(CreateEmptyItem());
         }
@@ -278,7 +278,7 @@ public class EquipmentBag : RefreshListener
         int unlockedExtraSlotCount = GetCurrentOpenSlotCount();
 
         currentSlotCount = openSlotCount + unlockedExtraSlotCount;
-        currentSlotCount = Mathf.Clamp(currentSlotCount, 0, slotCount);
+        currentSlotCount = Mathf.Clamp(currentSlotCount, 0, maxSlotCount);
     }
 
     private bool IsValidSlotIndex(int slotIndex)

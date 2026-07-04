@@ -245,7 +245,7 @@ GameObject:
   - component: {fileID: 3394675334736342445}
   - component: {fileID: 3131203849903030181}
   - component: {fileID: 6370626538912415708}
-  - component: {fileID: 2968610257625392173}
+  - component: {fileID: 2335489100761839389}
   m_Layer: 5
   m_Name: SkillNode
   m_TagString: Untagged
@@ -311,12 +311,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b3f202ff17b5f44aa140f844904e434, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SkillNodeTooltipProvider
-  skillNodeUI: {fileID: 3131203849903030181}
   anchorRect: {fileID: 0}
+  skillNodeUI: {fileID: 3131203849903030181}
   unlockedText: "\uD574\uAE08 \uC644\uB8CC"
   canUnlockText: "\uD574\uAE08 \uAC00\uB2A5"
   lockedText: "\uC7A0\uAE40"
---- !u!114 &2968610257625392173
+--- !u!114 &2335489100761839389
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -325,12 +325,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 8281552216295151602}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f811147cfbd52a4b8cf7877b3eb1bc0, type: 3}
+  m_Script: {fileID: 11500000, guid: edd5a4566a67c494ea5429e6afe2e07b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipTrigger
+  m_EditorClassIdentifier: Assembly-CSharp::ToggleTooltipTrigger
+  isPointer: 1
   tooltipUI: {fileID: 0}
   providerComponent: {fileID: 6370626538912415708}
-  slot: {fileID: 0}
+  infoToggle: {fileID: 0}
+  invenToggle: {fileID: 0}
+  isExitUse: 1
 --- !u!1 &8913983986458512368
 GameObject:
   m_ObjectHideFlags: 0

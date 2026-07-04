@@ -3747,7 +3747,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -7217,7 +7217,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ALL UI ASSETS on one sheet_156
+      name: SliderThinHandle
       rect:
         serializedVersion: 2
         x: 420
@@ -7226,7 +7226,7 @@ TextureImporter:
         height: 20
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 0, y: 8, z: 0, w: 8}
       customData: 
       outline: []
       physicsShape: []
@@ -7283,7 +7283,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ALL UI ASSETS on one sheet_159
+      name: SliderThin
       rect:
         serializedVersion: 2
         x: 469
@@ -7292,7 +7292,7 @@ TextureImporter:
         height: 40
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 0, y: 6, z: 0, w: 6}
       customData: 
       outline: []
       physicsShape: []
@@ -30502,10 +30502,8 @@ TextureImporter:
       ALL UI ASSETS on one sheet_152: 6496856428866099606
       ALL UI ASSETS on one sheet_153: -3066733974990921887
       ALL UI ASSETS on one sheet_155: -6693004619424139951
-      ALL UI ASSETS on one sheet_156: 9028880068207283306
       ALL UI ASSETS on one sheet_157: -3236996966722799570
       ALL UI ASSETS on one sheet_158: -7447423115598044247
-      ALL UI ASSETS on one sheet_159: 6153841338323762273
       ALL UI ASSETS on one sheet_16: -6139143459908755758
       ALL UI ASSETS on one sheet_160: -5133559231289634248
       ALL UI ASSETS on one sheet_161: -3251036902195578532
@@ -31432,6 +31430,8 @@ TextureImporter:
       Inven: 6839275369242874053
       Invent2: -8611563409106166928
       Paneel: 1905247122971191166
+      SliderThin: 6153841338323762273
+      SliderThinHandle: 9028880068207283306
       basicProfil: -7229276309447193908
       bridge: 72199436
       dial: 3502036648270260059
