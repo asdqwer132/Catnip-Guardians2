@@ -5,7 +5,8 @@ public class ItemTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerE
 {
     [Header("Option")]
     public bool isPointer = true;
-
+    public bool autoDisable = true;
+    public bool startShow = false;
     [Header("Tooltip")]
     public ItemTooltipUI tooltipUI;
 
@@ -18,15 +19,22 @@ public class ItemTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerE
     {
         CacheProvider();
     }
+    private void Start()
+    {
+        if(startShow)
+            ShowTooltip();
+    }
 
     public void Init(ItemTooltipUI tooltipTrigger)
     {
         tooltipUI = tooltipTrigger;
     }
 
+    
     private void OnDisable()
     {
-        HideTooltip();
+        if (autoDisable)
+            HideTooltip();
     }
 
     public virtual void OnPointerEnter(PointerEventData eventData)

@@ -81,7 +81,7 @@ public class SkillNodeUI : MonoBehaviour
 
         if (SkillTreeManager.Instance != null)
         {
-            isUnlocked = SkillTreeManager.Instance.IsUnlocked(skillNodeData.skillId);
+            isUnlocked = SkillTreeManager.Instance.IsUnlocked(skillNodeData.dataId);
             canUnlock = SkillTreeManager.Instance.CanUnlock(skillNodeData);
         }
 

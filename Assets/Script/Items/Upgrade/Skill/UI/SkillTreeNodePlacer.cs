@@ -428,11 +428,11 @@ public class SkillTreeNodePlacer : MonoBehaviour
         if (node == null)
             return "NULL";
 
-        if (!string.IsNullOrEmpty(node.skillName))
-            return node.skillName;
+        if (!string.IsNullOrEmpty(node.GetDataName()))
+            return node.GetDataName();
 
-        if (!string.IsNullOrEmpty(node.skillId))
-            return node.skillId;
+        if (!string.IsNullOrEmpty(node.dataId))
+            return node.dataId;
 
         return node.name;
     }

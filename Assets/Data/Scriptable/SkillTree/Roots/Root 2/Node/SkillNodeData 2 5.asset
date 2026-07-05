@@ -12,11 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 606bb820635defc49b80fccb1aeef576, type: 3}
   m_Name: SkillNodeData 2 5
   m_EditorClassIdentifier: Assembly-CSharp::SkillNodeData
-  skillId: SkillNodeData 2 5
-  skillName: 
-  description: 
   icon: {fileID: -8084883774510457907, guid: b9e517c886b9bac4e9fbedd93ea26b5d, type: 3}
-  costs: []
+  data: []
+  dataId: SkillNodeData 2 5
+  dataType: 0
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  skillMap: {fileID: 11400000, guid: 26bdc2a0d6cdd3f4b9172203def60c8a, type: 2}
+  costs:
+  - currencyType: 0
+    amount: 10
+  - currencyType: 2
+    amount: 20
   requiredSkills:
   - {fileID: 11400000, guid: 0f001038c7bfbc74b9cd457f1efdd241, type: 2}
   rewards: []

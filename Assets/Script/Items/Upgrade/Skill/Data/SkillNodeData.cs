@@ -5,31 +5,17 @@ using UnityEngine;
     fileName = "SkillNodeData",
     menuName = "GameData/Skill Tree/Skill Node"
 )]
-public class SkillNodeData : ScriptableObject
+public class SkillNodeData : DefaultData
 {
-    [Header("Identity")]
-    public string skillId;
-    public string skillName;
-
-    [TextArea]
-    public string description;
-
-    [Header("Icon")]
-    public Sprite icon;
+    [Header("Map")]
+    public SkillMapData skillMap;
 
     [Header("Cost")]
-    public List<Cost> costs = new List<Cost>();
+    public Cost[] costs;
 
     [Header("Requirement")]
     public List<SkillNodeData> requiredSkills = new List<SkillNodeData>();
 
     [Header("Rewards")]
     public List<SkillRewardData> rewards = new List<SkillRewardData>();
-#if UNITY_EDITOR
-    private void OnValidate()
-    {
-        if (string.IsNullOrEmpty(skillId))
-            skillId = name;
-    }
-#endif
 }
