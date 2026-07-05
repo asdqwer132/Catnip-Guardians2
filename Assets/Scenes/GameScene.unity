@@ -10553,6 +10553,7 @@ GameObject:
   - component: {fileID: 428193923}
   - component: {fileID: 428193924}
   - component: {fileID: 428193925}
+  - component: {fileID: 428193926}
   m_Layer: 0
   m_Name: SkillTreeManager
   m_TagString: Untagged
@@ -10619,6 +10620,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RefreshBroadcaster
   debugLog: 0
+--- !u!114 &428193926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 428193920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ee03ea7ece1fe241bdfd2b5cda24abc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkillTreeUIInjecter
+  NodesParents:
+  - {fileID: 461087393}
+  - {fileID: 955780523}
+  tooltipUI: {fileID: 1786658148}
+  infoToggel: {fileID: 1131757000}
+  invenToggle: {fileID: 1608648185}
+  includeInactive: 1
+  injectOnAwake: 1
 --- !u!1001 &429208571
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11581,6 +11602,11 @@ MonoBehaviour:
   toggle: {fileID: 0}
   onSprite: {fileID: 0}
   offSprite: {fileID: 0}
+--- !u!224 &461087393 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8435663291656773403, guid: 5215de539966edd41961325a8ba41b78, type: 3}
+  m_PrefabInstance: {fileID: 1948229351}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &463687686
 GameObject:
   m_ObjectHideFlags: 0
@@ -31948,6 +31974,11 @@ PrefabInstance:
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7249652874889271678, guid: f70a3a0a01ff00548a0b8b605afe81c5, type: 3}
   m_PrefabInstance: {fileID: 944362642}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &955780523 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8435663291656773403, guid: 4d4abbfe9fcde9b4aabdd28fc48c498c, type: 3}
+  m_PrefabInstance: {fileID: 1064294652}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &961012914
 GameObject:
@@ -54140,9 +54171,9 @@ MonoBehaviour:
   m_fontSize: 48
   m_fontSizeBase: 48
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_fontSizeMax: 48
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512

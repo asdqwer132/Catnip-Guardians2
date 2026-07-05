@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 606bb820635defc49b80fccb1aeef576, type: 3}
   m_Name: SkillNodeData 1
   m_EditorClassIdentifier: Assembly-CSharp::SkillNodeData
-  icon: {fileID: 1884739967, guid: 3ceae624e72f72c4eab16a7b4f415312, type: 3}
-  data: []
+  icon: {fileID: -1417783508605431231, guid: b9e517c886b9bac4e9fbedd93ea26b5d, type: 3}
+  data:
+  - language: 0
+    dataName: Maximum Range Increase
+    description: Increases the maximum item throw range.
   dataId: SkillNodeData 1
   dataType: 0
   requireUnlock: 0

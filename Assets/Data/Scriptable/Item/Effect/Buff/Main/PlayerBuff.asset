@@ -16,6 +16,7 @@ MonoBehaviour:
   impactBaseScale: {x: 1, y: 1, z: 1}
   scaleImpactVfxByRadius: 1
   useAnimatorClipLifeTime: 1
+  audioSource: 
   impactVfxLifeTime: 1
   targetResolver: {fileID: 11400000, guid: f7725c9c27a1eaa4c84cfdb41978bdf8, type: 2}
   buffInfo:
@@ -23,9 +24,9 @@ MonoBehaviour:
     maxStack: 30
     applyTiming: 1
     useLimitType: 0
-    duration: 10
+    duration: 0.01
     maxUseCount: 2
   includeSelf: 0
   showInUI: 1
   modifiers:
-  - {fileID: 11400000, guid: c4df3d6b079f5ae4a8d069d86604b8c4, type: 2}
+  - {fileID: 11400000, guid: 5636e723312cef140bc56e9bc8624535, type: 2}

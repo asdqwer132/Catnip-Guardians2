@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 606bb820635defc49b80fccb1aeef576, type: 3}
-  m_Name: SkillNodeData 6
+  m_Name: SkillNodeData 20
   m_EditorClassIdentifier: Assembly-CSharp::SkillNodeData
-  icon: {fileID: 509954292504270212, guid: bc6f84a0491f2614a85da482dcebce0a, type: 3}
+  icon: {fileID: -5161173795680686134, guid: b9e517c886b9bac4e9fbedd93ea26b5d, type: 3}
   data:
   - language: 0
-    dataName: Bag Weight Limit Increase
-    description: Increases the maximum weight the bag can carry.
-  dataId: SkillNodeData 6
+    dataName: Potion Equipment Slot Unlock
+    description: Unlocks an additional potion equipment slot.
+  dataId: SkillNodeData 20
   dataType: 0
   requireUnlock: 0
   iconSearchFolderPath: Assets/Art/Icons/Items
@@ -29,5 +29,5 @@ MonoBehaviour:
   - currencyType: 1
     amount: 25
   requiredSkills:
-  - {fileID: 11400000, guid: 0c938d36457d86f41a6d3e3ffa98cc2d, type: 2}
+  - {fileID: 11400000, guid: 1aae92a88d2a18d498cd7fdbb9c6ed64, type: 2}
   rewards: []

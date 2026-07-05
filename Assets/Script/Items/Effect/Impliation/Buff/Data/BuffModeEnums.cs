@@ -12,8 +12,9 @@ public enum BuffStackMode
 
 public enum BuffUseLimitType
 {
-    Time,
-    UseCount
+    Infinite = -1,
+    Time= 0,
+    UseCount = 1,
 }
 
 public enum BuffCalculationMode
