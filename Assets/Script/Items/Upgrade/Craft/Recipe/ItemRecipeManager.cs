@@ -6,6 +6,7 @@ using UnityEngine;
 public class ItemRecipeList
 {
     public ItemSeries itemSeries;
+    public int depth;
     public List<ItemRecipeData> recipes = new List<ItemRecipeData>();
 }
 
@@ -36,6 +37,19 @@ public class ItemRecipeManager : MonoBehaviour
     public List<InventoryItem> GetMaterials()
     {
         return currentMaterials;
+    }
+    public ItemRecipeList GetRecipeListBySeries(ItemSeries itemSeries)
+    {
+        foreach (ItemRecipeList recipeList in recipes)
+        {
+            if (recipeList == null)
+                continue;
+
+            if (recipeList.itemSeries == itemSeries)
+                return recipeList;
+        }
+
+        return null;
     }
     public List<ItemRecipeData> GetAllRecipe()
     {

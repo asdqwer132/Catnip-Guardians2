@@ -239,6 +239,8 @@ GameObject:
   - component: {fileID: 3232640910192738381}
   - component: {fileID: 2678204648813700814}
   - component: {fileID: 8172993865820362134}
+  - component: {fileID: 2481134887136139181}
+  - component: {fileID: 6462670772467954552}
   m_Layer: 5
   m_Name: Toggle (1)
   m_TagString: Untagged
@@ -264,7 +266,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 134, y: 115}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &3232640910192738381
 MonoBehaviour:
@@ -366,5 +368,38 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipTrigger
   isPointer: 0
+  autoDisable: 1
+  startShow: 0
   tooltipUI: {fileID: 0}
   providerComponent: {fileID: 2678204648813700814}
+--- !u!114 &2481134887136139181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7164971542191934972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c6d3fd1fdf1d6824da466d3c9bcc2e26, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ToggleCheckmarkAnimation
+  toggle: {fileID: 3232640910192738381}
+  checkmark: {fileID: 270959737702815370}
+  checkmarkCanvasGroup: {fileID: 6462670772467954552}
+  duration: 0.15
+  offScale: 0.6
+  overshootScale: 1.15
+  useUnscaledTime: 1
+--- !u!225 &6462670772467954552
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7164971542191934972}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
