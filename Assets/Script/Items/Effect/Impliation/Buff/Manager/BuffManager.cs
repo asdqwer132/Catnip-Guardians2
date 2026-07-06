@@ -1,4 +1,4 @@
-using System;
+Ôªøusing System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +11,8 @@ public class BuffManager : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private bool useDebugInspector = true;
     [SerializeField] private List<ActiveBuff> debugAllActiveBuffs = new List<ActiveBuff>();
+    [SerializeField] private List<ActiveBuff> debugNormalActiveBuffs = new List<ActiveBuff>();
+    [SerializeField] private List<ActiveBuff> debugInfiniteActiveBuffs = new List<ActiveBuff>();
     [SerializeField] private List<DebugBuffGroup> debugBuffGroups = new List<DebugBuffGroup>();
 
     private BuffStorage storage;
@@ -111,7 +113,7 @@ public class BuffManager : MonoBehaviour
 
         consumedBuffer.Clear();
 
-        // 1. ¥ı«œ±‚ ∞Ëø≠ ∏’¿˙ ¿¸∫Œ ¿˚øÎ
+        // 1. ÎçîÌïòÍ∏∞ Í≥ÑÏó¥ Î®ºÏ†Ä Ï†ÑÎ∂Ä Ï†ÅÏö©
         for (int i = 0; i < storage.activeBuffs.Count; i++)
         {
             ActiveBuff buff = storage.activeBuffs[i];
@@ -125,7 +127,7 @@ public class BuffManager : MonoBehaviour
                 consumedBuffer.Add(buff);
         }
 
-        // 2. ∞ˆ«œ±‚ ∞Ëø≠ ≥™¡ﬂø° ¿¸∫Œ ¿˚øÎ
+        // 2. Í≥±ÌïòÍ∏∞ Í≥ÑÏó¥ ÎÇòÏ§ëÏóê Ï†ÑÎ∂Ä Ï†ÅÏö©
         for (int i = 0; i < storage.activeBuffs.Count; i++)
         {
             ActiveBuff buff = storage.activeBuffs[i];
@@ -349,6 +351,26 @@ public class BuffManager : MonoBehaviour
         NotifyBuffChanged(BuffNotifyScope.Target);
     }
 
+    public void ClearNormalBuffsForTarget(IBuffTarget target)
+    {
+        if (storage == null || target == null)
+            return;
+
+        storage.RemoveNormalBuffsForTarget(target);
+        target.RefreshBuffedStat();
+        NotifyBuffChanged(BuffNotifyScope.Target);
+    }
+
+    public void ClearInfiniteBuffsForTarget(IBuffTarget target)
+    {
+        if (storage == null || target == null)
+            return;
+
+        storage.RemoveInfiniteBuffsForTarget(target);
+        target.RefreshBuffedStat();
+        NotifyBuffChanged(BuffNotifyScope.Target);
+    }
+
     public List<IBuffTarget> GetRegisteredBuffTargetsUnsafe()
     {
         return storage != null ? storage.registeredTargets : new List<IBuffTarget>();
@@ -386,6 +408,26 @@ public class BuffManager : MonoBehaviour
     public List<ActiveBuff> GetAllVisibleBuffs()
     {
         return query != null ? query.GetAllVisibleBuffs() : new List<ActiveBuff>();
+    }
+
+    public List<ActiveBuff> GetNormalActiveBuffs()
+    {
+        return query != null ? query.GetNormalActiveBuffs() : new List<ActiveBuff>();
+    }
+
+    public List<ActiveBuff> GetNormalVisibleBuffs()
+    {
+        return query != null ? query.GetNormalVisibleBuffs() : new List<ActiveBuff>();
+    }
+
+    public List<ActiveBuff> GetInfiniteActiveBuffs()
+    {
+        return query != null ? query.GetInfiniteActiveBuffs() : new List<ActiveBuff>();
+    }
+
+    public List<ActiveBuff> GetInfiniteVisibleBuffs()
+    {
+        return query != null ? query.GetInfiniteVisibleBuffs() : new List<ActiveBuff>();
     }
 
     public List<ActiveBuff> GetBagBuffsAsList(EquipmentBag bag)
@@ -439,6 +481,24 @@ public class BuffManager : MonoBehaviour
     }
 
     #endregion
+
+    public void ClearNormalBuffs()
+    {
+        if (storage == null)
+            return;
+
+        storage.ClearNormalBuffs();
+        NotifyBuffChanged(BuffNotifyScope.All);
+    }
+
+    public void ClearInfiniteBuffs()
+    {
+        if (storage == null)
+            return;
+
+        storage.ClearInfiniteBuffs();
+        NotifyBuffChanged(BuffNotifyScope.All);
+    }
 
     public void ClearAllBuffs()
     {
@@ -530,6 +590,8 @@ public class BuffManager : MonoBehaviour
             return;
 
         debugAllActiveBuffs.Clear();
+        debugNormalActiveBuffs.Clear();
+        debugInfiniteActiveBuffs.Clear();
         debugBuffGroups.Clear();
 
         for (int i = 0; i < storage.activeBuffs.Count; i++)
@@ -540,6 +602,12 @@ public class BuffManager : MonoBehaviour
                 continue;
 
             debugAllActiveBuffs.Add(buff);
+
+            if (buff.IsInfinite)
+                debugInfiniteActiveBuffs.Add(buff);
+            else
+                debugNormalActiveBuffs.Add(buff);
+
             AddDebugGroup(buff);
         }
     }

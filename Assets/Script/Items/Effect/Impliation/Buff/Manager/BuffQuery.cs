@@ -1,3 +1,4 @@
+﻿using System;
 using System.Collections.Generic;
 
 public class BuffQuery
@@ -9,49 +10,125 @@ public class BuffQuery
         this.storage = storage;
     }
 
+    #region All Buffs
+
     public List<ActiveBuff> GetAllActiveBuffs()
     {
-        List<ActiveBuff> result = new List<ActiveBuff>();
-        AddBuffsToList(result, storage.activeBuffs, false);
-        return result;
+        return CreateList(storage?.activeBuffs, false);
     }
 
     public List<ActiveBuff> GetAllVisibleBuffs()
     {
-        List<ActiveBuff> result = new List<ActiveBuff>();
-        AddBuffsToList(result, storage.activeBuffs, true);
-        return result;
+        return CreateList(storage?.activeBuffs, true);
     }
 
-    public List<ActiveBuff> GetBagBuffsAsList(EquipmentBag bag, bool visibleOnly = false)
+    #endregion
+
+    #region Normal Buffs
+
+    public List<ActiveBuff> GetNormalActiveBuffs()
     {
-        return GetBuffsByPredicate(buff => buff.target != null && buff.target.kind == BuffTargetKind.Bag && buff.target.bag == bag, visibleOnly);
+        return CreateList(storage?.normalBuffs, false);
     }
 
-    public List<ActiveBuff> GetItemBuffsAsList(ItemData itemData, bool visibleOnly = false)
+    public List<ActiveBuff> GetNormalVisibleBuffs()
     {
-        return GetBuffsByPredicate(buff => buff.target != null && buff.target.kind == BuffTargetKind.Item && buff.target.itemData == itemData, visibleOnly);
+        return CreateList(storage?.normalBuffs, true);
     }
 
-    public List<ActiveBuff> GetItemSeriesBuffsAsList(ItemSeries series, bool visibleOnly = false)
+    #endregion
+
+    #region Infinite Buffs
+
+    public List<ActiveBuff> GetInfiniteActiveBuffs()
     {
-        return GetBuffsByPredicate(buff => buff.target != null && buff.target.kind == BuffTargetKind.ItemSeries && buff.target.itemSeries == series, visibleOnly);
+        return CreateList(storage?.infiniteBuffs, false);
     }
 
-    public List<ActiveBuff> GetTargetBuffsAsList(IBuffTarget target, bool visibleOnly = false)
+    public List<ActiveBuff> GetInfiniteVisibleBuffs()
     {
-        return GetBuffsByPredicate(buff => buff.target != null && buff.target.MatchesTarget(target), visibleOnly);
+        return CreateList(storage?.infiniteBuffs, true);
     }
 
-    public List<ActiveBuff> GetTargetGroupBuffsAsList(string targetGroup, bool visibleOnly = false)
+    #endregion
+
+    #region Target Queries
+
+    public List<ActiveBuff> GetBagBuffsAsList(
+        EquipmentBag bag,
+        bool visibleOnly = false
+    )
     {
         return GetBuffsByPredicate(
-            buff => buff.target != null && buff.target.kind == BuffTargetKind.Group && buff.target.targetGroup == targetGroup,
+            buff =>
+                buff.target != null &&
+                buff.target.kind == BuffTargetKind.Bag &&
+                buff.target.bag == bag,
             visibleOnly
         );
     }
 
-    private List<ActiveBuff> GetBuffsByPredicate(System.Predicate<ActiveBuff> predicate, bool visibleOnly)
+    public List<ActiveBuff> GetItemBuffsAsList(
+        ItemData itemData,
+        bool visibleOnly = false
+    )
+    {
+        return GetBuffsByPredicate(
+            buff =>
+                buff.target != null &&
+                buff.target.kind == BuffTargetKind.Item &&
+                buff.target.itemData == itemData,
+            visibleOnly
+        );
+    }
+
+    public List<ActiveBuff> GetItemSeriesBuffsAsList(
+        ItemSeries series,
+        bool visibleOnly = false
+    )
+    {
+        return GetBuffsByPredicate(
+            buff =>
+                buff.target != null &&
+                buff.target.kind == BuffTargetKind.ItemSeries &&
+                buff.target.itemSeries == series,
+            visibleOnly
+        );
+    }
+
+    public List<ActiveBuff> GetTargetBuffsAsList(
+        IBuffTarget target,
+        bool visibleOnly = false
+    )
+    {
+        return GetBuffsByPredicate(
+            buff =>
+                buff.target != null &&
+                buff.target.MatchesTarget(target),
+            visibleOnly
+        );
+    }
+
+    public List<ActiveBuff> GetTargetGroupBuffsAsList(
+        string targetGroup,
+        bool visibleOnly = false
+    )
+    {
+        return GetBuffsByPredicate(
+            buff =>
+                buff.target != null &&
+                buff.target.kind == BuffTargetKind.Group &&
+                buff.target.targetGroup == targetGroup,
+            visibleOnly
+        );
+    }
+
+    #endregion
+
+    private List<ActiveBuff> GetBuffsByPredicate(
+        Predicate<ActiveBuff> predicate,
+        bool visibleOnly
+    )
     {
         List<ActiveBuff> result = new List<ActiveBuff>();
 
@@ -61,6 +138,7 @@ public class BuffQuery
         for (int i = 0; i < storage.activeBuffs.Count; i++)
         {
             ActiveBuff buff = storage.activeBuffs[i];
+
             if (!CanAdd(buff, visibleOnly))
                 continue;
 
@@ -71,7 +149,21 @@ public class BuffQuery
         return result;
     }
 
-    private void AddBuffsToList(List<ActiveBuff> result, List<ActiveBuff> source, bool visibleOnly)
+    private List<ActiveBuff> CreateList(
+        List<ActiveBuff> source,
+        bool visibleOnly
+    )
+    {
+        List<ActiveBuff> result = new List<ActiveBuff>();
+        AddBuffsToList(result, source, visibleOnly);
+        return result;
+    }
+
+    private void AddBuffsToList(
+        List<ActiveBuff> result,
+        List<ActiveBuff> source,
+        bool visibleOnly
+    )
     {
         if (result == null || source == null)
             return;
@@ -79,12 +171,16 @@ public class BuffQuery
         for (int i = 0; i < source.Count; i++)
         {
             ActiveBuff buff = source[i];
+
             if (CanAdd(buff, visibleOnly))
                 result.Add(buff);
         }
     }
 
-    private bool CanAdd(ActiveBuff buff, bool visibleOnly)
+    private bool CanAdd(
+        ActiveBuff buff,
+        bool visibleOnly
+    )
     {
         if (buff == null || buff.IsExpired)
             return false;

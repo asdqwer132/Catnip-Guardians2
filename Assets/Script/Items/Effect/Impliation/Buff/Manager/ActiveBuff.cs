@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 [Serializable]
@@ -30,14 +30,22 @@ public class ActiveBuff
 
     [NonSerialized] public BuffModifier[] modifiers;
 
+    public bool IsInfinite => useLimitType == BuffUseLimitType.Infinite;
+
     public bool IsExpired
     {
         get
         {
+            if (IsInfinite)
+                return false;
+
             if (useLimitType == BuffUseLimitType.UseCount)
                 return remainUseCount <= 0;
 
-            return remainTime <= 0f;
+            if (useLimitType == BuffUseLimitType.Time)
+                return remainTime <= 0f;
+
+            return false;
         }
     }
 
@@ -104,6 +112,7 @@ public class ActiveBuff
             return;
 
         remainTime -= deltaTime;
+
         if (remainTime < 0f)
             remainTime = 0f;
     }
@@ -118,10 +127,17 @@ public class ActiveBuff
 
     public float GetTimeRate()
     {
-        if (useLimitType == BuffUseLimitType.UseCount)
-            return maxUseCount <= 0 ? 0f : (float)remainUseCount / maxUseCount;
+        if (IsInfinite)
+            return 1f;
 
-        return maxTime <= 0f ? 0f : remainTime / maxTime;
+        if (useLimitType == BuffUseLimitType.UseCount)
+            return maxUseCount <= 0
+                ? 0f
+                : (float)remainUseCount / maxUseCount;
+
+        return maxTime <= 0f
+            ? 0f
+            : remainTime / maxTime;
     }
 
     public bool MatchesQuery(BuffQueryContext query)
@@ -132,13 +148,23 @@ public class ActiveBuff
         if (!target.Matches(query))
             return false;
 
-        if (!includeSelf && query != null && query.itemData != null && sourceItemData == query.itemData)
+        if (!includeSelf &&
+            query != null &&
+            query.itemData != null &&
+            sourceItemData == query.itemData)
+        {
             return false;
+        }
 
         return true;
     }
 
-    public bool IsSameBuff(ItemData sourceItemData, EquipmentBag sourceBag, ItemEffectData sourceEffectData, BuffTargetHandle target)
+    public bool IsSameBuff(
+        ItemData sourceItemData,
+        EquipmentBag sourceBag,
+        ItemEffectData sourceEffectData,
+        BuffTargetHandle target
+    )
     {
         if (this.sourceItemData != sourceItemData)
             return false;
