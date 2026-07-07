@@ -10,7 +10,8 @@ public class GameDebugWindow : EditorWindow
         Buff,
         Skill,
         Inventory,
-        Enemy
+        Enemy,
+        Map
     }
 
     private DebugCategory selectedCategory;
@@ -31,7 +32,8 @@ public class GameDebugWindow : EditorWindow
 
         EditorGUILayout.Space(10);
 
-        scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
+        scrollPosition =
+            EditorGUILayout.BeginScrollView(scrollPosition);
 
         switch (selectedCategory)
         {
@@ -50,9 +52,16 @@ public class GameDebugWindow : EditorWindow
             case DebugCategory.Enemy:
                 DrawEnemyDebug();
                 break;
+
+            case DebugCategory.Map:
+                DrawMapDebug();
+                break;
         }
 
         EditorGUILayout.EndScrollView();
+
+        if (Application.isPlaying)
+            Repaint();
     }
 
     private void DrawToolbar()
@@ -64,7 +73,8 @@ public class GameDebugWindow : EditorWindow
                 "Buff",
                 "Skill",
                 "Inventory",
-                "Enemy"
+                "Enemy",
+                "Map"
             }
         );
     }
@@ -75,8 +85,9 @@ public class GameDebugWindow : EditorWindow
             "Buff Debug",
             EditorStyles.boldLabel
         );
+
         BuffManager buffManager =
-    UnityEngine.Object.FindAnyObjectByType<BuffManager>();
+            Object.FindAnyObjectByType<BuffManager>();
 
         if (buffManager == null)
         {
@@ -122,13 +133,7 @@ public class GameDebugWindow : EditorWindow
 
         EditorGUI.EndDisabledGroup();
 
-        if (!Application.isPlaying)
-        {
-            EditorGUILayout.HelpBox(
-                "플레이 모드에서만 실행할 수 있습니다.",
-                MessageType.Info
-            );
-        }
+        DrawPlayModeHelpBox();
     }
 
     private void DrawSkillDebug()
@@ -166,6 +171,77 @@ public class GameDebugWindow : EditorWindow
 
         EditorGUILayout.HelpBox(
             "적 테스트 기능을 여기에 추가합니다.",
+            MessageType.Info
+        );
+    }
+
+    private void DrawMapDebug()
+    {
+        EditorGUILayout.LabelField(
+            "Map Debug",
+            EditorStyles.boldLabel
+        );
+
+        TilemapRadialSequenceController mapController =
+            Object.FindAnyObjectByType<
+                TilemapRadialSequenceController
+            >();
+
+        if (mapController == null)
+        {
+            EditorGUILayout.HelpBox(
+                "현재 씬에서 TilemapRadialSequenceController를 찾을 수 없습니다.",
+                MessageType.Warning
+            );
+
+            return;
+        }
+
+        EditorGUILayout.ObjectField(
+            "Map Controller",
+            mapController,
+            typeof(TilemapRadialSequenceController),
+            true
+        );
+
+        EditorGUILayout.Space(5);
+
+        EditorGUILayout.LabelField(
+            "현재 맵 인덱스",
+            mapController.CurrentMapIndex.ToString()
+        );
+
+        EditorGUILayout.LabelField(
+            "전환 실행 중",
+            mapController.IsPlaying ? "Yes" : "No"
+        );
+
+        EditorGUILayout.Space(10);
+
+        EditorGUI.BeginDisabledGroup(
+            !Application.isPlaying ||
+            mapController.IsPlaying
+        );
+
+        if (GUILayout.Button(
+            "다음 맵 재생",
+            GUILayout.Height(40)))
+        {
+            mapController.PlayNext();
+        }
+
+        EditorGUI.EndDisabledGroup();
+
+        DrawPlayModeHelpBox();
+    }
+
+    private void DrawPlayModeHelpBox()
+    {
+        if (Application.isPlaying)
+            return;
+
+        EditorGUILayout.HelpBox(
+            "플레이 모드에서만 실행할 수 있습니다.",
             MessageType.Info
         );
     }
