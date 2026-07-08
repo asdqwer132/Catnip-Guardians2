@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 using UnityEngine.Tilemaps;
 
 public class TilemapRadialSequenceController : MonoBehaviour
@@ -16,8 +17,9 @@ public class TilemapRadialSequenceController : MonoBehaviour
     private Transform sharedCenter;
 
     [Header("Sequence")]
+    [FormerlySerializedAs("initializeOnAwake")]
     [SerializeField]
-    private bool initializeOnAwake = true;
+    private bool initializeOnStart = true;
 
     [SerializeField]
     private bool autoPlayOnStart = false;
@@ -48,21 +50,26 @@ public class TilemapRadialSequenceController : MonoBehaviour
     public int CurrentMapIndex => currentMapIndex;
     public bool IsPlaying => sequenceCoroutine != null;
 
-    private void Awake()
+    public int MapCount
     {
-        if (initializeOnAwake)
-            InitializeSequence();
+        get
+        {
+            if (tilemapTransitions == null)
+                return 0;
+
+            return tilemapTransitions.Length;
+        }
     }
 
     private void Start()
     {
+        if (initializeOnStart)
+            InitializeSequence();
+
         if (autoPlayOnStart)
             PlayAll();
     }
 
-    /// <summary>
-    /// 0번 맵만 보이게 하고 나머지 맵은 모두 숨깁니다.
-    /// </summary>
     public void InitializeSequence()
     {
         StopSequence();
@@ -80,21 +87,39 @@ public class TilemapRadialSequenceController : MonoBehaviour
                 tilemapTransitions[i];
 
             if (transition == null)
+            {
+                Debug.LogWarning(
+                    $"[Tilemap Sequence] Element {i}가 비어 있습니다.",
+                    this
+                );
+
                 continue;
+            }
 
             transition.StopTransition();
 
-            SetRendererEnabled(transition, true);
+            SetRendererEnabled(
+                transition,
+                true
+            );
 
             if (i == 0)
             {
                 transition.SetVisibleImmediately();
-                SetColliderEnabled(transition, true);
+
+                SetColliderEnabled(
+                    transition,
+                    true
+                );
             }
             else
             {
                 transition.SetHiddenImmediately();
-                SetColliderEnabled(transition, false);
+
+                SetColliderEnabled(
+                    transition,
+                    false
+                );
             }
         }
 
@@ -102,10 +127,6 @@ public class TilemapRadialSequenceController : MonoBehaviour
         onMapChanged?.Invoke(currentMapIndex);
     }
 
-    /// <summary>
-    /// 다음 맵 하나만 나타냅니다.
-    /// UI 버튼에서 호출하기 좋습니다.
-    /// </summary>
     public void PlayNext()
     {
         if (sequenceCoroutine != null)
@@ -114,13 +135,11 @@ public class TilemapRadialSequenceController : MonoBehaviour
         if (!HasNextMap())
             return;
 
-        sequenceCoroutine =
-            StartCoroutine(PlayNextRoutine());
+        sequenceCoroutine = StartCoroutine(
+            PlayNextRoutine()
+        );
     }
 
-    /// <summary>
-    /// 현재 맵부터 마지막 맵까지 자동으로 순차 재생합니다.
-    /// </summary>
     public void PlayAll()
     {
         if (sequenceCoroutine != null)
@@ -129,14 +148,11 @@ public class TilemapRadialSequenceController : MonoBehaviour
         if (!HasNextMap())
             return;
 
-        sequenceCoroutine =
-            StartCoroutine(PlayAllRoutine());
+        sequenceCoroutine = StartCoroutine(
+            PlayAllRoutine()
+        );
     }
 
-    /// <summary>
-    /// 지정한 인덱스까지 순서대로 재생합니다.
-    /// 예: PlayToIndex(4) → 현재 맵부터 4번 맵까지 재생
-    /// </summary>
     public void PlayToIndex(int targetIndex)
     {
         if (sequenceCoroutine != null)
@@ -144,7 +160,9 @@ public class TilemapRadialSequenceController : MonoBehaviour
 
         if (tilemapTransitions == null ||
             tilemapTransitions.Length == 0)
+        {
             return;
+        }
 
         targetIndex = Mathf.Clamp(
             targetIndex,
@@ -155,10 +173,32 @@ public class TilemapRadialSequenceController : MonoBehaviour
         if (targetIndex <= currentMapIndex)
             return;
 
-        sequenceCoroutine =
-            StartCoroutine(
-                PlayToIndexRoutine(targetIndex)
-            );
+        sequenceCoroutine = StartCoroutine(
+            PlayToIndexRoutine(targetIndex)
+        );
+    }
+
+    public void ResetSequence()
+    {
+        InitializeSequence();
+    }
+
+    public void StopSequence()
+    {
+        if (sequenceCoroutine != null)
+        {
+            StopCoroutine(sequenceCoroutine);
+            sequenceCoroutine = null;
+        }
+
+        if (tilemapTransitions == null)
+            return;
+
+        foreach (TilemapRadialTransition transition in tilemapTransitions)
+        {
+            if (transition != null)
+                transition.StopTransition();
+        }
     }
 
     private IEnumerator PlayNextRoutine()
@@ -213,6 +253,9 @@ public class TilemapRadialSequenceController : MonoBehaviour
 
     private IEnumerator RevealNextMap()
     {
+        if (tilemapTransitions == null)
+            yield break;
+
         int nextIndex = currentMapIndex + 1;
 
         if (nextIndex < 0 ||
@@ -226,12 +269,33 @@ public class TilemapRadialSequenceController : MonoBehaviour
 
         if (nextTransition == null)
         {
-            currentMapIndex = nextIndex;
+            Debug.LogError(
+                $"[Tilemap Sequence] Element {nextIndex}가 비어 있습니다.",
+                this
+            );
+
             yield break;
         }
 
-        SetRendererEnabled(nextTransition, true);
-        SetColliderEnabled(nextTransition, false);
+        if (nextTransition.CachedTileCount == 0)
+        {
+            Debug.LogWarning(
+                $"[Tilemap Sequence] " +
+                $"{nextIndex}번 맵의 캐싱된 타일 개수가 0입니다. " +
+                $"오브젝트: {nextTransition.name}",
+                nextTransition
+            );
+        }
+
+        SetRendererEnabled(
+            nextTransition,
+            true
+        );
+
+        SetColliderEnabled(
+            nextTransition,
+            false
+        );
 
         nextTransition.SetHiddenImmediately();
 
@@ -252,10 +316,12 @@ public class TilemapRadialSequenceController : MonoBehaviour
         );
 
         int previousIndex = currentMapIndex;
-
         currentMapIndex = nextIndex;
 
-        SetColliderEnabled(nextTransition, true);
+        SetColliderEnabled(
+            nextTransition,
+            true
+        );
 
         if (previousIndex >= 0 &&
             previousIndex < tilemapTransitions.Length)
@@ -286,41 +352,10 @@ public class TilemapRadialSequenceController : MonoBehaviour
         onMapChanged?.Invoke(currentMapIndex);
     }
 
-    /// <summary>
-    /// 모든 맵을 초기 상태로 되돌립니다.
-    /// </summary>
-    public void ResetSequence()
-    {
-        InitializeSequence();
-    }
-
-    /// <summary>
-    /// 현재 진행 중인 순차 재생을 중지합니다.
-    /// </summary>
-    public void StopSequence()
-    {
-        if (sequenceCoroutine != null)
-        {
-            StopCoroutine(sequenceCoroutine);
-            sequenceCoroutine = null;
-        }
-
-        if (tilemapTransitions == null)
-            return;
-
-        foreach (TilemapRadialTransition transition
-                 in tilemapTransitions)
-        {
-            if (transition != null)
-                transition.StopTransition();
-        }
-    }
-
     private bool HasNextMap()
     {
         return tilemapTransitions != null &&
-               currentMapIndex + 1 <
-               tilemapTransitions.Length;
+               currentMapIndex + 1 < tilemapTransitions.Length;
     }
 
     private IEnumerator WaitDelay(float delay)
@@ -346,6 +381,9 @@ public class TilemapRadialSequenceController : MonoBehaviour
         bool enabled
     )
     {
+        if (transition == null)
+            return;
+
         TilemapRenderer tilemapRenderer =
             transition.GetComponent<TilemapRenderer>();
 
@@ -358,6 +396,9 @@ public class TilemapRadialSequenceController : MonoBehaviour
         bool enabled
     )
     {
+        if (transition == null)
+            return;
+
         TilemapCollider2D tilemapCollider =
             transition.GetComponent<TilemapCollider2D>();
 

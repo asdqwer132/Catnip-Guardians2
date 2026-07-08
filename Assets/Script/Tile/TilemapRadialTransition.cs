@@ -43,12 +43,15 @@ public class TilemapRadialTransition : MonoBehaviour
 
     private bool isCached;
 
+    public bool IsPlaying => transitionCoroutine != null;
+    public int CachedTileCount => cellDatas.Count;
+    public Tilemap TargetTilemap => targetTilemap;
+
     private struct CellData
     {
         public Vector3Int cellPosition;
         public Color originalColor;
         public TileFlags originalFlags;
-
         public float distance;
         public float lastAlpha;
     }
@@ -58,7 +61,7 @@ public class TilemapRadialTransition : MonoBehaviour
         if (targetTilemap == null)
             targetTilemap = GetComponent<Tilemap>();
 
-        CacheTiles();
+        EnsureCached();
         RecalculateDistances(GetDefaultCenter());
 
         if (hideOnAwake)
@@ -67,24 +70,17 @@ public class TilemapRadialTransition : MonoBehaviour
             SetVisibleImmediately();
     }
 
-    /// <summary>
-    /// centerTransform 위치에서 원형으로 맵을 나타냅니다.
-    /// </summary>
     public void PlayReveal()
     {
         PlayRevealFrom(GetDefaultCenter());
     }
 
-    /// <summary>
-    /// 지정한 월드 위치에서 원형으로 맵을 나타냅니다.
-    /// </summary>
     public void PlayRevealFrom(Vector3 worldPosition)
     {
         EnsureCached();
         StopCurrentTransition();
 
         RecalculateDistances(worldPosition);
-
         SetRadius(hiddenRadius);
 
         transitionCoroutine = StartCoroutine(
@@ -96,24 +92,17 @@ public class TilemapRadialTransition : MonoBehaviour
         );
     }
 
-    /// <summary>
-    /// 현재 중심을 기준으로 위쪽 맵을 원형으로 다시 숨깁니다.
-    /// </summary>
     public void PlayHide()
     {
         PlayHideFrom(GetDefaultCenter());
     }
 
-    /// <summary>
-    /// 지정한 월드 위치를 중심으로 위쪽 맵을 원형으로 숨깁니다.
-    /// </summary>
     public void PlayHideFrom(Vector3 worldPosition)
     {
         EnsureCached();
         StopCurrentTransition();
 
         RecalculateDistances(worldPosition);
-
         SetRadius(maxRadius);
 
         transitionCoroutine = StartCoroutine(
@@ -143,6 +132,11 @@ public class TilemapRadialTransition : MonoBehaviour
         SetRadius(hiddenRadius);
     }
 
+    public void StopTransition()
+    {
+        StopCurrentTransition();
+    }
+
     private IEnumerator TransitionRoutine(
         float startRadius,
         float endRadius,
@@ -159,8 +153,11 @@ public class TilemapRadialTransition : MonoBehaviour
 
             elapsedTime += deltaTime;
 
-            float normalizedTime = Mathf.Clamp01(elapsedTime / duration);
-            float curvedTime = radiusCurve.Evaluate(normalizedTime);
+            float normalizedTime =
+                Mathf.Clamp01(elapsedTime / duration);
+
+            float curvedTime =
+                radiusCurve.Evaluate(normalizedTime);
 
             float radius = Mathf.Lerp(
                 startRadius,
@@ -184,6 +181,9 @@ public class TilemapRadialTransition : MonoBehaviour
 
     private void CacheTiles()
     {
+        if (isCached)
+            return;
+
         if (targetTilemap == null)
             return;
 
@@ -196,11 +196,12 @@ public class TilemapRadialTransition : MonoBehaviour
             if (!targetTilemap.HasTile(cellPosition))
                 continue;
 
-            Color originalColor = targetTilemap.GetColor(cellPosition);
+            Color originalColor =
+                targetTilemap.GetColor(cellPosition);
+
             TileFlags originalFlags =
                 targetTilemap.GetTileFlags(cellPosition);
 
-            // 타일 색상 변경을 가능하게 만듭니다.
             targetTilemap.SetTileFlags(
                 cellPosition,
                 TileFlags.None
@@ -223,6 +224,9 @@ public class TilemapRadialTransition : MonoBehaviour
 
     private void RecalculateDistances(Vector3 worldCenter)
     {
+        if (targetTilemap == null)
+            return;
+
         currentCenter = worldCenter;
         maxRadius = 0f;
 
@@ -247,11 +251,18 @@ public class TilemapRadialTransition : MonoBehaviour
         }
 
         hiddenRadius = -Mathf.Max(edgeWidth, 0.01f);
-        maxRadius += Mathf.Max(edgeWidth, targetTilemap.cellSize.magnitude);
+
+        maxRadius += Mathf.Max(
+            edgeWidth,
+            targetTilemap.cellSize.magnitude
+        );
     }
 
     private void SetRadius(float radius)
     {
+        if (targetTilemap == null)
+            return;
+
         currentRadius = radius;
 
         for (int i = 0; i < cellDatas.Count; i++)
@@ -290,18 +301,16 @@ public class TilemapRadialTransition : MonoBehaviour
             cellDatas[i] = cellData;
         }
     }
-    public bool IsPlaying => transitionCoroutine != null;
 
-    public void StopTransition()
-    {
-        StopCurrentTransition();
-    }
     private Vector3 GetDefaultCenter()
     {
         if (centerTransform != null)
             return centerTransform.position;
 
-        return targetTilemap.transform.position;
+        if (targetTilemap != null)
+            return targetTilemap.transform.position;
+
+        return transform.position;
     }
 
     private void StopCurrentTransition()
@@ -321,7 +330,6 @@ public class TilemapRadialTransition : MonoBehaviour
 
     private void OnDestroy()
     {
-        // 실행 중 변경했던 TileFlags를 원래 상태로 되돌립니다.
         if (targetTilemap == null)
             return;
 
