@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eda0e8ff03735a14599958deea0a77a4, type: 3}
+  m_Name: MainTree 5
+  m_EditorClassIdentifier: Assembly-CSharp::PlantData
+  icon: {fileID: -1773102970, guid: efe67b985d5838242bcaa783eeb0f150, type: 3}
+  data: []
+  dataId: MainTree 5
+  dataType: 0
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  seed: {fileID: -1773102970, guid: efe67b985d5838242bcaa783eeb0f150, type: 3}
+  growing:
+  - {fileID: 6194069981415278876, guid: be3f29b035713b846ba58326f559edca, type: 3}
+  - {fileID: -7528199513585423542, guid: be3f29b035713b846ba58326f559edca, type: 3}
+  - {fileID: 1302930124755786175, guid: be3f29b035713b846ba58326f559edca, type: 3}
+  grownUp: {fileID: -1773102970, guid: efe67b985d5838242bcaa783eeb0f150, type: 3}
+  maxHP: 1000000
+  growTime: 500
+  reward: []
+  buyCosts: []
+  spawnNormalEnemyCount: 5
+  normalEnemies:
+  - dataSet: {fileID: 11400000, guid: 87d2731841b5f5d4096c16f91d360265, type: 2}
+    spawnWeight: 50
+    spawnRate: 1000
+  - dataSet: {fileID: 11400000, guid: e78442e74fd016b4684aa02e4841b223, type: 2}
+    spawnWeight: 30
+    spawnRate: 1000
+  - dataSet: {fileID: 11400000, guid: 1502456bd987cdd48af6678cce59a604, type: 2}
+    spawnWeight: 20
+    spawnRate: 1000
+  middleBossEnemies:
+    dataSet: {fileID: 11400000, guid: 189a0743b5546254aa30874d82bb2d9e, type: 2}
+    spawnWeight: 1
+    spawnRate: 1000
+  bossEnemies:
+    dataSet: {fileID: 11400000, guid: 16d1cbd92a9524649bfe3469b4d01056, type: 2}
+    spawnWeight: 1
+    spawnRate: 1000
