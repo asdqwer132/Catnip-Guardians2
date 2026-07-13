@@ -269,8 +269,8 @@ GameObject:
   - component: {fileID: 7564827998020386016}
   - component: {fileID: 2012091877062395094}
   - component: {fileID: 7410954833466767392}
-  - component: {fileID: 4783383456521828122}
   - component: {fileID: 129418771747262252}
+  - component: {fileID: -7782124105144231720}
   m_Layer: 5
   m_Name: RecipeTreeSlot
   m_TagString: Untagged
@@ -336,26 +336,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &4783383456521828122
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2048561311254323468}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f95ac522a0236a4fb5880587a2bae82, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RecipeSlorUI
-  icon: {fileID: 3909274231516367803}
-  nameText: {fileID: 0}
-  amountImage: {fileID: 0}
-  amountText: {fileID: 0}
-  gradeText: {fileID: 0}
-  fillButton: {fileID: 129418771747262252}
-  currentItem: {fileID: 0}
-  recipeManager: {fileID: 0}
 --- !u!114 &129418771747262252
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -400,6 +380,28 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &-7782124105144231720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2048561311254323468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c71a95d588e3d948be6607cfb606062, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RecipeTreeSlotUI
+  icon: {fileID: 3909274231516367803}
+  nameText: {fileID: 0}
+  amountImage: {fileID: 0}
+  amountText: {fileID: 0}
+  gradeText: {fileID: 0}
+  fillButton: {fileID: 129418771747262252}
+  currentItem: {fileID: 0}
+  recipeManager: {fileID: 0}
+  incomingLines: []
+  outgoingLines: []
 --- !u!1 &2869380065409900965
 GameObject:
   m_ObjectHideFlags: 0

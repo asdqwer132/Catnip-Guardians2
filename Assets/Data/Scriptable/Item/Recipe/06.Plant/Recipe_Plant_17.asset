@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8699dce0c4dd3846be4f88159460b12, type: 3}
+  m_Name: Recipe_Plant_17
+  m_EditorClassIdentifier: Assembly-CSharp::ItemRecipeData
+  itemGrade: 1
+  itemSeries: 6
+  materials:
+  - itemData: {fileID: 11400000, guid: d31a522d9d0210943bcb9f17a78403ce, type: 2}
+    amount: 1
+  - itemData: {fileID: 11400000, guid: 8bf4c504ff4487448ac965f3cbf0ccfe, type: 2}
+    amount: 1
+  resultItem: {fileID: 11400000, guid: 7c474745b6da35c4586dcb21409f9b6f, type: 2}

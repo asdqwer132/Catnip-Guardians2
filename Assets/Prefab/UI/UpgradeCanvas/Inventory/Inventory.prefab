@@ -1151,13 +1151,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventorySearchUI
   targetUI: {fileID: 0}
-  categoryDropdown: {fileID: 6775331939781044033}
-  seriesDropdown: {fileID: 1903179651365654446}
-  gradeDropdown: {fileID: 6293246203645402411}
   resetButton: {fileID: 7337857219413839177}
   resetCategory: 1
   resetSeries: 1
   resetGrade: 1
+  filter:
+    useCategory: 0
+    category: 0
+    useSeries: 0
+    series: 0
+    useGrade: 0
+    grade: 0
+  categoryDropdown: {fileID: 6775331939781044033}
+  seriesDropdown: {fileID: 1903179651365654446}
+  gradeDropdown: {fileID: 6293246203645402411}
+  allOptionText: ALL
 --- !u!1 &1317932155647662812
 GameObject:
   m_ObjectHideFlags: 0
@@ -1458,7 +1466,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 20
   m_Viewport: {fileID: 9142120842446639569}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 0}
@@ -1778,13 +1786,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventorySearchUI
   targetUI: {fileID: 0}
-  categoryDropdown: {fileID: 7528433444248560340}
-  seriesDropdown: {fileID: 2749842921790816626}
-  gradeDropdown: {fileID: 6180444509018309118}
   resetButton: {fileID: 7619449778245346731}
   resetCategory: 1
   resetSeries: 1
   resetGrade: 1
+  filter:
+    useCategory: 0
+    category: 0
+    useSeries: 0
+    series: 0
+    useGrade: 0
+    grade: 0
+  categoryDropdown: {fileID: 7528433444248560340}
+  seriesDropdown: {fileID: 2749842921790816626}
+  gradeDropdown: {fileID: 6180444509018309118}
+  allOptionText: ALL
 --- !u!1 &2323649314378266515
 GameObject:
   m_ObjectHideFlags: 0

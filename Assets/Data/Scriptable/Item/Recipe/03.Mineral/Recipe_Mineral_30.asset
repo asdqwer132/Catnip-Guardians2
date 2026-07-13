@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8699dce0c4dd3846be4f88159460b12, type: 3}
+  m_Name: Recipe_Mineral_30
+  m_EditorClassIdentifier: Assembly-CSharp::ItemRecipeData
+  itemGrade: 3
+  itemSeries: 3
+  materials:
+  - itemData: {fileID: 11400000, guid: ba61e0f066da0704983748b7ad073432, type: 2}
+    amount: 1
+  - itemData: {fileID: 11400000, guid: ba61e0f066da0704983748b7ad073432, type: 2}
+    amount: 1
+  - itemData: {fileID: 11400000, guid: 64fd1870a14287f48ace4badf666ae9e, type: 2}
+    amount: 1
+  resultItem: {fileID: 11400000, guid: 03f27e263853d3f438ec1c623319695e, type: 2}

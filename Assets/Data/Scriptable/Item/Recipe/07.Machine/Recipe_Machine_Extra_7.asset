@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8699dce0c4dd3846be4f88159460b12, type: 3}
+  m_Name: Recipe_Machine_Extra_7
+  m_EditorClassIdentifier: Assembly-CSharp::ItemRecipeData
+  itemGrade: 1
+  itemSeries: 7
+  materials:
+  - itemData: {fileID: 11400000, guid: 3b8445aa70524234cb159b0014dfaff9, type: 2}
+    amount: 1
+  - itemData: {fileID: 11400000, guid: e6ee98465480a6641a354f46b2a9a3be, type: 2}
+    amount: 1
+  resultItem: {fileID: 11400000, guid: 77cc01990f6ca44448cc7d5eb2771dfa, type: 2}

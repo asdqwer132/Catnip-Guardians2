@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8699dce0c4dd3846be4f88159460b12, type: 3}
+  m_Name: Recipe_Monster_30
+  m_EditorClassIdentifier: Assembly-CSharp::ItemRecipeData
+  itemGrade: 3
+  itemSeries: 4
+  materials:
+  - itemData: {fileID: 11400000, guid: e60ac12a24fc27445a3b2475e3e9b02f, type: 2}
+    amount: 1
+  - itemData: {fileID: 11400000, guid: 910bbf484020ccc4dbecc6be60be77d2, type: 2}
+    amount: 1
+  - itemData: {fileID: 11400000, guid: 8a0c2da0cb9780e48812da05259b30a2, type: 2}
+    amount: 1
+  - itemData: {fileID: 11400000, guid: b92301ef674575049abddee613602363, type: 2}
+    amount: 1
+  resultItem: {fileID: 11400000, guid: 73ea914e1d72f004ca691a942f8c405a, type: 2}

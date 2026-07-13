@@ -44,5 +44,10 @@ public enum ItemSeries
     None = 0,
     Weapon = 1,
     Food = 2,
-
+    Mineral = 3,
+    Monster = 4,
+    Present = 5,
+    Plant = 6,
+    Machine = 7,
+    Magic = 8,
 }

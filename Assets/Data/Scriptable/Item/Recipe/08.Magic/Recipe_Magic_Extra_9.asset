@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8699dce0c4dd3846be4f88159460b12, type: 3}
+  m_Name: Recipe_Magic_Extra_9
+  m_EditorClassIdentifier: Assembly-CSharp::ItemRecipeData
+  itemGrade: 2
+  itemSeries: 8
+  materials:
+  - itemData: {fileID: 11400000, guid: 25166d949ba53584ab57cddfb927a525, type: 2}
+    amount: 1
+  - itemData: {fileID: 11400000, guid: c2494c3acd7278841a66dd75017913d5, type: 2}
+    amount: 1
+  - itemData: {fileID: 11400000, guid: 0a0a6c302bfc4e6438bd7c0eac04f0c9, type: 2}
+    amount: 1
+  - itemData: {fileID: 11400000, guid: 976975cb7e2a48343a36423035f3e2bd, type: 2}
+    amount: 1
+  resultItem: {fileID: 11400000, guid: 1e922ccbffd93fe46bfd11eb3899adf8, type: 2}

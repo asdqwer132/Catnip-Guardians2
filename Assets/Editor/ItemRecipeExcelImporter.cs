@@ -36,7 +36,7 @@ public class ItemRecipeCsvImporter : EditorWindow
         EditorGUILayout.LabelField("CSV Recipe Importer", EditorStyles.boldLabel);
 
         EditorGUILayout.HelpBox(
-            "CSV 컬럼은 Result Name, Grade, Series, Material 1~4만 사용합니다.\n" +
+            "CSV 컬럼은 Result Name, Grade, Series, Material 1~4, Tier를 사용합니다.\n" +
             "Material 칸에 같은 아이템 이름을 반복해서 적으면 중복 재료로 들어갑니다.",
             MessageType.Info);
 
@@ -223,6 +223,17 @@ public class ItemRecipeCsvImporter : EditorWindow
             ItemGrade grade = ParseEnumOrFallback(row.grade, resultItem.grade);
             ItemSeries series = ParseEnumOrFallback(row.series, resultItem.series);
 
+            if (!int.TryParse(row.tier, out int tier) || tier < 1)
+            {
+                failed++;
+                LogError($"Row {csvRowNumber}: Tier must be an integer greater than 0: {row.tier}");
+
+                if (stopOnMissingItem)
+                    break;
+
+                continue;
+            }
+
             string assetName = MakeSafeAssetName("Recipe_" + row.resultName) + ".asset";
             string assetPath = CombineAssetPath(finalOutputFolderPath, assetName);
 
@@ -244,7 +255,7 @@ public class ItemRecipeCsvImporter : EditorWindow
                 Undo.RecordObject(recipe, "Update Item Recipe Data");
             }
 
-            ApplyRecipe(recipe, resultItem, grade, series, materialItems);
+            ApplyRecipe(recipe, resultItem, grade, series, tier, materialItems);
 
             if (isNew)
             {
@@ -269,11 +280,13 @@ public class ItemRecipeCsvImporter : EditorWindow
         ItemData resultItem,
         ItemGrade grade,
         ItemSeries series,
+        int tier,
         List<ItemData> materialItems)
     {
         recipe.resultItem = resultItem;
         recipe.itemGrade = grade;
         recipe.itemSeries = series;
+        recipe.tier = tier;
 
         recipe.materials = new RecipeMaterial[materialItems.Count];
 
@@ -420,6 +433,7 @@ public class ItemRecipeCsvImporter : EditorWindow
         public string resultName;
         public string grade;
         public string series;
+        public string tier;
         public readonly List<string> materialNames = new List<string>();
     }
 
@@ -438,6 +452,7 @@ public class ItemRecipeCsvImporter : EditorWindow
             RequireHeader(headerMap, "Result Name");
             RequireHeader(headerMap, "Grade");
             RequireHeader(headerMap, "Series");
+            RequireHeader(headerMap, "Tier");
 
             List<RecipeCsvRow> rows = new List<RecipeCsvRow>();
 
@@ -452,7 +467,8 @@ public class ItemRecipeCsvImporter : EditorWindow
                 {
                     resultName = GetCell(values, headerMap, "Result Name"),
                     grade = GetCell(values, headerMap, "Grade"),
-                    series = GetCell(values, headerMap, "Series")
+                    series = GetCell(values, headerMap, "Series"),
+                    tier = GetCell(values, headerMap, "Tier")
                 };
 
                 row.materialNames.Add(GetCell(values, headerMap, "Material 1"));

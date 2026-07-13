@@ -24,6 +24,7 @@ public class DefaultData : ScriptableObject, IUnlockable
     public Description[] data;
 
     [Header("Id Info")]
+    public string dataNumbering;
     public string dataId;
     public DataType dataType;
     public bool requireUnlock = false;
@@ -285,7 +286,11 @@ public class DefaultData : ScriptableObject, IUnlockable
     private void OnValidate()
     {
         if (string.IsNullOrEmpty(dataId))
-            dataId = name;
+        {
+            string text = dataNumbering + name;
+            text = text.Replace(" ", "");
+            dataId = text;
+        }
 
         languageDataMap = null;
     }

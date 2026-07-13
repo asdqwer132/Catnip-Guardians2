@@ -4,6 +4,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Recipe", menuName = "GameData/Item/Recipe")]
 public class ItemRecipeData : ScriptableObject, ISearchable
 {
+    public int tier;
     public ItemGrade itemGrade;
     public ItemSeries itemSeries;
     public RecipeMaterial[] materials;
