@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3785cda24587414f8274b2fa5e75dbf, type: 3}
+  m_Name: CraftItem
+  m_EditorClassIdentifier: Assembly-CSharp::CraftItemData
+  resultItem: {fileID: 11400000, guid: 92fd2e1927ea58b4ebf0b8d9dcb59f45, type: 2}
+  baseChancePercent: 0
+  chanceRules:
+  - condition: {fileID: 11400000, guid: 08b1f8fb214c0e84484e114abbc51a9b, type: 2}
+    chancePercent: 50
+  - condition: {fileID: 11400000, guid: 9b88ea09d34cc8c41a8e764b4a577021, type: 2}
+    chancePercent: 50

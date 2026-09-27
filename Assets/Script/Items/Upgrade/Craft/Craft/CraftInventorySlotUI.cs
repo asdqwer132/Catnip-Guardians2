@@ -2,21 +2,30 @@ using UnityEngine;
 
 public class CraftInventorySlotUI : ClickableItemSlotUI
 {
-    //UI 연결
+    // Optional explicit override for a slot that is not attached to the craft screen.
+    [SerializeField] private ItemCraftManager itemCraftManager;
+
     public override void OnClickSlot()
     {
         if (currentItem == null || currentItem.itemData == null)
+            return;
+
+        ItemCraftManager newManager = itemCraftManager;
+        if (newManager == null && CraftUIManager.Active != null)
+            newManager = CraftUIManager.Active.Manager;
+
+        if (newManager != null)
         {
-            Debug.LogWarning("조합에 넣을 아이템이 없습니다.");
+            newManager.AddMaterial(currentItem.itemData);
             return;
         }
 
-        if (ItemCombinationManager.instance == null)
+        if (GeneralCraftManager.instance != null && GeneralCraftManager.instance.currentManager != null)
         {
-            Debug.LogWarning("ItemCombinationManager가 없습니다.");
+            GeneralCraftManager.instance.GetCurrentManager().AddMaterial(currentItem.itemData);
             return;
         }
 
-        ItemCombinationManager.instance.AddMaterial(currentItem.itemData);
+        Debug.LogWarning("[CraftInventorySlotUI] No crafting manager is available.");
     }
 }
