@@ -46,7 +46,7 @@ public enum ItemSeries
     Food = 2,
     Mineral = 3,
     Monster = 4,
-    Present = 5,
+    Fishing = 5,
     Plant = 6,
     Machine = 7,
     Magic = 8,

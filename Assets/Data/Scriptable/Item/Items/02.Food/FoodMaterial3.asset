@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: FoodMaterial3
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 8379184114560303771, guid: dcab59d5f873a8f4d816745b88f42589, type: 3}
+  data:
+  - language: 1
+    dataName: "\uC2DD\uCE7C"
+    description: "\uC2DD\uC7AC\uB8CC\uB97C \uC790\uB974\uACE0 \uC190\uC9C8\uD558\uB294
+      \uC8FC\uBC29\uC6A9 \uCE7C"
+  - language: 0
+    dataName: kitchen knife
+    description: Kitchen knife for cutting and preparing ingredients
+  dataNumbering: 003
+  dataId: FoodMaterial3
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 0
+  category: 0
+  series: 2
+  weight: 1
+  cooldown: 1
+  effectDatas: []

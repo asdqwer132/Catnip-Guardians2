@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Magic20
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 8304090937515513328, guid: 5eeb02e818d1d2846b19d13baa52256f, type: 3}
+  data:
+  - language: 1
+    dataName: "\uB9C8\uBC95\uC0AC\uC758 \uBAA8\uC790"
+    description: "\uB9C8\uBC95\uC0AC\uC758 \uC704\uC5C4\uC774 \uAC10\uB3C4\uB294
+      \uBFB0\uC871\uD55C \uBAA8\uC790"
+  - language: 0
+    dataName: Wizard's Hat
+    description: A pointed hat exuding the majesty of a wizard
+  dataNumbering: 020
+  dataId: Magic20
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 1
+  category: 0
+  series: 8
+  weight: 1
+  cooldown: 1
+  effectDatas: []

@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Food17
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: -5544790156653359380, guid: 902d44bf1be93e14eb69a66a410960bc, type: 3}
+  data:
+  - language: 1
+    dataName: "\uCC28\uAC00\uC6B4 \uC218\uD504"
+    description: "\uC2DC\uC6D0\uD558\uAC8C \uC990\uAE30\uB294 \uBD80\uB4DC\uB7EC\uC6B4
+      \uC218\uD504 \uD55C \uADF8\uB987"
+  - language: 0
+    dataName: cold soup
+    description: A refreshing bowl of soft soup
+  dataNumbering: 017
+  dataId: Food17
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 1
+  category: 0
+  series: 2
+  weight: 1
+  cooldown: 1
+  effectDatas: []

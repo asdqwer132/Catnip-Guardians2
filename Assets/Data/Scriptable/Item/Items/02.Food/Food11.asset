@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Food11
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 8474638641336598268, guid: a9414f5c02d68f0478c99389f7ca06f4, type: 3}
+  data:
+  - language: 1
+    dataName: "\uCCB4\uB9AC"
+    description: "\uBD89\uC740 \uACFC\uC721\uC5D0 \uB2EC\uCF64\uD55C \uC999\uC774
+      \uCC2C \uC791\uC740 \uC5F4\uB9E4"
+  - language: 0
+    dataName: cherry
+    description: Small fruits with red flesh and sweet juice
+  dataNumbering: 011
+  dataId: Food11
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 0
+  category: 0
+  series: 2
+  weight: 1
+  cooldown: 1
+  effectDatas: []

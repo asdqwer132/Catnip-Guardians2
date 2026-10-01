@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Magic8
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 1430395678125258099, guid: d115d230022df464fbfee6726dc8525f, type: 3}
+  data:
+  - language: 1
+    dataName: "\uC18D\uC131 \uC2A4\uD0DC\uD5045"
+    description: "\uC18D\uC131\uC758 \uD798\uC774 \uBAB8\uCCB4\uC5D0 \uAE43\uB4E0
+      \uB9C8\uBC95 \uC9C0\uD321\uC774"
+  - language: 0
+    dataName: Attribute Staff 5
+    description: A magic wand imbued with the power of attributes embedded in the
+      body
+  dataNumbering: 008
+  dataId: Magic8
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 0
+  category: 0
+  series: 8
+  weight: 1
+  cooldown: 1
+  effectDatas: []

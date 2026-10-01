@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Mineral9
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 1760139976300763519, guid: ffd9c87dfb219444b8caf728eed65596, type: 3}
+  data:
+  - language: 1
+    dataName: "\uC801\uB3D9\uC8FC\uAD34"
+    description: "\uBD89\uC740 \uAD6C\uB9BF\uBE5B \uAD11\uC11D\uC744 \uC815\uB828\uD55C
+      \uAE08\uC18D \uC7AC\uB8CC"
+  - language: 0
+    dataName: Red copper ingot
+    description: Metal material refined from reddish-copper ore
+  dataNumbering: 009
+  dataId: Mineral9
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 0
+  category: 0
+  series: 3
+  weight: 1
+  cooldown: 1
+  effectDatas: []

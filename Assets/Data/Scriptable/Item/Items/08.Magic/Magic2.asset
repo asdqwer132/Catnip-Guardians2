@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Magic2
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 7065297747890864316, guid: 783e7514ac79e6543ae5c30bc87f6ba2, type: 3}
+  data:
+  - language: 1
+    dataName: "\uC800\uC8FC\uC778\uD615"
+    description: "\uBD88\uAE38\uD55C \uC800\uC8FC\uC758 \uAE30\uC6B4\uC774 \uC2A4\uBA70
+      \uC788\uB294 \uC778\uD615"
+  - language: 0
+    dataName: Cursed Puppet
+    description: A doll imbued with ominous curse energy
+  dataNumbering: 002
+  dataId: Magic2
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 0
+  category: 0
+  series: 8
+  weight: 1
+  cooldown: 1
+  effectDatas: []

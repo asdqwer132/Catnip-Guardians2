@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Fishing1
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: -5434585333855672725, guid: d3b9fe3b157447242b407b36c2f12ec4, type: 3}
+  data:
+  - language: 1
+    dataName: "\uC740\uBE5B \uC1A1\uC0AC\uB9AC"
+    description: "\uC791\uC740 \uBAB8\uC5D0 \uC740\uBE5B \uBE44\uB298\uC774 \uBC18\uC9DD\uC774\uB294
+      \uBB3C\uACE0\uAE30"
+  - language: 0
+    dataName: silver bush
+    description: A fish with small bodies covered in gleaming silver scales
+  dataNumbering: 001
+  dataId: Fishing1
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 0
+  category: 0
+  series: 5
+  weight: 1
+  cooldown: 1
+  effectDatas: []

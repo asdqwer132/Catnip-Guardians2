@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Fishing30
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: -4806154448895937617, guid: eba8a53388ee6c04493d8625c99964bb, type: 3}
+  data:
+  - language: 1
+    dataName: "\uD06C\uB77C\uCF04\uC758 \uB2E4\uB9AC"
+    description: "\uD06C\uB77C\uCF04\uC5D0\uAC8C\uC11C \uC5BB\uC740 \uAC70\uB300\uD558\uACE0
+      \uC9C8\uAE34 \uB2E4\uB9AC"
+  - language: 0
+    dataName: Kraken's Bridge
+    description: A huge and tough leg obtained from the Kraken
+  dataNumbering: 030
+  dataId: Fishing30
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 3
+  category: 0
+  series: 5
+  weight: 1
+  cooldown: 1
+  effectDatas: []

@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Food25
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: -1127478983481661016, guid: afa9934cf6c491e45a93ff1b048ffe54, type: 3}
+  data:
+  - language: 1
+    dataName: "\uCF00\uC774\uD06C"
+    description: "\uD3ED\uC2E0\uD55C \uBE75\uC5D0 \uB2EC\uCF64\uD55C \uC7A5\uC2DD\uC744
+      \uB354\uD55C \uAC04\uC2DD"
+  - language: 0
+    dataName: cake
+    description: A snack with a sweet garnish on fluffy bread
+  dataNumbering: 025
+  dataId: Food25
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 2
+  category: 0
+  series: 2
+  weight: 1
+  cooldown: 1
+  effectDatas: []

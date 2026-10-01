@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Food13
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 7940710352109492319, guid: acb6b52a17da0714d96416285fbfaa88, type: 3}
+  data:
+  - language: 1
+    dataName: "\uC625\uC218\uC218"
+    description: "\uB178\uB780 \uC54C\uAC31\uC774\uAC00 \uCD18\uCD18\uD558\uAC8C
+      \uB2EC\uB9B0 \uACE1\uBB3C \uC7AC\uB8CC"
+  - language: 0
+    dataName: corn
+    description: Grain ingredients densely packed with yellow grains
+  dataNumbering: 013
+  dataId: Food13
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 0
+  category: 0
+  series: 2
+  weight: 1
+  cooldown: 1
+  effectDatas: []

@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Mineral29
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 7310528450485334199, guid: c4d52392f330a1b45bdd8def65f5500e, type: 3}
+  data:
+  - language: 1
+    dataName: "\uC624\uB9AC\uD558\uB974\uCF58\uC8FC\uAD34"
+    description: "\uC804\uC124\uC758 \uAD11\uC11D\uC744 \uC815\uB828\uD55C \uADC0\uD55C
+      \uAE08\uC18D \uC7AC\uB8CC"
+  - language: 0
+    dataName: Oricharchon bar
+    description: Precious metal materials refined from legendary ores
+  dataNumbering: 029
+  dataId: Mineral29
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 3
+  category: 0
+  series: 3
+  weight: 1
+  cooldown: 1
+  effectDatas: []

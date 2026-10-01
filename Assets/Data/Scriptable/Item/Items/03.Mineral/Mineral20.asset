@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Mineral20
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 9130762911686870994, guid: 99f93139dd030eb48a4cebc65a237642, type: 3}
+  data:
+  - language: 1
+    dataName: "\uBE44\uCDE8\uC8FC\uAD34"
+    description: "\uBE44\uCDE8\uC758 \uB179\uBE5B\uC744 \uD488\uC740 \uB2E8\uB2E8\uD55C
+      \uAC00\uACF5 \uC7AC\uB8CC"
+  - language: 0
+    dataName: Jade Ingot
+    description: Hard processed materials with the green hue of jade
+  dataNumbering: 020
+  dataId: Mineral20
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 1
+  category: 0
+  series: 3
+  weight: 1
+  cooldown: 1
+  effectDatas: []

@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Weapon3
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: 9fac258aa5c4f46429961a5ae8cabd65, type: 3}
+  data:
+  - language: 1
+    dataName: "\uB179\uC2A8\uCE7C"
+    description: "\uC624\uB79C \uC138\uC6D4 \uB179\uC774 \uC2AC\uC5B4 \uB0A1\uC544
+      \uBC84\uB9B0 \uCE7C"
+  - language: 0
+    dataName: rusty knife
+    description: A knife rusted and worn over many years
+  dataNumbering: 003
+  dataId: Weapon3
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 0
+  category: 0
+  series: 1
+  weight: 1
+  cooldown: 1
+  effectDatas: []

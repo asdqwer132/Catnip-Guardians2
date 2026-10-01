@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Food19
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 6714586202874788677, guid: 72dc90e32a74f2f42b33101da892cfb9, type: 3}
+  data:
+  - language: 1
+    dataName: "\uBC14\uC0AD\uD55C \uD30C\uC774"
+    description: "\uBC14\uC0AD\uD55C \uAC89\uBA74\uC5D0 \uB9DB\uC788\uB294 \uC18D\uC744
+      \uB2F4\uC740 \uD30C\uC774"
+  - language: 0
+    dataName: Crispy pie
+    description: A pie with a crispy exterior and delicious inside.
+  dataNumbering: 019
+  dataId: Food19
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 1
+  category: 0
+  series: 2
+  weight: 1
+  cooldown: 1
+  effectDatas: []

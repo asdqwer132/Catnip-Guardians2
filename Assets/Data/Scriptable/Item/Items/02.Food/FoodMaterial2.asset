@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: FoodMaterial2
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: -4869591586548571963, guid: 6b8c719e6bf306a41990517abcdd65af, type: 3}
+  data:
+  - language: 1
+    dataName: "\uBC00\uAC00\uB8E8"
+    description: "\uBC00\uC744 \uACF1\uAC8C \uAC08\uC544 \uB9CC\uB4E0 \uD558\uC580
+      \uAC00\uB8E8 \uC7AC\uB8CC"
+  - language: 0
+    dataName: flour
+    description: White flour ingredient made by finely grinding wheat
+  dataNumbering: 002
+  dataId: FoodMaterial2
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 0
+  category: 0
+  series: 2
+  weight: 1
+  cooldown: 1
+  effectDatas: []

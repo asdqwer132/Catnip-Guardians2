@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: FishingMaterial3
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: -4016736640020951340, guid: db2cdbaa0034334418787b66060b14ee, type: 3}
+  data:
+  - language: 1
+    dataName: "\uD558\uAE09 \uB09A\uC2DC\uB300"
+    description: "\uB09A\uC2DC\uB97C \uCC98\uC74C \uBC30\uC6B8 \uB54C \uC4F0\uB294
+      \uAE30\uBCF8 \uB09A\uC2EF\uB300"
+  - language: 0
+    dataName: Low-grade fishing rod
+    description: Basic fishing rods used when learning to fish for the first time
+  dataNumbering: 003
+  dataId: FishingMaterial3
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 0
+  category: 0
+  series: 5
+  weight: 1
+  cooldown: 1
+  effectDatas: []

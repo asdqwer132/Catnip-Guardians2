@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Food10
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: -5396515401766535592, guid: 1e69b1222c110f94b9e3ff0a9e9ed006, type: 3}
+  data:
+  - language: 1
+    dataName: "\uB808\uBAAC"
+    description: "\uC0C1\uD07C\uD55C \uD5A5\uACFC \uAC15\uD55C \uC2E0\uB9DB\uC744
+      \uC9C0\uB2CC \uACFC\uC77C"
+  - language: 0
+    dataName: lemon
+    description: A fruit with a fresh aroma and strong acidity
+  dataNumbering: 010
+  dataId: Food10
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 0
+  category: 0
+  series: 2
+  weight: 1
+  cooldown: 1
+  effectDatas: []

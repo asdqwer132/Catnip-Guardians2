@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Food2
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: -5372944314309056676, guid: 57c3bacc02f157b40b22fe2182079adf, type: 3}
+  data:
+  - language: 1
+    dataName: "\uAC10\uC790"
+    description: "\uB545\uC18D\uC5D0\uC11C \uC790\uB780 \uD3EC\uC2AC\uD3EC\uC2AC\uD55C
+      \uBFCC\uB9AC \uC2DD\uC7AC\uB8CC"
+  - language: 0
+    dataName: potato
+    description: Fluffy root ingredients grown underground
+  dataNumbering: 002
+  dataId: Food2
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 0
+  category: 0
+  series: 2
+  weight: 1
+  cooldown: 1
+  effectDatas: []

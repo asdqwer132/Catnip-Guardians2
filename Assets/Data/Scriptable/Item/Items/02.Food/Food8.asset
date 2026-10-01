@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Food8
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: -8022664937610391690, guid: 989bc214488f3bc46b507e5ebc72eb6c, type: 3}
+  data:
+  - language: 1
+    dataName: "\uBC84\uC12F"
+    description: "\uCD09\uCD09\uD55C \uC232\uC5D0\uC11C \uC790\uB780 \uD5A5\uAE0B\uD55C
+      \uC2DD\uC6A9 \uBC84\uC12F"
+  - language: 0
+    dataName: mushroom
+    description: Fragrant edible mushrooms grown in moist forests
+  dataNumbering: 008
+  dataId: Food8
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 0
+  category: 0
+  series: 2
+  weight: 1
+  cooldown: 1
+  effectDatas: []

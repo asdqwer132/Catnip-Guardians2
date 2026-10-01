@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Weapon25
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: 48f4c766872be9d41adff753606046a4, type: 3}
+  data:
+  - language: 1
+    dataName: "\uD568\uC131\uC758 \uCC3D"
+    description: "\uC6A9\uB9F9\uD55C \uD568\uC131\uC774 \uC6B8\uB824 \uD37C\uC9C0\uB294
+      \uAE34 \uCC3D"
+  - language: 0
+    dataName: Window of Cry
+    description: Long spears echoing with brave shouts
+  dataNumbering: 025
+  dataId: Weapon25
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 2
+  category: 0
+  series: 1
+  weight: 1
+  cooldown: 1
+  effectDatas: []

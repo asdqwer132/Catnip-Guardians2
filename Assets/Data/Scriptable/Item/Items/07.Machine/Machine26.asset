@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Machine26
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: -514781307594678984, guid: 436d36459bcdb9f4c8af508127ccb0ba, type: 3}
+  data:
+  - language: 1
+    dataName: "\uD30C\uB791 LED"
+    description: "\uD478\uB978\uBE5B\uC73C\uB85C \uC791\uB3D9 \uC0C1\uD0DC\uB97C
+      \uC54C\uB9AC\uB294 \uBD80\uD488"
+  - language: 0
+    dataName: Blue LED
+    description: Parts that indicate operating status with blue light
+  dataNumbering: 026
+  dataId: Machine26
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 2
+  category: 0
+  series: 7
+  weight: 1
+  cooldown: 1
+  effectDatas: []

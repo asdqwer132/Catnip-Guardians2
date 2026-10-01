@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Magic1
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 8761859165611830717, guid: 4c5bfb02e0eafed49be60bd9a257042e, type: 3}
+  data:
+  - language: 1
+    dataName: "\uB9C8\uBC95 \uC2A4\uD06C\uB864"
+    description: "\uC2E0\uBE44\uD55C \uC8FC\uBB38\uC774 \uAE00\uB85C \uC0C8\uACA8\uC9C4
+      \uB9C8\uBC95 \uB450\uB8E8\uB9C8\uB9AC"
+  - language: 0
+    dataName: Magic Scroll
+    description: A magical scroll engraved with mysterious spells
+  dataNumbering: 001
+  dataId: Magic1
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 0
+  category: 0
+  series: 8
+  weight: 1
+  cooldown: 1
+  effectDatas: []

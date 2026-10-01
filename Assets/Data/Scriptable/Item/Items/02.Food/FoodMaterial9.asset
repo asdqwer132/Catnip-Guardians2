@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: FoodMaterial9
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 8561990067812065449, guid: 41aa565b80e9d784ebc249571085dc48, type: 3}
+  data:
+  - language: 1
+    dataName: "\uC870\uBBF8\uB8CC"
+    description: "\uC74C\uC2DD\uC5D0 \uD48D\uBBF8\uB97C \uB354\uD558\uB294 \uB9DB\uB0B4\uAE30
+      \uC7AC\uB8CC"
+  - language: 0
+    dataName: seasoning
+    description: Flavoring ingredients that add flavor to food
+  dataNumbering: 009
+  dataId: FoodMaterial9
+  dataType: 1
+  requireUnlock: 0
+  iconSearchFolderPath: Assets/Art/Icons/Items
+  findIconOnRebuild: 1
+  grade: 2
+  category: 0
+  series: 2
+  weight: 1
+  cooldown: 1
+  effectDatas: []
