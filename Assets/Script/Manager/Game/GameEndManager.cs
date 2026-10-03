@@ -15,6 +15,7 @@ public class GameEndManager : MonoBehaviour
 
     [Header("Result Panel")]
     [SerializeField] private GameObject resultPanel;
+    [SerializeField] private SceneMoveManager moveManager;
 
     [Header("Result Text")]
     [SerializeField] private TMP_Text titleText;
@@ -101,12 +102,13 @@ public class GameEndManager : MonoBehaviour
         if (!isGameEnded)
             return;
 
+        SetCursorDefault();
+        moveManager.GoUpgradeScene();
         //Time.timeScale = 1f;
 
-        HideResultPanel();
-        ShowUpgradePanel();
+        //HideResultPanel();
+        //ShowUpgradePanel();
 
-        SetCursorDefault();
     }
 
     public void CloseUpgradePanel()

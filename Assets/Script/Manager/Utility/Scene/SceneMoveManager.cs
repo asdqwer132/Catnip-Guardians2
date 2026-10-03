@@ -13,19 +13,12 @@ public class SceneMoveManager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance != null && instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        instance = this;
-        DontDestroyOnLoad(gameObject);
 
         if (loadingPanel != null)
             loadingPanel.SetActive(false);
     }
-
+    public void GoGameScene() => LoadScene("GameScene");
+    public void GoUpgradeScene() => LoadScene("UpgradeScene"); 
     public void LoadScene(string sceneName)
     {
         if (string.IsNullOrEmpty(sceneName))

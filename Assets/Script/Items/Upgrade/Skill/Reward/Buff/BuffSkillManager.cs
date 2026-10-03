@@ -8,7 +8,10 @@ public class RegisteredBuffSkillItem
     public ItemData itemData;
     public string bagId;
 
-    public RegisteredBuffSkillItem(ItemData itemData, string bagId)
+    public RegisteredBuffSkillItem(
+        ItemData itemData,
+        string bagId
+    )
     {
         this.itemData = itemData;
         this.bagId = bagId;
@@ -21,7 +24,7 @@ public class BuffSkillManager : MonoBehaviour
     public ItemEffectExecutor itemEffectExecutor;
 
     [Header("Bag Manager")]
-    public EquipmentBagManager equipmentBagManager;
+    public GameItemBagManager equipmentBagManager;
 
     [Header("Registered Buff Items")]
     [SerializeField]
@@ -33,20 +36,29 @@ public class BuffSkillManager : MonoBehaviour
         get { return registeredBuffItems; }
     }
 
-    public void RegisterBuffItem(ItemData itemData, string bagId)
+    public void RegisterBuffItem(
+        ItemData itemData,
+        string bagId
+    )
     {
         if (itemData == null)
             return;
 
         if (!ItemEffectExecutor.CanExecuteItemEffect(itemData))
         {
-            Debug.LogWarning(itemData.GetDataName() + " 은 실행 가능한 이펙트가 없습니다.");
+            Debug.LogWarning(
+                itemData.GetDataName() +
+                " 은 실행 가능한 이펙트가 없습니다."
+            );
+
             return;
         }
 
+        // 같은 아이템 + 같은 가방 중복 등록 방지
         for (int i = 0; i < registeredBuffItems.Count; i++)
         {
-            RegisteredBuffSkillItem registeredItem = registeredBuffItems[i];
+            RegisteredBuffSkillItem registeredItem =
+                registeredBuffItems[i];
 
             if (registeredItem == null)
                 continue;
@@ -59,10 +71,18 @@ public class BuffSkillManager : MonoBehaviour
         }
 
         registeredBuffItems.Add(
-            new RegisteredBuffSkillItem(itemData, bagId)
+            new RegisteredBuffSkillItem(
+                itemData,
+                bagId
+            )
         );
 
-        Debug.Log("버프 스킬 아이템 등록: " + itemData.GetDataName() + " / BagId: " + bagId);
+        Debug.Log(
+            "버프 스킬 아이템 등록: " +
+            itemData.GetDataName() +
+            " / BagId: " +
+            bagId
+        );
     }
 
     public void ExecuteAllRegisteredBuffItems(
@@ -72,13 +92,17 @@ public class BuffSkillManager : MonoBehaviour
     {
         if (itemEffectExecutor == null)
         {
-            Debug.LogWarning("BuffSkillManager에 ItemEffectExecutor가 없습니다.");
+            Debug.LogWarning(
+                "BuffSkillManager에 ItemEffectExecutor가 없습니다."
+            );
+
             return;
         }
 
         for (int i = 0; i < registeredBuffItems.Count; i++)
         {
-            RegisteredBuffSkillItem registeredItem = registeredBuffItems[i];
+            RegisteredBuffSkillItem registeredItem =
+                registeredBuffItems[i];
 
             if (registeredItem == null)
                 continue;
@@ -102,29 +126,40 @@ public class BuffSkillManager : MonoBehaviour
 
         EquipmentBag targetBag = null;
 
+        // bagId가 있으면
+        // GameScene의 EquipmentBag을 다시 찾아준다.
         if (!string.IsNullOrEmpty(registeredItem.bagId))
         {
             if (equipmentBagManager == null)
             {
-                Debug.LogWarning("EquipmentBagManager가 없습니다.");
+                Debug.LogWarning(
+                    "GameItemBagManager가 없습니다."
+                );
+
                 return;
             }
 
-            targetBag = equipmentBagManager.GetBagData(registeredItem.bagId);
+            targetBag =
+                equipmentBagManager.GetBagData(
+                    registeredItem.bagId
+                );
 
             if (targetBag == null)
             {
-                Debug.LogWarning("BagId에 해당하는 가방을 찾지 못했습니다: " + registeredItem.bagId);
+                Debug.LogWarning(
+                    "BagId에 해당하는 가방을 찾지 못했습니다: " +
+                    registeredItem.bagId
+                );
+
                 return;
             }
         }
 
-
         itemEffectExecutor.ExecuteItemEffect(
             registeredItem.itemData,
-            new Vector3(),
-            new Vector3(),
-            new Vector3(),
+            Vector3.zero,
+            Vector3.zero,
+            Vector3.zero,
             owner,
             targetBag,
             currentCycleId

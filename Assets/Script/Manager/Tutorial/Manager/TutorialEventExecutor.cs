@@ -236,6 +236,7 @@ public class TutorialEventExecutor : MonoBehaviour
     public void PauseGame()
     {
         Time.timeScale = 0f;
+
     }
 
     public void ResumeGame()

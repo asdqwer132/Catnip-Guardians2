@@ -4,7 +4,6 @@ public class GameManager : MonoBehaviour
 {
     [Header("Manager")]
     public InitManager initManager;
-    public ShopManager shopManager;
     public GameEndManager endManager;
     public RoundManager roundManager;
     public GameStatisticsManager statisticsManager;
@@ -12,7 +11,6 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        initManager.GameInit();
         RetryGame();
     }
 
@@ -77,16 +75,14 @@ public class GameManager : MonoBehaviour
         if (!endManager.IsGameEnded)
             return;
 
-        endManager.OpenUpgradePanelFromEnd();
 
         if (statisticsManager != null)
             statisticsManager.Confirm();
 
-        if (shopManager != null)
-            shopManager.InitShop();
 
         if (AudioManager.instance != null)
             AudioManager.instance.PlayBgm("Ambient 6 ");
+        endManager.OpenUpgradePanelFromEnd();
     }
 
     /// <summary>

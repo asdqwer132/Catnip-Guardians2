@@ -6,6 +6,7 @@ public class SkillTreeManager : MonoBehaviour
 {
     public static SkillTreeManager Instance { get; private set; }
 
+
     public BuffSkillManager buffSkillManager;
 
     public event Action OnSkillTreeChanged;

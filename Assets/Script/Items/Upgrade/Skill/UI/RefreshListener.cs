@@ -6,11 +6,11 @@ public abstract class RefreshListener : MonoBehaviour
     [SerializeField] private RefreshType listenType = RefreshType.All;
     private bool subscribed = false;
 
-
     protected virtual void Start()
     {
         Subscribe();
     }
+
     protected virtual void OnEnable()
     {
         Subscribe();
@@ -18,10 +18,7 @@ public abstract class RefreshListener : MonoBehaviour
 
     protected virtual void OnDisable()
     {
-        if (RefreshBroadcaster.Instance != null)
-        {
-            RefreshBroadcaster.Instance.OnRefreshRequested -= HandleRefresh;
-        }
+        Unsubscribe();
     }
 
     private void Subscribe()
@@ -30,14 +27,25 @@ public abstract class RefreshListener : MonoBehaviour
             return;
 
         if (RefreshBroadcaster.Instance == null)
-        {
-           // Debug.LogWarning($"{name} RefreshBroadcaster ¾øÀ½");
             return;
-        }
 
-        RefreshBroadcaster.Instance.OnRefreshRequested += Refresh;
+        RefreshBroadcaster.Instance.OnRefreshRequested += HandleRefresh;
         subscribed = true;
     }
+
+    private void Unsubscribe()
+    {
+        if (!subscribed)
+            return;
+
+        if (RefreshBroadcaster.Instance != null)
+        {
+            RefreshBroadcaster.Instance.OnRefreshRequested -= HandleRefresh;
+        }
+
+        subscribed = false;
+    }
+
     private void HandleRefresh(RefreshType refreshType)
     {
         if ((refreshType & listenType) == 0)

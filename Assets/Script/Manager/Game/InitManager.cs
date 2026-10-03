@@ -8,17 +8,16 @@ public class InitManager : MonoBehaviour
     public BuffManager buffManager;
     public BuffSkillManager buffSkillManager;
     public SubPlantManager subPlantManager;
-    public ItemInitManager itemInitManager;
-    public UnlockManager unlockManager;
     public EnemyManager enemyManager;
     public GameStatisticsManager statisticsManager;
 
+    [Header("DataCarrier")]
+    public GameItemBagManager bagManager;
+
     [Header("UI")]
-    public SkillTreeUI skillTreeUI;
     public BagUIInitializer bagUIInitializer;
     public SelectedBagPreviewUI selectedBagPreviewUI;
     public BuffUIManager buffUIManager;
-    public InventoryUI[] inventoryUIs;
 
     public bool isInited = false;
 
@@ -26,7 +25,13 @@ public class InitManager : MonoBehaviour
     {
         plantManager.SetPlants();
         enemyManager.Init(plantManager.CurrentPlant);
-
+        bagManager.Init();
+        if (GameSession.Instance != null)
+        {
+            GameSession.Instance.LoadSkillBuff(
+                buffSkillManager
+            );
+        }
         if (!isInited)
         {
             RoundInit();
@@ -39,15 +44,9 @@ public class InitManager : MonoBehaviour
         DamageArea.ClearAllActiveAreas();
         enemyManager.AllStop();
     }
-    public void GameInit()
-    {
-        itemInitManager.ApplyDefaultInventoryItems();
-        EquipmentBagManager.instance.Init();
-    }
     public void RoundInit()
     {
-        subPlantManager.ThrowAllItems();
-        unlockManager.Init();
+        //subPlantManager.ThrowAllItems();
         itemUseManager.Init();
         buffManager.ClearAllBuffs();
         buffSkillManager.ExecuteAllRegisteredBuffItems(buffSkillManager.gameObject, 0);
@@ -61,13 +60,8 @@ public class InitManager : MonoBehaviour
     {
         bagUIInitializer.InitAll();
         selectedBagPreviewUI.Init();
-        skillTreeUI.Init();
         buffUIManager.Init();
         OffscreenTargetIndicatorManager.Instance.ClearAll();
 
-        foreach (var item in inventoryUIs)
-        {
-            item.Init();
-        }
     }
 }

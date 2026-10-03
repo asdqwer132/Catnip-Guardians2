@@ -199,31 +199,31 @@ public class EquipmentBag : RefreshListener
     {
         if (item == null || item.itemData == null)
         {
-            Debug.LogWarning("ÀåÂøÇÒ ¾ÆÀÌÅÛÀÌ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
             return false;
         }
 
         if (item.amount <= 0)
         {
-            Debug.LogWarning("¾ÆÀÌÅÛ ¼ö·®ÀÌ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
             return false;
         }
 
         if (bagData == null)
         {
-            Debug.LogWarning("°¡¹æ µ¥ÀÌÅÍ°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
             return false;
         }
 
         if (GetCurrentEquippedCount() >= currentSlotCount)
         {
-            Debug.Log("°¡¹æ ½½·ÔÀÌ °¡µæ Ã¡½À´Ï´Ù.");
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã¡ï¿½ï¿½ï¿½Ï´ï¿½.");
             return false;
         }
 
         if (!CanAddWeight(item))
         {
-            Debug.Log("°¡¹æ ÃÖ´ë ¹«°Ô¸¦ ÃÊ°úÇÕ´Ï´Ù.");
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½Ô¸ï¿½ ï¿½Ê°ï¿½ï¿½Õ´Ï´ï¿½.");
             return false;
         }
 
@@ -292,6 +292,42 @@ public class EquipmentBag : RefreshListener
         return slotIndex >= 0 &&
                slotIndex < currentSlotCount &&
                slotIndex < equippedItems.Count;
+    }
+
+
+    public EquipmentBagSnapshot CreateSnapshot()
+    {
+        return new EquipmentBagSnapshot(this);
+    }
+
+    public void ApplySnapshot(EquipmentBagSnapshot snapshot)
+    {
+        if (snapshot == null)
+            return;
+
+        if (snapshot.bagData != null)
+            bagData = snapshot.bagData;
+
+        equippedItems.Clear();
+
+        for (int i = 0; i < maxSlotCount; i++)
+        {
+            if (snapshot.equippedItems != null &&
+                i < snapshot.equippedItems.Count &&
+                snapshot.equippedItems[i] != null)
+            {
+                InventoryItem savedItem = snapshot.equippedItems[i];
+                equippedItems.Add(new InventoryItem(savedItem.itemData, savedItem.amount));
+            }
+            else
+            {
+                equippedItems.Add(CreateEmptyItem());
+            }
+        }
+
+        RefreshLocks();
+        UpdateCurrentSlotCount();
+        RefreshUI();
     }
 
     private InventoryItem CreateEmptyItem()

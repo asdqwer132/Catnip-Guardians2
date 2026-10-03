@@ -36,7 +36,14 @@ public class CurrencyManager : MonoBehaviour
 
     private void Awake()
     {
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         instance = this;
+        DontDestroyOnLoad(gameObject);
 
         InitCurrencies();
         InitUIGroups();
