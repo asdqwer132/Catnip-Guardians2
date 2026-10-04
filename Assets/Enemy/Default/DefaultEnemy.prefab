@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 1506509451877719227}
   - component: {fileID: 2148724508074491466}
   - component: {fileID: 8286702315382605037}
+  - component: {fileID: 6783716009750710999}
   m_Layer: 0
   m_Name: DefaultEnemy
   m_TagString: Enemy
@@ -195,7 +196,7 @@ MonoBehaviour:
   attack: {fileID: 2430655365351377237}
   patternRunner: {fileID: 2148724508074491466}
   buffManager: {fileID: 0}
-  statRefreshInterval: 0.1
+  statusController: {fileID: 0}
   currentStat:
     speed: 2
     maxHp: 10
@@ -204,6 +205,7 @@ MonoBehaviour:
     attackCooldown: 1
     growEx: 10
   isFullyStopped: 0
+  isStunned: 0
 --- !u!114 &7500191993510811139
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -248,9 +250,6 @@ MonoBehaviour:
   animator: {fileID: 1451514569049703972}
   spriteRenderer: {fileID: 5335311948501192886}
   defaultFaceLeft: 0
-  setOrder: 1
-  baseOrder: 0
-  orderMultiplier: 100
   walkingBoolName: IsWalking
   attackTriggerName: Attack
   hitTriggerName: Hit
@@ -272,10 +271,9 @@ MonoBehaviour:
   attackRange: 1.5
   attackCooldown: 1
   attackDistanceTolerance: 0.15
-  faceTargetWhileInAttackRange: 1
-  faceTargetBeforeDamage: 1
   target: {fileID: 1506509451877719227}
   visual: {fileID: 7063470980320774977}
+  mover: {fileID: 0}
   isAttackStopped: 0
   isActionAttackPlaying: 0
 --- !u!114 &1506509451877719227
@@ -329,6 +327,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PooledObject
   poolGroup: 1
+--- !u!114 &6783716009750710999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5831428086637394887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b49afbcecb5528d4b81c9f46576faff7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyStatusController
+  stunImmune: 1
+  stunRemainingTime: 0
 --- !u!1001 &5215225404695743293
 PrefabInstance:
   m_ObjectHideFlags: 0

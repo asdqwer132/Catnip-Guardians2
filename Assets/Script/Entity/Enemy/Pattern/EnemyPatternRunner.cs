@@ -40,6 +40,7 @@ public class EnemyPatternRunner : MonoBehaviour
     private float pendingLethalDamage;
 
     public bool IsExecuting => isExecuting;
+    public bool IsHandlingLethalDamage => isHandlingLethalDamage;
     public bool IsBlockingDefaultAI => isExecuting && isBlockingDefaultAI;
 
     private void Awake()
@@ -206,9 +207,9 @@ public class EnemyPatternRunner : MonoBehaviour
         if (nextPattern == null)
             return null;
 
-        // ¿©±â¼­ ÄğÅ¸ÀÓ °É¸é ¾È µÊ.
-        // ÆĞÅÏ ½ÇÇà ½Ã°£ÀÌ ±ä °æ¿ì ½ÇÇà Áß¿¡ ÄğÅ¸ÀÓÀÌ ´Ù ´â¾Æ¼­
-        // µÎ ¹øÂ° ÆĞÅÏÀÌ ¶Ç °°ÀÌ ³ª°¨.
+        // ì—¬ê¸°ì„œ ì¿¨íƒ€ì„ ê±¸ë©´ ì•ˆ ë¨.
+        // íŒ¨í„´ ì‹¤í–‰ ì‹œê°„ì´ ê¸´ ê²½ìš° ì‹¤í–‰ ì¤‘ì— ì¿¨íƒ€ì„ì´ ë‹¤ ë‹³ì•„ì„œ
+        // ë‘ ë²ˆì§¸ íŒ¨í„´ì´ ë˜ ê°™ì´ ë‚˜ê°.
 
         return nextPattern;
     }

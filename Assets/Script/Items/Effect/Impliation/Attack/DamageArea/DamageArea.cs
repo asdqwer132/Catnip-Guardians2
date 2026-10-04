@@ -35,6 +35,12 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
     private readonly Dictionary<GameObject, float> periodicTimers =
         new Dictionary<GameObject, float>();
 
+    private HitEffectData[] onHitEffects;
+    private HitEffectApplyMode hitEffectApplyMode;
+    private ItemEffectContext hitSourceContext;
+    private readonly Dictionary<Enemy, int> hitEffectLifeIds =
+        new Dictionary<Enemy, int>();
+
     protected virtual void Awake()
     {
         if (circleCollider == null)
@@ -67,6 +73,9 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
 
         hitObjects.Clear();
         periodicTimers.Clear();
+        hitEffectLifeIds.Clear();
+        onHitEffects = null;
+        hitSourceContext = null;
 
         base.OnDisable();
     }
@@ -90,6 +99,7 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
         timer = 0f;
         hitObjects.Clear();
         periodicTimers.Clear();
+        hitEffectLifeIds.Clear();
 
         base.InitWithSnapshotAndDynamicBuff(
             snapshotAttackStat,
@@ -100,6 +110,24 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
         );
 
         ApplyRadius();
+    }
+
+    public void InitHitEffects(
+        HitEffectData[] effects,
+        HitEffectApplyMode applyMode,
+        ItemEffectContext context
+    )
+    {
+        onHitEffects = effects != null ? (HitEffectData[])effects.Clone() : null;
+        hitEffectApplyMode = applyMode;
+        hitEffectLifeIds.Clear();
+
+        // Executor의 Context는 여러 효과가 공유하므로 생성 시점의 값을 복사한다.
+        hitSourceContext = context == null ? null : new ItemEffectContext(
+            context.owner, context.sourceItemData, context.usePosition,
+            context.targetPosition, context.sourceBag, context.currentEffectData,
+            context.buffManager
+        );
     }
 
     protected override void ApplyStat(DamageAreaAttackStat currentStat)
@@ -115,7 +143,7 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
         ApplyRadius();
     }
 
-    private void ApplyRadius()
+    protected virtual void ApplyRadius()
     {
         radius = Mathf.Max(0.01f, radius);
 
@@ -142,7 +170,7 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
 
     #region Trigger
 
-    private void OnTriggerEnter2D(Collider2D other)
+    protected virtual void OnTriggerEnter2D(Collider2D other)
     {
         if (damageApplyMode == DamageApplyMode.HitOnce)
         {
@@ -160,7 +188,7 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
             TryHitPeriodicEnter(other);
     }
 
-    private void OnTriggerStay2D(Collider2D other)
+    protected virtual void OnTriggerStay2D(Collider2D other)
     {
         if (damageApplyMode != DamageApplyMode.Periodic)
             return;
@@ -168,7 +196,7 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
         TryHitPeriodicStay(other);
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    protected virtual void OnTriggerExit2D(Collider2D other)
     {
         GameObject targetObj = GetTargetObject(other);
 
@@ -201,8 +229,8 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
         if (enemy == null)
             return;
 
-        enemy.TakeDamage(damage);
         hitObjects.Add(targetObj);
+        ApplyHit(enemy);
     }
 
     private void TryHitAlways(Collider2D other)
@@ -215,7 +243,7 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
         if (enemy == null)
             return;
 
-        enemy.TakeDamage(damage);
+        ApplyHit(enemy);
     }
 
     private void TryHitPeriodicEnter(Collider2D other)
@@ -236,7 +264,7 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
         if (!periodicTimers.ContainsKey(targetObj))
             periodicTimers.Add(targetObj, 0f);
 
-        enemy.TakeDamage(damage);
+        ApplyHit(enemy);
     }
 
     private void TryHitPeriodicStay(Collider2D other)
@@ -264,7 +292,45 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
 
         periodicTimers[targetObj] = 0f;
 
+        ApplyHit(enemy);
+    }
+
+    private void ApplyHit(Enemy enemy)
+    {
+        if (enemy == null || enemy.IsDead || !enemy.isActiveAndEnabled)
+            return;
+
+        // 피해 처리 중 풀 반환/재생성/부활이 일어나도 새 생명에 효과를 옮기지 않는다.
+        int lifeId = enemy.HitEffectLifeId;
+        HitEffectData[] effects = onHitEffects;
+        ItemEffectContext sourceContext = hitSourceContext;
         enemy.TakeDamage(damage);
+
+        if (!isActiveAndEnabled || enemy == null || !enemy.CanReceiveHitEffects ||
+            enemy.HitEffectLifeId != lifeId || effects == null || effects.Length == 0)
+            return;
+
+        if (hitEffectApplyMode == HitEffectApplyMode.FirstHitOnly)
+        {
+            int appliedLifeId;
+            if (hitEffectLifeIds.TryGetValue(enemy, out appliedLifeId) &&
+                appliedLifeId == lifeId)
+                return;
+
+            // 확률 실패도 첫 명중 시도에 포함한다. 다음 주기에 다시 굴리지 않는다.
+            hitEffectLifeIds[enemy] = lifeId;
+        }
+
+        HitEffectContext context = new HitEffectContext(enemy, sourceContext);
+        for (int i = 0; i < effects.Length; i++)
+        {
+            if (!context.IsTargetValid || !isActiveAndEnabled)
+                break;
+
+            HitEffectData effect = effects[i];
+            if (effect != null)
+                effect.TryExecute(context);
+        }
     }
 
     private bool CanHit(Collider2D other)
@@ -280,7 +346,7 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
         if (enemy == null)
             return false;
 
-        return true;
+        return !enemy.IsDead && enemy.isActiveAndEnabled;
     }
 
     #endregion

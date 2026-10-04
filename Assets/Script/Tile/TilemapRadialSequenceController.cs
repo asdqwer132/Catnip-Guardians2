@@ -1,18 +1,17 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
-using UnityEngine.Tilemaps;
 
 public class TilemapRadialSequenceController : MonoBehaviour
 {
     [Header("Tilemaps")]
-    [Tooltip("0¹øÀº Ã³À½ º¸ÀÌ´Â ±âº» ¸ÊÀÔ´Ï´Ù. ÀÌÈÄ ¹è¿­ ¼ø¼­´ë·Î ³ªÅ¸³³´Ï´Ù.")]
+    [Tooltip("0ë²ˆì€ ì²˜ìŒ ë³´ì´ëŠ” ê¸°ë³¸ ë§µì…ë‹ˆë‹¤. ì´í›„ ë°°ì—´ ìˆœì„œëŒ€ë¡œ ë‚˜íƒ€ë‚©ë‹ˆë‹¤.")]
     [SerializeField]
     private TilemapRadialTransition[] tilemapTransitions;
 
     [Header("Center")]
-    [Tooltip("¸ğµç ¸ÊÀÌ °°Àº À§Ä¡¿¡¼­ ÆÛÁö°Ô ÇÒ °æ¿ì ÁöÁ¤ÇÕ´Ï´Ù.")]
+    [Tooltip("ëª¨ë“  ë§µì´ ê°™ì€ ìœ„ì¹˜ì—ì„œ í¼ì§€ê²Œ í•  ê²½ìš° ì§€ì •í•©ë‹ˆë‹¤.")]
     [SerializeField]
     private Transform sharedCenter;
 
@@ -32,11 +31,15 @@ public class TilemapRadialSequenceController : MonoBehaviour
     private bool useUnscaledTime = false;
 
     [Header("Previous Map")]
-    [Tooltip("ÀüÈ¯ ¿Ï·á ÈÄ ÀÌÀü ¸ÊÀÇ TilemapRenderer¸¦ ²ü´Ï´Ù.")]
+    [Tooltip("ì „í™˜ ì™„ë£Œ í›„ ì´ì „ ë§µì˜ TilemapRendererë¥¼ ë•ë‹ˆë‹¤.")]
     [SerializeField]
     private bool disablePreviousRenderer = false;
 
-    [Tooltip("ÀüÈ¯ ¿Ï·á ÈÄ ÀÌÀü ¸ÊÀÇ TilemapCollider2D¸¦ ²ü´Ï´Ù.")]
+    [Tooltip("ì´ì „ ê¸°ë³¸ ë§µì„ ë‚¨ê²¨ ë‘ë”ë¼ë„ ì´ì „ ë§µì˜ ë°ì½”ëŠ” ì „í™˜ ì™„ë£Œ í›„ ìˆ¨ê¹ë‹ˆë‹¤.")]
+    [SerializeField]
+    private bool hidePreviousDecorations = true;
+
+    [Tooltip("ì „í™˜ ì™„ë£Œ í›„ ì´ì „ ë§µì˜ TilemapCollider2Dë¥¼ ë•ë‹ˆë‹¤.")]
     [SerializeField]
     private bool disablePreviousCollider = true;
 
@@ -89,7 +92,7 @@ public class TilemapRadialSequenceController : MonoBehaviour
             if (transition == null)
             {
                 Debug.LogWarning(
-                    $"[Tilemap Sequence] Element {i}°¡ ºñ¾î ÀÖ½À´Ï´Ù.",
+                    $"[Tilemap Sequence] Element {i}ê°€ ë¹„ì–´ ìˆìŠµë‹ˆë‹¤.",
                     this
                 );
 
@@ -270,7 +273,7 @@ public class TilemapRadialSequenceController : MonoBehaviour
         if (nextTransition == null)
         {
             Debug.LogError(
-                $"[Tilemap Sequence] Element {nextIndex}°¡ ºñ¾î ÀÖ½À´Ï´Ù.",
+                $"[Tilemap Sequence] Element {nextIndex}ê°€ ë¹„ì–´ ìˆìŠµë‹ˆë‹¤.",
                 this
             );
 
@@ -281,8 +284,8 @@ public class TilemapRadialSequenceController : MonoBehaviour
         {
             Debug.LogWarning(
                 $"[Tilemap Sequence] " +
-                $"{nextIndex}¹ø ¸ÊÀÇ Ä³½ÌµÈ Å¸ÀÏ °³¼ö°¡ 0ÀÔ´Ï´Ù. " +
-                $"¿ÀºêÁ§Æ®: {nextTransition.name}",
+                $"{nextIndex}ë²ˆ ë§µì˜ ìºì‹±ëœ íƒ€ì¼ ê°œìˆ˜ê°€ 0ì…ë‹ˆë‹¤. " +
+                $"ì˜¤ë¸Œì íŠ¸: {nextTransition.name}",
                 nextTransition
             );
         }
@@ -338,6 +341,10 @@ public class TilemapRadialSequenceController : MonoBehaviour
                         false
                     );
                 }
+                else if (hidePreviousDecorations)
+                {
+                    previousTransition.SetDecorationRenderersEnabled(false);
+                }
 
                 if (disablePreviousCollider)
                 {
@@ -384,11 +391,7 @@ public class TilemapRadialSequenceController : MonoBehaviour
         if (transition == null)
             return;
 
-        TilemapRenderer tilemapRenderer =
-            transition.GetComponent<TilemapRenderer>();
-
-        if (tilemapRenderer != null)
-            tilemapRenderer.enabled = enabled;
+        transition.SetRenderersEnabled(enabled);
     }
 
     private void SetColliderEnabled(
@@ -399,10 +402,6 @@ public class TilemapRadialSequenceController : MonoBehaviour
         if (transition == null)
             return;
 
-        TilemapCollider2D tilemapCollider =
-            transition.GetComponent<TilemapCollider2D>();
-
-        if (tilemapCollider != null)
-            tilemapCollider.enabled = enabled;
+        transition.SetCollidersEnabled(enabled);
     }
 }

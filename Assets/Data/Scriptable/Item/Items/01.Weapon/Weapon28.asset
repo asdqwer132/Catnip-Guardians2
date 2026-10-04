@@ -25,11 +25,10 @@ MonoBehaviour:
   dataId: Weapon28
   dataType: 1
   requireUnlock: 0
-  iconSearchFolderPath: Assets/Art/Icons/Items
-  findIconOnRebuild: 1
   grade: 2
   category: 0
   series: 1
   weight: 1
   cooldown: 1
-  effectDatas: []
+  effectDatas:
+  - {fileID: 11400000, guid: 248f2cc5645ec3d488eb78dd0a2a1398, type: 2}

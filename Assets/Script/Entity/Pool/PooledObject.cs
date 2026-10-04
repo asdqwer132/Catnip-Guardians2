@@ -12,6 +12,10 @@ public class PooledObject : MonoBehaviour
 
     public PoolObjectGroup PoolGroup => poolGroup;
     public GameObject OriginalPrefab { get; private set; }
+    public ObjectPoolManager OwnerPool { get; private set; }
+    public bool HasPoolOwner { get; private set; }
+    public bool IsSpawned { get; private set; }
+    public int SpawnId { get; private set; }
 
     private IPoolable[] cachedPoolables;
 
@@ -19,6 +23,45 @@ public class PooledObject : MonoBehaviour
     {
         OriginalPrefab = prefab;
         CachePoolables();
+    }
+
+    public void SetPoolGroup(PoolObjectGroup group)
+    {
+        poolGroup = group;
+    }
+
+    internal void InitializePool(ObjectPoolManager owner, GameObject prefab)
+    {
+        OwnerPool = owner;
+        HasPoolOwner = owner != null;
+        IsSpawned = false;
+        SpawnId = 0;
+        SetOriginalPrefab(prefab);
+    }
+
+    internal bool TryBeginSpawn(ObjectPoolManager owner)
+    {
+        if (IsSpawned || OwnerPool != owner)
+            return false;
+
+        IsSpawned = true;
+        unchecked
+        {
+            SpawnId++;
+            if (SpawnId == 0)
+                SpawnId++;
+        }
+        return true;
+    }
+
+    internal bool TryBeginReturn(ObjectPoolManager owner)
+    {
+        if (!IsSpawned || OwnerPool != owner)
+            return false;
+
+        // 반환 콜백이나 OnDisable에서 재진입해도 큐에 한 번만 들어간다.
+        IsSpawned = false;
+        return true;
     }
 
     public IPoolable[] GetPoolables()

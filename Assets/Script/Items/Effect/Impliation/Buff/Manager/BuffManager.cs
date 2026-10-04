@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -93,6 +93,45 @@ public class BuffManager : MonoBehaviour
 
         NotifyBuffChanged(notifyScope);
     }
+    // 명중 효과용: Resolver를 재탐색하지 않고 맞은 대상에게만 적용한다.
+    public bool RegisterBuffForTarget(
+        BuffEffect effect,
+        ItemEffectContext itemContext,
+        IBuffTarget buffTarget
+    )
+    {
+        if (storage == null || effect == null || itemContext == null ||
+            buffTarget == null || buffTarget.BuffTargetObject == null)
+            return false;
+
+        if (!effect.HasValidModifier())
+            return false;
+
+        BuffInfo finalInfo = GetBuffedStatForItem(
+            effect.buffInfo, itemContext.sourceItemData, itemContext.sourceBag
+        );
+        if (finalInfo == null)
+            return false;
+
+        finalInfo.Clamp();
+
+        ActiveBuff activeBuff = new ActiveBuff(
+            effect.modifiers,
+            finalInfo,
+            itemContext.sourceItemData,
+            itemContext.sourceBag,
+            effect,
+            BuffTargetHandle.Target(buffTarget),
+            effect.includeSelf,
+            effect.showInUI
+        );
+
+        // 같은 공격에 다른 디버프가 있어도 BuffEffect별로 독립적으로 구분한다.
+        storage.AddOrRefresh(activeBuff, finalInfo);
+        NotifyBuffChanged(BuffNotifyScope.Target);
+        return true;
+    }
+
     public T GetBuffedStat<T>(
         T baseStat,
         BuffQueryContext context,
@@ -399,6 +438,73 @@ public class BuffManager : MonoBehaviour
     #endregion
 
     #region Buff Query List
+
+    // 이펙트 조건용 조회: 횟수를 소비하거나 버프 변경 알림을 발생시키지 않는다.
+    public bool HasActiveBuff(
+        BuffEffect effect,
+        BuffQueryContext context,
+        int minimumStack = 1
+    )
+    {
+        return HasActiveBuffInternal(effect, context, minimumStack, false);
+    }
+
+    // 가방 조건은 그 가방에 직접 등록된 버프만 확인한다.
+    // AllItems나 개별 아이템/시리즈 버프를 가방 버프로 간주하지 않는다.
+    public bool HasActiveBuffForBag(
+        BuffEffect effect,
+        EquipmentBag bag,
+        int minimumStack = 1
+    )
+    {
+        if (bag == null)
+            return false;
+
+        return HasActiveBuffInternal(
+            effect, BuffQueryContext.ForItem(null, bag), minimumStack, true
+        );
+    }
+
+    private bool HasActiveBuffInternal(
+        BuffEffect effect,
+        BuffQueryContext context,
+        int minimumStack,
+        bool bagOnly
+    )
+    {
+        if (storage == null || effect == null || context == null)
+            return false;
+
+        if (context.buffTarget != null)
+        {
+            if (context.buffTarget.BuffTargetObject == null)
+                return false;
+        }
+        else if (context.itemData == null && context.bag == null)
+        {
+            return false;
+        }
+
+        int requiredStack = Mathf.Max(1, minimumStack);
+        for (int i = 0; i < storage.activeBuffs.Count; i++)
+        {
+            ActiveBuff buff = storage.activeBuffs[i];
+            if (buff == null || buff.IsExpired || buff.target == null)
+                continue;
+
+            if (buff.sourceEffectData != effect || buff.stack < requiredStack)
+                continue;
+
+            if (bagOnly && buff.target.kind != BuffTargetKind.Bag)
+                continue;
+
+            // includeSelf, 가방, 시리즈, 전체 아이템, 대상 그룹 규칙을 그대로 따른다.
+            if (buff.MatchesQuery(context))
+                return true;
+        }
+
+        return false;
+    }
 
     public List<ActiveBuff> GetAllActiveBuffs()
     {

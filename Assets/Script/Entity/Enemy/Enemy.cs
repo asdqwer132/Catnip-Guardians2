@@ -14,6 +14,9 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     [Header("Buff")]
     public BuffManager buffManager;
 
+    [Header("Status")]
+    public EnemyStatusController statusController;
+
     [Header("Runtime Stat")]
     [SerializeField] private EnemyStat currentStat = new EnemyStat();
 
@@ -25,9 +28,14 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     private bool isActionDisabled = false;
 
     [SerializeField] private bool isFullyStopped = false;
+    [SerializeField] private bool isStunned = false;
+    private int hitEffectLifeId;
 
-    public bool IsActionDisabled => isActionDisabled;
-    public bool IsFullyStopped => isFullyStopped;
+    public bool IsActionDisabled => isActionDisabled || isStunned;
+    public bool IsFullyStopped => isFullyStopped || isActionDisabled || isStunned;
+    public bool IsStunned => isStunned;
+    public int HitEffectLifeId => hitEffectLifeId;
+    public bool CanReceiveHitEffects => isInitialized && !IsDead && isActiveAndEnabled;
 
     public UnityEngine.Object BuffTargetObject => this;
 
@@ -59,6 +67,27 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         cachedAnimator = GetComponentInChildren<Animator>();
 
         EnsureRuntimeStatInstances();
+        GetOrCreateStatusController();
+    }
+
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+
+        if (!isInitialized || IsDead)
+            return;
+
+        if (IsFullyStopped)
+            ApplyFullStopState();
+        else
+            TryReleaseControlStop();
+    }
+
+    protected override void OnDisable()
+    {
+        InvalidateHitEffectLife();
+        ClearHitEffectStatuses();
+        base.OnDisable();
     }
 
     private void OnDestroy()
@@ -75,14 +104,8 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         if (IsDead)
             return;
 
-        if (isFullyStopped)
+        if (IsFullyStopped)
             return;
-
-        if (isActionDisabled)
-        {
-            FullStop();
-            return;
-        }
 
         if (actorTarget == null || !actorTarget.HasTarget)
         {
@@ -150,14 +173,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
             return;
 
         isFullyStopped = false;
-
-        if (mover != null)
-            mover.SetMoveStopped(false);
-
-        if (attack != null)
-            attack.SetAttackStopped(false);
-
-        ResumeAnimation();
+        TryReleaseControlStop();
     }
 
     private void ApplyFullStopState()
@@ -166,10 +182,17 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
             patternRunner.ForceStopPattern();
 
         if (mover != null)
+        {
             mover.SetMoveStopped(true);
+            mover.ClearAllVelocity();
+            mover.Stop();
+        }
 
         if (attack != null)
+        {
             attack.SetAttackStopped(true);
+            attack.CancelAttack();
+        }
 
         if (visual != null)
         {
@@ -186,7 +209,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
             return;
 
         isActionDisabled = true;
-        FullStop();
+        ApplyFullStopState();
     }
 
     public void EnableAction()
@@ -195,7 +218,74 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
             return;
 
         isActionDisabled = false;
-        ReleaseFullStop();
+        TryReleaseControlStop();
+    }
+
+    public EnemyStatusController GetOrCreateStatusController()
+    {
+        if (statusController == null)
+            statusController = GetComponent<EnemyStatusController>();
+
+        if (statusController == null)
+            statusController = gameObject.AddComponent<EnemyStatusController>();
+
+        statusController.Bind(this);
+        return statusController;
+    }
+
+    // 수동 전체 정지, 행동 비활성화, 기절을 독립적으로 유지한다.
+    public bool SetStunned(bool value)
+    {
+        if (value && (!CanReceiveHitEffects ||
+            (patternRunner != null && patternRunner.IsHandlingLethalDamage)))
+            return false;
+
+        if (isStunned == value)
+            return true;
+
+        isStunned = value;
+        if (value)
+            ApplyFullStopState();
+        else
+            TryReleaseControlStop();
+
+        return true;
+    }
+
+    private void TryReleaseControlStop()
+    {
+        if (IsFullyStopped || IsDead || !isInitialized || !isActiveAndEnabled)
+            return;
+
+        if (mover != null)
+            mover.SetMoveStopped(false);
+
+        if (attack != null)
+            attack.SetAttackStopped(false);
+
+        ResumeAnimation();
+    }
+
+    private void ClearHitEffectStatuses()
+    {
+        if (statusController != null)
+            statusController.ClearAllStatuses();
+        else
+            SetStunned(false);
+    }
+
+    private void InvalidateHitEffectLife()
+    {
+        unchecked { hitEffectLifeId++; }
+    }
+
+    protected override void ResetActorStateForReuse()
+    {
+        InvalidateHitEffectLife();
+        ClearHitEffectStatuses();
+        if (buffManager != null)
+            buffManager.ClearBuffsForTarget(this);
+        base.ResetActorStateForReuse();
     }
 
     private void PauseAnimation()
@@ -231,6 +321,8 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     public void OnSpawnedFromPool()
     {
         isInitialized = false;
+        InvalidateHitEffectLife();
+        ClearHitEffectStatuses();
         isActionDisabled = false;
         isFullyStopped = false;
         previousAnimatorSpeed = 1f;
@@ -255,6 +347,8 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     public void OnReturnedToPool()
     {
         isInitialized = false;
+        InvalidateHitEffectLife();
+        ClearHitEffectStatuses();
         isActionDisabled = false;
         isFullyStopped = false;
 
@@ -295,6 +389,8 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     public void Init(IDamageable target, BuffManager injectedBuffManager, EnemyDataSet dataSet)
     {
+        InvalidateHitEffectLife();
+        ClearHitEffectStatuses();
         buffManager = injectedBuffManager;
 
         isActionDisabled = false;
@@ -506,6 +602,8 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     protected override void OnDeathStarted()
     {
+        InvalidateHitEffectLife();
+        ClearHitEffectStatuses();
         StopMove();
         CancelAttack();
 

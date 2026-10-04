@@ -15,6 +15,8 @@ public class EnemyStat : IGameStat<EnemyStat>
     public float attackRange = 1.5f;
     public float attackCooldown = 1f;
 
+
+
     [Header("Reward")]
     public float growEx = 10f;
 

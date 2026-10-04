@@ -15,6 +15,10 @@ public class DamageAreaAttackEffect : ItemEffectData
     [Header("Damage Area")]
     public DamageApplyMode damageApplyMode = DamageApplyMode.HitOnce;
 
+    [Header("On Hit Effects")]
+    public HitEffectData[] onHitEffects;
+    public HitEffectApplyMode hitEffectApplyMode = HitEffectApplyMode.FirstHitOnly;
+
     public override void ExecuteEffect(ItemEffectContext context)
     {
         if (context == null || context.sourceItemData == null)
@@ -59,7 +63,7 @@ public class DamageAreaAttackEffect : ItemEffectData
         return attackStat;
     }
 
-    private void InitDamageArea(DamageArea damageArea, ItemEffectContext context)
+    protected void InitDamageArea(DamageArea damageArea, ItemEffectContext context)
     {
         if (damageArea == null || context == null)
             return;
@@ -90,6 +94,8 @@ public class DamageAreaAttackEffect : ItemEffectData
             buffManager: context.buffManager,
             owner: context.owner
         );
+
+        damageArea.InitHitEffects(onHitEffects, hitEffectApplyMode, context);
     }
 
     protected override float GetImpactRadius(ItemEffectContext context)

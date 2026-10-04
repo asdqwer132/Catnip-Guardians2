@@ -19,6 +19,9 @@ public class InitManager : MonoBehaviour
     public SelectedBagPreviewUI selectedBagPreviewUI;
     public BuffUIManager buffUIManager;
 
+    [Header("Tester")]
+    public ItemTester itemTester;
+
     public bool isInited = false;
 
     public void InitAll()
@@ -26,6 +29,7 @@ public class InitManager : MonoBehaviour
         plantManager.SetPlants();
         enemyManager.Init(plantManager.CurrentPlant);
         bagManager.Init();
+
         if (GameSession.Instance != null)
         {
             GameSession.Instance.LoadSkillBuff(
@@ -37,6 +41,8 @@ public class InitManager : MonoBehaviour
             RoundInit();
             isInited = true;    
         }
+
+        itemTester.Init();
     }
 
     public void ResetEntity()
