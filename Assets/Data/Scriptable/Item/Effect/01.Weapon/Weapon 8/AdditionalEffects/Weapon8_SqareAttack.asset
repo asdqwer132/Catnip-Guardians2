@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f2756bcb9ae28c4bb217094358a5414, type: 3}
+  m_Name: Weapon8_SqareAttack
+  m_EditorClassIdentifier: Assembly-CSharp::DirectionalRectangleAttackEffect
+  impactVfxPrefab: {fileID: 0}
+  impactBaseScale: {x: 1, y: 1, z: 1}
+  scaleImpactVfxByRadius: 1
+  useAnimatorClipLifeTime: 1
+  audioSource: 
+  impactVfxLifeTime: 1
+  attackStat:
+    damageAreaPower: 10
+    damageAreaInterval: 0.5
+    damageAreaRange: 0.5
+    damageAreaLifeTime: 0.5
+  attackPrefab: {fileID: 6979488993338471827, guid: eb9a5a68d579cba43b0f25e62589538f, type: 3}
+  damageApplyMode: 0
+  onHitEffects: []
+  hitEffectApplyMode: 0
+  attackWidth: 1
+  attackHeight: 4

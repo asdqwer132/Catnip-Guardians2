@@ -31,10 +31,13 @@ public class ActorMover : MonoBehaviour
     [SerializeField] private Vector2 finalVelocity;
 
     private bool hasBaseMoveCommandThisFrame;
+    private ActorControlledMovement controlledMovement;
 
     private const float FaceThreshold = 0.01f;
 
-    public bool IsMoving => isMoving;
+    public bool IsMoving => isMoving || controlledMovement.IsActive;
+    public bool IsMovementControlled => controlledMovement.IsActive;
+    public bool IsBaseMovementBlocked => controlledMovement.SuppressBaseMovement;
     public bool IsMoveStopped => isMoveStopped;
     public Vector2 CurrentMoveDirection => currentMoveDirection;
     public Vector2 LastMoveDirection => lastMoveDirection;
@@ -46,6 +49,9 @@ public class ActorMover : MonoBehaviour
     {
         get
         {
+            if (controlledMovement.IsActive)
+                return true;
+
             if (isMoving)
                 return true;
 
@@ -84,6 +90,12 @@ public class ActorMover : MonoBehaviour
         TickMove(Time.deltaTime);
     }
 
+    private void OnDisable()
+    {
+        ClearAllVelocity();
+        ResetFrameCommand();
+    }
+
     private void TickMove(float deltaTime)
     {
         if (deltaTime <= 0f)
@@ -92,7 +104,7 @@ public class ActorMover : MonoBehaviour
             return;
         }
 
-        if (isMoveStopped)
+        if (isMoveStopped && !controlledMovement.AllowWhileStopped)
         {
             ClearAllVelocity();
             SetIdleVisual();
@@ -100,7 +112,15 @@ public class ActorMover : MonoBehaviour
             return;
         }
 
-        if (!hasBaseMoveCommandThisFrame)
+        bool suppressBase = isMoveStopped || controlledMovement.SuppressBaseMovement;
+        Vector2 controlledDelta = controlledMovement.Tick(transform.position, deltaTime);
+
+        if (suppressBase)
+        {
+            desiredBaseVelocity = Vector2.zero;
+            currentBaseVelocity = Vector2.zero;
+        }
+        else if (!hasBaseMoveCommandThisFrame)
             desiredBaseVelocity = Vector2.zero;
 
         if (useAcceleration)
@@ -121,11 +141,14 @@ public class ActorMover : MonoBehaviour
         }
 
         finalVelocity = currentBaseVelocity + externalVelocity;
-
+        Vector2 totalDelta = controlledDelta;
         if (finalVelocity.sqrMagnitude > StopVelocityThresholdSqr)
+            totalDelta += finalVelocity * deltaTime;
+
+        finalVelocity = totalDelta / deltaTime;
+        if (totalDelta.sqrMagnitude > 0.0000001f)
         {
-            Vector2 delta = finalVelocity * deltaTime;
-            ApplyPositionDelta(delta);
+            ApplyPositionDelta(totalDelta);
         }
         else
         {
@@ -181,7 +204,7 @@ public class ActorMover : MonoBehaviour
 
     private bool CanMove()
     {
-        return !isMoveStopped;
+        return !isMoveStopped && !controlledMovement.SuppressBaseMovement;
     }
 
     private bool CanFaceByMovement()
@@ -374,6 +397,37 @@ public class ActorMover : MonoBehaviour
 
     #region External Move
 
+    public bool TryStartMovementControl(ActorMovementControlRequest request)
+    {
+        if (!isActiveAndEnabled || (isMoveStopped && !request.allowWhileStopped))
+            return false;
+
+        if (!controlledMovement.TryStart(request, transform.position))
+            return false;
+
+        if (request.suppressBaseMovement)
+            ClearBaseVelocity();
+        if (request.clearExternalVelocity)
+            ClearExternalVelocity();
+        return true;
+    }
+
+    public void CancelMovementControl()
+    {
+        controlledMovement.Clear();
+    }
+
+    public bool IsMovementControlledBy(object source)
+    {
+        return controlledMovement.IsControlledBy(source);
+    }
+
+    public void CancelMovementControl(object source)
+    {
+        if (controlledMovement.IsControlledBy(source))
+            controlledMovement.Clear();
+    }
+
     public void AddExternalVelocity(Vector2 velocity)
     {
         if (!CanMove())
@@ -430,6 +484,7 @@ public class ActorMover : MonoBehaviour
 
     public void ClearAllVelocity()
     {
+        CancelMovementControl();
         desiredBaseVelocity = Vector2.zero;
         currentBaseVelocity = Vector2.zero;
         externalVelocity = Vector2.zero;

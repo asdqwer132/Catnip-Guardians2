@@ -17,6 +17,12 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     [Header("Status")]
     public EnemyStatusController statusController;
 
+    [Header("Movement Control")]
+    [Tooltip("이 적은 아이템의 밀어내기/끌어당기기에 면역입니다.")]
+    public bool movementControlImmune;
+    [Tooltip("0: 전부 적용, 1: 완전 저항. 강도만 감소시킵니다.")]
+    [Range(0f, 1f)] public float movementControlResistance;
+
     [Header("Runtime Stat")]
     [SerializeField] private EnemyStat currentStat = new EnemyStat();
 
@@ -85,6 +91,8 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     protected override void OnDisable()
     {
+        if (mover != null)
+            mover.CancelMovementControl();
         InvalidateHitEffectLife();
         ClearHitEffectStatuses();
         base.OnDisable();
@@ -103,6 +111,15 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
         if (IsDead)
             return;
+
+        if (mover != null && mover.IsMovementControlled)
+        {
+            // 사망 패턴을 밀기/당기기로 지연하거나 취소하지 않는다.
+            if (patternRunner != null && patternRunner.IsHandlingLethalDamage)
+                mover.CancelMovementControl();
+            else if (mover.IsBaseMovementBlocked)
+                return;
+        }
 
         if (IsFullyStopped)
             return;
@@ -157,6 +174,29 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     #endregion
 
     #region Control
+
+    public bool TryApplyMovementControl(
+        ActorMovementControlRequest request,
+        bool interruptPattern = true,
+        bool interruptAttack = true
+    )
+    {
+        if (!CanReceiveHitEffects || movementControlImmune || mover == null ||
+            (patternRunner != null && patternRunner.IsHandlingLethalDamage))
+            return false;
+
+        if (float.IsNaN(movementControlResistance) || float.IsInfinity(movementControlResistance))
+            return false;
+        request.strength *= 1f - Mathf.Clamp01(movementControlResistance);
+        if (!mover.TryStartMovementControl(request))
+            return false;
+
+        if (interruptPattern && patternRunner != null)
+            patternRunner.ForceStopPattern();
+        if (interruptAttack && attack != null)
+            attack.CancelAttack();
+        return true;
+    }
 
     public void FullStop()
     {

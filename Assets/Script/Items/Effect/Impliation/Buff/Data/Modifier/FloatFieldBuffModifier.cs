@@ -1,16 +1,20 @@
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Float Field Buff Modifier", menuName = "GameData/Buff/Modifier/Float Field")]
 public class FloatFieldBuffModifier : BuffModifier
 {
+    private readonly Dictionary<Type, FieldInfo> fieldCache = new Dictionary<Type, FieldInfo>();
+    private string cachedFieldName;
     [Header("Target Field")]
     public string fieldName;
 
     [Header("Value")]
     public float addValue;
 
-    [Tooltip("0.5 = 1.5¹è, 1 = 2¹è, 2 = 3¹è")]
+    [Tooltip("0.5 = 1.5ë°°, 1 = 2ë°°, 2 = 3ë°°")]
     public float multiplyValue;
 
     public override bool CanApplyTo(object stat, BuffQueryContext query)
@@ -34,6 +38,9 @@ public class FloatFieldBuffModifier : BuffModifier
 
     public override void ApplyAdditiveTo(object stat, int stack, BuffQueryContext query)
     {
+        if (addValue == 0f)
+            return;
+
         FieldInfo field = GetTargetField(stat);
         if (field == null)
             return;
@@ -45,6 +52,9 @@ public class FloatFieldBuffModifier : BuffModifier
 
     public override void ApplyMultiplicativeTo(object stat, int stack, BuffQueryContext query)
     {
+        if (multiplyValue == 0f)
+            return;
+
         FieldInfo field = GetTargetField(stat);
         if (field == null)
             return;
@@ -65,11 +75,21 @@ public class FloatFieldBuffModifier : BuffModifier
         if (stat == null || string.IsNullOrEmpty(fieldName))
             return null;
 
-        FieldInfo field = stat.GetType().GetField(fieldName, BindingFlags.Public | BindingFlags.Instance);
+        if (cachedFieldName != fieldName)
+        {
+            cachedFieldName = fieldName;
+            fieldCache.Clear();
+        }
 
-        if (field == null || field.FieldType != typeof(float))
-            return null;
-
+        Type type = stat.GetType();
+        FieldInfo field;
+        if (!fieldCache.TryGetValue(type, out field))
+        {
+            field = type.GetField(fieldName, BindingFlags.Public | BindingFlags.Instance);
+            if (field != null && field.FieldType != typeof(float))
+                field = null;
+            fieldCache.Add(type, field);
+        }
         return field;
     }
 }

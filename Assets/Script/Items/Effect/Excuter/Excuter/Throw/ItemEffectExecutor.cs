@@ -18,7 +18,7 @@ public class ItemEffectExecutor : MonoBehaviour
         int currentCycleId
     )
     {
-        if (itemData == null)
+        if (!CanExecuteItemEffect(itemData))
             return;
 
         usePosition.z = 0f;
@@ -36,7 +36,22 @@ public class ItemEffectExecutor : MonoBehaviour
             direction: direction
         );
 
-        ExecuteItemEffectDatas(itemData, context);
+        BuffManager manager = context.buffManager;
+        BuffItemUseToken token = manager != null
+            ? manager.BeginItemUse(itemData, sourceBag)
+            : default(BuffItemUseToken);
+        bool succeeded = false;
+        try
+        {
+            ExecuteItemEffectDatas(itemData, context);
+            succeeded = true;
+        }
+        finally
+        {
+            // 마지막 1회까지 모든 효과에 버프를 적용한 후 정확히 한 번 차감한다.
+            if (manager != null)
+                manager.EndItemUse(token, succeeded);
+        }
     }
 
     private void ExecuteItemEffectDatas(ItemData itemData, ItemEffectContext context)

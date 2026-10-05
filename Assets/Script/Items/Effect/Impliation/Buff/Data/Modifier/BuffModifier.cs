@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
 public abstract class BuffModifier : ScriptableObject
 {
+    private readonly Dictionary<Type, MethodInfo> clampMethods = new Dictionary<Type, MethodInfo>();
     [Header("Optional Filter")]
     [Tooltip("비워두면 모든 스탯 타입에 적용 시도. 예: AttackStat, EnemyStat, EnemySpawnerStat, HealStat")]
     public string targetStatTypeName;
@@ -38,7 +40,14 @@ public abstract class BuffModifier : ScriptableObject
         if (stat == null)
             return;
 
-        MethodInfo method = stat.GetType().GetMethod("Clamp", BindingFlags.Public | BindingFlags.Instance);
+        Type type = stat.GetType();
+        MethodInfo method;
+        if (!clampMethods.TryGetValue(type, out method))
+        {
+            method = type.GetMethod("Clamp", BindingFlags.Public | BindingFlags.Instance,
+                null, Type.EmptyTypes, null);
+            clampMethods.Add(type, method);
+        }
         if (method != null)
             method.Invoke(stat, null);
     }

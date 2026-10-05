@@ -1,4 +1,4 @@
-﻿public class BuffTicker
+public class BuffTicker
 {
     private readonly BuffStorage storage;
 
@@ -14,15 +14,15 @@
 
         bool changed = false;
 
-        // 일반 버프만 시간 경과와 만료를 처리합니다.
-        // 무한 버프는 Tick 대상이 아닙니다.
-        for (int i = storage.normalBuffs.Count - 1; i >= 0; i--)
+        // 시간제 버프만 매 프레임 처리한다.
+        for (int i = storage.timedBuffs.Count - 1; i >= 0; i--)
         {
-            ActiveBuff buff = storage.normalBuffs[i];
+            ActiveBuff buff = storage.timedBuffs[i];
 
             if (buff == null)
             {
-                storage.normalBuffs.RemoveAt(i);
+                storage.timedBuffs.RemoveAt(i);
+                storage.normalBuffs.Remove(null);
                 storage.activeBuffs.Remove(null);
                 changed = true;
                 continue;
@@ -37,17 +37,29 @@
             changed = true;
         }
 
-        // 무한 버프에는 만료 처리를 하지 않고 null만 정리합니다.
-        for (int i = storage.infiniteBuffs.Count - 1; i >= 0; i--)
+        // 외부 코드가 ActiveBuff.ConsumeUse()를 직접 호출한 경우도 만료를 정리한다.
+        // 정상 아이템 실행 경로는 EndItemUse에서 즉시 제거한다.
+        if (storage.HasExpiredUseCounts)
         {
-            ActiveBuff buff = storage.infiniteBuffs[i];
+            storage.HasExpiredUseCounts = false;
+            for (int i = storage.useCountBuffs.Count - 1; i >= 0; i--)
+            {
+                ActiveBuff buff = storage.useCountBuffs[i];
+                if (buff != null && !buff.IsExpired)
+                    continue;
 
-            if (buff != null)
-                continue;
-
-            storage.infiniteBuffs.RemoveAt(i);
-            storage.activeBuffs.Remove(null);
-            changed = true;
+                if (buff == null)
+                {
+                    storage.useCountBuffs.RemoveAt(i);
+                    storage.normalBuffs.Remove(null);
+                    storage.activeBuffs.Remove(null);
+                }
+                else
+                {
+                    storage.RemoveBuff(buff);
+                }
+                changed = true;
+            }
         }
 
         storage.RemoveNullRegisters();

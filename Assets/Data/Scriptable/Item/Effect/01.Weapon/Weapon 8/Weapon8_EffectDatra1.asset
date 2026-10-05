@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbe3f4c5d0d27d444ae03b43d60d096e, type: 3}
+  m_Name: Weapon8_EffectDatra1
+  m_EditorClassIdentifier: Assembly-CSharp::ConditionalItemEffectData
+  conditionMode: 0
+  conditions:
+  - {fileID: 11400000, guid: 3e0ec680d3672814aae7e325a25830cb, type: 2}
+  impactVfxPrefab: {fileID: 0}
+  impactBaseScale: {x: 1, y: 1, z: 1}
+  scaleImpactVfxByRadius: 1
+  useAnimatorClipLifeTime: 1
+  audioSource: 
+  impactVfxLifeTime: 1
+  effectWhenTrue: {fileID: 11400000, guid: 00f2c94a473f2fa4fa7e9f76b80399ea, type: 2}
+  effectWhenFalse: {fileID: 11400000, guid: a2bb0540da733db43bf139222aa4bba4, type: 2}

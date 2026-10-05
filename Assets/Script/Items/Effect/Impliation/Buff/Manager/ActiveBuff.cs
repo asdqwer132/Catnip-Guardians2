@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
@@ -28,7 +29,12 @@ public class ActiveBuff
     [Min(1)] public int maxUseCount = 1;
     [Min(0)] public int remainUseCount = 1;
 
+    public BuffUseCountConsumeMode useCountConsumeMode;
+
     [NonSerialized] public BuffModifier[] modifiers;
+    [NonSerialized] private HashSet<ItemData> consumeItemSet;
+    internal BuffStorage StorageOwner { get; set; }
+    internal ulong RegistrationVersion { get; private set; }
 
     public bool IsInfinite => useLimitType == BuffUseLimitType.Infinite;
 
@@ -76,8 +82,6 @@ public class ActiveBuff
         if (info == null)
             info = new BuffInfo();
 
-        info.Clamp();
-
         applyTiming = info.applyTiming;
         useLimitType = info.useLimitType;
         stackMode = info.stackMode;
@@ -91,9 +95,27 @@ public class ActiveBuff
 
         maxUseCount = Mathf.Max(1, info.maxUseCount);
         remainUseCount = maxUseCount;
+        useCountConsumeMode = info.useCountConsumeMode;
 
-        if (stack <= 0)
-            stack = 1;
+        if (consumeItemSet != null)
+            consumeItemSet.Clear();
+
+        if (useCountConsumeMode == BuffUseCountConsumeMode.SpecificItemsUsed &&
+            info.consumeItems != null)
+        {
+            if (consumeItemSet == null)
+                consumeItemSet = new HashSet<ItemData>();
+
+            for (int i = 0; i < info.consumeItems.Length; i++)
+            {
+                ItemData item = info.consumeItems[i];
+                if (item != null)
+                    consumeItemSet.Add(item);
+            }
+        }
+
+        stack = Mathf.Clamp(stack, 1, maxStack);
+        InvalidateRegistration();
     }
 
     public void RegisterAgain(BuffInfo info)
@@ -123,6 +145,26 @@ public class ActiveBuff
             return;
 
         remainUseCount = Mathf.Max(0, remainUseCount - 1);
+
+        if (remainUseCount == 0 && StorageOwner != null)
+            StorageOwner.HasExpiredUseCounts = true;
+    }
+
+    public bool ShouldConsumeOnItemUse(ItemData usedItem)
+    {
+        if (usedItem == null || useLimitType != BuffUseLimitType.UseCount || IsExpired)
+            return false;
+
+        if (useCountConsumeMode == BuffUseCountConsumeMode.AnyItemUsed)
+            return true;
+
+        return useCountConsumeMode == BuffUseCountConsumeMode.SpecificItemsUsed &&
+               consumeItemSet != null && consumeItemSet.Contains(usedItem);
+    }
+
+    internal void InvalidateRegistration()
+    {
+        unchecked { RegistrationVersion++; }
     }
 
     public float GetTimeRate()

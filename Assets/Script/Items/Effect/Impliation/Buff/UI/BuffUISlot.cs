@@ -63,7 +63,7 @@ public class BuffUISlot : MonoBehaviour
         RefreshIcon();
     }
 
-    private void RefreshRuntimeInfo()
+    public void RefreshRuntimeInfo()
     {
         if (activeBuff == null)
             return;
@@ -80,6 +80,9 @@ public class BuffUISlot : MonoBehaviour
 
     private string GetRemainText()
     {
+        if (activeBuff.IsInfinite)
+            return "∞";
+
         if (activeBuff.useLimitType == BuffUseLimitType.UseCount)
             return activeBuff.remainUseCount + "/" + activeBuff.maxUseCount;
 

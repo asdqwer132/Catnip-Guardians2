@@ -38,6 +38,27 @@ public class BuffUIManager : MonoBehaviour
         RefreshCurrentMode();
     }
 
+    // 횟수만 바뀐 경우 슬롯을 다시 구성하지 않고 표시 값만 갱신한다.
+    public void RefreshRuntimeValues()
+    {
+        for (int i = 0; i < spawnedSlots.Count; i++)
+        {
+            BuffUISlot slot = spawnedSlots[i];
+            if (slot != null && slot.gameObject.activeSelf)
+                slot.RefreshRuntimeInfo();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        for (int i = spawnedSlots.Count - 1; i >= 0; i--)
+        {
+            if (spawnedSlots[i] != null)
+                Destroy(spawnedSlots[i].gameObject);
+        }
+        spawnedSlots.Clear();
+    }
+
     public void RefreshCurrentMode()
     {
         if (buffManager == null)
@@ -246,11 +267,13 @@ public class BuffUIManager : MonoBehaviour
 
     private void RefreshSlots(IReadOnlyList<ActiveBuff> buffs, string displayLabel)
     {
-        ClearSlots();
-
         if (buffs == null || contentParent == null || slotPrefab == null)
+        {
+            ClearSlots();
             return;
+        }
 
+        int slotIndex = 0;
         for (int i = 0; i < buffs.Count; i++)
         {
             ActiveBuff buff = buffs[i];
@@ -258,9 +281,31 @@ public class BuffUIManager : MonoBehaviour
             if (buff == null || buff.IsExpired)
                 continue;
 
-            BuffUISlot slot = Instantiate(slotPrefab, contentParent);
+            BuffUISlot slot;
+            if (slotIndex < spawnedSlots.Count)
+            {
+                slot = spawnedSlots[slotIndex];
+                if (slot == null)
+                {
+                    slot = Instantiate(slotPrefab, contentParent);
+                    spawnedSlots[slotIndex] = slot;
+                }
+            }
+            else
+            {
+                slot = Instantiate(slotPrefab, contentParent);
+                spawnedSlots.Add(slot);
+            }
+
             slot.Set(buff, displayLabel);
-            spawnedSlots.Add(slot);
+            slot.gameObject.SetActive(true);
+            slotIndex++;
+        }
+
+        for (int i = slotIndex; i < spawnedSlots.Count; i++)
+        {
+            if (spawnedSlots[i] != null)
+                spawnedSlots[i].gameObject.SetActive(false);
         }
     }
 
@@ -269,9 +314,8 @@ public class BuffUIManager : MonoBehaviour
         for (int i = spawnedSlots.Count - 1; i >= 0; i--)
         {
             if (spawnedSlots[i] != null)
-                Destroy(spawnedSlots[i].gameObject);
+                spawnedSlots[i].gameObject.SetActive(false);
         }
 
-        spawnedSlots.Clear();
     }
 }

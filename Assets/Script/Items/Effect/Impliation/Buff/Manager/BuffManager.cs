@@ -20,7 +20,20 @@ public class BuffManager : MonoBehaviour
     private BuffQuery query;
 
     private readonly List<IDynamicBuffReceiver> dynamicBuffReceivers = new List<IDynamicBuffReceiver>();
-    private readonly List<ActiveBuff> consumedBuffer = new List<ActiveBuff>();
+    private readonly Stack<List<BuffStatEntry>> calculationPool = new Stack<List<BuffStatEntry>>();
+    private readonly Stack<BuffItemUseSession> itemUsePool = new Stack<BuffItemUseSession>();
+    private readonly List<BuffItemUseSession> itemUseStack = new List<BuffItemUseSession>();
+    private ulong nextItemUseId;
+    private int notificationDepth;
+
+    private struct BuffStatEntry
+    {
+        public ActiveBuff buff;
+        public BuffModifier[] modifiers;
+        public int stack;
+        public ulong registrationVersion;
+        public bool applied;
+    }
 
     public BuffStorage Storage => storage;
 
@@ -42,8 +55,110 @@ public class BuffManager : MonoBehaviour
         if (ticker.Tick(Time.deltaTime))
             NotifyBuffChanged(BuffNotifyScope.All);
 
-        if (useDebugInspector)
-            RefreshDebugInspector();
+        // 디버그 목록은 등록/해제 시만 갱신. 시간/횟수는 같은 ActiveBuff 참조로 확인한다.
+    }
+
+    private void OnDestroy()
+    {
+        if (instance == this)
+            instance = null;
+
+        for (int i = 0; i < itemUseStack.Count; i++)
+            itemUseStack[i].Clear();
+        itemUseStack.Clear();
+    }
+
+    // 스탯 조회/미리보기와 실제 아이템 사용을 분리한다.
+    // 모든 효과를 실행하기 전에 시작하고, 모든 효과가 끝난 뒤 완료한다.
+    public BuffItemUseToken BeginItemUse(ItemData itemData, EquipmentBag sourceBag)
+    {
+        if (storage == null || itemData == null)
+            return default(BuffItemUseToken);
+
+        BuffItemUseSession session = itemUsePool.Count > 0
+            ? itemUsePool.Pop() : new BuffItemUseSession();
+        session.Clear();
+        session.manager = this;
+        unchecked { session.id = ++nextItemUseId; }
+        session.active = true;
+
+        for (int i = 0; i < storage.useCountBuffs.Count; i++)
+        {
+            ActiveBuff buff = storage.useCountBuffs[i];
+            if (buff == null || buff.IsExpired)
+                continue;
+
+            bool onItemUse = buff.ShouldConsumeOnItemUse(itemData);
+            if (!onItemUse && buff.useCountConsumeMode != BuffUseCountConsumeMode.WhenBuffApplied)
+                continue;
+
+            session.candidates.Add(new BuffUseCandidate
+            {
+                buff = buff,
+                registrationVersion = buff.RegistrationVersion,
+                consumeOnComplete = onItemUse
+            });
+        }
+
+        itemUseStack.Add(session);
+        return new BuffItemUseToken(session, session.id);
+    }
+
+    public void EndItemUse(BuffItemUseToken token, bool succeeded = true)
+    {
+        BuffItemUseSession session = token.session;
+        if (session == null || !session.active || session.id != token.id || session.manager != this)
+            return;
+
+        int last = itemUseStack.Count - 1;
+        if (last < 0 || itemUseStack[last] != session)
+        {
+            Debug.LogWarning("BuffManager: 나중에 시작한 아이템 사용부터 완료해야 합니다.", this);
+            return;
+        }
+
+        itemUseStack.RemoveAt(last);
+        bool changed = false;
+        bool removed = false;
+        BuffNotifyScope scope = BuffNotifyScope.Item;
+
+        try
+        {
+            if (succeeded)
+            {
+                for (int i = 0; i < session.candidates.Count; i++)
+                {
+                    BuffUseCandidate candidate = session.candidates[i];
+                    ActiveBuff buff = candidate.buff;
+                    if (buff.StorageOwner != storage || buff.IsExpired ||
+                        buff.RegistrationVersion != candidate.registrationVersion)
+                        continue;
+
+                    if (!candidate.consumeOnComplete && !session.appliedBuffs.Contains(buff))
+                        continue;
+
+                    buff.ConsumeUse();
+                    changed = true;
+                    if (!buff.IsExpired)
+                        continue;
+
+                    BuffNotifyScope buffScope = GetNotifyScope(buff.target);
+                    scope = removed ? MergeNotifyScope(scope, buffScope) : buffScope;
+                    removed = true;
+                    storage.RemoveBuff(buff);
+                }
+            }
+        }
+        finally
+        {
+            session.Clear();
+            itemUsePool.Push(session);
+        }
+
+        if (removed)
+            NotifyBuffChanged(scope);
+        else if (changed && buffUIManager != null)
+            buffUIManager.RefreshRuntimeValues();
     }
 
     public void RegisterBuff(BuffEffect effect, ItemEffectContext itemContext)
@@ -68,6 +183,7 @@ public class BuffManager : MonoBehaviour
             return;
 
         BuffNotifyScope notifyScope = BuffNotifyScope.Item;
+        bool registered = false;
 
         for (int i = 0; i < targets.Count; i++)
         {
@@ -76,22 +192,24 @@ public class BuffManager : MonoBehaviour
             if (target == null)
                 continue;
 
-            ActiveBuff activeBuff = new ActiveBuff(
+            storage.RegisterBuff(
                 effect.modifiers,
                 finalInfo,
                 context.sourceItemData,
                 context.sourceBag,
-                context.sourceEffectData,
+                effect,
                 target,
                 effect.includeSelf,
                 effect.showInUI
             );
 
-            storage.AddOrRefresh(activeBuff, finalInfo);
-            notifyScope = MergeNotifyScope(notifyScope, GetNotifyScope(target));
+            BuffNotifyScope targetScope = GetNotifyScope(target);
+            notifyScope = registered ? MergeNotifyScope(notifyScope, targetScope) : targetScope;
+            registered = true;
         }
 
-        NotifyBuffChanged(notifyScope);
+        if (registered)
+            NotifyBuffChanged(notifyScope);
     }
     // 명중 효과용: Resolver를 재탐색하지 않고 맞은 대상에게만 적용한다.
     public bool RegisterBuffForTarget(
@@ -115,7 +233,7 @@ public class BuffManager : MonoBehaviour
 
         finalInfo.Clamp();
 
-        ActiveBuff activeBuff = new ActiveBuff(
+        storage.RegisterBuff(
             effect.modifiers,
             finalInfo,
             itemContext.sourceItemData,
@@ -127,7 +245,6 @@ public class BuffManager : MonoBehaviour
         );
 
         // 같은 공격에 다른 디버프가 있어도 BuffEffect별로 독립적으로 구분한다.
-        storage.AddOrRefresh(activeBuff, finalInfo);
         NotifyBuffChanged(BuffNotifyScope.Target);
         return true;
     }
@@ -150,112 +267,133 @@ public class BuffManager : MonoBehaviour
         if (result == null)
             return baseStat;
 
-        consumedBuffer.Clear();
-
-        // 1. 더하기 계열 먼저 전부 적용
-        for (int i = 0; i < storage.activeBuffs.Count; i++)
-        {
-            ActiveBuff buff = storage.activeBuffs[i];
-
-            if (!CanUseBuff(buff, context, calculationMode))
-                continue;
-
-            ApplyModifiersAdditive(buff, result, context);
-
-            if (consumeUseCount && buff.useLimitType == BuffUseLimitType.UseCount)
-                consumedBuffer.Add(buff);
-        }
-
-        // 2. 곱하기 계열 나중에 전부 적용
-        for (int i = 0; i < storage.activeBuffs.Count; i++)
-        {
-            ActiveBuff buff = storage.activeBuffs[i];
-
-            if (!CanUseBuff(buff, context, calculationMode))
-                continue;
-
-            ApplyModifiersMultiplicative(buff, result, context);
-        }
-
-        for (int i = 0; i < consumedBuffer.Count; i++)
-            consumedBuffer[i].ConsumeUse();
-
-        if (consumeUseCount && consumedBuffer.Count > 0)
-        {
-            ticker.Tick(0f);
-            NotifyBuffChanged(BuffNotifyScope.DynamicOnly);
-        }
-
-        result.Clamp();
+        ApplyBuffsToStat(result, context, calculationMode, consumeUseCount);
         return result;
     }
 
-    private void ApplyModifiersAdditive<T>(ActiveBuff buff, T stat, BuffQueryContext context) where T : class
+    private bool ApplyModifiersAdditive<T>(BuffStatEntry entry, T stat, BuffQueryContext context) where T : class
     {
-        if (buff == null || buff.modifiers == null || stat == null)
+        bool applied = false;
+
+        for (int i = 0; i < entry.modifiers.Length; i++)
+        {
+            BuffModifier modifier = entry.modifiers[i];
+            if (modifier == null || !modifier.CanApplyTo(stat, context))
+                continue;
+
+            modifier.ApplyAdditiveTo(stat, entry.stack, context);
+            applied = true;
+        }
+        return applied;
+    }
+
+    public void ApplyBuffsToStat<T>(
+        T stat,
+        BuffQueryContext context,
+        BuffCalculationMode calculationMode = BuffCalculationMode.All,
+        bool consumeUseCount = false
+    ) where T : class, IGameStat<T>
+    {
+        if (stat == null || storage == null)
             return;
 
-        for (int i = 0; i < buff.modifiers.Length; i++)
+        List<BuffStatEntry> entries = calculationPool.Count > 0
+            ? calculationPool.Pop() : new List<BuffStatEntry>(16);
+        try
         {
-            BuffModifier modifier = buff.modifiers[i];
+            // 적용 대상을 한 번만 찾고, 중첩 조회도 각각의 버퍼를 사용한다.
+            for (int i = 0; i < storage.activeBuffs.Count; i++)
+            {
+                ActiveBuff buff = storage.activeBuffs[i];
+                if (!CanUseBuff(buff, context, calculationMode))
+                    continue;
 
-            if (modifier == null)
-                continue;
+                entries.Add(new BuffStatEntry
+                {
+                    buff = buff,
+                    modifiers = buff.modifiers,
+                    stack = Mathf.Max(1, buff.stack),
+                    registrationVersion = buff.RegistrationVersion
+                });
+            }
 
-            if (!modifier.CanApplyTo(stat, context))
-                continue;
+            // 모든 더하기 -> 모든 곱하기. 마지막 1회도 두 단계 모두 적용한다.
+            for (int i = 0; i < entries.Count; i++)
+            {
+                BuffStatEntry entry = entries[i];
+                entry.applied = ApplyModifiersAdditive(entry, stat, context);
+                entries[i] = entry;
+            }
 
-            modifier.ApplyAdditiveTo(stat, Mathf.Max(1, buff.stack), context);
+            for (int i = 0; i < entries.Count; i++)
+            {
+                BuffStatEntry entry = entries[i];
+                entry.applied |= ApplyModifiersMultiplicative(entry, stat, context);
+                entries[i] = entry;
+            }
+
+            stat.Clamp();
+
+            // 변경 알림에 따른 재계산은 실제 사용이 아니므로 차감하지 않는다.
+            if (notificationDepth > 0)
+                return;
+
+            if (itemUseStack.Count > 0)
+            {
+                BuffItemUseSession session = itemUseStack[itemUseStack.Count - 1];
+                for (int i = 0; i < entries.Count; i++)
+                {
+                    BuffStatEntry entry = entries[i];
+                    if (entry.applied && entry.buff.useLimitType == BuffUseLimitType.UseCount &&
+                        entry.buff.useCountConsumeMode == BuffUseCountConsumeMode.WhenBuffApplied &&
+                        entry.buff.RegistrationVersion == entry.registrationVersion)
+                    {
+                        session.appliedBuffs.Add(entry.buff);
+                    }
+                }
+            }
+            else if (consumeUseCount)
+            {
+                ConsumeAppliedBuffs(entries);
+            }
+        }
+        finally
+        {
+            entries.Clear();
+            calculationPool.Push(entries);
         }
     }
-    public void ApplyBuffsToStat<T>(
-    T stat,
-    BuffQueryContext context,
-    BuffCalculationMode calculationMode = BuffCalculationMode.All,
-    bool consumeUseCount = false
-) where T : class, IGameStat<T>
+
+    private void ConsumeAppliedBuffs(List<BuffStatEntry> entries)
     {
-        if (stat == null)
-            return;
-
-        if (storage == null)
-            return;
-
-        consumedBuffer.Clear();
-
-        for (int i = 0; i < storage.activeBuffs.Count; i++)
+        bool changed = false;
+        bool removed = false;
+        BuffNotifyScope scope = BuffNotifyScope.Item;
+        for (int i = 0; i < entries.Count; i++)
         {
-            ActiveBuff buff = storage.activeBuffs[i];
-
-            if (!CanUseBuff(buff, context, calculationMode))
+            BuffStatEntry entry = entries[i];
+            ActiveBuff buff = entry.buff;
+            if (!entry.applied || buff.StorageOwner != storage || buff.IsExpired ||
+                buff.RegistrationVersion != entry.registrationVersion ||
+                buff.useLimitType != BuffUseLimitType.UseCount ||
+                buff.useCountConsumeMode != BuffUseCountConsumeMode.WhenBuffApplied)
                 continue;
 
-            ApplyModifiersAdditive(buff, stat, context);
-
-            if (consumeUseCount && buff.useLimitType == BuffUseLimitType.UseCount)
-                consumedBuffer.Add(buff);
-        }
-
-        for (int i = 0; i < storage.activeBuffs.Count; i++)
-        {
-            ActiveBuff buff = storage.activeBuffs[i];
-
-            if (!CanUseBuff(buff, context, calculationMode))
+            buff.ConsumeUse();
+            changed = true;
+            if (!buff.IsExpired)
                 continue;
 
-            ApplyModifiersMultiplicative(buff, stat, context);
+            BuffNotifyScope buffScope = GetNotifyScope(buff.target);
+            scope = removed ? MergeNotifyScope(scope, buffScope) : buffScope;
+            removed = true;
+            storage.RemoveBuff(buff);
         }
 
-        for (int i = 0; i < consumedBuffer.Count; i++)
-            consumedBuffer[i].ConsumeUse();
-
-        if (consumeUseCount && consumedBuffer.Count > 0)
-        {
-            ticker.Tick(0f);
-            NotifyBuffChanged(BuffNotifyScope.DynamicOnly);
-        }
-
-        stat.Clamp();
+        if (removed)
+            NotifyBuffChanged(scope);
+        else if (changed && buffUIManager != null)
+            buffUIManager.RefreshRuntimeValues();
     }
 
     public void ApplyBuffsToStatForTarget<T>(
@@ -272,23 +410,20 @@ public class BuffManager : MonoBehaviour
             consumeUseCount
         );
     }
-    private void ApplyModifiersMultiplicative<T>(ActiveBuff buff, T stat, BuffQueryContext context) where T : class
+    private bool ApplyModifiersMultiplicative<T>(BuffStatEntry entry, T stat, BuffQueryContext context) where T : class
     {
-        if (buff == null || buff.modifiers == null || stat == null)
-            return;
+        bool applied = false;
 
-        for (int i = 0; i < buff.modifiers.Length; i++)
+        for (int i = 0; i < entry.modifiers.Length; i++)
         {
-            BuffModifier modifier = buff.modifiers[i];
-
-            if (modifier == null)
+            BuffModifier modifier = entry.modifiers[i];
+            if (modifier == null || !modifier.CanApplyTo(stat, context))
                 continue;
 
-            if (!modifier.CanApplyTo(stat, context))
-                continue;
-
-            modifier.ApplyMultiplicativeTo(stat, Mathf.Max(1, buff.stack), context);
+            modifier.ApplyMultiplicativeTo(stat, entry.stack, context);
+            applied = true;
         }
+        return applied;
     }
 
     private bool CanUseBuff(ActiveBuff buff, BuffQueryContext context, BuffCalculationMode calculationMode)
@@ -310,17 +445,21 @@ public class BuffManager : MonoBehaviour
         if (calculationMode == BuffCalculationMode.All)
             return true;
 
+        // 횟수제 아이템 버프는 생성되는 공격에 저장해야 마지막 1회도 유지된다.
+        // SnapshotOnly/DynamicOnly를 함께 쓰는 공격에서 중복 적용도 방지한다.
+        bool countedItemBuff = buff.useLimitType == BuffUseLimitType.UseCount &&
+            buff.target != null && buff.target.kind != BuffTargetKind.Target &&
+            buff.target.kind != BuffTargetKind.Group;
+        bool snapshot = countedItemBuff || buff.applyTiming == BuffApplyTiming.Snapshot;
+
         if (calculationMode == BuffCalculationMode.SnapshotOnly)
-            return buff.applyTiming == BuffApplyTiming.Snapshot;
+            return snapshot;
 
         if (calculationMode == BuffCalculationMode.DynamicOnly)
-            return buff.applyTiming == BuffApplyTiming.Dynamic;
+            return !snapshot;
 
         return true;
     }
-
-    #region Stat Query
-
 
     #region Stat Query
 
@@ -357,8 +496,6 @@ public class BuffManager : MonoBehaviour
 
     #endregion
 
-    #endregion
-
     #region Buff Target Register
 
     public void RegisterBuffTarget(IBuffTarget target)
@@ -367,7 +504,7 @@ public class BuffManager : MonoBehaviour
             return;
 
         storage.RegisterTarget(target);
-        target.RefreshBuffedStat();
+        RefreshTargetStat(target);
         RefreshDebugInspector();
     }
 
@@ -386,7 +523,8 @@ public class BuffManager : MonoBehaviour
             return;
 
         storage.RemoveBuffsForTarget(target);
-        target.RefreshBuffedStat();
+        if (!storage.registeredTargets.Contains(target))
+            RefreshTargetStat(target);
         NotifyBuffChanged(BuffNotifyScope.Target);
     }
 
@@ -396,7 +534,8 @@ public class BuffManager : MonoBehaviour
             return;
 
         storage.RemoveNormalBuffsForTarget(target);
-        target.RefreshBuffedStat();
+        if (!storage.registeredTargets.Contains(target))
+            RefreshTargetStat(target);
         NotifyBuffChanged(BuffNotifyScope.Target);
     }
 
@@ -406,7 +545,8 @@ public class BuffManager : MonoBehaviour
             return;
 
         storage.RemoveInfiniteBuffsForTarget(target);
-        target.RefreshBuffedStat();
+        if (!storage.registeredTargets.Contains(target))
+            RefreshTargetStat(target);
         NotifyBuffChanged(BuffNotifyScope.Target);
     }
 
@@ -639,14 +779,22 @@ public class BuffManager : MonoBehaviour
 
     private void NotifyBuffChanged(BuffNotifyScope scope)
     {
-        if (scope == BuffNotifyScope.All || scope == BuffNotifyScope.Target)
-            RefreshAllRegisteredTargetStats();
+        notificationDepth++;
+        try
+        {
+            if (scope == BuffNotifyScope.All || scope == BuffNotifyScope.Target)
+                RefreshAllRegisteredTargetStats();
 
-        if (scope == BuffNotifyScope.All || scope == BuffNotifyScope.Item || scope == BuffNotifyScope.DynamicOnly)
-            NotifyDynamicBuffReceivers();
+            if (scope == BuffNotifyScope.All || scope == BuffNotifyScope.Item || scope == BuffNotifyScope.DynamicOnly)
+                NotifyDynamicBuffReceivers();
 
-        RefreshUI();
-        RefreshDebugInspector();
+            RefreshUI();
+            RefreshDebugInspector();
+        }
+        finally
+        {
+            notificationDepth--;
+        }
     }
 
     private void RefreshAllRegisteredTargetStats()
@@ -664,8 +812,15 @@ public class BuffManager : MonoBehaviour
                 continue;
             }
 
-            target.RefreshBuffedStat();
+            RefreshTargetStat(target);
         }
+    }
+
+    private void RefreshTargetStat(IBuffTarget target)
+    {
+        notificationDepth++;
+        try { target.RefreshBuffedStat(); }
+        finally { notificationDepth--; }
     }
 
     private void NotifyDynamicBuffReceivers()

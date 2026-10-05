@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 public class BuffStorage
 {
@@ -12,7 +12,40 @@ public class BuffStorage
     // BuffUseLimitType.Infinite 버프
     public readonly List<ActiveBuff> infiniteBuffs = new List<ActiveBuff>();
 
+    // 매 프레임은 timedBuffs만, 아이템 실행 시에는 useCountBuffs만 확인한다.
+    public readonly List<ActiveBuff> timedBuffs = new List<ActiveBuff>();
+    public readonly List<ActiveBuff> useCountBuffs = new List<ActiveBuff>();
+    internal bool HasExpiredUseCounts { get; set; }
+
     public readonly List<IBuffTarget> registeredTargets = new List<IBuffTarget>();
+
+    public ActiveBuff RegisterBuff(
+        BuffModifier[] modifiers,
+        BuffInfo info,
+        ItemData sourceItemData,
+        EquipmentBag sourceBag,
+        ItemEffectData sourceEffectData,
+        BuffTargetHandle target,
+        bool includeSelf,
+        bool showInUI
+    )
+    {
+        ActiveBuff same = FindSameBuff(sourceItemData, sourceBag, sourceEffectData, target);
+        if (same != null)
+        {
+            same.modifiers = modifiers;
+            same.includeSelf = includeSelf;
+            same.showInUI = showInUI;
+            same.RegisterAgain(info);
+            SyncBuffCategory(same);
+            return same;
+        }
+
+        ActiveBuff buff = new ActiveBuff(modifiers, info, sourceItemData, sourceBag,
+            sourceEffectData, target, includeSelf, showInUI);
+        AddNewBuff(buff);
+        return buff;
+    }
 
     public void AddOrRefresh(ActiveBuff newBuff, BuffInfo info)
     {
@@ -58,11 +91,20 @@ public class BuffStorage
 
         normalBuffs.Remove(buff);
         infiniteBuffs.Remove(buff);
+        timedBuffs.Remove(buff);
+        useCountBuffs.Remove(buff);
+        buff.StorageOwner = this;
 
         if (buff.IsInfinite)
             infiniteBuffs.Add(buff);
         else
+        {
             normalBuffs.Add(buff);
+            if (buff.useLimitType == BuffUseLimitType.UseCount)
+                useCountBuffs.Add(buff);
+            else if (buff.useLimitType == BuffUseLimitType.Time)
+                timedBuffs.Add(buff);
+        }
     }
 
     public ActiveBuff FindSameBuff(
@@ -100,6 +142,10 @@ public class BuffStorage
         activeBuffs.Remove(buff);
         normalBuffs.Remove(buff);
         infiniteBuffs.Remove(buff);
+        timedBuffs.Remove(buff);
+        useCountBuffs.Remove(buff);
+        buff.StorageOwner = null;
+        buff.InvalidateRegistration();
     }
 
     public void RegisterTarget(IBuffTarget target)
@@ -167,6 +213,8 @@ public class BuffStorage
                 activeBuffs.RemoveAt(i);
                 normalBuffs.Remove(null);
                 infiniteBuffs.Remove(null);
+                timedBuffs.Remove(null);
+                useCountBuffs.Remove(null);
                 continue;
             }
 
@@ -197,24 +245,54 @@ public class BuffStorage
     public void ClearNormalBuffs()
     {
         for (int i = normalBuffs.Count - 1; i >= 0; i--)
-            activeBuffs.Remove(normalBuffs[i]);
+        {
+            ActiveBuff buff = normalBuffs[i];
+            activeBuffs.Remove(buff);
+            if (buff != null)
+            {
+                buff.StorageOwner = null;
+                buff.InvalidateRegistration();
+            }
+        }
 
         normalBuffs.Clear();
+        timedBuffs.Clear();
+        useCountBuffs.Clear();
+        HasExpiredUseCounts = false;
     }
 
     public void ClearInfiniteBuffs()
     {
         for (int i = infiniteBuffs.Count - 1; i >= 0; i--)
-            activeBuffs.Remove(infiniteBuffs[i]);
+        {
+            ActiveBuff buff = infiniteBuffs[i];
+            activeBuffs.Remove(buff);
+            if (buff != null)
+            {
+                buff.StorageOwner = null;
+                buff.InvalidateRegistration();
+            }
+        }
 
         infiniteBuffs.Clear();
     }
 
     public void ClearAll()
     {
+        for (int i = 0; i < activeBuffs.Count; i++)
+        {
+            ActiveBuff buff = activeBuffs[i];
+            if (buff == null)
+                continue;
+            buff.StorageOwner = null;
+            buff.InvalidateRegistration();
+        }
         activeBuffs.Clear();
         normalBuffs.Clear();
         infiniteBuffs.Clear();
+        timedBuffs.Clear();
+        useCountBuffs.Clear();
+        HasExpiredUseCounts = false;
     }
 
     public void RemoveNullRegisters()

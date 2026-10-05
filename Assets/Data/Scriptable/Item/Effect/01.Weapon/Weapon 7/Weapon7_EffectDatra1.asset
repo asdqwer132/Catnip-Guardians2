@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b250f045bef3cf34fbfec8a0516c81f9, type: 3}
+  m_Name: Weapon7_EffectDatra1
+  m_EditorClassIdentifier: Assembly-CSharp::BuffEffect
+  conditionMode: 0
+  conditions: []
+  visualData: {fileID: 0}
+  impactVfxPrefab: {fileID: 0}
+  impactBaseScale: {x: 1, y: 1, z: 1}
+  scaleImpactVfxByRadius: 1
+  useAnimatorClipLifeTime: 1
+  audioSource: 
+  impactVfxLifeTime: 1
+  targetResolver: {fileID: 11400000, guid: f3ff37221a9bf2f43a5ee69b82a95df8, type: 2}
+  buffInfo:
+    stackMode: 0
+    maxStack: 1
+    applyTiming: 1
+    useLimitType: 0
+    duration: 5
+    maxUseCount: 3
+    useCountConsumeMode: 2
+    consumeItems:
+    - {fileID: 11400000, guid: 70bf65ee269e06f42869590d93bd318d, type: 2}
+    - {fileID: 11400000, guid: f5c0a85f81b4a6341b823365aa908815, type: 2}
+    - {fileID: 11400000, guid: 25070a8f7d2957849928ee59bab08e8c, type: 2}
+  includeSelf: 0
+  showInUI: 1
+  modifiers:
+  - {fileID: 11400000, guid: 2b1ed47c413dc8f499436e988e0bcadc, type: 2}
