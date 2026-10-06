@@ -1,40 +1,40 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "EnemyBasicAttackAction", menuName = "GameData/Enemy/Enemy Pattern/Action/Basic Attack")]
 public class EnemyBasicAttackAction : EnemyPatternAction
 {
     [Header("Damage")]
-    [Tooltip("ÀÌ ¾×¼Ç¿¡¼­ »ç¿ëÇÒ Àü¿ë °ø°Ý·ÂÀÔ´Ï´Ù. ActorAttack.damage¿Í º°°³ÀÔ´Ï´Ù.")]
+    [Tooltip("ì´ ì•¡ì…˜ì—ì„œ ì‚¬ìš©í•  ì „ìš© ê³µê²©ë ¥ìž…ë‹ˆë‹¤. ActorAttack.damageì™€ ë³„ê°œìž…ë‹ˆë‹¤.")]
     [Min(0f)] public float actionDamage = 10f;
 
-    [Tooltip("ÄÑ¸é ±âº» °ø°Ý·Â¿¡ ¾×¼Ç °ø°Ý·ÂÀ» ´õÇÕ´Ï´Ù. ²ô¸é ¾×¼Ç °ø°Ý·Â¸¸ »ç¿ëÇÕ´Ï´Ù.")]
+    [Tooltip("ì¼œë©´ ê¸°ë³¸ ê³µê²©ë ¥ì— ì•¡ì…˜ ê³µê²©ë ¥ì„ ë”í•©ë‹ˆë‹¤. ë„ë©´ ì•¡ì…˜ ê³µê²©ë ¥ë§Œ ì‚¬ìš©í•©ë‹ˆë‹¤.")]
     public bool addBaseAttackDamage = false;
 
-    [Tooltip("addBaseAttackDamage°¡ ÄÑÁ® ÀÖÀ» ¶§ ±âº» °ø°Ý·Â¿¡ °öÇÒ °ªÀÔ´Ï´Ù.")]
+    [Tooltip("addBaseAttackDamageê°€ ì¼œì ¸ ìžˆì„ ë•Œ ê¸°ë³¸ ê³µê²©ë ¥ì— ê³±í•  ê°’ìž…ë‹ˆë‹¤.")]
     [Min(0f)] public float baseAttackDamageMultiplier = 1f;
 
     [Header("Timing")]
-    [Tooltip("°ø°Ý ¾Ö´Ï¸ÞÀÌ¼ÇÀ» ½ÃÀÛÇÑ µÚ ½ÇÁ¦ µ¥¹ÌÁö°¡ µé¾î°¡±â±îÁö °É¸®´Â ½Ã°£ÀÔ´Ï´Ù.")]
+    [Tooltip("ê³µê²© ì• ë‹ˆë©”ì´ì…˜ì„ ì‹œìž‘í•œ ë’¤ ì‹¤ì œ ë°ë¯¸ì§€ê°€ ë“¤ì–´ê°€ê¸°ê¹Œì§€ ê±¸ë¦¬ëŠ” ì‹œê°„ìž…ë‹ˆë‹¤.")]
     [Min(0f)] public float attackDelay = 0.25f;
 
-    [Tooltip("µ¥¹ÌÁö°¡ µé¾î°£ µÚ ¾×¼ÇÀÌ ³¡³ª±â Àü Ãß°¡·Î ±â´Ù¸®´Â ½Ã°£ÀÔ´Ï´Ù.")]
+    [Tooltip("ë°ë¯¸ì§€ê°€ ë“¤ì–´ê°„ ë’¤ ì•¡ì…˜ì´ ëë‚˜ê¸° ì „ ì¶”ê°€ë¡œ ê¸°ë‹¤ë¦¬ëŠ” ì‹œê°„ìž…ë‹ˆë‹¤.")]
     [Min(0f)] public float afterDamageDelay = 0f;
 
-    [Tooltip("ÄÑ¸é °ø°Ý ¾Ö´Ï¸ÞÀÌ¼Ç ±æÀÌ¸¸Å­ ¾×¼ÇÀ» À¯ÁöÇÕ´Ï´Ù.")]
+    [Tooltip("ì¼œë©´ ê³µê²© ì• ë‹ˆë©”ì´ì…˜ ê¸¸ì´ë§Œí¼ ì•¡ì…˜ì„ ìœ ì§€í•©ë‹ˆë‹¤.")]
     public bool waitAnimationEnd = true;
 
     [Header("Range")]
-    [Tooltip("ÄÑ¸é ActorAttackÀÇ °ø°Ý »ç°Å¸® ´ë½Å ¾Æ·¡ customAttackRange¸¦ »ç¿ëÇÕ´Ï´Ù.")]
+    [Tooltip("ì¼œë©´ ActorAttackì˜ ê³µê²© ì‚¬ê±°ë¦¬ ëŒ€ì‹  ì•„ëž˜ customAttackRangeë¥¼ ì‚¬ìš©í•©ë‹ˆë‹¤.")]
     public bool useCustomAttackRange = false;
 
     [Min(0.01f)] public float customAttackRange = 1.5f;
     [Min(0f)] public float customAttackDistanceTolerance = 0.15f;
 
-    [Tooltip("ÄÑ¸é °ø°Ý ½ÃÀÛ Àü¿¡ »ç°Å¸® Ã¼Å©¸¦ ÇÕ´Ï´Ù.")]
+    [Tooltip("ì¼œë©´ ê³µê²© ì‹œìž‘ ì „ì— ì‚¬ê±°ë¦¬ ì²´í¬ë¥¼ í•©ë‹ˆë‹¤.")]
     public bool requireRangeBeforeStart = true;
 
-    [Tooltip("ÄÑ¸é µ¥¹ÌÁö Àû¿ë ¼ø°£¿¡µµ »ç°Å¸® Ã¼Å©¸¦ ÇÕ´Ï´Ù.")]
+    [Tooltip("ì¼œë©´ ë°ë¯¸ì§€ ì ìš© ìˆœê°„ì—ë„ ì‚¬ê±°ë¦¬ ì²´í¬ë¥¼ í•©ë‹ˆë‹¤.")]
     public bool checkRangeBeforeDamage = true;
 
     [Header("Facing")]
@@ -87,6 +87,7 @@ public class EnemyBasicAttackAction : EnemyPatternAction
 
     private IEnumerator FallbackAttack(EnemyPatternContext context, float finalDamage)
     {
+        context.StopMove();
         Vector2 direction = context.DirectionToTarget;
 
         if (direction.sqrMagnitude > 0.0001f)
@@ -95,7 +96,7 @@ public class EnemyBasicAttackAction : EnemyPatternAction
         context.PlayAttack(direction);
 
         if (attackDelay > 0f)
-            yield return new WaitForSeconds(attackDelay);
+            yield return context.WaitSeconds(attackDelay);
         else
             yield return null;
 
@@ -103,7 +104,7 @@ public class EnemyBasicAttackAction : EnemyPatternAction
             context.DamageTarget(finalDamage);
 
         if (afterDamageDelay > 0f)
-            yield return new WaitForSeconds(afterDamageDelay);
+            yield return context.WaitSeconds(afterDamageDelay);
     }
 
     private bool IsTargetInRange(EnemyPatternContext context)

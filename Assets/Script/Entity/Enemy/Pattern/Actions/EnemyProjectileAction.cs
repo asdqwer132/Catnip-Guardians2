@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "EnemyProjectileAction", menuName = "GameData/Enemy/Enemy Pattern/Action/Projectile")]
@@ -51,7 +51,7 @@ public class EnemyProjectileAction : EnemyPatternAction
             );
 
             if (interval > 0f && i < projectileCount - 1)
-                yield return new WaitForSeconds(interval);
+                yield return context.WaitSeconds(interval);
         }
     }
 

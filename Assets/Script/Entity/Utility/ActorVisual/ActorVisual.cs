@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 public class ActorVisual : MonoBehaviour
@@ -17,6 +17,25 @@ public class ActorVisual : MonoBehaviour
 
     [Header("Animator State")]
     public string idleStateName = "Idle";
+
+    [Header("Action Animation")]
+    [Tooltip("실제 Animator State 이름입니다. 하위 상태는 전체 경로를 넣을 수 있습니다.")]
+    public string attackStateName = "Attack";
+    public string hitStateName = "Hit";
+    public string dieStateName = "Die";
+    [Min(0.01f)] public float attackFallbackDuration = 0.3f;
+    [Min(0.01f)] public float hitFallbackDuration = 0.18f;
+    [Min(0.01f)] public float animationEntryTimeout = 0.2f;
+    [Min(0.1f)] public float maximumActionAnimationTime = 5f;
+
+    private enum ActionAnimation { None, Attack, Hit, Death }
+    private ActionAnimation actionAnimation;
+    private ActorAnimationTracker actionTracker;
+    private int actionAnimationVersion;
+    private bool patternAnimationPaused;
+    private bool defaultAttackAnimationPaused;
+    private bool IsAnimationPaused => patternAnimationPaused || defaultAttackAnimationPaused;
+    private float speedBeforePatternPause = 1f;
 
     private bool defaultFlipX;
     private Color defaultColor;
@@ -40,11 +59,20 @@ public class ActorVisual : MonoBehaviour
     private const float FaceThreshold = 0.01f;
 
     public bool IsCustomAnimationLocked => isCustomAnimationLocked;
+    public bool IsHitPlaying => actionAnimation == ActionAnimation.Hit && actionTracker.IsPlaying;
+    public bool IsAttackPlaying => actionAnimation == ActionAnimation.Attack && actionTracker.IsPlaying;
+    public bool IsDeathPlaying => actionAnimation == ActionAnimation.Death;
+    protected bool CanPlayLocomotion => !isCustomAnimationLocked && !IsAnimationPaused &&
+        !IsHitPlaying && !IsAttackPlaying && !IsDeathPlaying;
+    protected bool CanPlayAttack => !isCustomAnimationLocked && !IsAnimationPaused &&
+        !IsHitPlaying && !IsDeathPlaying;
 
     protected virtual void Awake()
     {
         if (animator == null)
             animator = GetComponent<Animator>();
+        if (animator == null)
+            animator = GetComponentInChildren<Animator>();
 
         if (spriteRenderer == null)
             spriteRenderer = GetComponentInChildren<SpriteRenderer>();
@@ -66,9 +94,91 @@ public class ActorVisual : MonoBehaviour
     }
 
 
+    protected virtual void Update()
+    {
+        if (!IsAnimationPaused) actionTracker.Tick(animator, Time.deltaTime);
+        if (!actionTracker.IsPlaying && actionAnimation != ActionAnimation.None && actionAnimation != ActionAnimation.Death)
+        {
+            actionAnimation = ActionAnimation.None;
+            ForceIdle(Vector2.zero, false, false);
+        }
+    }
+
+    protected virtual void OnDisable()
+    {
+        CancelCustomAnimationLock();
+        SetPatternAnimationPaused(false);
+        SetDefaultAttackAnimationPaused(false);
+        ClearActionAnimation();
+    }
+
+    private void BeginActionAnimation(ActionAnimation action, string stateName, float fallback)
+    {
+        actionAnimation = action;
+        unchecked { actionAnimationVersion++; }
+        actionTracker.Begin(animator, stateName, fallback, animationEntryTimeout, maximumActionAnimationTime);
+        // 같은 피격 State에 다시 맞아도 처음부터 재생한다.
+        if (animator != null && !string.IsNullOrEmpty(stateName) &&
+            TryGetStateHash(stateName, 0, out int stateHash))
+        {
+            AnimatorStateInfo current = animator.GetCurrentAnimatorStateInfo(0);
+            if (current.shortNameHash == stateHash || current.fullPathHash == stateHash)
+                animator.Play(stateHash, 0, 0f);
+        }
+    }
+
+    private void ClearActionAnimation()
+    {
+        actionTracker.Clear();
+        actionAnimation = ActionAnimation.None;
+        unchecked { actionAnimationVersion++; }
+    }
+
+    public void CancelAttackAnimation()
+    {
+        if (actionAnimation != ActionAnimation.Attack) return;
+        ClearActionAnimation();
+        ForceIdle(Vector2.zero, false, false);
+    }
+
+    public void CancelHitReaction()
+    {
+        if (actionAnimation != ActionAnimation.Hit) return;
+        ClearActionAnimation();
+        ForceIdle(Vector2.zero, false, false);
+    }
+
+    public void SetPatternAnimationPaused(bool paused)
+    {
+        bool wasPaused = IsAnimationPaused;
+        patternAnimationPaused = paused;
+        ApplyAnimationPause(wasPaused);
+    }
+
+    public void SetDefaultAttackAnimationPaused(bool paused)
+    {
+        bool wasPaused = IsAnimationPaused;
+        defaultAttackAnimationPaused = paused;
+        ApplyAnimationPause(wasPaused);
+    }
+
+    private void ApplyAnimationPause(bool wasPaused)
+    {
+        if (wasPaused == IsAnimationPaused || animator == null) return;
+        if (IsAnimationPaused)
+        {
+            speedBeforePatternPause = animator.speed;
+            animator.speed = 0f;
+        }
+        else animator.speed = speedBeforePatternPause > 0f ? speedBeforePatternPause : 1f;
+    }
+
     public virtual void ResetVisual()
     {
         CancelCustomAnimationLock();
+        SetPatternAnimationPaused(false);
+        SetDefaultAttackAnimationPaused(false);
+        ClearActionAnimation();
 
         if (spriteRenderer != null)
         {
@@ -93,6 +203,7 @@ public class ActorVisual : MonoBehaviour
 
     public virtual void LookDirection(Vector2 direction)
     {
+        if (IsHitPlaying || IsDeathPlaying || IsAnimationPaused) return;
         if (spriteRenderer == null)
             return;
 
@@ -115,7 +226,7 @@ public class ActorVisual : MonoBehaviour
 
     public virtual void PlayMove()
     {
-        if (isCustomAnimationLocked)
+        if (!CanPlayLocomotion)
             return;
 
         if (animator == null)
@@ -135,13 +246,13 @@ public class ActorVisual : MonoBehaviour
     {
         PlayMove();
 
-        if (!isCustomAnimationLocked)
+        if (CanPlayLocomotion)
             LookDirection(direction);
     }
 
     public virtual void StopMove()
     {
-        if (isCustomAnimationLocked)
+        if (isCustomAnimationLocked || IsHitPlaying || IsDeathPlaying || IsAnimationPaused)
             return;
 
         if (animator == null)
@@ -158,7 +269,7 @@ public class ActorVisual : MonoBehaviour
     {
         StopMove();
 
-        if (isCustomAnimationLocked)
+        if (!CanPlayLocomotion)
             return;
 
         if (lastMoveDirection.sqrMagnitude > 0.0001f)
@@ -167,11 +278,11 @@ public class ActorVisual : MonoBehaviour
 
     public virtual void PlayAttack()
     {
-        if (isCustomAnimationLocked)
+        if (!CanPlayAttack)
             return;
 
-        if (animator == null)
-            return;
+        BeginActionAnimation(ActionAnimation.Attack, attackStateName, attackFallbackDuration);
+        if (animator == null) return;
 
         isWalking = false;
 
@@ -184,19 +295,19 @@ public class ActorVisual : MonoBehaviour
 
     public virtual void PlayAttack(Vector2 attackDirection)
     {
+        if (!CanPlayAttack) return;
+        LookDirection(attackDirection);
         PlayAttack();
-
-        if (!isCustomAnimationLocked)
-            LookDirection(attackDirection);
     }
 
     public virtual void PlayHit()
     {
-        if (isCustomAnimationLocked)
-            return;
-
-        if (animator == null)
-            return;
+        if (IsDeathPlaying) return;
+        CancelCustomAnimationLock();
+        SetPatternAnimationPaused(false);
+        SetDefaultAttackAnimationPaused(false);
+        BeginActionAnimation(ActionAnimation.Hit, hitStateName, hitFallbackDuration);
+        if (animator == null) return;
 
         isWalking = false;
 
@@ -210,6 +321,9 @@ public class ActorVisual : MonoBehaviour
     public virtual void PlayDie()
     {
         CancelCustomAnimationLock();
+        SetPatternAnimationPaused(false);
+        SetDefaultAttackAnimationPaused(false);
+        BeginActionAnimation(ActionAnimation.Death, dieStateName, attackFallbackDuration);
 
         if (animator == null)
             return;
@@ -229,6 +343,7 @@ public class ActorVisual : MonoBehaviour
         bool restartIdleAnimation = false,
         bool ignoreCustomAnimationLock = false)
     {
+        if (IsHitPlaying || IsDeathPlaying || IsAnimationPaused) return;
         if (isCustomAnimationLocked && !ignoreCustomAnimationLock)
             return;
 
@@ -291,13 +406,24 @@ public class ActorVisual : MonoBehaviour
 
     public IEnumerator WaitCurrentAnimationEnd()
     {
-        if (animator == null)
+        int version = actionAnimationVersion;
+        if (actionTracker.IsPlaying)
+        {
+            while (version == actionAnimationVersion && actionTracker.IsPlaying) yield return null;
             yield break;
-
+        }
+        if (animator == null) yield break;
         yield return null;
-
-        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
-        yield return new WaitForSeconds(stateInfo.length);
+        AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
+        int hash = state.fullPathHash;
+        float elapsed = 0f;
+        while (animator != null && elapsed < maximumActionAnimationTime)
+        {
+            state = animator.GetCurrentAnimatorStateInfo(0);
+            if (state.fullPathHash != hash || state.normalizedTime >= 1f) break;
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
     }
 
     public virtual bool PlayAnimationByName(
@@ -312,6 +438,7 @@ public class ActorVisual : MonoBehaviour
         float normalizedTime = 0f,
         float crossFadeTime = 0f)
     {
+        if (IsHitPlaying || IsDeathPlaying) return false;
         if (animator == null)
             return false;
 
@@ -320,7 +447,7 @@ public class ActorVisual : MonoBehaviour
 
         if (!TryGetStateHash(stateName, layer, out int stateHash))
         {
-            Debug.LogWarning($"[{name}] Animator State�� ã�� �� ����: {stateName}");
+            Debug.LogWarning($"[{name}] Animator State를 찾을 수 없음: {stateName}");
             return false;
         }
 
@@ -337,6 +464,7 @@ public class ActorVisual : MonoBehaviour
         CancelCustomAnimationLock();
 
         animator.speed = 1f;
+        ClearActionAnimation();
 
         if (stopMove)
         {
@@ -416,9 +544,12 @@ public class ActorVisual : MonoBehaviour
     private IEnumerator CustomAnimationLockRoutine(int stateHash, int layer, bool returnIdleWhenEnd)
     {
         yield return null;
-
+        float elapsed = 0f;
         while (animator != null)
         {
+            if (IsAnimationPaused || animator.speed <= 0f) { yield return null; continue; }
+            elapsed += Time.deltaTime;
+            if (elapsed >= maximumActionAnimationTime) break;
             AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(layer);
 
             bool isCurrentCustomState =

@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "EnemyStatModifierAction", menuName = "GameData/Enemy/Enemy Pattern/Action/Stat Modifier")]
@@ -32,7 +32,8 @@ public class EnemyStatModifierAction : EnemyPatternAction
 
         context.AddRuntimeModifier(modifier);
 
-        if (waitUntilEnd && duration > 0f)
-            yield return new WaitForSeconds(duration);
+        // 실제 보정의 만료를 기다린다. 일시 정지 뒤 남은 시간을 다시 기다리지 않는다.
+        if (waitUntilEnd)
+            while (!modifier.IsExpired) yield return null;
     }
 }

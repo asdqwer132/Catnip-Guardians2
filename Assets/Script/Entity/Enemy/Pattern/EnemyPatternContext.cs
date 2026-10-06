@@ -1,3 +1,4 @@
+﻿using System.Collections;
 using UnityEngine;
 
 public class EnemyPatternContext
@@ -68,12 +69,7 @@ public class EnemyPatternContext
 
     public IDamageable GetTargetDamageable()
     {
-        Transform target = GetTargetTransform();
-
-        if (target == null)
-            return null;
-
-        return target.GetComponentInParent<IDamageable>();
+        return Target != null ? Target.TargetDamageable : null;
     }
 
     public float GetDistanceToTarget()
@@ -85,6 +81,17 @@ public class EnemyPatternContext
     }
 
     #endregion
+
+    // 강제 이동으로 패턴이 멈추면 대기 시간도 함께 멈춘다.
+    public IEnumerator WaitSeconds(float duration)
+    {
+        float elapsed = 0f;
+        while (elapsed < Mathf.Max(0f, duration))
+        {
+            yield return null;
+            elapsed += Time.deltaTime;
+        }
+    }
 
     #region Stat
 
@@ -185,7 +192,7 @@ public class EnemyPatternContext
             Visual.PlayMove(delta.normalized);
     }
 
-    // ���� �׼� �ڵ� ȣȯ��
+    // 이전 액션 코드 호환용
     public void MoveBy(Vector2 delta, bool playMove)
     {
         MoveBy(delta);
@@ -247,6 +254,7 @@ public class EnemyPatternContext
             Mover.FaceDirection(direction);
             return;
         }
+        if (Visual != null) Visual.LookDirection(direction);
     }
 
 

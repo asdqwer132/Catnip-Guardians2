@@ -1,4 +1,9 @@
-using UnityEngine;
+﻿using UnityEngine;
+
+public enum EnemyBehaviorState
+{
+    Idle, Moving, PreparingAttack, Attacking, Pattern, MovementControlled, Hit, Stopped, DeathPattern, Dead
+}
 
 public class Enemy : HealthActor, IPoolable, IBuffTarget
 {
@@ -16,6 +21,12 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     [Header("Status")]
     public EnemyStatusController statusController;
+
+    [Header("Hit Reaction")]
+    [Tooltip("피격 시 기본행동을 차단하는 최소 시간입니다. 피격 애니메이션이 더 길면 끝까지 기다립니다.")]
+    [Min(0.01f)] public float minimumHitReactionTime = 0.15f;
+    [SerializeField] private EnemyBehaviorState behaviorState;
+    private float hitReactionRemainingTime;
 
     [Header("Movement Control")]
     [Tooltip("이 적은 아이템의 밀어내기/끌어당기기에 면역입니다.")]
@@ -40,6 +51,13 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     public bool IsActionDisabled => isActionDisabled || isStunned;
     public bool IsFullyStopped => isFullyStopped || isActionDisabled || isStunned;
     public bool IsStunned => isStunned;
+    public bool IsHitReacting => !IsDead && (hitReactionRemainingTime > 0f ||
+        (visual != null && visual.IsHitPlaying));
+    public EnemyBehaviorState BehaviorState => behaviorState;
+    public bool CanRunDefaultActions => isInitialized && isActiveAndEnabled && !IsDead &&
+        !IsFullyStopped && !IsHitReacting &&
+        (patternRunner == null || (!patternRunner.IsExecuting && !patternRunner.IsHandlingLethalDamage)) &&
+        (mover == null || !mover.IsBaseMovementBlocked);
     public int HitEffectLifeId => hitEffectLifeId;
     public bool CanReceiveHitEffects => isInitialized && !IsDead && isActiveAndEnabled;
 
@@ -91,8 +109,11 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     protected override void OnDisable()
     {
+        ClearHitReaction();
+        if (patternRunner != null) patternRunner.StopPattern();
+        if (attack != null) attack.CancelAttack();
         if (mover != null)
-            mover.CancelMovementControl();
+            mover.ClearAllVelocity();
         InvalidateHitEffectLife();
         ClearHitEffectStatuses();
         base.OnDisable();
@@ -106,43 +127,62 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     private void Update()
     {
-        if (!isInitialized)
-            return;
+        if (!isInitialized) return;
+        if (IsDead) { behaviorState = EnemyBehaviorState.Dead; return; }
+        hitReactionRemainingTime = Mathf.Max(0f, hitReactionRemainingTime - Time.deltaTime);
 
-        if (IsDead)
-            return;
-
-        if (mover != null && mover.IsMovementControlled)
+        // 사망 예약은 일반 정지·피격·이동제어보다 우선한다.
+        if (patternRunner != null && patternRunner.IsHandlingLethalDamage)
         {
-            // 사망 패턴을 밀기/당기기로 지연하거나 취소하지 않는다.
-            if (patternRunner != null && patternRunner.IsHandlingLethalDamage)
-                mover.CancelMovementControl();
-            else if (mover.IsBaseMovementBlocked)
-                return;
+            behaviorState = EnemyBehaviorState.DeathPattern;
+            ClearHitReaction();
+            if (mover != null) { mover.CancelMovementControl(); mover.SetMoveStopped(false); }
+            if (attack != null) attack.SetAttackStopped(false);
+            patternRunner.TickPattern();
+            return;
         }
 
         if (IsFullyStopped)
-            return;
-
-        if (actorTarget == null || !actorTarget.HasTarget)
         {
-            StopMove();
-            CancelAttack();
+            behaviorState = EnemyBehaviorState.Stopped;
+            if (patternRunner != null) patternRunner.TickPattern(false);
             return;
         }
 
-        Transform targetTransform = actorTarget.TargetTransform;
-
-        if (targetTransform == null)
+        if (IsHitReacting)
         {
+            behaviorState = EnemyBehaviorState.Hit;
             StopMove();
-            CancelAttack();
+            if (patternRunner != null) patternRunner.TickPattern(false);
+            return;
+        }
+
+        bool blockedByMovementControl = mover != null && mover.IsBaseMovementBlocked;
+        if (visual != null)
+            visual.SetPatternAnimationPaused(blockedByMovementControl && patternRunner != null && patternRunner.IsExecuting);
+        if (blockedByMovementControl)
+        {
+            behaviorState = EnemyBehaviorState.MovementControlled;
+            StopMove();
+            if (patternRunner != null) patternRunner.TickPattern(false);
             return;
         }
 
         if (patternRunner != null && patternRunner.TickPattern())
+        {
+            behaviorState = EnemyBehaviorState.Pattern;
             return;
+        }
 
+        // 타깃이 사라져도 자기 위치에서 실행할 패턴은 먼저 처리한다.
+        Transform targetTransform = actorTarget != null && actorTarget.HasTarget ? actorTarget.TargetTransform : null;
+        if (targetTransform == null)
+        {
+            behaviorState = EnemyBehaviorState.Idle;
+            StopMove();
+            CancelAttack();
+            return;
+        }
         TickDefaultAI(targetTransform);
     }
 
@@ -154,6 +194,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     {
         if (attack == null)
         {
+            behaviorState = EnemyBehaviorState.Moving;
             MoveToTarget(targetTransform);
             return;
         }
@@ -162,13 +203,17 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
         if (!isAtAttackDistance)
         {
+            behaviorState = EnemyBehaviorState.Moving;
             CancelAttack();
             MoveToAttackDistance(targetTransform);
             return;
         }
 
-        if (mover != null && !mover.IsMoving)
-            attack.TickAttack();
+        // 사거리 안에서는 잔여 기본 속도까지 즉시 제거하고 공격 준비에 들어간다.
+        StopMove();
+        attack.TickAttack();
+        behaviorState = attack.IsPreparing ? EnemyBehaviorState.PreparingAttack :
+            attack.IsAttacking ? EnemyBehaviorState.Attacking : EnemyBehaviorState.Idle;
     }
 
     #endregion
@@ -218,6 +263,8 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     private void ApplyFullStopState()
     {
+        if (patternRunner != null && patternRunner.IsHandlingLethalDamage) return;
+        ClearHitReaction();
         if (patternRunner != null)
             patternRunner.ForceStopPattern();
 
@@ -314,6 +361,16 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
             SetStunned(false);
     }
 
+    private void ClearHitReaction()
+    {
+        hitReactionRemainingTime = 0f;
+        if (visual != null)
+        {
+            visual.SetPatternAnimationPaused(false);
+            visual.CancelHitReaction();
+        }
+    }
+
     private void InvalidateHitEffectLife()
     {
         unchecked { hitEffectLifeId++; }
@@ -321,6 +378,10 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     protected override void ResetActorStateForReuse()
     {
+        ClearHitReaction();
+        behaviorState = EnemyBehaviorState.Idle;
+        if (attack != null) attack.ResetAttackState();
+        if (mover != null) mover.ClearAllVelocity();
         InvalidateHitEffectLife();
         ClearHitEffectStatuses();
         if (buffManager != null)
@@ -361,6 +422,9 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     public void OnSpawnedFromPool()
     {
         isInitialized = false;
+        ClearHitReaction();
+        behaviorState = EnemyBehaviorState.Idle;
+        if (attack != null) attack.ResetAttackState();
         InvalidateHitEffectLife();
         ClearHitEffectStatuses();
         isActionDisabled = false;
@@ -387,6 +451,8 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     public void OnReturnedToPool()
     {
         isInitialized = false;
+        ClearHitReaction();
+        behaviorState = EnemyBehaviorState.Idle;
         InvalidateHitEffectLife();
         ClearHitEffectStatuses();
         isActionDisabled = false;
@@ -404,7 +470,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         if (attack != null)
         {
             attack.SetAttackStopped(false);
-            attack.CancelAttack();
+            attack.ResetAttackState();
         }
 
         if (patternRunner != null)
@@ -429,6 +495,15 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     public void Init(IDamageable target, BuffManager injectedBuffManager, EnemyDataSet dataSet)
     {
+        if (dataSet == null)
+        {
+            Debug.LogError($"[{name}] EnemyDataSet이 없습니다.", this);
+            return;
+        }
+        isInitialized = false;
+        ClearHitReaction();
+        behaviorState = EnemyBehaviorState.Idle;
+        if (attack != null) attack.ResetAttackState();
         InvalidateHitEffectLife();
         ClearHitEffectStatuses();
         buffManager = injectedBuffManager;
@@ -449,8 +524,13 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
             attack.SetAttackStopped(false);
 
         statData = dataSet.statData;
-        patternRunner.patternData = dataSet.patternData;
-        visual.animator.runtimeAnimatorController = dataSet.animatorController;
+        if (patternRunner != null)
+        {
+            patternRunner.patternData = dataSet.patternData;
+            patternRunner.Init(this);
+        }
+        if (visual != null && visual.animator != null)
+            visual.animator.runtimeAnimatorController = dataSet.animatorController;
 
 
         ResumeAnimation();
@@ -464,9 +544,6 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
         if (actorTarget != null)
             actorTarget.SetTarget(target);
-
-        if (patternRunner != null)
-            patternRunner.Init(this);
 
         if (buffManager != null)
             buffManager.RegisterBuffTarget(this);
@@ -610,11 +687,21 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     public override void TakeDamage(float damage)
     {
+        if (IsDead || damage <= 0f || float.IsNaN(damage) || float.IsInfinity(damage)) return;
         if (patternRunner != null)
             damage = patternRunner.ModifyIncomingDamage(damage);
 
+        bool wasHandlingLethalDamage = patternRunner != null && patternRunner.IsHandlingLethalDamage;
         if (patternRunner != null && patternRunner.TryHandleLethalDamage(damage))
+        {
+            if (!wasHandlingLethalDamage)
+            {
+                ClearHitReaction();
+                CancelAttack();
+                if (mover != null) mover.ClearAllVelocity();
+            }
             return;
+        }
 
         base.TakeDamage(damage);
     }
@@ -630,9 +717,16 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     protected override void OnDamaged(float damage)
     {
-        if (IsDead)
+        if (IsDead || (health != null && health.Hp <= 0f) ||
+            (patternRunner != null && patternRunner.IsHandlingLethalDamage))
             return;
 
+        CancelAttack();
+        StopMove();
+        // 일반 패턴의 커스텀 연출보다 피격에 집중한다. 사망 패턴은 위에서 제외했다.
+        if (patternRunner != null) patternRunner.StopPattern();
+        hitReactionRemainingTime = Mathf.Max(0.01f, minimumHitReactionTime);
+        behaviorState = EnemyBehaviorState.Hit;
         if (visual != null)
             visual.PlayHit();
 
@@ -642,6 +736,8 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     protected override void OnDeathStarted()
     {
+        ClearHitReaction();
+        behaviorState = EnemyBehaviorState.Dead;
         InvalidateHitEffectLife();
         ClearHitEffectStatuses();
         StopMove();

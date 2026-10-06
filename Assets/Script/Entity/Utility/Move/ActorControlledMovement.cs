@@ -14,6 +14,14 @@ internal struct ActorControlledMovement
     internal bool SuppressBaseMovement => active && request.suppressBaseMovement;
     internal bool AllowWhileStopped => active && request.allowWhileStopped;
 
+    internal Vector2 GetResistanceDirection(Vector2 position)
+    {
+        if (!active) return Vector2.zero;
+        if (request.mode == ActorMovementControlMode.PushAway) return -pushDirection;
+        Vector2 awayFromCenter = position - request.center;
+        return awayFromCenter.sqrMagnitude > Epsilon ? awayFromCenter.normalized : pushDirection;
+    }
+
     internal bool IsControlledBy(object source)
     {
         return active && source != null && ReferenceEquals(request.source, source);

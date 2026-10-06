@@ -1,5 +1,4 @@
-using System;
-using UnityEditor.Animations;
+﻿using System;
 using UnityEngine;
 [Serializable]
 
@@ -7,7 +6,7 @@ using UnityEngine;
 public class EnemyDataSet : ScriptableObject
 {
     [Header("Animation")]
-    public AnimatorController animatorController;
+    public RuntimeAnimatorController animatorController;
     [Header("Data")]
     public EnemyStatData statData;
     public EnemyPatternSetData patternData;

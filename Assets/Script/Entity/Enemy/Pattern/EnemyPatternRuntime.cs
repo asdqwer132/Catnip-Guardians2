@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class EnemyPatternRuntime
 {
@@ -22,14 +22,14 @@ public class EnemyPatternRuntime
             CooldownTimer = 0f;
     }
 
-    public void StartCooldown()
+    public void StartCooldown(bool consume = true)
     {
         if (Entry == null)
             return;
 
         CooldownTimer = Mathf.Max(0f, Entry.cooldown);
 
-        if (Entry.consumeOnce)
+        if (consume && Entry.consumeOnce)
             Consumed = true;
     }
 

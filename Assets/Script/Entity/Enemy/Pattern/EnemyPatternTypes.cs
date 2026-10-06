@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -45,7 +45,7 @@ public class EnemyPatternEntry
     [TextArea] public string memo;
     public bool enabled = true;
     public EnemyPatternPickGroup pickGroup = EnemyPatternPickGroup.Random1;
-    public bool blockDefaultAI = true;
+    [HideInInspector] public bool blockDefaultAI = true; // 이전 에셋 호환용. 현재는 항상 차단한다.
 
     [Header("Pick")]
     [Min(0f)] public float weight = 1f;

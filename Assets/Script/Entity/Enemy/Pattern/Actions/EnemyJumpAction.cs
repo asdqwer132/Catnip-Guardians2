@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "EnemyJumpAction", menuName = "GameData/Enemy/Enemy Pattern/Action/Jump To Target")]
@@ -39,6 +39,8 @@ public class EnemyJumpAction : EnemyPatternAction
 
         Vector3 endPosition = targetPosition + (Vector3)(directionFromTarget.normalized * endDistanceFromTarget);
         float timer = 0f;
+        Vector3 pathOffset = Vector3.zero;
+        Vector3 lastWrittenPosition = startPosition;
 
         mover.Stop();
         context.FaceDirection((Vector2)(endPosition - startPosition));
@@ -49,16 +51,20 @@ public class EnemyJumpAction : EnemyPatternAction
             float t = timer / Mathf.Max(0.0001f, duration);
             float smoothT = Mathf.SmoothStep(0f, 1f, t);
 
-            Vector3 position = Vector3.Lerp(startPosition, endPosition, smoothT);
+            // 패턴을 멈추고 강제로 옮긴 변위는 재개 후에도 보존한다.
+            pathOffset += context.Position - lastWrittenPosition;
+            Vector3 position = Vector3.Lerp(startPosition, endPosition, smoothT) + pathOffset;
             position.y += Mathf.Sin(t * Mathf.PI) * visualArcHeight;
 
             mover.SetPosition(position);
+            lastWrittenPosition = position;
 
             timer += deltaTime;
             yield return null;
         }
 
-        mover.SetPosition(endPosition);
+        pathOffset += context.Position - lastWrittenPosition;
+        mover.SetPosition(endPosition + pathOffset);
         mover.Stop();
 
         if (damageOnLanding && hitRadius > 0f && context.IsTargetInRadius(hitRadius))

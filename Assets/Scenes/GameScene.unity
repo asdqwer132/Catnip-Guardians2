@@ -1880,6 +1880,13 @@ MonoBehaviour:
   hitTriggerName: Hit
   dieTriggerName: Die
   idleStateName: Idle
+  attackStateName: Attack
+  hitStateName: Hit
+  dieStateName: Die
+  attackFallbackDuration: 0.3
+  hitFallbackDuration: 0.18
+  animationEntryTimeout: 0.2
+  maximumActionAnimationTime: 5
 --- !u!114 &329843155
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8063,7 +8070,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemTester
   items:
   - isUse: 1
-    item: {fileID: 11400000, guid: 1b380765c9da64b42a642fbd1c40ac28, type: 2}
+    item: {fileID: 11400000, guid: 324d63b8b67ec8d469dd859a740a7330, type: 2}
     targetBagData: {fileID: 166470119}
 --- !u!1 &907073005
 GameObject:
@@ -18047,6 +18054,7 @@ MonoBehaviour:
   deceleration: 45
   externalDamping: 10
   stopVelocityThreshold: 0.02
+  faceAgainstMovementControl: 1
   visual: {fileID: 1836332731}
   attack: {fileID: 0}
   isMoving: 0
@@ -18077,6 +18085,13 @@ MonoBehaviour:
   hitTriggerName: Hit
   dieTriggerName: Die
   idleStateName: Idle
+  attackStateName: Attack
+  hitStateName: Hit
+  dieStateName: Die
+  attackFallbackDuration: 0.3
+  hitFallbackDuration: 0.18
+  animationEntryTimeout: 0.2
+  maximumActionAnimationTime: 5
   moveXFloatName: MoveX
   moveYFloatName: MoveY
   idleXFloatName: IdleX

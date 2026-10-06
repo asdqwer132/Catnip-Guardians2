@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cf1b2247af5b8246baf3175c0e3897f, type: 3}
+  m_Name: SummonAttackEffect
+  m_EditorClassIdentifier: Assembly-CSharp::SummonAttackEffect
+  conditionMode: 0
+  conditions: []
+  visualData: {fileID: 0}
+  impactVfxPrefab: {fileID: 0}
+  impactBaseScale: {x: 1, y: 1, z: 1}
+  scaleImpactVfxByRadius: 1
+  useAnimatorClipLifeTime: 1
+  audioSource: 
+  impactVfxLifeTime: 1
+  attackStat:
+    summonAttackPower: 0
+    summonThrowInterval: 0.5
+    summonAttackRange: 0.5
+    summonLifeTime: 0.5
+  attackPrefab: {fileID: 0}

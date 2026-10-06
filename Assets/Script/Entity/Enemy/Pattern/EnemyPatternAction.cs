@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 
 public abstract class EnemyPatternAction : ScriptableObject
@@ -25,7 +25,7 @@ public abstract class EnemyPatternAction : ScriptableObject
         }
 
         PlayEffect(beforeEffectPrefab, context.Position);
-        if(!string.IsNullOrEmpty(audioByName.categoryName) && !string.IsNullOrEmpty(audioByName.clipName))
+        if(AudioManager.instance != null && !string.IsNullOrEmpty(audioByName.categoryName) && !string.IsNullOrEmpty(audioByName.clipName))
             AudioManager.instance.PlaySfx(audioByName.categoryName, audioByName.clipName);
     }
 
@@ -33,6 +33,9 @@ public abstract class EnemyPatternAction : ScriptableObject
     {
         PlayEffect(afterEffectPrefab, context.Position);
     }
+    // ì¤‘ë‹¨ ì •ë¦¬ëŠ” ì´ í›… ë˜ëŠ” Executeì˜ try/finallyì—ì„œ ì²˜ë¦¬í•œë‹¤.
+    public virtual void OnPatternInterrupted(EnemyPatternContext context, EnemyPatternEntry pattern) { }
+
     private void PlayEffect(GameObject prefab, Vector3 position)
     {
         if (prefab == null)
@@ -50,7 +53,7 @@ public abstract class EnemyPatternAction : ScriptableObject
         }
         else
         {
-            // Ç® ¸Å´ÏÀú ¾øÀ» ¶§ ¿¹ºñ¿ë
+            // í’€ ë§¤ë‹ˆì € ì—†ì„ ë•Œ ì˜ˆë¹„ìš©
             effect = Instantiate(prefab, position, Quaternion.identity);
         }
 

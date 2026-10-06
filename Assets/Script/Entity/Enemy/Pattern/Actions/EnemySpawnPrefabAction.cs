@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "EnemySpawnPrefabAction", menuName = "GameData/Enemy/Enemy Pattern/Action/Spawn Prefab")]
@@ -27,7 +27,7 @@ public class EnemySpawnPrefabAction : EnemyPatternAction
             Instantiate(spawnPrefab, position, Quaternion.identity);
 
             if (interval > 0f && i < spawnCount - 1)
-                yield return new WaitForSeconds(interval);
+                yield return context.WaitSeconds(interval);
         }
     }
 }

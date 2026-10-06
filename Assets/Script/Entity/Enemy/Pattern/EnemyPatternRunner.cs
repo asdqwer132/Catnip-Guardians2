@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -34,6 +34,16 @@ public class EnemyPatternRunner : MonoBehaviour
     private EnemyPatternRuntime queuedReactivePattern;
     private EnemyPatternRuntime queuedDeathPattern;
 
+    private readonly List<EnemyPatternRuntime> candidates = new List<EnemyPatternRuntime>();
+    private readonly Stack<IEnumerator> executionStack = new Stack<IEnumerator>();
+    private EnemyPatternRuntime activeRuntime;
+    private EnemyPatternAction activeAction;
+    private int executionVersion;
+    private bool steppingAction;
+    private bool cleanupPending;
+    private bool moveStoppedBeforePattern;
+    private bool attackStoppedBeforePattern;
+
     private float patternCooldownTimer;
     private bool initialized;
     private bool isHandlingLethalDamage;
@@ -41,7 +51,10 @@ public class EnemyPatternRunner : MonoBehaviour
 
     public bool IsExecuting => isExecuting;
     public bool IsHandlingLethalDamage => isHandlingLethalDamage;
-    public bool IsBlockingDefaultAI => isExecuting && isBlockingDefaultAI;
+    public bool IsBlockingDefaultAI => isExecuting;
+    public bool CanAdvancePattern => initialized && isActiveAndEnabled && enemy != null && !enemy.IsDead &&
+        (isHandlingLethalDamage || (!enemy.IsFullyStopped && !enemy.IsHitReacting &&
+         (mover == null || !mover.IsBaseMovementBlocked)));
 
     private void Awake()
     {
@@ -93,7 +106,7 @@ public class EnemyPatternRunner : MonoBehaviour
         StopPattern();
         BuildRuntimeList();
         ClearRuntimeModifiers();
-        patternCooldown = Random.Range(patternData.minPatternCooldown, patternData.maxPatternCooldown);
+        patternCooldown = GetRandomPatternCooldown();
         patternCooldownTimer = 0f;
         nextPatternRemainingTime = 0f;
         nextPatternState = "Ready";
@@ -121,37 +134,34 @@ public class EnemyPatternRunner : MonoBehaviour
         }
     }
 
-    public bool TickPattern()
+    private void OnDisable()
     {
-        if (!initialized)
-            return false;
-        if (enemy != null && enemy.IsFullyStopped)
-            return false;
-        if (patternData == null)
-            return false;
-
-        if (enemy == null || enemy.IsDead)
-            return false;
-
-        TickTimers();
-
-        if (isExecuting)
-            return IsBlockingDefaultAI;
-
-        EnemyPatternRuntime nextPattern = ConsumeQueuedDeathPattern();
-
-        if (nextPattern == null)
-            nextPattern = ConsumeQueuedReactivePattern();
-
-        if (nextPattern == null)
-            nextPattern = PickAutoPattern();
-
-        if (nextPattern == null)
-            return false;
-
-        StartPattern(nextPattern);
-        return IsBlockingDefaultAI;
+        ForceStopPattern();
+        ClearRuntimeModifiers();
     }
+
+    public bool TickPattern(bool allowStart = true)
+    {
+        if (!initialized || !isActiveAndEnabled || enemy == null || enemy.IsDead) return false;
+        TickTimers();
+        if (isExecuting) return true;
+        if (!allowStart || !CanAdvancePattern || patternData == null || Time.deltaTime <= 0f) return false;
+
+        EnemyPatternRuntime next = ConsumeQueuedDeathPattern();
+        if (next == null && isHandlingLethalDamage)
+        {
+            // 예약 후 조건이 바뀌거나 외부에서 중단해도 사망 처리가 영원히 보류되지 않는다.
+            FinishLethalDamagePattern();
+            return true;
+        }
+        if (next == null) next = ConsumeQueuedReactivePattern();
+        if (next == null) next = PickAutoPattern();
+        if (next == null) return false;
+        StartPattern(next);
+        // 즉시 끝나는 패턴도 이번 프레임에는 기본 AI가 덮어쓰지 않는다.
+        return true;
+    }
+
     private void TickTimers()
     {
         float deltaTime = Time.deltaTime;
@@ -215,44 +225,34 @@ public class EnemyPatternRunner : MonoBehaviour
     }
     private EnemyPatternRuntime PickWeightedAutoPattern()
     {
+        return PickWeightedPattern(EnemyPatternPickGroup.Random1, EnemyPatternConditionType.Always, false);
+    }
+
+    // 확률 판정은 후보마다 한 번만 한다. 추첨 도중 후보가 바뀌지 않는다.
+    private EnemyPatternRuntime PickWeightedPattern(EnemyPatternPickGroup group,
+        EnemyPatternConditionType requiredCondition, bool requireCondition)
+    {
+        candidates.Clear();
         float totalWeight = 0f;
-
         for (int i = 0; i < runtimes.Count; i++)
         {
             EnemyPatternRuntime runtime = runtimes[i];
-
-            if (!CanRunPattern(runtime, false))
-                continue;
-
-            if (!IsAutoPickGroup(runtime.Entry.pickGroup))
-                continue;
-
-            totalWeight += Mathf.Max(0f, runtime.Entry.weight);
+            if (runtime.Entry.pickGroup != group ||
+                (requireCondition && !runtime.Entry.HasCondition(requiredCondition)) ||
+                !CanRunPattern(runtime, false)) continue;
+            float weight = Mathf.Max(0f, runtime.Entry.weight);
+            if (weight <= 0f || float.IsNaN(weight) || float.IsInfinity(weight)) continue;
+            candidates.Add(runtime);
+            totalWeight += weight;
         }
-
-        if (totalWeight <= 0f)
-            return null;
-
-        float random = Random.Range(0f, totalWeight);
-        float current = 0f;
-
-        for (int i = 0; i < runtimes.Count; i++)
+        if (candidates.Count == 0) return null;
+        float pick = Random.Range(0f, totalWeight);
+        for (int i = 0; i < candidates.Count; i++)
         {
-            EnemyPatternRuntime runtime = runtimes[i];
-
-            if (!CanRunPattern(runtime, false))
-                continue;
-
-            if (!IsAutoPickGroup(runtime.Entry.pickGroup))
-                continue;
-
-            current += Mathf.Max(0f, runtime.Entry.weight);
-
-            if (random <= current)
-                return runtime;
+            pick -= Mathf.Max(0f, candidates[i].Entry.weight);
+            if (pick <= 0f) return candidates[i];
         }
-
-        return null;
+        return candidates[candidates.Count - 1];
     }
 
     private bool IsAutoPickGroup(EnemyPatternPickGroup group)
@@ -265,6 +265,7 @@ public class EnemyPatternRunner : MonoBehaviour
     }
     private void UpdatePatternCooldownDebug()
     {
+#if UNITY_EDITOR
         if (!Application.isPlaying)
             return;
 
@@ -306,6 +307,7 @@ public class EnemyPatternRunner : MonoBehaviour
                 ? $"Next {remainingTime:0.0}s"
                 : "Ready";
         }
+#endif
     }
 
     private float GetMinAvailableAutoPatternCooldown()
@@ -383,95 +385,149 @@ public class EnemyPatternRunner : MonoBehaviour
 
     private void StartPattern(EnemyPatternRuntime runtime)
     {
-        if (runtime == null || runtime.Entry == null)
-            return;
-
-        if (patternCoroutine != null)
-            StopCoroutine(patternCoroutine);
-
-        PreparePatternState(runtime.Entry);
-        patternCoroutine = StartCoroutine(RunPattern(runtime));
-    }
-
-    private void PreparePatternState(EnemyPatternEntry entry)
-    {
+        if (runtime == null || runtime.Entry == null) return;
+        StopPattern();
+        activeRuntime = runtime;
         isExecuting = true;
-        isBlockingDefaultAI = ShouldBlockDefaultAI(entry);
-        currentPatternName = string.IsNullOrEmpty(entry.patternName) ? entry.pickGroup.ToString() : entry.patternName;
+        isBlockingDefaultAI = true;
+        currentPatternName = string.IsNullOrEmpty(runtime.Entry.patternName)
+            ? runtime.Entry.pickGroup.ToString() : runtime.Entry.patternName;
+        moveStoppedBeforePattern = mover != null && mover.IsMoveStopped;
+        attackStoppedBeforePattern = attack != null && attack.IsAttackStopped;
+        unchecked { executionVersion++; }
+        int version = executionVersion;
+
+        // 패턴 설정과 관계없이 기본 이동/공격을 패턴 시작 시 인계한다.
+        context.CancelDefaultAttack();
+        context.StopMove();
+        Coroutine started = StartCoroutine(RunPattern(runtime, version));
+        // 첫 yield 전에 끝난 패턴의 낡은 코루틴 핸들을 보관하지 않는다.
+        if (isExecuting && version == executionVersion) patternCoroutine = started;
     }
 
-    private bool ShouldBlockDefaultAI(EnemyPatternEntry entry)
-    {
-        if (entry == null)
-            return false;
-
-        if (entry.blockDefaultAI)
-            return true;
-
-        if (entry.actions == null)
-            return false;
-
-        for (int i = 0; i < entry.actions.Count; i++)
-        {
-            EnemyPatternAction action = entry.actions[i];
-
-            if (action != null && action.ForceBlockDefaultAI)
-                return true;
-        }
-
-        return false;
-    }
-    private IEnumerator RunPattern(EnemyPatternRuntime runtime)
+    private IEnumerator RunPattern(EnemyPatternRuntime runtime, int version)
     {
         EnemyPatternEntry entry = runtime.Entry;
-
-        if (patternData != null)
+        bool completed = false;
+        try
         {
-            if (patternData.cancelDefaultAttackOnPatternStart)
-                context.CancelDefaultAttack();
-
-            if (patternData.stopMoveOnPatternStart)
-                context.StopMove();
-        }
-
-        if (patternData != null && patternData.showLog)
-            Debug.Log($"[EnemyPatternRunner] Start Pattern: {currentPatternName}", this);
-
-        if (entry.actions != null)
-        {
-            for (int i = 0; i < entry.actions.Count; i++)
+            if (patternData != null && patternData.showLog)
+                Debug.Log($"[EnemyPatternRunner] Start Pattern: {currentPatternName}", this);
+            if (entry.actions != null)
             {
-                EnemyPatternAction action = entry.actions[i];
+                for (int i = 0; i < entry.actions.Count; i++)
+                {
+                    while (!CanAdvancePattern && version == executionVersion) yield return null;
+                    if (version != executionVersion || enemy == null || enemy.IsDead) yield break;
+                    EnemyPatternAction action = entry.actions[i];
+                    if (action == null) continue;
+                    activeAction = action;
+                    action.OnPatternStart(context, entry);
+                    if (version != executionVersion) yield break;
+                    yield return ExecuteAction(action.Execute(context, entry), version);
+                    if (version != executionVersion) yield break;
+                    // 즉시 끝나는 액션도 지정한 애니메이션을 끝까지 보여준다.
+                    context.StopMove();
+                    while (visual != null && visual.IsCustomAnimationLocked && version == executionVersion)
+                        yield return null;
+                    if (version != executionVersion) yield break;
+                    action.OnPatternEnd(context, entry);
+                    activeAction = null;
+                }
+            }
+            completed = true;
+        }
+        finally
+        {
+            if (version == executionVersion) FinishPattern(runtime, completed);
+        }
+    }
 
-                if (action == null)
-                    continue;
+    // 중첩 IEnumerator를 한곳에서 진행한다. 상위 상태가 개입하면 진행을 멈춘다.
+    private IEnumerator ExecuteAction(IEnumerator routine, int version)
+    {
+        if (routine == null) yield break;
+        executionStack.Push(routine);
+        while (executionStack.Count > 0 && version == executionVersion)
+        {
+            if (!CanAdvancePattern || Time.deltaTime <= 0f) { yield return null; continue; }
+            IEnumerator current = executionStack.Peek();
+            bool hasNext;
+            steppingAction = true;
+            try { hasNext = current.MoveNext(); }
+            finally
+            {
+                steppingAction = false;
+                if (cleanupPending) DisposeActionStack();
+            }
+            if (version != executionVersion) yield break;
+            if (!hasNext)
+            {
+                executionStack.Pop();
+                DisposeEnumerator(current);
+                continue;
+            }
+            IEnumerator nested = current.Current as IEnumerator;
+            if (nested != null) executionStack.Push(nested);
+            else yield return current.Current;
+        }
+    }
 
-                action.OnPatternStart(context, entry);
+    private static void DisposeEnumerator(IEnumerator routine)
+    {
+        System.IDisposable disposable = routine as System.IDisposable;
+        if (disposable != null) disposable.Dispose();
+    }
 
-                yield return action.Execute(context, entry);
+    private void DisposeActionStack()
+    {
+        cleanupPending = false;
+        while (executionStack.Count > 0)
+        {
+            try { DisposeEnumerator(executionStack.Pop()); }
+            catch (System.Exception exception) { Debug.LogException(exception, this); }
+        }
+    }
 
-                action.OnPatternEnd(context, entry);
-
-                if (enemy == null || enemy.IsDead)
-                    break;
+    private void RestorePatternState(bool cancelVisual)
+    {
+        if (attack != null) attack.CancelAttack();
+        if (mover != null) mover.Stop();
+        if (visual != null)
+        {
+            visual.SetPatternAnimationPaused(false);
+            if (cancelVisual)
+            {
+                visual.CancelCustomAnimation();
+                visual.ForceIdle(Vector2.zero, false, false);
             }
         }
+        // 패턴 종료가 수동 전체 정지나 기절 상태를 해제하지 않게 한다.
+        if (enemy != null && !enemy.IsDead && (!enemy.IsFullyStopped || isHandlingLethalDamage))
+        {
+            if (mover != null) mover.SetMoveStopped(moveStoppedBeforePattern);
+            if (attack != null) attack.SetAttackStopped(attackStoppedBeforePattern);
+        }
+    }
 
-        runtime.StartCooldown();
-
-        SetNextPatternCooldown();
-
+    private void FinishPattern(EnemyPatternRuntime runtime, bool completed)
+    {
         if (patternData != null && patternData.showLog)
             Debug.Log($"[EnemyPatternRunner] End Pattern: {currentPatternName}", this);
-
+        runtime.StartCooldown(completed);
+        if (steppingAction) cleanupPending = true;
+        else DisposeActionStack();
+        RestorePatternState(true);
+        activeAction = null;
+        activeRuntime = null;
         isExecuting = false;
         isBlockingDefaultAI = false;
         currentPatternName = "None";
         patternCoroutine = null;
-
-        if (isHandlingLethalDamage)
-            FinishLethalDamagePattern();
+        SetNextPatternCooldown();
+        if (isHandlingLethalDamage) FinishLethalDamagePattern();
     }
+
     private void SetNextPatternCooldown()
     {
         patternCooldown = GetRandomPatternCooldown();
@@ -501,15 +557,25 @@ public class EnemyPatternRunner : MonoBehaviour
     }
     public void StopPattern()
     {
+        if (!isExecuting && patternCoroutine == null) return;
+        unchecked { executionVersion++; }
         if (patternCoroutine != null)
         {
             StopCoroutine(patternCoroutine);
             patternCoroutine = null;
         }
-
+        if (steppingAction) cleanupPending = true;
+        else DisposeActionStack();
+        if (activeAction != null && activeRuntime != null)
+            activeAction.OnPatternInterrupted(context, activeRuntime.Entry);
+        if (activeRuntime != null) activeRuntime.StartCooldown(false);
+        RestorePatternState(true);
+        activeAction = null;
+        activeRuntime = null;
         isExecuting = false;
         isBlockingDefaultAI = false;
         currentPatternName = "None";
+        SetNextPatternCooldown();
     }
 
     public void NotifyDamaged(float damage)
@@ -531,7 +597,11 @@ public class EnemyPatternRunner : MonoBehaviour
             return false;
 
         if (isHandlingLethalDamage)
-            return false;
+        {
+            // 사망 패턴 중 추가 타격이 사망 연출을 먼저 끝내지 않게 한다.
+            pendingLethalDamage += Mathf.Min(damage, float.MaxValue - pendingLethalDamage);
+            return true;
+        }
 
         if (enemy.health.Hp - damage > 0f)
             return false;
@@ -540,64 +610,25 @@ public class EnemyPatternRunner : MonoBehaviour
         if (deathPattern == null)
             return false;
 
+        StopPattern();
         isHandlingLethalDamage = true;
         pendingLethalDamage = damage;
         queuedDeathPattern = deathPattern;
         return true;
     }
 
-    private EnemyPatternRuntime PickReactivePattern(EnemyPatternPickGroup group, EnemyPatternConditionType requiredCondition)
+    private EnemyPatternRuntime PickReactivePattern(EnemyPatternPickGroup group,
+        EnemyPatternConditionType requiredCondition)
     {
-        float totalWeight = 0f;
-
-        for (int i = 0; i < runtimes.Count; i++)
-        {
-            EnemyPatternRuntime runtime = runtimes[i];
-            if (!CanRunPattern(runtime, false))
-                continue;
-
-            if (runtime.Entry.pickGroup != group)
-                continue;
-
-            if (!runtime.Entry.HasCondition(requiredCondition))
-                continue;
-
-            totalWeight += Mathf.Max(0f, runtime.Entry.weight);
-        }
-
-        if (totalWeight <= 0f)
-            return null;
-
-        float random = Random.Range(0f, totalWeight);
-        float current = 0f;
-
-        for (int i = 0; i < runtimes.Count; i++)
-        {
-            EnemyPatternRuntime runtime = runtimes[i];
-            if (!CanRunPattern(runtime, false))
-                continue;
-
-            if (runtime.Entry.pickGroup != group)
-                continue;
-
-            if (!runtime.Entry.HasCondition(requiredCondition))
-                continue;
-
-            current += Mathf.Max(0f, runtime.Entry.weight);
-            if (random <= current)
-                return runtime;
-        }
-
-        return null;
+        return PickWeightedPattern(group, requiredCondition, true);
     }
 
     private void FinishLethalDamagePattern()
     {
-        if (enemy != null && !enemy.IsDead)
-            enemy.ApplyDamageWithoutPattern(pendingLethalDamage);
-
+        float damage = pendingLethalDamage;
         isHandlingLethalDamage = false;
         pendingLethalDamage = 0f;
+        if (enemy != null && !enemy.IsDead) enemy.ApplyDamageWithoutPattern(damage);
     }
 
     #region Runtime Modifier

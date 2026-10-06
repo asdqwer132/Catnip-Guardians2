@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 public class ActorAttack : MonoBehaviour
@@ -9,6 +9,10 @@ public class ActorAttack : MonoBehaviour
     public float attackCooldown = 1f;
     public float attackDistanceTolerance = 0.15f;
 
+    [Header("Attack Preparation")]
+    [Tooltip("멈춰서 타깃을 바라본 뒤 공격하기까지의 시간입니다. 0이면 즉시 공격합니다.")]
+    [Min(0f)] public float attackPreparationTime = 0.1f;
+
     [Header("Components")]
     public ActorTarget target;
     public ActorVisual visual;
@@ -18,25 +22,62 @@ public class ActorAttack : MonoBehaviour
     [SerializeField] private bool isAttackStopped;
     [SerializeField] private bool isActionAttackPlaying;
 
+    private enum DefaultAttackPhase { None, Preparing, Animating }
+    private DefaultAttackPhase defaultPhase;
+    private Enemy enemyOwner;
+    private float preparationElapsed;
+    private float animationElapsed;
+    private float nextAttackTime;
+    private bool defaultDamageApplied;
+    private int attackVersion;
+
     public bool IsAttacking { get; private set; }
+    public bool IsPreparing => defaultPhase == DefaultAttackPhase.Preparing;
     public bool IsAttackStopped => isAttackStopped;
     public bool IsActionAttackPlaying => isActionAttackPlaying;
 
-    private float attackTimer = 0f;
-    private Coroutine attackCoroutine;
-
-    private const float FaceThreshold = 0.01f;
-
     private void Awake()
     {
-        if (target == null)
-            target = GetComponent<ActorTarget>();
+        if (target == null) target = GetComponent<ActorTarget>();
+        if (visual == null) visual = GetComponent<ActorVisual>();
+        if (mover == null) mover = GetComponent<ActorMover>();
+        enemyOwner = GetComponent<Enemy>();
+    }
 
-        if (visual == null)
-            visual = GetComponent<ActorVisual>();
+    private void OnDisable() { ResetAttackState(); }
 
-        if (mover == null)
-            mover = GetComponent<ActorMover>();
+    // 기본 공격은 코루틴을 만들지 않고 작은 단계 상태로 진행한다.
+    private void Update()
+    {
+        if (defaultPhase == DefaultAttackPhase.None) return;
+        // interruptAttack=false로 남겨 둔 기본 공격은 강제 이동이 끝날 때까지 보존한다.
+        bool pauseForMovementControl = mover != null && mover.IsMovementControlled && !isAttackStopped &&
+            (enemyOwner == null || (!enemyOwner.IsFullyStopped && !enemyOwner.IsHitReacting && !enemyOwner.IsDead));
+        if (visual != null) visual.SetDefaultAttackAnimationPaused(pauseForMovementControl);
+        if (pauseForMovementControl) return;
+        if (!CanUseDefaultAttack() || !IsTargetAtAttackDistance())
+        {
+            CancelAttack();
+            return;
+        }
+        if (mover != null) mover.Stop();
+
+        if (defaultPhase == DefaultAttackPhase.Preparing)
+        {
+            FaceTarget();
+            preparationElapsed += Time.deltaTime;
+            if (preparationElapsed < Mathf.Max(0f, attackPreparationTime)) return;
+            defaultPhase = DefaultAttackPhase.Animating;
+            animationElapsed = 0f;
+            if (visual != null) visual.PlayAttack();
+            return;
+        }
+
+        animationElapsed += Time.deltaTime;
+        bool finished = visual != null ? !visual.IsAttackPlaying : animationElapsed > 0f;
+        if (!finished) return;
+        ApplyAttackDamage();
+        CancelAttack();
     }
 
     public void SetAttackStat(float newDamage, float newRange, float newCooldown)
@@ -46,37 +87,24 @@ public class ActorAttack : MonoBehaviour
         attackCooldown = Mathf.Max(0.01f, newCooldown);
     }
 
-    #region Stop State
-
     public void SetAttackStopped(bool stopped)
     {
-        if (isAttackStopped == stopped)
-            return;
-
+        if (isAttackStopped == stopped) return;
         isAttackStopped = stopped;
-
-        if (isAttackStopped)
-            ForceStop();
+        if (stopped) ForceStop();
     }
 
-    public void ForceStop()
+    public void ForceStop() { CancelAttack(); }
+    public void ResetAttackState()
     {
         CancelAttack();
-
-        if (visual != null)
-            visual.ForceIdle(Vector2.zero, false, false);
+        nextAttackTime = 0f;
     }
 
-    #endregion
-
     #region Range
-
     public float GetDistanceToTarget()
     {
-        if (target == null)
-            return float.MaxValue;
-
-        return target.GetDistanceFrom(transform);
+        return target != null ? target.GetDistanceFrom(transform) : float.MaxValue;
     }
 
     public bool IsTargetAtAttackDistance()
@@ -86,262 +114,158 @@ public class ActorAttack : MonoBehaviour
 
     public bool IsTargetAtAttackDistance(float checkRange, float checkTolerance)
     {
-        if (target == null)
-            return false;
-
-        if (!target.HasTarget)
-            return false;
-
-        float distance = GetDistanceToTarget();
-        return Mathf.Abs(distance - checkRange) <= checkTolerance;
+        if (target == null || !target.HasTarget) return false;
+        // 기존의 원형 띠 사거리 규칙을 유지하면서 제곱근 계산을 피한다.
+        float range = Mathf.Max(0f, checkRange);
+        float tolerance = Mathf.Max(0.0001f, checkTolerance);
+        float minimum = Mathf.Max(0f, range - tolerance);
+        float maximum = range + tolerance;
+        float distanceSqr = target.GetSqrDistanceFrom(transform);
+        return distanceSqr >= minimum * minimum && distanceSqr <= maximum * maximum;
     }
-
     #endregion
 
     #region Default Attack
+    private bool CanUseDefaultAttack()
+    {
+        if (isAttackStopped || !isActiveAndEnabled) return false;
+        if (enemyOwner != null && !enemyOwner.CanRunDefaultActions) return false;
+        if (visual != null && (visual.IsHitPlaying || visual.IsDeathPlaying || visual.IsCustomAnimationLocked))
+            return false;
+        return mover == null || (!mover.IsMoveStopped && !mover.HasExternalMovement);
+    }
 
     public void TickAttack()
     {
-        if (isAttackStopped)
-            return;
-
-        if (IsAttacking)
-            return;
-
-        if (target == null || !target.HasTarget)
-            return;
-
-        if (!IsTargetAtAttackDistance())
-            return;
-
-        attackTimer -= Time.deltaTime;
-
-        if (attackTimer > 0f)
-            return;
-
-        attackCoroutine = StartCoroutine(DefaultAttackRoutine());
-        attackTimer = attackCooldown;
-    }
-
-    private IEnumerator DefaultAttackRoutine()
-    {
+        if (Time.deltaTime <= 0f || IsAttacking || !CanUseDefaultAttack() || Time.time < nextAttackTime ||
+            !IsTargetAtAttackDistance()) return;
+        if (mover != null) mover.Stop();
         IsAttacking = true;
         isActionAttackPlaying = false;
+        defaultPhase = DefaultAttackPhase.Preparing;
+        preparationElapsed = 0f;
+        defaultDamageApplied = false;
         FaceTarget();
-        if (visual != null)
-        {
-            visual.PlayAttack();
-            yield return visual.WaitCurrentAnimationEnd();
-            ApplyAttackDamage();
-        }
-        else
-        {
-            yield return null;
-            ApplyAttackDamage();
-        }
-
-        IsAttacking = false;
-        attackCoroutine = null;
     }
-
     #endregion
 
-    #region Action Attack
-
+    #region Pattern Action Attack
     public IEnumerator PlayActionAttack(
-        float actionDamage,
-        float attackDelay,
-        bool useCustomRange,
-        float customRange,
-        float customTolerance,
-        bool requireRangeBeforeStart,
-        bool checkRangeBeforeDamage,
-        bool waitAnimationEnd,
-        bool faceTargetBeforeStart,
-        bool faceTargetBeforeActionDamage,
+        float actionDamage, float attackDelay, bool useCustomRange, float customRange,
+        float customTolerance, bool requireRangeBeforeStart, bool checkRangeBeforeDamage,
+        bool waitAnimationEnd, bool faceTargetBeforeStart, bool faceTargetBeforeActionDamage,
         float afterDamageDelay)
     {
-        if (isAttackStopped)
-            yield break;
-
-        if (target == null || !target.HasTarget)
-            yield break;
-
+        if (isAttackStopped || target == null || !target.HasTarget) yield break;
         float checkRange = useCustomRange ? customRange : attackRange;
-        float checkTolerance = useCustomRange ? customTolerance : attackDistanceTolerance;
-
-        if (requireRangeBeforeStart && !IsTargetAtAttackDistance(checkRange, checkTolerance))
-            yield break;
+        float tolerance = useCustomRange ? customTolerance : attackDistanceTolerance;
+        if (requireRangeBeforeStart && !IsTargetAtAttackDistance(checkRange, tolerance)) yield break;
 
         CancelAttack();
-
+        int version = attackVersion;
         IsAttacking = true;
         isActionAttackPlaying = true;
-        attackCoroutine = null;
+        if (mover != null) mover.Stop();
 
-        if (faceTargetBeforeStart)
-            FaceTarget();
-
-        if (visual != null)
-            visual.PlayAttack();
-
-        float safeAttackDelay = Mathf.Max(0f, attackDelay);
-        float safeAfterDamageDelay = Mathf.Max(0f, afterDamageDelay);
-        bool damaged = false;
-
-        if (waitAnimationEnd && visual != null && visual.animator != null)
+        // 직접 실행하거나 패턴 러너가 중단해도 이전 공격이 나중에 피해를 주지 않는다.
+        try
         {
-            yield return null;
-
-            AnimatorStateInfo stateInfo = visual.animator.GetCurrentAnimatorStateInfo(0);
-            float animationLength = Mathf.Max(0f, stateInfo.length);
             float elapsed = 0f;
-
-            while (elapsed < animationLength)
+            while (elapsed < Mathf.Max(0f, attackPreparationTime))
             {
-                if (isAttackStopped)
-                    break;
-
-                if (!damaged && elapsed >= safeAttackDelay)
-                {
-                    if (faceTargetBeforeActionDamage)
-                        FaceTarget();
-
-                    ApplyActionDamage(
-                        actionDamage,
-                        checkRangeBeforeDamage,
-                        checkRange,
-                        checkTolerance
-                    );
-
-                    damaged = true;
-                }
-
-                elapsed += Time.deltaTime;
+                if (!CanContinueActionAttack(version)) yield break;
+                if (faceTargetBeforeStart) FaceTarget();
                 yield return null;
+                elapsed += Time.deltaTime;
             }
-        }
+            if (!CanContinueActionAttack(version)) yield break;
+            if (faceTargetBeforeStart) FaceTarget();
+            if (visual != null) visual.PlayAttack();
 
-        if (!damaged)
-        {
-            if (safeAttackDelay > 0f)
-                yield return new WaitForSeconds(safeAttackDelay);
-
-            if (!isAttackStopped)
+            elapsed = 0f;
+            bool damaged = false;
+            float delay = Mathf.Max(0f, attackDelay);
+            do
             {
-                if (faceTargetBeforeActionDamage)
-                    FaceTarget();
+                if (!CanContinueActionAttack(version)) yield break;
+                if (!damaged && elapsed >= delay)
+                {
+                    // 표시를 먼저 설정해서 피해 이벤트의 재진입에도 한 번만 적용한다.
+                    damaged = true;
+                    if (faceTargetBeforeActionDamage) FaceTarget();
+                    ApplyActionDamage(actionDamage, checkRangeBeforeDamage, checkRange, tolerance);
+                    if (!CanContinueActionAttack(version)) yield break;
+                }
+                bool animationPlaying = waitAnimationEnd && visual != null &&
+                    (visual.IsAttackPlaying || visual.IsCustomAnimationLocked);
+                if (damaged && !animationPlaying) break;
+                yield return null;
+                elapsed += Time.deltaTime;
+            } while (true);
 
-                ApplyActionDamage(
-                    actionDamage,
-                    checkRangeBeforeDamage,
-                    checkRange,
-                    checkTolerance
-                );
+            elapsed = 0f;
+            while (elapsed < Mathf.Max(0f, afterDamageDelay))
+            {
+                if (!CanContinueActionAttack(version)) yield break;
+                yield return null;
+                elapsed += Time.deltaTime;
             }
         }
-
-        if (safeAfterDamageDelay > 0f)
-            yield return new WaitForSeconds(safeAfterDamageDelay);
-
-        IsAttacking = false;
-        isActionAttackPlaying = false;
+        finally
+        {
+            if (version == attackVersion) CancelAttack();
+        }
     }
 
-    private void ApplyActionDamage(
-        float actionDamage,
-        bool checkRange,
-        float checkRangeValue,
-        float checkTolerance)
+    private bool CanContinueActionAttack(int version)
     {
-        if (isAttackStopped)
-            return;
+        return version == attackVersion && IsAttacking && !isAttackStopped &&
+            isActiveAndEnabled && target != null && target.HasTarget &&
+            (enemyOwner == null || (!enemyOwner.IsDead && (!enemyOwner.IsFullyStopped ||
+                (enemyOwner.patternRunner != null && enemyOwner.patternRunner.IsHandlingLethalDamage)) && !enemyOwner.IsHitReacting));
+    }
 
-        if (target == null || !target.HasTarget)
-            return;
-
-        if (checkRange && !IsTargetAtAttackDistance(checkRangeValue, checkTolerance))
-            return;
-
+    private void ApplyActionDamage(float actionDamage, bool checkRange, float range, float tolerance)
+    {
+        if (isAttackStopped || target == null || !target.HasTarget) return;
+        if (checkRange && !IsTargetAtAttackDistance(range, tolerance)) return;
         target.DamageTarget(Mathf.Max(0f, actionDamage));
     }
-
     #endregion
 
-    #region Direction
-
+    #region Direction / Animation Event
     public void FaceTarget()
     {
-        if (!CanFaceByAttack())
-            return;
-
-        if (target == null || !target.HasTarget)
-            return;
-
-        if (target.TargetTransform == null)
-            return;
-
+        if (isAttackStopped || target == null || !target.HasTarget || target.TargetTransform == null) return;
+        if (enemyOwner != null && (enemyOwner.IsHitReacting || enemyOwner.IsDead)) return;
+        if (mover != null && (mover.IsMovingOrTryingToMove || mover.HasExternalMovement)) return;
         Vector2 direction = target.TargetTransform.position - transform.position;
-
-        if (Mathf.Abs(direction.x) <= FaceThreshold)
-            return;
-
-        Vector2 horizontalDirection = direction.x < 0f
-            ? Vector2.left
-            : Vector2.right;
-
-        if (visual != null)
-            visual.LookDirection(horizontalDirection);
+        if (visual != null && direction.sqrMagnitude > 0.0001f) visual.LookDirection(direction.normalized);
     }
-
-    private bool CanFaceByAttack()
-    {
-        if (isAttackStopped)
-            return false;
-
-        if (mover != null && mover.IsMovingOrTryingToMove)
-            return false;
-
-        return true;
-    }
-
-    #endregion
-
-    #region Animation Event
 
     public void ApplyAttackDamage()
     {
-        if (isAttackStopped)
-            return;
-
-        if (isActionAttackPlaying)
-            return;
-
-        if (target == null)
-            return;
-
-        if (!target.HasTarget)
-            return;
-
-        if (!IsTargetAtAttackDistance())
-            return;
-
-        //FaceTarget();
-
-        target.DamageTarget(damage);
+        // 애니메이션 이벤트와 종료 시점 대체 처리가 함께 있어도 한 공격당 한 번이다.
+        if (defaultPhase != DefaultAttackPhase.Animating || isActionAttackPlaying ||
+            defaultDamageApplied || !CanUseDefaultAttack() || !IsTargetAtAttackDistance()) return;
+        defaultDamageApplied = true;
+        target.DamageTarget(Mathf.Max(0f, damage));
     }
 
     public void CancelAttack()
     {
+        bool wasDefaultAttack = defaultPhase != DefaultAttackPhase.None;
+        unchecked { attackVersion++; }
+        defaultPhase = DefaultAttackPhase.None;
         IsAttacking = false;
         isActionAttackPlaying = false;
-
-        if (attackCoroutine != null)
+        defaultDamageApplied = false;
+        if (wasDefaultAttack) nextAttackTime = Time.time + Mathf.Max(0.01f, attackCooldown);
+        if (visual != null)
         {
-            StopCoroutine(attackCoroutine);
-            attackCoroutine = null;
+            visual.SetDefaultAttackAnimationPaused(false);
+            visual.CancelAttackAnimation();
         }
     }
-
     #endregion
 }

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "EnemyPatternSetData", menuName = "GameData/Enemy/Enemy Pattern/Enemy Pattern Set Data")]
@@ -9,8 +9,8 @@ public class EnemyPatternSetData : ScriptableObject
     [Min(0.05f)] public float maxPatternCooldown = 5f;
 
     [Header("Execution")]
-    public bool cancelDefaultAttackOnPatternStart = true;
-    public bool stopMoveOnPatternStart = false;
+    [HideInInspector] public bool cancelDefaultAttackOnPatternStart = true;
+    [HideInInspector] public bool stopMoveOnPatternStart = false;
 
     [Header("Debug")]
     public bool showLog = false;
