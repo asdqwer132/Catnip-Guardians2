@@ -11,6 +11,10 @@ public class SummonAttackEffect : ItemEffectData
 
     [Header("Optional Override")]
     public SummonItemThrower attackPrefab;
+    [Header("Behaviour Override")]
+    [Tooltip("켜면 프리팹 대신 이 효과의 모듈 목록을 사용합니다. 빈 목록이면 행동하지 않습니다.")]
+    public bool overrideModules;
+    public SummonBehaviourModule[] modules;
 
     public override void Prepare(ItemEffectContext context)
     {
@@ -39,6 +43,7 @@ public class SummonAttackEffect : ItemEffectData
             Quaternion.identity
         );
 
+        if (overrideModules) damageArea.ConfigureModules(modules);
         damageArea.SetExecutionContext(context);
         InitDamageArea(damageArea, context);
     }

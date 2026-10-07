@@ -20,9 +20,10 @@ public class ItemEffectExecutor : MonoBehaviour
     // 아이템 반복 사용과 소환수가 공통으로 호출한다. 인벤토리/가방 슬롯을 소비하지 않는다.
     public static void ExecuteItem(ItemData itemData, Vector3 usePosition, Vector3 targetPosition,
         Vector3 direction, GameObject owner, EquipmentBag sourceBag, BuffManager manager,
-        ItemEffectContext parent = null, bool triggerSpecialItems = true)
+        ItemEffectContext parent = null, bool triggerSpecialItems = true, bool isThrownItem = false)
     {
-        if (!CanExecuteItemEffect(itemData) || (parent != null && !parent.CanContinue))
+        // 자체 효과가 없는 아이템도 투척되었다면 장판 반응의 재료가 될 수 있다.
+        if (itemData == null || (!isThrownItem && !CanExecuteItemEffect(itemData)) || (parent != null && !parent.CanContinue))
             return;
         usePosition.z = targetPosition.z = direction.z = 0f;
         ItemEffectContext context = new ItemEffectContext(owner, itemData, usePosition,
@@ -42,7 +43,8 @@ public class ItemEffectExecutor : MonoBehaviour
         bool succeeded = false;
         try
         {
-            for (int i = 0; i < itemData.effectDatas.Length && context.CanContinue; i++)
+            bool replaced = isThrownItem && ReactiveGroundArea.NotifyItemLanded(context);
+            for (int i = 0; !replaced && itemData.effectDatas != null && i < itemData.effectDatas.Length && context.CanContinue; i++)
             {
                 ItemEffectData effect = itemData.effectDatas[i];
                 if (effect != null) effect.Execute(context);

@@ -1,9 +1,9 @@
 using UnityEngine;
 
-public enum AttackPlacementMode { FixedPoint, Forward, CircleEven, CircleRandom }
+public enum AttackPlacementMode { FixedPoint, Forward, CircleEven, CircleRandom, Shotgun }
 public enum AttackDirectionMode { ThrownDirection, FixedWorldDirection }
 
-// 연속 공격과 반복 아이템 사용이 같은 위치 계산을 사용한다.
+// 스텝마다, 발사체마다 독립적으로 위치를 계산한다.
 public static class AttackPlacement
 {
     public static Vector3 Direction(ItemEffectContext context, AttackDirectionMode mode,
@@ -29,6 +29,8 @@ public static class AttackPlacement
             return origin;
         float angle;
         float distance = radius;
+        if (mode == AttackPlacementMode.Shotgun)
+            return origin + (Quaternion.Euler(0f, 0f, Random.Range(-spread * 0.5f, spread * 0.5f)) * forward) * radius;
         if (mode == AttackPlacementMode.CircleRandom)
         {
             angle = Random.Range(-spread * 0.5f, spread * 0.5f);

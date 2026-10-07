@@ -1,608 +1,242 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
-public enum SummonThrowTargetMode
-{
-    NearestEnemy,
-    RandomEnemy,
-    RandomPosition
-}
+public enum SummonThrowTargetMode { NearestEnemy, RandomEnemy, RandomPosition }
 
+// 기존 프리팹의 클래스/GUID와 버프 타깃을 유지하는 공통 소환수 호스트.
 public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget
 {
-    private static readonly List<SummonItemThrower> activeThrowers =
-        new List<SummonItemThrower>();
-
+    private static readonly List<SummonItemThrower> activeThrowers = new List<SummonItemThrower>();
     [Header("Component")]
     public CircleCollider2D rangeCollider;
     public Transform rangeVisual;
-
-    [Header("Throw")]
+    [Header("Behaviour Modules")]
+    [Tooltip("행동 에셋을 원하는 순서로 조합합니다. 이동 모듈을 공격 모듈보다 앞에 배치하세요.")]
+    public SummonBehaviourModule[] modules;
+    [Tooltip("모듈 목록이 비어 있으면 기존 아이템 투척 설정으로 동작합니다.")]
+    public bool useLegacyThrowWhenNoModules = true;
+    [Header("Legacy Throw")]
     public ItemThrowExecutor itemThrowExecutor;
     public ItemData itemDatas;
     public SummonThrowTargetMode targetMode = SummonThrowTargetMode.NearestEnemy;
-
     [Header("Detect")]
     public LayerMask enemyLayerMask;
-
     [Header("Runtime Stat")]
-    [SerializeField] private float summonAttackPower = 0f;
+    [SerializeField] private float summonAttackPower;
     [SerializeField] private float summonAttackRange = 5f;
     [SerializeField] private float summonThrowInterval = 1f;
     [SerializeField] private float lifeTime = 5f;
-
-    [Header("Debug")]
-    [SerializeField] private bool showDebugLog = false;
-    [SerializeField] private bool showWarningLog = true;
-    [SerializeField] private Enemy currentTarget;
-    [SerializeField] private int detectedEnemyCount;
-    [SerializeField] private List<Enemy> detectedEnemies = new List<Enemy>();
-
+    private readonly List<SummonBehaviourRuntime> behaviours = new List<SummonBehaviourRuntime>();
+    private readonly EnemyQueryBuffer query = new EnemyQueryBuffer();
     private ItemEffectContext executionContext;
-    public void SetExecutionContext(ItemEffectContext context)
-    {
-        executionContext = context.Copy(transform.position, context.direction);
-    }
-
-    private float timer;
-    private float throwTimer;
-    private bool isRegisteredBuffTarget;
+    private float timer, throwTimer;
+    private bool initialized, registered, finishing;
 
     public UnityEngine.Object BuffTargetObject => this;
     public string BuffTargetGroup => "Summon";
     public string BuffTargetDebugName => name;
+    public float AttackPower => summonAttackPower;
+    public float AttackRange => summonAttackRange;
+    public float AttackInterval => summonThrowInterval;
+    public bool CanAct => initialized && !finishing && isActiveAndEnabled &&
+        (executionContext == null || executionContext.CanContinue);
 
     protected virtual void Awake()
     {
-        if (itemThrowExecutor == null)
-            itemThrowExecutor = GetComponent<ItemThrowExecutor>();
-
-        if (rangeCollider == null)
-            rangeCollider = GetComponent<CircleCollider2D>();
-
-        if (rangeVisual == null)
-        {
-            SpriteRenderer spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-
-            if (spriteRenderer != null)
-                rangeVisual = spriteRenderer.transform;
-        }
-
+        if (itemThrowExecutor == null) itemThrowExecutor = GetComponent<ItemThrowExecutor>();
+        if (rangeCollider == null) rangeCollider = GetComponent<CircleCollider2D>();
         ApplyRadius();
     }
 
     protected override void OnEnable()
     {
         base.OnEnable();
-
-        if (!activeThrowers.Contains(this))
-            activeThrowers.Add(this);
-
-        timer = 0f;
-        throwTimer = 0f;
-        currentTarget = null;
-
-        detectedEnemies.Clear();
-        detectedEnemyCount = 0;
-
-        ApplyRadius();
-
-        if (buffManager != null)
-            RegisterBuffTargetToManager();
+        activeThrowers.Add(this);
+        timer = throwTimer = 0f;
+        finishing = false;
+        if (initialized) InitializeBehaviours();
+        RegisterBuffTarget();
     }
 
-    protected override void OnDisable()
+    private void Start()
     {
-        UnregisterBuffTargetFromManager();
+        // 씬에 직접 배치한 기존 프리팹도 직렬화된 스탯으로 동작한다.
+        if (initialized) return;
+        initialized = true;
+        InitializeBehaviours();
+    }
 
-        activeThrowers.Remove(this);
+    public void ConfigureModules(SummonBehaviourModule[] overrides)
+    {
+        DisposeBehaviours();
+        modules = overrides != null ? (SummonBehaviourModule[])overrides.Clone() : new SummonBehaviourModule[0];
+        useLegacyThrowWhenNoModules = false;
+        if (initialized) InitializeBehaviours();
+    }
 
-        executionContext = null;
-        currentTarget = null;
-        detectedEnemies.Clear();
-        detectedEnemyCount = 0;
+    public void SetExecutionContext(ItemEffectContext context)
+        => executionContext = context != null ? context.Copy(transform.position, context.direction) : null;
 
-        base.OnDisable();
+    public ItemEffectContext CreateContext(Vector3 target, Vector3 direction)
+    {
+        if (executionContext != null)
+        {
+            ItemEffectContext result = executionContext.Copy(target, direction);
+            result.usePosition = transform.position;
+            return result;
+        }
+        return new ItemEffectContext(owner, sourceItemData, transform.position, target, sourceBag,
+            buffManager: buffManager, direction: direction);
+    }
+
+    public bool TryTarget(SummonThrowTargetMode mode, out Vector3 target)
+    {
+        target = transform.position;
+        if (mode == SummonThrowTargetMode.RandomPosition)
+        { target += (Vector3)(Random.insideUnitCircle * AttackRange); return true; }
+        query.Scan(transform.position, AttackRange, enemyLayerMask);
+        Enemy enemy = EnemyQueryBuffer.Select(query.Enemies, transform.position, mode == SummonThrowTargetMode.RandomEnemy);
+        if (enemy == null) return false;
+        target = enemy.transform.position;
+        return true;
+    }
+
+    public bool ThrowItem(ItemData item, Vector3 target)
+    {
+        if (!CanAct || item == null) return false;
+        if (itemThrowExecutor == null)
+        {
+            ItemEffectExecutor executor = gameObject.AddComponent<ItemEffectExecutor>();
+            executor.buffManager = buffManager;
+            itemThrowExecutor = gameObject.AddComponent<ItemThrowExecutor>();
+            itemThrowExecutor.itemEffectExecutor = executor;
+            itemThrowExecutor.showTargetRange = false;
+        }
+        ItemEffectContext context = CreateContext(target, (target - transform.position).normalized);
+        if ((target - transform.position).sqrMagnitude <= 0.0001f)
+        {
+            ItemEffectExecutor.ExecuteItem(item, transform.position, target, context.direction,
+                owner, sourceBag, buffManager, context, false, isThrownItem: true);
+            return true;
+        }
+        return itemThrowExecutor.Throw(item, transform.position, target, owner, sourceBag, 0, context, false);
+    }
+
+    public override void InitWithSnapshotAndDynamicBuff(SummonStat snapshotAttackStat, ItemData sourceItemData,
+        EquipmentBag sourceBag, BuffManager buffManager, GameObject owner)
+    {
+        UnregisterBuffTarget();
+        DisposeBehaviours();
+        timer = throwTimer = 0f;
+        finishing = false;
+        base.InitWithSnapshotAndDynamicBuff(snapshotAttackStat, sourceItemData, sourceBag, buffManager, owner);
+        RegisterBuffTarget();
+        initialized = true;
+        InitializeBehaviours();
+    }
+
+    private void InitializeBehaviours()
+    {
+        DisposeBehaviours();
+        if (modules == null) return;
+        foreach (SummonBehaviourModule module in modules)
+            if (module != null)
+            {
+                SummonBehaviourRuntime behaviour = module.CreateRuntime(this);
+                if (behaviour != null) behaviours.Add(behaviour);
+            }
     }
 
     private void Update()
     {
-        UpdateLifeTime();
-        if (timer < lifeTime && (executionContext == null || executionContext.CanContinue)) UpdateThrow();
-
-        detectedEnemyCount = detectedEnemies.Count;
-    }
-
-    private void UpdateLifeTime()
-    {
+        if (!initialized || finishing) return;
+        if (!CanAct) { Clear(); return; }
         timer += Time.deltaTime;
-
         if (timer >= lifeTime)
         {
+            finishing = true;
+            DisposeBehaviours();
             CompleteLifetime();
             Destroy(gameObject);
-        }
-    }
-
-    private void UpdateThrow()
-    {
-        throwTimer += Time.deltaTime;
-
-        if (throwTimer < summonThrowInterval)
             return;
-
-        throwTimer = 0f;
-        TryThrow();
-    }
-
-    public override void InitWithSnapshotAndDynamicBuff(
-        SummonStat snapshotAttackStat,
-        ItemData sourceItemData,
-        EquipmentBag sourceBag,
-        BuffManager buffManager,
-        GameObject owner
-    )
-    {
-        UnregisterBuffTargetFromManager();
-
-        timer = 0f;
-        throwTimer = 0f;
-        currentTarget = null;
-
-        detectedEnemies.Clear();
-        detectedEnemyCount = 0;
-
-        base.InitWithSnapshotAndDynamicBuff(
-            snapshotAttackStat,
-            sourceItemData,
-            sourceBag,
-            buffManager,
-            owner
-        );
-
-        RegisterBuffTargetToManager();
-
-        ApplyRadius();
-        RefreshEnemiesInsideRange();
+        }
+        foreach (SummonBehaviourRuntime behaviour in behaviours.ToArray())
+        {
+            if (!CanAct) break;
+            behaviour.Tick(Time.deltaTime);
+        }
+        if (behaviours.Count == 0 && useLegacyThrowWhenNoModules && CanAct)
+        {
+            throwTimer += Time.deltaTime;
+            if (throwTimer >= AttackInterval)
+            {
+                throwTimer = 0f;
+                Vector3 target;
+                if (TryTarget(targetMode, out target)) ThrowItem(itemDatas, target);
+            }
+        }
     }
 
     protected override void RefreshStatFromSnapshotAndDynamicBuff()
     {
-        if (snapshotAttackStat == null)
-            return;
-
-        SummonStat currentStat = snapshotAttackStat;
-
+        if (snapshotAttackStat == null) return;
+        SummonStat current = snapshotAttackStat;
         if (buffManager != null)
         {
-            SummonStat itemBuffedStat = buffManager.GetBuffedStatForItem(
-                snapshotAttackStat,
-                sourceItemData,
-                sourceBag,
-                BuffCalculationMode.DynamicOnly
-            );
-
-            if (itemBuffedStat != null)
-                currentStat = itemBuffedStat;
-
-            SummonStat targetBuffedStat = buffManager.GetBuffedStatForTarget(
-                currentStat,
-                this
-            );
-
-            if (targetBuffedStat != null)
-                currentStat = targetBuffedStat;
+            current = buffManager.GetBuffedStatForItem(current, sourceItemData, sourceBag,
+                BuffCalculationMode.DynamicOnly) ?? current;
+            current = buffManager.GetBuffedStatForTarget(current, this) ?? current;
         }
-
-        ApplyStat(currentStat);
+        ApplyStat(current);
     }
 
-    public void RefreshBuffedStat()
+    public void RefreshBuffedStat() => RefreshStatFromSnapshotAndDynamicBuff();
+
+    protected override void ApplyStat(SummonStat current)
     {
-        RefreshStatFromSnapshotAndDynamicBuff();
-    }
-
-    private void RegisterBuffTargetToManager()
-    {
-        if (isRegisteredBuffTarget)
-            return;
-
-        if (buffManager == null)
-            return;
-
-        buffManager.RegisterBuffTarget(this);
-        isRegisteredBuffTarget = true;
-    }
-
-    private void UnregisterBuffTargetFromManager()
-    {
-        if (!isRegisteredBuffTarget)
-            return;
-
-        if (buffManager == null)
-            return;
-
-        buffManager.UnregisterBuffTarget(this);
-        isRegisteredBuffTarget = false;
-    }
-
-    protected override void ApplyStat(SummonStat currentStat)
-    {
-        if (currentStat == null)
-            return;
-
-        summonAttackPower = currentStat.summonAttackPower;
-        summonAttackRange = Mathf.Max(0.01f, currentStat.summonAttackRange);
-        summonThrowInterval = Mathf.Max(0.01f, currentStat.summonThrowInterval);
-        lifeTime = Mathf.Max(0.01f, currentStat.summonLifeTime);
-
+        SummonStat stat = current.Clone();
+        stat.Clamp();
+        summonAttackPower = stat.summonAttackPower;
+        summonAttackRange = stat.summonAttackRange;
+        summonThrowInterval = stat.summonThrowInterval;
+        lifeTime = stat.summonLifeTime;
         ApplyRadius();
     }
 
     private void ApplyRadius()
     {
-        summonAttackRange = Mathf.Max(0.01f, summonAttackRange);
-
-        if (rangeVisual != null)
-        {
-            rangeVisual.localScale = new Vector3(
-                summonAttackRange * 2f,
-                summonAttackRange * 2f,
-                1f
-            );
-        }
-
-        if (rangeCollider == null)
-            rangeCollider = GetComponent<CircleCollider2D>();
-
+        if (rangeVisual != null && rangeVisual != transform)
+            rangeVisual.localScale = new Vector3(summonAttackRange * 2f, summonAttackRange * 2f, 1f);
         if (rangeCollider != null)
-        {
-            rangeCollider.radius = summonAttackRange;
-            rangeCollider.isTrigger = true;
-            rangeCollider.enabled = true;
-        }
-
-        transform.localScale = Vector3.one;
+        { rangeCollider.radius = summonAttackRange; rangeCollider.isTrigger = true; }
     }
 
-    #region Trigger Detect
-
-    private void OnTriggerEnter2D(Collider2D other)
+    private void RegisterBuffTarget()
     {
-        Log(
-            $"[SummonItemThrower] Trigger Enter: {other.name}, Layer: {LayerMask.LayerToName(other.gameObject.layer)}"
-        );
-
-        Enemy enemy = GetEnemy(other);
-
-        if (enemy == null)
-        {
-            Log($"[SummonItemThrower] Enemy component not found: {other.name}");
-            return;
-        }
-
-        if (!IsEnemyLayer(other.gameObject) && !IsEnemyLayer(enemy.gameObject))
-        {
-            Log($"[SummonItemThrower] Layer blocked: {other.name}");
-            return;
-        }
-
-        AddEnemy(enemy);
+        if (registered || buffManager == null) return;
+        buffManager.RegisterBuffTarget(this);
+        registered = true;
     }
-
-    private void OnTriggerExit2D(Collider2D other)
+    private void UnregisterBuffTarget()
     {
-        Enemy enemy = GetEnemy(other);
-
-        if (enemy == null)
-            return;
-
-        RemoveEnemy(enemy);
+        if (registered && buffManager != null) buffManager.UnregisterBuffTarget(this);
+        registered = false;
     }
-
-    private void AddEnemy(Enemy enemy)
+    private void DisposeBehaviours()
     {
-        if (enemy == null)
-            return;
-
-        if (detectedEnemies.Contains(enemy))
-            return;
-
-        detectedEnemies.Add(enemy);
-        detectedEnemyCount = detectedEnemies.Count;
-
-        Log($"[SummonItemThrower] Enemy Added: {enemy.name} / Count: {detectedEnemies.Count}");
+        foreach (SummonBehaviourRuntime behaviour in behaviours) behaviour.Dispose();
+        behaviours.Clear();
     }
-
-    private void RemoveEnemy(Enemy enemy)
+    protected override void OnDisable()
     {
-        if (enemy == null)
-            return;
-
-        if (!detectedEnemies.Contains(enemy))
-            return;
-
-        detectedEnemies.Remove(enemy);
-        detectedEnemyCount = detectedEnemies.Count;
-
-        Log($"[SummonItemThrower] Enemy Removed: {enemy.name} / Count: {detectedEnemies.Count}");
-
-        if (currentTarget == enemy)
-            currentTarget = null;
+        DisposeBehaviours();
+        UnregisterBuffTarget();
+        activeThrowers.Remove(this);
+        base.OnDisable();
     }
-
-    private bool IsEnemyLayer(GameObject obj)
-    {
-        if (obj == null)
-            return false;
-
-        return (enemyLayerMask.value & (1 << obj.layer)) != 0;
-    }
-
-    #endregion
-
-    #region Initial Scan
-
-    private void RefreshEnemiesInsideRange()
-    {
-        detectedEnemies.Clear();
-
-        Collider2D[] hits = Physics2D.OverlapCircleAll(
-            transform.position,
-            summonAttackRange,
-            enemyLayerMask
-        );
-
-        for (int i = 0; i < hits.Length; i++)
-        {
-            Enemy enemy = GetEnemy(hits[i]);
-
-            if (enemy == null)
-                continue;
-
-            if (detectedEnemies.Contains(enemy))
-                continue;
-
-            detectedEnemies.Add(enemy);
-        }
-
-        detectedEnemyCount = detectedEnemies.Count;
-        currentTarget = null;
-
-        Log($"[SummonItemThrower] Initial Scan / Count: {detectedEnemies.Count}");
-    }
-
-    #endregion
-
-    #region Target / Throw Decision
-
-    private void TryThrow()
-    {
-        CleanInvalidEnemies();
-
-        if (targetMode == SummonThrowTargetMode.RandomPosition)
-        {
-            ThrowToRandomPosition();
-            return;
-        }
-
-        currentTarget = SelectTargetEnemy();
-
-        string targetName = currentTarget != null ? currentTarget.name : "null";
-        Log($"[SummonItemThrower] TryThrow / Count: {detectedEnemies.Count} / Target: {targetName}");
-
-        if (currentTarget == null)
-            return;
-
-        ThrowToEnemy(currentTarget);
-    }
-
-    private Enemy SelectTargetEnemy()
-    {
-        CleanInvalidEnemies();
-
-        if (detectedEnemies.Count <= 0)
-            return null;
-
-        if (targetMode == SummonThrowTargetMode.NearestEnemy)
-            return GetNearestEnemy();
-
-        if (targetMode == SummonThrowTargetMode.RandomEnemy)
-            return GetRandomEnemy();
-
-        return null;
-    }
-
-    private Enemy GetNearestEnemy()
-    {
-        Enemy nearestEnemy = null;
-        float nearestDistanceSqr = float.MaxValue;
-        Vector3 currentPosition = transform.position;
-
-        for (int i = 0; i < detectedEnemies.Count; i++)
-        {
-            Enemy enemy = detectedEnemies[i];
-
-            if (enemy == null)
-                continue;
-
-            float distanceSqr =
-                (enemy.transform.position - currentPosition).sqrMagnitude;
-
-            if (distanceSqr >= nearestDistanceSqr)
-                continue;
-
-            nearestDistanceSqr = distanceSqr;
-            nearestEnemy = enemy;
-        }
-
-        return nearestEnemy;
-    }
-
-    private Enemy GetRandomEnemy()
-    {
-        CleanInvalidEnemies();
-
-        if (detectedEnemies.Count <= 0)
-            return null;
-
-        int index = Random.Range(0, detectedEnemies.Count);
-        return detectedEnemies[index];
-    }
-
-    private Vector3 GetRandomPositionInRange()
-    {
-        Vector2 randomCircle = Random.insideUnitCircle * summonAttackRange;
-
-        Vector3 randomPosition = transform.position + new Vector3(
-            randomCircle.x,
-            randomCircle.y,
-            0f
-        );
-
-        randomPosition.z = transform.position.z;
-        return randomPosition;
-    }
-
-    private void CleanInvalidEnemies()
-    {
-        for (int i = detectedEnemies.Count - 1; i >= 0; i--)
-        {
-            Enemy enemy = detectedEnemies[i];
-
-            if (enemy == null)
-            {
-                detectedEnemies.RemoveAt(i);
-                continue;
-            }
-
-            if (!enemy.gameObject.activeInHierarchy)
-            {
-                detectedEnemies.RemoveAt(i);
-                continue;
-            }
-        }
-
-        if (currentTarget != null && !detectedEnemies.Contains(currentTarget))
-            currentTarget = null;
-
-        detectedEnemyCount = detectedEnemies.Count;
-    }
-
-    #endregion
-
-    #region Throw
-
-    private void ThrowToEnemy(Enemy targetEnemy)
-    {
-        if (targetEnemy == null)
-            return;
-
-        Vector3 targetPosition = targetEnemy.transform.position;
-        ThrowToPosition(targetPosition, targetEnemy.name);
-    }
-
-    private void ThrowToRandomPosition()
-    {
-        Vector3 targetPosition = GetRandomPositionInRange();
-        ThrowToPosition(targetPosition, "Random Position");
-    }
-
-    private void ThrowToPosition(Vector3 targetPosition, string debugTargetName)
-    {
-        if (itemThrowExecutor == null)
-        {
-            Warning("[SummonItemThrower] itemThrowExecutor is null.");
-            return;
-        }
-
-        if (itemDatas == null)
-        {
-            Warning("[SummonItemThrower] itemDatas is null.");
-            return;
-        }
-
-        Vector3 startPosition = transform.position;
-        targetPosition.z = startPosition.z;
-
-        Log($"[SummonItemThrower] Throw: {itemDatas.name} -> {debugTargetName}");
-
-        itemThrowExecutor.Throw(
-            itemDatas,
-            startPosition,
-            targetPosition,
-            owner,
-            sourceBag,
-            0,
-            executionContext
-        );
-    }
-
-    #endregion
-
-    #region GetObject
-
-    private Enemy GetEnemy(Collider2D col)
-    {
-        if (col == null)
-            return null;
-
-        Enemy enemy = col.GetComponent<Enemy>();
-
-        if (enemy == null)
-            enemy = col.GetComponentInParent<Enemy>();
-
-        return enemy;
-    }
-
-    #endregion
-
-    #region Debug
-
-    private void Log(string message)
-    {
-        if (!showDebugLog)
-            return;
-
-        Debug.Log(message);
-    }
-
-    private void Warning(string message)
-    {
-        if (!showWarningLog)
-            return;
-
-        Debug.LogWarning(message);
-    }
-
-    #endregion
-
-    #region Clear
-
     public static void ClearAllActiveThrowers()
     {
-        for (int i = activeThrowers.Count - 1; i >= 0; i--)
-        {
-            SummonItemThrower thrower = activeThrowers[i];
-
-            if (thrower == null)
-            {
-                activeThrowers.RemoveAt(i);
-                continue;
-            }
-
-            thrower.Clear();
-        }
-
+        foreach (SummonItemThrower summon in activeThrowers.ToArray()) if (summon != null) summon.Clear();
         activeThrowers.Clear();
     }
-
-    #endregion
-
-#if UNITY_EDITOR
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.DrawWireSphere(transform.position, summonAttackRange);
-    }
-#endif
 }

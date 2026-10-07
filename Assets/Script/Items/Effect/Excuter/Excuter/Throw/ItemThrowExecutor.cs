@@ -78,7 +78,7 @@ public class ItemThrowExecutor : MonoBehaviour
                 {
                     if (flight.CanContinue)
                         ItemEffectExecutor.ExecuteItem(inventoryItem, startPosition, targetPosition, direction,
-                            owner, currentBag, manager, flight, triggerSpecialItems);
+                            owner, currentBag, manager, flight, triggerSpecialItems, isThrownItem: true);
                 }
                 finally { completion.Complete(); }
 

@@ -22,10 +22,20 @@ public class RepeatItemEffect : ItemEffectData
     [Tooltip("끄면 목표 위치에서 효과를 바로 실행합니다. 켜면 도착할 때 실행합니다.")]
     public bool throwItems = true;
     public ItemThrowMover projectilePrefab;
+    [Tooltip("공통 발사체 이미지. 비워두면 투척 아이템/원본 아이템의 아이콘을 사용합니다.")]
+    public Sprite projectileSprite;
     public bool showTargetRange;
     public TargetRangeIndicator targetRangeIndicatorPrefab;
     [Tooltip("추가 공격 상태를 하위 아이템마다 발동할지 설정합니다. 기본은 최초 아이템만 발동합니다.")]
     public bool triggerSpecialItemsForChildren;
+    [Tooltip("켜면 Flight Time / Arc Height를 사용합니다. 끄면 기존 투척 프리팹의 비행 설정을 유지합니다.")]
+    public bool overrideProjectileMotion;
+    public LayerMask enemyLayerMask = ~0;
+    [Tooltip("바운스의 첫 공격을 원래 착지점에서 즉시 실행합니다.")]
+    public bool firstStepAtOrigin;
+    [Header("Sequence Effects")]
+    public ItemEffectData[] onStartEffects;
+    public ItemEffectData[] afterLastImpactEffects;
 
     // 기존 에셋과 호출 코드를 위한 필드. 에디터에서는 steps로 자동 변환한다.
     [HideInInspector] public ItemData[] items;
@@ -33,6 +43,11 @@ public class RepeatItemEffect : ItemEffectData
     public override void Prepare(ItemEffectContext context)
     {
         context.GetSnapshotStat(this, repeatStat);
+        ItemEffectUtility.Prepare(context, onStartEffects);
+        ItemEffectUtility.Prepare(context, afterLastImpactEffects);
+        if (steps != null)
+            foreach (RepeatItemStep step in steps)
+                if (step != null) ItemEffectUtility.Prepare(context, step.onImpactEffects);
     }
 
     public override void ExecuteEffect(ItemEffectContext context)
@@ -49,6 +64,9 @@ public class RepeatItemEffect : ItemEffectData
     private void OnValidate()
     {
         ConvertLegacyItemsToSteps();
+        if (steps != null)
+            foreach (RepeatItemStep step in steps)
+                if (step != null) step.ConvertLegacyItems();
     }
 
     [ContextMenu("Convert Legacy Items To Steps")]
@@ -75,7 +93,7 @@ public class RepeatItemEffect : ItemEffectData
         items = null;
     }
 
-    internal RepeatItemStep[] CreateRuntimeSteps()
+    public RepeatItemStep[] CreateRuntimeSteps()
     {
         List<RepeatItemStep> validSteps = new List<RepeatItemStep>();
         if (steps != null && steps.Length > 0)
@@ -84,7 +102,7 @@ public class RepeatItemEffect : ItemEffectData
             {
                 RepeatItemStep step = steps[i];
                 if (step != null)
-                    AddValidStep(validSteps, step.items, step.intervalAfter);
+                    AddValidStep(validSteps, step);
             }
         }
         else if (items != null)
@@ -92,7 +110,7 @@ public class RepeatItemEffect : ItemEffectData
             // 변환되지 않은 기존 에셋도 플레이 중에는 정상적으로 사용할 수 있다.
             float interval = GetLegacyInterval();
             for (int i = 0; i < items.Length; i++)
-                AddValidStep(validSteps, new[] { items[i] }, interval);
+                AddValidStep(validSteps, new RepeatItemStep { items = new[] { items[i] }, intervalAfter = interval });
         }
         return validSteps.ToArray();
     }
@@ -103,20 +121,35 @@ public class RepeatItemEffect : ItemEffectData
             0f, 60f, 0.2f);
     }
 
-    private static void AddValidStep(List<RepeatItemStep> output, ItemData[] sourceItems, float interval)
+    private static void AddValidStep(List<RepeatItemStep> output, RepeatItemStep source)
     {
-        if (sourceItems == null) return;
-        List<ItemData> validItems = new List<ItemData>(sourceItems.Length);
-        for (int i = 0; i < sourceItems.Length; i++)
+        List<RepeatItemEntry> entries = new List<RepeatItemEntry>();
+        if (source.entries != null && source.entries.Length > 0)
         {
-            if (ItemEffectExecutor.CanExecuteItemEffect(sourceItems[i]))
-                validItems.Add(sourceItems[i]);
+            foreach (RepeatItemEntry entry in source.entries)
+                if (entry != null && entry.item != null)
+                    entries.Add(new RepeatItemEntry { item = entry.item, count = Mathf.Clamp(entry.count, 1, 128) });
         }
-        if (validItems.Count == 0) return;
+        else if (source.items != null)
+        {
+            foreach (ItemData item in source.items)
+                if (item != null)
+                    entries.Add(new RepeatItemEntry { item = item, count = 1 });
+        }
+        bool hasEffects = false;
+        if (source.onImpactEffects != null)
+            foreach (ItemEffectData effect in source.onImpactEffects) hasEffects |= effect != null;
+        if (entries.Count == 0 && !hasEffects) return;
         output.Add(new RepeatItemStep
         {
-            items = validItems.ToArray(),
-            intervalAfter = EffectStatUtility.Safe(interval, 0f, 60f, 0.2f)
+            entries = entries.ToArray(),
+            onImpactEffects = ItemEffectUtility.Copy(source.onImpactEffects),
+            effectOnlyCount = Mathf.Clamp(source.effectOnlyCount, 1, 128),
+            overridePlacement = source.overridePlacement,
+            placement = source.placement,
+            travelMode = source.travelMode,
+            impactTrigger = source.impactTrigger,
+            intervalAfter = EffectStatUtility.Safe(source.intervalAfter, 0f, 60f, 0.2f)
         });
     }
 }

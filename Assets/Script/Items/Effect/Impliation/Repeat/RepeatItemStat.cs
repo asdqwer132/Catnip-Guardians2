@@ -18,6 +18,14 @@ public class RepeatItemStat : IGameStat<RepeatItemStat>
     public float itemRepeatRadius = 2f;
     public float itemRepeatSpreadAngle = 360f;
     public float itemRepeatDirectionAngle;
+    [Header("Projectiles")]
+    public float itemRepeatProjectileCountMultiplier = 1f;
+    public float itemRepeatFlightTime = 0.3f;
+    public float itemRepeatArcHeight = 0.8f;
+    [Header("Impact Trigger")]
+    public float itemRepeatBombDelay;
+    public float itemRepeatBombLifetime = 5f;
+    public float itemRepeatTriggerRadius = 0.5f;
     public RepeatItemStat Clone() => (RepeatItemStat)MemberwiseClone();
     public void Clamp()
     {
@@ -29,5 +37,11 @@ public class RepeatItemStat : IGameStat<RepeatItemStat>
         itemRepeatRadius = EffectStatUtility.Safe(itemRepeatRadius, 0f, 100f, 2f);
         itemRepeatSpreadAngle = EffectStatUtility.Safe(itemRepeatSpreadAngle, 0f, 360f, 360f);
         itemRepeatDirectionAngle = EffectStatUtility.Safe(itemRepeatDirectionAngle, -360f, 360f, 0f);
+        itemRepeatProjectileCountMultiplier = EffectStatUtility.Safe(itemRepeatProjectileCountMultiplier, 0f, 128f, 1f);
+        itemRepeatFlightTime = EffectStatUtility.Safe(itemRepeatFlightTime, 0.01f, 60f, 0.3f);
+        itemRepeatArcHeight = EffectStatUtility.Safe(itemRepeatArcHeight, 0f, 100f, 0.8f);
+        itemRepeatBombDelay = EffectStatUtility.Safe(itemRepeatBombDelay, 0f, 600f, 0f);
+        itemRepeatBombLifetime = EffectStatUtility.Safe(itemRepeatBombLifetime, 0.01f, 600f, 5f);
+        itemRepeatTriggerRadius = EffectStatUtility.Safe(itemRepeatTriggerRadius, 0f, 100f, 0.5f);
     }
 }

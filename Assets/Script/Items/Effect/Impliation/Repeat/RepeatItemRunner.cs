@@ -1,33 +1,34 @@
-﻿using UnityEngine;
+using System.Collections.Generic;
+using UnityEngine;
 
 public sealed class RepeatItemRunner : AttackObject<RepeatItemStat>
 {
     private ItemEffectContext context;
     private RepeatItemStat stat;
     private RepeatItemStep[] steps;
-    private ItemThrowExecutor thrower;
     private RepeatItemSelection selection;
     private AttackPlacementMode placement;
     private RepeatItemStartPosition startPosition;
-    private Vector3 origin, direction;
-    private bool throwItems, triggerSpecial, initialized, finished, waitingForFirstUse;
-    private int total, index;
+    private ItemThrowMover prefab;
+    private Sprite projectileSprite;
+    private TargetRangeIndicator rangePrefab;
+    private ItemEffectData[] finalEffects;
+    private LayerMask enemyMask;
+    private Vector3 origin, direction, lastImpact;
+    private bool throwItems, triggerSpecial, overrideMotion, firstAtOrigin, showRange;
+    private bool initialized, finished, waitingForFirstUse, waitForImpact, launching;
+    private int total, index, pending, serialPosition;
     private float waitStartedAt, stepInterval;
+    private readonly List<RepeatItemProjectile> projectiles = new List<RepeatItemProjectile>();
 
     public void Init(RepeatItemEffect effect, ItemEffectContext execution)
-    {
-        Init(effect, execution, effect != null ? effect.CreateRuntimeSteps() : null);
-    }
+        => Init(effect, execution, effect != null ? effect.CreateRuntimeSteps() : null);
 
     internal void Init(RepeatItemEffect effect, ItemEffectContext execution, RepeatItemStep[] runtimeSteps)
     {
         if (effect == null || execution == null || effect.repeatStat == null ||
             runtimeSteps == null || runtimeSteps.Length == 0)
-        {
-            finished = true;
-            Destroy(gameObject);
-            return;
-        }
+        { Destroy(gameObject); return; }
         context = execution;
         steps = runtimeSteps;
         selection = effect.selection;
@@ -35,27 +36,25 @@ public sealed class RepeatItemRunner : AttackObject<RepeatItemStat>
         startPosition = effect.startPosition;
         throwItems = effect.throwItems;
         triggerSpecial = effect.triggerSpecialItemsForChildren;
-        origin = context.targetPosition;
+        overrideMotion = effect.overrideProjectileMotion;
+        firstAtOrigin = effect.firstStepAtOrigin;
+        prefab = effect.projectilePrefab;
+        projectileSprite = effect.projectileSprite;
+        showRange = effect.showTargetRange;
+        rangePrefab = effect.targetRangeIndicatorPrefab;
+        enemyMask = effect.enemyLayerMask;
+        finalEffects = ItemEffectUtility.Copy(effect.afterLastImpactEffects);
+        origin = lastImpact = context.targetPosition;
+        transform.position = origin;
         BindLifetime(context);
         InitWithSnapshotAndDynamicBuff(context.GetSnapshotStat(effect, effect.repeatStat),
             context.sourceItemData, context.sourceBag, context.buffManager, context.owner);
         total = EffectStatUtility.Count(stat.itemRepeatCount);
         direction = AttackPlacement.Direction(context, effect.directionMode, effect.fixedWorldDirection, stat.itemRepeatDirectionAngle);
-        if (throwItems)
-        {
-            ItemEffectExecutor executor = gameObject.AddComponent<ItemEffectExecutor>();
-            executor.buffManager = context.buffManager;
-            thrower = gameObject.AddComponent<ItemThrowExecutor>();
-            thrower.itemEffectExecutor = executor;
-            thrower.throwMoverPrefab = effect.projectilePrefab;
-            thrower.showTargetRange = effect.showTargetRange;
-            thrower.targetRangeIndicatorPrefab = effect.targetRangeIndicatorPrefab;
-        }
-        initialized = true;
-        waitingForFirstUse = true;
+        initialized = waitingForFirstUse = true;
         waitStartedAt = Time.time;
-        if (stat.itemRepeatInterval <= 0f)
-            UseNext();
+        ItemEffectUtility.Execute(effect.onStartEffects, context.Copy(origin, direction));
+        if (stat.itemRepeatInterval <= 0f) UseNext();
     }
 
     protected override void ApplyStat(RepeatItemStat current)
@@ -68,49 +67,126 @@ public sealed class RepeatItemRunner : AttackObject<RepeatItemStat>
     {
         if (!initialized || finished) return;
         if (!context.CanContinue) { Clear(); return; }
-        // 실행 중 바뀐 Dynamic 버프도 현재 대기 중인 간격에 반영한다.
+        if (index >= total) { if (pending == 0) Finish(); return; }
+        if (waitForImpact && pending > 0) return;
         float interval = waitingForFirstUse ? stat.itemRepeatInterval :
             EffectStatUtility.Safe(stepInterval * stat.itemRepeatStepIntervalMultiplier, 0f, 60f, 0.2f);
-        if (Time.time - waitStartedAt + 0.00001f >= interval)
-            UseNext();
+        if (Time.time - waitStartedAt + 0.00001f >= interval) UseNext();
     }
 
     private void UseNext()
     {
         if (finished || !context.CanContinue) return;
         RepeatItemStep step = steps[selection == RepeatItemSelection.Random ? Random.Range(0, steps.Length) : index % steps.Length];
-        // 반복 시작 위치에는 원래 아이템이 이미 도착했다. 첫 재투척부터 한 칸 앞으로 보낸다.
-        int placementIndex = placement == AttackPlacementMode.Forward ? index + 1 : index;
-        Vector3 target = AttackPlacement.Position(placement, origin, direction, placementIndex, total,
-            stat.itemRepeatForwardOffset, stat.itemRepeatSideOffset, stat.itemRepeatRadius, stat.itemRepeatSpreadAngle);
-        Vector3 start = startPosition == RepeatItemStartPosition.OwnerPosition && owner != null ? owner.transform.position : origin;
-        context.targetPosition = target;
-        // 한 묶음은 같은 프레임, 같은 목표 위치에서 전부 사용한다.
-        for (int i = 0; i < step.items.Length; i++)
+        List<ItemData> payloads = new List<ItemData>();
+        foreach (RepeatItemEntry entry in step.entries)
         {
-            if (finished || !context.CanContinue) return;
-            ItemData item = step.items[i];
-            if (!ItemEffectExecutor.CanExecuteItemEffect(item)) continue;
-            if (throwItems && (target - start).sqrMagnitude > 0.0001f)
-                thrower.Throw(item, start, target, owner, sourceBag, 0, context, triggerSpecial);
-            else
-                ItemEffectExecutor.ExecuteItem(item, start, target, direction, owner, sourceBag, buffManager, context, triggerSpecial);
+            int copies = Copies(entry.count);
+            for (int i = 0; i < copies && payloads.Count < 128; i++) payloads.Add(entry.item);
         }
-        index++;
+        if (step.entries.Length == 0)
+            for (int i = 0; i < Copies(step.effectOnlyCount); i++) payloads.Add(null);
+        AttackPlacementMode mode = step.overridePlacement ? step.placement : placement;
+        bool bounce = step.travelMode == RepeatItemTravelMode.Bounce;
+        bool fly = step.travelMode == RepeatItemTravelMode.Throw || bounce ||
+            (step.travelMode == RepeatItemTravelMode.Inherit && throwItems);
+        Vector3 start = bounce ? lastImpact :
+            startPosition == RepeatItemStartPosition.OwnerPosition && owner != null ? owner.transform.position : origin;
+        int useIndex = index++;
         waitingForFirstUse = false;
+        waitForImpact = bounce;
         stepInterval = step.intervalAfter;
         waitStartedAt = Time.time;
-        if (index >= total)
+        launching = true;
+        for (int shot = 0; shot < payloads.Count; shot++)
         {
-            finished = true;
-            CompleteLifetime();
-            Destroy(gameObject);
+            if (finished || !context.CanContinue) return;
+            // 한 발은 전체 반복에 분산하고, 다중 발사는 스텝 안에서 각각 배치한다.
+            int positionIndex = mode == AttackPlacementMode.Forward ? serialPosition + (firstAtOrigin ? 0 : 1) :
+                payloads.Count > 1 ? shot : useIndex;
+            int positionCount = payloads.Count > 1 ? payloads.Count : total;
+            Vector3 target = firstAtOrigin && useIndex == 0 ? origin :
+                AttackPlacement.Position(mode, origin, direction, positionIndex, positionCount,
+                    stat.itemRepeatForwardOffset, stat.itemRepeatSideOffset, stat.itemRepeatRadius, stat.itemRepeatSpreadAngle);
+            serialPosition++;
+            ItemData item = payloads[shot];
+            Vector3 shotDirection = (target - start).sqrMagnitude > 0.000001f ? (target - start).normalized : direction;
+            ItemEffectContext shotContext = context.Copy(target, shotDirection);
+            shotContext.usePosition = start;
+            context.targetPosition = target;
+            bool firstBounce = bounce && firstAtOrigin && useIndex == 0;
+            if ((!fly || (target - start).sqrMagnitude <= 0.0001f || firstBounce) && step.impactTrigger == ItemImpactTrigger.OnArrival)
+            {
+                Impact(item, step.onImpactEffects, shotContext, fly && !firstBounce);
+                continue;
+            }
+            ItemThrowMover mover = prefab != null ? Instantiate(prefab, start, Quaternion.identity) :
+                new GameObject("RepeatItemProjectile").AddComponent<ItemThrowMover>();
+            mover.destroyOnArrive = false;
+            Sprite sprite = projectileSprite != null ? projectileSprite :
+                item != null ? item.icon : sourceItemData != null ? sourceItemData.icon : null;
+            mover.Init(start, start, sprite, null);
+            if (overrideMotion || bounce)
+            {
+                mover.autoArcHeightByDistance = false;
+                mover.arcHeight = stat.itemRepeatArcHeight;
+                mover.maxMoveTime = stat.itemRepeatFlightTime;
+            }
+            float flight = fly && !firstBounce ?
+                (overrideMotion || bounce ? stat.itemRepeatFlightTime : Mathf.Max(0.01f, Mathf.Min(mover.arriveTime, mover.maxMoveTime))) : 0f;
+            TargetRangeIndicator indicator = null;
+            if (showRange && rangePrefab != null)
+                indicator = Instantiate(rangePrefab, target, Quaternion.identity);
+            RepeatItemProjectile projectile = mover.gameObject.AddComponent<RepeatItemProjectile>();
+            projectiles.Add(projectile);
+            pending++;
+            if (ItemRuntimeObjectManager.Instance != null) ItemRuntimeObjectManager.Instance.Register(mover);
+            projectile.Init(mover, shotContext, step.impactTrigger, stat.Clone(), enemyMask, flight, indicator,
+                () => Impact(item, step.onImpactEffects, shotContext, fly && !firstBounce),
+                succeeded => Resolved(projectile, succeeded));
         }
+        launching = false;
+        if (index >= total && pending == 0) Finish();
+    }
+
+    private int Copies(int count) => Mathf.Clamp(Mathf.RoundToInt(Mathf.Clamp(count, 1, 128) * stat.itemRepeatProjectileCountMultiplier), 0, 128);
+
+    private void Impact(ItemData item, ItemEffectData[] effects, ItemEffectContext execution, bool thrown)
+    {
+        if (finished || !execution.CanContinue) return;
+        lastImpact = execution.targetPosition;
+        context.targetPosition = lastImpact;
+        if (item != null)
+            ItemEffectExecutor.ExecuteItem(item, execution.usePosition, lastImpact, execution.direction,
+                owner, sourceBag, buffManager, execution, triggerSpecial, thrown);
+        ItemEffectUtility.Execute(effects, execution);
+    }
+
+    private void Resolved(RepeatItemProjectile projectile, bool succeeded)
+    {
+        projectiles.Remove(projectile);
+        pending = Mathf.Max(0, pending - 1);
+        if (finished) return;
+        if (!succeeded) { Clear(); return; }
+        if (waitForImpact && pending == 0) waitStartedAt = Time.time;
+        if (!launching && index >= total && pending == 0) Finish();
+    }
+
+    private void Finish()
+    {
+        if (finished) return;
+        finished = true;
+        ItemEffectUtility.Execute(finalEffects, context.Copy(lastImpact, direction));
+        CompleteLifetime();
+        Destroy(gameObject);
     }
 
     protected override void OnDisable()
     {
         finished = true;
+        foreach (RepeatItemProjectile projectile in projectiles.ToArray())
+            if (projectile != null) Destroy(projectile.gameObject);
+        projectiles.Clear();
         base.OnDisable();
     }
 }
