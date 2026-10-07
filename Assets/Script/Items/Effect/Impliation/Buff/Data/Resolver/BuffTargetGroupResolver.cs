@@ -1,7 +1,7 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "BuffTargetGroupResolver", menuName = "GameData/Buff/Buff Target/Group")]
+[CreateAssetMenu(fileName = "BuffTargetGroupResolver", menuName = "GameData/Buffs/Targets/Group")]
 public class BuffTargetGroupResolver : BuffTargetResolver
 {
     public string targetGroup;

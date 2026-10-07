@@ -1,8 +1,8 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 [CreateAssetMenu(
     fileName = "DamageAreaAttackEffect",
-    menuName = "GameData/Item/Item Effect/DamageAreaAttackEffect"
+    menuName = "GameData/Items/Effects/Attack/Damage Area"
 )]
 public class DamageAreaAttackEffect : ItemEffectData
 {
@@ -18,6 +18,18 @@ public class DamageAreaAttackEffect : ItemEffectData
     [Header("On Hit Effects")]
     public HitEffectData[] onHitEffects;
     public HitEffectApplyMode hitEffectApplyMode = HitEffectApplyMode.FirstHitOnly;
+
+    public override void Prepare(ItemEffectContext context)
+    {
+        context.GetSnapshotStat(this, attackStat);
+        if (onHitEffects == null) return;
+        for (int i = 0; i < onHitEffects.Length; i++)
+        {
+            BuffHitEffectData hitBuff = onHitEffects[i] as BuffHitEffectData;
+            if (hitBuff != null && hitBuff.buffEffect != null)
+                context.plan.Prepare(hitBuff.buffEffect, context);
+        }
+    }
 
     public override void ExecuteEffect(ItemEffectContext context)
     {
@@ -50,17 +62,7 @@ public class DamageAreaAttackEffect : ItemEffectData
         if (context == null || context.buffManager == null)
             return attackStat;
 
-        DamageAreaAttackStat buffedStat = context.buffManager.GetBuffedStatForItem(
-            attackStat,
-            context.sourceItemData,
-            context.sourceBag,
-            BuffCalculationMode.All
-        );
-
-        if (buffedStat != null)
-            return buffedStat;
-
-        return attackStat;
+        return context.GetCurrentStat(this, attackStat);
     }
 
     protected void InitDamageArea(DamageArea damageArea, ItemEffectContext context)
@@ -70,22 +72,8 @@ public class DamageAreaAttackEffect : ItemEffectData
 
         damageArea.damageApplyMode = damageApplyMode;
 
-        DamageAreaAttackStat snapshotStat = attackStat;
-
-        if (context.buffManager != null)
-        {
-            DamageAreaAttackStat buffedSnapshotStat =
-                context.buffManager.GetBuffedStatForItem(
-                    attackStat,
-                    context.sourceItemData,
-                    context.sourceBag,
-                    BuffCalculationMode.SnapshotOnly,
-                    true
-                );
-
-            if (buffedSnapshotStat != null)
-                snapshotStat = buffedSnapshotStat;
-        }
+        DamageAreaAttackStat snapshotStat = context.GetSnapshotStat(this, attackStat);
+        damageArea.BindLifetime(context);
 
         damageArea.InitWithSnapshotAndDynamicBuff(
             snapshotAttackStat: snapshotStat,

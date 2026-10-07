@@ -1,6 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "ConditionalItemEffect", menuName = "GameData/Item/Item Effect/Conditional")]
+[CreateAssetMenu(fileName = "ConditionalItemEffect", menuName = "GameData/Items/Effects/Branch/Conditional")]
 public class ConditionalItemEffectData : ItemEffectData
 {
     [Header("Branches")]
@@ -8,6 +8,13 @@ public class ConditionalItemEffectData : ItemEffectData
     public ItemEffectData effectWhenTrue;
     [Tooltip("조건을 만족하지 않으면 실행할 B 이펙트. 비어 있으면 해당 분기는 실행하지 않습니다.")]
     public ItemEffectData effectWhenFalse;
+
+    protected override bool CanStart(ItemEffectContext context) => true;
+
+    public override void Prepare(ItemEffectContext context)
+    {
+        context.plan.Prepare(AreConditionsSatisfied(context) ? effectWhenTrue : effectWhenFalse, context);
+    }
 
     protected override void ExecuteWithConditions(ItemEffectContext context)
     {
@@ -22,7 +29,6 @@ public class ConditionalItemEffectData : ItemEffectData
             return;
 
         bool conditionsSatisfied = AreConditionsSatisfied(context);
-        Debug.Log(conditionsSatisfied);
         ItemEffectData selectedEffect = conditionsSatisfied ? effectWhenTrue : effectWhenFalse;
         if (selectedEffect != null)
             selectedEffect.Execute(context);

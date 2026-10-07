@@ -1,18 +1,18 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 [System.Serializable]
 public class EnemySpawnInfo
 {
     public EnemyDataSet dataSet;
 
-    [Tooltip("ÀÏ¹İ Àû ¹è¿­¿¡¼­ ·£´ı ¼±ÅÃµÉ È®·üÀÔ´Ï´Ù.")]
+    [Tooltip("ì¼ë°˜ ì  ë°°ì—´ì—ì„œ ëœë¤ ì„ íƒë  í™•ë¥ ì…ë‹ˆë‹¤.")]
     public float spawnWeight = 1f;
 
-    [Tooltip("ÀÏ¹İ ½ºÆ÷³Ê¿¡¼­´Â ¹İº¹ ½ºÆù °£°İ, ¹Ìµéº¸½º/º¸½º ½ºÆ÷³Ê¿¡¼­´Â µîÀå±îÁö ´ë±â ½Ã°£ÀÔ´Ï´Ù.")]
+    [Tooltip("ì¼ë°˜ ìŠ¤í¬ë„ˆì—ì„œëŠ” ë°˜ë³µ ìŠ¤í° ê°„ê²©, ë¯¸ë“¤ë³´ìŠ¤/ë³´ìŠ¤ ìŠ¤í¬ë„ˆì—ì„œëŠ” ë“±ì¥ê¹Œì§€ ëŒ€ê¸° ì‹œê°„ì…ë‹ˆë‹¤.")]
     public float spawnRate = 1f;
 }
 
-[CreateAssetMenu(menuName = "GameData/Plant Data")]
+[CreateAssetMenu(menuName = "GameData/Entities/Plant/Plant Data")]
 public class PlantData : DefaultData
 {
     [Header("Visual")]

@@ -1,7 +1,7 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "BuffTargetAreaResolver", menuName = "GameData/Buff/Buff Target/Area")]
+[CreateAssetMenu(fileName = "BuffTargetAreaResolver", menuName = "GameData/Buffs/Targets/Area")]
 public class BuffTargetAreaResolver : BuffTargetResolver
 {
     public float radius = 3f;

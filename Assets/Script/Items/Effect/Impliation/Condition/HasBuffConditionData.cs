@@ -1,6 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "HasBuffCondition", menuName = "GameData/Item/Condition/Has Buff")]
+[CreateAssetMenu(fileName = "HasBuffCondition", menuName = "GameData/Items/Conditions/Has Buff")]
 public class HasBuffConditionData : ItemEffectConditionData
 {
     public PlayerStatusList targetStatus;

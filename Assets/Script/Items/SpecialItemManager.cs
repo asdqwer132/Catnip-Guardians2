@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 [System.Serializable]
 public class SpecialItem
 {
@@ -16,10 +16,11 @@ public class SpecialItemManager : MonoBehaviour
     }
     public void Call(ItemEffectContext itemEffectContext)
     {
-        Debug.Log("ca");
+        if (itemEffectContext == null || !itemEffectContext.CanContinue || itemEffectContext.sourceItemData == null ||
+            StatusManager.Instance == null || ItemThrowExecutor == null || specialItems == null) return;
         if (StatusManager.Instance.HasStatus(PlayerStatusList.star))
         {
-            if (itemEffectContext.sourceItemData.dataId != "WeaponExtra1")
+            if (itemEffectContext.sourceItemData != specialItems && itemEffectContext.sourceItemData.dataId != "WeaponExtra1")
             {
                 Debug.Log("asd");
                 ItemThrowExecutor.Throw(

@@ -1,6 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "Bag", menuName = "GameData/Bag")]
+[CreateAssetMenu(fileName = "Bag", menuName = "GameData/Items/Bag")]
 public class BagData : DefaultData
 {
     public int slotCount = 1;

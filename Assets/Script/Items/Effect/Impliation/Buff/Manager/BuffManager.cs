@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -60,6 +60,7 @@ public class BuffManager : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (storage != null) storage.ClearAll();
         if (instance == this)
             instance = null;
 
@@ -170,7 +171,7 @@ public class BuffManager : MonoBehaviour
             return;
 
         BuffRegisterContext context = new BuffRegisterContext(itemContext, this);
-        BuffInfo finalInfo = GetBuffedStatForItem(effect.buffInfo, context.sourceItemData, context.sourceBag);
+        BuffInfo finalInfo = itemContext.GetCurrentStat(effect, effect.buffInfo);
 
         if (finalInfo == null)
             return;
@@ -192,7 +193,7 @@ public class BuffManager : MonoBehaviour
             if (target == null)
                 continue;
 
-            storage.RegisterBuff(
+            ActiveBuff active = storage.RegisterBuff(
                 effect.modifiers,
                 finalInfo,
                 context.sourceItemData,
@@ -202,6 +203,8 @@ public class BuffManager : MonoBehaviour
                 effect.includeSelf,
                 effect.showInUI
             );
+
+            TrackBuffCompletion(active, effect, itemContext);
 
             BuffNotifyScope targetScope = GetNotifyScope(target);
             notifyScope = registered ? MergeNotifyScope(notifyScope, targetScope) : targetScope;
@@ -225,15 +228,13 @@ public class BuffManager : MonoBehaviour
         if (!effect.HasValidModifier())
             return false;
 
-        BuffInfo finalInfo = GetBuffedStatForItem(
-            effect.buffInfo, itemContext.sourceItemData, itemContext.sourceBag
-        );
+        BuffInfo finalInfo = itemContext.GetCurrentStat(effect, effect.buffInfo);
         if (finalInfo == null)
             return false;
 
         finalInfo.Clamp();
 
-        storage.RegisterBuff(
+        ActiveBuff active = storage.RegisterBuff(
             effect.modifiers,
             finalInfo,
             itemContext.sourceItemData,
@@ -244,9 +245,22 @@ public class BuffManager : MonoBehaviour
             effect.showInUI
         );
 
+        TrackBuffCompletion(active, effect, itemContext);
+
         // 같은 공격에 다른 디버프가 있어도 BuffEffect별로 독립적으로 구분한다.
         NotifyBuffChanged(BuffNotifyScope.Target);
         return true;
+    }
+
+    private static void TrackBuffCompletion(ActiveBuff buff, BuffEffect effect, ItemEffectContext context)
+    {
+        if (buff == null) return;
+        UnityEngine.Object obj = buff.target != null ? buff.target.targetObject : null;
+        Component component = obj as Component;
+        GameObject targetObject = obj as GameObject;
+        Transform target = component != null ? component.transform :
+            (targetObject != null ? targetObject.transform : (context.owner != null ? context.owner.transform : null));
+        buff.completion.Track(context, effect.endVisualData, target);
     }
 
     public T GetBuffedStat<T>(

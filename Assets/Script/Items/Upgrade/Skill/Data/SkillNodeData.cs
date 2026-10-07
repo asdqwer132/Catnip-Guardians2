@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(
     fileName = "SkillNodeData",
-    menuName = "GameData/Skill Tree/Skill Node"
+    menuName = "GameData/Skills/Node"
 )]
 public class SkillNodeData : DefaultData
 {

@@ -1,6 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "CircleMovementControlArea", menuName = "GameData/Item/Movement Control Area/Circle")]
+[CreateAssetMenu(fileName = "CircleMovementControlArea", menuName = "GameData/Items/Effects/Movement/Shapes/Circle")]
 public class CircleMovementControlAreaShape : MovementControlAreaShape
 {
     public override int Overlap(MovementControlAreaContext area, ContactFilter2D filter, Collider2D[] results)

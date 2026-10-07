@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ItemThrowExecutor : MonoBehaviour
 {
@@ -20,10 +20,12 @@ public class ItemThrowExecutor : MonoBehaviour
         Vector3 targetPosition,
         GameObject owner,
         EquipmentBag currentBag,
-        int currentCycleId
+        int currentCycleId,
+        ItemEffectContext parentContext = null,
+        bool triggerSpecialItems = true
     )
     {
-        if (inventoryItem == null)
+        if (inventoryItem == null || (parentContext != null && !parentContext.CanContinue))
             return false;
 
         if (itemEffectExecutor == null)
@@ -53,6 +55,16 @@ public class ItemThrowExecutor : MonoBehaviour
         if (rangeIndicator != null)
             RegisterRuntimeObject(rangeIndicator);
 
+        BuffManager manager = itemEffectExecutor.buffManager != null ? itemEffectExecutor.buffManager : BuffManager.instance;
+        ItemEffectContext flight = new ItemEffectContext(owner, inventoryItem, startPosition, targetPosition,
+            currentBag, buffManager: manager, direction: direction);
+        flight.InheritExecution(parentContext);
+        ItemEffectLifetime flightScope = new ItemEffectLifetime(parentContext != null ? parentContext.lifetime : null,
+            trackCompletion: parentContext != null && parentContext.lifetime != null && parentContext.lifetime.TracksCompletion);
+        flight.lifetime = flightScope;
+        ItemThrowCompletion completion = mover.gameObject.AddComponent<ItemThrowCompletion>();
+        completion.Init(flight);
+
         mover.Init(
             startPosition,
             targetPosition,
@@ -62,18 +74,18 @@ public class ItemThrowExecutor : MonoBehaviour
                 if (rangeIndicator != null)
                     Destroy(rangeIndicator.gameObject);
 
-                itemEffectExecutor.ExecuteItemEffect(
-                    inventoryItem,
-                    targetPosition,
-                    targetPosition,
-                    direction,
-                    owner,
-                    currentBag,
-                    currentCycleId
-                );
+                try
+                {
+                    if (flight.CanContinue)
+                        ItemEffectExecutor.ExecuteItem(inventoryItem, startPosition, targetPosition, direction,
+                            owner, currentBag, manager, flight, triggerSpecialItems);
+                }
+                finally { completion.Complete(); }
+
             }
         );
 
+        flightScope.Close();
         return true;
     }
 

@@ -60,6 +60,7 @@ public class EnemyPatternRunner : MonoBehaviour
     {
         AutoBind();
         BuildRuntimeList();
+        bool si = isBlockingDefaultAI;//
     }
 
     private void AutoBind()

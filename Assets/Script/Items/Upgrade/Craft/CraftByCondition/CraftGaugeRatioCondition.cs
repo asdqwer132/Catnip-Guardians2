@@ -1,7 +1,7 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 // Add this asset to CraftItemData.chanceRules, together with its chance bonus.
-[CreateAssetMenu(fileName = "GaugeRatioCondition", menuName = "GameData/Item/Crafting/Conditions/Gauge Ratio")]
+[CreateAssetMenu(fileName = "GaugeRatioCondition", menuName = "GameData/Crafting/Conditions/Gauge Ratio")]
 public sealed class CraftGaugeRatioCondition : CraftCondition
 {
     public CraftGaugeType gaugeType;

@@ -1,7 +1,7 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "EnemyZigzagMoveAction", menuName = "GameData/Enemy/Enemy Pattern/Action/Zigzag Move")]
+[CreateAssetMenu(fileName = "EnemyZigzagMoveAction", menuName = "GameData/Entities/Enemy/Patterns/Actions/Zigzag Move")]
 public class EnemyZigzagMoveAction : EnemyPatternAction
 {
     [Min(0f)] public float speed = 3f;

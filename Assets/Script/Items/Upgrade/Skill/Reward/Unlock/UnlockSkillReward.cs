@@ -1,8 +1,8 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 [CreateAssetMenu(
     fileName = "UnlockSkillReward",
-    menuName = "GameData/Skill Tree/Reward/Unlock"
+    menuName = "GameData/Skills/Rewards/Unlock"
 )]
 public class UnlockSkillReward : SkillRewardData
 {
@@ -17,13 +17,13 @@ public class UnlockSkillReward : SkillRewardData
     {
         if (context == null)
         {
-            Debug.LogWarning("SkillApplyContext°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("SkillApplyContextê°€ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
         if (context.unlockManager == null)
         {
-            Debug.LogWarning("UnlockManager°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("UnlockManagerê°€ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 

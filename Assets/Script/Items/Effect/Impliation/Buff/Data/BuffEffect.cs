@@ -1,7 +1,7 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "BuffEffect", menuName = "GameData/Item/Item Effect/BuffEffect")]
+[CreateAssetMenu(fileName = "BuffEffect", menuName = "GameData/Items/Effects/Buff")]
 public class BuffEffect : ItemEffectData
 {
     [Header("Target")]
@@ -10,12 +10,23 @@ public class BuffEffect : ItemEffectData
     [Header("Runtime Info")]
     public BuffInfo buffInfo = new BuffInfo();
     public bool includeSelf;
+
+    [Header("UI")]
+    [Tooltip("버프 UI에 표시할 아이콘입니다. 비워두면 버프를 부여한 아이템의 아이콘을 사용합니다.")]
+    public Sprite buffIcon;
     public bool showInUI = true;
 
     [Header("Modifiers")]
     public BuffModifier[] modifiers;
 
     private readonly List<BuffTargetHandle> cachedTargets = new List<BuffTargetHandle>();
+
+    protected override bool OwnsEndVisual => false;
+
+    public override void Prepare(ItemEffectContext context)
+    {
+        context.GetSnapshotStat(this, buffInfo);
+    }
 
     public override void ExecuteEffect(ItemEffectContext context)
     {

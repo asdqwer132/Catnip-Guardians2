@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,14 +17,14 @@ public sealed class EnemyMovementControlAreaRunner : MonoBehaviour
         EnemyMovementControlEffect.AreaSettings settings,
         MovementControlAreaContext area,
         float lifetime,
-        float interval)
+        float interval, ItemEffectContext context)
     {
         if (instance == null || !instance.isActiveAndEnabled)
         {
             GameObject host = new GameObject("EnemyMovementControlAreas");
             instance = host.AddComponent<EnemyMovementControlAreaRunner>();
         }
-        instance.AddArea(settings, area, lifetime, interval);
+        instance.AddArea(settings, area, lifetime, interval, context);
     }
 
     private void Awake()
@@ -37,10 +37,10 @@ public sealed class EnemyMovementControlAreaRunner : MonoBehaviour
         EnemyMovementControlEffect.AreaSettings settings,
         MovementControlAreaContext area,
         float lifetime,
-        float interval)
+        float interval, ItemEffectContext context)
     {
         AreaState state = inactiveAreas.Count > 0 ? inactiveAreas.Pop() : new AreaState();
-        state.Initialize(settings, area, lifetime, interval);
+        state.Initialize(settings, area, lifetime, interval, context);
         activeAreas.Add(state);
         try
         {
@@ -82,14 +82,14 @@ public sealed class EnemyMovementControlAreaRunner : MonoBehaviour
             if (!keep)
             {
                 activeAreas.RemoveAt(i);
-                ReturnArea(state);
+                ReturnArea(state, state.Completed);
             }
         }
     }
 
-    private void ReturnArea(AreaState state)
+    private void ReturnArea(AreaState state, bool completed = false)
     {
-        state.Clear();
+        state.Clear(completed);
         inactiveAreas.Push(state);
     }
 
@@ -121,6 +121,9 @@ public sealed class EnemyMovementControlAreaRunner : MonoBehaviour
         private float tickInterval;
         private float sinceLastQuery;
         private bool active;
+        private ItemEffectContext context;
+        private ItemEffectLease lease;
+        internal bool Completed { get; private set; }
 
         private readonly EnemyMovementControlEffect.QueryBuffer buffer =
             new EnemyMovementControlEffect.QueryBuffer();
@@ -133,8 +136,11 @@ public sealed class EnemyMovementControlAreaRunner : MonoBehaviour
             EnemyMovementControlEffect.AreaSettings nextSettings,
             MovementControlAreaContext nextArea,
             float lifetime,
-            float interval)
+            float interval, ItemEffectContext context)
         {
+            this.context = context;
+            lease = context != null ? context.RetainLifetime() : null;
+            Completed = false;
             settings = nextSettings;
             area = nextArea;
             remainingLifetime = lifetime;
@@ -145,11 +151,14 @@ public sealed class EnemyMovementControlAreaRunner : MonoBehaviour
 
         internal bool Tick(float deltaTime)
         {
-            if (!active)
+            if (!active || (context != null && !context.CanContinue))
                 return false;
             remainingLifetime = Mathf.Max(0f, remainingLifetime - deltaTime);
             if (remainingLifetime <= TimeEpsilon)
+            {
+                Completed = true;
                 return false;
+            }
 
             sinceLastQuery += deltaTime;
             if (sinceLastQuery + TimeEpsilon >= tickInterval)
@@ -201,9 +210,12 @@ public sealed class EnemyMovementControlAreaRunner : MonoBehaviour
             removed.Clear();
         }
 
-        internal void Clear()
+        internal void Clear(bool completed = false)
         {
             active = false;
+            if (lease != null) lease.Finish(completed);
+            lease = null;
+            context = null;
             foreach (KeyValuePair<Enemy, int> pair in affected)
             {
                 Enemy enemy = pair.Key;

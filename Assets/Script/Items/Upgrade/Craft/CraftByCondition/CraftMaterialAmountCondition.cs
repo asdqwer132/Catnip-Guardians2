@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public enum CraftAmountComparison
 {
@@ -8,7 +8,7 @@ public enum CraftAmountComparison
     BetweenInclusive
 }
 
-[CreateAssetMenu(fileName = "MaterialAmountCondition", menuName = "GameData/Item/Crafting/Conditions/Material Amount")]
+[CreateAssetMenu(fileName = "MaterialAmountCondition", menuName = "GameData/Crafting/Conditions/Material Amount")]
 public sealed class CraftMaterialAmountCondition : CraftCondition
 {
     public ItemData material;

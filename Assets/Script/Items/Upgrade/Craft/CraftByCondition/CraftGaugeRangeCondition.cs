@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 [Serializable]
@@ -10,7 +10,7 @@ public sealed class CraftGaugeContribution
 }
 
 /// <summary>Each material contributes points. Use overlapping ranges for additive bonuses.</summary>
-[CreateAssetMenu(fileName = "GaugeRangeCondition", menuName = "GameData/Item/Crafting/Conditions/Gauge Range")]
+[CreateAssetMenu(fileName = "GaugeRangeCondition", menuName = "GameData/Crafting/Conditions/Gauge Range")]
 public sealed class CraftGaugeRangeCondition : CraftCondition
 {
     public CraftGaugeContribution[] contributions = new CraftGaugeContribution[0];

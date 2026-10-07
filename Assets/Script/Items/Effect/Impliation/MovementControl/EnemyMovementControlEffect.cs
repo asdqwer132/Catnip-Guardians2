@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,7 +15,7 @@ public enum EnemyMovementControlExecutionMode
     PersistentArea = 1
 }
 
-[CreateAssetMenu(fileName = "EnemyMovementControlEffect", menuName = "GameData/Item/Item Effect/Enemy Movement Control")]
+[CreateAssetMenu(fileName = "EnemyMovementControlEffect", menuName = "GameData/Items/Effects/Movement/Control")]
 public class EnemyMovementControlEffect : ItemEffectData
 {
     [Header("Movement")]
@@ -85,6 +85,11 @@ public class EnemyMovementControlEffect : ItemEffectData
             ExecuteMovementControl(context, true);
     }
 
+    public override void Prepare(ItemEffectContext context)
+    {
+        context.GetSnapshotStat(this, movementStat);
+    }
+
     public override void ExecuteEffect(ItemEffectContext context)
     {
         ExecuteMovementControl(context, false);
@@ -146,7 +151,7 @@ public class EnemyMovementControlEffect : ItemEffectData
 
         if (persistent)
         {
-            EnemyMovementControlAreaRunner.StartArea(settings, area, stat.areaDuration, stat.tickInterval);
+            EnemyMovementControlAreaRunner.StartArea(settings, area, stat.areaDuration, stat.tickInterval, context);
             return;
         }
 
@@ -154,6 +159,7 @@ public class EnemyMovementControlEffect : ItemEffectData
         try
         {
             ApplyMovementControl(settings, area, buffer, null, null);
+            ItemEffectDelayRunner.Wait(context, stat.duration);
         }
         finally
         {
@@ -232,15 +238,7 @@ public class EnemyMovementControlEffect : ItemEffectData
 
     private EnemyMovementControlStat GetCurrentStat(ItemEffectContext context)
     {
-        if (movementStat == null)
-            return null;
-
-        EnemyMovementControlStat result = context != null && context.buffManager != null
-            ? context.buffManager.GetBuffedStatForItem(movementStat, context.sourceItemData, context.sourceBag)
-            : movementStat.Clone();
-        if (result != null)
-            result.Clamp();
-        return result;
+        return context != null ? context.GetCurrentStat(this, movementStat) : movementStat;
     }
 
     private bool TryGetAreaContext(ItemEffectContext context, float range, out MovementControlAreaContext area)
@@ -293,7 +291,7 @@ public class EnemyMovementControlEffect : ItemEffectData
 
         Vector3 position = new Vector3(area.center.x, area.center.y, 0f);
         ItemEffectContext visualContext = new ItemEffectContext(context.owner, context.sourceItemData,
-            context.usePosition, position, context.sourceBag, this, context.buffManager, context.direction);
+            context.usePosition, position, context.sourceBag, this, context.buffManager, context.direction, context.plan);
         Quaternion rotation = areaShape != null ? areaShape.GetVisualRotation(area) : Quaternion.identity;
         ImpactVfxInstance impact = Instantiate(impactVfxPrefab, position, rotation);
         impact.Init(

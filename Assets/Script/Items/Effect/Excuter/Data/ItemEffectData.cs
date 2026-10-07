@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public abstract class ItemEffectData : ScriptableObject
 {
@@ -23,28 +23,45 @@ public abstract class ItemEffectData : ScriptableObject
     public bool HasLegacyVisualSettings =>
         impactVfxPrefab != null || !string.IsNullOrWhiteSpace(audioSource);
 
+    [Header("End Visual / Audio")]
+    [Tooltip("효과와 모든 하위 효과가 실제로 끝난 뒤 한 번 재생합니다. 전투 초기화/비활성화 취소에는 재생하지 않습니다.")]
+    public EffectVisualData endVisualData;
+    protected virtual bool OwnsEndVisual => true;
+    protected virtual bool CanStart(ItemEffectContext context) => AreConditionsSatisfied(context);
+
+    public bool CanExecute(ItemEffectContext context) => context != null && context.CanContinue && CanStart(context);
+
+    public virtual void Prepare(ItemEffectContext context) { }
+
     public void Execute(ItemEffectContext context)
     {
-        if (context == null)
+        if (context == null || !context.CanContinue || !CanStart(context))
             return;
-
-        // 분기 에셋을 서로 연결한 경우에도 같은 실행 경로의 순환 참조를 차단한다.
         if (!context.TryBeginEffectExecution(this))
         {
-            Debug.LogWarning("ItemEffectData: 이펙트 실행 중 순환 참조가 발견되어 실행을 건너뜁니다.", this);
+            Debug.LogWarning("ItemEffectData: 순환 실행 경로를 발견해 건너뜁니다.", this);
             return;
         }
-
-        ItemEffectData previousEffect = context.currentEffectData;
-        context.SetCurrentEffect(this);
+        ItemEffectContext execution = context.Copy(context.targetPosition, context.direction);
+        execution.currentEffectData = this;
+        EffectVisualData endVisual = OwnsEndVisual ? endVisualData : null;
+        ItemEffectLifetime scope = new ItemEffectLifetime(context.lifetime, endVisual != null ? (System.Action)(() =>
+        {
+            if (endVisual != null && execution.CanContinue)
+                endVisual.Play(new EffectVisualContext(execution.targetPosition, Quaternion.identity));
+        }) : null, trackCompletion: endVisual != null || (context.lifetime != null && context.lifetime.TracksCompletion));
+        execution.lifetime = scope;
+        bool succeeded = false;
         try
         {
-            ExecuteWithConditions(context);
+            execution.plan.Prepare(this, execution);
+            ExecuteWithConditions(execution);
+            succeeded = true;
         }
         finally
         {
-            context.SetCurrentEffect(previousEffect);
             context.EndEffectExecution(this);
+            scope.Close(succeeded);
         }
     }
 
@@ -111,7 +128,7 @@ public abstract class ItemEffectData : ScriptableObject
         ItemEffectContext snapshot = new ItemEffectContext(
             context.owner, context.sourceItemData, context.usePosition,
             context.targetPosition, context.sourceBag, this, context.buffManager,
-            context.direction
+            context.direction, context.plan
         );
 
         EffectVisualContext visualContext = new EffectVisualContext(

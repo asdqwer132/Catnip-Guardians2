@@ -1,6 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "Item", menuName = "GameData/Item/ItemData")]
+[CreateAssetMenu(fileName = "Item", menuName = "GameData/Items/Item")]
 public class ItemData : DefaultData
 {
     [Header("Item Class")]
@@ -16,6 +16,12 @@ public class ItemData : DefaultData
 
 
     public ItemEffectData[] effectDatas;
+
+    [Header("Optional Item Completion")]
+    [Tooltip("비워두면 효과별 End Visual만 사용합니다. 지정하면 투척/소환/버프/하위 공격이 모두 끝난 뒤 한 번 재생합니다.")]
+    public EffectVisualData endVisualData;
+    [Tooltip("끄면 최초 도착 위치, 켜면 종료 순간 소유자의 위치에서 재생합니다.")]
+    public bool endVisualAtOwner;
 
 
 }

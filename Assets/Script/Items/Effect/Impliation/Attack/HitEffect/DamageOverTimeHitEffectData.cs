@@ -1,6 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "DamageOverTimeHitEffect", menuName = "GameData/Item/Hit Effect/Damage Over Time")]
+[CreateAssetMenu(fileName = "DamageOverTimeHitEffect", menuName = "GameData/Items/Hit Effects/Damage Over Time")]
 public class DamageOverTimeHitEffectData : HitEffectData
 {
     [Header("Damage Over Time")]
@@ -8,15 +8,15 @@ public class DamageOverTimeHitEffectData : HitEffectData
     [Min(0.01f)] public float duration = 3f;
     [Min(0.01f)] public float tickInterval = 1f;
 
-    private HitEffectContext context;
+    protected override bool OwnsEndVisual => false;
     protected override bool ApplyEffect(HitEffectContext context)
     {
-        this.context = context;
+        
         return context.target.GetOrCreateStatusController().ApplyDamageOverTime(
-            this, damagePerTick, duration, tickInterval
+            this, damagePerTick, duration, tickInterval, context
         );
     }
-    public void PlayHit()
+    public void PlayHit(HitEffectContext context)
     {
         PlayHitVisual( context );
     }

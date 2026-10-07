@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -33,6 +33,7 @@ public class ActiveBuff
 
     [NonSerialized] public BuffModifier[] modifiers;
     [NonSerialized] private HashSet<ItemData> consumeItemSet;
+    internal readonly ItemEffectCompletionGroup completion = new ItemEffectCompletionGroup();
     internal BuffStorage StorageOwner { get; set; }
     internal ulong RegistrationVersion { get; private set; }
 

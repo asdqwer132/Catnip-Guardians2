@@ -1,10 +1,31 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class AttackObject<TStat> : AttackObjectBase, IDynamicBuffReceiver
     where TStat : class, IGameStat<TStat>
 {
     [Header("Reference")]
     public GameObject owner;
+
+    private ItemEffectLease effectLease;
+    public void BindLifetime(ItemEffectContext context)
+    {
+        if (effectLease != null) effectLease.Cancel();
+        effectLease = context != null ? context.RetainLifetime() : null;
+    }
+
+    protected void CompleteLifetime()
+    {
+        ItemEffectLease finished = effectLease;
+        effectLease = null;
+        if (finished != null) finished.Finish();
+    }
+
+    protected override void OnDisable()
+    {
+        if (effectLease != null) effectLease.Cancel();
+        effectLease = null;
+        base.OnDisable();
+    }
 
     protected bool useSnapshotAndDynamicBuff;
 

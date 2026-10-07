@@ -1,6 +1,6 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
-[CreateAssetMenu(fileName = "EnemyStatData", menuName = "GameData/Enemy/Enemy Stat Data")]
+[CreateAssetMenu(fileName = "EnemyStatData", menuName = "GameData/Entities/Enemy/Enemy Stat Data")]
 public class EnemyStatData : ScriptableObject
 {
     [Header("Class")]
@@ -83,7 +83,7 @@ public class EnemyStatData : ScriptableObject
         stat.attackRange = Random.Range(minAttackRange, maxAttackRange);
         stat.attackCooldown = Random.Range(minAttackCooldown, maxAttackCooldown);
 
-        // EnemyStat ¾È¿¡ growEx°¡ ÀÖ´Ù¸é ÀÌ°Å »ç¿ë
+        // EnemyStat ì•ˆì— growExê°€ ìˆë‹¤ë©´ ì´ê±° ì‚¬ìš©
         stat.growEx = Random.Range(minGrowEx, maxGrowEx);
 
         stat.Clamp();
@@ -91,7 +91,7 @@ public class EnemyStatData : ScriptableObject
         return stat;
     }
 
-    // EnemyStat ¾È¿¡ growEx°¡ ¾ø´Ù¸é Enemy ÂÊ¿¡¼­ ÀÌ°É µû·Î È£ÃâÇØ¼­ ¾²¸é µÊ
+    // EnemyStat ì•ˆì— growExê°€ ì—†ë‹¤ë©´ Enemy ìª½ì—ì„œ ì´ê±¸ ë”°ë¡œ í˜¸ì¶œí•´ì„œ ì“°ë©´ ë¨
     public float GetRandomGrowEx()
     {
         return Random.Range(minGrowEx, maxGrowEx);

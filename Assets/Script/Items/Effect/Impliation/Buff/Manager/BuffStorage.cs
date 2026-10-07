@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 public class BuffStorage
 {
@@ -134,9 +134,9 @@ public class BuffStorage
         return null;
     }
 
-    public void RemoveBuff(ActiveBuff buff)
+    public void RemoveBuff(ActiveBuff buff, bool completed = true)
     {
-        if (buff == null)
+        if (buff == null || buff.StorageOwner != this)
             return;
 
         activeBuffs.Remove(buff);
@@ -146,6 +146,7 @@ public class BuffStorage
         useCountBuffs.Remove(buff);
         buff.StorageOwner = null;
         buff.InvalidateRegistration();
+        buff.completion.Finish(completed);
     }
 
     public void RegisterTarget(IBuffTarget target)
@@ -238,54 +239,33 @@ public class BuffStorage
                     continue;
             }
 
-            RemoveBuff(buff);
+            RemoveBuff(buff, false);
         }
     }
 
     public void ClearNormalBuffs()
     {
-        for (int i = normalBuffs.Count - 1; i >= 0; i--)
-        {
-            ActiveBuff buff = normalBuffs[i];
-            activeBuffs.Remove(buff);
-            if (buff != null)
-            {
-                buff.StorageOwner = null;
-                buff.InvalidateRegistration();
-            }
-        }
-
+        for (int i = normalBuffs.Count - 1; i >= 0; i--) RemoveBuff(normalBuffs[i], false);
         normalBuffs.Clear();
         timedBuffs.Clear();
         useCountBuffs.Clear();
+        activeBuffs.RemoveAll(buff => buff == null);
         HasExpiredUseCounts = false;
     }
 
     public void ClearInfiniteBuffs()
     {
-        for (int i = infiniteBuffs.Count - 1; i >= 0; i--)
-        {
-            ActiveBuff buff = infiniteBuffs[i];
-            activeBuffs.Remove(buff);
-            if (buff != null)
-            {
-                buff.StorageOwner = null;
-                buff.InvalidateRegistration();
-            }
-        }
-
+        for (int i = infiniteBuffs.Count - 1; i >= 0; i--) RemoveBuff(infiniteBuffs[i], false);
         infiniteBuffs.Clear();
+        activeBuffs.RemoveAll(buff => buff == null);
     }
 
     public void ClearAll()
     {
-        for (int i = 0; i < activeBuffs.Count; i++)
+        for (int i = activeBuffs.Count - 1; i >= 0; i--)
         {
             ActiveBuff buff = activeBuffs[i];
-            if (buff == null)
-                continue;
-            buff.StorageOwner = null;
-            buff.InvalidateRegistration();
+            if (buff != null) RemoveBuff(buff, false);
         }
         activeBuffs.Clear();
         normalBuffs.Clear();

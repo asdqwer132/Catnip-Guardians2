@@ -115,10 +115,13 @@ public class BuffUISlot : MonoBehaviour
         if (iconImage == null)
             return;
 
-        Sprite icon = activeBuff != null && activeBuff.sourceItemData != null ? activeBuff.sourceItemData.icon : null;
-        iconImage.enabled = icon != null;
+        BuffEffect buffEffect = activeBuff != null ? activeBuff.sourceEffectData as BuffEffect : null;
+        Sprite icon = buffEffect != null ? buffEffect.buffIcon : null;
 
-        if (icon != null)
-            iconImage.sprite = icon;
+        if (icon == null && activeBuff != null && activeBuff.sourceItemData != null)
+            icon = activeBuff.sourceItemData.icon;
+
+        iconImage.sprite = icon;
+        iconImage.enabled = icon != null;
     }
 }

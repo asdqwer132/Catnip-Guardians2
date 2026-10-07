@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -11,6 +11,7 @@ public class EnemyStatusController : MonoBehaviour
     [Header("Runtime")]
     [SerializeField] private float stunRemainingTime;
 
+    private readonly ItemEffectCompletionGroup stunCompletion = new ItemEffectCompletionGroup();
     private Enemy enemy;
     private bool runtimeStunImmune;
     private readonly List<DamageOverTimeState> damageOverTimeStates = new List<DamageOverTimeState>();
@@ -19,6 +20,8 @@ public class EnemyStatusController : MonoBehaviour
     private sealed class DamageOverTimeState
     {
         public DamageOverTimeHitEffectData effect;
+        public HitEffectContext context;
+        public readonly ItemEffectCompletionGroup completion = new ItemEffectCompletionGroup();
         public int targetLifeId;
         public float damagePerTick;
         public float remainingDuration;
@@ -36,7 +39,7 @@ public class EnemyStatusController : MonoBehaviour
         enemy = owner;
     }
 
-    public bool ApplyStun(float duration)
+    public bool ApplyStun(float duration, HitEffectContext context = null)
     {
         if (!isActiveAndEnabled || IsStunImmune)
             return false;
@@ -53,6 +56,7 @@ public class EnemyStatusController : MonoBehaviour
 
         // 짧은 기절이 기존의 긴 기절 시간을 줄이지 않도록 한다.
         stunRemainingTime = Mathf.Max(stunRemainingTime, Mathf.Max(0.01f, duration));
+        if (context != null) stunCompletion.Track(context.CreateItemContext(), null, enemy.transform);
         return true;
     }
 
@@ -68,7 +72,8 @@ public class EnemyStatusController : MonoBehaviour
         DamageOverTimeHitEffectData effect,
         float damagePerTick,
         float duration,
-        float tickInterval
+        float tickInterval,
+        HitEffectContext context = null
     )
     {
         if (!isActiveAndEnabled || effect == null || damagePerTick <= 0f ||
@@ -91,6 +96,8 @@ public class EnemyStatusController : MonoBehaviour
             if (state.effect != effect || state.targetLifeId != lifeId)
                 continue;
 
+            state.context = context;
+            if (context != null) state.completion.Track(context.CreateItemContext(), effect.endVisualData, enemy.transform);
             state.damagePerTick = damagePerTick;
             state.remainingDuration = Mathf.Max(state.remainingDuration, safeDuration);
             state.tickInterval = safeInterval;
@@ -100,15 +107,18 @@ public class EnemyStatusController : MonoBehaviour
             return true;
         }
 
-        damageOverTimeStates.Add(new DamageOverTimeState
+        DamageOverTimeState created = new DamageOverTimeState
         {
             effect = effect,
             targetLifeId = lifeId,
             damagePerTick = damagePerTick,
             remainingDuration = safeDuration,
             tickInterval = safeInterval,
-            timeUntilNextTick = safeInterval
-        });
+            timeUntilNextTick = safeInterval,
+            context = context
+        };
+        if (context != null) created.completion.Track(context.CreateItemContext(), effect.endVisualData, enemy.transform);
+        damageOverTimeStates.Add(created);
         return true;
     }
 
@@ -132,7 +142,7 @@ public class EnemyStatusController : MonoBehaviour
             {
                 stunRemainingTime = Mathf.Max(0f, stunRemainingTime - Time.deltaTime);
                 if (stunRemainingTime <= 0f)
-                    ClearStun();
+                    ClearStun(true);
             }
         }
 
@@ -157,6 +167,7 @@ public class EnemyStatusController : MonoBehaviour
                 if (state.targetLifeId != lifeId)
                 {
                     damageOverTimeStates.Remove(state);
+                    state.completion.Finish(false);
                     continue;
                 }
 
@@ -170,7 +181,7 @@ public class EnemyStatusController : MonoBehaviour
                 {
                     state.timeUntilNextTick += state.tickInterval;
                     //공격 지점
-                    state.effect.PlayHit();
+                    state.effect.PlayHit(state.context);
                     enemy.TakeDamage(state.damagePerTick);
 
                     // 피해 이벤트 중 사망·풀 재사용·상태 정리가 일어날 수 있다.
@@ -182,7 +193,10 @@ public class EnemyStatusController : MonoBehaviour
                 }
 
                 if (state.remainingDuration <= 0f)
+                {
                     damageOverTimeStates.Remove(state);
+                    state.completion.Finish(true);
+                }
             }
         }
         finally
@@ -191,9 +205,10 @@ public class EnemyStatusController : MonoBehaviour
         }
     }
 
-    public void ClearStun()
+    public void ClearStun(bool completed = false)
     {
         stunRemainingTime = 0f;
+        stunCompletion.Finish(completed);
         if (enemy != null)
             enemy.SetStunned(false);
     }
@@ -207,6 +222,7 @@ public class EnemyStatusController : MonoBehaviour
 
     public void ClearDamageOverTime()
     {
+        for (int i = 0; i < damageOverTimeStates.Count; i++) damageOverTimeStates[i].completion.Finish(false);
         damageOverTimeStates.Clear();
     }
 

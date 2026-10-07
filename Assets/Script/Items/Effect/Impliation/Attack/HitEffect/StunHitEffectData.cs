@@ -1,6 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "StunHitEffect", menuName = "GameData/Item/Hit Effect/Stun")]
+[CreateAssetMenu(fileName = "StunHitEffect", menuName = "GameData/Items/Hit Effects/Stun")]
 public class StunHitEffectData : HitEffectData
 {
     [Header("Stun")]
@@ -8,6 +8,6 @@ public class StunHitEffectData : HitEffectData
 
     protected override bool ApplyEffect(HitEffectContext context)
     {
-        return context.target.GetOrCreateStatusController().ApplyStun(duration);
+        return context.target.GetOrCreateStatusController().ApplyStun(duration, context);
     }
 }

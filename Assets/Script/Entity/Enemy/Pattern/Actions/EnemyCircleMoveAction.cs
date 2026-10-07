@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 
 public enum EnemyCircleMoveFinishMode
@@ -7,29 +7,29 @@ public enum EnemyCircleMoveFinishMode
     ByDuration
 }
 
-[CreateAssetMenu(fileName = "EnemyCircleMoveAction", menuName = "GameData/Enemy/Enemy Pattern/Action/Circle Move Around Target")]
+[CreateAssetMenu(fileName = "EnemyCircleMoveAction", menuName = "GameData/Entities/Enemy/Patterns/Actions/Circle Move Around Target")]
 public class EnemyCircleMoveAction : EnemyPatternAction
 {
     [Header("Finish")]
     public EnemyCircleMoveFinishMode finishMode = EnemyCircleMoveFinishMode.ByAngle;
 
-    [Tooltip("ByDurationÀÏ ¶§´Â ½ÇÁ¦ Áö¼Ó ½Ã°£. ByAngleÀÏ ¶§´Â ¾ÈÀü Á¦ÇÑ ½Ã°£")]
+    [Tooltip("ByDurationì¼ ë•ŒëŠ” ì‹¤ì œ ì§€ì† ì‹œê°„. ByAngleì¼ ë•ŒëŠ” ì•ˆì „ ì œí•œ ì‹œê°„")]
     [Min(0.05f)] public float duration = 1.2f;
 
-    [Tooltip("¸î µµ µ¹Áö. 180ÀÌ¸é ¹İ ¹ÙÄû, 360ÀÌ¸é ÇÑ ¹ÙÄû")]
+    [Tooltip("ëª‡ ë„ ëŒì§€. 180ì´ë©´ ë°˜ ë°”í€´, 360ì´ë©´ í•œ ë°”í€´")]
     [Min(0f)] public float angle = 180f;
 
     [Header("Move")]
-    [Tooltip("Å¸°Ù°ú À¯ÁöÇÏ·Á´Â °Å¸®")]
+    [Tooltip("íƒ€ê²Ÿê³¼ ìœ ì§€í•˜ë ¤ëŠ” ê±°ë¦¬")]
     [Min(0f)] public float radius = 1.5f;
 
-    [Tooltip("ByAngle ¸ğµå¿¡¼­ »ç¿ëÇÏ´Â ¿øÇü ÀÌµ¿ ¼Óµµ")]
+    [Tooltip("ByAngle ëª¨ë“œì—ì„œ ì‚¬ìš©í•˜ëŠ” ì›í˜• ì´ë™ ì†ë„")]
     [Min(0f)] public float moveSpeed = 4f;
 
-    [Tooltip("¹İÁö¸§¿¡¼­ ¹ş¾î³µÀ» ¶§ ´Ù½Ã ¿ø ±Ëµµ·Î µ¹¾Æ¿À·Á´Â Èû")]
+    [Tooltip("ë°˜ì§€ë¦„ì—ì„œ ë²—ì–´ë‚¬ì„ ë•Œ ë‹¤ì‹œ ì› ê¶¤ë„ë¡œ ëŒì•„ì˜¤ë ¤ëŠ” í˜")]
     [Min(0f)] public float radiusCorrectionPower = 4f;
 
-    [Tooltip("¹İÁö¸§ º¸Á¤ ¼Óµµ Á¦ÇÑ")]
+    [Tooltip("ë°˜ì§€ë¦„ ë³´ì • ì†ë„ ì œí•œ")]
     [Min(0f)] public float maxRadiusCorrectionSpeed = 3f;
 
     [Header("Direction")]

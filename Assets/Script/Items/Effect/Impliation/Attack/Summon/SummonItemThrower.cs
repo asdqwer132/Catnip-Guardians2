@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public enum SummonThrowTargetMode
@@ -37,6 +37,12 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget
     [SerializeField] private Enemy currentTarget;
     [SerializeField] private int detectedEnemyCount;
     [SerializeField] private List<Enemy> detectedEnemies = new List<Enemy>();
+
+    private ItemEffectContext executionContext;
+    public void SetExecutionContext(ItemEffectContext context)
+    {
+        executionContext = context.Copy(transform.position, context.direction);
+    }
 
     private float timer;
     private float throwTimer;
@@ -91,6 +97,7 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget
 
         activeThrowers.Remove(this);
 
+        executionContext = null;
         currentTarget = null;
         detectedEnemies.Clear();
         detectedEnemyCount = 0;
@@ -101,7 +108,7 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget
     private void Update()
     {
         UpdateLifeTime();
-        UpdateThrow();
+        if (timer < lifeTime && (executionContext == null || executionContext.CanContinue)) UpdateThrow();
 
         detectedEnemyCount = detectedEnemies.Count;
     }
@@ -111,7 +118,10 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget
         timer += Time.deltaTime;
 
         if (timer >= lifeTime)
+        {
+            CompleteLifetime();
             Destroy(gameObject);
+        }
     }
 
     private void UpdateThrow()
@@ -522,8 +532,9 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget
             startPosition,
             targetPosition,
             owner,
-            null,
-            0
+            sourceBag,
+            0,
+            executionContext
         );
     }
 

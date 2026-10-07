@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 public enum SkillMapType
 {
     Forest = 0,
@@ -6,7 +6,7 @@ public enum SkillMapType
 }
 [CreateAssetMenu(
     fileName = "SkillMapData",
-    menuName = "GameData/Skill Tree/Skill Map"
+    menuName = "GameData/Skills/Map"
 )]
 public class SkillMapData : DefaultData
 {

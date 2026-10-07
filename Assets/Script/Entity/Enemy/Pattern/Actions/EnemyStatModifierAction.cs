@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "EnemyStatModifierAction", menuName = "GameData/Enemy/Enemy Pattern/Action/Stat Modifier")]
+[CreateAssetMenu(fileName = "EnemyStatModifierAction", menuName = "GameData/Entities/Enemy/Patterns/Actions/Stat Modifier")]
 public class EnemyStatModifierAction : EnemyPatternAction
 {
     [Min(0f)] public float duration = 2f;

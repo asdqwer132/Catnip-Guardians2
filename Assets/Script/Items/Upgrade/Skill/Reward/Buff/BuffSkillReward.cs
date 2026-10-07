@@ -1,8 +1,8 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 [CreateAssetMenu(
     fileName = "BuffSkillReward",
-    menuName = "GameData/Skill Tree/Reward/Buff"
+    menuName = "GameData/Skills/Rewards/Buff"
 )]
 public class BuffSkillReward : SkillRewardData
 {
@@ -16,19 +16,19 @@ public class BuffSkillReward : SkillRewardData
     {
         if (context == null)
         {
-            Debug.LogWarning("SkillApplyContext°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("SkillApplyContextê°€ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
         if (buffItemData == null)
         {
-            Debug.LogWarning("µî·ÏÇÒ ¹öÇÁ ¾ÆÀÌÅÛÀÌ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("ë“±ë¡í•  ë²„í”„ ì•„ì´í…œì´ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
         if (context.buffSkillManager == null)
         {
-            Debug.LogWarning("SkillApplyContext¿¡ BuffSkillManager°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("SkillApplyContextì— BuffSkillManagerê°€ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 

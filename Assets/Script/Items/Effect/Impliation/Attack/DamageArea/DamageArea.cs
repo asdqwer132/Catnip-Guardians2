@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public enum DamageApplyMode
@@ -85,7 +85,10 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
         timer += Time.deltaTime;
 
         if (timer >= lifeTime)
+        {
+            CompleteLifetime();
             Destroy(gameObject);
+        }
     }
 
     public override void InitWithSnapshotAndDynamicBuff(
@@ -126,8 +129,9 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
         hitSourceContext = context == null ? null : new ItemEffectContext(
             context.owner, context.sourceItemData, context.usePosition,
             context.targetPosition, context.sourceBag, context.currentEffectData,
-            context.buffManager
+            context.buffManager, context.direction
         );
+        if (hitSourceContext != null) hitSourceContext.InheritExecution(context);
     }
 
     protected override void ApplyStat(DamageAreaAttackStat currentStat)

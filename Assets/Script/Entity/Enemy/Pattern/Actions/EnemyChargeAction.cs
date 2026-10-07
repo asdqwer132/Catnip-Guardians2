@@ -1,7 +1,7 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "EnemyChargeAction", menuName = "GameData/Enemy/Enemy Pattern/Action/Charge")]
+[CreateAssetMenu(fileName = "EnemyChargeAction", menuName = "GameData/Entities/Enemy/Patterns/Actions/Charge")]
 public class EnemyChargeAction : EnemyPatternAction
 {
     [Header("Move")]
@@ -20,7 +20,7 @@ public class EnemyChargeAction : EnemyPatternAction
     public float damageMultiplier = 1.2f;
     public bool damageOnce = true;
 
-    [Tooltip("Damage Once°¡ ²¨Á® ÀÖÀ» ¶§ ¹İº¹ ÇÇÇØ °£°İ")]
+    [Tooltip("Damage Onceê°€ êº¼ì ¸ ìˆì„ ë•Œ ë°˜ë³µ í”¼í•´ ê°„ê²©")]
     [Min(0.01f)] public float damageInterval = 0.2f;
 
     [Header("Option")]

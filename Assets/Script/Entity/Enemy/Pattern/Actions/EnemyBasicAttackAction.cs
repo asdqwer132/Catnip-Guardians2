@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "EnemyBasicAttackAction", menuName = "GameData/Enemy/Enemy Pattern/Action/Basic Attack")]
+[CreateAssetMenu(fileName = "EnemyBasicAttackAction", menuName = "GameData/Entities/Enemy/Patterns/Actions/Basic Attack")]
 public class EnemyBasicAttackAction : EnemyPatternAction
 {
     [Header("Damage")]

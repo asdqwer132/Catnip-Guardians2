@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 [Serializable]
@@ -10,7 +10,7 @@ public sealed class CraftChanceRule
     public float chancePercent;
 }
 
-[CreateAssetMenu(fileName = "CraftItem", menuName = "GameData/Item/Crafting/Item")]
+[CreateAssetMenu(fileName = "CraftItem", menuName = "GameData/Crafting/Item")]
 public sealed class CraftItemData : ScriptableObject
 {
     public ItemData resultItem;

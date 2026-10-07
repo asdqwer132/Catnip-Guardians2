@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class ItemRuntimeObjectManager : MonoBehaviour
@@ -58,6 +58,7 @@ public class ItemRuntimeObjectManager : MonoBehaviour
 
     public void ClearAll()
     {
+        ItemEffectRuntime.CancelAll();
         isClearing = true;
 
         foreach (GameObject obj in runtimeObjects)

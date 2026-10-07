@@ -1,8 +1,8 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 [CreateAssetMenu(
     fileName = "DirectionalRectangleAttackEffect",
-    menuName = "GameData/Item/Item Effect/DirectionalRectangleAttackEffect"
+    menuName = "GameData/Items/Effects/Attack/Directional Rectangle"
 )]
 public class DirectionalRectangleAttackEffect : DamageAreaAttackEffect
 {

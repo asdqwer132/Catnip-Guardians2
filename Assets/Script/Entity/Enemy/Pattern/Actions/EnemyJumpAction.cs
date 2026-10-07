@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "EnemyJumpAction", menuName = "GameData/Enemy/Enemy Pattern/Action/Jump To Target")]
+[CreateAssetMenu(fileName = "EnemyJumpAction", menuName = "GameData/Entities/Enemy/Patterns/Actions/Jump To Target")]
 public class EnemyJumpAction : EnemyPatternAction
 {
     public EnemyPatternPointType targetPointType = EnemyPatternPointType.Target;

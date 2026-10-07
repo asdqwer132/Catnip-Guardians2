@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 // 공유 에셋에는 설정만 저장한다. 남은 시간과 적용 대상은 에셋에 저장하지 않는다.
 public abstract class HitEffectData : ScriptableObject
@@ -10,6 +10,10 @@ public abstract class HitEffectData : ScriptableObject
     public EffectVisualData visualData;
     [Tooltip("켜면 연출이 적을 따라갑니다. 적이 죽거나 풀로 반환되면 연출도 정리됩니다.")]
     public bool followTarget = true;
+
+    [Header("End Visual / Audio")]
+    public EffectVisualData endVisualData;
+    protected virtual bool OwnsEndVisual => true;
 
     public bool TryExecute(HitEffectContext context)
     {
@@ -23,14 +27,23 @@ public abstract class HitEffectData : ScriptableObject
         if (chance < 1f && Random.value >= chance)
             return false;
 
-        bool applied = ApplyEffect(context);
-
-        // 확률 실패·면역·조건 실패 등 실제로 적용되지 않은 효과는 연출하지 않는다.
-        // 효과 적용 중 사망/풀 반환이 일어나면 다른 생명에 연출을 붙이지 않는다.
-        if (applied && context.IsTargetValid)
-            PlayHitVisual(context);
-
-        return applied;
+        bool applied = false;
+        bool succeeded = false;
+        EffectVisualData endVisual = OwnsEndVisual ? endVisualData : null;
+        ItemEffectLifetime scope = new ItemEffectLifetime(context.lifetime, endVisual != null ? (System.Action)(() =>
+        {
+            if (applied && endVisual != null && context.IsTargetValid)
+                endVisual.Play(new EffectVisualContext(context.target.transform.position, Quaternion.identity));
+        }) : null, trackCompletion: endVisual != null || (context.lifetime != null && context.lifetime.TracksCompletion));
+        HitEffectContext execution = context.WithLifetime(scope);
+        try
+        {
+            applied = ApplyEffect(execution);
+            succeeded = true;
+            if (applied && execution.IsTargetValid) PlayHitVisual(execution);
+            return applied;
+        }
+        finally { scope.Close(succeeded); }
     }
 
     protected virtual void PlayHitVisual(HitEffectContext context)

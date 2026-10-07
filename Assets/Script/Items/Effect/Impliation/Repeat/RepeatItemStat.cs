@@ -1,0 +1,33 @@
+using System;
+using UnityEngine;
+
+[Serializable]
+public class RepeatItemStat : IGameStat<RepeatItemStat>
+{
+    [Header("Repeat")]
+    [Tooltip("아이템 묶음을 사용할 총 횟수입니다. 목록보다 많으면 처음부터 다시 선택합니다.")]
+    public float itemRepeatCount = 3f;
+    [Tooltip("효과 시작부터 첫 아이템 묶음을 사용하기까지의 대기 시간입니다.")]
+    public float itemRepeatInterval = 0.2f;
+    [Header("Step Intervals")]
+    [Tooltip("각 묶음의 Interval After에 곱하는 값입니다. 1 = 그대로, 0.5 = 절반, 0 = 대기 없음. 버프로 변경할 수 있습니다.")]
+    public float itemRepeatStepIntervalMultiplier = 1f;
+    [Header("Placement")]
+    public float itemRepeatForwardOffset;
+    public float itemRepeatSideOffset;
+    public float itemRepeatRadius = 2f;
+    public float itemRepeatSpreadAngle = 360f;
+    public float itemRepeatDirectionAngle;
+    public RepeatItemStat Clone() => (RepeatItemStat)MemberwiseClone();
+    public void Clamp()
+    {
+        itemRepeatCount = EffectStatUtility.Safe(itemRepeatCount, 1f, 128f, 1f);
+        itemRepeatInterval = EffectStatUtility.Safe(itemRepeatInterval, 0f, 60f, 0.2f);
+        itemRepeatStepIntervalMultiplier = EffectStatUtility.Safe(itemRepeatStepIntervalMultiplier, 0f, 100f, 1f);
+        itemRepeatForwardOffset = EffectStatUtility.Safe(itemRepeatForwardOffset, -100f, 100f, 0f);
+        itemRepeatSideOffset = EffectStatUtility.Safe(itemRepeatSideOffset, -100f, 100f, 0f);
+        itemRepeatRadius = EffectStatUtility.Safe(itemRepeatRadius, 0f, 100f, 2f);
+        itemRepeatSpreadAngle = EffectStatUtility.Safe(itemRepeatSpreadAngle, 0f, 360f, 360f);
+        itemRepeatDirectionAngle = EffectStatUtility.Safe(itemRepeatDirectionAngle, -360f, 360f, 0f);
+    }
+}

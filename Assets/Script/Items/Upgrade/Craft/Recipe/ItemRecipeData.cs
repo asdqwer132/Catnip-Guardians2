@@ -1,7 +1,7 @@
-using NUnit.Framework.Interfaces;
+﻿using NUnit.Framework.Interfaces;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Recipe", menuName = "GameData/Item/Recipe")]
+[CreateAssetMenu(fileName = "Recipe", menuName = "GameData/Crafting/Recipe")]
 public class ItemRecipeData : ScriptableObject, ISearchable
 {
     public int tier;

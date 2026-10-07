@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class AttackObjectBase : MonoBehaviour
@@ -33,6 +33,7 @@ public abstract class AttackObjectBase : MonoBehaviour
 
     public static void ClearAllActiveEntities()
     {
+        ItemEffectRuntime.CancelAll();
         for (int i = activeEntities.Count - 1; i >= 0; i--)
         {
             AttackObjectBase entity = activeEntities[i];

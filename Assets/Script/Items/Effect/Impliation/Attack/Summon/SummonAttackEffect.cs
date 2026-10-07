@@ -1,8 +1,8 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 [CreateAssetMenu(
     fileName = "SummonAttackEffect",
-    menuName = "GameData/Item/Item Effect/SummonAttackEffect"
+    menuName = "GameData/Items/Effects/Attack/Summon"
 )]
 public class SummonAttackEffect : ItemEffectData
 {
@@ -11,6 +11,11 @@ public class SummonAttackEffect : ItemEffectData
 
     [Header("Optional Override")]
     public SummonItemThrower attackPrefab;
+
+    public override void Prepare(ItemEffectContext context)
+    {
+        context.GetSnapshotStat(this, attackStat);
+    }
 
     public override void ExecuteEffect(ItemEffectContext context)
     {
@@ -34,6 +39,7 @@ public class SummonAttackEffect : ItemEffectData
             Quaternion.identity
         );
 
+        damageArea.SetExecutionContext(context);
         InitDamageArea(damageArea, context);
     }
 
@@ -45,17 +51,7 @@ public class SummonAttackEffect : ItemEffectData
         if (context == null || context.buffManager == null)
             return attackStat;
 
-        SummonStat buffedStat = context.buffManager.GetBuffedStatForItem(
-            attackStat,
-            context.sourceItemData,
-            context.sourceBag,
-            BuffCalculationMode.All
-        );
-
-        if (buffedStat != null)
-            return buffedStat;
-
-        return attackStat;
+        return context.GetCurrentStat(this, attackStat);
     }
 
     private void InitDamageArea(SummonItemThrower damageArea, ItemEffectContext context)
@@ -63,22 +59,8 @@ public class SummonAttackEffect : ItemEffectData
         if (damageArea == null || context == null)
             return;
 
-        SummonStat snapshotStat = attackStat;
-
-        if (context.buffManager != null)
-        {
-            SummonStat buffedSnapshotStat =
-                context.buffManager.GetBuffedStatForItem(
-                    attackStat,
-                    context.sourceItemData,
-                    context.sourceBag,
-                    BuffCalculationMode.SnapshotOnly,
-                    true
-                );
-
-            if (buffedSnapshotStat != null)
-                snapshotStat = buffedSnapshotStat;
-        }
+        SummonStat snapshotStat = context.GetSnapshotStat(this, attackStat);
+        damageArea.BindLifetime(context);
 
         damageArea.InitWithSnapshotAndDynamicBuff(
             snapshotAttackStat: snapshotStat,

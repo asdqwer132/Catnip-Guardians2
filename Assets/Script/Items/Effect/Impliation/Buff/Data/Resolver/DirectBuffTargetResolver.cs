@@ -1,7 +1,7 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "DirectBuffTargetResolver", menuName = "GameData/Buff/Buff Target/Direct Buff Target")]
+[CreateAssetMenu(fileName = "DirectBuffTargetResolver", menuName = "GameData/Buffs/Targets/Direct")]
 public class DirectBuffTargetResolver : BuffTargetResolver
 {
     public Component targetComponent;

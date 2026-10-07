@@ -14,13 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BuffEffect
   conditionMode: 0
   conditions: []
-  visualData: {fileID: 0}
+  visualData: {fileID: 11400000, guid: 7c0d05a6a40fc5c449588f183307a9ec, type: 2}
   impactVfxPrefab: {fileID: 0}
   impactBaseScale: {x: 1, y: 1, z: 1}
   scaleImpactVfxByRadius: 1
   useAnimatorClipLifeTime: 1
   audioSource: 
   impactVfxLifeTime: 1
+  endVisualData: {fileID: 0}
   targetResolver: {fileID: 11400000, guid: f3ff37221a9bf2f43a5ee69b82a95df8, type: 2}
   buffInfo:
     stackMode: 0
@@ -35,6 +36,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: f5c0a85f81b4a6341b823365aa908815, type: 2}
     - {fileID: 11400000, guid: 25070a8f7d2957849928ee59bab08e8c, type: 2}
   includeSelf: 0
+  buffIcon: {fileID: 21300000, guid: 3a29433eec60bd94c91977f3d16a8a72, type: 3}
   showInUI: 1
   modifiers:
   - {fileID: 11400000, guid: 2b1ed47c413dc8f499436e988e0bcadc, type: 2}

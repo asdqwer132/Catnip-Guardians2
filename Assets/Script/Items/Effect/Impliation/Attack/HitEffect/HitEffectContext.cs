@@ -1,7 +1,9 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public sealed class HitEffectContext
 {
+    private readonly ItemEffectContext sourceContext;
+    public ItemEffectLifetime lifetime;
     public readonly Enemy target;
     public readonly int targetLifeId;
     public readonly GameObject owner;
@@ -17,6 +19,8 @@ public sealed class HitEffectContext
 
     public HitEffectContext(Enemy target, ItemEffectContext sourceContext)
     {
+        this.sourceContext = sourceContext;
+        lifetime = sourceContext != null ? sourceContext.lifetime : null;
         this.target = target;
         targetLifeId = target != null ? target.HitEffectLifeId : 0;
         hitPosition = target != null ? target.transform.position : Vector3.zero;
@@ -34,8 +38,23 @@ public sealed class HitEffectContext
 
     public ItemEffectContext CreateBuffContext(BuffEffect effect, BuffManager manager)
     {
-        return new ItemEffectContext(
-            owner, sourceItemData, usePosition, hitPosition, sourceBag, effect, manager
+        ItemEffectContext result = new ItemEffectContext(
+            owner, sourceItemData, usePosition, hitPosition, sourceBag, effect, manager,
+            sourceContext != null ? sourceContext.direction : Vector3.zero,
+            sourceContext != null ? sourceContext.plan : null
         );
+        result.InheritExecution(sourceContext);
+        result.lifetime = lifetime;
+        return result;
+    }
+
+    public HitEffectContext WithLifetime(ItemEffectLifetime scope)
+    {
+        return new HitEffectContext(target, sourceContext) { lifetime = scope };
+    }
+
+    public ItemEffectContext CreateItemContext()
+    {
+        return CreateBuffContext(null, buffManager);
     }
 }

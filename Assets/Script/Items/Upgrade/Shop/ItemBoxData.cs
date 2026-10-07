@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 [System.Serializable]
 public class GachaItemInfo
@@ -7,7 +7,7 @@ public class GachaItemInfo
     public int weight = 1;
 }
 
-[CreateAssetMenu(fileName = "Box", menuName = "GameData/Item/Box")]
+[CreateAssetMenu(fileName = "Box", menuName = "GameData/Shop/Box")]
 public class ItemBoxData : DefaultData
 {
     [Header("Price")]
@@ -21,7 +21,7 @@ public class ItemBoxData : DefaultData
     public AnimationClip idleClip;
     public AnimationClip openClip;
 
-    [Tooltip("»óÀÚ ¿­±â Trigger ÀÌ¸§")]
+    [Tooltip("ìƒì ì—´ê¸° Trigger ì´ë¦„")]
     public string openTriggerName = "Open";
 
     public ItemData GetRandomItem()

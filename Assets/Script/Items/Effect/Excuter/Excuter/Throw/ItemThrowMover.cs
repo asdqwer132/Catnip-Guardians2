@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using UnityEngine;
 
 public class ItemThrowMover : MonoBehaviour
@@ -7,24 +7,24 @@ public class ItemThrowMover : MonoBehaviour
     public SpriteRenderer spriteRenderer;
 
     [Header("Move")]
-    [Tooltip("ÀÚµ¿ °è»êµÊ. µµÂø ½Ã°£°ú X°Å¸® ±âÁØ")]
+    [Tooltip("ìë™ ê³„ì‚°ë¨. ë„ì°© ì‹œê°„ê³¼ Xê±°ë¦¬ ê¸°ì¤€")]
     public float speed = 10f;
-    [Tooltip("¸ñÇ¥ ÁöÁ¡±îÁö µµÂøÇÏ´Â ½Ã°£")]
+    [Tooltip("ëª©í‘œ ì§€ì ê¹Œì§€ ë„ì°©í•˜ëŠ” ì‹œê°„")]
     public float arriveTime = 0.6f;
     public float maxMoveTime = 3f;
 
     [Header("Projectile Arc")]
-    [Tooltip("ÃÖ°íÁ¡ ³ôÀÌ")]
+    [Tooltip("ìµœê³ ì  ë†’ì´")]
     public float arcHeight = 1.5f;
     public bool autoArcHeightByDistance = true;
-    [Tooltip("ÀÚµ¿ ³ôÀÌ ÃÖ¼Ò°ª")]
+    [Tooltip("ìë™ ë†’ì´ ìµœì†Œê°’")]
     public float minArcHeight = 0.6f;
-    [Tooltip("ÀÚµ¿ ³ôÀÌ ÃÖ´ë°ª")]
+    [Tooltip("ìë™ ë†’ì´ ìµœëŒ€ê°’")]
     public float maxArcHeight = 3f;
-    [Tooltip("X°Å¸® ±âÁØÀ¸·Î ³ôÀÌ °è»ê")]
+    [Tooltip("Xê±°ë¦¬ ê¸°ì¤€ìœ¼ë¡œ ë†’ì´ ê³„ì‚°")]
     public float arcHeightDistanceMultiplier = 0.25f;
     [Range(0.1f, 0.9f)]
-    [Tooltip("ÃÖ°íÁ¡ À§Ä¡. 0.5¸é °¡¿îµ¥, 0.35¸é ÃÊ¹İ¿¡ ³ôÀÌ ¶ä")]
+    [Tooltip("ìµœê³ ì  ìœ„ì¹˜. 0.5ë©´ ê°€ìš´ë°, 0.35ë©´ ì´ˆë°˜ì— ë†’ì´ ëœ¸")]
     public float arcPeakProgress = 0.45f;
 
     [Header("Rotation")]
@@ -81,7 +81,7 @@ public class ItemThrowMover : MonoBehaviour
         SetSprite(itemSprite);
         InitMove(startPosition, targetPosition, arriveTime, onArrive);
     }
-    private void InitMove(
+    public void InitMove(
         Vector3 startPosition,
         Vector3 targetPosition,
         float arriveTime,
@@ -196,6 +196,12 @@ public class ItemThrowMover : MonoBehaviour
         transform.Rotate(0f, 0f, spinSpeed * Time.deltaTime);
     }
 
+    private void OnDisable()
+    {
+        isMoving = false;
+        onArrive = null;
+    }
+
     private void Arrive()
     {
         if (!isMoving)
@@ -205,9 +211,11 @@ public class ItemThrowMover : MonoBehaviour
 
         transform.position = targetPosition;
 
-        onArrive?.Invoke();
+        Action arrived = onArrive;
+        onArrive = null;
+        arrived?.Invoke();
 
-        if (destroyOnArrive)
+        if (destroyOnArrive && !isMoving)
             Destroy(gameObject);
     }
 }
