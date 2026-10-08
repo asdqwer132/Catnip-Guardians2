@@ -4,6 +4,7 @@ using UnityEngine;
 public enum SummonThrowTargetMode { NearestEnemy, RandomEnemy, RandomPosition }
 
 // 기존 프리팹의 클래스/GUID와 버프 타깃을 유지하는 공통 소환수 호스트.
+[BuffTargetGroups("Summon")]
 public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget, IDamageable
 {
     [Header("Identity / Health")]

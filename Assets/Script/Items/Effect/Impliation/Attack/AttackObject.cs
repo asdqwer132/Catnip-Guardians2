@@ -106,8 +106,12 @@ public class AttackObject<TStat> : AttackObjectBase, IDynamicBuffReceiver
                 currentStat = dynamicBuffedStat;
         }
 
+        currentStat = ApplyTargetBuffs(currentStat);
         ApplyStat(executionScaleContext != null ? EffectExecutionScaling.Apply(currentStat, executionScaleContext) : currentStat);
     }
+
+    // 오브젝트 대상 버프도 실행 배율을 곱하기 전에 계산한다.
+    protected virtual TStat ApplyTargetBuffs(TStat currentStat) => currentStat;
 
     protected virtual void ApplyStat(TStat currentStat) { }
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
+[BuffTargetGroups("EnemySpawner")]
 public class EnemySpawner : MonoBehaviour, IBuffTarget
 {
     [Header("Setting")]

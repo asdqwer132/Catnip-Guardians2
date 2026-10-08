@@ -107,6 +107,7 @@ LED처럼 사용 전 상태를 기준으로 분기하려면 `Freeze Branch At Pr
 - `WeightedRandomEffect`에 아이템 또는 효과 목록과 가중치를 지정한다. 자동 사용의 재고/가방 슬롯은 소비하지 않으며 사용 횟수 버프와 추가 공격은 각각 옵션이다.
 - 마법사의 상자는 CSV의 Common/Magic 후보 14개 에셋을 연결했다. 후보 중 아직 기존 효과가 비어 있는 아이템은 행별 검토표대로 효과를 연결해야 실제 공격/상태가 발동한다. 상자 자체의 추첨·동시 실행은 구현되어 있다.
 - `ScaledEffectData`는 명시된 의미의 스탯만 조정한다. 확률·개수·공격 간격 전체에 배율을 일괄 적용하지 않는다.
+- 버프 그룹 입력은 자동 선택과 직접 입력을 함께 제공한다. DamageArea는 그룹/직접/범위 대상으로 등록되며 `DamageAreaAttackStat` Modifier를 실제 공격 수치에 반영한다. 그룹 이름 `DamageArea`와 스탯 타입 이름 `DamageAreaAttackStat`을 구분한다.
 - 피해·범위 등의 실행 배율은 Snapshot와 Dynamic 버프를 계산한 뒤 적용한다. 기본 피해 10에 동적 피해 +10, 0.5배이면 최종 피해 10이다.
 - 꽃 소환물 자체의 만개 조건은 `HasStatusConditionData.target = SourceSummon`으로 조회한다. 생성한 플레이어의 상태와 구분하며 소환물 생명 번호를 확인한다.
 

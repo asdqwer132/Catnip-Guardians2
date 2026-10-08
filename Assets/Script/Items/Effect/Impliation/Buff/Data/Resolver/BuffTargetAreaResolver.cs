@@ -6,6 +6,7 @@ public class BuffTargetAreaResolver : BuffTargetResolver
 {
     public float radius = 3f;
     public LayerMask layerMask = ~0;
+    [BuffTargetGroupName("(모든 그룹)")]
     public string requiredGroup;
     public bool includeTriggers = true;
 
@@ -23,6 +24,7 @@ public class BuffTargetAreaResolver : BuffTargetResolver
         filter.SetLayerMask(layerMask);
         filter.useLayerMask = true;
         filter.useTriggers = includeTriggers;
+        BuffTargetHandle groupFilter = BuffTargetHandle.Group(requiredGroup);
 
         int count = Physics2D.OverlapCircle(context.targetPosition, radius, filter, hits);
 
@@ -38,7 +40,7 @@ public class BuffTargetAreaResolver : BuffTargetResolver
             if (target == null)
                 continue;
 
-            if (!string.IsNullOrEmpty(requiredGroup) && target.BuffTargetGroup != requiredGroup)
+            if (groupFilter != null && !groupFilter.MatchesTarget(target))
                 continue;
 
             Object targetObject = target.BuffTargetObject;

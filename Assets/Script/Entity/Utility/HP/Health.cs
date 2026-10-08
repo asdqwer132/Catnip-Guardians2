@@ -48,6 +48,7 @@ public struct HealthDamageResult
     public bool isTransferredDamage;
 }
 
+[BuffTargetGroups("Health", "PlantHealth", "SummonHealth")]
 public class Health : MonoBehaviour, IBuffTarget
 {
     private static readonly List<Health> active = new List<Health>();
@@ -92,6 +93,7 @@ public class Health : MonoBehaviour, IBuffTarget
     public event Action<HealthDamageResult> OnDamageResolved;
     public event Action OnDead;
     public UnityEngine.Object BuffTargetObject => this;
+    [BuffTargetGroupName]
     public string buffTargetGroup = "Health";
     public string BuffTargetGroup => buffTargetGroup;
     public string BuffTargetDebugName => name;

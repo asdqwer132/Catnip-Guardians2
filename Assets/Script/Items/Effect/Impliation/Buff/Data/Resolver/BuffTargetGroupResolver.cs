@@ -4,6 +4,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "BuffTargetGroupResolver", menuName = "GameData/Buffs/Targets/Group")]
 public class BuffTargetGroupResolver : BuffTargetResolver
 {
+    [BuffTargetGroupName]
     public string targetGroup;
 
     public override void ResolveTargets(BuffRegisterContext context, List<BuffTargetHandle> results)

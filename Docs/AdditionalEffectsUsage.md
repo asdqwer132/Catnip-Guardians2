@@ -311,6 +311,19 @@ Execute Effects 명중 에셋은 **공격의 On Hit Effects**에 넣고, 그 에
 
 ## 9. 상태 부여·조회·소비·정화
 
+### DamageArea에 피해·범위 버프 주기
+
+1. **Create → GameData → Buffs → Targets → Group**으로 대상 설정 에셋을 만든다.
+2. **Target Group** 아래의 **자동 선택 → DamageArea**를 고른다. 위쪽 Target Group 입력 칸은 항상 직접 수정할 수 있다. 목록에 없는 사용자 그룹 이름도 저장되며, 다시 열어도 지워지지 않는다.
+3. **Buffs → Modifiers → Float Field**를 만들고 **Target Stat Type Name = DamageAreaAttackStat**, **Field Name = damageAreaPower**를 입력한다. Add Value `5`면 피해 +5, Multiply Value `0.2`면 피해 +20%다.
+4. **Items → Effects → Buff**의 Target Resolver에 1번 대상 설정을, Modifiers에 3번 Modifier를 넣는다. 원하는 지속 시간을 Buff Info에 입력하고 아이템의 Effect Datas에 연결한다.
+
+그룹 이름은 `DamageArea`, 스탯 타입은 `DamageAreaAttackStat`이며 서로 다른 입력값이다. 같은 방식으로 Field Name에 `damageAreaRange`(반경), `damageAreaInterval`(피해 주기), `damageAreaLifeTime`(공격 수명)을 지정할 수 있다.
+
+이 설정은 활성 DamageArea와 버프가 유지되는 동안 새로 생성되는 DamageArea에 적용된다. 직사각형·부채꼴 DamageArea도 기본 그룹을 공유한다. 일반 이동 투사체와 소환물은 이 그룹에 포함되지 않는다. 특정 공격만 구분하려면 해당 DamageArea 프리팹의 **Buff Target Group**을 `DamageArea/Fire`처럼 직접 입력하고 같은 그룹으로 조회한다. 부모 그룹 `DamageArea`는 하위 그룹도 포함한다.
+
+**Area** 대상 설정의 Required Group에도 같은 자동 선택·직접 입력을 제공하며, 반경 안의 해당 그룹과 하위 그룹만 선택한다. 비우면 모든 그룹을 허용한다. **Direct**는 실제 대상 컴포넌트 한 개에 적용하며, DamageArea 또는 그 오브젝트의 Transform/Collider도 받을 수 있다. 프리팹 에셋을 지정하는 것으로 나중에 생성되는 모든 인스턴스를 가리키지는 않으므로 생성 공격 전체에는 Group을 사용한다.
+
 ### 예: 5초 동안 유지하는 상태 만들기
 
 1. **Items → Status → Definition**으로 `MyStatusKey`를 만든다. Display Name은 표시 이름이며 상태의 동일 여부는 이 에셋 참조로 구분한다.
@@ -436,7 +449,7 @@ Ready는 남은 시간을 0으로 만들고 준비 완료 상태를 유지한다
 
 1. **Buffs → Modifiers → Float Field**를 만든다.
 2. **Target Stat Type Name = PlayerStat**, **Field Name = cooldownRecoveryRate**, **Add Value = 0**, **Multiply Value = 0.2**.
-3. BuffEffect의 Modifiers에 넣고, Context Status 대상 설정의 **PlayerStatus**를 연결한다.
+3. **Buffs → Targets → Group**으로 대상 설정을 만들고 **Target Group → 자동 선택 → Player**를 지정한다. BuffEffect의 Target Resolver에 이 대상 설정을, Modifiers에 2번 Modifier를 연결한다.
 4. 원하는 지속 시간을 Buff Info에 입력한다.
 
 기본 회복속도 1에서 1.2가 된다. Float Field의 Multiply Value `0.2`와 Scaled Effects의 배율 `1.2`는 입력 방식이 다르다.
@@ -595,6 +608,7 @@ Attack Prefab을 비우면 기본 부채꼴 판정 오브젝트를 생성한다.
 | 연쇄가 최대 횟수 전에 끝남 | 다음 적과 Chain Range, 재명중 허용, 즉시 같은 적 허용 여부 |
 | 피해는 있는데 그림이 없음 | Visual Data / 장판·투사체 프리팹이 비어 있는지 |
 | 회복이 없음 | 식물 생존 상태, 최대 HP 도달, 실제 Health 존재, Use Radius / Center / Shape |
+| DamageArea 버프가 안 바뀜 | Target Group = DamageArea, Modifier 타입 = DamageAreaAttackStat인지; Direct의 프리팹 참조와 생성 인스턴스를 구분했는지 |
 | 상태 조건이 실패 | 부여·조회가 같은 StatusDefinition을 참조하는지, PlayerStatus와 Owner/SourceSummon의 차이 |
 | 상태가 정화되지 않음 | StatusDefinition의 Harmful·Dispellable, 정화 대상 설정, Include Modifier Buffs |
 | 장판 조건이 실패 | 같은 AreaDefinition인지, Own/Allied 소유자 조건, 조회 위치가 장판 안인지 |
@@ -615,7 +629,7 @@ Attack Prefab을 비우면 기본 부채꼴 판정 오브젝트를 생성한다.
 1. 기존 전투 씬과 아이템 사용 흐름에서 해당 ItemData를 사용한다.
 2. 식물 회복은 HP 변화, 공격은 적 HP·처치, 상태는 등록·만료, 쿨다운은 남은 시간으로 확인한다.
 3. 여러 적, 적 한 명, 대상 없음, 효과 중 전투 초기화 상황을 확인한다.
-4. **Window → General → Test Runner → EditMode**에서 `CombatEffectTests`와 `Additional*Tests`를 실행한다.
+4. **Window → General → Test Runner → EditMode**에서 `CombatEffectTests`, `Additional*Tests`, `BuffTargetInspectorTests`를 실행한다. 버프 대상의 선택·적용·해제·재사용 검사는 `AdditionalBuffTargetTests`에 있다.
 5. 플레이 모드를 끝내고 설정을 저장한다. 플레이 중 바꾼 Inspector 값이 영구 설정으로 남았다고 가정하지 말고 에셋을 다시 확인한다.
 
 새 `.asset`과 `.meta`를 함께 Git에 올린다. 예를 들어 위 두 폴더와 기존 ItemData/공격 에셋을 수정했다면 프로젝트 루트에서 다음처럼 올린다.

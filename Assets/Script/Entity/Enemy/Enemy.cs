@@ -5,6 +5,7 @@ public enum EnemyBehaviorState
     Idle, Moving, PreparingAttack, Attacking, Pattern, MovementControlled, Hit, Stopped, DeathPattern, Dead
 }
 
+[BuffTargetGroups("Enemy")]
 public class Enemy : HealthActor, IPoolable, IBuffTarget
 {
     [Header("Data")]

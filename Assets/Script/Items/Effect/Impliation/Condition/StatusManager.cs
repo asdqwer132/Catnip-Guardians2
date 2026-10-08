@@ -28,6 +28,7 @@ public class StatusStat : IGameStat<StatusStat>
         statStar = Mathf.Max(0f, statStar);
     }
 }
+[BuffTargetGroups("PlayerStatus")]
 public class StatusManager : MonoBehaviour, IBuffTarget, IDynamicBuffReceiver
 {
     [Header("Reference")]

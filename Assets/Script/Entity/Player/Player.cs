@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[BuffTargetGroups("Player")]
 public class Player : MonoBehaviour, IDynamicBuffReceiver, IBuffTarget
 {
     [Header("Stat")]

@@ -22,6 +22,7 @@ public class BuffUIManager : MonoBehaviour
     public MonoBehaviour targetBuffTargetObject;
 
     [Tooltip("Enemy, Player, EnemySpawner, Plant, Tower 같은 그룹 이름")]
+    [BuffTargetGroupName]
     public string targetGroup;
 
     private IBuffTarget targetBuffTarget;

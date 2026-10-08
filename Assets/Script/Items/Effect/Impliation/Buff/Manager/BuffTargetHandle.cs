@@ -13,6 +13,7 @@ public class BuffTargetHandle
 
     [Header("Object Target")]
     public UnityEngine.Object targetObject;
+    [BuffTargetGroupName]
     public string targetGroup;
 
     [NonSerialized] private IBuffTarget cachedTarget;

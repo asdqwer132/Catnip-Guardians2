@@ -8,7 +8,8 @@ public enum DamageApplyMode
     Periodic
 }
 
-public class DamageArea : AttackObject<DamageAreaAttackStat>
+[BuffTargetGroups("DamageArea")]
+public class DamageArea : AttackObject<DamageAreaAttackStat>, IBuffTarget
 {
     private static readonly List<DamageArea> activeDamageAreas =
         new List<DamageArea>();
@@ -16,6 +17,14 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
     [Header("Component")]
     public CircleCollider2D circleCollider;
     public Transform rangeVisual;
+
+    [Header("Buff Target")]
+    [BuffTargetGroupName]
+    public string buffTargetGroup = "DamageArea";
+    public Object BuffTargetObject => this;
+    public string BuffTargetGroup => buffTargetGroup;
+    public string BuffTargetDebugName => name;
+    private BuffManager registeredBuffManager;
 
     [Header("Damage")]
     public DamageApplyMode damageApplyMode = DamageApplyMode.HitOnce;
@@ -63,6 +72,12 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
             activeDamageAreas.Add(this);
 
         timer = 0f;
+        if (useSnapshotAndDynamicBuff)
+        {
+            RegisterDynamicBuffReceiver();
+            RegisterBuffTarget();
+            RefreshBuffedStat();
+        }
     }
 
     protected override void OnDisable()
@@ -77,6 +92,7 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
         hitSourceContext = null;
 
         base.OnDisable();
+        UnregisterBuffTarget();
     }
 
     protected virtual void Update()
@@ -100,6 +116,7 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
         GameObject owner
     )
     {
+        UnregisterBuffTarget();
         timer = 0f;
         hitObjects.Clear();
         periodicTimers.Clear();
@@ -114,7 +131,29 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
             owner
         );
 
+        RegisterBuffTarget();
         ApplyRadius();
+    }
+
+    public void RefreshBuffedStat() => OnDynamicBuffChanged();
+
+    protected override DamageAreaAttackStat ApplyTargetBuffs(DamageAreaAttackStat currentStat)
+        => buffManager != null
+            ? buffManager.GetBuffedStatForTarget(currentStat, this, BuffCalculationMode.All)
+            : currentStat;
+
+    private void RegisterBuffTarget()
+    {
+        if (!isActiveAndEnabled || buffManager == null || registeredBuffManager == buffManager) return;
+        registeredBuffManager = buffManager;
+        registeredBuffManager.RegisterBuffTarget(this);
+    }
+
+    private void UnregisterBuffTarget()
+    {
+        BuffManager previous = registeredBuffManager;
+        registeredBuffManager = null;
+        if (previous != null) previous.UnregisterBuffTarget(this);
     }
 
     public void InitHitEffects(
