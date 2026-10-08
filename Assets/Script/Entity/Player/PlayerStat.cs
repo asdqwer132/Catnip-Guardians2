@@ -7,6 +7,8 @@ public class PlayerStat : IGameStat<PlayerStat>
     [Header("Move")]
     [Min(0f)] public float moveSpeed = 5f;
     [Min(0f)] public float maxMoveSpeed = 10f;
+    [Tooltip("쿨다운 회복 속도 배율. 1 = 기본, 1.2 = 20% 빠르게 회복합니다.")]
+    [Min(0f)] public float cooldownRecoveryRate = 1f;
 
     [Header("Range")]
     [Min(0f)] public float minRange = 1f;
@@ -18,6 +20,7 @@ public class PlayerStat : IGameStat<PlayerStat>
         {
             moveSpeed = moveSpeed,
             maxMoveSpeed = maxMoveSpeed,
+            cooldownRecoveryRate = cooldownRecoveryRate,
             minRange = minRange,
             maxRange = maxRange
         };
@@ -27,6 +30,7 @@ public class PlayerStat : IGameStat<PlayerStat>
     {
         moveSpeed = Mathf.Max(0f, moveSpeed);
         maxMoveSpeed = Mathf.Max(0f, maxMoveSpeed);
+        cooldownRecoveryRate = EffectStatUtility.Safe(cooldownRecoveryRate, 0f, 100f, 1f);
 
         minRange = Mathf.Max(0f, minRange);
         maxRange = Mathf.Max(minRange, maxRange);

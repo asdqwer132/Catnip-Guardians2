@@ -1,0 +1,319 @@
+﻿Series,ID,ItemName,DefaultDescription,Condition,SpecialDescription,구현 연결 계획,연결 상태,ItemData 경로
+Weapon,Item1,나무검,"단순 공격 (범위 0.5, 데미지 5)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon1.asset
+Weapon,Item2,돌검,"단순 공격 (범위 0.75, 데미지 7.5)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon2.asset
+Weapon,Item3,녹슨칼,"단순 공격 (범위 1, 데미지 10)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon3.asset
+Weapon,Item4,녹슨창,"직선 공격 (범위 가로 0.5 세로 3, 데미지 10)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon4.asset
+Weapon,Item5,녹슨도끼,"단순 공격 (범위 0.5, 데미지 20)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon5.asset
+Weapon,Item6,녹슨망치,"단순 공격 (범위 0.5, 데미지 15) + [적 상태 : 기절 (지속 1)] 부여",,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon6.asset
+Weapon,Item7,사냥용활,[상태 : 활 (지속 1회)] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon7.asset
+Weapon,Item8,화살1 - 일반,기초 공격,상태 : 활,"상태시 직선 공격 (범위 가로 0.5 세로 5, 데미지 20)",StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon8.asset
+Weapon,Item9,화살2 - 얼음,기초 공격,상태 : 활,"상태시 직선 공격 (범위 가로 0.5 세로 5, 데미지 5) + 피격 효과(슬로우 50%)",StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon9.asset
+Weapon,Item10,화살3 - 화염,기초 공격,상태 : 활,"상태시 직선 공격 (범위 가로 0.5 세로 5, 데미지 5) + 피격 효과 : 도트 공격(데미지 2, 지속 5)",StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon10.asset
+Weapon,Item11,철검,"단순 공격 (범위 1.5, 데미지 15)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon11.asset
+Weapon,Item12,철창,"직선 공격 (범위 가로 0.5 세로 4, 데미지 20)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon12.asset
+Weapon,Item13,철도끼,"단순 공격 (범위 1, 데미지 40)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon13.asset
+Weapon,Item14,철망치,"단순 공격 (범위 1, 데미지 20) + [적 상태 : 기절 (지속 1.5)] 부여",,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon14.asset
+Weapon,Item15,붉은검,"단순 공격 (범위 1.5, 데미지 60)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon15.asset
+Weapon,Item16,붉은창,"직선 공격 (범위 가로 0.5 세로 5, 데미지 30)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon16.asset
+Weapon,Item17,붉은도끼,"단순 공격 (범위 2, 데미지 60)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon17.asset
+Weapon,Item18,붉은망치,"단순 공격 (범위 1.5, 데미지 25) + [적 상태 : 기절 (지속 2)] 부여",,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon18.asset
+Weapon,Item19,금메이스,"단순 공격 (범위 2, 데미지 30) + [적 제어 : 밀어내기 (강도 1)] 부여",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon19.asset
+Weapon,Item20,금삼지창,"연속 단순 공격 (범위 1, 데미지 20, 인터벌 3회 수직 0.5)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon20.asset
+Weapon,Item21,금괭이,"단순 공격 (범위 3, 데미지 10) + [장판 : 땅고르기 (지속 5)] 생성",,,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon21.asset
+Weapon,Item22,철방패,"버프 (쿨다운 회복속도 -20%, 방어력 10, 지속 15)",,,HealthChangeEffect / RegenerationEffect; CooldownControlEffect / PlayerStat.cooldownRecoveryRate,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon22.asset
+Weapon,Item23,쇠뇌,[상태 : 활(지속 4회)] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon23.asset
+Weapon,Item24,함성의 검,"단순 공격 (범위 2, 데미지 20)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon24.asset
+Weapon,Item25,함성의 창,"직선 공격 (범위 가로 0.5 세로 6, 데미지 40)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon25.asset
+Weapon,Item26,함성의 도끼,"단순 공격 (범위 2.5, 데미지 80)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon26.asset
+Weapon,Item27,함성의 망치,"단순 공격 (범위 2, 데미지 30) + [적 상태 : 기절 (지속 2.5)] 부여",,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon27.asset
+Weapon,Item28,로켓화살,기초 공격,상태 : 활,"상태시 직선 공격(범위 가로 1 세로 5, 데미지 10) + 첫 피격 효과 : 단순 공격 (범위 1, 데미지 20)",StatusDefinition / HasStatusConditionData / BuffEffect; ExecuteEffectOnHitData,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon28.asset
+Weapon,Item29,별부수기 대검,"단순 공격 (범위 5, 데미지 150) + [상태 : 별부수기(지속 1회)] 부여",,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon29.asset
+Weapon,Item30,별부수기 곡괭이,"단순 공격 (범위 2, 데미지 50) + [상태 : 별부수기(지속 3회)] 부여",,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/Weapon30.asset
+Weapon,Material1,나뭇가지,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/WeaponMaterial1.asset
+Weapon,Material2,돌덩이,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/WeaponMaterial2.asset
+Weapon,Material3,나무판자,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/WeaponMaterial3.asset
+Weapon,Material4,못,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/WeaponMaterial4.asset
+Weapon,Material5,철구슬,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/WeaponMaterial5.asset
+Weapon,Material6,밧줄,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/WeaponMaterial6.asset
+Weapon,Material7,화염가루,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/WeaponMaterial7.asset
+Weapon,Material8,크림슨덩어리,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/WeaponMaterial8.asset
+Weapon,Material9,별부수기 목걸이,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/01.Weapon/WeaponMaterial9.asset
+Food,Item1,사과,"버프 (공격력 +10%, 지속 8)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food1.asset
+Food,Item2,감자,"버프 (방어력 +10, 지속 8)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food2.asset
+Food,Item3,따뜻한 수프,"식물 체력 15 회복 + 버프 (초당 체력 회복 1, 지속 5)",,,HealthChangeEffect / RegenerationEffect / Health; HealthChangeEffect / RegenerationEffect,신규 기능 연결됨,Assets/Data/Scriptable/Item/Items/02.Food/Food3.asset
+Food,Item4,생선,"버프 (공격력 +20%, 70%) or 디버프 (공격력 -10%, 30%)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food4.asset
+Food,Item5,당근,"버프 (이동속도 +15%, 지속 8)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food5.asset
+Food,Item6,빵,"버프 (쿨다운 회복속도 +10%, 지속 8)",,,HealthChangeEffect / RegenerationEffect; CooldownControlEffect / PlayerStat.cooldownRecoveryRate,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food6.asset
+Food,Item7,꿀,"버프 (모든 버프 지속시간 +20%, 지속 10)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food7.asset
+Food,Item8,버섯,"버프 (최대 사거리 +1, 지속 8)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food8.asset
+Food,Item9,치즈,"버프 (방어력 +10%, 지속 10)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food9.asset
+Food,Item10,레몬,"단순 공격 (범위 1.5, 데미지 50) + [장판 : 레몬즙 (지속 10)] 생성",,,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food10.asset
+Food,Item11,체리,"동시 공격 (범위 1.5, 데미지 20, 인터벌 2회 수평 1) ",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food11.asset
+Food,Item12,고추,"버프 (공격력 +20, 쿨다운 회복속도 -10%, 지속 8)",,,HealthChangeEffect / RegenerationEffect; CooldownControlEffect / PlayerStat.cooldownRecoveryRate,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food12.asset
+Food,Item13,옥수수,"연속 단순 공격 (범위 1, 데미지 20, 인터벌 2 ~ 4회 랜덤 0.5)",,,WeightedRandomEffect 또는 RepeatItemEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food13.asset
+Food,Item14,달걀,"버프 (공격력 +1, 방어력 +1, 최대 사거리 +0.1, 이동속도 +0.1, 지속 10)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food14.asset
+Food,Item15,스테이크,"버프 (공격력 +30, 지속 10)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food15.asset
+Food,Item16,커피,"버프 (쿨다운 회복속도 +25%, 이동속도 +15%, 지속 10)",,,HealthChangeEffect / RegenerationEffect; CooldownControlEffect / PlayerStat.cooldownRecoveryRate,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food16.asset
+Food,Item17,차가운 수프,"버프 (쿨다운 회복속도 +20%, 최대 사거리 +2, 지속 10)",,,HealthChangeEffect / RegenerationEffect; CooldownControlEffect / PlayerStat.cooldownRecoveryRate,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food17.asset
+Food,Item18,꿀단지,"식물 체력 30 회복 + 버프 (초당 체력 회복 2, 지속 8)",,,HealthChangeEffect / RegenerationEffect / Health; HealthChangeEffect / RegenerationEffect,신규 기능 연결됨,Assets/Data/Scriptable/Item/Items/02.Food/Food18.asset
+Food,Item19,바삭한 파이,"단순 공격 (범위 2, 데미지 100)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food19.asset
+Food,Item20,와인,"버프 (공격력 +40%, 이동속도 -15%, 지속 12)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food20.asset
+Food,Item21,왕만두,"식물 버프 (최대 체력 +50, 방어력 +8, 지속 15)",,,HealthChangeEffect / RegenerationEffect / Health,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food21.asset
+Food,Item22,카레,"버프 (공격력 +25, 최대 사거리 +20%, 지속 12)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food22.asset
+Food,Item23,우유,식물과 플레이어의 해로운 상태 모두 제거,,,StatusDefinition / HasStatusConditionData / BuffEffect,신규 기능 연결됨,Assets/Data/Scriptable/Item/Items/02.Food/Food23.asset
+Food,Item24,햄버거,"버프 (공격력 +30%, 이동속도 +20%, 쿨다운 회복속도 +20%, 지속 15)",,,HealthChangeEffect / RegenerationEffect; CooldownControlEffect / PlayerStat.cooldownRecoveryRate,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food24.asset
+Food,Item25,케이크,식물 체력 50 회복,,,HealthChangeEffect / RegenerationEffect / Health; HealthChangeEffect / RegenerationEffect,신규 기능 연결됨,Assets/Data/Scriptable/Item/Items/02.Food/Food25.asset
+Food,Item26,독사과,"버프 (공격력 +70%, 최대 사거리 +50% 지속 10) + 식물 현재 체력 20% 감소",,,HealthChangeEffect / RegenerationEffect / Health,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food26.asset
+Food,Item27,마시멜로,[상태 : 따뜻한 마시멜로 (지속 10)] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food27.asset
+Food,Item28,수박,[소환수 : 수박] 생성,,,SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food28.asset
+Food,Item29,크리스탈 사과,[상태 : 수정의 축복 (지속 20)] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food29.asset
+Food,Item30,크리스탈 파이,"식물 체력 100 회복 + 버프 (공격력 +50%, 방어력 +15, 쿨다운 회복속도 +30%, 지속 20)",,,HealthChangeEffect / RegenerationEffect / Health; HealthChangeEffect / RegenerationEffect; CooldownControlEffect / PlayerStat.cooldownRecoveryRate,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/Food30.asset
+Food,Material1,달걀,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/FoodMaterial1.asset
+Food,Material2,밀가루,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/FoodMaterial2.asset
+Food,Material3,식칼,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/FoodMaterial3.asset
+Food,Material4,후라이팬,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/FoodMaterial4.asset
+Food,Material5,나무그릇,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/FoodMaterial5.asset
+Food,Material6,냄비,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/FoodMaterial6.asset
+Food,Material7,절구,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/FoodMaterial7.asset
+Food,Material8,커피잔,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/FoodMaterial8.asset
+Food,Material9,조미료,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/02.Food/FoodMaterial9.asset
+Mineral,Item1,석탄원석,[장판 : 회백 광맥 (지속 5)] 생성,,,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral1.asset
+Mineral,Item2,염화원석,[상태 : 회백 정련 (지속 5)] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral2.asset
+Mineral,Item3,적동원석,[장판 : 대지 광맥 (지속 5)] 생성,,,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral3.asset
+Mineral,Item4,구리원석,[상태 : 대지 맥동 (지속 5)] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral4.asset
+Mineral,Item5,백금원석,[장판 : 찬란 광맥 (지속 5)] 생성,,,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral5.asset
+Mineral,Item6,금원석,[상태 : 찬란 공명 (지속 5)] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral6.asset
+Mineral,Item7,석탄주괴,기초 공격,상태 : 회백 & 장판 : 회백,상태시 폭발형 범위 공격,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect; StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral7.asset
+Mineral,Item8,염화주괴,기초 공격,상태 : 회백 & 장판 : 회백,상태시 화상 공격,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect; StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral8.asset
+Mineral,Item9,적동주괴,기초 공격,상태 : 대지 & 장판 : 대지,상태시 번개 장판 생성,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect; StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral9.asset
+Mineral,Item10,구리주괴,기초 공격,상태 : 대지 & 장판 : 대지,상태시 강한 번개 공격,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect; StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral10.asset
+Mineral,Item11,백금주괴,기초 공격,상태 : 찬란 & 장판 : 찬란,상태시 주기적 광선 공격 소환물 설치,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect; StatusDefinition / HasStatusConditionData / BuffEffect; SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral11.asset
+Mineral,Item12,금주괴,기초 공격,상태 : 찬란 & 장판 : 찬란,상태시 적 혼란 부여,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect; StatusDefinition / HasStatusConditionData / BuffEffect; TargetOverrideHitEffectData(모드 미정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral12.asset
+Mineral,Item13,오팔원석,[장판 : 회백 광맥 (지속 15)] 생성,,,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral13.asset
+Mineral,Item14,미스릴원석,[상태 : 회백 정련 (지속 15)] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral14.asset
+Mineral,Item15,비취원석,[장판 : 대지 광맥 (지속 15)] 생성,,,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral15.asset
+Mineral,Item16,흑요원석,[상태 : 대지 맥동 (지속 15)] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral16.asset
+Mineral,Item17,청람원석,[장판 : 찬란 광맥 (지속 15)] 생성,,,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral17.asset
+Mineral,Item18,심홍원석,[상태 : 찬란 공명 (지속 15)] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral18.asset
+Mineral,Item19,오팔주괴,기초 공격,상태 : 회백 & 장판 : 회백,상태시 터져서 공격하는 범위 공격,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect; StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral19.asset
+Mineral,Item20,비취주괴,기초 공격,상태 : 회백 & 장판 : 회백,상태시 3연 공격,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect; StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral20.asset
+Mineral,Item21,미스릴주괴,기초 공격,상태 : 대지 & 장판 : 대지,상태시 바위로 밀쳐내기 공격 및 스턴,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect; StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral21.asset
+Mineral,Item22,청람주괴,기초 공격,상태 : 대지 & 장판 : 대지,상태시 출혈 부여,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect; StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral22.asset
+Mineral,Item23,심홍주괴,기초 공격,상태 : 찬란 & 장판 : 찬란,상태시 장판 지우고 전체 스턴,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect; StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral23.asset
+Mineral,Item24,흑요주괴,기초 공격,상태 : 찬란 & 장판 : 찬란,상태시 장판 지우고 광범위 거대 공격,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect; StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral24.asset
+Mineral,Item25,루비,최대 화상 공격,상태 : 무지개 & 장판 : 무지개,상태시 공격 강화 및 연쇄 폭발,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect; StatusDefinition / HasStatusConditionData / BuffEffect; ChainAttackEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral25.asset
+Mineral,Item26,토파즈,최대 번개 공격,상태 : 무지개 & 장판 : 무지개,상태시 공격 강화 및 강적에게 추가타,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect; StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral26.asset
+Mineral,Item27,페리도트,최대 직선 공격,상태 : 무지개 & 장판 : 무지개,상태시 공격 강화 및 속박 추가,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect; StatusDefinition / HasStatusConditionData / BuffEffect; RootHitEffectData,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral27.asset
+Mineral,Item28,아쿠아마린,최대 범위 공격,상태 : 무지개 & 장판 : 무지개,상태시 공격 강화 및 끌어당기고 종료시 빙결,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect; StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral28.asset
+Mineral,Item29,오리하르콘주괴,[장판 : 무지개 광맥 (지속 15)] 생성,,,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect,신규 기능 연결됨,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral29.asset
+Mineral,Item30,오리하르콘덩어리,[상태 : 무지개 축복 (지속 15)] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,신규 기능 연결됨,Assets/Data/Scriptable/Item/Items/03.Mineral/Mineral30.asset
+Mineral,Material1,대장장이견습망치,[상태 : 정교한 대장장이 (지속 10)] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/MineralMaterial1.asset
+Mineral,Material2,불쏘시게,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/MineralMaterial2.asset
+Mineral,Material3,작은용암레진,[상태 : 강인한 대장장이 (지속 10)] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/MineralMaterial3.asset
+Mineral,Material4,대장장이금망치,[상태 : 정교한 대장장이 (지속 20)] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/MineralMaterial4.asset
+Mineral,Material5,나무판자,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/MineralMaterial5.asset
+Mineral,Material6,용암레진,[상태 : 강인한 대장장이 (지속 20)] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/MineralMaterial6.asset
+Mineral,Material7,대장장이초월망치,[상태 : 정교한 대장장이 (지속 30)] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/MineralMaterial7.asset
+Mineral,Material8,고급통나무,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/MineralMaterial8.asset
+Mineral,Material9,넝측용암레진,[상태 : 강인한 대장장이 (지속 30)] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/03.Mineral/MineralMaterial9.asset
+Monster,Item1,슬라임점액1,적 이속 디버프,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster1.asset
+Monster,Item2,슬라임점액2,기본 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster2.asset
+Monster,Item3,슬라임점액3,분열공격,,,ExecuteEffectOnHitData,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster3.asset
+Monster,Item4,슬라임점액4,장판 디버프,,,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster4.asset
+Monster,Item5,깃털1,적 공속 디버프,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster5.asset
+Monster,Item6,깃털2,적 밀어내기,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster6.asset
+Monster,Item7,깃털3,적 댕기기,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster7.asset
+Monster,Item8,도마뱀테일,미끼 생성,,,SummonDefinition(enableHealth) / TargetOverrideHitEffectData,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster8.asset
+Monster,Item9,짐승송곳니,강공격 + 출혈,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster9.asset
+Monster,Item10,짐승발톱,강공격 + 방어 감소,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster10.asset
+Monster,Item11,거미줄,거미줄에 오래 체류시 거미가 물어감,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster11.asset
+Monster,Item12,작은뼈,뼈 시리즈 쿨 감소,,,CooldownControlEffect / PlayerStat.cooldownRecoveryRate,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster12.asset
+Monster,Item13,곤충날개,깃털 쿨 감소,,,CooldownControlEffect / PlayerStat.cooldownRecoveryRate,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster13.asset
+Monster,Item14,스켈레톤헤드,소환 작은 스켈레톤,,,SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster14.asset
+Monster,Item15,슬라임덩어리,효과 전부 0.5배 적용된 슬라임 아이템 ,,,ScaledEffectData,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster15.asset
+Monster,Item16,스켈레톤무더기,3 소환 작은 스켈레톤,,,SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster16.asset
+Monster,Item17,뿔1,직선 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster17.asset
+Monster,Item18,뿔2,일반 강공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster18.asset
+Monster,Item19,샤크테일,3초간 장판 공격,,,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster19.asset
+Monster,Item20,샥스핀,3초뒤 강공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster20.asset
+Monster,Item21,앵무조개껍대기,지속적 끌어당기기,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster21.asset
+Monster,Item22,소라껍대기,적 혼란 부여,,,TargetOverrideHitEffectData(모드 미정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster22.asset
+Monster,Item23,황금깃털,상태 황금깃털 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster23.asset
+Monster,Item24,뼈1,뼈1 소환,"소환 : 뼈 1,2,3,4,5",소환물 존재시 강한 스켈레톤 드래곤 소환,SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster24.asset
+Monster,Item25,뼈2,뼈2 소환,"소환 : 뼈 1,2,3,4,5",소환물 존재시 강한 스켈레톤 드래곤 소환,SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster25.asset
+Monster,Item26,뼈3,뼈3 소환,"소환 : 뼈 1,2,3,4,5",소환물 존재시 강한 스켈레톤 드래곤 소환,SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster26.asset
+Monster,Item27,뼈4,뼈4 소환,"소환 : 뼈 1,2,3,4,5",소환물 존재시 강한 스켈레톤 드래곤 소환,SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster27.asset
+Monster,Item28,뼈5,뼈5 소환,"소환 : 뼈 1,2,3,4,5",소환물 존재시 강한 스켈레톤 드래곤 소환,SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster28.asset
+Monster,Item29,은색송곳니,표식 : 은색 사냥꾼 부여,,,MarkHitEffectData,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster29.asset
+Monster,Item30,금색송곳니,표식 : 금색 사냥꾼 부여,,,MarkHitEffectData,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/Monster30.asset
+Monster,Material1,갈무리칼,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/MonsterMaterial1.asset
+Monster,Material2,끌,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/MonsterMaterial2.asset
+Monster,Material3,가죽,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/MonsterMaterial3.asset
+Monster,Material4,고급 갈무리칼,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/MonsterMaterial4.asset
+Monster,Material5,단지,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/MonsterMaterial5.asset
+Monster,Material6,실,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/MonsterMaterial6.asset
+Monster,Material7,램프,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/MonsterMaterial7.asset
+Monster,Material8,진홍빛 갈무리칼,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/MonsterMaterial8.asset
+Monster,Material9,서릿빛 갈무리칼,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/04.Monster/MonsterMaterial9.asset
+Fishing,Item1,은빛 송사리,가장 가까운 적에게 송사리 3마리 발사 (마리당 데미지 4),,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing1.asset
+Fishing,Item2,철갑 가시복,"원형 공격 (범위 1.5, 데미지 12) + 가시 6개 방사 (데미지 2)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing2.asset
+Fishing,Item3,은빛 상어,"직선 공격 (가로 0.75, 세로 4, 데미지 15)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing3.asset
+Fishing,Item4,청록고등어,가장 가까운 적에게 데미지 8; 주변 적에게 최대 3회 도탄 (도탄당 데미지 6),,,ChainAttackEffect,신규 기능 연결됨,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing4.asset
+Fishing,Item5,푸른해파리,"[지형 : 해파리 전류 (범위 2, 지속 5)] 생성; 주기 공격 (데미지 3, 인터벌 1) + 슬로우 20%",,,AreaEffectData / HasAreaConditionData,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing5.asset
+Fishing,Item6,가오리,"직선 왕복 공격 (가로 1.5, 세로 4, 왕복 각 데미지 8)",,,ProjectileAttackEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing6.asset
+Fishing,Item7,하얀 도미,도미가 범위 2를 3회 회전하며 공격 (회전당 데미지 5),,,ProjectileAttackEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing7.asset
+Fishing,Item8,소라,"목표 위치에 지연 포격 (예고 1, 범위 1.5, 데미지 18)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing8.asset
+Fishing,Item9,회색상어,"가장 먼 적 방향으로 직선 공격 (가로 1, 세로 5, 데미지 20)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing9.asset
+Fishing,Item10,조개,"부채꼴 공격 (범위 2.5, 파편 5개, 파편당 데미지 4)",,,SectorDamageAreaAttackEffect / RepeatItemEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing10.asset
+Fishing,Item11,불가사리,"불가사리 팔 5방향 직선 공격 (길이 2.5, 데미지 5)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing11.asset
+Fishing,Item12,새우,무작위 적 4명에게 새우가 순차 도약 공격 (대상당 데미지 6),,,ChainAttackEffect; WeightedRandomEffect 또는 RepeatItemEffect,신규 기능 연결됨,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing12.asset
+Fishing,Item13,해초,"[지형 : 해초밭 (범위 2, 지속 6)] 생성; 내부 적 슬로우 35%",,,AreaEffectData / HasAreaConditionData,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing13.asset
+Fishing,Item14,산호돔,기초공격,해초밭 / 붉은 해초밭,강공격 / 강강공격,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing14.asset
+Fishing,Item15,녹색 대포 물고기,소환 : 대포물고기,,,SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing15.asset
+Fishing,Item16,전기뱀방어,"적 최대 5명에게 연쇄 번개 (첫 데미지 20, 전이마다 -3) + 마비 0.5초",,,ChainAttackEffect,신규 기능 연결됨,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing16.asset
+Fishing,Item17,복어,"독 (데미지 4, 인터벌 1, 지속 5)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing17.asset
+Fishing,Item18,고래상어,"직선 공격 (가로 2, 세로 6, 데미지 40) + 경로의 적을 양옆으로 밀어냄",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing18.asset
+Fishing,Item19,문어,범위 3의 적 최대 4명을 촉수로 끌어당기고 데미지 15,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing19.asset
+Fishing,Item20,발광오징어,표식 : 발광 부여,,,MarkHitEffectData,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing20.asset
+Fishing,Item21,붉은해초,"[지형 : 붉은 해초 (범위 2.5, 지속 8)] 생성; 내부 적 출혈 (데미지 3, 인터벌 1)",,,AreaEffectData / HasAreaConditionData,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing21.asset
+Fishing,Item22,화살고기,"가장 가까운 적 방향으로 화살고기 3마리 발사 (가로 0.4, 세로 5, 마리당 데미지 12)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing22.asset
+Fishing,Item23,잉어,잉어가 적 사이를 최대 6회 도약 (도약당 데미지 10); 같은 적 재피격 가능,,,ChainAttackEffect,신규 기능 연결됨,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing23.asset
+Fishing,Item24,푸른 귀상어,"귀상어가 직선 돌진 (가로 2, 세로 6, 데미지 55) + 첫 피격 적 수직 분열",,,ExecuteEffectOnHitData,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing24.asset
+Fishing,Item25,심해 아귀,범위 3의 적을 중심으로 끌어당기며 2초 뒤 폭발 (데미지 60),,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing25.asset
+Fishing,Item26,짝퉁 크라켄,"범위 3 내 무작위 위치 8곳을 촉수 공격 (회당 범위 0.8, 데미지 15)",,,WeightedRandomEffect 또는 RepeatItemEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing26.asset
+Fishing,Item27,은빛 청어,은빛 청어 10마리가 무작위 난사공격,,,WeightedRandomEffect 또는 RepeatItemEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing27.asset
+Fishing,Item28,금빛 청어,금빛 청어 8마리가 체력이 높은 적부터 추적 공격 (마리당 데미지 12),,,HealthChangeEffect / RegenerationEffect / Health; ProjectileAttackEffect / TargetSelection,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing28.asset
+Fishing,Item29,유령 물고기,표식 : 나랑 같이 부여,,,MarkHitEffectData,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing29.asset
+Fishing,Item30,크라켄의 다리,범위 5에 촉수 8개 생성; 각 촉수가 가장 가까운 적을 붙잡아 3회 공격 (회당 데미지 25),,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/Fishing30.asset
+Fishing,Material1,물갈퀴,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/FishingMaterial1.asset
+Fishing,Material2,하급 바늘,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/FishingMaterial2.asset
+Fishing,Material3,하급 낚시대,[상태 : 하급 낚시] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/FishingMaterial3.asset
+Fishing,Material4,물안경,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/FishingMaterial4.asset
+Fishing,Material5,중급 찌,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/FishingMaterial5.asset
+Fishing,Material6,중급 바늘,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/FishingMaterial6.asset
+Fishing,Material7,중급 낚시대,[상태 : 중급 낚시] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/FishingMaterial7.asset
+Fishing,Material8,산소통,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/FishingMaterial8.asset
+Fishing,Material9,고급 낚시줄,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/FishingMaterial9.asset
+Fishing,Material10,고급 찌,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/FishingMaterial10.asset
+Fishing,Material11,고급 바늘,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/FishingMaterial11.asset
+Fishing,Material12,고급 낚시대,[상태 : 고급 낚시] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/FishingMaterial12.asset
+Fishing,Material13,최고급 찌,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/FishingMaterial13.asset
+Fishing,Material14,최고급 바늘,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/FishingMaterial14.asset
+Fishing,Material15,최고급 낚시대,[상태 : 최고급 낚시] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/05.Fishing/FishingMaterial15.asset
+Plant,Item1,나뭇잎1,직선 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant1.asset
+Plant,Item2,나뭇잎2,범위 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant2.asset
+Plant,Item3,나뭇잎3,상태 이상 공격,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant3.asset
+Plant,Item4,나뭇가지,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant4.asset
+Plant,Item5,꽃뭉치,[적 상태 : 꽃가루] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant5.asset
+Plant,Item6,목화꽃,[상태 : 꽃 지기] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant6.asset
+Plant,Item7,작은나무,"[소환수 : 작은 나무 (나뭇잎 1,2,3, 나뭇가지 사용)] 소환",,,SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant7.asset
+Plant,Item8,큰흘림잎,체력 10퍼 이하 적 즉사,,,HealthChangeEffect / RegenerationEffect / Health; ExecuteHitEffectData(샷건99999는 기존 피해),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant8.asset
+Plant,Item9,붉은뿌리,[적 상태 : 화상] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant9.asset
+Plant,Item10,나무뿌리,[장판 : 강인한 뿌리 (지속 시간 3)],,,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant10.asset
+Plant,Item11,나무줄기,3연 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant11.asset
+Plant,Item12,대나무,3초 후 작은 범위 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant12.asset
+Plant,Item13,푸른열매덩굴,스턴 10초,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant13.asset
+Plant,Item14,가시덩굴,[장판 : 가시지옥 (지속 시간 1)],,,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant14.asset
+Plant,Item15,꽃1,"[소환수 : 화염꽃 (화염 공격력 8, 지속 12)] 소환",,,SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant15.asset
+Plant,Item16,꽃2,"[소환수 : 서리꽃 (공격력 5, 슬로우 20%, 지속 12)] 소환",,,SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant16.asset
+Plant,Item17,꽃3,"[소환수 : 전기꽃 (연쇄 공격력 5, 지속 12)] 소환",,,ChainAttackEffect; SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant17.asset
+Plant,Item18,꽃4,"[소환수 : 치유꽃 (식물 초당 체력 회복 1, 지속 12)] 소환",,,HealthChangeEffect / RegenerationEffect / Health; HealthChangeEffect / RegenerationEffect; SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant18.asset
+Plant,Item19,꽃5,"[소환수 : 폭발꽃 (적 접근 시 범위 1.5, 데미지 20, 지속 12)] 소환",,,SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant19.asset
+Plant,Item20,꽃6,"[소환수 : 포자꽃 (독 공격력 3, 지속 5, 지속 12)] 소환",,,SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant20.asset
+Plant,Item21,만개꽃1,사용 불가,소환수 상태 : 만개,효과 2배,StatusDefinition / HasStatusConditionData / BuffEffect; SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant21.asset
+Plant,Item22,만개꽃2,사용 불가,소환수 상태 : 만개,효과 2배,StatusDefinition / HasStatusConditionData / BuffEffect; SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant22.asset
+Plant,Item23,만개꽃3,사용 불가,소환수 상태 : 만개,효과 2배,StatusDefinition / HasStatusConditionData / BuffEffect; SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant23.asset
+Plant,Item24,만개꽃4,사용 불가,소환수 상태 : 만개,효과 2배,StatusDefinition / HasStatusConditionData / BuffEffect; SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant24.asset
+Plant,Item25,만개꽃5,사용 불가,소환수 상태 : 만개,효과 2배,StatusDefinition / HasStatusConditionData / BuffEffect; SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant25.asset
+Plant,Item26,만개꽃6,사용 불가,소환수 상태 : 만개,효과 2배,StatusDefinition / HasStatusConditionData / BuffEffect; SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant26.asset
+Plant,Item27,선인장1,강한 범위 공격 후 [장판 : 가시지옥 (지속 시간 2.5)] 부여,,,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant27.asset
+Plant,Item28,선인장2,[소환수 : 선인장 (빠른 공격)] 소환,,,SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant28.asset
+Plant,Item29,네잎클로버,소환수 상태 만개 부여 (지속 시간 5),,,StatusDefinition / HasStatusConditionData / BuffEffect; SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant29.asset
+Plant,Item30,황금도토리,버프 (소환 지속 시간 + 15),,,SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/Plant30.asset
+Plant,Material1,묘목,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/PlantMaterial1.asset
+Plant,Material2,삽,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/PlantMaterial2.asset
+Plant,Material3,괭이,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/PlantMaterial3.asset
+Plant,Material4,거름,버프 (소환 지속 시간 +2.5) + 소환수 상태 만개 부여 (지속 시간 1),,,StatusDefinition / HasStatusConditionData / BuffEffect; SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/PlantMaterial4.asset
+Plant,Material5,씨앗,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/PlantMaterial5.asset
+Plant,Material6,곤충잡이채,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/PlantMaterial6.asset
+Plant,Material7,농사비전,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/PlantMaterial7.asset
+Plant,Material8,비료?,버프 (소환 지속 시간 +5 30%) or 체력 -5% + 소환수 상태 만개 부여 (지속 시간 1),,,HealthChangeEffect / RegenerationEffect / Health; StatusDefinition / HasStatusConditionData / BuffEffect; SummonDefinition / SummonModifyEffect / SummonTransformEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/PlantMaterial8.asset
+Plant,Material9,밀짚모자,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/06.Plant/PlantMaterial9.asset
+Machine,Item1,일반테이프,터렛 체력 회복,,,HealthChangeEffect / RegenerationEffect / Health; HealthChangeEffect / RegenerationEffect; SummonModifyEffect / SummonAuraModule,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine1.asset
+Machine,Item2,나사못,기본 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine2.asset
+Machine,Item3,황동기어,터렛 사거리 증가,,,SummonModifyEffect / SummonAuraModule,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine3.asset
+Machine,Item4,톱니바퀴,터렛 공속 증가,,,SummonModifyEffect / SummonAuraModule,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine4.asset
+Machine,Item5,압축 스프링,튕기는 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine5.asset
+Machine,Item6,압력조절벨브,터렛 강화 공격 1회,,,SummonModifyEffect / SummonAuraModule,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine6.asset
+Machine,Item7,소형연료통,장판 미끄덩,,,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine7.asset
+Machine,Item8,전구,기초 공격,상태 : 완충,큰 범위공격,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine8.asset
+Machine,Item9,전선,전기 공격 최대 2회,상태 : 완충,전기 공격 최대 5회,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine9.asset
+Machine,Item10,건전지,상태 : 완충 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine10.asset
+Machine,Item11,저항1,터렛 공격력 추가 증가,,,SummonModifyEffect / SummonAuraModule,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine11.asset
+Machine,Item12,저항2,터렛 공격력 추가 증가,,,SummonModifyEffect / SummonAuraModule,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine12.asset
+Machine,Item13,스위치,터렛 재생,,,SummonModifyEffect / SummonAuraModule,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine13.asset
+Machine,Item14,모터,터렛 공속 증가,,,SummonModifyEffect / SummonAuraModule,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine14.asset
+Machine,Item15,고급테이프,터렛 체력 강 회복,,,HealthChangeEffect / RegenerationEffect / Health; HealthChangeEffect / RegenerationEffect; SummonModifyEffect / SummonAuraModule,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine15.asset
+Machine,Item16,케이블,터렛 일시 강화,,,SummonModifyEffect / SummonAuraModule,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine16.asset
+Machine,Item17,용접 토치,터렛 화상 공격 전환,,,SummonModifyEffect / SummonAuraModule,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine17.asset
+Machine,Item18,육각렌치,기본 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine18.asset
+Machine,Item19,압력계,터렛 공격력 증가,,,SummonModifyEffect / SummonAuraModule,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine19.asset
+Machine,Item20,수도꼭지,터렛 빙결 공격 전환,,,SummonModifyEffect / SummonAuraModule,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine20.asset
+Machine,Item21,트렌지스터2,[상태 : 연결] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine21.asset
+Machine,Item22,트렌지스터1,[상태 : 단독] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine22.asset
+Machine,Item23,시야 센서,터렛 사거리 증가,,,SummonModifyEffect / SummonAuraModule,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine23.asset
+Machine,Item24,붉은 LED,[상태 : 빨간불! (지속 1회)] 부여,상태 : 파란불!,상태시 강공격,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine24.asset
+Machine,Item25,초록 LED,[상태 : 초록불! (지속 1회)] 부여,상태 : 빨간불!,상태시 강공격,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine25.asset
+Machine,Item26,파랑 LED,[상태 : 파랑불! (지속 1회)] 부여,상태 : 초록불!,상태시 강공격,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine26.asset
+Machine,Item27,붉은 코어,터렛 강화 빨간 모드,,,SummonModifyEffect / SummonAuraModule,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine27.asset
+Machine,Item28,푸른 코어,터렛 강화 파란 모드,,,SummonModifyEffect / SummonAuraModule,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine28.asset
+Machine,Item29,데이터 유심,터렛 지속시간 증가,,,SummonModifyEffect / SummonAuraModule,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine29.asset
+Machine,Item30,안테나,[소환수 : 안테나 (근처 터렛 강화)] 소환,,,SummonDefinition / SummonModifyEffect / SummonTransformEffect; SummonModifyEffect / SummonAuraModule,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/Machine30.asset
+Machine,Material1,드라이버 키트,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/MachineMaterial1.asset
+Machine,Material2,하급 모듈,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/MachineMaterial2.asset
+Machine,Material3,하급 터렛,[소환수 : 하급 터렛] 생성,,,SummonDefinition / SummonModifyEffect / SummonTransformEffect; SummonModifyEffect / SummonAuraModule,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/MachineMaterial3.asset
+Machine,Material4,중급 모듈,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/MachineMaterial4.asset
+Machine,Material5,중급 터렛,[소환수 : 중급 터렛] 생성,,,SummonDefinition / SummonModifyEffect / SummonTransformEffect; SummonModifyEffect / SummonAuraModule,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/MachineMaterial5.asset
+Machine,Material6,고급 모듈,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/MachineMaterial6.asset
+Machine,Material7,고급 터렛,[소환수 : 고급 터렛] 생성,,,SummonDefinition / SummonModifyEffect / SummonTransformEffect; SummonModifyEffect / SummonAuraModule,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/MachineMaterial7.asset
+Machine,Material8,최고급 모듈,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/MachineMaterial8.asset
+Machine,Material9,최고급 터렛,[소환수 : 최고급 터렛] 생성,,,SummonDefinition / SummonModifyEffect / SummonTransformEffect; SummonModifyEffect / SummonAuraModule,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/07.Machine/MachineMaterial9.asset
+Magic,Item1,마법 스크롤,"화염구·얼음창·번개 중 하나 무작위 시전 (범위 1.5, 데미지 12)",,,WeightedRandomEffect 또는 RepeatItemEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic1.asset
+Magic,Item2,저주인형,가장 가까운 적에게 [저주 : 인형 연결 (지속 6)] 부여,,,MarkHitEffectData(반응 규칙 미정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic2.asset
+Magic,Item3,빗자루,"부채꼴 공격 (범위 3, 데미지 8) + 밀어내기 (강도 1.5)",,,SectorDamageAreaAttackEffect / RepeatItemEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic3.asset
+Magic,Item4,속성 스태프1,"원형 공격 (범위 1.5, 데미지 10) + 화상 (데미지 2, 지속 4)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic4.asset
+Magic,Item5,속성 스태프2,"직선 공격 (가로 0.5, 세로 4, 데미지 10) + 슬로우 30% (지속 4)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic5.asset
+Magic,Item6,속성 스태프3,적 최대 3명에게 연쇄 번개 (대상당 데미지 8) + 마비 0.3초,,,ChainAttackEffect,신규 기능 연결됨,Assets/Data/Scriptable/Item/Items/08.Magic/Magic6.asset
+Magic,Item7,속성 스태프4,"목표 위치에 바위 기둥 생성 (범위 1, 데미지 12, 적 밀어내기)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic7.asset
+Magic,Item8,속성 스태프5,"회오리 생성 (범위 2, 지속 3); 적을 중심으로 끌어당기며 초당 데미지 4",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic8.asset
+Magic,Item9,속성 스태프6,"직선 광선 (가로 0.4, 세로 5, 데미지 15); 아군 관통 시 체력 3 회복",,,HealthChangeEffect / RegenerationEffect / Health; HealthChangeEffect / RegenerationEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic9.asset
+Magic,Item10,속성 스태프7,"원형 공격 (범위 1.5, 데미지 12) + 공격력 -15% (지속 5)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic10.asset
+Magic,Item11,견습 마법사의 스태프,[상태 : 견습 마력 (지속 12)] 1중첩 부여 (최대 5),,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic11.asset
+Magic,Item12,견습 마법사의 모자,"[상태 : 견습 보호막 (피해 15 차단, 지속 10)] 부여",,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic12.asset
+Magic,Item13,견습 마법사의 망토,"버프 (이동속도 +20%, 지속 8)",,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic13.asset
+Magic,Item14,라이플탄,기초 공격,상태 : 라이플,"상태시 다중 직선 공격 (범위 가로 0.5 세로 5, 데미지 20, 인터벌 10회 랜덤 가로 0,5)",StatusDefinition / HasStatusConditionData / BuffEffect; WeightedRandomEffect 또는 RepeatItemEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic14.asset
+Magic,Item15,라이플,[상태 : 라이플 (지속 3회)] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic15.asset
+Magic,Item16,별빛 스태프,"목표 위치에 별빛 5개 낙하 (각 범위 0.8, 데미지 10)",상태 : 별부수기,"목표 위치에 별빛 10개 낙하 (각 범위 0.8, 데미지 10)",StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic16.asset
+Magic,Item17,별빛 포션,[상태 : 별부수기 (지속 6회)] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic17.asset
+Magic,Item18,심연 포션,[장판 : 무지개 광맥 (지속 15)] 생성 + [상태 : 무지개 축복 (지속 15)] 부여,,,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect; StatusDefinition / HasStatusConditionData / BuffEffect,신규 기능 연결됨,Assets/Data/Scriptable/Item/Items/08.Magic/Magic18.asset
+Magic,Item19,마법사의 스태프,[상태 : 대마법사 마력 (지속 4)] 1중첩 부여 (최대 3),상태 : 무지개 & 장판 : 무지개,[상태 : 대마법사 마력 (지속 10)] 2중첩 부여 (최대 10),AreaEffectData / HasAreaConditionData / ConsumeAreaEffect; StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic19.asset
+Magic,Item20,마법사의 모자,45초 후 모든 쿨 초기화,상태 : 무지개 & 장판 : 무지개,30초 후 모든 쿨 초기화,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect; CooldownControlEffect / PlayerStat.cooldownRecoveryRate; StatusDefinition / HasStatusConditionData / BuffEffect,신규 기능 연결됨,Assets/Data/Scriptable/Item/Items/08.Magic/Magic20.asset
+Magic,Item21,마법사의 망토,[상태 : 차원 회피 (지속 2)] 부여,상태 : 무지개 & 장판 : 무지개,[상태 : 차원 회피 (지속 4)] 부여,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect; StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic21.asset
+Magic,Item22,샷건탄,기초 공격,상태 : 샷건,"상태시 다중 단순 공격 (범위 2, 데미지 50, 인터벌 8회 랜덤 0.5)",StatusDefinition / HasStatusConditionData / BuffEffect; WeightedRandomEffect 또는 RepeatItemEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic22.asset
+Magic,Item23,샷건,[상태 : 샷건 (지속 1회)] 부여,,,StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic23.asset
+Magic,Item24,대마법사의 스태프,[상태 : 대마법사 마력 (지속 20)] 5중첩 부여 (최대 15),상태 : 무지개 & 장판 : 무지개,[상태 : 대마법사 마력 (지속 30)] 7중첩 부여 (최대 20),AreaEffectData / HasAreaConditionData / ConsumeAreaEffect; StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic24.asset
+Magic,Item25,대마법사의 모자,15초 후 모든 쿨 초기화,상태 : 무지개 & 장판 : 무지개,10초 후 모든 쿨 초기화,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect; CooldownControlEffect / PlayerStat.cooldownRecoveryRate; StatusDefinition / HasStatusConditionData / BuffEffect,신규 기능 연결됨,Assets/Data/Scriptable/Item/Items/08.Magic/Magic25.asset
+Magic,Item26,대마법사의 망토,[상태 : 차원 회피 (지속 8)] 부여,상태 : 무지개 & 장판 : 무지개,[상태 : 차원 회피 (지속 16)] 부여,AreaEffectData / HasAreaConditionData / ConsumeAreaEffect; StatusDefinition / HasStatusConditionData / BuffEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic26.asset
+Magic,Item27,마법사의 상자,랜덤 커먼 등급 매직 시리즈 아이탬 랜덤 5개 동시 사용,,,WeightedRandomEffect 또는 RepeatItemEffect,신규 기능 연결됨,Assets/Data/Scriptable/Item/Items/08.Magic/Magic27.asset
+Magic,Item28,다이너마이트,강한 범위 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic28.asset
+Magic,Item29,즉사 샷건탄,기초 공격,상태 : 샷건,"상태시 다중 단순 공격 (범위 2, 데미지 99999, 인터벌 8회 랜덤 1)",StatusDefinition / HasStatusConditionData / BuffEffect; WeightedRandomEffect 또는 RepeatItemEffect,기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/Magic29.asset
+Magic,Item30,타이무 스토쁘,시간 5초 정지,,,TimeStopEffect,신규 기능 연결됨,Assets/Data/Scriptable/Item/Items/08.Magic/Magic30.asset
+Magic,Material1,하급 마정석,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/MagicMaterial1.asset
+Magic,Material2,나무 막대기,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/MagicMaterial2.asset
+Magic,Material3,마법의 정석,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/MagicMaterial3.asset
+Magic,Material4,중급 마정석,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/MagicMaterial4.asset
+Magic,Material5,포션병,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/MagicMaterial5.asset
+Magic,Material6,마법의 정석 2,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/MagicMaterial6.asset
+Magic,Material7,고급 마정석,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/MagicMaterial7.asset
+Magic,Material8,마법 스태프,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/MagicMaterial8.asset
+Magic,Material9,마법의 정석 3,기초 공격,,,기존 공격/버프/Repeat 구성 재사용(기초 공격 수치는 별도 설정),기존 제작분 유지 / 기획값 연결 검토,Assets/Data/Scriptable/Item/Items/08.Magic/MagicMaterial9.asset

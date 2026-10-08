@@ -5,6 +5,11 @@ public sealed class ItemEffectPlan
 {
     private readonly Dictionary<ItemEffectData, object> stats = new Dictionary<ItemEffectData, object>();
     private readonly HashSet<ItemEffectData> preparing = new HashSet<ItemEffectData>();
+    private readonly Dictionary<ItemEffectData, ItemEffectData> branches = new Dictionary<ItemEffectData, ItemEffectData>();
+
+    public bool TryGetBranch(ItemEffectData effect, out ItemEffectData selected)
+        => branches.TryGetValue(effect, out selected);
+    public void SetBranch(ItemEffectData effect, ItemEffectData selected) => branches[effect] = selected;
 
     public void Prepare(ItemEffectData effect, ItemEffectContext context)
     {
@@ -24,7 +29,7 @@ public sealed class ItemEffectPlan
             return cached as T;
         T snapshot = context.buffManager != null
             ? context.buffManager.GetBuffedStatForItem(baseStat, context.sourceItemData,
-                context.sourceBag, BuffCalculationMode.SnapshotOnly, true)
+                context.sourceBag, BuffCalculationMode.SnapshotOnly, context.consumeUseBuffs)
             : baseStat.Clone();
         if (snapshot != null) snapshot.Clamp();
         stats.Add(effect, snapshot);

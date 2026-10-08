@@ -9,6 +9,7 @@ public sealed class SummonContactDamageModule : SummonBehaviourModule
     [Min(0f)] public float attackPowerMultiplier = 1f;
     [Min(0.01f)] public float hitInterval = 0.5f;
     public HitEffectData[] onHitEffects;
+    public override void Prepare(ItemEffectContext context) => HitEffectPreparation.Prepare(onHitEffects, context);
     public override SummonBehaviourRuntime CreateRuntime(SummonItemThrower summon) => new Runtime(summon, this);
 
     private sealed class Runtime : SummonBehaviourRuntime
@@ -19,6 +20,7 @@ public sealed class SummonContactDamageModule : SummonBehaviourModule
         private readonly EnemyQueryBuffer query = new EnemyQueryBuffer();
         private readonly float radius, damage, power, interval;
         private readonly HitEffectData[] effects;
+        private readonly HitEffectAttackState attackState = new HitEffectAttackState();
         private float elapsed;
         public Runtime(SummonItemThrower summon, SummonContactDamageModule data) : base(summon)
         {
@@ -32,6 +34,7 @@ public sealed class SummonContactDamageModule : SummonBehaviourModule
         {
             elapsed += deltaTime;
             query.Scan(summon.transform.position, radius, summon.enemyLayerMask);
+            bool attacked = false;
             foreach (Enemy enemy in query.Enemies)
             {
                 if (!summon.CanAct) break;
@@ -40,9 +43,10 @@ public sealed class SummonContactDamageModule : SummonBehaviourModule
                 if (hitTimes.TryGetValue(enemy, out previous) && previous.life == enemy.HitEffectLifeId && elapsed < previous.next)
                     continue;
                 hitTimes[enemy] = new HitState { life = enemy.HitEffectLifeId, next = elapsed + interval };
-                SummonDamageUtility.Hit(enemy, damage + summon.AttackPower * power, effects,
-                    summon.CreateContext(enemy.transform.position, enemy.transform.position - summon.transform.position));
+                attacked |= SummonDamageUtility.Hit(enemy, summon.CalculateDamage(damage + summon.AttackPower * power), effects,
+                    summon.CreateAttackContext(enemy.transform.position, enemy.transform.position - summon.transform.position), attackState);
             }
+            if (attacked) summon.NotifyAttack();
             // 밖으로 나갔다 들어와도 interval 안에는 중복 피해를 주지 않는다.
             removed.Clear();
             foreach (KeyValuePair<Enemy, HitState> pair in hitTimes)

@@ -30,6 +30,112 @@ public class EnemyStatusController : MonoBehaviour
         public int revision;
     }
 
+    private sealed class TimedControlState
+    {
+        public int targetLifeId;
+        public float remaining;
+        public bool root;
+        public ItemEffectContext context;
+        public ItemEffectLease lease;
+        public TargetOverrideHandle targetOverride;
+        public EffectVisualData endVisual;
+    }
+    private readonly List<TimedControlState> timedControls = new List<TimedControlState>();
+    private readonly List<TimedControlState> timedControlUpdateBuffer = new List<TimedControlState>();
+    public int ActiveRootCount
+    {
+        get
+        {
+            int count = 0;
+            for (int i = 0; i < timedControls.Count; i++) if (timedControls[i].root) count++;
+            return count;
+        }
+    }
+
+    public bool ApplyRoot(float duration, HitEffectContext context = null, EffectVisualData endVisual = null)
+    {
+        if (!CanApplyControl(duration, context)) return false;
+        TimedControlState state = CreateControl(duration, context, endVisual);
+        state.root = true;
+        timedControls.Add(state);
+        enemy.SetRooted(true);
+        return true;
+    }
+
+    public bool ApplyTargetOverride(IDamageable target, float duration, int priority = 0,
+        HitEffectContext context = null, EffectVisualData endVisual = null)
+    {
+        if (!CanApplyControl(duration, context) || enemy.actorTarget == null) return false;
+        TargetOverrideHandle handle = enemy.actorTarget.AddTargetOverride(target, priority);
+        if (handle == null) return false;
+        TimedControlState state = CreateControl(duration, context, endVisual);
+        state.targetOverride = handle;
+        timedControls.Add(state);
+        return true;
+    }
+
+    private bool CanApplyControl(float duration, HitEffectContext context)
+    {
+        if (enemy == null) enemy = GetComponent<Enemy>();
+        return isActiveAndEnabled && enemy != null && enemy.CanReceiveHitEffects &&
+            duration > 0f && !float.IsNaN(duration) && !float.IsInfinity(duration) &&
+            (context == null || (context.IsTargetValid && context.CreateItemContext().CanContinue));
+    }
+
+    private TimedControlState CreateControl(float duration, HitEffectContext context, EffectVisualData endVisual)
+    {
+        ItemEffectContext itemContext = context != null ? context.CreateItemContext() : null;
+        return new TimedControlState
+        {
+            targetLifeId = enemy.HitEffectLifeId,
+            remaining = duration,
+            context = itemContext,
+            lease = itemContext != null ? itemContext.RetainLifetime() : null,
+            endVisual = endVisual
+        };
+    }
+
+    private void UpdateTimedControls(float deltaTime)
+    {
+        timedControlUpdateBuffer.Clear();
+        timedControlUpdateBuffer.AddRange(timedControls);
+        try
+        {
+            for (int i = 0; i < timedControlUpdateBuffer.Count; i++)
+            {
+                TimedControlState state = timedControlUpdateBuffer[i];
+                if (!timedControls.Contains(state)) continue;
+                if (enemy == null || !enemy.CanReceiveHitEffects || enemy.HitEffectLifeId != state.targetLifeId ||
+                    (state.context != null && !state.context.CanContinue) ||
+                    (state.targetOverride != null && !state.targetOverride.IsValid))
+                { FinishControl(state, false); continue; }
+                state.remaining -= Mathf.Max(0f, deltaTime);
+                if (state.remaining <= 0f) FinishControl(state, true);
+            }
+        }
+        finally { timedControlUpdateBuffer.Clear(); }
+    }
+
+    private void FinishControl(TimedControlState state, bool completed)
+    {
+        if (!timedControls.Remove(state)) return;
+        if (state.targetOverride != null) state.targetOverride.Dispose();
+        if (enemy != null) enemy.SetRooted(ActiveRootCount > 0);
+        try
+        {
+            if (completed && state.endVisual != null && enemy != null && enemy.CanReceiveHitEffects &&
+                enemy.HitEffectLifeId == state.targetLifeId && (state.context == null || state.context.CanContinue))
+                state.endVisual.Play(new EffectVisualContext(enemy.transform.position, Quaternion.identity));
+        }
+        finally { if (state.lease != null) state.lease.Finish(completed); }
+    }
+
+    public void ClearMovementAndTargetControls()
+    {
+        while (timedControls.Count > 0) FinishControl(timedControls[timedControls.Count - 1], false);
+        if (enemy != null) enemy.SetRooted(false);
+    }
+
     public float StunRemainingTime => stunRemainingTime;
     public bool IsStunImmune => stunImmune || runtimeStunImmune;
     public int ActiveDamageOverTimeCount => damageOverTimeStates.Count;
@@ -122,9 +228,11 @@ public class EnemyStatusController : MonoBehaviour
         return true;
     }
 
-    private void Update()
+    private void Update() { TickStatuses(Time.deltaTime); }
+
+    public void TickStatuses(float deltaTime)
     {
-        if (stunRemainingTime <= 0f && damageOverTimeStates.Count == 0)
+        if (stunRemainingTime <= 0f && damageOverTimeStates.Count == 0 && timedControls.Count == 0)
             return;
 
         if (enemy == null || !enemy.CanReceiveHitEffects)
@@ -133,6 +241,9 @@ public class EnemyStatusController : MonoBehaviour
             return;
         }
 
+        float statusDelta = TimeStopRuntime.IsStopped(TimeStopTargets.EnemyStatusTimers) ? 0f : Mathf.Max(0f, deltaTime);
+        UpdateTimedControls(statusDelta);
+
         // 플레이 중 인스펙터에서 면역을 켠 경우에도 기존 기절을 해제한다.
         if (stunRemainingTime > 0f)
         {
@@ -140,14 +251,14 @@ public class EnemyStatusController : MonoBehaviour
                 ClearStun();
             else
             {
-                stunRemainingTime = Mathf.Max(0f, stunRemainingTime - Time.deltaTime);
+                stunRemainingTime = Mathf.Max(0f, stunRemainingTime - statusDelta);
                 if (stunRemainingTime <= 0f)
                     ClearStun(true);
             }
         }
 
-        if (Time.deltaTime > 0f && damageOverTimeStates.Count > 0)
-            UpdateDamageOverTime(Time.deltaTime);
+        if (statusDelta > 0f && damageOverTimeStates.Count > 0)
+            UpdateDamageOverTime(statusDelta);
     }
 
     private void UpdateDamageOverTime(float deltaTime)
@@ -218,6 +329,7 @@ public class EnemyStatusController : MonoBehaviour
         runtimeStunImmune = false;
         ClearStun();
         ClearDamageOverTime();
+        ClearMovementAndTargetControls();
     }
 
     public void ClearDamageOverTime()

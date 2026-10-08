@@ -21,6 +21,7 @@ public class Plant : HealthActor
             plantUI.SetPlantData(plantData);
 
         InitHealthOwner("PlantHealth");
+        if (health != null) health.SetBuffManager(buffManager != null ? buffManager : BuffManager.instance);
         Revive(plantData.maxHP, true);
 
         if(timerManager != null)

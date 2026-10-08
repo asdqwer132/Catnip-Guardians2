@@ -34,7 +34,9 @@ public class ActorVisual : MonoBehaviour
     private int actionAnimationVersion;
     private bool patternAnimationPaused;
     private bool defaultAttackAnimationPaused;
-    private bool IsAnimationPaused => patternAnimationPaused || defaultAttackAnimationPaused;
+    private bool timeStopAnimationPaused;
+    private Enemy enemyOwner;
+    private bool IsAnimationPaused => patternAnimationPaused || defaultAttackAnimationPaused || timeStopAnimationPaused;
     private float speedBeforePatternPause = 1f;
 
     private bool defaultFlipX;
@@ -58,6 +60,7 @@ public class ActorVisual : MonoBehaviour
 
     private const float FaceThreshold = 0.01f;
 
+    public bool IsAnimationPlaybackPaused => IsAnimationPaused;
     public bool IsCustomAnimationLocked => isCustomAnimationLocked;
     public bool IsHitPlaying => actionAnimation == ActionAnimation.Hit && actionTracker.IsPlaying;
     public bool IsAttackPlaying => actionAnimation == ActionAnimation.Attack && actionTracker.IsPlaying;
@@ -69,6 +72,7 @@ public class ActorVisual : MonoBehaviour
 
     protected virtual void Awake()
     {
+        enemyOwner = GetComponent<Enemy>();
         if (animator == null)
             animator = GetComponent<Animator>();
         if (animator == null)
@@ -96,6 +100,7 @@ public class ActorVisual : MonoBehaviour
 
     protected virtual void Update()
     {
+        SetTimeStopAnimationPaused(enemyOwner != null && enemyOwner.IsTimeStopped);
         if (!IsAnimationPaused) actionTracker.Tick(animator, Time.deltaTime);
         if (!actionTracker.IsPlaying && actionAnimation != ActionAnimation.None && actionAnimation != ActionAnimation.Death)
         {
@@ -109,6 +114,7 @@ public class ActorVisual : MonoBehaviour
         CancelCustomAnimationLock();
         SetPatternAnimationPaused(false);
         SetDefaultAttackAnimationPaused(false);
+        SetTimeStopAnimationPaused(false);
         ClearActionAnimation();
     }
 
@@ -162,6 +168,13 @@ public class ActorVisual : MonoBehaviour
         ApplyAnimationPause(wasPaused);
     }
 
+    public void SetTimeStopAnimationPaused(bool paused)
+    {
+        bool wasPaused = IsAnimationPaused;
+        timeStopAnimationPaused = paused;
+        ApplyAnimationPause(wasPaused);
+    }
+
     private void ApplyAnimationPause(bool wasPaused)
     {
         if (wasPaused == IsAnimationPaused || animator == null) return;
@@ -170,7 +183,7 @@ public class ActorVisual : MonoBehaviour
             speedBeforePatternPause = animator.speed;
             animator.speed = 0f;
         }
-        else animator.speed = speedBeforePatternPause > 0f ? speedBeforePatternPause : 1f;
+        else animator.speed = Mathf.Max(0f, speedBeforePatternPause);
     }
 
     public virtual void ResetVisual()
@@ -237,7 +250,7 @@ public class ActorVisual : MonoBehaviour
 
         isWalking = true;
 
-        animator.speed = 1f;
+        animator.speed = IsAnimationPaused ? 0f : 1f;
         animator.ResetTrigger(attackTriggerHash);
         animator.SetBool(walkingBoolHash, true);
     }
@@ -286,7 +299,7 @@ public class ActorVisual : MonoBehaviour
 
         isWalking = false;
 
-        animator.speed = 1f;
+        animator.speed = IsAnimationPaused ? 0f : 1f;
         animator.SetBool(walkingBoolHash, false);
         animator.ResetTrigger(hitTriggerHash);
         animator.ResetTrigger(dieTriggerHash);
@@ -311,7 +324,7 @@ public class ActorVisual : MonoBehaviour
 
         isWalking = false;
 
-        animator.speed = 1f;
+        animator.speed = IsAnimationPaused ? 0f : 1f;
         animator.SetBool(walkingBoolHash, false);
         animator.ResetTrigger(attackTriggerHash);
         animator.ResetTrigger(dieTriggerHash);
@@ -330,7 +343,7 @@ public class ActorVisual : MonoBehaviour
 
         isWalking = false;
 
-        animator.speed = 1f;
+        animator.speed = IsAnimationPaused ? 0f : 1f;
         animator.SetBool(walkingBoolHash, false);
         animator.ResetTrigger(attackTriggerHash);
         animator.ResetTrigger(hitTriggerHash);
@@ -355,7 +368,7 @@ public class ActorVisual : MonoBehaviour
 
         isWalking = false;
 
-        animator.speed = 1f;
+        animator.speed = IsAnimationPaused ? 0f : 1f;
         animator.ResetTrigger(attackTriggerHash);
         animator.ResetTrigger(hitTriggerHash);
         animator.ResetTrigger(dieTriggerHash);
@@ -401,7 +414,7 @@ public class ActorVisual : MonoBehaviour
         if (animator == null)
             return;
 
-        animator.speed = 1f;
+        animator.speed = IsAnimationPaused ? 0f : 1f;
     }
 
     public IEnumerator WaitCurrentAnimationEnd()
@@ -421,7 +434,7 @@ public class ActorVisual : MonoBehaviour
         {
             state = animator.GetCurrentAnimatorStateInfo(0);
             if (state.fullPathHash != hash || state.normalizedTime >= 1f) break;
-            elapsed += Time.deltaTime;
+            if (!IsAnimationPaused) elapsed += Time.deltaTime;
             yield return null;
         }
     }
@@ -463,7 +476,7 @@ public class ActorVisual : MonoBehaviour
 
         CancelCustomAnimationLock();
 
-        animator.speed = 1f;
+        animator.speed = IsAnimationPaused ? 0f : 1f;
         ClearActionAnimation();
 
         if (stopMove)

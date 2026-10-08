@@ -47,6 +47,15 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     [SerializeField] private bool isFullyStopped = false;
     [SerializeField] private bool isStunned = false;
     private int hitEffectLifeId;
+    private bool isRooted;
+
+    public bool IsRooted => isRooted;
+    public bool IsTimeStopped => TimeStopRuntime.IsStopped(TimeStopTargets.EnemyActions);
+    public void SetRooted(bool value)
+    {
+        isRooted = value;
+        if (value && mover != null) mover.ClearAllVelocity();
+    }
 
     public bool IsActionDisabled => isActionDisabled || isStunned;
     public bool IsFullyStopped => isFullyStopped || isActionDisabled || isStunned;
@@ -55,7 +64,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         (visual != null && visual.IsHitPlaying));
     public EnemyBehaviorState BehaviorState => behaviorState;
     public bool CanRunDefaultActions => isInitialized && isActiveAndEnabled && !IsDead &&
-        !IsFullyStopped && !IsHitReacting &&
+        !IsFullyStopped && !IsTimeStopped && !IsHitReacting &&
         (patternRunner == null || (!patternRunner.IsExecuting && !patternRunner.IsHandlingLethalDamage)) &&
         (mover == null || !mover.IsBaseMovementBlocked);
     public int HitEffectLifeId => hitEffectLifeId;
@@ -129,6 +138,8 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     {
         if (!isInitialized) return;
         if (IsDead) { behaviorState = EnemyBehaviorState.Dead; return; }
+        // 시간 정지는 수동 행동 정지/기절 상태를 변경하지 않고 실행 시계만 멈춘다.
+        if (IsTimeStopped) { behaviorState = EnemyBehaviorState.Stopped; return; }
         hitReactionRemainingTime = Mathf.Max(0f, hitReactionRemainingTime - Time.deltaTime);
 
         // 사망 예약은 일반 정지·피격·이동제어보다 우선한다.
@@ -226,7 +237,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         bool interruptAttack = true
     )
     {
-        if (!CanReceiveHitEffects || movementControlImmune || mover == null ||
+        if (!CanReceiveHitEffects || IsRooted || IsTimeStopped || movementControlImmune || mover == null ||
             (patternRunner != null && patternRunner.IsHandlingLethalDamage))
             return false;
 
@@ -355,6 +366,10 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     private void ClearHitEffectStatuses()
     {
+        SetRooted(false);
+        MarkStatusController marks = GetComponent<MarkStatusController>();
+        if (marks != null) marks.ClearMarks();
+        if (actorTarget != null) actorTarget.ClearTargetOverrides();
         if (statusController != null)
             statusController.ClearAllStatuses();
         else
@@ -412,6 +427,12 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         if (previousAnimatorSpeed <= 0f)
             previousAnimatorSpeed = 1f;
 
+        if (IsTimeStopped && visual != null)
+        {
+            visual.SetTimeStopAnimationPaused(true);
+            return;
+        }
+        if (visual != null && visual.IsAnimationPlaybackPaused) return;
         cachedAnimator.speed = previousAnimatorSpeed;
     }
 
@@ -685,6 +706,12 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     #region Damage
 
+    public void TakeDamage(float damage, ItemEffectContext source)
+    {
+        if (health == null) return;
+        using (health.UseDamageSource(source)) TakeDamage(damage);
+    }
+
     public override void TakeDamage(float damage)
     {
         if (IsDead || damage <= 0f || float.IsNaN(damage) || float.IsInfinity(damage)) return;
@@ -692,7 +719,8 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
             damage = patternRunner.ModifyIncomingDamage(damage);
 
         bool wasHandlingLethalDamage = patternRunner != null && patternRunner.IsHandlingLethalDamage;
-        if (patternRunner != null && patternRunner.TryHandleLethalDamage(damage))
+        bool reachesZeroHp = health != null && health.PreviewDamageToHp(damage) >= health.Hp;
+        if (patternRunner != null && (wasHandlingLethalDamage || reachesZeroHp) && patternRunner.TryHandleLethalDamage(damage))
         {
             if (!wasHandlingLethalDamage)
             {
@@ -706,9 +734,10 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         base.TakeDamage(damage);
     }
 
-    public void ApplyDamageWithoutPattern(float damage)
+    public void ApplyDamageWithoutPattern(float damage, ItemEffectContext source = null)
     {
-        base.TakeDamage(damage);
+        if (health == null) return;
+        using (health.UseDamageSource(source)) base.TakeDamage(damage);
     }
 
     #endregion

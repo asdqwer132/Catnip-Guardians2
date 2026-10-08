@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class BuffRegisterContext
 {
+    public readonly ItemEffectContext itemContext;
     public GameObject owner;
     public ItemData sourceItemData;
     public EquipmentBag sourceBag;
@@ -14,6 +15,8 @@ public class BuffRegisterContext
     {
         if (context == null)
             return;
+
+        itemContext = context;
 
         owner = context.owner;
         sourceItemData = context.sourceItemData;

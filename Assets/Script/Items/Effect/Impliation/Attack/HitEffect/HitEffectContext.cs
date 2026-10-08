@@ -3,6 +3,8 @@
 public sealed class HitEffectContext
 {
     private readonly ItemEffectContext sourceContext;
+    public ItemEffectContext SourceContext => sourceContext;
+    public readonly HitEffectAttackState attackState;
     public ItemEffectLifetime lifetime;
     public readonly Enemy target;
     public readonly int targetLifeId;
@@ -13,17 +15,28 @@ public sealed class HitEffectContext
     public readonly BuffManager buffManager;
     public readonly Vector3 usePosition;
     public readonly Vector3 hitPosition;
+    public readonly Vector3 attackDirection;
+
+    public bool IsHitEventValid => (sourceContext == null || sourceContext.CanContinue) &&
+        (lifetime == null || !lifetime.IsCancelled);
 
     public bool IsTargetValid => target != null &&
         target.CanReceiveHitEffects && target.HitEffectLifeId == targetLifeId;
 
-    public HitEffectContext(Enemy target, ItemEffectContext sourceContext)
+    public HitEffectContext(Enemy target, ItemEffectContext sourceContext, HitEffectAttackState attackState = null)
+        : this(target, sourceContext, target != null ? target.HitEffectLifeId : 0,
+            target != null ? target.transform.position : Vector3.zero, attackState ?? new HitEffectAttackState()) { }
+
+    private HitEffectContext(Enemy target, ItemEffectContext sourceContext, int lifeId,
+        Vector3 position, HitEffectAttackState attackState)
     {
         this.sourceContext = sourceContext;
+        this.attackState = attackState;
         lifetime = sourceContext != null ? sourceContext.lifetime : null;
         this.target = target;
-        targetLifeId = target != null ? target.HitEffectLifeId : 0;
-        hitPosition = target != null ? target.transform.position : Vector3.zero;
+        targetLifeId = lifeId;
+        hitPosition = position;
+        attackDirection = sourceContext != null ? sourceContext.direction : Vector3.zero;
 
         if (sourceContext == null)
             return;
@@ -45,12 +58,14 @@ public sealed class HitEffectContext
         );
         result.InheritExecution(sourceContext);
         result.lifetime = lifetime;
+        result.hitTarget = target;
+        result.hitTargetLifeId = targetLifeId;
         return result;
     }
 
     public HitEffectContext WithLifetime(ItemEffectLifetime scope)
     {
-        return new HitEffectContext(target, sourceContext) { lifetime = scope };
+        return new HitEffectContext(target, sourceContext, targetLifeId, hitPosition, attackState) { lifetime = scope };
     }
 
     public ItemEffectContext CreateItemContext()

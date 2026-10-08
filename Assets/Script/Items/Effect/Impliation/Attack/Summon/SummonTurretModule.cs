@@ -15,6 +15,7 @@ public sealed class SummonTurretModule : SummonBehaviourModule
     [Min(0.01f)] public float projectileRadius = 0.1f;
     public bool homing;
     public HitEffectData[] onHitEffects;
+    public override void Prepare(ItemEffectContext context) => HitEffectPreparation.Prepare(onHitEffects, context);
     public override SummonBehaviourRuntime CreateRuntime(SummonItemThrower summon) => new Runtime(summon, this);
 
     private sealed class Runtime : SummonBehaviourRuntime
@@ -52,9 +53,10 @@ public sealed class SummonTurretModule : SummonBehaviourModule
             if (direction.sqrMagnitude < 0.000001f) direction = Vector3.right;
             SummonProjectile projectile = prefab != null ? UnityEngine.Object.Instantiate(prefab, summon.transform.position, Quaternion.identity) :
                 new GameObject("SummonProjectile").AddComponent<SummonProjectile>();
-            projectile.Init(summon.CreateContext(target.transform.position, direction.normalized), target,
-                damage + summon.AttackPower * power, speed, lifetime, radius, homing, summon.enemyLayerMask, effects, sprite);
+            projectile.Init(summon.CreateAttackContext(target.transform.position, direction.normalized), target,
+                summon.CalculateDamage(damage + summon.AttackPower * power), speed, lifetime, radius, homing, summon.enemyLayerMask, effects, sprite);
             if (ItemRuntimeObjectManager.Instance != null) ItemRuntimeObjectManager.Instance.Register(projectile);
+            summon.NotifyAttack();
         }
     }
 }

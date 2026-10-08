@@ -28,6 +28,9 @@ public class ActorAttack : MonoBehaviour
     private float preparationElapsed;
     private float animationElapsed;
     private float nextAttackTime;
+    private float attackClock;
+    private bool IsTimeStopped => enemyOwner != null && enemyOwner.IsTimeStopped;
+    private float ActionDeltaTime => IsTimeStopped ? 0f : Time.deltaTime;
     private bool defaultDamageApplied;
     private int attackVersion;
 
@@ -49,6 +52,8 @@ public class ActorAttack : MonoBehaviour
     // 기본 공격은 코루틴을 만들지 않고 작은 단계 상태로 진행한다.
     private void Update()
     {
+        if (IsTimeStopped) return;
+        attackClock += Time.deltaTime;
         if (defaultPhase == DefaultAttackPhase.None) return;
         // interruptAttack=false로 남겨 둔 기본 공격은 강제 이동이 끝날 때까지 보존한다.
         bool pauseForMovementControl = mover != null && mover.IsMovementControlled && !isAttackStopped &&
@@ -99,6 +104,7 @@ public class ActorAttack : MonoBehaviour
     {
         CancelAttack();
         nextAttackTime = 0f;
+        attackClock = 0f;
     }
 
     #region Range
@@ -137,7 +143,7 @@ public class ActorAttack : MonoBehaviour
 
     public void TickAttack()
     {
-        if (Time.deltaTime <= 0f || IsAttacking || !CanUseDefaultAttack() || Time.time < nextAttackTime ||
+        if (Time.deltaTime <= 0f || IsAttacking || !CanUseDefaultAttack() || attackClock < nextAttackTime ||
             !IsTargetAtAttackDistance()) return;
         if (mover != null) mover.Stop();
         IsAttacking = true;
@@ -156,6 +162,7 @@ public class ActorAttack : MonoBehaviour
         bool waitAnimationEnd, bool faceTargetBeforeStart, bool faceTargetBeforeActionDamage,
         float afterDamageDelay)
     {
+        while (IsTimeStopped) yield return null;
         if (isAttackStopped || target == null || !target.HasTarget) yield break;
         float checkRange = useCustomRange ? customRange : attackRange;
         float tolerance = useCustomRange ? customTolerance : attackDistanceTolerance;
@@ -173,10 +180,11 @@ public class ActorAttack : MonoBehaviour
             float elapsed = 0f;
             while (elapsed < Mathf.Max(0f, attackPreparationTime))
             {
+                while (IsTimeStopped && version == attackVersion) yield return null;
                 if (!CanContinueActionAttack(version)) yield break;
                 if (faceTargetBeforeStart) FaceTarget();
                 yield return null;
-                elapsed += Time.deltaTime;
+                elapsed += ActionDeltaTime;
             }
             if (!CanContinueActionAttack(version)) yield break;
             if (faceTargetBeforeStart) FaceTarget();
@@ -187,6 +195,7 @@ public class ActorAttack : MonoBehaviour
             float delay = Mathf.Max(0f, attackDelay);
             do
             {
+                while (IsTimeStopped && version == attackVersion) yield return null;
                 if (!CanContinueActionAttack(version)) yield break;
                 if (!damaged && elapsed >= delay)
                 {
@@ -200,15 +209,16 @@ public class ActorAttack : MonoBehaviour
                     (visual.IsAttackPlaying || visual.IsCustomAnimationLocked);
                 if (damaged && !animationPlaying) break;
                 yield return null;
-                elapsed += Time.deltaTime;
+                elapsed += ActionDeltaTime;
             } while (true);
 
             elapsed = 0f;
             while (elapsed < Mathf.Max(0f, afterDamageDelay))
             {
+                while (IsTimeStopped && version == attackVersion) yield return null;
                 if (!CanContinueActionAttack(version)) yield break;
                 yield return null;
-                elapsed += Time.deltaTime;
+                elapsed += ActionDeltaTime;
             }
         }
         finally
@@ -227,7 +237,7 @@ public class ActorAttack : MonoBehaviour
 
     private void ApplyActionDamage(float actionDamage, bool checkRange, float range, float tolerance)
     {
-        if (isAttackStopped || target == null || !target.HasTarget) return;
+        if (IsTimeStopped || isAttackStopped || target == null || !target.HasTarget) return;
         if (checkRange && !IsTargetAtAttackDistance(range, tolerance)) return;
         target.DamageTarget(Mathf.Max(0f, actionDamage));
     }
@@ -260,7 +270,7 @@ public class ActorAttack : MonoBehaviour
         IsAttacking = false;
         isActionAttackPlaying = false;
         defaultDamageApplied = false;
-        if (wasDefaultAttack) nextAttackTime = Time.time + Mathf.Max(0.01f, attackCooldown);
+        if (wasDefaultAttack) nextAttackTime = attackClock + Mathf.Max(0.01f, attackCooldown);
         if (visual != null)
         {
             visual.SetDefaultAttackAnimationPaused(false);

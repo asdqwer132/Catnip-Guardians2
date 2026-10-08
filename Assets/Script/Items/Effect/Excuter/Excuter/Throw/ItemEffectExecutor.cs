@@ -20,7 +20,8 @@ public class ItemEffectExecutor : MonoBehaviour
     // 아이템 반복 사용과 소환수가 공통으로 호출한다. 인벤토리/가방 슬롯을 소비하지 않는다.
     public static void ExecuteItem(ItemData itemData, Vector3 usePosition, Vector3 targetPosition,
         Vector3 direction, GameObject owner, EquipmentBag sourceBag, BuffManager manager,
-        ItemEffectContext parent = null, bool triggerSpecialItems = true, bool isThrownItem = false)
+        ItemEffectContext parent = null, bool triggerSpecialItems = true, bool isThrownItem = false,
+        bool consumeUseBuffs = true)
     {
         // 자체 효과가 없는 아이템도 투척되었다면 장판 반응의 재료가 될 수 있다.
         if (itemData == null || (!isThrownItem && !CanExecuteItemEffect(itemData)) || (parent != null && !parent.CanContinue))
@@ -29,6 +30,7 @@ public class ItemEffectExecutor : MonoBehaviour
         ItemEffectContext context = new ItemEffectContext(owner, itemData, usePosition,
             targetPosition, sourceBag, buffManager: manager, direction: direction);
         context.InheritExecution(parent);
+        context.consumeUseBuffs = consumeUseBuffs && (parent == null || parent.consumeUseBuffs);
         EffectVisualData completionVisual = itemData.endVisualData;
         bool completionAtOwner = itemData.endVisualAtOwner;
         ItemEffectLifetime scope = new ItemEffectLifetime(parent != null ? parent.lifetime : null, completionVisual != null ? (System.Action)(() =>
@@ -39,7 +41,7 @@ public class ItemEffectExecutor : MonoBehaviour
                     Quaternion.identity));
         }) : null, trackCompletion: completionVisual != null || (parent != null && parent.lifetime != null && parent.lifetime.TracksCompletion));
         context.lifetime = scope;
-        BuffItemUseToken token = manager != null ? manager.BeginItemUse(itemData, sourceBag) : default(BuffItemUseToken);
+        BuffItemUseToken token = manager != null && context.consumeUseBuffs ? manager.BeginItemUse(itemData, sourceBag) : default(BuffItemUseToken);
         bool succeeded = false;
         try
         {
@@ -55,7 +57,7 @@ public class ItemEffectExecutor : MonoBehaviour
         {
             try
             {
-                if (manager != null) manager.EndItemUse(token, succeeded);
+                if (manager != null && context.consumeUseBuffs) manager.EndItemUse(token, succeeded);
                 // 함수 종료 알림은 한 아이템당 한 번. 실제 수명 종료는 ItemEffectLifetime이 담당한다.
                 if (succeeded && triggerSpecialItems && SpecialItemManager.Instance != null)
                     SpecialItemManager.Instance.Call(context);

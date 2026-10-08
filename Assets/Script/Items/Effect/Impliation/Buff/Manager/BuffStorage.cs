@@ -135,6 +135,9 @@ public class BuffStorage
     }
 
     public void RemoveBuff(ActiveBuff buff, bool completed = true)
+        => RemoveBuff(buff, completed ? BuffRemovalReason.NaturalExpiry : BuffRemovalReason.Cancelled);
+
+    public void RemoveBuff(ActiveBuff buff, BuffRemovalReason reason)
     {
         if (buff == null || buff.StorageOwner != this)
             return;
@@ -146,7 +149,11 @@ public class BuffStorage
         useCountBuffs.Remove(buff);
         buff.StorageOwner = null;
         buff.InvalidateRegistration();
-        buff.completion.Finish(completed);
+        try { buff.NotifyRemoved(reason); }
+        finally
+        {
+            buff.completion.Finish(reason == BuffRemovalReason.NaturalExpiry || reason == BuffRemovalReason.Consumed);
+        }
     }
 
     public void RegisterTarget(IBuffTarget target)

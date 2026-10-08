@@ -1,6 +1,8 @@
 public class BuffTicker
 {
     private readonly BuffStorage storage;
+    private readonly System.Collections.Generic.List<ActiveBuff> updateBuffer = new System.Collections.Generic.List<ActiveBuff>();
+    private bool ticking;
 
     public BuffTicker(BuffStorage storage)
     {
@@ -9,26 +11,35 @@ public class BuffTicker
 
     public bool Tick(float deltaTime)
     {
-        if (storage == null)
+        if (storage == null || ticking)
             return false;
+        ticking = true;
+        try { return TickInternal(deltaTime); }
+        finally { updateBuffer.Clear(); ticking = false; }
+    }
+
+    private bool TickInternal(float deltaTime)
+    {
 
         bool changed = false;
 
         // 시간제 버프만 매 프레임 처리한다.
-        for (int i = storage.timedBuffs.Count - 1; i >= 0; i--)
+        updateBuffer.AddRange(storage.timedBuffs);
+        for (int i = 0; i < updateBuffer.Count; i++)
         {
-            ActiveBuff buff = storage.timedBuffs[i];
+            ActiveBuff buff = updateBuffer[i];
 
             if (buff == null)
             {
-                storage.timedBuffs.RemoveAt(i);
+                storage.timedBuffs.Remove(null);
                 storage.normalBuffs.Remove(null);
                 storage.activeBuffs.Remove(null);
                 changed = true;
                 continue;
             }
 
-            buff.Tick(deltaTime);
+            if (buff.StorageOwner != storage) continue;
+            if (!IsEnemyStatusTimerStopped(buff)) buff.Tick(deltaTime);
 
             if (!buff.IsExpired)
                 continue;
@@ -42,21 +53,24 @@ public class BuffTicker
         if (storage.HasExpiredUseCounts)
         {
             storage.HasExpiredUseCounts = false;
-            for (int i = storage.useCountBuffs.Count - 1; i >= 0; i--)
+            updateBuffer.Clear();
+            updateBuffer.AddRange(storage.useCountBuffs);
+            for (int i = 0; i < updateBuffer.Count; i++)
             {
-                ActiveBuff buff = storage.useCountBuffs[i];
+                ActiveBuff buff = updateBuffer[i];
+                if (buff != null && buff.StorageOwner != storage) continue;
                 if (buff != null && !buff.IsExpired)
                     continue;
 
                 if (buff == null)
                 {
-                    storage.useCountBuffs.RemoveAt(i);
+                    storage.useCountBuffs.Remove(null);
                     storage.normalBuffs.Remove(null);
                     storage.activeBuffs.Remove(null);
                 }
                 else
                 {
-                    storage.RemoveBuff(buff);
+                    storage.RemoveBuff(buff, BuffRemovalReason.Consumed);
                 }
                 changed = true;
             }
@@ -64,5 +78,14 @@ public class BuffTicker
 
         storage.RemoveNullRegisters();
         return changed;
+    }
+
+    private static bool IsEnemyStatusTimerStopped(ActiveBuff buff)
+    {
+        if (!TimeStopRuntime.IsStopped(TimeStopTargets.EnemyStatusTimers) || buff.target == null) return false;
+        UnityEngine.Component component = buff.target.targetObject as UnityEngine.Component;
+        UnityEngine.GameObject host = buff.target.targetObject as UnityEngine.GameObject;
+        return component != null ? component.GetComponentInParent<Enemy>() != null :
+            (host != null && host.GetComponentInParent<Enemy>() != null);
     }
 }

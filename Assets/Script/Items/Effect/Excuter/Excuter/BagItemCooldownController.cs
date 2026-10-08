@@ -8,6 +8,37 @@ public class BagItemCooldownController
     private float[] slotCooldownRemains;
     private bool[] slotPreparationStarted;
 
+    // 준비 상태를 지우는 Reset과 다르다. 게임 효과는 다음 사용을 준비 완료로 만든다.
+    public void MakeSlotReady(int slotIndex)
+    {
+        if (slotCooldownRemains == null || slotIndex < 0 || slotIndex >= slotCooldownRemains.Length) return;
+        slotCooldownRemains[slotIndex] = 0f;
+        slotPreparationStarted[slotIndex] = true;
+    }
+
+    public void ChangeSlotCooldown(int slotIndex, CooldownOperation operation, float amount)
+    {
+        if (slotCooldownRemains == null || slotIndex < 0 || slotIndex >= slotCooldownRemains.Length) return;
+        if (operation == CooldownOperation.Ready) { MakeSlotReady(slotIndex); return; }
+        slotCooldownRemains[slotIndex] = ChangeRemaining(slotCooldownRemains[slotIndex], operation, amount);
+    }
+
+    public void ChangeBagCooldown(CooldownOperation operation, float amount)
+        => bagCooldownRemain = ChangeRemaining(bagCooldownRemain, operation, amount);
+
+    public static float ChangeRemaining(float remaining, CooldownOperation operation, float amount)
+    {
+        remaining = EffectStatUtility.Safe(remaining, 0f, 1000000f, 0f);
+        amount = EffectStatUtility.Safe(amount, 0f, 1000000f, 0f);
+        switch (operation)
+        {
+            case CooldownOperation.ReduceSeconds: return Mathf.Max(0f, remaining - amount);
+            case CooldownOperation.ReduceFraction: return remaining * (1f - Mathf.Clamp01(amount));
+            case CooldownOperation.Ready: return 0f;
+            default: return remaining;
+        }
+    }
+
     public void Init(int slotCount)
     {
         bagCooldownRemain = 0f;

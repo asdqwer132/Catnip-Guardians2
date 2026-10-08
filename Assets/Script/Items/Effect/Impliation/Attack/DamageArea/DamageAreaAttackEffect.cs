@@ -22,13 +22,7 @@ public class DamageAreaAttackEffect : ItemEffectData
     public override void Prepare(ItemEffectContext context)
     {
         context.GetSnapshotStat(this, attackStat);
-        if (onHitEffects == null) return;
-        for (int i = 0; i < onHitEffects.Length; i++)
-        {
-            BuffHitEffectData hitBuff = onHitEffects[i] as BuffHitEffectData;
-            if (hitBuff != null && hitBuff.buffEffect != null)
-                context.plan.Prepare(hitBuff.buffEffect, context);
-        }
+        HitEffectPreparation.Prepare(onHitEffects, context);
     }
 
     public override void ExecuteEffect(ItemEffectContext context)
@@ -72,7 +66,7 @@ public class DamageAreaAttackEffect : ItemEffectData
 
         damageArea.damageApplyMode = damageApplyMode;
 
-        DamageAreaAttackStat snapshotStat = context.GetSnapshotStat(this, attackStat);
+        DamageAreaAttackStat snapshotStat = context.GetUnscaledSnapshotStat(this, attackStat);
         damageArea.BindLifetime(context);
 
         damageArea.InitWithSnapshotAndDynamicBuff(

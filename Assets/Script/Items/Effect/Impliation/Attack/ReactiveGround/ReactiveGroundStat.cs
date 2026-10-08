@@ -1,7 +1,7 @@
 using System;
 
 [Serializable]
-public sealed class ReactiveGroundStat : IGameStat<ReactiveGroundStat>
+public sealed class ReactiveGroundStat : IGameStat<ReactiveGroundStat>, IEffectScalableStat
 {
     public float groundRadius = 2f;
     public float groundLifetime = 5f;
@@ -9,6 +9,12 @@ public sealed class ReactiveGroundStat : IGameStat<ReactiveGroundStat>
     public float groundReactionCooldown = 0.1f;
     public float groundSpecialDuration;
     public ReactiveGroundStat Clone() => (ReactiveGroundStat)MemberwiseClone();
+    public void ApplyExecutionScale(EffectExecutionScale scale)
+    {
+        groundRadius *= scale.Range;
+        groundLifetime *= scale.Duration;
+        groundSpecialDuration *= scale.Duration;
+    }
     public void Clamp()
     {
         groundRadius = EffectStatUtility.Safe(groundRadius, 0.01f, 100f, 2f);

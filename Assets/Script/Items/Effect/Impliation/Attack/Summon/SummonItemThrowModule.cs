@@ -40,13 +40,15 @@ public sealed class SummonItemThrowModule : SummonBehaviourModule
             Vector3 forward = target - summon.transform.position;
             if (forward.sqrMagnitude < 0.000001f) forward = Vector3.right;
             forward.Normalize();
+            int profileVersion = summon.ProfileVersion;
             for (int i = 0; i < count && summon.CanAct; i++)
             {
                 Vector3 position = spread == AttackPlacementMode.Shotgun ?
                     AttackPlacement.Position(spread, summon.transform.position, forward, i, count, 0f, 0f,
                         Vector3.Distance(target, summon.transform.position), angle) :
                     AttackPlacement.Position(spread, target, forward, i, count, 0f, 0f, radius, angle);
-                summon.ThrowItem(item, position);
+                summon.ThrowItem(summon.ResolveAttackItem(item), position);
+                if (summon.ProfileVersion != profileVersion) break;
             }
         }
     }

@@ -7,6 +7,7 @@ public class BagItemUseManager : MonoBehaviour
 
     [Header("Cooldown")]
     public float bagCooldown = 3f;
+    public Player cooldownOwner;
 
     [Header("Throw")]
     public ItemThrowExecutor throwExecutor;
@@ -16,6 +17,24 @@ public class BagItemUseManager : MonoBehaviour
         new BagItemCooldownController();
 
     private bool canTickCooldown = false;
+    public static readonly System.Collections.Generic.List<BagItemUseManager> ActiveManagers =
+        new System.Collections.Generic.List<BagItemUseManager>();
+    private void OnEnable() { if (!ActiveManagers.Contains(this)) ActiveManagers.Add(this); }
+    private void OnDisable() { ActiveManagers.Remove(this); }
+
+    public void ApplyCooldownControl(CooldownControlEffect effect)
+    {
+        if (effect == null || bag == null || bag.equippedItems == null) return;
+        SyncControllers();
+        if (effect.affectBagCooldown) cooldownController.ChangeBagCooldown(effect.operation, effect.amount);
+        for (int i = 0; i < bag.equippedItems.Count; i++)
+        {
+            ItemData item = bag.equippedItems[i] != null ? bag.equippedItems[i].itemData : null;
+            if (!effect.Matches(item)) continue;
+            cooldownController.StartPreparationCooldownIfNeeded(i, item);
+            cooldownController.ChangeSlotCooldown(i, effect.operation, effect.amount);
+        }
+    }
 
     private void Awake()
     {
@@ -37,6 +56,8 @@ public class BagItemUseManager : MonoBehaviour
 
     public void Init()
     {
+        if (cooldownOwner == null) cooldownOwner = GetComponentInParent<Player>();
+        if (cooldownOwner == null) cooldownOwner = FindFirstObjectByType<Player>();
         if (throwExecutor == null)
             throwExecutor = GetComponent<ItemThrowExecutor>();
 
@@ -63,7 +84,9 @@ public class BagItemUseManager : MonoBehaviour
 
         SyncControllers();
 
-        cooldownController.TickCooldown(deltaTime);
+        float rate = cooldownOwner != null && cooldownOwner.currentStat != null
+            ? cooldownOwner.currentStat.cooldownRecoveryRate : 1f;
+        cooldownController.TickCooldown(deltaTime * EffectStatUtility.Safe(rate, 0f, 100f, 1f));
 
         if (IsBagCoolingDown())
             return;

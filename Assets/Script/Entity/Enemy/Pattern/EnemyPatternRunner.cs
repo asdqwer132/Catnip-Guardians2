@@ -48,11 +48,12 @@ public class EnemyPatternRunner : MonoBehaviour
     private bool initialized;
     private bool isHandlingLethalDamage;
     private float pendingLethalDamage;
+    private ItemEffectContext pendingLethalSource;
 
     public bool IsExecuting => isExecuting;
     public bool IsHandlingLethalDamage => isHandlingLethalDamage;
     public bool IsBlockingDefaultAI => isExecuting;
-    public bool CanAdvancePattern => initialized && isActiveAndEnabled && enemy != null && !enemy.IsDead &&
+    public bool CanAdvancePattern => initialized && isActiveAndEnabled && enemy != null && !enemy.IsDead && !enemy.IsTimeStopped &&
         (isHandlingLethalDamage || (!enemy.IsFullyStopped && !enemy.IsHitReacting &&
          (mover == null || !mover.IsBaseMovementBlocked)));
 
@@ -115,6 +116,7 @@ public class EnemyPatternRunner : MonoBehaviour
         queuedDeathPattern = null;
         isHandlingLethalDamage = false;
         pendingLethalDamage = 0f;
+        pendingLethalSource = null;
         initialized = false;
     }
 
@@ -144,6 +146,7 @@ public class EnemyPatternRunner : MonoBehaviour
     public bool TickPattern(bool allowStart = true)
     {
         if (!initialized || !isActiveAndEnabled || enemy == null || enemy.IsDead) return false;
+        if (enemy.IsTimeStopped) return isExecuting;
         TickTimers();
         if (isExecuting) return true;
         if (!allowStart || !CanAdvancePattern || patternData == null || Time.deltaTime <= 0f) return false;
@@ -555,6 +558,7 @@ public class EnemyPatternRunner : MonoBehaviour
 
         isHandlingLethalDamage = false;
         pendingLethalDamage = 0f;
+        pendingLethalSource = null;
     }
     public void StopPattern()
     {
@@ -614,6 +618,7 @@ public class EnemyPatternRunner : MonoBehaviour
         StopPattern();
         isHandlingLethalDamage = true;
         pendingLethalDamage = damage;
+        pendingLethalSource = enemy.health.CurrentDamageSource;
         queuedDeathPattern = deathPattern;
         return true;
     }
@@ -627,9 +632,11 @@ public class EnemyPatternRunner : MonoBehaviour
     private void FinishLethalDamagePattern()
     {
         float damage = pendingLethalDamage;
+        ItemEffectContext source = pendingLethalSource;
         isHandlingLethalDamage = false;
         pendingLethalDamage = 0f;
-        if (enemy != null && !enemy.IsDead) enemy.ApplyDamageWithoutPattern(damage);
+        pendingLethalSource = null;
+        if (enemy != null && !enemy.IsDead) enemy.ApplyDamageWithoutPattern(damage, source);
     }
 
     #region Runtime Modifier

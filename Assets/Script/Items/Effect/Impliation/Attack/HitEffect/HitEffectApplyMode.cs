@@ -1,5 +1,9 @@
 public enum HitEffectApplyMode
 {
-    FirstHitOnly,
-    EveryHit
+    // Keep the serialized values of existing assets.
+    FirstHitOnly = 0,
+    OncePerTarget = FirstHitOnly,
+    EveryHit = 1,
+    FirstHitPerAttack = 2,
+    FirstHitPerUse = 3
 }

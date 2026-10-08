@@ -16,6 +16,7 @@ public class ActiveBuff
     public bool showInUI = true;
 
     [Header("Runtime")]
+    public StatusDefinition statusDefinition;
     public BuffApplyTiming applyTiming = BuffApplyTiming.Snapshot;
     public BuffUseLimitType useLimitType = BuffUseLimitType.Time;
     public BuffStackMode stackMode = BuffStackMode.Refresh;
@@ -36,6 +37,14 @@ public class ActiveBuff
     internal readonly ItemEffectCompletionGroup completion = new ItemEffectCompletionGroup();
     internal BuffStorage StorageOwner { get; set; }
     internal ulong RegistrationVersion { get; private set; }
+    public event Action<ActiveBuff, BuffRemovalReason> Removed;
+
+    internal void NotifyRemoved(BuffRemovalReason reason)
+    {
+        Action<ActiveBuff, BuffRemovalReason> callbacks = Removed;
+        Removed = null;
+        callbacks?.Invoke(this, reason);
+    }
 
     public bool IsInfinite => useLimitType == BuffUseLimitType.Infinite;
 
@@ -83,6 +92,7 @@ public class ActiveBuff
         if (info == null)
             info = new BuffInfo();
 
+        statusDefinition = info.statusDefinition;
         applyTiming = info.applyTiming;
         useLimitType = info.useLimitType;
         stackMode = info.stackMode;

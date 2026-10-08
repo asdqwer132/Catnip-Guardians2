@@ -57,7 +57,8 @@ public class DirectionalRectangleAttackEffect : DamageAreaAttackEffect
             rotation
         );
 
-        damageArea.SetRectangleSize(attackWidth, attackHeight);
+        float scale = EffectExecutionScale.Safe(context.rangeMultiplier);
+        damageArea.SetRectangleSize(attackWidth * scale, attackHeight * scale);
 
         // 기존 SnapshotOnly + 동적 버프 초기화와 타격 모드 설정을 재사용한다.
         InitDamageArea(damageArea, context);

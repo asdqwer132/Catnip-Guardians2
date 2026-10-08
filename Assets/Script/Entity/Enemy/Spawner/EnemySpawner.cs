@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour, IBuffTarget
@@ -39,6 +39,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
     private Coroutine spawnCoroutine;
     private Coroutine spawnDebugCoroutine;
     private bool isSpawning;
+    private EnemySpawnInfo pendingImmediateSpawn;
     private int spawnerIndex = -1;
     private float spawnStartTime;
 
@@ -87,11 +88,11 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         RefreshBuffedStat();
 
 
+        pendingImmediateSpawn = null;
         if (spawnImmediatelyOnStart)
         {
 
-            EnemySpawnInfo selectedInfo = GetRandomEnemySpawnInfo();
-            SpawnEnemy(selectedInfo, 0);
+            pendingImmediateSpawn = GetRandomEnemySpawnInfo();
         }
         StartSpawning();
     }
@@ -139,6 +140,14 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
 
     private IEnumerator SpawnRoutine()
     {
+        if (pendingImmediateSpawn != null)
+        {
+            while (isSpawning && TimeStopRuntime.IsStopped(TimeStopTargets.EnemySpawning)) yield return null;
+            if (!isSpawning) yield break;
+            EnemySpawnInfo immediate = pendingImmediateSpawn;
+            pendingImmediateSpawn = null;
+            SpawnEnemy(immediate, 0f);
+        }
         while (isSpawning)
         {
             EnemySpawnInfo selectedInfo = GetRandomEnemySpawnInfo();
@@ -160,7 +169,13 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
 
             StartSpawnDebugTimer(selectedInfo, interval);
 
-            yield return new WaitForSeconds(interval);
+            float remaining = interval;
+            while (remaining > 0f || TimeStopRuntime.IsStopped(TimeStopTargets.EnemySpawning))
+            {
+                yield return null;
+                if (!TimeStopRuntime.IsStopped(TimeStopTargets.EnemySpawning))
+                    remaining -= Time.deltaTime;
+            }
 
             StopSpawnDebugTimer();
             SetSpawnDebugCompleted();
@@ -192,11 +207,10 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
     private IEnumerator SpawnDebugTimerRoutine(float interval)
     {
         float safeInterval = Mathf.Max(0.01f, interval);
-        float startTime = Time.time;
+        float elapsed = 0f;
 
         while (isSpawning)
         {
-            float elapsed = Time.time - startTime;
             float remaining = Mathf.Max(0f, safeInterval - elapsed);
 
             debugSpawnRemainingTime = RoundToOneDecimal(remaining);
@@ -205,7 +219,9 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
             if (remaining <= 0f)
                 break;
 
-            yield return new WaitForSeconds(0.1f);
+            yield return null;
+            if (!TimeStopRuntime.IsStopped(TimeStopTargets.EnemySpawning))
+                elapsed += Time.deltaTime;
         }
 
         debugSpawnRemainingTime = 0f;
@@ -254,7 +270,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
 
     private void SpawnEnemy(EnemySpawnInfo info, float usedInterval)
     {
-        if (info == null)
+        if (TimeStopRuntime.IsStopped(TimeStopTargets.EnemySpawning) || info == null)
             return;
 
         if (info.dataSet == null)

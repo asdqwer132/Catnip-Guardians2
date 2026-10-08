@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class EnemySimpleProjectile : MonoBehaviour
 {
@@ -32,20 +32,25 @@ public class EnemySimpleProjectile : MonoBehaviour
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
 
-        Destroy(gameObject, lifeTime);
+        // 수명은 이동과 같은 시계를 사용해 시간 정지 중 소멸하지 않는다.
     }
 
-    private void Update()
+    private void Update() { Tick(Time.deltaTime); }
+
+    public void Tick(float deltaTime)
     {
-        if (!initialized)
+        if (!initialized || TimeStopRuntime.IsStopped(TimeStopTargets.EnemyProjectiles))
             return;
 
-        transform.position += (Vector3)(direction * speed * Time.deltaTime);
+        deltaTime = Mathf.Max(0f, deltaTime);
+        lifeTime -= deltaTime;
+        if (lifeTime <= 0f) { initialized = false; Destroy(gameObject); return; }
+        transform.position += (Vector3)(direction * speed * deltaTime);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!initialized)
+        if (!initialized || TimeStopRuntime.IsStopped(TimeStopTargets.EnemyProjectiles))
             return;
 
         if (owner != null && other.transform.IsChildOf(owner.transform))

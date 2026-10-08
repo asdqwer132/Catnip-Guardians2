@@ -60,4 +60,7 @@ public class BuffEffect : ItemEffectData
 
         return false;
     }
+
+    public bool HasRuntimePayload() => HasValidModifier() ||
+        (buffInfo != null && buffInfo.statusDefinition != null);
 }

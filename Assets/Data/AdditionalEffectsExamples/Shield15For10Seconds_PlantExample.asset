@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2333efa5f9724b43a9a0e83db58be454, type: 3}
+  m_Name: Shield15For10Seconds_PlantExample
+  m_EditorClassIdentifier:
+  conditionMode: 0
+  conditions: []
+  visualData: {fileID: 0}
+  endVisualData: {fileID: 0}
+  targets:
+    target: 0
+    useRadius: 0
+    radius: 5
+    center: 0
+    sameOwnerOnly: 1
+    maximumTargets: 128
+  shieldStat:
+    shieldAmount: 15
+    shieldDuration: 10
+  reapplyMode: 0

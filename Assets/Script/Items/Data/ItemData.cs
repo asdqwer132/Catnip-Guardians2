@@ -7,6 +7,8 @@ public class ItemData : DefaultData
     public ItemGrade grade;
     public ItemCategory category;
     public ItemSeries series;
+    [Tooltip("하위 분류 에셋. 예: 뼈, 깃털. 이름이나 Monster 시리즈 전체로 대상을 추정하지 않습니다.")]
+    public ItemTagDefinition[] tags;
 
     [Header("Effects")]
     public float weight = 1f;

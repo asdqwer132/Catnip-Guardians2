@@ -2,8 +2,11 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class BuffInfo : IGameStat<BuffInfo>
+public class BuffInfo : IGameStat<BuffInfo>, IEffectScalableStat
 {
+    [Header("Status Identity")]
+    [Tooltip("선택 사항. 같은 표시 이름이어도 상태 판정은 이 에셋 키로 구분합니다.")]
+    public StatusDefinition statusDefinition;
     [Header("Stack")]
     public BuffStackMode stackMode = BuffStackMode.Refresh;
     [Min(1)] public int maxStack = 1;
@@ -27,6 +30,7 @@ public class BuffInfo : IGameStat<BuffInfo>
     {
         return new BuffInfo
         {
+            statusDefinition = statusDefinition,
             stackMode = stackMode,
             maxStack = maxStack,
             applyTiming = applyTiming,
@@ -47,4 +51,6 @@ public class BuffInfo : IGameStat<BuffInfo>
         if (stackMode == BuffStackMode.Refresh)
             maxStack = 1;
     }
+
+    public void ApplyExecutionScale(EffectExecutionScale scale) => duration *= scale.Duration;
 }

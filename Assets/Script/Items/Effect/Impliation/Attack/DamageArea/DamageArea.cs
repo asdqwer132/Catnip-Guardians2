@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum DamageApplyMode
@@ -31,15 +31,13 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
 
     private float timer;
 
-    private readonly HashSet<GameObject> hitObjects = new HashSet<GameObject>();
-    private readonly Dictionary<GameObject, float> periodicTimers =
-        new Dictionary<GameObject, float>();
+    private readonly HashSet<EnemyLifeKey> hitObjects = new HashSet<EnemyLifeKey>();
+    private readonly Dictionary<EnemyLifeKey, float> periodicTimers = new Dictionary<EnemyLifeKey, float>();
+    private readonly Dictionary<EnemyLifeKey, HashSet<Collider2D>> contacts = new Dictionary<EnemyLifeKey, HashSet<Collider2D>>();
+    private readonly Dictionary<Collider2D, EnemyLifeKey> contactLives = new Dictionary<Collider2D, EnemyLifeKey>();
 
-    private HitEffectData[] onHitEffects;
-    private HitEffectApplyMode hitEffectApplyMode;
+    private HitEffectDispatcher hitDispatcher;
     private ItemEffectContext hitSourceContext;
-    private readonly Dictionary<Enemy, int> hitEffectLifeIds =
-        new Dictionary<Enemy, int>();
 
     protected virtual void Awake()
     {
@@ -73,8 +71,9 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
 
         hitObjects.Clear();
         periodicTimers.Clear();
-        hitEffectLifeIds.Clear();
-        onHitEffects = null;
+        contacts.Clear();
+        contactLives.Clear();
+        hitDispatcher = null;
         hitSourceContext = null;
 
         base.OnDisable();
@@ -82,6 +81,8 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
 
     protected virtual void Update()
     {
+        if (hitSourceContext != null && !hitSourceContext.CanContinue)
+        { gameObject.SetActive(false); Destroy(gameObject); return; }
         timer += Time.deltaTime;
 
         if (timer >= lifeTime)
@@ -102,7 +103,8 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
         timer = 0f;
         hitObjects.Clear();
         periodicTimers.Clear();
-        hitEffectLifeIds.Clear();
+        contacts.Clear();
+        contactLives.Clear();
 
         base.InitWithSnapshotAndDynamicBuff(
             snapshotAttackStat,
@@ -121,17 +123,10 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
         ItemEffectContext context
     )
     {
-        onHitEffects = effects != null ? (HitEffectData[])effects.Clone() : null;
-        hitEffectApplyMode = applyMode;
-        hitEffectLifeIds.Clear();
-
-        // Executor의 Context는 여러 효과가 공유하므로 생성 시점의 값을 복사한다.
-        hitSourceContext = context == null ? null : new ItemEffectContext(
-            context.owner, context.sourceItemData, context.usePosition,
-            context.targetPosition, context.sourceBag, context.currentEffectData,
-            context.buffManager, context.direction
-        );
-        if (hitSourceContext != null) hitSourceContext.InheritExecution(context);
+        contacts.Clear();
+        contactLives.Clear();
+        hitSourceContext = context != null ? context.Copy(context.targetPosition, context.direction) : null;
+        hitDispatcher = new HitEffectDispatcher(effects, applyMode, hitSourceContext);
     }
 
     protected override void ApplyStat(DamageAreaAttackStat currentStat)
@@ -172,215 +167,59 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>
         transform.localScale = Vector3.one;
     }
 
-    #region Trigger
+    // Derived shapes filter this bounding collider without duplicating damage policy.
+    protected virtual bool IsInsideAttack(Enemy enemy) => true;
 
-    protected virtual void OnTriggerEnter2D(Collider2D other)
+    protected virtual void OnTriggerEnter2D(Collider2D other) => TryContact(other);
+    protected virtual void OnTriggerStay2D(Collider2D other) => TryContact(other);
+    protected virtual void OnTriggerExit2D(Collider2D other) => RemoveContact(other);
+
+    private void RemoveContact(Collider2D other)
     {
+        if (other == null) return;
+        EnemyLifeKey key;
+        if (!contactLives.TryGetValue(other, out key)) return;
+        contactLives.Remove(other);
+        HashSet<Collider2D> colliders;
+        if (!contacts.TryGetValue(key, out colliders)) return;
+        colliders.Remove(other);
+        if (colliders.Count != 0) return;
+        contacts.Remove(key);
+        periodicTimers.Remove(key);
+    }
+
+    private void TryContact(Collider2D other)
+    {
+        Enemy enemy = other != null ? other.GetComponentInParent<Enemy>() : null;
+        if (enemy == null || !enemy.CanReceiveHitEffects || enemy.gameObject == owner || !IsInsideAttack(enemy))
+        { RemoveContact(other); return; }
+        EnemyLifeKey key = new EnemyLifeKey(enemy);
+        EnemyLifeKey old;
+        if (contactLives.TryGetValue(other, out old) && !old.Equals(key)) RemoveContact(other);
+        bool entered = !contacts.ContainsKey(key);
+        HashSet<Collider2D> colliders;
+        if (!contacts.TryGetValue(key, out colliders))
+        { colliders = new HashSet<Collider2D>(); contacts.Add(key, colliders); }
+        colliders.Add(other);
+        contactLives[other] = key;
+
         if (damageApplyMode == DamageApplyMode.HitOnce)
-        {
-            TryHitOnce(other);
-            return;
-        }
-
+        { if (hitObjects.Add(key)) ApplyHit(enemy); return; }
         if (damageApplyMode == DamageApplyMode.EveryEnter)
-        {
-            TryHitAlways(other);
-            return;
-        }
-
-        if (damageApplyMode == DamageApplyMode.Periodic)
-            TryHitPeriodicEnter(other);
-    }
-
-    protected virtual void OnTriggerStay2D(Collider2D other)
-    {
-        if (damageApplyMode != DamageApplyMode.Periodic)
-            return;
-
-        TryHitPeriodicStay(other);
-    }
-
-    protected virtual void OnTriggerExit2D(Collider2D other)
-    {
-        GameObject targetObj = GetTargetObject(other);
-
-        if (targetObj == null)
-            return;
-
-        if (periodicTimers.ContainsKey(targetObj))
-            periodicTimers.Remove(targetObj);
-    }
-
-    #endregion
-
-    #region Attack
-
-    private void TryHitOnce(Collider2D other)
-    {
-        if (!CanHit(other))
-            return;
-
-        GameObject targetObj = GetTargetObject(other);
-
-        if (targetObj == null)
-            return;
-
-        if (hitObjects.Contains(targetObj))
-            return;
-
-        Enemy enemy = GetEnemy(other);
-
-        if (enemy == null)
-            return;
-
-        hitObjects.Add(targetObj);
-        ApplyHit(enemy);
-    }
-
-    private void TryHitAlways(Collider2D other)
-    {
-        if (!CanHit(other))
-            return;
-
-        Enemy enemy = GetEnemy(other);
-
-        if (enemy == null)
-            return;
-
-        ApplyHit(enemy);
-    }
-
-    private void TryHitPeriodicEnter(Collider2D other)
-    {
-        if (!CanHit(other))
-            return;
-
-        Enemy enemy = GetEnemy(other);
-
-        if (enemy == null)
-            return;
-
-        GameObject targetObj = GetTargetObject(other);
-
-        if (targetObj == null)
-            return;
-
-        if (!periodicTimers.ContainsKey(targetObj))
-            periodicTimers.Add(targetObj, 0f);
-
-        ApplyHit(enemy);
-    }
-
-    private void TryHitPeriodicStay(Collider2D other)
-    {
-        if (!CanHit(other))
-            return;
-
-        Enemy enemy = GetEnemy(other);
-
-        if (enemy == null)
-            return;
-
-        GameObject targetObj = GetTargetObject(other);
-
-        if (targetObj == null)
-            return;
-
-        if (!periodicTimers.ContainsKey(targetObj))
-            periodicTimers.Add(targetObj, 0f);
-
-        periodicTimers[targetObj] += Time.deltaTime;
-
-        if (periodicTimers[targetObj] < damageInterval)
-            return;
-
-        periodicTimers[targetObj] = 0f;
-
+        { if (entered) ApplyHit(enemy); return; }
+        float next;
+        if (periodicTimers.TryGetValue(key, out next) && Time.time < next) return;
+        // Absolute time means an enemy with several colliders never gains extra ticks.
+        periodicTimers[key] = Time.time + damageInterval;
         ApplyHit(enemy);
     }
 
     private void ApplyHit(Enemy enemy)
     {
-        if (enemy == null || enemy.IsDead || !enemy.isActiveAndEnabled)
-            return;
-
-        // 피해 처리 중 풀 반환/재생성/부활이 일어나도 새 생명에 효과를 옮기지 않는다.
-        int lifeId = enemy.HitEffectLifeId;
-        HitEffectData[] effects = onHitEffects;
-        ItemEffectContext sourceContext = hitSourceContext;
-        enemy.TakeDamage(damage);
-
-        if (!isActiveAndEnabled || enemy == null || !enemy.CanReceiveHitEffects ||
-            enemy.HitEffectLifeId != lifeId || effects == null || effects.Length == 0)
-            return;
-
-        if (hitEffectApplyMode == HitEffectApplyMode.FirstHitOnly)
-        {
-            int appliedLifeId;
-            if (hitEffectLifeIds.TryGetValue(enemy, out appliedLifeId) &&
-                appliedLifeId == lifeId)
-                return;
-
-            // 확률 실패도 첫 명중 시도에 포함한다. 다음 주기에 다시 굴리지 않는다.
-            hitEffectLifeIds[enemy] = lifeId;
-        }
-
-        HitEffectContext context = new HitEffectContext(enemy, sourceContext);
-        for (int i = 0; i < effects.Length; i++)
-        {
-            if (!context.IsTargetValid || !isActiveAndEnabled)
-                break;
-
-            HitEffectData effect = effects[i];
-            if (effect != null)
-                effect.TryExecute(context);
-        }
+        if (hitDispatcher != null) hitDispatcher.Hit(enemy, damage,
+            hitSourceContext != null ? hitSourceContext.direction : Vector3.zero);
+        else if (enemy != null && enemy.CanReceiveHitEffects) enemy.TakeDamage(damage);
     }
-
-    private bool CanHit(Collider2D other)
-    {
-        if (other == null)
-            return false;
-
-        if (owner != null && other.gameObject == owner)
-            return false;
-
-        Enemy enemy = GetEnemy(other);
-
-        if (enemy == null)
-            return false;
-
-        return !enemy.IsDead && enemy.isActiveAndEnabled;
-    }
-
-    #endregion
-
-    #region GetObject
-
-    private Enemy GetEnemy(Collider2D other)
-    {
-        if (other == null)
-            return null;
-
-        Enemy enemy = other.GetComponent<Enemy>();
-
-        if (enemy == null)
-            enemy = other.GetComponentInParent<Enemy>();
-
-        return enemy;
-    }
-
-    private GameObject GetTargetObject(Collider2D other)
-    {
-        Enemy enemy = GetEnemy(other);
-
-        if (enemy != null)
-            return enemy.gameObject;
-
-        return other.gameObject;
-    }
-
-    #endregion
 
     #region Clear
 

@@ -1,8 +1,12 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "ReactiveGroundEffect", menuName = "GameData/Items/Effects/Attack/Reactive Ground")]
-public sealed class ReactiveGroundEffect : ItemEffectData
+public class ReactiveGroundEffect : ItemEffectData
 {
+    [Tooltip("비워 두면 기존 장판 설정을 유지합니다. 설정하면 종류/스탯/생명주기 효과를 이 정의에서 가져옵니다.")]
+    public AreaDefinition areaDefinition;
+    [Tooltip("장판 종류는 유지하고 이 효과의 Ground Stat으로 범위/수명을 재정의합니다.")]
+    public bool overrideDefinitionStat;
     public ReactiveGroundStat groundStat = new ReactiveGroundStat();
     [Tooltip("생성 시와 매 Tick마다 중심에서 실행합니다.")]
     public ItemEffectData[] defaultEffects;
@@ -19,14 +23,25 @@ public sealed class ReactiveGroundEffect : ItemEffectData
 
     public override void Prepare(ItemEffectContext context)
     {
-        context.GetSnapshotStat(this, groundStat);
+        context.GetSnapshotStat(this, BaseStat);
         ItemEffectUtility.Prepare(context, defaultEffects);
         ItemEffectUtility.Prepare(context, specialEffects);
+        if (areaDefinition != null)
+        {
+            ItemEffectUtility.Prepare(context, areaDefinition.onStart);
+            ItemEffectUtility.Prepare(context, areaDefinition.onEnter);
+            ItemEffectUtility.Prepare(context, areaDefinition.onTick);
+            ItemEffectUtility.Prepare(context, areaDefinition.onExit);
+            ItemEffectUtility.Prepare(context, areaDefinition.onNaturalEnd);
+            ItemEffectUtility.Prepare(context, areaDefinition.onResidence);
+        }
     }
+
+    public ReactiveGroundStat BaseStat => areaDefinition != null && !overrideDefinitionStat ? areaDefinition.stat : groundStat;
 
     public override void ExecuteEffect(ItemEffectContext context)
     {
-        if (context == null || groundStat == null) return;
+        if (context == null || BaseStat == null) return;
         GameObject host = new GameObject("ReactiveGround");
         host.transform.position = context.targetPosition;
         ReactiveGroundArea area = host.AddComponent<ReactiveGroundArea>();
@@ -36,7 +51,7 @@ public sealed class ReactiveGroundEffect : ItemEffectData
 
     protected override float GetImpactRadius(ItemEffectContext context)
     {
-        ReactiveGroundStat stat = context.GetCurrentStat(this, groundStat);
+        ReactiveGroundStat stat = context.GetCurrentStat(this, BaseStat);
         return stat != null ? stat.groundRadius : 1f;
     }
 }

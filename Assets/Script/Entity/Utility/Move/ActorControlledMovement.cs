@@ -17,7 +17,7 @@ internal struct ActorControlledMovement
     internal Vector2 GetResistanceDirection(Vector2 position)
     {
         if (!active) return Vector2.zero;
-        if (request.mode == ActorMovementControlMode.PushAway) return -pushDirection;
+        if (request.mode != ActorMovementControlMode.PullTowards) return -pushDirection;
         Vector2 awayFromCenter = position - request.center;
         return awayFromCenter.sqrMagnitude > Epsilon ? awayFromCenter.normalized : pushDirection;
     }
@@ -48,6 +48,13 @@ internal struct ActorControlledMovement
 
         Vector2 direction = radial.sqrMagnitude > Epsilon
             ? radial.normalized : next.fallbackDirection.normalized;
+        if (next.mode == ActorMovementControlMode.SidewaysFromPath)
+        {
+            Vector2 forward = next.fallbackDirection.sqrMagnitude > Epsilon
+                ? next.fallbackDirection.normalized : Vector2.right;
+            Vector2 side = new Vector2(-forward.y, forward.x);
+            direction = Vector2.Dot(radial, side) < 0f ? -side : side;
+        }
         if (direction.sqrMagnitude <= Epsilon)
             direction = Vector2.right;
 
@@ -115,7 +122,8 @@ internal struct ActorControlledMovement
 
     private static bool IsValid(ActorMovementControlRequest value)
     {
-        return (value.mode == ActorMovementControlMode.PushAway || value.mode == ActorMovementControlMode.PullTowards) &&
+        return (value.mode == ActorMovementControlMode.PushAway || value.mode == ActorMovementControlMode.PullTowards ||
+                value.mode == ActorMovementControlMode.SidewaysFromPath) &&
             (value.speedCurve == ActorMovementControlSpeedCurve.Constant || value.speedCurve == ActorMovementControlSpeedCurve.EaseOut) &&
             (value.reapplyMode == ActorMovementControlReapplyMode.Replace ||
              value.reapplyMode == ActorMovementControlReapplyMode.IgnoreWhileActive ||

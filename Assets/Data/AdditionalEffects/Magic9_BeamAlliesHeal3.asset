@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6140339cc2364a67859b45b814f6a8c9, type: 3}
+  m_Name: Magic9_BeamAlliesHeal3
+  m_EditorClassIdentifier:
+  conditionMode: 0
+  conditions: []
+  visualData: {fileID: 0}
+  endVisualData: {fileID: 0}
+  targets:
+    target: 5
+    useRadius: 1
+    radius: 5
+    center: 0
+    sameOwnerOnly: 1
+    maximumTargets: 128
+    shape: 1
+    width: 0.4
+    length: 5
+  kind: 0
+  amountMode: 0
+  healthStat:
+    healthChangeAmount: 3
+  damagePolicy:
+    canKill: 1
+    bypassDefense: 0
+    bypassShield: 0
+    bypassImmunity: 0
+    notifyDamaged: 1
+  scaleCostsWithDamage: 0

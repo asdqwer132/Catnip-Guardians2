@@ -8,12 +8,15 @@ public class ConditionalItemEffectData : ItemEffectData
     public ItemEffectData effectWhenTrue;
     [Tooltip("조건을 만족하지 않으면 실행할 B 이펙트. 비어 있으면 해당 분기는 실행하지 않습니다.")]
     public ItemEffectData effectWhenFalse;
+    [Tooltip("켜면 사용 전 준비 단계에서 분기를 고정합니다. 실행 중 새로 부여한 상태가 이 분기를 바꾸지 않습니다.")]
+    public bool freezeBranchAtPrepare;
 
     protected override bool CanStart(ItemEffectContext context) => true;
 
     public override void Prepare(ItemEffectContext context)
     {
-        context.plan.Prepare(AreConditionsSatisfied(context) ? effectWhenTrue : effectWhenFalse, context);
+        if (context == null) return;
+        context.plan.Prepare(SelectBranch(context), context);
     }
 
     protected override void ExecuteWithConditions(ItemEffectContext context)
@@ -28,9 +31,17 @@ public class ConditionalItemEffectData : ItemEffectData
         if (context == null)
             return;
 
-        bool conditionsSatisfied = AreConditionsSatisfied(context);
-        ItemEffectData selectedEffect = conditionsSatisfied ? effectWhenTrue : effectWhenFalse;
+        ItemEffectData selectedEffect = SelectBranch(context);
         if (selectedEffect != null)
             selectedEffect.Execute(context);
+    }
+
+    private ItemEffectData SelectBranch(ItemEffectContext context)
+    {
+        ItemEffectData selected;
+        if (freezeBranchAtPrepare && context.plan.TryGetBranch(this, out selected)) return selected;
+        selected = AreConditionsSatisfied(context) ? effectWhenTrue : effectWhenFalse;
+        if (freezeBranchAtPrepare) context.plan.SetBranch(this, selected);
+        return selected;
     }
 }

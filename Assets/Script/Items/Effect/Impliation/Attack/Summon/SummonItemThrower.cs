@@ -4,9 +4,12 @@ using UnityEngine;
 public enum SummonThrowTargetMode { NearestEnemy, RandomEnemy, RandomPosition }
 
 // 기존 프리팹의 클래스/GUID와 버프 타깃을 유지하는 공통 소환수 호스트.
-public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget
+public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget, IDamageable
 {
-    private static readonly List<SummonItemThrower> activeThrowers = new List<SummonItemThrower>();
+    [Header("Identity / Health")]
+    public SummonDefinition definition;
+    [Tooltip("켜면 아이템 투척 피해를 summonAttackPower로 지정합니다. 끄면 아이템 자체 피해를 사용합니다.")]
+    public bool overrideThrownItemDamage;
     [Header("Component")]
     public CircleCollider2D rangeCollider;
     public Transform rangeVisual;
@@ -26,9 +29,16 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget
     [SerializeField] private float summonAttackRange = 5f;
     [SerializeField] private float summonThrowInterval = 1f;
     [SerializeField] private float lifeTime = 5f;
+    private float damageMultiplier = 1f, healingMultiplier = 1f, extraLifetime;
     private readonly List<SummonBehaviourRuntime> behaviours = new List<SummonBehaviourRuntime>();
+    private readonly List<SummonModification> modifications = new List<SummonModification>();
+    private readonly HashSet<SummonTransformEffect> completedTransforms = new HashSet<SummonTransformEffect>();
     private readonly EnemyQueryBuffer query = new EnemyQueryBuffer();
     private ItemEffectContext executionContext;
+    private SummonBehaviourModule[] effectiveModules;
+    private ItemData effectiveItem;
+    private bool effectiveLegacyThrow;
+    private Health health;
     private float timer, throwTimer;
     private bool initialized, registered, finishing;
 
@@ -38,8 +48,21 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget
     public float AttackPower => summonAttackPower;
     public float AttackRange => summonAttackRange;
     public float AttackInterval => summonThrowInterval;
+    public GameObject Owner => owner;
+    public SummonDefinition Definition => definition;
+    public Health Health => health != null ? health : GetComponent<Health>();
+    public Transform DamageTransform => transform;
+    // HP 없는 일반 공격 소환물은 적의 피격 대상으로 선택하지 않는다.
+    public bool IsDead => finishing || Health == null || Health.IsDead;
+    public int LifeId { get; private set; }
+    public int ProfileVersion { get; private set; }
+    public int AttackCount { get; private set; }
+    public IReadOnlyList<SummonBehaviourModule> ActiveModules => effectiveModules ?? new SummonBehaviourModule[0];
+    public ItemData ActiveAttackItem => effectiveItem;
+    public float RemainingLifeTime => Mathf.Max(0f, lifeTime + extraLifetime - timer);
+    public bool IsTransformReserved { get; internal set; }
     public bool CanAct => initialized && !finishing && isActiveAndEnabled &&
-        (executionContext == null || executionContext.CanContinue);
+        (Health == null || !Health.IsDead) && (executionContext == null || executionContext.CanContinue);
 
     protected virtual void Awake()
     {
@@ -51,10 +74,20 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget
     protected override void OnEnable()
     {
         base.OnEnable();
-        activeThrowers.Add(this);
+        unchecked { LifeId++; }
+        SummonRegistry.Register(this);
         timer = throwTimer = 0f;
+        extraLifetime = 0f;
+        AttackCount = 0;
+        completedTransforms.Clear();
+        IsTransformReserved = false;
         finishing = false;
-        if (initialized) InitializeBehaviours();
+        if (initialized)
+        {
+            if (useSnapshotAndDynamicBuff) { RegisterDynamicBuffReceiver(); OnDynamicBuffChanged(); }
+            InitializeHealth();
+            RefreshProfiles(true);
+        }
         RegisterBuffTarget();
     }
 
@@ -63,16 +96,18 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget
         // 씬에 직접 배치한 기존 프리팹도 직렬화된 스탯으로 동작한다.
         if (initialized) return;
         initialized = true;
-        InitializeBehaviours();
+        InitializeHealth();
+        RefreshProfiles(true);
     }
 
     public void ConfigureModules(SummonBehaviourModule[] overrides)
     {
-        DisposeBehaviours();
         modules = overrides != null ? (SummonBehaviourModule[])overrides.Clone() : new SummonBehaviourModule[0];
         useLegacyThrowWhenNoModules = false;
-        if (initialized) InitializeBehaviours();
+        if (initialized) RefreshProfiles(true);
     }
+
+    public void ConfigureDefinition(SummonDefinition value) { definition = value; }
 
     public void SetExecutionContext(ItemEffectContext context)
         => executionContext = context != null ? context.Copy(transform.position, context.direction) : null;
@@ -83,10 +118,20 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget
         {
             ItemEffectContext result = executionContext.Copy(target, direction);
             result.usePosition = transform.position;
+            result.sourceSummon = this;
+            result.sourceSummonLifeId = LifeId;
             return result;
         }
         return new ItemEffectContext(owner, sourceItemData, transform.position, target, sourceBag,
-            buffManager: buffManager, direction: direction);
+            buffManager: buffManager, direction: direction) { sourceSummon = this, sourceSummonLifeId = LifeId };
+    }
+
+    public ItemEffectContext CreateAttackContext(Vector3 target, Vector3 direction)
+    {
+        ItemEffectContext context = CreateContext(target, direction);
+        context.damageMultiplier *= CurrentDamageMultiplier;
+        context.healingMultiplier *= CurrentHealingMultiplier;
+        return context;
     }
 
     public bool TryTarget(SummonThrowTargetMode mode, out Vector3 target)
@@ -112,36 +157,154 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget
             itemThrowExecutor.itemEffectExecutor = executor;
             itemThrowExecutor.showTargetRange = false;
         }
-        ItemEffectContext context = CreateContext(target, (target - transform.position).normalized);
+        ItemEffectContext context = CreateAttackContext(target, (target - transform.position).normalized);
+        if (overrideThrownItemDamage) context.damageOverride = AttackPower;
         if ((target - transform.position).sqrMagnitude <= 0.0001f)
         {
             ItemEffectExecutor.ExecuteItem(item, transform.position, target, context.direction,
                 owner, sourceBag, buffManager, context, false, isThrownItem: true);
+            NotifyAttack();
             return true;
         }
-        return itemThrowExecutor.Throw(item, transform.position, target, owner, sourceBag, 0, context, false);
+        bool thrown = itemThrowExecutor.Throw(item, transform.position, target, owner, sourceBag, 0, context, false);
+        if (thrown) NotifyAttack();
+        return thrown;
     }
 
     public override void InitWithSnapshotAndDynamicBuff(SummonStat snapshotAttackStat, ItemData sourceItemData,
         EquipmentBag sourceBag, BuffManager buffManager, GameObject owner)
     {
         UnregisterBuffTarget();
+        ClearModifications();
         DisposeBehaviours();
+        unchecked { LifeId++; }
+        completedTransforms.Clear();
+        IsTransformReserved = false;
+        AttackCount = 0;
+        extraLifetime = 0f;
         timer = throwTimer = 0f;
         finishing = false;
         base.InitWithSnapshotAndDynamicBuff(snapshotAttackStat, sourceItemData, sourceBag, buffManager, owner);
         RegisterBuffTarget();
         initialized = true;
-        InitializeBehaviours();
+        InitializeHealth();
+        RefreshProfiles(true);
+    }
+
+    private void InitializeHealth()
+    {
+        if (health != null) health.OnDead -= OnSummonDead;
+        health = GetComponent<Health>();
+        if (health == null && definition != null && definition.enableHealth) health = gameObject.AddComponent<Health>();
+        if (health == null) return;
+        health.team = HealthTeam.Ally;
+        health.buffTargetGroup = "SummonHealth";
+        health.SetBuffManager(buffManager);
+        float maxHp = definition != null && definition.enableHealth ? definition.maxHealth : health.MaxHp;
+        health.Init(EffectStatUtility.Safe(maxHp, 0.01f, 1000000f, 10f));
+        health.OnDead += OnSummonDead;
+    }
+
+    private void OnSummonDead() => Despawn(true);
+    public void TakeDamage(float damage) { if (CanAct && Health != null) Health.TakeDamage(damage); }
+
+    public bool HasTransformed(SummonTransformEffect transformEffect) => completedTransforms.Contains(transformEffect);
+    internal void RecordTransform(SummonTransformEffect transformEffect) => completedTransforms.Add(transformEffect);
+
+    public SummonModification AddModification(SummonModificationSettings settings, ItemEffectContext source)
+    {
+        if (settings == null || !CanAct || (source != null && !source.CanContinue)) return null;
+        SummonModification modification = new SummonModification(this, settings, source);
+        modifications.Add(modification);
+        extraLifetime += EffectStatUtility.Safe(settings.addRemainingLifetime, -600f, 600f, 0f);
+        RefreshProfiles();
+        return modification;
+    }
+
+    private float CurrentDamageMultiplier
+    {
+        get
+        {
+            float result = damageMultiplier;
+            foreach (SummonModification modification in modifications)
+                if (modification.IsValid(this)) result *= modification.DamageMultiplier;
+            return EffectStatUtility.Safe(result, 0f, 1000000f, 1f);
+        }
+    }
+    private float CurrentHealingMultiplier
+    {
+        get
+        {
+            float result = healingMultiplier;
+            foreach (SummonModification modification in modifications)
+                if (modification.IsValid(this)) result *= modification.HealingMultiplier;
+            return EffectStatUtility.Safe(result, 0f, 1000000f, 1f);
+        }
+    }
+
+    public float CalculateDamage(float damage)
+    {
+        if (executionContext != null && executionContext.damageOverride.HasValue) damage = executionContext.damageOverride.Value;
+        float executionMultiplier = executionContext != null ? executionContext.damageMultiplier : 1f;
+        return EffectStatUtility.Safe(damage * CurrentDamageMultiplier * executionMultiplier, 0f, 1000000f, 0f);
+    }
+
+    public void NotifyAttack()
+    {
+        if (!CanAct) return;
+        AttackCount++;
+        if (buffManager != null) buffManager.ConsumeSummonAttack(this);
+        foreach (SummonModification modification in modifications) modification.ConsumeAttack();
+        RefreshProfiles();
+    }
+
+    private void RefreshProfiles(bool force = false)
+    {
+        int life = LifeId;
+        foreach (SummonModification expired in modifications.ToArray())
+            if (modifications.Contains(expired) && !expired.IsValid(this))
+            {
+                bool completed = expired.HasCompletedNaturally(this);
+                modifications.Remove(expired);
+                expired.Dispose(completed);
+                if (LifeId != life || finishing || !isActiveAndEnabled) return;
+            }
+        SummonBehaviourModule[] nextModules = modules;
+        effectiveItem = itemDatas;
+        effectiveLegacyThrow = useLegacyThrowWhenNoModules;
+        foreach (SummonModification modification in modifications)
+        {
+            if (modification.ReplaceModules) { nextModules = modification.Modules; effectiveLegacyThrow = false; }
+            if (modification.ReplaceAttackItem) effectiveItem = modification.AttackItem;
+        }
+        if (!force && ReferenceEquals(effectiveModules, nextModules)) return;
+        effectiveModules = nextModules;
+        ProfileVersion++;
+        if (initialized) InitializeBehaviours();
+    }
+
+    public ItemData ResolveAttackItem(ItemData configured)
+    {
+        for (int i = modifications.Count - 1; i >= 0; i--)
+            if (modifications[i].IsValid(this) && modifications[i].ReplaceAttackItem) return modifications[i].AttackItem;
+        return configured;
+    }
+
+    private void ClearModifications()
+    {
+        SummonModification[] removed = modifications.ToArray();
+        modifications.Clear();
+        foreach (SummonModification modification in removed) modification.Dispose();
     }
 
     private void InitializeBehaviours()
     {
         DisposeBehaviours();
-        if (modules == null) return;
-        foreach (SummonBehaviourModule module in modules)
+        if (effectiveModules == null) return;
+        foreach (SummonBehaviourModule module in effectiveModules)
             if (module != null)
             {
+                module.Prepare(CreateAttackContext(transform.position, Vector3.right));
                 SummonBehaviourRuntime behaviour = module.CreateRuntime(this);
                 if (behaviour != null) behaviours.Add(behaviour);
             }
@@ -149,30 +312,39 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget
 
     private void Update()
     {
+        Advance(Time.deltaTime);
+    }
+
+    public void Advance(float deltaTime)
+    {
         if (!initialized || finishing) return;
         if (!CanAct) { Clear(); return; }
-        timer += Time.deltaTime;
-        if (timer >= lifeTime)
+        int life = LifeId;
+        deltaTime = EffectStatUtility.Safe(deltaTime, 0f, 600f, 0f);
+        foreach (SummonModification modification in modifications) modification.Tick(deltaTime);
+        RefreshProfiles();
+        if (LifeId != life || !CanAct) return;
+        timer += deltaTime;
+        if (timer >= lifeTime + extraLifetime)
         {
-            finishing = true;
-            DisposeBehaviours();
-            CompleteLifetime();
-            Destroy(gameObject);
+            Despawn(true);
             return;
         }
-        foreach (SummonBehaviourRuntime behaviour in behaviours.ToArray())
+        int currentProfile = ProfileVersion;
+        for (int i = 0; i < behaviours.Count; i++)
         {
             if (!CanAct) break;
-            behaviour.Tick(Time.deltaTime);
+            behaviours[i].Tick(deltaTime);
+            if (ProfileVersion != currentProfile) break;
         }
-        if (behaviours.Count == 0 && useLegacyThrowWhenNoModules && CanAct)
+        if (behaviours.Count == 0 && effectiveLegacyThrow && CanAct)
         {
-            throwTimer += Time.deltaTime;
+            throwTimer += deltaTime;
             if (throwTimer >= AttackInterval)
             {
                 throwTimer = 0f;
                 Vector3 target;
-                if (TryTarget(targetMode, out target)) ThrowItem(itemDatas, target);
+                if (TryTarget(targetMode, out target)) ThrowItem(effectiveItem, target);
             }
         }
     }
@@ -200,6 +372,8 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget
         summonAttackRange = stat.summonAttackRange;
         summonThrowInterval = stat.summonThrowInterval;
         lifeTime = stat.summonLifeTime;
+        damageMultiplier = stat.summonDamageMultiplier;
+        healingMultiplier = stat.summonHealingMultiplier;
         ApplyRadius();
     }
 
@@ -229,14 +403,26 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget
     }
     protected override void OnDisable()
     {
+        unchecked { LifeId++; }
+        if (health != null) health.OnDead -= OnSummonDead;
+        ClearModifications();
         DisposeBehaviours();
         UnregisterBuffTarget();
-        activeThrowers.Remove(this);
+        SummonRegistry.Unregister(this);
         base.OnDisable();
     }
+    public void Despawn(bool completed)
+    {
+        if (finishing) return;
+        finishing = true;
+        if (completed) CompleteLifetime();
+        gameObject.SetActive(false);
+        Destroy(gameObject);
+    }
+    public override void Clear() => Despawn(false);
     public static void ClearAllActiveThrowers()
     {
-        foreach (SummonItemThrower summon in activeThrowers.ToArray()) if (summon != null) summon.Clear();
-        activeThrowers.Clear();
+        var active = new List<SummonItemThrower>(SummonRegistry.Active);
+        foreach (SummonItemThrower summon in active) if (summon != null) summon.Clear();
     }
 }

@@ -10,15 +10,21 @@ public sealed class ItemEffectLifetime
     private bool closed;
     private readonly int generation = ItemEffectRuntime.Generation;
     private readonly ItemEffectLease parent;
+    private readonly ItemEffectLifetime parentLifetime;
     private Action onCompleted;
 
-    public bool IsCancelled => cancelled || generation != ItemEffectRuntime.Generation;
+    public bool IsCancelled => cancelled || generation != ItemEffectRuntime.Generation ||
+        (parentLifetime != null && parentLifetime.IsCancelled);
     public bool IsFinished => pending == 0;
     public bool TracksCompletion { get; private set; }
+    public bool CancelOnChildFailure { get; private set; }
 
-    public ItemEffectLifetime(ItemEffectLifetime parentLifetime = null, Action onCompleted = null, bool trackCompletion = true)
+    public ItemEffectLifetime(ItemEffectLifetime parentLifetime = null, Action onCompleted = null,
+        bool trackCompletion = true, bool cancelOnChildFailure = false)
     {
         TracksCompletion = trackCompletion;
+        this.parentLifetime = parentLifetime;
+        CancelOnChildFailure = cancelOnChildFailure || (parentLifetime != null && parentLifetime.CancelOnChildFailure);
         parent = parentLifetime != null && parentLifetime.TracksCompletion ? parentLifetime.Retain() : null;
         this.onCompleted = onCompleted;
     }
@@ -59,7 +65,8 @@ public sealed class ItemEffectLifetime
             if (parent != null)
                 // 적 사망/면역 등 한 하위 효과의 종료가 전체 연속 공격을 취소하지 않는다.
                 // 전투 초기화는 세대 번호로 모든 실행에 함께 전달한다.
-                parent.Finish(generation == ItemEffectRuntime.Generation);
+                parent.Finish(generation == ItemEffectRuntime.Generation &&
+                    (parentLifetime == null || !parentLifetime.CancelOnChildFailure || !IsCancelled));
         }
     }
 }

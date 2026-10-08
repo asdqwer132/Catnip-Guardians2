@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class DamageAreaAttackStat : IGameStat<DamageAreaAttackStat>
+public class DamageAreaAttackStat : IGameStat<DamageAreaAttackStat>, IEffectScalableStat
 {
     [Header("Damage Area")]
     public float damageAreaPower = 0f;
@@ -32,5 +32,11 @@ public class DamageAreaAttackStat : IGameStat<DamageAreaAttackStat>
 
         if (damageAreaLifeTime < 0.01f)
             damageAreaLifeTime = 0.01f;
+    }
+    public void ApplyExecutionScale(EffectExecutionScale scale)
+    {
+        damageAreaPower = scale.ScaleDamage(damageAreaPower);
+        damageAreaRange *= scale.Range;
+        damageAreaLifeTime *= scale.Duration;
     }
 }

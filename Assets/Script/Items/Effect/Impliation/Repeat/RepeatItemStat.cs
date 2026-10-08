@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class RepeatItemStat : IGameStat<RepeatItemStat>
+public class RepeatItemStat : IGameStat<RepeatItemStat>, IEffectScalableStat
 {
     [Header("Repeat")]
     [Tooltip("아이템 묶음을 사용할 총 횟수입니다. 목록보다 많으면 처음부터 다시 선택합니다.")]
@@ -43,5 +43,12 @@ public class RepeatItemStat : IGameStat<RepeatItemStat>
         itemRepeatBombDelay = EffectStatUtility.Safe(itemRepeatBombDelay, 0f, 600f, 0f);
         itemRepeatBombLifetime = EffectStatUtility.Safe(itemRepeatBombLifetime, 0.01f, 600f, 5f);
         itemRepeatTriggerRadius = EffectStatUtility.Safe(itemRepeatTriggerRadius, 0f, 100f, 0.5f);
+    }
+    public void ApplyExecutionScale(EffectExecutionScale scale)
+    {
+        itemRepeatForwardOffset *= scale.Range;
+        itemRepeatSideOffset *= scale.Range;
+        itemRepeatRadius *= scale.Range;
+        itemRepeatTriggerRadius *= scale.Range;
     }
 }

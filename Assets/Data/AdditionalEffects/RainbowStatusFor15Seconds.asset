@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b250f045bef3cf34fbfec8a0516c81f9, type: 3}
+  m_Name: RainbowStatusFor15Seconds
+  m_EditorClassIdentifier:
+  conditionMode: 0
+  conditions: []
+  visualData: {fileID: 0}
+  endVisualData: {fileID: 0}
+  targetResolver: {fileID: 11400000, guid: 477c97b431704ecd968b4161d32ecd98, type: 2}
+  buffInfo:
+    statusDefinition: {fileID: 11400000, guid: f64fe4f0e81347dc95c61c988934d5c2, type: 2}
+    stackMode: 0
+    maxStack: 1
+    applyTiming: 0
+    useLimitType: 0
+    duration: 15
+    maxUseCount: 1
+    useCountConsumeMode: 0
+    consumeItems: []
+  includeSelf: 1
+  buffIcon: {fileID: 0}
+  showInUI: 1
+  modifiers: []

@@ -4,7 +4,8 @@ using UnityEngine;
 public enum ActorMovementControlMode
 {
     PushAway = 0,
-    PullTowards = 1
+    PullTowards = 1,
+    SidewaysFromPath = 2
 }
 
 public enum ActorMovementControlSpeedCurve

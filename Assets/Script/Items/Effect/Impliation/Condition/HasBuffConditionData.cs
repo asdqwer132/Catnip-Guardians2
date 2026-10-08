@@ -6,6 +6,6 @@ public class HasBuffConditionData : ItemEffectConditionData
     public PlayerStatusList targetStatus;
     public override bool IsSatisfied(ItemEffectContext context)
     {
-        return StatusManager.Instance.HasStatus(targetStatus);
+        return StatusManager.Instance != null && StatusManager.Instance.HasStatus(targetStatus);
     }
 }

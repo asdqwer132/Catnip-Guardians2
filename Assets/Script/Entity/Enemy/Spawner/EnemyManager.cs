@@ -30,6 +30,7 @@ public class EnemyManager : MonoBehaviour
     [SerializeField] private int currentAliveEnemyCount;
 
     private readonly List<Enemy> currentEnemies = new List<Enemy>();
+    public IReadOnlyList<Enemy> ActiveEnemies => currentEnemies;
 
     private float spawnStartTime;
     private bool allEnemiesActionDisabled = false;

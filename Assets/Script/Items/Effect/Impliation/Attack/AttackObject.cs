@@ -7,10 +7,12 @@ public class AttackObject<TStat> : AttackObjectBase, IDynamicBuffReceiver
     public GameObject owner;
 
     private ItemEffectLease effectLease;
+    private ItemEffectContext executionScaleContext;
     public void BindLifetime(ItemEffectContext context)
     {
         if (effectLease != null) effectLease.Cancel();
         effectLease = context != null ? context.RetainLifetime() : null;
+        executionScaleContext = context != null ? context.Copy(context.targetPosition, context.direction) : null;
     }
 
     protected void CompleteLifetime()
@@ -24,6 +26,7 @@ public class AttackObject<TStat> : AttackObjectBase, IDynamicBuffReceiver
     {
         if (effectLease != null) effectLease.Cancel();
         effectLease = null;
+        executionScaleContext = null;
         base.OnDisable();
     }
 
@@ -103,7 +106,7 @@ public class AttackObject<TStat> : AttackObjectBase, IDynamicBuffReceiver
                 currentStat = dynamicBuffedStat;
         }
 
-        ApplyStat(currentStat);
+        ApplyStat(executionScaleContext != null ? EffectExecutionScaling.Apply(currentStat, executionScaleContext) : currentStat);
     }
 
     protected virtual void ApplyStat(TStat currentStat) { }

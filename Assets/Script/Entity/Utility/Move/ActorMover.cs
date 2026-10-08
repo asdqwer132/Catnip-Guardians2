@@ -73,6 +73,13 @@ public class ActorMover : MonoBehaviour
 
     private void TickMove(float deltaTime)
     {
+        if (enemyOwner != null && enemyOwner.IsTimeStopped) { ResetFrameCommand(); return; }
+        if (enemyOwner != null && enemyOwner.IsRooted)
+        {
+            ClearAllVelocity();
+            SetIdleVisual();
+            return;
+        }
         if (deltaTime <= 0f) { ResetFrameCommand(); return; }
         if (isMoveStopped && !controlledMovement.AllowWhileStopped)
         {
@@ -172,7 +179,8 @@ public class ActorMover : MonoBehaviour
 
     private bool CanMove()
     {
-        return !isMoveStopped && !controlledMovement.SuppressBaseMovement && !IsBaseActionLocked;
+        return !isMoveStopped && !controlledMovement.SuppressBaseMovement && !IsBaseActionLocked &&
+            (enemyOwner == null || (!enemyOwner.IsRooted && !enemyOwner.IsTimeStopped));
     }
     #endregion
 

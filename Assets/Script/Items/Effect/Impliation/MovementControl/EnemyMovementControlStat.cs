@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class EnemyMovementControlStat : IGameStat<EnemyMovementControlStat>
+public class EnemyMovementControlStat : IGameStat<EnemyMovementControlStat>, IEffectScalableStat
 {
     [Tooltip("원형에서는 탐색 반지름. 다른 모양에서도 범위의 기본 크기로 사용합니다.")]
     [Min(0f)] public float range = 3f;
@@ -48,5 +48,13 @@ public class EnemyMovementControlStat : IGameStat<EnemyMovementControlStat>
     private static float NonNegative(float value)
     {
         return float.IsNaN(value) || float.IsInfinity(value) ? 0f : Mathf.Max(0f, value);
+    }
+    public void ApplyExecutionScale(EffectExecutionScale scale)
+    {
+        range *= scale.Range;
+        maxDistance *= scale.Range;
+        pullStopDistance *= scale.Range;
+        duration *= scale.Duration;
+        areaDuration *= scale.Duration;
     }
 }
