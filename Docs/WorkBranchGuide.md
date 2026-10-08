@@ -39,7 +39,7 @@ git switch --track -c work origin/work
 1. Unity Hub에서 기존 프로젝트를 Unity `6000.4.4f1`로 연다.
 2. 임포트와 컴파일이 끝나면 Console의 오류를 확인한다.
 3. `Assets/Data/AdditionalEffects`의 CSV 설정과 `Assets/Data/AdditionalEffectsExamples`의 예제를 확인한다. 16개 ItemData는 새 기능이 연결되어 있고 나머지는 Effect Datas 또는 On Hit Effects에 연결한다.
-4. `Docs/AdditionalEffects.md`에 따라 대상·레이어·범위·연출을 설정한다.
+4. [추가 이펙트 사용 설명서](AdditionalEffectsUsage.md)에 따라 대상·레이어·범위·연출을 설정한다. [구현 범위와 미정 기획](AdditionalEffects.md)도 확인한다.
 5. Test Runner의 EditMode에서 `CombatEffectTests`와 `Additional*Tests`를 실행하고 실제 전투 씬을 확인한다.
 
 `.meta`는 에셋 참조에 필요하므로 스크립트/에셋과 함께 가져온다.
