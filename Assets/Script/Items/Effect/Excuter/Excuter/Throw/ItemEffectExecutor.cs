@@ -33,13 +33,38 @@ public class ItemEffectExecutor : MonoBehaviour
         context.consumeUseBuffs = consumeUseBuffs && (parent == null || parent.consumeUseBuffs);
         EffectVisualData completionVisual = itemData.endVisualData;
         bool completionAtOwner = itemData.endVisualAtOwner;
-        ItemEffectLifetime scope = new ItemEffectLifetime(parent != null ? parent.lifetime : null, completionVisual != null ? (System.Action)(() =>
+        ItemData[] completionItems = itemData.afterCompletionItems != null
+            ? (ItemData[])itemData.afterCompletionItems.Clone() : null;
+        bool hasCompletionItems = HasCompletionItems(completionItems);
+        bool completionItemsAtOwner = itemData.afterCompletionItemsAtOwner;
+        bool completionConsumeUseBuffs = itemData.afterCompletionConsumeUseBuffs;
+        bool completionTriggerSpecialItems = itemData.afterCompletionTriggerSpecialItems;
+        ItemEffectLifetime scope = new ItemEffectLifetime(parent != null ? parent.lifetime : null,
+            completionVisual != null || hasCompletionItems ? (System.Action)(() =>
         {
+            if (!context.CanContinue)
+                return;
             if (completionVisual != null && context.CanContinue)
                 completionVisual.Play(new EffectVisualContext(
                     completionAtOwner && owner != null ? owner.transform.position : targetPosition,
                     Quaternion.identity));
-        }) : null, trackCompletion: completionVisual != null || (parent != null && parent.lifetime != null && parent.lifetime.TracksCompletion));
+            if (!hasCompletionItems || !context.CanContinue)
+                return;
+            Vector3 position = completionItemsAtOwner && owner != null ? owner.transform.position : targetPosition;
+            ItemEffectContext continuation = context.Copy(position, direction);
+            // 현재 scope는 이미 종료됐다. 살아 있는 바깥 scope에 연결해 Then 등도 후속 아이템을 기다린다.
+            continuation.lifetime = parent != null ? parent.lifetime : null;
+            if (completionItems != null)
+                foreach (ItemData item in completionItems)
+                {
+                    if (!context.CanContinue) break;
+                    if (!CanExecuteItemEffect(item) || !continuation.TryBeginCompletionItem(item)) continue;
+                    ExecuteItem(item, position, position, direction, owner, sourceBag, manager, continuation,
+                        completionTriggerSpecialItems, consumeUseBuffs: completionConsumeUseBuffs);
+                }
+        }) : null, trackCompletion: completionVisual != null || hasCompletionItems ||
+            (parent != null && parent.lifetime != null && parent.lifetime.TracksCompletion),
+            cancelOnChildFailure: hasCompletionItems);
         context.lifetime = scope;
         BuffItemUseToken token = manager != null && context.consumeUseBuffs ? manager.BeginItemUse(itemData, sourceBag) : default(BuffItemUseToken);
         bool succeeded = false;
@@ -71,6 +96,14 @@ public class ItemEffectExecutor : MonoBehaviour
         if (itemData == null || itemData.effectDatas == null) return false;
         for (int i = 0; i < itemData.effectDatas.Length; i++)
             if (itemData.effectDatas[i] != null) return true;
+        return false;
+    }
+
+    private static bool HasCompletionItems(ItemData[] items)
+    {
+        if (items != null)
+            foreach (ItemData item in items)
+                if (CanExecuteItemEffect(item)) return true;
         return false;
     }
 }

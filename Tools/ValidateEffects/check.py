@@ -157,7 +157,8 @@ def main():
     effect = ROOT / 'Assets/Script/Items/Effect'
     selected = ('Impliation/IStat.cs', 'Excuter/Data/EffectStatUtility.cs', 'Excuter/Data/EffectExecutionScale.cs',
                 'Excuter/Data/ItemEffectContext.cs', 'Excuter/Data/ItemEffectPlan.cs', 'Excuter/Data/ItemEffectLifetime.cs',
-                'Excuter/Excuter/BagItemCooldownController.cs', 'Impliation/Attack/DamageArea/DamageAreaAttackStat.cs',
+                'Excuter/Excuter/BagItemCooldownController.cs', 'Excuter/Excuter/Throw/ItemEffectExecutor.cs',
+                'Impliation/Attack/DamageArea/DamageAreaAttackStat.cs',
                 'Impliation/Cooldown/ItemCooldownStat.cs', 'Impliation/Cooldown/BagCooldownStat.cs',
                 'Impliation/Buff/Data/Modifier/BuffModifier.cs', 'Impliation/Buff/Data/Modifier/FloatFieldBuffModifier.cs',
                 'Impliation/Buff/Data/BuffModeEnums.cs', 'Impliation/Buff/Data/Resolver/IBuffTarget.cs',

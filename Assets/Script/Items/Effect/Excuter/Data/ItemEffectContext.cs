@@ -172,4 +172,19 @@ public class ItemEffectContext
         if (executingEffects != null)
             executingEffects.Remove(effectData);
     }
+
+    // 종료 후 사용은 같은 실행의 예산을 공유한다. A -> A, A -> B -> A 순환은 실행 전에 막는다.
+    public bool TryBeginCompletionItem(ItemData item)
+    {
+        if (item == null || !CanContinue || executionBudget.remaining <= 0)
+            return false;
+
+        int depth = 0;
+        for (ItemEffectContext ancestor = this; ancestor != null; ancestor = ancestor.executionParent)
+            if (ancestor.sourceItemData == item || ++depth > 64)
+                return false;
+
+        executionBudget.remaining--;
+        return true;
+    }
 }

@@ -25,6 +25,16 @@ public class ItemData : DefaultData
     [Tooltip("끄면 최초 도착 위치, 켜면 종료 순간 소유자의 위치에서 재생합니다.")]
     public bool endVisualAtOwner;
 
+    [Header("Items After Completion")]
+    [Tooltip("모든 효과가 자연 종료하면 지정한 아이템의 효과를 배열 순서로 같은 시점에 자동 사용합니다. 투척/재고/가방 슬롯/쿨다운은 소비하지 않습니다. 자기 자신 또는 상위 실행 아이템은 건너뜁니다.")]
+    public ItemData[] afterCompletionItems;
+    [Tooltip("끄면 최초 도착 위치, 켜면 종료 순간 소유자의 위치에서 후속 아이템을 사용합니다.")]
+    public bool afterCompletionItemsAtOwner;
+    [Tooltip("후속 자동 사용이 횟수제 버프를 소비할지 설정합니다.")]
+    public bool afterCompletionConsumeUseBuffs;
+    [Tooltip("후속 자동 사용으로 특수 아이템 사용 반응을 호출할지 설정합니다.")]
+    public bool afterCompletionTriggerSpecialItems;
+
 
 }
 public enum ItemGrade

@@ -7,6 +7,15 @@ public static class Runner {
  static void True(bool condition){if(!condition)throw new Exception("Assertion failed");}
  static void Eq(float value,float expected){if(Math.Abs(value-expected)>0.00001f)throw new Exception($"Expected {expected}, got {value}");}
  static ItemEffectContext Context()=>new ItemEffectContext(null,null,Vector3.zero,Vector3.right,null);
+ private sealed class CompletionProbe : ItemEffectData {
+  public readonly List<ItemEffectContext> calls=new List<ItemEffectContext>();
+  public bool wait;public Action<ItemEffectContext> onExecute;private ItemEffectLease lease;
+  public override void ExecuteEffect(ItemEffectContext context){calls.Add(context);if(wait)lease=context.RetainLifetime();onExecute?.Invoke(context);}
+  public void Finish(bool succeeded=true){var held=lease;lease=null;if(held!=null)held.Finish(succeeded);}
+ }
+ static ItemData CompletionItem(CompletionProbe effect,params ItemData[] next)=>new ItemData{effectDatas=new ItemEffectData[]{effect},afterCompletionItems=next};
+ static void UseCompletionItem(ItemData item,BuffManager manager=null,ItemEffectContext parent=null,EquipmentBag bag=null)
+  =>ItemEffectExecutor.ExecuteItem(item,Vector3.zero,Vector3.right,Vector3.up,null,bag,manager,parent,triggerSpecialItems:false);
  public static void Main(){
  Check("cooldown seconds clamps at zero",()=>Eq(BagItemCooldownController.ChangeRemaining(3,CooldownOperation.ReduceSeconds,9),0));
  Check("cooldown fraction scales remaining",()=>Eq(BagItemCooldownController.ChangeRemaining(12,CooldownOperation.ReduceFraction,0.25f),9));
@@ -78,6 +87,54 @@ public static class Runner {
   var a=new EquipmentBag();var b=new EquipmentBag();var target=BuffTargetHandle.Bag(a);
   True(target.Matches(BuffQueryContext.ForBag(a)));True(!target.Matches(BuffQueryContext.ForBag(b)));
   True(target.Matches(BuffQueryContext.ForItem(new ItemData(),a)));True(!target.Matches(BuffQueryContext.ForItem(new ItemData(),b)));
+ });
+ Check("completion items wait for all retained effects without an end visual",()=>{
+  var first=new CompletionProbe{wait=true};var second=new CompletionProbe{wait=true};var next=new CompletionProbe();
+  var source=new ItemData{effectDatas=new ItemEffectData[]{first,second},afterCompletionItems=new[]{CompletionItem(next)}};
+  UseCompletionItem(source);True(next.calls.Count==0);first.Finish();True(next.calls.Count==0);second.Finish();True(next.calls.Count==1);second.Finish();True(next.calls.Count==1);
+ });
+ Check("forced child cancellation suppresses completion items",()=>{
+  var first=new CompletionProbe{wait=true};var second=new CompletionProbe{wait=true};var next=new CompletionProbe();
+  var source=new ItemData{effectDatas=new ItemEffectData[]{first,second},afterCompletionItems=new[]{CompletionItem(next)}};
+  UseCompletionItem(source);first.Finish(false);second.Finish();True(next.calls.Count==0);
+ });
+ Check("battle generation reset suppresses completion items",()=>{
+  var hold=new CompletionProbe{wait=true};var next=new CompletionProbe();UseCompletionItem(CompletionItem(hold,CompletionItem(next)));
+  ItemEffectRuntime.CancelAll();hold.Finish();True(next.calls.Count==0);
+ });
+ Check("completion item list is captured before the source runs",()=>{
+  var hold=new CompletionProbe{wait=true};var next=new CompletionProbe();var replacement=new CompletionProbe();var source=CompletionItem(hold,CompletionItem(next));
+  UseCompletionItem(source);source.afterCompletionItems[0]=CompletionItem(replacement);hold.Finish();True(next.calls.Count==1&&replacement.calls.Count==0);
+ });
+ Check("completion self and indirect cycles stop before using an ancestor again",()=>{
+  var recordA=new CompletionProbe();var recordB=new CompletionProbe();var a=CompletionItem(recordA);var b=CompletionItem(recordB);
+  a.afterCompletionItems=new[]{a,b};b.afterCompletionItems=new[]{a};UseCompletionItem(a);True(recordA.calls.Count==1&&recordB.calls.Count==1);
+ });
+ Check("completion siblings can repeat while null and empty items are skipped",()=>{
+  var next=new CompletionProbe();var target=CompletionItem(next);UseCompletionItem(CompletionItem(new CompletionProbe(),null,new ItemData(),target,target));True(next.calls.Count==2);
+ });
+ Check("outer lifetime waits for asynchronous completion item chains",()=>{
+  var b=new CompletionProbe{wait=true};var c=new CompletionProbe{wait=true};int finished=0;var outer=new ItemEffectLifetime(onCompleted:()=>finished++,cancelOnChildFailure:true);
+  var parent=Context();parent.lifetime=outer;UseCompletionItem(CompletionItem(new CompletionProbe(),CompletionItem(b,CompletionItem(c))),parent:parent);
+  outer.Close();True(finished==0);b.Finish();True(finished==0&&c.calls.Count==1);c.Finish();True(finished==1);
+ });
+ Check("completion visual starts before followup item use",()=>{
+  var order=new List<int>();var next=new CompletionProbe{onExecute=context=>order.Add(2)};var source=CompletionItem(new CompletionProbe(),CompletionItem(next));
+  source.endVisualData=new EffectVisualData{played=()=>order.Add(1)};UseCompletionItem(source);True(order.Count==2&&order[0]==1&&order[1]==2);
+ });
+ Check("automatic completion item use defaults avoid consuming buffs or triggering specials",()=>{
+  var manager=new BuffManager();var next=new CompletionProbe();var source=CompletionItem(new CompletionProbe(),CompletionItem(next));var previous=SpecialItemManager.Instance;
+  try{SpecialItemManager.Instance=new SpecialItemManager();UseCompletionItem(source,manager);True(manager.begunUses==1&&manager.endedUses==1&&SpecialItemManager.Instance.calls==0);True(!next.calls[0].consumeUseBuffs);
+   source.afterCompletionConsumeUseBuffs=true;source.afterCompletionTriggerSpecialItems=true;UseCompletionItem(source,manager);True(manager.begunUses==3&&manager.endedUses==3&&SpecialItemManager.Instance.calls==1);}
+  finally{SpecialItemManager.Instance=previous;}
+ });
+ Check("completion item preserves bag direction and scale but uses its own item identity",()=>{
+  var next=new CompletionProbe();var target=CompletionItem(next);var source=CompletionItem(new CompletionProbe(),target);var bag=new EquipmentBag();var parent=Context();parent.damageMultiplier=1.5f;
+  UseCompletionItem(source,parent:parent,bag:bag);var actual=next.calls[0];True(ReferenceEquals(actual.sourceItemData,target)&&ReferenceEquals(actual.sourceBag,bag));Eq(actual.usePosition.x,1);Eq(actual.targetPosition.x,1);Eq(actual.direction.y,1);Eq(actual.damageMultiplier,1.5f);
+ });
+ Check("long completion chains stop at the execution depth limit",()=>{
+  var probes=new List<CompletionProbe>();ItemData next=null;for(int i=0;i<100;i++){var probe=new CompletionProbe();probes.Add(probe);next=CompletionItem(probe,next);}
+  UseCompletionItem(next);int calls=0;foreach(var probe in probes)calls+=probe.calls.Count;True(calls>0&&calls<100);
  });
  Check("scope waits for retained child",()=>{int done=0;var s=new ItemEffectLifetime(onCompleted:()=>done++);var l=s.Retain();s.Close();True(done==0);l.Finish();True(done==1);l.Finish();True(done==1);});
  Check("scope cancellation suppresses completion",()=>{int done=0;var s=new ItemEffectLifetime(onCompleted:()=>done++);var l=s.Retain();s.Close();l.Cancel();True(done==0&&s.IsCancelled);});

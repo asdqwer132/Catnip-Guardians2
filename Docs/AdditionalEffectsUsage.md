@@ -641,6 +641,22 @@ Attack Prefab을 비우면 기본 부채꼴 판정 오브젝트를 생성한다.
 
 **End Visual Data**는 효과와 하위 효과가 실제로 끝난 뒤의 연출이다. 일반 시작·명중 그림과 따로 설정한다. 취소에는 재생하지 않는다. 명중 연출의 **Follow Target**은 살아 있는 명중 적을 따라가며, 공격 반경으로 크기를 확대하지 않는다.
 
+### 아이템 전체 종료 후 다른 아이템 자동 사용
+
+설정 위치는 개별 효과 에셋이 아닌 **원본 ItemData**다.
+
+1. 먼저 사용할 아이템 A의 ItemData를 선택한다.
+2. **Items After Completion → After Completion Items** 목록에 다음에 사용할 아이템 B의 **ItemData 에셋**을 넣는다. EffectData 에셋을 넣는 칸이 아니다.
+3. **After Completion Items At Owner**를 끄면 A의 최초 도착 위치에서, 켜면 A가 끝난 순간 소유자의 위치에서 B를 사용한다. 방향은 A의 실행 방향을 이어받는다.
+4. 기본 설정으로 B는 재고·가방 슬롯·쿨다운을 소비하지 않고 효과를 자동 실행한다. **After Completion Consume Use Buffs**를 켜면 횟수제 버프를 소비하고, **After Completion Trigger Special Items**를 켜면 특수 아이템의 사용 반응도 호출한다. 상위 자동 실행에서 횟수 소비를 껐다면 하위 실행도 소비하지 않는다.
+5. A의 투척·소환·버프·하위 공격이 모두 자연 종료할 때 B를 한 번 사용한다. **End Visual Data**를 비워도 동작한다. 지정한 종료 비주얼을 먼저 재생하고 같은 프레임에 B를 실행한다. 종료 비주얼의 애니메이션 길이는 대기 시간에 포함하지 않는다.
+
+예를 들어 `Food3`(따뜻한 수프)의 After Completion Items에 `Food25`(케이크)를 넣으면 수프의 5초 회복 효과까지 끝난 뒤 케이크의 회복 효과를 실행한다. 이 설정은 자동 연결하지 않았으므로 원하는 ItemData에 직접 지정한다.
+
+목록이 여러 개면 배열 순서로 같은 시점에 실행한다. **B가 끝난 뒤 C를 사용**하려면 A의 목록에는 B만 넣고 B의 After Completion Items에 C를 넣는다. A를 Then Effects 안에서 사용하면 바깥 Then도 B·C의 후속 효과까지 기다린다.
+
+강제 비활성화·취소·전투 초기화에는 후속 아이템을 사용하지 않는다. 종료되지 않는 무한 버프나 소환 효과가 남아 있으면 계속 기다린다. 비어 있는 ItemData, 자기 자신, `A → B → A` 같은 순환과 너무 긴 실행 경로는 건너뛴다.
+
 장판의 지속 표시에는 **Area Visual Prefab** 또는 Area Definition의 **Visual Prefab**을, 이동 투사체에는 **Projectile Visual Prefab / Projectile Sprite**를 사용한다. Visual Data 하나를 넣는다고 장판 수명 내내 표시되거나 투사체를 따라 움직이는 것은 아니다.
 
 ## 18. 작동하지 않을 때 확인할 것
@@ -667,6 +683,7 @@ Attack Prefab을 비우면 기본 부채꼴 판정 오브젝트를 생성한다.
 | 회복속도 버프가 안 적용됨 | Field Name = cooldownRecoveryRate; PlayerStat이면 Group = Player, ItemCooldownStat이면 아이템 대상; 선택 가방만 시간이 진행됨 |
 | 상자에서 일부 결과가 아무것도 안 함 | 추첨 후보 ItemData의 Effect Datas가 비어 있는지 |
 | 종료 후 효과가 안 나옴 | 자연 종료인지 강제 취소인지, 끝나지 않은 하위 효과가 있는지 |
+| 종료 후 아이템이 안 나옴 | 원본 ItemData의 After Completion Items에 유효한 ItemData를 넣었는지; 무한 지속·강제 취소·자기 참조·순환 경로 |
 | Create 메뉴가 없거나 Missing Script | Console 컴파일 오류, 코드와 `.meta`를 함께 가져왔는지 |
 
 ## 19. 확인·저장·Git에 올리기
@@ -676,7 +693,7 @@ Attack Prefab을 비우면 기본 부채꼴 판정 오브젝트를 생성한다.
 1. 기존 전투 씬과 아이템 사용 흐름에서 해당 ItemData를 사용한다.
 2. 식물 회복은 HP 변화, 공격은 적 HP·처치, 상태는 등록·만료, 쿨다운은 남은 시간으로 확인한다.
 3. 여러 적, 적 한 명, 대상 없음, 효과 중 전투 초기화 상황을 확인한다.
-4. **Window → General → Test Runner → EditMode**에서 `CombatEffectTests`, `Additional*Tests`, `BuffTargetInspectorTests`를 실행한다. 버프 대상의 선택·적용·해제·재사용 검사는 `AdditionalBuffTargetTests`, 아이템/가방 쿨다운의 분리·만료·진행률 검사는 `AdditionalCooldownBuffTests`에 있다.
+4. **Window → General → Test Runner → EditMode**에서 `CombatEffectTests`, `Additional*Tests`, `BuffTargetInspectorTests`를 실행한다. 버프 대상 검사는 `AdditionalBuffTargetTests`, 쿨다운 검사는 `AdditionalCooldownBuffTests`, 종료 후 아이템 사용의 대기·취소·순환·위치 검사는 `AdditionalItemCompletionTests`에 있다.
 5. 플레이 모드를 끝내고 설정을 저장한다. 플레이 중 바꾼 Inspector 값이 영구 설정으로 남았다고 가정하지 말고 에셋을 다시 확인한다.
 
 새 `.asset`과 `.meta`를 함께 Git에 올린다. 예를 들어 위 두 폴더와 기존 ItemData/공격 에셋을 수정했다면 프로젝트 루트에서 다음처럼 올린다.
