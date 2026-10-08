@@ -1,32 +1,41 @@
 using UnityEngine;
 using static UnityEditor.Progress;
+
+[System.Serializable]
+public class TestItemList
+{
+
+}
 [System.Serializable]
 public class TestItem
 {
 
     [Header("Item")]
     public bool isUse = true;
-    public ItemData item;
+    public ItemData[] item;
 
     [Header("Bag")]
     public EquipmentBag targetBagData;
 }
 public class ItemTester : MonoBehaviour
 {
-    public TestItem[] items;
+    public TestItem[] itemss;
     public void Init()
     {
-        foreach (var test in items)
+        foreach (var items in itemss)
         {
-            if (test.isUse)
+            foreach (var test in items.item)
             {
-                foreach (var equip in test.targetBagData.equippedItems)
+                if (items.isUse)
                 {
-                    if (equip.amount == 0)
+                    foreach (var equip in items.targetBagData.equippedItems)
                     {
-                        equip.itemData = test.item;
-                        equip.amount = 1;
-                        break;
+                        if (equip.amount == 0)
+                        {
+                            equip.itemData = test;
+                            equip.amount = 1;
+                            break;
+                        }
                     }
                 }
             }

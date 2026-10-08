@@ -12882,19 +12882,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bf1de6367470f24a83c88aa48aabe4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemTester
-  items:
-  - isUse: 1
-    item: {fileID: 11400000, guid: a3f19b37e7f4bda4eb2b0a2d70bc76e1, type: 2}
-    targetBagData: {fileID: 166470119}
-  - isUse: 1
-    item: {fileID: 11400000, guid: c35f8ce1185f1e640a56eeef602a173d, type: 2}
-    targetBagData: {fileID: 166470119}
+  itemss:
   - isUse: 0
-    item: {fileID: 11400000, guid: 0c2942638fad53249ae356da3bbeab37, type: 2}
+    item:
+    - {fileID: 11400000, guid: 5865985a9d6396643b29abcc8a2482a0, type: 2}
+    - {fileID: 11400000, guid: ce1c82f98da4f1e4d835d49018657ff8, type: 2}
+    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
     targetBagData: {fileID: 166470119}
   - isUse: 1
-    item: {fileID: 11400000, guid: c35f8ce1185f1e640a56eeef602a173d, type: 2}
-    targetBagData: {fileID: 332667247}
+    item:
+    - {fileID: 11400000, guid: 5865985a9d6396643b29abcc8a2482a0, type: 2}
+    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
+    targetBagData: {fileID: 166470119}
 --- !u!1 &907073005
 GameObject:
   m_ObjectHideFlags: 0

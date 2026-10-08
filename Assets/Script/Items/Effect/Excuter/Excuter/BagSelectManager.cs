@@ -40,7 +40,6 @@ public class BagSelectManager : MonoBehaviour
 
     public void Init()
     {
-        Debug.Log("asd");
         RefreshUI();
         SelectBag(currentBagIndex);
     }
@@ -58,7 +57,6 @@ public class BagSelectManager : MonoBehaviour
 
     public void SelectBag(int index)
     {
-        Debug.Log(index);
         if (bagUseManagers == null || bagUseManagers.Length == 0)
         {
             Debug.LogWarning("등록된 가방 매니저가 없습니다.");
