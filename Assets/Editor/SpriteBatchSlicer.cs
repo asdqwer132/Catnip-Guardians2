@@ -14,7 +14,7 @@ public class SpriteBatchSlicer : EditorWindow
 
     private bool skipEmptySlices = true;
 
-    [MenuItem("Tools/Sprite/Batch Slice Custom")]
+    [MenuItem("Tools/Utility/Sprite/Batch Slice Custom")]
     public static void Open()
     {
         GetWindow<SpriteBatchSlicer>("Sprite Batch Slicer");

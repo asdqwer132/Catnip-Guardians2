@@ -11,16 +11,25 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6140339cc2364a67859b45b814f6a8c9, type: 3}
   m_Name: WarmSoup_Heal15
-  m_EditorClassIdentifier:
+  m_EditorClassIdentifier: 
   conditionMode: 0
   conditions: []
   visualData: {fileID: 0}
+  impactVfxPrefab: {fileID: 0}
+  impactBaseScale: {x: 1, y: 1, z: 1}
+  scaleImpactVfxByRadius: 1
+  useAnimatorClipLifeTime: 1
+  audioSource: 
+  impactVfxLifeTime: 1
   endVisualData: {fileID: 0}
   targets:
     target: 0
     useRadius: 0
     radius: 5
     center: 0
+    shape: 0
+    width: 0.4
+    length: 5
     sameOwnerOnly: 1
     maximumTargets: 128
   kind: 0

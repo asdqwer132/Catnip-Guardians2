@@ -213,6 +213,32 @@ public sealed class CombatEffectTests
         Assert.That(specials.calls.Count, Is.EqualTo(0));
     }
 
+    // 테스트 중 생성된 지면 오브젝트만 추적한다.
+    // Resources.FindObjectsOfTypeAll은 비활성 객체와 에셋까지 포함하므로 씬에 속한 것만 남긴다.
+    private static HashSet<ReactiveGroundArea> SnapshotSceneGroundAreas()
+    {
+        HashSet<ReactiveGroundArea> result = new HashSet<ReactiveGroundArea>();
+        foreach (ReactiveGroundArea area in Resources.FindObjectsOfTypeAll<ReactiveGroundArea>())
+        {
+            if (area == null)
+                continue;
+
+            GameObject obj = area.gameObject;
+            if (obj.scene.IsValid() && obj.scene.isLoaded)
+                result.Add(area);
+        }
+        return result;
+    }
+
+    private void TrackNewSceneGroundAreas(HashSet<ReactiveGroundArea> before)
+    {
+        foreach (ReactiveGroundArea area in SnapshotSceneGroundAreas())
+        {
+            if (!before.Contains(area) && !owned.Contains(area.gameObject))
+                owned.Add(area.gameObject);
+        }
+    }
+
     [Test]
     public void GroundCreatedByLandingDoesNotReactToThatSameLanding()
     {
@@ -223,10 +249,17 @@ public sealed class CombatEffectTests
         ground.specialEffects = new ItemEffectData[] { specials };
         ItemData item = Asset<ItemData>();
         item.effectDatas = new ItemEffectData[] { ground };
-        HashSet<ReactiveGroundArea> existing = new HashSet<ReactiveGroundArea>(Object.FindObjectsByType<ReactiveGroundArea>(FindObjectsSortMode.None));
-        ItemEffectExecutor.ExecuteItem(item, Vector3.zero, Vector3.zero, Vector3.right, null, null, null, triggerSpecialItems: false, isThrownItem: true);
-        ReactiveGroundArea[] areas = Object.FindObjectsByType<ReactiveGroundArea>(FindObjectsSortMode.None);
-        foreach (ReactiveGroundArea area in areas) if (!existing.Contains(area)) owned.Add(area.gameObject);
+        HashSet<ReactiveGroundArea> existing = SnapshotSceneGroundAreas();
+        try
+        {
+            ItemEffectExecutor.ExecuteItem(item, Vector3.zero, Vector3.zero, Vector3.right,
+                null, null, null, triggerSpecialItems: false, isThrownItem: true);
+        }
+        finally
+        {
+            // 실행 중 예외가 발생하더라도 생성된 테스트 오브젝트를 TearDown에서 정리한다.
+            TrackNewSceneGroundAreas(existing);
+        }
         Assert.That(defaults.calls.Count, Is.EqualTo(1));
         Assert.That(specials.calls.Count, Is.EqualTo(0));
     }

@@ -23,10 +23,16 @@ MonoBehaviour:
   impactVfxLifeTime: 1
   endVisualData: {fileID: 0}
   steps:
-  - items:
-    - {fileID: 11400000, guid: f17e606fbe7103e4ca3f726834004005, type: 2}
-    - {fileID: 11400000, guid: f17e606fbe7103e4ca3f726834004005, type: 2}
-    - {fileID: 11400000, guid: f17e606fbe7103e4ca3f726834004005, type: 2}
+  - entries:
+    - item: {fileID: 11400000, guid: 0cc59d794443a844aa710122e4cb9d84, type: 2}
+      count: 1
+    items: []
+    onImpactEffects: []
+    effectOnlyCount: 1
+    overridePlacement: 0
+    placement: 0
+    travelMode: 0
+    impactTrigger: 0
     intervalAfter: 1
   selection: 0
   repeatStat:
@@ -37,14 +43,28 @@ MonoBehaviour:
     itemRepeatSideOffset: 0
     itemRepeatRadius: 1
     itemRepeatSpreadAngle: 120
-    itemRepeatDirectionAngle: 120
-  placement: 3
+    itemRepeatDirectionAngle: 0
+    itemRepeatProjectileCountMultiplier: 1
+    itemRepeatFlightTime: 0.3
+    itemRepeatArcHeight: 0.8
+    itemRepeatBombDelay: 0
+    itemRepeatBombLifetime: 5
+    itemRepeatTriggerRadius: 0.5
+  placement: 1
   directionMode: 0
   fixedWorldDirection: {x: 1, y: 0}
   startPosition: 0
   throwItems: 1
   projectilePrefab: {fileID: 2153336256934016628, guid: 7d27764ab7c84ac489fdc540376ba873, type: 3}
+  projectileSprite: {fileID: 0}
   showTargetRange: 1
   targetRangeIndicatorPrefab: {fileID: 7885248462748341646, guid: f3f56727797bdb640b4b975b776cdacd, type: 3}
   triggerSpecialItemsForChildren: 0
+  overrideProjectileMotion: 0
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  firstStepAtOrigin: 0
+  onStartEffects: []
+  afterLastImpactEffects: []
   items: []

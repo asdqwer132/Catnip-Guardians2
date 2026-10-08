@@ -35,10 +35,20 @@ public static class BuffTargetGroupCatalog
             }
 
             // Unity 6000 지원 API. 정렬 없이 비활성 씬 대상도 포함한다.
-            foreach (MonoBehaviour component in UnityEngine.Object.FindObjectsByType<MonoBehaviour>(
-                FindObjectsInactive.Include, FindObjectsSortMode.None))
-                if (component is IBuffTarget target) AddGroup(groups, target.BuffTargetGroup);
+            foreach (MonoBehaviour component in
+             Resources.FindObjectsOfTypeAll<MonoBehaviour>())
+            {
+                if (component == null ||
+                    EditorUtility.IsPersistent(component) ||
+                    !component.gameObject.scene.IsValid() ||
+                    !component.gameObject.scene.isLoaded ||
+                    UnityEditor.SceneManagement.EditorSceneManager
+                        .IsPreviewSceneObject(component.gameObject))
+                    continue;
 
+                if (component is IBuffTarget target)
+                    AddGroup(groups, target.BuffTargetGroup);
+            }
             cached = new string[groups.Count];
             groups.CopyTo(cached);
             lastRefresh = EditorApplication.timeSinceStartup;

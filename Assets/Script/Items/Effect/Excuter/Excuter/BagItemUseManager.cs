@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BagItemUseManager : MonoBehaviour
+public class BagItemUseManager : MonoBehaviour, IDynamicBuffReceiver
 {
     [Header("Bag")]
     public EquipmentBag bag;
@@ -42,6 +42,11 @@ public class BagItemUseManager : MonoBehaviour
     {
         Init();
     }
+    
+    void Start()
+    {
+        BuffManager.instance.RegisterDynamicBuffReceiver(this);
+    }
 
     public BagData GetBagData()
     {
@@ -59,7 +64,6 @@ public class BagItemUseManager : MonoBehaviour
     public void Init()
     {
         if (cooldownOwner == null) cooldownOwner = GetComponentInParent<Player>();
-        if (cooldownOwner == null) cooldownOwner = FindFirstObjectByType<Player>();
         if (throwExecutor == null)
             throwExecutor = GetComponent<ItemThrowExecutor>();
 
@@ -367,5 +371,32 @@ public class BagItemUseManager : MonoBehaviour
             bag,
             slotIndex
         );
+    }
+
+    public void OnDynamicBuffChanged()
+    {
+        if (bag == null || bag.equippedItems == null)
+            return;
+
+        SyncControllers();
+
+        // 가방 쿨타임 재계산
+        cooldownController.RecalculateBagCooldown(
+            GetBagCooldown()
+        );
+
+        // 각 슬롯의 쿨타임 재계산
+        for (int i = 0; i < bag.equippedItems.Count; i++)
+        {
+            ItemData item = bag.equippedItems[i]?.itemData;
+
+            if (item == null)
+                continue;
+
+            cooldownController.RecalculateSlotCooldown(
+                i,
+                GetItemCooldown(item)
+            );
+        }
     }
 }

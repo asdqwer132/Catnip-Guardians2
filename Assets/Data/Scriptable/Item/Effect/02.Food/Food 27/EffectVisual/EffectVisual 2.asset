@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 286f61051a956b84d8951a8358b100a1, type: 3}
+  m_Name: EffectVisual 2
+  m_EditorClassIdentifier: Assembly-CSharp::EffectVisualData
+  impactVfxPrefab: {fileID: 7370820554304283871, guid: 6bb8e448b33213a4a8e2504f77930ae6, type: 3}
+  impactBaseScale: {x: 1, y: 1, z: 1}
+  scaleImpactVfxByRadius: 1
+  attachParticlesToFollowTarget: 1
+  useAnimatorClipLifeTime: 1
+  impactVfxLifeTime: 1
+  audioSource: 
+  prewarmCount: 0
+  debugLog: 0

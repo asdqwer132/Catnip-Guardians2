@@ -262,6 +262,54 @@ public class BagItemCooldownController
         return Mathf.Clamp01(GetSlotCooldownRemain(slotIndex) / cooldown);
     }
 
+    public void RecalculateBagCooldown(float newCooldown)
+    {
+        newCooldown = EffectStatUtility.Safe(
+            newCooldown, 0f, 1000000f, 0f);
+
+        if (bagCooldownRemain <= 0f)
+            return;
+
+        // 기존 전체 쿨타임과 새로운 쿨타임의 차이만 적용
+        float difference = newCooldown - bagCooldownDuration;
+
+        bagCooldownRemain = Mathf.Max(
+            0f,
+            bagCooldownRemain + difference
+        );
+
+        // bagCooldownDuration은 변경하지 않음
+    }
+
+    public void RecalculateSlotCooldown(int slotIndex, float newCooldown)
+    {
+        if (slotCooldownRemains == null ||
+            slotCooldownDurations == null ||
+            slotPreparationStarted == null)
+            return;
+
+        if (slotIndex < 0 || slotIndex >= slotCooldownRemains.Length)
+            return;
+
+        if (!slotPreparationStarted[slotIndex])
+            return;
+
+        if (slotCooldownRemains[slotIndex] <= 0f)
+            return;
+
+        newCooldown = EffectStatUtility.Safe(
+            newCooldown, 0f, 1000000f, 0f);
+
+        float difference =
+            newCooldown - slotCooldownDurations[slotIndex];
+
+        slotCooldownRemains[slotIndex] = Mathf.Max(
+            0f,
+            slotCooldownRemains[slotIndex] + difference
+        );
+
+        // slotCooldownDurations은 변경하지 않음
+    }
     private void ClearSlotCooldowns()
     {
         if (slotCooldownRemains == null)

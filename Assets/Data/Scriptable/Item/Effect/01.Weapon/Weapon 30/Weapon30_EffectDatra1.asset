@@ -21,8 +21,10 @@ MonoBehaviour:
   useAnimatorClipLifeTime: 1
   audioSource: 
   impactVfxLifeTime: 1
+  endVisualData: {fileID: 0}
   targetResolver: {fileID: 11400000, guid: f3ff37221a9bf2f43a5ee69b82a95df8, type: 2}
   buffInfo:
+    statusDefinition: {fileID: 0}
     stackMode: 0
     maxStack: 1
     applyTiming: 0
@@ -32,6 +34,23 @@ MonoBehaviour:
     useCountConsumeMode: 0
     consumeItems: []
   includeSelf: 0
+  buffIcon: {fileID: 0}
   showInUI: 1
   modifiers:
-  - {fileID: 11400000, guid: 0a125301d346e5a409c02f93d6ade42c, type: 2}
+  - {fileID: 5944442224200532080}
+--- !u!114 &5944442224200532080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57bb8c5d3dc35cf4db784fd698670410, type: 3}
+  m_Name: Weapon30_BuffModifier Copy
+  m_EditorClassIdentifier: Assembly-CSharp::FloatFieldBuffModifier
+  targetStatTypeName: StatusStat
+  fieldName: statStar
+  addValue: 1
+  multiplyValue: 0

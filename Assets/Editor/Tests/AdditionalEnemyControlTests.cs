@@ -237,7 +237,7 @@ public sealed class AdditionalEnemyControlTests
         effect.duration = 2f;
         effect.targets = TimeStopTargets.EnemyActions;
         effect.ExecuteEffect(context);
-        TimeStopRunner runner = Object.FindFirstObjectByType<TimeStopRunner>();
+        TimeStopRunner runner = Object.FindAnyObjectByType<TimeStopRunner>();
         owned.Add(runner.gameObject);
         scope.Close();
         Assert.That(runner.RemainingTime, Is.EqualTo(4f));

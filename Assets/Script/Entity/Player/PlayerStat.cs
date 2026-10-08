@@ -4,6 +4,7 @@ using UnityEngine;
 [Serializable]
 public class PlayerStat : IGameStat<PlayerStat>
 {
+
     [Header("Move")]
     [Min(0f)] public float moveSpeed = 5f;
     [Min(0f)] public float maxMoveSpeed = 10f;
