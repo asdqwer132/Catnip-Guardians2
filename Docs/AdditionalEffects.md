@@ -23,6 +23,7 @@ Unity Inspector에서 에셋을 만들고 아이템에 연결하는 순서는 [�
 | 지속 회복 | `RegenerationEffect` | 회복량·간격·지속·첫 회복 시점 설정 |
 | 방어·보호막 | `Health`, `ShieldEffect` | Health의 방어 공식 선택; 보호막 흡수 후 남은 HP 차감 |
 | 쿨다운 | `CooldownControlEffect`, `ItemTagDefinition` | 지정 가방·아이템·시리즈·하위 태그의 남은 시간 감소/비율 감소/준비 완료 |
+| 지속 쿨다운 버프 | `ItemCooldownStat`, `BagCooldownStat`, 전체 아이템/가방 대상 설정 | 기본 시간의 고정 초 감소, 독립적인 회복속도·지속 시간·중첩 |
 | 명중 위치 후속 실행 | `ExecuteEffectOnHitData` | 공격의 On Hit Effects에 연결; 처치된 타격에서도 위치 기반 효과 실행 |
 | 공통 대상 선택 | `TargetSelection` | 최근접/최원거리/현재 HP 최대/무작위/강적 우선 |
 | 선택 대상/전체 적에 명중 효과 | `ApplyHitEffectsEffect` | 전체 기절이나 처형 등 기존 HitEffectData를 선택 결과에 직접 적용 |
@@ -43,7 +44,7 @@ Project 창의 **Create → GameData → Items → Effects / Hit Effects / Condi
 
 ## 바로 열어볼 예제 에셋
 
-`Assets/Data/AdditionalEffectsExamples`에 21개 에셋을 넣었다. 기존 아이템의 `Effect Datas` 또는 공격의 `On Hit Effects`에 연결해 확인할 수 있다.
+`Assets/Data/AdditionalEffectsExamples`에 기존 예제 21개와 `CooldownBuffs`의 설정 10개를 넣었다. 기존 아이템의 `Effect Datas` 또는 공격의 `On Hit Effects`에 연결해 확인할 수 있다. 쿨다운 폴더는 전체 아이템/가방 대상 2개, Modifier 4개, 5초 BuffEffect 4개로 구성된다.
 
 `Assets/Data/AdditionalEffects`에는 CSV 수치로 구성한 에셋 28개가 있다. 따뜻한 수프·꿀단지·케이크·우유, 청록고등어·새우·전기뱀방어·잉어, 속성 스태프3·마법사의 상자·타이무 스토쁘, 무지개 광맥/축복·심연 포션·두 모자의 분기 등 기존 Effect Datas가 비어 있던 16개 ItemData에 연결했다. 정확한 목록은 `Docs/AdditionalEffectsConfiguration.json`에 있다.
 
@@ -84,7 +85,9 @@ LED처럼 사용 전 상태를 기준으로 분기하려면 `Freeze Branch At Pr
 - `Health.defenseFormula` 기본값은 None이다. Flat Reduction 또는 Percent Reduction은 기획의 방어 공식을 선택해 사용한다. HealthStat의 defense 수치가 실제 피해 계산에 연결된다.
 - 최대 HP 버프는 기본 최대 HP와 현재 HP를 분리해 반복 갱신 때 중첩 계산하지 않는다. 최대 HP 증가 시 유지/증가량만큼 회복/비율 유지 정책을 선택할 수 있다.
 - 쿨다운 Ready는 슬롯의 준비 완료 상태를 유지한다. 기존 Reset처럼 다음 사용에 초기 준비 대기를 다시 시작하지 않는다.
-- 쿨다운 회복속도 버프는 `PlayerStat.cooldownRecoveryRate`를 조정한다. 1.2는 20% 빠른 회복이고 가방/슬롯 시계에 실제 적용된다.
+- 아이템 쿨다운은 `ItemCooldownStat.cooldown`, 회복속도는 `ItemCooldownStat.cooldownRecoveryRate`를 조정한다. 기존 `PlayerStat.cooldownRecoveryRate`도 아이템 시계에만 적용하며, 아이템별 속도와 곱해진다.
+- 가방 공통 쿨다운은 `BagCooldownStat.cooldown`, 회복속도는 `BagCooldownStat.cooldownRecoveryRate`를 조정한다. 전체 가방 조회를 전체 아이템 조회와 분리해 다른 종류의 버프가 섞이지 않는다.
+- 기본 시간은 준비 시작 시 확정하고 버프 만료 후 새 준비부터 복원한다. 진행 중인 회복속도는 현재 버프를 조회한다. 원본 데이터는 수정하지 않으며 UI는 시작할 때의 총 시간을 사용한다.
 - 아군 관통 회복은 HealthChangeEffect의 Targets를 All Allies, Use Radius를 켜고 Shape를 Directional Rectangle로 지정한다. 방향과 시작 위치를 기존 광선 공격과 공유한다.
 - 작은뼈/곤충날개는 Item Tag 에셋을 만들어 해당 ItemData에 연결한다. Monster 전체 시리즈로 대체하지 않는다.
 - 지연 쿨다운 조작은 사용 당시 설정을 복사하고 전투 초기화 시 취소한다.

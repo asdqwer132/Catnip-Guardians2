@@ -5,7 +5,9 @@ public class BagItemCooldownController
 {
     private float bagCooldown = 3f;
     private float bagCooldownRemain = 0f;
+    private float bagCooldownDuration;
     private float[] slotCooldownRemains;
+    private float[] slotCooldownDurations;
     private bool[] slotPreparationStarted;
 
     // 준비 상태를 지우는 Reset과 다르다. 게임 효과는 다음 사용을 준비 완료로 만든다.
@@ -42,6 +44,7 @@ public class BagItemCooldownController
     public void Init(int slotCount)
     {
         bagCooldownRemain = 0f;
+        bagCooldownDuration = 0f;
 
         SyncSlotCount(slotCount);
         ClearSlotCooldowns();
@@ -50,7 +53,7 @@ public class BagItemCooldownController
 
     public void SetBagCooldown(float value)
     {
-        bagCooldown = Mathf.Max(0f, value);
+        bagCooldown = EffectStatUtility.Safe(value, 0f, 1000000f, 0f);
     }
 
     public void SyncSlotCount(int slotCount)
@@ -60,6 +63,9 @@ public class BagItemCooldownController
 
         if (slotCooldownRemains == null)
             slotCooldownRemains = new float[slotCount];
+
+        if (slotCooldownDurations == null)
+            slotCooldownDurations = new float[slotCount];
 
         if (slotPreparationStarted == null)
             slotPreparationStarted = new bool[slotCount];
@@ -85,16 +91,34 @@ public class BagItemCooldownController
 
             slotPreparationStarted = newSlotPreparationStarted;
         }
+
+        if (slotCooldownDurations.Length != slotCount)
+        {
+            float[] newSlotCooldownDurations = new float[slotCount];
+            int copyCount = Mathf.Min(slotCooldownDurations.Length, newSlotCooldownDurations.Length);
+            for (int i = 0; i < copyCount; i++)
+                newSlotCooldownDurations[i] = slotCooldownDurations[i];
+            slotCooldownDurations = newSlotCooldownDurations;
+        }
     }
 
-    public void TickCooldown(float deltaTime)
+    public void TickCooldown(float deltaTime, float itemRecoveryRate = 1f, float bagRecoveryRate = 1f)
+        => TickCooldownInternal(deltaTime, itemRecoveryRate, null, bagRecoveryRate);
+
+    public void TickCooldown(float deltaTime, System.Func<int, float> getItemRecoveryRate, float bagRecoveryRate = 1f)
+        => TickCooldownInternal(deltaTime, 1f, getItemRecoveryRate, bagRecoveryRate);
+
+    private void TickCooldownInternal(float deltaTime, float itemRecoveryRate,
+        System.Func<int, float> getItemRecoveryRate, float bagRecoveryRate)
     {
+        deltaTime = EffectStatUtility.Safe(deltaTime, 0f, 1000000f, 0f);
         if (deltaTime <= 0f)
             return;
 
         if (bagCooldownRemain > 0f)
         {
-            bagCooldownRemain -= deltaTime;
+            bagRecoveryRate = EffectStatUtility.Safe(bagRecoveryRate, 0f, 100f, 1f);
+            bagCooldownRemain -= deltaTime * bagRecoveryRate;
 
             if (bagCooldownRemain < 0f)
                 bagCooldownRemain = 0f;
@@ -108,7 +132,9 @@ public class BagItemCooldownController
             if (slotCooldownRemains[i] <= 0f)
                 continue;
 
-            slotCooldownRemains[i] -= deltaTime;
+            float rate = getItemRecoveryRate != null ? getItemRecoveryRate(i) : itemRecoveryRate;
+            rate = EffectStatUtility.Safe(rate, 0f, 100f, 1f);
+            slotCooldownRemains[i] -= deltaTime * rate;
 
             if (slotCooldownRemains[i] < 0f)
                 slotCooldownRemains[i] = 0f;
@@ -118,6 +144,7 @@ public class BagItemCooldownController
     public void ResetAllCooldowns(int slotCount)
     {
         bagCooldownRemain = 0f;
+        bagCooldownDuration = 0f;
 
         SyncSlotCount(slotCount);
         ClearSlotCooldowns();
@@ -133,8 +160,16 @@ public class BagItemCooldownController
 
     public void StartPreparationCooldownIfNeeded(int slotIndex, ItemData item)
     {
-        if (item == null)
-            return;
+        if (item != null)
+            StartPreparationCooldownIfNeeded(slotIndex, item.Cooldown);
+    }
+
+    public bool HasStartedPreparation(int slotIndex)
+        => slotPreparationStarted != null && slotIndex >= 0 &&
+           slotIndex < slotPreparationStarted.Length && slotPreparationStarted[slotIndex];
+
+    public void StartPreparationCooldownIfNeeded(int slotIndex, float cooldown)
+    {
         if (slotPreparationStarted == null)
             return;
         if (slotIndex < 0 || slotIndex >= slotPreparationStarted.Length)
@@ -142,17 +177,24 @@ public class BagItemCooldownController
         if (slotPreparationStarted[slotIndex])
             return;
 
-        float cooldown = Mathf.Max(0f, item.Cooldown);
+        cooldown = EffectStatUtility.Safe(cooldown, 0f, 1000000f, 0f);
 
         if (slotCooldownRemains != null && slotIndex >= 0 && slotIndex < slotCooldownRemains.Length)
+        {
             slotCooldownRemains[slotIndex] = cooldown;
+            slotCooldownDurations[slotIndex] = cooldown;
+        }
 
         slotPreparationStarted[slotIndex] = true;
     }
 
     public void StartBagCooldown()
+        => StartBagCooldown(bagCooldown);
+
+    public void StartBagCooldown(float cooldown)
     {
-        bagCooldownRemain = bagCooldown;
+        bagCooldownDuration = EffectStatUtility.Safe(cooldown, 0f, 1000000f, 0f);
+        bagCooldownRemain = bagCooldownDuration;
     }
 
     public bool IsBagCoolingDown()
@@ -177,10 +219,10 @@ public class BagItemCooldownController
 
     public float GetBagCooldownRatio()
     {
-        if (bagCooldown <= 0f)
+        if (bagCooldownDuration <= 0f)
             return 0f;
 
-        return Mathf.Clamp01(GetBagCooldownRemain() / bagCooldown);
+        return Mathf.Clamp01(GetBagCooldownRemain() / bagCooldownDuration);
     }
 
     public float GetSlotCooldownRemain(int slotIndex)
@@ -204,7 +246,16 @@ public class BagItemCooldownController
         if (item == null || item.itemData == null)
             return 0f;
 
-        float cooldown = Mathf.Max(0f, item.itemData.Cooldown);
+        return GetSlotCooldownRatio(slotIndex);
+    }
+
+    public float GetSlotCooldownRatio(int slotIndex)
+    {
+        if (slotCooldownDurations == null || slotIndex < 0 || slotIndex >= slotCooldownDurations.Length)
+            return 0f;
+
+        // 버프 만료 후에도 진행 중인 시계의 분모는 시작할 때의 시간으로 유지한다.
+        float cooldown = slotCooldownDurations[slotIndex];
         if (cooldown <= 0f)
             return 0f;
 
@@ -217,7 +268,10 @@ public class BagItemCooldownController
             return;
 
         for (int i = 0; i < slotCooldownRemains.Length; i++)
+        {
             slotCooldownRemains[i] = 0f;
+            slotCooldownDurations[i] = 0f;
+        }
     }
 
     private void ClearSlotPreparation()

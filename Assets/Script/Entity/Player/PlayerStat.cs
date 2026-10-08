@@ -7,7 +7,7 @@ public class PlayerStat : IGameStat<PlayerStat>
     [Header("Move")]
     [Min(0f)] public float moveSpeed = 5f;
     [Min(0f)] public float maxMoveSpeed = 10f;
-    [Tooltip("쿨다운 회복 속도 배율. 1 = 기본, 1.2 = 20% 빠르게 회복합니다.")]
+    [Tooltip("전체 아이템의 쿨다운 회복 속도 배율. 1 = 기본, 1.2 = 20% 빠르게 회복합니다. 가방 공통 쿨다운에는 적용하지 않습니다.")]
     [Min(0f)] public float cooldownRecoveryRate = 1f;
 
     [Header("Range")]

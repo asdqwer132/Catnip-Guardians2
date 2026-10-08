@@ -17,6 +17,8 @@ public class BagItemUseManager : MonoBehaviour
         new BagItemCooldownController();
 
     private bool canTickCooldown = false;
+    private System.Func<int, float> slotRecoveryRate;
+    private float playerRecoveryRate = 1f;
     public static readonly System.Collections.Generic.List<BagItemUseManager> ActiveManagers =
         new System.Collections.Generic.List<BagItemUseManager>();
     private void OnEnable() { if (!ActiveManagers.Contains(this)) ActiveManagers.Add(this); }
@@ -31,7 +33,7 @@ public class BagItemUseManager : MonoBehaviour
         {
             ItemData item = bag.equippedItems[i] != null ? bag.equippedItems[i].itemData : null;
             if (!effect.Matches(item)) continue;
-            cooldownController.StartPreparationCooldownIfNeeded(i, item);
+            StartItemPreparation(i, item);
             cooldownController.ChangeSlotCooldown(i, effect.operation, effect.amount);
         }
     }
@@ -84,9 +86,11 @@ public class BagItemUseManager : MonoBehaviour
 
         SyncControllers();
 
-        float rate = cooldownOwner != null && cooldownOwner.currentStat != null
-            ? cooldownOwner.currentStat.cooldownRecoveryRate : 1f;
-        cooldownController.TickCooldown(deltaTime * EffectStatUtility.Safe(rate, 0f, 100f, 1f));
+        playerRecoveryRate = GetPlayerCooldownRecoveryRate();
+        if (slotRecoveryRate == null)
+            slotRecoveryRate = GetSlotCooldownRecoveryRate;
+        float bagRate = BagCooldownStat.Resolve(bagCooldown, bag, GetCooldownBuffManager()).cooldownRecoveryRate;
+        cooldownController.TickCooldown(deltaTime, slotRecoveryRate, bagRate);
 
         if (IsBagCoolingDown())
             return;
@@ -103,6 +107,9 @@ public class BagItemUseManager : MonoBehaviour
         if (!CanTryUse(owner))
             return false;
 
+        if (cooldownOwner == null)
+            cooldownOwner = owner.GetComponentInParent<Player>();
+
         SyncControllers();
 
         if (IsBagCoolingDown())
@@ -118,10 +125,7 @@ public class BagItemUseManager : MonoBehaviour
         if (!ItemEffectExecutor.CanExecuteItemEffect(inventoryItem))
             return false;
 
-        cooldownController.StartPreparationCooldownIfNeeded(
-            slotIndex,
-            inventoryItem
-        );
+        StartItemPreparation(slotIndex, inventoryItem);
 
         if (cooldownController.IsSlotCoolingDown(slotIndex))
             return false;
@@ -163,7 +167,7 @@ public class BagItemUseManager : MonoBehaviour
 
         if (useCycle.HasUsedAllUsableSlotsThisCycle(bag))
         {
-            cooldownController.StartBagCooldown();
+            cooldownController.StartBagCooldown(GetBagCooldown());
             ResetUsePosition();
 
             return;
@@ -189,10 +193,57 @@ public class BagItemUseManager : MonoBehaviour
 
         ItemData inventoryItem = bag.equippedItems[slotIndex].itemData;
 
-        cooldownController.StartPreparationCooldownIfNeeded(
-            slotIndex,
-            inventoryItem
-        );
+        StartItemPreparation(slotIndex, inventoryItem);
+    }
+
+    private void StartItemPreparation(int slotIndex, ItemData item)
+    {
+        if (item == null || cooldownController.HasStartedPreparation(slotIndex))
+            return;
+
+        cooldownController.StartPreparationCooldownIfNeeded(slotIndex, GetItemCooldown(item));
+    }
+
+    public float GetItemCooldown(ItemData item)
+        => ItemCooldownStat.Resolve(item, bag, GetCooldownBuffManager()).cooldown;
+
+    public float GetBagCooldown()
+        => BagCooldownStat.Resolve(bagCooldown, bag, GetCooldownBuffManager()).cooldown;
+
+    private BuffManager GetCooldownBuffManager()
+    {
+        BuffManager manager = null;
+        if (throwExecutor != null && throwExecutor.itemEffectExecutor != null)
+            manager = throwExecutor.itemEffectExecutor.buffManager;
+        if (manager == null && cooldownOwner != null)
+            manager = cooldownOwner.buffManager;
+        if (manager == null)
+            manager = BuffManager.instance;
+        return manager;
+    }
+
+    private float GetPlayerCooldownRecoveryRate()
+    {
+        if (cooldownOwner == null)
+            return 1f;
+
+        BuffManager manager = GetCooldownBuffManager();
+        PlayerStat stat = cooldownOwner.baseStat;
+        // Player의 초기 등록 순서와 관계없이 현재 버프를 조회한다. 재조회는 횟수를 소비하지 않는다.
+        if (manager != null && stat != null)
+            stat = manager.GetBuffedStatForTarget(stat, cooldownOwner, BuffCalculationMode.All, false);
+        else
+            stat = cooldownOwner.currentStat ?? stat;
+        return stat != null ? EffectStatUtility.Safe(stat.cooldownRecoveryRate, 0f, 100f, 1f) : 1f;
+    }
+
+    private float GetSlotCooldownRecoveryRate(int slotIndex)
+    {
+        ItemData item = bag != null && bag.equippedItems != null && slotIndex >= 0 &&
+            slotIndex < bag.equippedItems.Count && bag.equippedItems[slotIndex] != null
+            ? bag.equippedItems[slotIndex].itemData : null;
+        ItemCooldownStat stat = ItemCooldownStat.Resolve(item, bag, GetCooldownBuffManager());
+        return stat.cooldownRecoveryRate * playerRecoveryRate;
     }
 
     private void SyncControllers()

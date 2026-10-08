@@ -62,8 +62,7 @@ public class BuffQuery
         return GetBuffsByPredicate(
             buff =>
                 buff.target != null &&
-                buff.target.kind == BuffTargetKind.Bag &&
-                buff.target.bag == bag,
+                buff.target.MatchesBag(bag),
             visibleOnly
         );
     }

@@ -53,6 +53,9 @@ public class BuffTargetHandle
         };
     }
 
+    public static BuffTargetHandle AllBags()
+        => new BuffTargetHandle { kind = BuffTargetKind.AllBags };
+
     public static BuffTargetHandle Target(IBuffTarget target)
     {
         if (target == null)
@@ -94,8 +97,15 @@ public class BuffTargetHandle
         if (query.buffTarget != null)
             return MatchesTarget(query.buffTarget);
 
+        if (query.isBagQuery)
+            return MatchesBag(query.bag);
+
         return MatchesItem(query.itemData, query.bag);
     }
+
+    public bool MatchesBag(EquipmentBag targetBag)
+        => targetBag != null && (kind == BuffTargetKind.AllBags ||
+           (kind == BuffTargetKind.Bag && bag != null && bag == targetBag));
 
     public bool MatchesItem(ItemData targetItemData, EquipmentBag targetBag)
     {

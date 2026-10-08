@@ -158,6 +158,11 @@ def main():
     selected = ('Impliation/IStat.cs', 'Excuter/Data/EffectStatUtility.cs', 'Excuter/Data/EffectExecutionScale.cs',
                 'Excuter/Data/ItemEffectContext.cs', 'Excuter/Data/ItemEffectPlan.cs', 'Excuter/Data/ItemEffectLifetime.cs',
                 'Excuter/Excuter/BagItemCooldownController.cs', 'Impliation/Attack/DamageArea/DamageAreaAttackStat.cs',
+                'Impliation/Cooldown/ItemCooldownStat.cs', 'Impliation/Cooldown/BagCooldownStat.cs',
+                'Impliation/Buff/Data/Modifier/BuffModifier.cs', 'Impliation/Buff/Data/Modifier/FloatFieldBuffModifier.cs',
+                'Impliation/Buff/Data/BuffModeEnums.cs', 'Impliation/Buff/Data/Resolver/IBuffTarget.cs',
+                'Impliation/Buff/Data/Resolver/BuffTargetGroupNameAttribute.cs',
+                'Impliation/Buff/Manager/BuffQueryContext.cs', 'Impliation/Buff/Manager/BuffTargetHandle.cs',
                 'Impliation/Repeat/RepeatItemStat.cs', 'Impliation/Attack/HitEffect/HitEffectApplyMode.cs',
                 'Impliation/Attack/HitEffect/HitEffectContext.cs', 'Impliation/Attack/HitEffect/HitEffectDispatcher.cs',
                 'Impliation/Random/WeightedRandomEffect.cs', 'Impliation/EnemyControl/TimeStopRuntime.cs')

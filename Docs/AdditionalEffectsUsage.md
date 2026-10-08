@@ -44,7 +44,7 @@
 | 위치 | 들어 있는 것 |
 | --- | --- |
 | `Assets/Data/AdditionalEffects` | CSV 수치로 구성한 설정 에셋 28개 |
-| `Assets/Data/AdditionalEffectsExamples` | 수프·보호막·연쇄 공격·상태·장판 등의 예제 에셋 21개 |
+| `Assets/Data/AdditionalEffectsExamples` | 수프·보호막·연쇄 공격·상태·장판 예제 21개와 쿨다운 버프 설정 10개 |
 | `Assets/Data/Scriptable/Item/Items` | 실제 아이템의 ItemData. 시리즈 폴더별로 구분 |
 | `Assets/Data/Scriptable/Item/Effect` | 기존 공격·버프·조건 에셋 |
 | `Docs/ItemEffectCoverage.csv` | 원본 318행의 아이템별 연결 계획과 ItemData 경로 |
@@ -128,6 +128,7 @@ Conditions를 비우면 항상 실행한다. **Condition Mode = All**이면 모�
 | 장판 조회 / 소비 | `Items → Conditions → Has Area` / `Items → Effects → Area → Consume Checked Areas` |
 | True/False 분기 | `Items → Effects → Branch → Conditional` |
 | 쿨다운 / 아이템 하위 태그 | `Items → Effects → Cooldown Control` / `Items → Item Tag` |
+| 전체 아이템 / 전체 가방 버프 대상 | `Buffs → Targets → All Items` / `All Bags` |
 | 소환물 종류 / 조회 | `Items → Summons → Definition` / `Items → Conditions → Has Summon` |
 | 소환물 개조 / 합체 / 오라 | `Items → Effects → Summon → Modify` / `Transform` / `Items → Summon Modules → Aura` |
 | 무작위 / 배율 / 종료 후 실행 | `Items → Effects → Weighted Random` / `Scaled Effects` / `Then Effects` |
@@ -324,6 +325,8 @@ Execute Effects 명중 에셋은 **공격의 On Hit Effects**에 넣고, 그 에
 
 **Area** 대상 설정의 Required Group에도 같은 자동 선택·직접 입력을 제공하며, 반경 안의 해당 그룹과 하위 그룹만 선택한다. 비우면 모든 그룹을 허용한다. **Direct**는 실제 대상 컴포넌트 한 개에 적용하며, DamageArea 또는 그 오브젝트의 Transform/Collider도 받을 수 있다. 프리팹 에셋을 지정하는 것으로 나중에 생성되는 모든 인스턴스를 가리키지는 않으므로 생성 공격 전체에는 Group을 사용한다.
 
+모든 가방의 아이템 공격을 강화하려면 **Buffs → Targets → All Items**를 사용한다. 공격 종류별 Modifier가 필요하다. DamageArea는 `DamageAreaAttackStat.damageAreaPower`, 이동 투사체는 `ProjectileAttackStat.projectileDamage`, 연쇄 공격은 `ChainAttackStat.chainFirstDamage`와 `chainNextDamage`를 각각 설정한다. **Include Self**를 켜면 버프를 부여한 ItemData도 포함한다. 기존 Owner의 **All**은 사용한 아이템·가방·시리즈를 합친 대상이며 전체 아이템 설정과 범위가 다르다.
+
 ### 예: 5초 동안 유지하는 상태 만들기
 
 1. **Items → Status → Definition**으로 `MyStatusKey`를 만든다. Display Name은 표시 이름이며 상태의 동일 여부는 이 에셋 참조로 구분한다.
@@ -428,6 +431,8 @@ Checked 모드는 확인한 장판이 사라졌을 때 다른 장판을 대신 �
 
 ## 12. 쿨다운 조작과 회복속도
 
+### 남은 시간을 한 번 줄이기
+
 Cooldown Control을 ItemData의 Effect Datas나 후속 Effects에 연결한다.
 
 | 필드 | 설정 |
@@ -445,7 +450,45 @@ Cooldown Control을 ItemData의 Effect Datas나 후속 Effects에 연결한다.
 
 Ready는 남은 시간을 0으로 만들고 준비 완료 상태를 유지한다. 다음 사용 때 초기 준비 대기를 다시 시작하는 기존 Reset과 다르다. 지연 효과는 전투 초기화·실행 취소 시 취소된다. SourceBag는 가방 정보가 있는 실행에서 사용한다.
 
-쿨다운 **회복속도 +20%** 버프는 기존 Float Field Modifier로 다음처럼 만든다.
+### 지속 버프: 아이템 쿨다운과 가방 공통 쿨다운
+
+**Create → GameData → Buffs → Modifiers → Float Field**로 Modifier를 만든다. 변경할 항목에 따라 다음처럼 입력한다.
+
+| 변경할 값 | Target Stat Type Name | Field Name | Add Value | Multiply Value |
+| --- | --- | --- | --- | --- |
+| 아이템 기본 쿨다운 -0.2초 | `ItemCooldownStat` | `cooldown` | `-0.2` | `0` |
+| 아이템 쿨다운 회복속도 +20% | `ItemCooldownStat` | `cooldownRecoveryRate` | `0` | `0.2` |
+| 가방 공통 기본 쿨다운 -0.2초 | `BagCooldownStat` | `cooldown` | `-0.2` | `0` |
+| 가방 공통 쿨다운 회복속도 +20% | `BagCooldownStat` | `cooldownRecoveryRate` | `0` | `0.2` |
+
+1. 아이템 전체에 적용하려면 **Buffs → Targets → All Items**, 가방 전체에 적용하려면 **Buffs → Targets → All Bags**로 대상 에셋을 만든다.
+2. **Items → Effects → Buff**를 만들어 Target Resolver에 대상 에셋, Modifiers에 Modifier를 연결한다.
+3. **Buff Info → Use Limit Type = Time**, **Duration = 5**, **Stack Mode = Refresh**, **Apply Timing = Dynamic**을 설정한다. 해제할 때까지 유지하려면 Use Limit Type을 **Infinite**로 선택한다.
+4. **Include Self**를 켜면 버프를 부여하는 아이템의 쿨다운도 포함한다. 끄면 같은 ItemData는 아이템 버프 대상에서 제외된다.
+5. 만든 BuffEffect를 버프 부여 아이템의 **Effect Datas**에 넣는다. 대상/Modifier 에셋을 Effect Datas에 직접 넣지 않는다.
+
+고정 감소는 `5초 - 0.2초 = 4.8초`다. 감소량이 원래 쿨다운보다 커도 최소 0초이며 원본 ItemData나 가방의 기본 설정값을 수정하지 않는다. **Refresh**는 재사용 시 지속 시간만 갱신한다. **Stack + Max Stack = 3**이면 -0.2초 Modifier가 최대 -0.6초까지 중첩된다.
+
+기본 쿨다운은 **준비 시작 시점**의 버프로 확정한다. 이미 시작한 카운트다운의 남은 시간을 고정 감소 버프로 즉시 바꾸지는 않는다. 버프 만료 후 새로 시작하는 아이템 준비·가방 공통 대기는 기본값으로 돌아온다. 진행률 UI도 시작할 때의 총 시간을 사용하므로 버프 만료로 갑자기 바뀌지 않는다. 진행 중인 시간까지 즉시 줄이려면 앞의 Cooldown Control을 함께 사용한다.
+
+회복속도는 진행 중인 카운트다운에도 즉시 적용되고 만료 후 다음 갱신부터 원래 속도로 돌아온다. `1.2`는 1초에 남은 시간을 1.2초 줄이는 속도다. 5초 준비를 처음부터 이 속도로 진행하면 약 4.17초가 걸린다. **ItemCooldownStat**은 아이템 시계에, **BagCooldownStat**은 가방 공통 시계에만 적용된다. 회복속도가 0이면 해당 시계만 멈춘다. 현재 게임의 선택 가방만 시간이 진행되는 규칙은 그대로다.
+
+사용한 가방 하나에 적용하려면 **Targets → Owner → Target Mode = SourceBag**를 사용하고 스탯 타입으로 아이템/가방을 구분한다. 사용한 ItemData에만 적용하려면 **SourceItem**, 같은 시리즈에는 **SourceItemSeries**를 사용한다. SourceBag는 가방 정보가 있는 실행에서 사용한다. 쿨다운 조회·UI 갱신·시간 갱신은 사용 횟수 버프를 소비하지 않는다. 횟수제로 만들 때는 실제 사용 이벤트인 **AnyItemUsed** 또는 **SpecificItemsUsed**를 선택한다.
+
+### 바로 연결할 수 있는 5초 예제
+
+`Assets/Data/AdditionalEffectsExamples/CooldownBuffs`에 다음 BuffEffect를 넣었다. 원하는 효과만 ItemData의 Effect Datas에 연결한다. 각각 별도의 대상/Modifier 에셋을 참조하며 Include Self를 켜 두었다.
+
+| BuffEffect 에셋 | 효과 |
+| --- | --- |
+| `AllItems_CooldownMinus0_2For5Seconds` | 전체 아이템 기본 쿨다운 -0.2초, 5초 |
+| `AllItems_CooldownRecovery20For5Seconds` | 전체 아이템 회복속도 +20%, 5초 |
+| `AllBags_CooldownMinus0_2For5Seconds` | 전체 가방 공통 기본 쿨다운 -0.2초, 5초 |
+| `AllBags_CooldownRecovery20For5Seconds` | 전체 가방 공통 회복속도 +20%, 5초 |
+
+### 기존 PlayerStat 회복속도 버프
+
+기존 **PlayerStat** 방식도 전체 아이템의 회복속도 버프로 유지한다. 가방 공통 쿨다운은 별도의 BagCooldownStat 버프를 사용한다.
 
 1. **Buffs → Modifiers → Float Field**를 만든다.
 2. **Target Stat Type Name = PlayerStat**, **Field Name = cooldownRecoveryRate**, **Add Value = 0**, **Multiply Value = 0.2**.
@@ -453,6 +496,8 @@ Ready는 남은 시간을 0으로 만들고 준비 완료 상태를 유지한다
 4. 원하는 지속 시간을 Buff Info에 입력한다.
 
 기본 회복속도 1에서 1.2가 된다. Float Field의 Multiply Value `0.2`와 Scaled Effects의 배율 `1.2`는 입력 방식이 다르다.
+
+이 버프는 **Group = Player**와 **Target Stat Type Name = PlayerStat**를 함께 사용한다. PlayerStatus나 All Items를 대상으로 PlayerStat Modifier를 연결하면 적용되지 않는다. 아이템 대상 설정을 사용하려면 앞의 **ItemCooldownStat**으로 변경한다. PlayerStat과 ItemCooldownStat의 회복속도 버프를 동시에 걸면 두 속도 배율을 곱한다. 각각 1.2면 아이템의 최종 속도는 1.44다.
 
 ## 13. 소환물 개조·합체·오라
 
@@ -618,6 +663,8 @@ Attack Prefab을 비우면 기본 부채꼴 판정 오브젝트를 생성한다.
 | 소환물 개조·합체가 안 됨 | Definition, Selection의 소유자·태그·범위, 재료 수, 결과 소환 프리팹·스탯 |
 | 오라가 예상 범위에 없음 | 소환물 Attack Range × Radius Multiplier, 대상 Definition/태그, Include Emitter |
 | 쿨다운이 안 줄어듦 | SourceBag 정보, 활성 가방, 필터, Affect Bag Cooldown, 지연 시간 |
+| 지속 쿨다운 버프가 안 적용됨 | 아이템: All Items + ItemCooldownStat / 가방: All Bags + BagCooldownStat; 고정 감소는 새 준비부터 적용; Include Self |
+| 회복속도 버프가 안 적용됨 | Field Name = cooldownRecoveryRate; PlayerStat이면 Group = Player, ItemCooldownStat이면 아이템 대상; 선택 가방만 시간이 진행됨 |
 | 상자에서 일부 결과가 아무것도 안 함 | 추첨 후보 ItemData의 Effect Datas가 비어 있는지 |
 | 종료 후 효과가 안 나옴 | 자연 종료인지 강제 취소인지, 끝나지 않은 하위 효과가 있는지 |
 | Create 메뉴가 없거나 Missing Script | Console 컴파일 오류, 코드와 `.meta`를 함께 가져왔는지 |
@@ -629,7 +676,7 @@ Attack Prefab을 비우면 기본 부채꼴 판정 오브젝트를 생성한다.
 1. 기존 전투 씬과 아이템 사용 흐름에서 해당 ItemData를 사용한다.
 2. 식물 회복은 HP 변화, 공격은 적 HP·처치, 상태는 등록·만료, 쿨다운은 남은 시간으로 확인한다.
 3. 여러 적, 적 한 명, 대상 없음, 효과 중 전투 초기화 상황을 확인한다.
-4. **Window → General → Test Runner → EditMode**에서 `CombatEffectTests`, `Additional*Tests`, `BuffTargetInspectorTests`를 실행한다. 버프 대상의 선택·적용·해제·재사용 검사는 `AdditionalBuffTargetTests`에 있다.
+4. **Window → General → Test Runner → EditMode**에서 `CombatEffectTests`, `Additional*Tests`, `BuffTargetInspectorTests`를 실행한다. 버프 대상의 선택·적용·해제·재사용 검사는 `AdditionalBuffTargetTests`, 아이템/가방 쿨다운의 분리·만료·진행률 검사는 `AdditionalCooldownBuffTests`에 있다.
 5. 플레이 모드를 끝내고 설정을 저장한다. 플레이 중 바꾼 Inspector 값이 영구 설정으로 남았다고 가정하지 말고 에셋을 다시 확인한다.
 
 새 `.asset`과 `.meta`를 함께 Git에 올린다. 예를 들어 위 두 폴더와 기존 ItemData/공격 에셋을 수정했다면 프로젝트 루트에서 다음처럼 올린다.

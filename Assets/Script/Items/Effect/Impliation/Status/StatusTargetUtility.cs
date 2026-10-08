@@ -24,7 +24,7 @@ public static class StatusTargetUtility
             case StatusQueryTarget.SourceItem:
                 return context.sourceItemData != null ? BuffQueryContext.ForItem(context.sourceItemData, context.sourceBag) : null;
             case StatusQueryTarget.SourceBag:
-                return context.sourceBag != null ? BuffQueryContext.ForItem(null, context.sourceBag) : null;
+                return context.sourceBag != null ? BuffQueryContext.ForBag(context.sourceBag) : null;
             case StatusQueryTarget.PlantHealth:
                 Plant plant = PlantManager.instance != null ? PlantManager.instance.plant : null;
                 return plant != null && plant.health != null && !plant.IsDead
@@ -56,6 +56,8 @@ public static class StatusTargetUtility
         }
         if (selection.kind == BuffTargetKind.Item)
             return buff.MatchesItem(selection.itemData, selection.bag);
+        if (selection.kind == BuffTargetKind.Bag)
+            return buff.MatchesBag(selection.bag);
         return false;
     }
 

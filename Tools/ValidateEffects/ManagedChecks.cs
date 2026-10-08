@@ -13,6 +13,72 @@ public static class Runner {
  Check("cooldown invalid values remain finite",()=>{Eq(BagItemCooldownController.ChangeRemaining(float.NaN,CooldownOperation.ReduceSeconds,1),0);Eq(BagItemCooldownController.ChangeRemaining(5,CooldownOperation.ReduceSeconds,float.NaN),5);});
  Check("ready preserves completed preparation",()=>{var c=new BagItemCooldownController();c.Init(1);c.MakeSlotReady(0);c.StartPreparationCooldownIfNeeded(0,new ItemData{cooldown=10});Eq(c.GetSlotCooldownRemain(0),0);});
  Check("reset restores initial preparation",()=>{var c=new BagItemCooldownController();c.Init(1);c.MakeSlotReady(0);c.ResetAllCooldowns(1);c.StartPreparationCooldownIfNeeded(0,new ItemData{cooldown=10});Eq(c.GetSlotCooldownRemain(0),10);});
+ Check("fixed cooldown modifier subtracts seconds without changing item data",()=>{
+  var item=new ItemData{cooldown=5};var manager=new BuffManager{CooldownModifiers=new[]{new FloatFieldBuffModifier{targetStatTypeName="ItemCooldownStat",fieldName="cooldown",addValue=-.2f}}};
+  Eq(ItemCooldownStat.Resolve(item,null,manager).cooldown,4.8f);Eq(item.cooldown,5);
+ });
+ Check("cooldown modifiers add before multiplying",()=>{
+  var stat=new ItemCooldownStat{cooldown=5};new FloatFieldBuffModifier{fieldName="cooldown",addValue=-.2f,multiplyValue=.5f}.ApplyTo(stat,1,null);Eq(stat.cooldown,7.2f);
+ });
+ Check("stacked fixed cooldown uses stack count and clamps at zero",()=>{
+  var stat=new ItemCooldownStat{cooldown=5};var modifier=new FloatFieldBuffModifier{fieldName="cooldown",addValue=-.2f};modifier.ApplyTo(stat,3,null);Eq(stat.cooldown,4.4f);
+  modifier.ApplyTo(stat,100,null);Eq(stat.cooldown,0);
+ });
+ Check("cooldown stat clones and invalid values are isolated",()=>{
+  var stat=new ItemCooldownStat{cooldown=5};var clone=stat.Clone();clone.cooldown=float.NaN;clone.cooldownRecoveryRate=float.PositiveInfinity;clone.Clamp();Eq(clone.cooldown,0);Eq(clone.cooldownRecoveryRate,1);Eq(stat.cooldown,5);
+  var bag=new BagCooldownStat{cooldown=-1,cooldownRecoveryRate=-1};bag.Clamp();Eq(bag.cooldown,0);Eq(bag.cooldownRecoveryRate,0);
+ });
+ Check("item recovery accelerates slots without accelerating bag",()=>{
+  var c=new BagItemCooldownController();c.Init(1);c.SetBagCooldown(3);c.StartBagCooldown();c.StartPreparationCooldownIfNeeded(0,5f);c.TickCooldown(1,1.2f);Eq(c.GetSlotCooldownRemain(0),3.8f);Eq(c.GetBagCooldownRemain(),2);
+ });
+ Check("bag recovery accelerates bag without accelerating slots",()=>{
+  var c=new BagItemCooldownController();c.Init(1);c.StartBagCooldown(3);c.StartPreparationCooldownIfNeeded(0,5f);c.TickCooldown(1,1,2);Eq(c.GetSlotCooldownRemain(0),4);Eq(c.GetBagCooldownRemain(),1);
+ });
+ Check("slot recovery callback preserves per-item scope",()=>{
+  var c=new BagItemCooldownController();c.Init(2);c.StartPreparationCooldownIfNeeded(0,5f);c.StartPreparationCooldownIfNeeded(1,5f);c.TickCooldown(1,index=>index==0?2:1);Eq(c.GetSlotCooldownRemain(0),3);Eq(c.GetSlotCooldownRemain(1),4);
+ });
+ Check("zero item recovery does not freeze bag",()=>{
+  var c=new BagItemCooldownController();c.Init(1);c.StartBagCooldown(3);c.StartPreparationCooldownIfNeeded(0,5f);c.TickCooldown(1,0);Eq(c.GetSlotCooldownRemain(0),5);Eq(c.GetBagCooldownRemain(),2);
+ });
+ Check("zero bag recovery does not freeze items",()=>{
+  var c=new BagItemCooldownController();c.Init(1);c.StartBagCooldown(3);c.StartPreparationCooldownIfNeeded(0,5f);c.TickCooldown(1,1,0);Eq(c.GetSlotCooldownRemain(0),4);Eq(c.GetBagCooldownRemain(),3);
+ });
+ Check("slot progress uses captured buffed duration and survives slot resize",()=>{
+  var c=new BagItemCooldownController();c.Init(1);c.StartPreparationCooldownIfNeeded(0,4.8f);Eq(c.GetSlotCooldownRatio(0),1);c.TickCooldown(1);c.SyncSlotCount(2);Eq(c.GetSlotCooldownRatio(0),3.8f/4.8f);
+ });
+ Check("bag progress uses captured duration after base value changes",()=>{
+  var c=new BagItemCooldownController();c.Init(1);c.StartBagCooldown(2.8f);Eq(c.GetBagCooldownRatio(),1);c.TickCooldown(1);c.SetBagCooldown(3);Eq(c.GetBagCooldownRatio(),1.8f/2.8f);
+ });
+ Check("fixed reduction expiry changes next preparation and preserves current clock",()=>{
+  var item=new ItemData{cooldown=5};var manager=new BuffManager{CooldownModifiers=new[]{new FloatFieldBuffModifier{fieldName="cooldown",addValue=-.2f}}};var c=new BagItemCooldownController();c.Init(1);
+  c.StartPreparationCooldownIfNeeded(0,ItemCooldownStat.Resolve(item,null,manager).cooldown);c.TickCooldown(1);manager.CooldownModifiers=null;
+  c.StartPreparationCooldownIfNeeded(0,ItemCooldownStat.Resolve(item,null,manager).cooldown);Eq(c.GetSlotCooldownRemain(0),3.8f);
+  c.ResetSlotPreparation(1);c.StartPreparationCooldownIfNeeded(0,ItemCooldownStat.Resolve(item,null,manager).cooldown);Eq(c.GetSlotCooldownRemain(0),5);
+ });
+ Check("item and bag stat types filter modifiers independently without consuming uses",()=>{
+  var manager=new BuffManager{LastConsume=true,CooldownModifiers=new[]{new FloatFieldBuffModifier{targetStatTypeName="BagCooldownStat",fieldName="cooldown",addValue=-.2f}}};
+  Eq(ItemCooldownStat.Resolve(new ItemData{cooldown=5},null,manager).cooldown,5);True(!manager.LastConsume);
+  manager.LastConsume=true;Eq(BagCooldownStat.Resolve(3,new EquipmentBag(),manager).cooldown,2.8f);True(!manager.LastConsume);
+ });
+ Check("item recovery field adds to its base of one",()=>{
+  var manager=new BuffManager{CooldownModifiers=new[]{new FloatFieldBuffModifier{fieldName="cooldownRecoveryRate",addValue=.2f}}};Eq(ItemCooldownStat.Resolve(new ItemData{cooldown=5},null,manager).cooldownRecoveryRate,1.2f);
+ });
+ Check("invalid recovery and delta times keep both clocks finite",()=>{
+  var c=new BagItemCooldownController();c.Init(1);c.StartBagCooldown(3);c.StartPreparationCooldownIfNeeded(0,5f);c.TickCooldown(float.NaN);Eq(c.GetSlotCooldownRemain(0),5);c.TickCooldown(1,float.NaN,float.NaN);Eq(c.GetSlotCooldownRemain(0),4);Eq(c.GetBagCooldownRemain(),2);
+ });
+ Check("all-items target matches items in different bags but excludes bag-only queries",()=>{
+  var target=BuffTargetHandle.AllItems();var a=new EquipmentBag();var b=new EquipmentBag();
+  True(target.Matches(BuffQueryContext.ForItem(new ItemData(),a)));True(target.Matches(BuffQueryContext.ForItem(new ItemData(),b)));True(!target.Matches(BuffQueryContext.ForBag(a)));
+ });
+ Check("all-bags target matches different bags but excludes item queries",()=>{
+  var target=BuffTargetHandle.AllBags();var a=new EquipmentBag();var b=new EquipmentBag();
+  True(target.Matches(BuffQueryContext.ForBag(a)));True(target.Matches(BuffQueryContext.ForBag(b)));True(!target.Matches(BuffQueryContext.ForItem(new ItemData(),a)));True(!target.Matches(BuffQueryContext.ForBag(null)));
+ });
+ Check("source-bag target retains its scope for both bag and item stats",()=>{
+  var a=new EquipmentBag();var b=new EquipmentBag();var target=BuffTargetHandle.Bag(a);
+  True(target.Matches(BuffQueryContext.ForBag(a)));True(!target.Matches(BuffQueryContext.ForBag(b)));
+  True(target.Matches(BuffQueryContext.ForItem(new ItemData(),a)));True(!target.Matches(BuffQueryContext.ForItem(new ItemData(),b)));
+ });
  Check("scope waits for retained child",()=>{int done=0;var s=new ItemEffectLifetime(onCompleted:()=>done++);var l=s.Retain();s.Close();True(done==0);l.Finish();True(done==1);l.Finish();True(done==1);});
  Check("scope cancellation suppresses completion",()=>{int done=0;var s=new ItemEffectLifetime(onCompleted:()=>done++);var l=s.Retain();s.Close();l.Cancel();True(done==0&&s.IsCancelled);});
  Check("generation cancellation invalidates copies",()=>{var c=Context();var copy=c.Copy(Vector3.zero,Vector3.right);ItemEffectRuntime.CancelAll();True(!c.CanContinue&&!copy.CanContinue);});

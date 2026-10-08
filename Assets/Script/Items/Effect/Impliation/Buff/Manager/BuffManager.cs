@@ -354,7 +354,7 @@ public class BuffManager : MonoBehaviour
             ActiveBuff buff = storage.activeBuffs[i];
             if (buff == null || buff.IsExpired || buff.statusDefinition != status ||
                 !buff.MatchesQuery(context)) continue;
-            if (context.buffTarget == null && context.itemData == null && buff.target.kind != BuffTargetKind.Bag) continue;
+            if (context.buffTarget == null && context.itemData == null && !buff.target.MatchesBag(context.bag)) continue;
             total = (int)System.Math.Min(int.MaxValue, (long)total + Mathf.Max(1, buff.stack));
         }
         return total;
@@ -374,7 +374,7 @@ public class BuffManager : MonoBehaviour
         {
             ActiveBuff buff = storage.activeBuffs[i];
             if (buff != null && !buff.IsExpired && buff.statusDefinition == status && buff.MatchesQuery(context) &&
-                (context.buffTarget != null || context.itemData != null || buff.target.kind == BuffTargetKind.Bag))
+                (context.buffTarget != null || context.itemData != null || buff.target.MatchesBag(context.bag)))
                 results.Add(buff);
         }
     }
@@ -749,7 +749,7 @@ public class BuffManager : MonoBehaviour
         return HasActiveBuffInternal(effect, context, minimumStack, false);
     }
 
-    // 가방 조건은 그 가방에 직접 등록된 버프만 확인한다.
+    // 가방 조건은 그 가방 또는 전체 가방에 등록된 버프만 확인한다.
     // AllItems나 개별 아이템/시리즈 버프를 가방 버프로 간주하지 않는다.
     public bool HasActiveBuffForBag(
         BuffEffect effect,
@@ -761,7 +761,7 @@ public class BuffManager : MonoBehaviour
             return false;
 
         return HasActiveBuffInternal(
-            effect, BuffQueryContext.ForItem(null, bag), minimumStack, true
+            effect, BuffQueryContext.ForBag(bag), minimumStack, true
         );
     }
 
@@ -795,7 +795,7 @@ public class BuffManager : MonoBehaviour
             if (buff.sourceEffectData != effect || buff.stack < requiredStack)
                 continue;
 
-            if (bagOnly && buff.target.kind != BuffTargetKind.Bag)
+            if (bagOnly && !buff.target.MatchesBag(context.bag))
                 continue;
 
             // includeSelf, 가방, 시리즈, 전체 아이템, 대상 그룹 규칙을 그대로 따른다.

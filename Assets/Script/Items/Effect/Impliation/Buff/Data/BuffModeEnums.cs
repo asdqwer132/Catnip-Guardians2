@@ -41,7 +41,8 @@ public enum BuffTargetKind
     ItemSeries,
     AllItems,
     Target,
-    Group
+    Group,
+    AllBags
 }
 
 public enum BuffNotifyScope
