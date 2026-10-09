@@ -26,6 +26,7 @@
 18. [작동하지 않을 때 확인할 것](#18-작동하지-않을-때-확인할-것)
 19. [확인·저장·Git에 올리기](#19-확인저장git에-올리기)
 20. [아이템 투척의 랜덤 도착 시간과 무게](#20-아이템-투척의-랜덤-도착-시간과-무게)
+21. [리피트 샷건의 랜덤 거리](#21-리피트-샷건의-랜덤-거리)
 
 ## 1. 가장 먼저 해보기: 따뜻한 수프
 
@@ -788,3 +789,26 @@ Random Range와 무게 모드의 오프셋 추첨 모두 같은 Distribution을 
 **Max Move Time**은 모든 모드의 최종 상한이므로 최소 도착 시간보다 작게 두면 그 상한이 우선한다. 반복 투척에서 **Override Projectile Motion**을 끄면 투척 프리팹 설정과 실제 하위 아이템의 무게를 사용한다. 직접 지정한 **Flight Time**이나 Bounce 비행은 그 시간을 그대로 사용한다.
 
 Unity에서 `Window → General → Test Runner → EditMode → AdditionalThrowArrivalTests`로 범위·함수·커브·무게 전달·도착 콜백 검사를 실행한다. Play Mode에서는 서로 다른 Weight의 아이템을 던져 도착 시간과 착지 후 효과를 확인한다.
+
+
+## 21. 리피트 샷건의 랜덤 거리
+
+**RepeatItemEffect → Repeat Stat → Item Repeat Shotgun Radius Offset**으로 발사체마다 다른 착지 거리를 설정한다. 각도는 기존 **Item Repeat Spread Angle**을 사용하고, 거리는 **Item Repeat Radius ± Item Repeat Shotgun Radius Offset** 안에서 매 발사체마다 독립적으로 추첨한다. 거리는 배치 중심을 기준으로 계산한다.
+
+4개를 동시에 던지는 예:
+
+| 필드 | 값 |
+| --- | --- |
+| Placement | Shotgun |
+| Repeat Stat → Item Repeat Count | `1` (아이템 묶음 1회) |
+| Steps → Entries → Item | 던질 ItemData |
+| Steps → Entries → Count | `4` (이 스텝에서 동시에 던질 개수) |
+| Repeat Stat → Item Repeat Radius | `5` |
+| Repeat Stat → Item Repeat Spread Angle | `30`도 |
+| Repeat Stat → Item Repeat Shotgun Radius Offset | `1` |
+
+이 설정은 앞쪽 30도 안에서 네 발의 각도와 거리를 각각 추첨한다. 각 착지점의 거리는 `4~6`이며 같은 반지름의 선 위에만 모이지 않는다. 오프셋을 `0.3`으로 줄이면 `4.7~5.3` 안에서 조금만 흩어진다.
+
+오프셋 `0`은 기존의 고정 반지름 동작이다. 오프셋이 반지름보다 크면 추첨 구간의 하한을 `0`으로 제한하며 음수 거리로 뒤쪽에 착지하지 않는다. 범위 배율을 적용하면 반지름과 오프셋을 함께 조정한다. 이 필드는 Shotgun에서 사용하며 다른 배치 모드의 위치 계산은 기존과 같다. 기존 효과 에셋에는 기본값 `0`으로 추가되므로 사용할 에셋에서 원하는 값을 입력한다.
+
+스텝의 **Override Placement**를 켰다면 해당 스텝의 Placement도 Shotgun으로 설정한다. **First Step At Origin**을 켜면 첫 묶음이 원점에 고정되므로 처음부터 흩어 던질 때는 끈다.

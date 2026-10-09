@@ -166,7 +166,8 @@ def main():
                 'Impliation/Buff/Data/BuffModeEnums.cs', 'Impliation/Buff/Data/Resolver/IBuffTarget.cs',
                 'Impliation/Buff/Data/Resolver/BuffTargetGroupNameAttribute.cs',
                 'Impliation/Buff/Manager/BuffQueryContext.cs', 'Impliation/Buff/Manager/BuffTargetHandle.cs',
-                'Impliation/Repeat/RepeatItemStat.cs', 'Impliation/Attack/HitEffect/HitEffectApplyMode.cs',
+                'Impliation/Repeat/RepeatItemStat.cs', 'Impliation/Repeat/AttackPlacement.cs',
+                'Impliation/Attack/HitEffect/HitEffectApplyMode.cs',
                 'Impliation/Attack/HitEffect/HitEffectContext.cs', 'Impliation/Attack/HitEffect/HitEffectDispatcher.cs',
                 'Impliation/Random/WeightedRandomEffect.cs', 'Impliation/EnemyControl/TimeStopRuntime.cs')
     pure_dir = work / 'managed'

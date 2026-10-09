@@ -69,5 +69,8 @@ namespace UnityEngine {
    =>new AnimationCurve{length=2,evaluate=u=>Mathf.Lerp(startValue,endValue,Mathf.InverseLerp(startTime,endTime,u))};
   public float Evaluate(float u)=>evaluate!=null?evaluate(u):0;
  }
- public static class Random { private static System.Random rng=new System.Random(42); public static float value=>(float)rng.NextDouble(); }
+ public static class Random {
+  private static System.Random rng=new System.Random(42); public static float value=>(float)rng.NextDouble();
+  public static float Range(float minimum,float maximum)=>Mathf.Lerp(minimum,maximum,value);
+ }
 }

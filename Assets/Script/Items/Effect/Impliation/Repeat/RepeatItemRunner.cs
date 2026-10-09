@@ -107,7 +107,8 @@ public sealed class RepeatItemRunner : AttackObject<RepeatItemStat>
             int positionCount = payloads.Count > 1 ? payloads.Count : total;
             Vector3 target = firstAtOrigin && useIndex == 0 ? origin :
                 AttackPlacement.Position(mode, origin, direction, positionIndex, positionCount,
-                    stat.itemRepeatForwardOffset, stat.itemRepeatSideOffset, stat.itemRepeatRadius, stat.itemRepeatSpreadAngle);
+                    stat.itemRepeatForwardOffset, stat.itemRepeatSideOffset, stat.itemRepeatRadius, stat.itemRepeatSpreadAngle,
+                    stat.itemRepeatShotgunRadiusOffset);
             serialPosition++;
             ItemData item = payloads[shot];
             Vector3 shotDirection = (target - start).sqrMagnitude > 0.000001f ? (target - start).normalized : direction;

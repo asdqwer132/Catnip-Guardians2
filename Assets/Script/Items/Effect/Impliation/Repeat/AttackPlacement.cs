@@ -20,7 +20,8 @@ public static class AttackPlacement
     }
 
     public static Vector3 Position(AttackPlacementMode mode, Vector3 origin, Vector3 forward,
-        int index, int count, float forwardOffset, float sideOffset, float radius, float spread)
+        int index, int count, float forwardOffset, float sideOffset, float radius, float spread,
+        float shotgunRadiusOffset = 0f)
     {
         Vector3 right = new Vector3(forward.y, -forward.x, 0f);
         if (mode == AttackPlacementMode.Forward)
@@ -30,7 +31,13 @@ public static class AttackPlacement
         float angle;
         float distance = radius;
         if (mode == AttackPlacementMode.Shotgun)
-            return origin + (Quaternion.Euler(0f, 0f, Random.Range(-spread * 0.5f, spread * 0.5f)) * forward) * radius;
+        {
+            angle = Random.Range(-spread * 0.5f, spread * 0.5f);
+            // Keep the original random sequence when the offset is disabled.
+            if (shotgunRadiusOffset > 0f)
+                distance = ResolveShotgunDistance(radius, shotgunRadiusOffset, Random.value);
+            return origin + (Quaternion.Euler(0f, 0f, angle) * forward) * distance;
+        }
         if (mode == AttackPlacementMode.CircleRandom)
         {
             angle = Random.Range(-spread * 0.5f, spread * 0.5f);
@@ -43,5 +50,14 @@ public static class AttackPlacement
             angle = count <= 1 ? 0f : -spread * 0.5f + spread * index / divisor;
         }
         return origin + (Quaternion.Euler(0f, 0f, angle) * forward) * distance;
+    }
+
+    public static float ResolveShotgunDistance(float radius, float offset, float sample)
+    {
+        radius = EffectStatUtility.Safe(radius, 0f, 100000000f, 0f);
+        offset = EffectStatUtility.Safe(offset, 0f, 100000000f, 0f);
+        sample = EffectStatUtility.Safe(sample, 0f, 1f, 0.5f);
+        // Clip the sampling interval so shots never land behind the origin.
+        return Mathf.Lerp(Mathf.Max(0f, radius - offset), radius + offset, sample);
     }
 }

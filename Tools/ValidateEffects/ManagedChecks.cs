@@ -17,6 +17,27 @@ public static class Runner {
  static void UseCompletionItem(ItemData item,BuffManager manager=null,ItemEffectContext parent=null,EquipmentBag bag=null)
   =>ItemEffectExecutor.ExecuteItem(item,Vector3.zero,Vector3.right,Vector3.up,null,bag,manager,parent,triggerSpecialItems:false);
  public static void Main(){
+ Check("shotgun radius offset samples independent distances inside the radius band",()=>{
+  Eq(AttackPlacement.ResolveShotgunDistance(5,1,0),4);Eq(AttackPlacement.ResolveShotgunDistance(5,1,.25f),4.5f);
+  Eq(AttackPlacement.ResolveShotgunDistance(5,1,.75f),5.5f);Eq(AttackPlacement.ResolveShotgunDistance(5,1,1),6);
+ });
+ Check("shotgun zero offset preserves fixed radius",()=>{
+  for(int i=0;i<=100;i++)Eq(AttackPlacement.ResolveShotgunDistance(5,0,i/100f),5);
+ });
+ Check("shotgun offset larger than radius cannot produce backward distances",()=>{
+  Eq(AttackPlacement.ResolveShotgunDistance(.2f,1,0),0);Eq(AttackPlacement.ResolveShotgunDistance(.2f,1,.5f),.6f);
+  Eq(AttackPlacement.ResolveShotgunDistance(.2f,1,1),1.2f);
+ });
+ Check("shotgun offset follows range scaling without changing the source stat",()=>{
+  var source=new RepeatItemStat{itemRepeatRadius=5,itemRepeatShotgunRadiusOffset=1};var context=Context();context.rangeMultiplier=2;
+  var scaled=EffectExecutionScaling.Apply(source,context);Eq(scaled.itemRepeatRadius,10);Eq(scaled.itemRepeatShotgunRadiusOffset,2);Eq(source.itemRepeatShotgunRadiusOffset,1);
+  Eq(AttackPlacement.ResolveShotgunDistance(scaled.itemRepeatRadius,scaled.itemRepeatShotgunRadiusOffset,.25f),9);
+ });
+ Check("shotgun invalid radius offset and sample remain finite",()=>{
+  Eq(AttackPlacement.ResolveShotgunDistance(float.NaN,float.PositiveInfinity,float.NaN),0);
+  var stat=new RepeatItemStat{itemRepeatShotgunRadiusOffset=-1};stat.Clamp();Eq(stat.itemRepeatShotgunRadiusOffset,0);
+  stat.itemRepeatShotgunRadiusOffset=float.NaN;stat.Clamp();Eq(stat.itemRepeatShotgunRadiusOffset,0);
+ });
  Check("throw random-range endpoints and interior remain inside arrival bounds",()=>{
   var t=new ItemThrowArrivalTiming{mode=ItemThrowArrivalMode.RandomRange,minArriveTime=.5f,maxArriveTime=2,distribution=ItemThrowArrivalDistribution.Uniform};
   Eq(t.Resolve(1,3,0,0),.5f);Eq(t.Resolve(1,3,0,1),2);Eq(t.Resolve(1,3,0,.25f),.875f);

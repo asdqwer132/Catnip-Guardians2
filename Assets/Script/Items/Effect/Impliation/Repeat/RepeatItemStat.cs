@@ -16,6 +16,9 @@ public class RepeatItemStat : IGameStat<RepeatItemStat>, IEffectScalableStat
     public float itemRepeatForwardOffset;
     public float itemRepeatSideOffset;
     public float itemRepeatRadius = 2f;
+    [Min(0f)]
+    [Tooltip("Shotgun의 착지 거리를 Radius ± 이 값에서 발사체마다 독립 추첨합니다. 0이면 기존 고정 반지름을 사용하며, 거리는 0 아래로 내려가지 않습니다.")]
+    public float itemRepeatShotgunRadiusOffset;
     public float itemRepeatSpreadAngle = 360f;
     public float itemRepeatDirectionAngle;
     [Header("Projectiles")]
@@ -35,6 +38,7 @@ public class RepeatItemStat : IGameStat<RepeatItemStat>, IEffectScalableStat
         itemRepeatForwardOffset = EffectStatUtility.Safe(itemRepeatForwardOffset, -100f, 100f, 0f);
         itemRepeatSideOffset = EffectStatUtility.Safe(itemRepeatSideOffset, -100f, 100f, 0f);
         itemRepeatRadius = EffectStatUtility.Safe(itemRepeatRadius, 0f, 100f, 2f);
+        itemRepeatShotgunRadiusOffset = EffectStatUtility.Safe(itemRepeatShotgunRadiusOffset, 0f, 100f, 0f);
         itemRepeatSpreadAngle = EffectStatUtility.Safe(itemRepeatSpreadAngle, 0f, 360f, 360f);
         itemRepeatDirectionAngle = EffectStatUtility.Safe(itemRepeatDirectionAngle, -360f, 360f, 0f);
         itemRepeatProjectileCountMultiplier = EffectStatUtility.Safe(itemRepeatProjectileCountMultiplier, 0f, 128f, 1f);
@@ -49,6 +53,7 @@ public class RepeatItemStat : IGameStat<RepeatItemStat>, IEffectScalableStat
         itemRepeatForwardOffset *= scale.Range;
         itemRepeatSideOffset *= scale.Range;
         itemRepeatRadius *= scale.Range;
+        itemRepeatShotgunRadiusOffset *= scale.Range;
         itemRepeatTriggerRadius *= scale.Range;
     }
 }
