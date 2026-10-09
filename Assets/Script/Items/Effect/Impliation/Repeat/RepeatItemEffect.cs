@@ -15,8 +15,16 @@ public class RepeatItemEffect : ItemEffectData
     public RepeatItemStat repeatStat = new RepeatItemStat();
     [Header("Placement")]
     public AttackPlacementMode placement;
+    [Tooltip("ThrownDirection: 원본 아이템을 던진 방향 / FixedWorldDirection: 아래 고정 방향")]
     public AttackDirectionMode directionMode;
+    [Tooltip("고정 기준 방향입니다. (1, 0)은 오른쪽, (0, 1)은 위쪽입니다.")]
     public Vector2 fixedWorldDirection = Vector2.right;
+    [Tooltip("Shotgun에서 각도를 무작위로 뽑거나 균등하게 나눕니다. 거리 오프셋은 두 방식 모두 독립적으로 적용됩니다.")]
+    public AttackSpreadDistribution shotgunDistribution;
+    [Tooltip("CenteredOnDirection: 기준 방향의 양옆에 배치 / FromDirection: 기준 방향에서 시작. Shotgun·CircleEven·CircleRandom에 적용됩니다.")]
+    public AttackSpreadStartMode spreadStartMode;
+    [Tooltip("켜면 기준 방향에서 시계 방향으로 배치합니다. 끄면 반시계 방향입니다.")]
+    public bool clockwiseSpread;
     public RepeatItemStartPosition startPosition;
     [Header("Throw")]
     [Tooltip("끄면 목표 위치에서 효과를 바로 실행합니다. 켜면 도착할 때 실행합니다.")]

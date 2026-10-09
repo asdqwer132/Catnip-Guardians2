@@ -7,6 +7,8 @@ public static class Runner {
  static void True(bool condition){if(!condition)throw new Exception("Assertion failed");}
  static void Eq(float value,float expected){if(Math.Abs(value-expected)>0.00001f)throw new Exception($"Expected {expected}, got {value}");}
  static ItemEffectContext Context()=>new ItemEffectContext(null,null,Vector3.zero,Vector3.right,null);
+ static ActiveBuff BuffRecord(BuffEffect effect,StatusDefinition status=null)
+  =>new ActiveBuff(null,new BuffInfo{statusDefinition=status,useLimitType=BuffUseLimitType.Infinite},null,null,effect,null,true,false);
  private sealed class CompletionProbe : ItemEffectData {
   public readonly List<ItemEffectContext> calls=new List<ItemEffectContext>();
   public bool wait;public Action<ItemEffectContext> onExecute;private ItemEffectLease lease;
@@ -17,6 +19,87 @@ public static class Runner {
  static void UseCompletionItem(ItemData item,BuffManager manager=null,ItemEffectContext parent=null,EquipmentBag bag=null)
   =>ItemEffectExecutor.ExecuteItem(item,Vector3.zero,Vector3.right,Vector3.up,null,bag,manager,parent,triggerSpecialItems:false);
  public static void Main(){
+ Check("even full circle starts in the chosen direction without an overlapping last shot",()=>{
+  for(int i=0;i<4;i++)Eq(AttackPlacement.ResolveSpreadAngle(360,i,4,AttackSpreadDistribution.Even,AttackSpreadStartMode.FromDirection,false,0),90*i);
+ });
+ Check("even centered fan includes both edges and keeps a single shot on its axis",()=>{
+  for(int i=0;i<4;i++)Eq(AttackPlacement.ResolveSpreadAngle(90,i,4,AttackSpreadDistribution.Even,AttackSpreadStartMode.CenteredOnDirection,false,0),-45+30*i);
+  Eq(AttackPlacement.ResolveSpreadAngle(90,0,1,AttackSpreadDistribution.Even,AttackSpreadStartMode.CenteredOnDirection,false,0),0);
+ });
+ Check("clockwise fan reverses sweep from the selected direction",()=>{
+  for(int i=0;i<4;i++)Eq(AttackPlacement.ResolveSpreadAngle(90,i,4,AttackSpreadDistribution.Even,AttackSpreadStartMode.FromDirection,true,0),-30*i);
+ });
+ Check("random fan respects centered and directional intervals independently of shot index",()=>{
+  Eq(AttackPlacement.ResolveSpreadAngle(90,0,4,AttackSpreadDistribution.Random,AttackSpreadStartMode.CenteredOnDirection,false,0),-45);
+  Eq(AttackPlacement.ResolveSpreadAngle(90,3,4,AttackSpreadDistribution.Random,AttackSpreadStartMode.CenteredOnDirection,false,1),45);
+  Eq(AttackPlacement.ResolveSpreadAngle(90,2,4,AttackSpreadDistribution.Random,AttackSpreadStartMode.FromDirection,true,.25f),-22.5f);
+ });
+ Check("even shotgun angles coexist with independent random radius offsets",()=>{
+  float[] samples={0,.25f,.75f,1};
+  for(int i=0;i<4;i++){
+   Eq(AttackPlacement.ResolveSpreadAngle(60,i,4,AttackSpreadDistribution.Even,AttackSpreadStartMode.CenteredOnDirection,false,samples[i]),-30+20*i);
+   Eq(AttackPlacement.ResolveShotgunDistance(5,1,samples[i]),4+2*samples[i]);
+  }
+ });
+ Check("direct modifier debuff is harmful without a status key",()=>{
+  var buff=BuffRecord(new BuffEffect{harmful=true});True(buff.harmful&&buff.dispellable);True(new BuffCleanseFilter().Matches(buff));
+  True(!new BuffCleanseFilter().Matches(BuffRecord(new BuffEffect())));
+ });
+ Check("legacy status harmful flag remains supported and either layer can forbid cleanse",()=>{
+  var status=new StatusDefinition{harmful=true};var effect=new BuffEffect();var filter=new BuffCleanseFilter();
+  True(filter.Matches(BuffRecord(effect,status)));
+  effect.dispellable=false;True(!filter.Matches(BuffRecord(effect,status)));
+  effect.dispellable=true;status.dispellable=false;True(!filter.Matches(BuffRecord(effect,status)));
+ });
+ Check("flag cleanse can select a beneficial buff and compares asset identity",()=>{
+  var poison=new BuffFlagDefinition{displayName="Poison"};var sameName=new BuffFlagDefinition{displayName="Poison"};
+  var filter=new BuffCleanseFilter{mode=BuffCleanseMode.Flags,flags=new[]{poison}};
+  True(filter.Matches(BuffRecord(new BuffEffect{flags=new[]{poison}})));
+  True(!filter.Matches(BuffRecord(new BuffEffect{flags=new[]{sameName}})));
+ });
+ Check("flag any and all support multiple independent tags",()=>{
+  var poison=new BuffFlagDefinition();var curse=new BuffFlagDefinition();var buff=BuffRecord(new BuffEffect{flags=new[]{poison}});
+  var filter=new BuffCleanseFilter{mode=BuffCleanseMode.Flags,flags=new[]{poison,curse}};
+  True(filter.Matches(buff));filter.flagMatch=BuffFlagMatchMode.All;True(!filter.Matches(buff));
+  True(filter.Matches(BuffRecord(new BuffEffect{flags=new[]{poison,curse}})));
+ });
+ Check("null empty and duplicate cleanse flags never broaden removal unexpectedly",()=>{
+  var flag=new BuffFlagDefinition();var buff=BuffRecord(new BuffEffect{flags=new[]{flag}});
+  foreach(var match in new[]{BuffFlagMatchMode.Any,BuffFlagMatchMode.All}){
+   var filter=new BuffCleanseFilter{mode=BuffCleanseMode.Flags,flagMatch=match};True(!filter.Matches(buff));
+   filter.flags=new BuffFlagDefinition[0];True(!filter.Matches(buff));filter.flags=new BuffFlagDefinition[]{null};True(!filter.Matches(buff));
+   filter.flags=new[]{null,flag,flag};True(filter.Matches(buff));
+  }
+ });
+ Check("harmful-or-flags and harmful-and-flags have distinct selection behavior",()=>{
+  var flag=new BuffFlagDefinition();var filter=new BuffCleanseFilter{mode=BuffCleanseMode.HarmfulOrFlags,flags=new[]{flag}};
+  var harmful=BuffRecord(new BuffEffect{harmful=true});var tagged=BuffRecord(new BuffEffect{flags=new[]{flag}});
+  True(filter.Matches(harmful));True(filter.Matches(tagged));
+  filter.mode=BuffCleanseMode.HarmfulAndFlags;True(!filter.Matches(harmful));True(!filter.Matches(tagged));
+  True(filter.Matches(BuffRecord(new BuffEffect{harmful=true,flags=new[]{flag}})));
+ });
+ Check("non-dispellable buff resists every cleanse mode including matching tags",()=>{
+  var flag=new BuffFlagDefinition();var buff=BuffRecord(new BuffEffect{harmful=true,dispellable=false,flags=new[]{flag}});
+  foreach(BuffCleanseMode mode in Enum.GetValues(typeof(BuffCleanseMode)))True(!new BuffCleanseFilter{mode=mode,flags=new[]{flag}}.Matches(buff));
+ });
+ Check("registered classification survives asset edits until the buff is refreshed",()=>{
+  var first=new BuffFlagDefinition();var second=new BuffFlagDefinition();var effect=new BuffEffect{harmful=true,flags=new[]{first}};var buff=BuffRecord(effect);
+  effect.harmful=false;effect.dispellable=false;effect.flags[0]=second;
+  True(buff.harmful&&buff.dispellable&&buff.HasFlag(first)&&!buff.HasFlag(second));
+  buff.RegisterAgain(new BuffInfo{useLimitType=BuffUseLimitType.Infinite});
+  True(!buff.harmful&&!buff.dispellable&&!buff.HasFlag(first)&&buff.HasFlag(second));
+ });
+ Check("refresh retains a single buff and cleansed removal reports cancellation",()=>{
+  var storage=new BuffStorage();var flag=new BuffFlagDefinition();var effect=new BuffEffect{harmful=true,flags=new[]{flag}};
+  var target=BuffTargetHandle.Item(new ItemData());var info=new BuffInfo{useLimitType=BuffUseLimitType.Infinite};
+  var buff=storage.RegisterBuff(null,info,null,null,effect,target,true,false);
+  True(ReferenceEquals(buff,storage.RegisterBuff(null,info,null,null,effect,target,true,false)));True(storage.activeBuffs.Count==1);
+  BuffRemovalReason reason=BuffRemovalReason.Cancelled;buff.Removed+=(removed,why)=>reason=why;
+  int completions=0;var context=Context();context.lifetime=new ItemEffectLifetime(onCompleted:()=>completions++);
+  buff.completion.Track(context,null);context.lifetime.Close();True(!context.lifetime.IsFinished);
+  storage.RemoveBuff(buff,BuffRemovalReason.Cleansed);True(reason==BuffRemovalReason.Cleansed&&storage.activeBuffs.Count==0&&storage.infiniteBuffs.Count==0);
+  True(context.lifetime.IsFinished&&context.lifetime.IsCancelled&&completions==0);
+ });
  Check("shotgun radius offset samples independent distances inside the radius band",()=>{
   Eq(AttackPlacement.ResolveShotgunDistance(5,1,0),4);Eq(AttackPlacement.ResolveShotgunDistance(5,1,.25f),4.5f);
   Eq(AttackPlacement.ResolveShotgunDistance(5,1,.75f),5.5f);Eq(AttackPlacement.ResolveShotgunDistance(5,1,1),6);

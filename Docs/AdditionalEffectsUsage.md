@@ -125,6 +125,7 @@ Conditions를 비우면 항상 실행한다. **Condition Mode = All**이면 모�
 | 명중 후 다른 효과 실행 | `Items → Hit Effects → Execute Effects` |
 | 상태 키 / 상태 대상 설정 | `Items → Status → Definition` / `Buffs → Targets → Context Status` |
 | 상태 부여 / 조회 | `Items → Effects → Buff` / `Items → Conditions → Has Status Key` |
+| 버프 확장 플래그 | `Items → Buff → Flag` |
 | 상태 소비 / 정화 | `Items → Effects → Status → Consume Checked Status` / `Cleanse` |
 | 장판 정의 / 생성 | `Items → Areas → Definition` / `Items → Effects → Attack → Defined Area` |
 | 장판 조회 / 소비 | `Items → Conditions → Has Area` / `Items → Effects → Area → Consume Checked Areas` |
@@ -390,7 +391,24 @@ Execute Effects 명중 에셋은 **공격의 On Hit Effects**에 넣고, 그 에
 
 Cleanse의 **Target Resolver**에 Context Status 에셋을 연결한다. 식물과 플레이어를 동시에 정화하려면 Targets에 **PlantHealth**, **PlayerStatus** 두 값을 넣는다. `Milk_PlayerAndPlantTargets`와 `Food23_MilkCleanse`가 이 설정이다.
 
-Harmful과 Dispellable이 모두 켜진 StatusDefinition이 등록된 버프만 제거한다. **Include Modifier Buffs**를 켜면 상태와 수치 변경이 함께 있는 복합 버프도 제거한다. 상태 키가 없는 기존 수치 버프나 별도 기절·속박 컨트롤러의 효과까지 일괄 해제하는 기능은 아니다.
+BuffEffect의 **Classification → Harmful**을 켜면 해로운 버프다. **Dispellable**을 켜면 정화할 수 있다. 수치 Modifier만 있는 버프도 이 두 값을 설정하면 정화 대상이 된다. 기존 StatusDefinition의 Harmful도 함께 인정하며, BuffEffect 또는 StatusDefinition 중 한쪽이라도 Dispellable을 끄면 정화할 수 없다.
+
+**CleanseEffect → Filter → Mode**에서 제거 조건을 선택한다.
+
+| Mode | 제거 대상 |
+| --- | --- |
+| Harmful | 해로운 버프. 기본 설정 |
+| Flags | 지정한 플래그를 가진 버프. 이롭거나 해로운지와 관계없이 선택 |
+| HarmfulOrFlags | 해로운 버프이거나 지정 플래그가 일치하는 버프 |
+| HarmfulAndFlags | 해로우면서 지정 플래그도 일치하는 버프 |
+
+플래그는 **Create → GameData → Items → Buff → Flag**에서 원하는 만큼 에셋을 만들어 확장한다. 예를 들어 `Poison`, `Curse`, `Fire` 에셋을 만들고 **BuffEffect → Flags**에 여러 개 넣는다. **CleanseEffect → Filter → Flags**에도 제거할 플래그의 **같은 에셋**을 연결한다. **Flag Match = Any**는 하나라도 일치하면, **All**은 지정한 플래그가 전부 있으면 제거한다. 이름이 같아도 서로 다른 에셋은 다른 플래그다. 빈 항목·중복은 추가 조건이 되지 않으며, 유효한 플래그가 없으면 플래그 조건은 불일치다.
+
+예: 독 디버프에 Harmful·Dispellable을 켜고 Flags에 Poison을 넣는다. 모든 디버프를 해제하는 정화는 Mode = Harmful, 독만 해제하는 정화는 Mode = Flags + Flags = Poison, 해로운 독만 해제하려면 Mode = HarmfulAndFlags + Flags = Poison으로 설정한다. 새 플래그를 추가할 때 코드를 수정할 필요가 없다.
+
+**Include Modifier Buffs**를 켜면 조건에 맞는 수치 변경 버프도 함께 제거한다. 끄면 Modifier가 없는 버프만 제거한다. 제거할 때 버프 전체가 해제되며, 같은 버프 안의 Modifier 일부나 플래그 하나만 떼어내지는 않는다. 플래그만 있는 버프도 Buff Info의 지속·중첩·사용 횟수 설정으로 등록할 수 있다. 분류와 플래그는 등록 시 복사하고 같은 버프가 다시 부여되면 갱신한다. 코드에서 활성 버프의 `harmful`, `dispellable`, `HasFlag(flag)`로 확인할 수 있다.
+
+정화의 대상은 Target Resolver가 선택한 대상이다. 별도 기절·속박 컨트롤러나 UI 전용 재생·보호막 표시는 이 버프 정화에 포함되지 않는다. 정화로 제거한 버프는 자연 종료 연출이나 종료 후 자동 아이템 사용을 실행하지 않는다. Unity Test Runner의 EditMode에서 **AdditionalBuffClassificationTests**와 **AdditionalAreaStatusTests**로 등록·수치 복구·플래그 선택·기존 상태 호환을 검사한다.
 
 ## 10. 장판 생성·조회·소비·체류
 
@@ -696,7 +714,7 @@ Attack Prefab을 비우면 기본 부채꼴 판정 오브젝트를 생성한다.
 | 회복이 없음 | 식물 생존 상태, 최대 HP 도달, 실제 Health 존재, Use Radius / Center / Shape |
 | DamageArea 버프가 안 바뀜 | Target Group = DamageArea, Modifier 타입 = DamageAreaAttackStat인지; Direct의 프리팹 참조와 생성 인스턴스를 구분했는지 |
 | 상태 조건이 실패 | 부여·조회가 같은 StatusDefinition을 참조하는지, PlayerStatus와 Owner/SourceSummon의 차이 |
-| 상태가 정화되지 않음 | StatusDefinition의 Harmful·Dispellable, 정화 대상 설정, Include Modifier Buffs |
+| 버프가 정화되지 않음 | BuffEffect·StatusDefinition의 Harmful·Dispellable, Filter의 Mode·플래그 에셋·Any/All, 정화 대상, Include Modifier Buffs |
 | 장판 조건이 실패 | 같은 AreaDefinition인지, Own/Allied 소유자 조건, 조회 위치가 장판 안인지 |
 | 상태·장판 소비가 안 됨 | Checked Condition을 같은 조건 에셋으로 연결했는지, 해당 실행에서 조건이 먼저 성공했는지 |
 | 분기가 예상과 다름 | Condition Mode, 조건 참조, Freeze Branch At Prepare에 따른 준비 시점 판정 |
@@ -812,3 +830,21 @@ Unity에서 `Window → General → Test Runner → EditMode → AdditionalThrow
 오프셋 `0`은 기존의 고정 반지름 동작이다. 오프셋이 반지름보다 크면 추첨 구간의 하한을 `0`으로 제한하며 음수 거리로 뒤쪽에 착지하지 않는다. 범위 배율을 적용하면 반지름과 오프셋을 함께 조정한다. 이 필드는 Shotgun에서 사용하며 다른 배치 모드의 위치 계산은 기존과 같다. 기존 효과 에셋에는 기본값 `0`으로 추가되므로 사용할 에셋에서 원하는 값을 입력한다.
 
 스텝의 **Override Placement**를 켰다면 해당 스텝의 Placement도 Shotgun으로 설정한다. **First Step At Origin**을 켜면 첫 묶음이 원점에 고정되므로 처음부터 흩어 던질 때는 끈다.
+
+### 랜덤·균등 각도와 시작 방향
+
+RepeatItemEffect의 Placement 아래에서 다음을 설정한다.
+
+| 필드 | 선택 |
+| --- | --- |
+| Shotgun Distribution | Random: 매 발사체 각도를 독립적으로 추첨 / Even: 펼침 각도를 균등하게 나눔 |
+| Direction Mode | ThrownDirection: 원본 아이템을 던진 방향 / FixedWorldDirection: Fixed World Direction 사용 |
+| Fixed World Direction | 고정 방향. `(1, 0)` 오른쪽, `(0, 1)` 위쪽 |
+| Spread Start Mode | CenteredOnDirection: 기준 방향 양옆으로 펼침 / FromDirection: 첫 발이 기준 방향에서 시작 |
+| Clockwise Spread | 켜면 시계 방향, 끄면 반시계 방향으로 펼침 |
+
+예: **Placement = Shotgun**, **Shotgun Distribution = Even**, **Direction Mode = ThrownDirection**, **Spread Start Mode = FromDirection**, 펼침 각도 `360`, 발사 개수 `4`이면 던진 방향을 첫 지점으로 `0°·90°·180°·270°`에 배치한다. 첫 발과 마지막 발은 겹치지 않는다. 펼침 각도 `90`이면 `0°·30°·60°·90°`이고, CenteredOnDirection이면 `-45°·-15°·15°·45°`다. **Item Repeat Direction Angle**로 기준 방향 자체를 회전시킬 수도 있다.
+
+각도를 균등하게 해도 **Shotgun Radius Offset**이 `1`이면 거리는 발마다 `Radius ± 1`에서 추첨한다. 같은 원의 둘레에 정확히 놓으려면 오프셋을 `0`으로 설정한다. 무작위 방식의 FromDirection은 기준 방향에서 펼침 각도만큼의 구간에서 각도를 뽑는다. 한 발만 균등 배치할 때는 기준 방향에 놓는다.
+
+**CircleEven**은 원 둘레의 균등 각도, **CircleRandom**은 원 내부의 무작위 위치다. 둘 모두 Direction Mode·Spread Start Mode·Clockwise Spread를 사용하며, Shotgun Distribution·Shotgun Radius Offset은 Shotgun에만 적용한다. 다중 발사는 각 묶음 안에서 균등 배치하고, 한 발씩 여러 번 반복하면 전체 반복 횟수로 나눠 배치한다. 기존 에셋은 Random·CenteredOnDirection·반시계 방향으로 기존 설정을 유지한다. Unity EditMode의 **CombatEffectTests**에서 배치와 RepeatItemRunner 연결을 검사한다.

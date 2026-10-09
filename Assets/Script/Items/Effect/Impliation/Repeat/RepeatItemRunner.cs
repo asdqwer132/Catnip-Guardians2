@@ -8,6 +8,9 @@ public sealed class RepeatItemRunner : AttackObject<RepeatItemStat>
     private RepeatItemStep[] steps;
     private RepeatItemSelection selection;
     private AttackPlacementMode placement;
+    private AttackSpreadDistribution shotgunDistribution;
+    private AttackSpreadStartMode spreadStartMode;
+    private bool clockwiseSpread;
     private RepeatItemStartPosition startPosition;
     private ItemThrowMover prefab;
     private Sprite projectileSprite;
@@ -33,6 +36,9 @@ public sealed class RepeatItemRunner : AttackObject<RepeatItemStat>
         steps = runtimeSteps;
         selection = effect.selection;
         placement = effect.placement;
+        shotgunDistribution = effect.shotgunDistribution;
+        spreadStartMode = effect.spreadStartMode;
+        clockwiseSpread = effect.clockwiseSpread;
         startPosition = effect.startPosition;
         throwItems = effect.throwItems;
         triggerSpecial = effect.triggerSpecialItemsForChildren;
@@ -108,7 +114,7 @@ public sealed class RepeatItemRunner : AttackObject<RepeatItemStat>
             Vector3 target = firstAtOrigin && useIndex == 0 ? origin :
                 AttackPlacement.Position(mode, origin, direction, positionIndex, positionCount,
                     stat.itemRepeatForwardOffset, stat.itemRepeatSideOffset, stat.itemRepeatRadius, stat.itemRepeatSpreadAngle,
-                    stat.itemRepeatShotgunRadiusOffset);
+                    stat.itemRepeatShotgunRadiusOffset, shotgunDistribution, spreadStartMode, clockwiseSpread);
             serialPosition++;
             ItemData item = payloads[shot];
             Vector3 shotDirection = (target - start).sqrMagnitude > 0.000001f ? (target - start).normalized : direction;

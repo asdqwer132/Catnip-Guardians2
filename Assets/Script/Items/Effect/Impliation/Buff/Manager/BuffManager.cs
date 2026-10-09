@@ -385,6 +385,9 @@ public class BuffManager : MonoBehaviour
     }
 
     public int Cleanse(BuffTargetHandle selection, bool includeModifierBuffs = true)
+        => Cleanse(selection, null, includeModifierBuffs);
+
+    public int Cleanse(BuffTargetHandle selection, BuffCleanseFilter filter, bool includeModifierBuffs = true)
     {
         if (storage == null || selection == null) return 0;
         int removed = 0;
@@ -392,8 +395,8 @@ public class BuffManager : MonoBehaviour
         for (int i = 0; i < candidates.Length; i++)
         {
             ActiveBuff buff = candidates[i];
-            StatusDefinition status = buff != null ? buff.statusDefinition : null;
-            if (buff == null || buff.StorageOwner != storage || buff.IsExpired || status == null || !status.harmful || !status.dispellable ||
+            if (buff == null || buff.StorageOwner != storage || buff.IsExpired ||
+                !(filter != null ? filter.Matches(buff) : buff.harmful && buff.dispellable) ||
                 !StatusTargetUtility.MatchesSelection(buff.target, selection)) continue;
             if (!includeModifierBuffs && StatusTargetUtility.HasModifiers(buff.modifiers)) continue;
             storage.RemoveBuff(buff, BuffRemovalReason.Cleansed);

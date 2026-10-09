@@ -102,6 +102,46 @@ public sealed class CombatEffectTests
         Assert.That((first - last).sqrMagnitude, Is.GreaterThan(0.01f));
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public void EvenShotgunStartsInChosenDirectionAndSweepsWithoutOverlap(bool clockwise)
+    {
+        Vector3 forward = Vector3.up;
+        for (int i = 0; i < 4; i++)
+        {
+            Vector3 point = AttackPlacement.Position(AttackPlacementMode.Shotgun, Vector3.zero, forward,
+                i, 4, 0f, 0f, 5f, 360f, shotgunDistribution: AttackSpreadDistribution.Even,
+                spreadStartMode: AttackSpreadStartMode.FromDirection, clockwiseSpread: clockwise);
+            Vector3 expected = Quaternion.Euler(0f, 0f, (clockwise ? -1f : 1f) * 90f * i) * forward * 5f;
+            Assert.That((point - expected).sqrMagnitude, Is.LessThan(0.00001f));
+        }
+    }
+
+    [TestCase(AttackDirectionMode.ThrownDirection, false)]
+    [TestCase(AttackDirectionMode.FixedWorldDirection, true)]
+    public void RepeatRunnerUsesDistributionStartAndDirectionSettings(AttackDirectionMode directionMode, bool clockwise)
+    {
+        CombatEffectRecordingEffect hits = Asset<CombatEffectRecordingEffect>();
+        RepeatItemEffect effect = Asset<RepeatItemEffect>();
+        effect.repeatStat.itemRepeatCount = 2; effect.repeatStat.itemRepeatInterval = 0;
+        effect.repeatStat.itemRepeatRadius = 5f; effect.repeatStat.itemRepeatSpreadAngle = 90f;
+        effect.throwItems = false; effect.placement = AttackPlacementMode.Shotgun;
+        effect.shotgunDistribution = AttackSpreadDistribution.Even;
+        effect.spreadStartMode = AttackSpreadStartMode.FromDirection;
+        effect.directionMode = directionMode; effect.fixedWorldDirection = Vector2.left;
+        effect.clockwiseSpread = clockwise;
+        effect.steps = new[] { new RepeatItemStep { effectOnlyCount = 4, onImpactEffects = new ItemEffectData[] { hits } } };
+        ItemEffectContext context = Context(); context.direction = Vector3.up;
+        Host().AddComponent<RepeatItemRunner>().Init(effect, context);
+        Assert.That(hits.calls.Count, Is.EqualTo(4));
+        Vector3 forward = directionMode == AttackDirectionMode.ThrownDirection ? Vector3.up : Vector3.left;
+        for (int i = 0; i < 4; i++)
+        {
+            Vector3 expected = Vector3.right + Quaternion.Euler(0f, 0f, (clockwise ? -1f : 1f) * 30f * i) * forward * 5f;
+            Assert.That((hits.calls[i].targetPosition - expected).sqrMagnitude, Is.LessThan(0.00001f));
+        }
+    }
+
     [Test]
     public void ForwardPlacementUsesBothOffsets()
     {

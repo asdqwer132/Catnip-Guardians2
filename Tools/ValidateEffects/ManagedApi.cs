@@ -1,6 +1,6 @@
 using UnityEngine;
 public class ItemData {
- public float cooldown; public ItemSeries series; public float Cooldown=>cooldown; public string GetDataName()=>"Managed Item";
+ public float cooldown; public ItemSeries series; public Sprite icon; public float Cooldown=>cooldown; public string GetDataName()=>"Managed Item";
  public ItemEffectData[] effectDatas; public EffectVisualData endVisualData; public bool endVisualAtOwner;
  public ItemData[] afterCompletionItems; public bool afterCompletionItemsAtOwner;
  public bool afterCompletionConsumeUseBuffs, afterCompletionTriggerSpecialItems;
@@ -8,7 +8,7 @@ public class ItemData {
 public enum ItemSeries { None, Weapon, Food }
 public class InventoryItem { public ItemData itemData; public int amount; }
 public class EquipmentBag { public string name; public System.Collections.Generic.List<InventoryItem> equippedItems; }
-public class ItemEffectData { public virtual void Prepare(ItemEffectContext c){} public virtual void ExecuteEffect(ItemEffectContext c){} public void Execute(ItemEffectContext c)=>ExecuteEffect(c); }
+public class ItemEffectData : ScriptableObject { public virtual void Prepare(ItemEffectContext c){} public virtual void ExecuteEffect(ItemEffectContext c){} public void Execute(ItemEffectContext c)=>ExecuteEffect(c); }
 public class BuffManager {
  public static BuffManager instance;
  public int begunUses, endedUses;
@@ -40,7 +40,7 @@ public class EffectVisualContext { public EffectVisualContext(Vector3 p, Quatern
 public class Enemy { public int HitEffectLifeId; public bool CanReceiveHitEffects=true; public int damages; public SimpleTransform transform=new SimpleTransform(); public void TakeDamage(float d, ItemEffectContext source=null){damages++;} }
 public class SimpleTransform { public Vector3 position; }
 public class HitEffectData { public int hits; public void TryExecute(HitEffectContext h){hits++;} }
-public class BuffEffect : ItemEffectData { }
+public class BuffEffect : ItemEffectData { public bool harmful; public bool dispellable=true; public BuffFlagDefinition[] flags; public Sprite buffIcon; }
 public class SummonItemThrower { }
 
 public static class ItemEffectUtility { public static ItemEffectData[] Copy(ItemEffectData[] x)=>x!=null?(ItemEffectData[])x.Clone():null; public static void Execute(ItemEffectData[] e,ItemEffectContext c){} }

@@ -11,6 +11,14 @@ public class BuffEffect : ItemEffectData
     public BuffInfo buffInfo = new BuffInfo();
     public bool includeSelf;
 
+    [Header("Classification")]
+    [Tooltip("해로운 버프로 분류합니다. StatusDefinition의 Harmful이 켜져 있어도 해로운 버프로 취급합니다.")]
+    public bool harmful;
+    [Tooltip("끄면 Cleanse로 제거할 수 없습니다. StatusDefinition의 Dispellable이 꺼져 있어도 정화가 차단됩니다.")]
+    public bool dispellable = true;
+    [Tooltip("정화 조건 등에 사용할 확장 플래그입니다. GameData/Items/Buff/Flag에서 플래그 에셋을 만들어 연결합니다.")]
+    public BuffFlagDefinition[] flags;
+
     [Header("UI")]
     [Tooltip("버프 UI에 표시할 아이콘입니다. 비워두면 버프를 부여한 아이템의 아이콘을 사용합니다.")]
     public Sprite buffIcon;
@@ -61,6 +69,13 @@ public class BuffEffect : ItemEffectData
         return false;
     }
 
-    public bool HasRuntimePayload() => HasValidModifier() ||
-        (buffInfo != null && buffInfo.statusDefinition != null);
+    public bool HasRuntimePayload()
+    {
+        if (HasValidModifier() || harmful || (buffInfo != null && buffInfo.statusDefinition != null))
+            return true;
+        if (flags != null)
+            foreach (BuffFlagDefinition flag in flags)
+                if (flag != null) return true;
+        return false;
+    }
 }
