@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Food30
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 7306298499121882410, guid: 623cd17da8f43fa42a77a4d8cdac4f0e, type: 3}
+  icon: {fileID: 21300000, guid: 623cd17da8f43fa42a77a4d8cdac4f0e, type: 3}
   data:
   - language: 1
     dataName: "\uD06C\uB9AC\uC2A4\uD0C8 \uD30C\uC774"
@@ -28,8 +28,13 @@ MonoBehaviour:
   grade: 3
   category: 0
   series: 2
+  tags: []
   weight: 1
   cooldown: 1
   effectDatas: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Monster28
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: -1530495064351113526, guid: c5fe17861e26bb74aa0049849ef8da0b, type: 3}
+  icon: {fileID: 21300000, guid: c5fe17861e26bb74aa0049849ef8da0b, type: 3}
   data:
   - language: 1
     dataName: "\uBF085"
@@ -28,8 +28,13 @@ MonoBehaviour:
   grade: 2
   category: 0
   series: 4
+  tags: []
   weight: 1
   cooldown: 1
   effectDatas: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

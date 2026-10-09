@@ -16,9 +16,9 @@ namespace ItemDataExcelTools
     public sealed class ItemDataExcelImporter : EditorWindow
     {
         [SerializeField] private string workbookPath = "";
-        [SerializeField] private string outputFolder = "Assets/GameData/Items";
+        [SerializeField] private string outputFolder = "Assets/Data/Scriptable/Item/Items";
         [SerializeField] private string iconFolder = "Assets/Art/Icons/Items";
-        [SerializeField] private bool findMissingIcons = true;
+        [SerializeField] private bool findMissingIcons = false;
         [SerializeField] private bool replaceDescriptions;
         [SerializeField] private bool showEnums;
         private Vector2 scroll;

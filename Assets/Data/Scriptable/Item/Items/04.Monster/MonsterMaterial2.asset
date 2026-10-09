@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: MonsterMaterial2
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 383397093160202004, guid: 30859f91ea33be74e98e4056f1e69fda, type: 3}
+  icon: {fileID: 21300000, guid: 30859f91ea33be74e98e4056f1e69fda, type: 3}
   data:
   - language: 1
     dataName: "\uB04C"
@@ -28,8 +28,13 @@ MonoBehaviour:
   grade: 0
   category: 0
   series: 4
+  tags: []
   weight: 1
   cooldown: 1
   effectDatas: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

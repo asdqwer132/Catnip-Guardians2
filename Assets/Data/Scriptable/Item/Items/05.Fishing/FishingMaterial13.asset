@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: FishingMaterial13
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 8368857105679151004, guid: 61b20b32248f6694481088d0a67481be, type: 3}
+  icon: {fileID: 21300000, guid: 61b20b32248f6694481088d0a67481be, type: 3}
   data:
   - language: 1
     dataName: "\uCD5C\uACE0\uAE09 \uCC0C"
@@ -28,8 +28,13 @@ MonoBehaviour:
   grade: 3
   category: 0
   series: 5
+  tags: []
   weight: 1
   cooldown: 1
   effectDatas: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

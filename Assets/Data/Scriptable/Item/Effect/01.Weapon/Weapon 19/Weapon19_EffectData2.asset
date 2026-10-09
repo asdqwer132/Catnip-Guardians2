@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d50d18715ac1424594cc41780060893d, type: 3}
+  m_Name: Weapon19_EffectData2
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyMovementControlEffect
+  conditionMode: 0
+  conditions: []
+  visualData: {fileID: 0}
+  impactVfxPrefab: {fileID: 0}
+  impactBaseScale: {x: 1, y: 1, z: 1}
+  scaleImpactVfxByRadius: 1
+  useAnimatorClipLifeTime: 1
+  audioSource: 
+  impactVfxLifeTime: 1
+  mode: 1
+  centerSource: 0
+  movementStat:
+    range: 3
+    strength: 1
+    duration: 5
+    maxDistance: 3
+    pullStopDistance: 0.15
+    areaDuration: 5
+    tickInterval: 0.1
+  executionMode: 1
+  holdAtCenter: 1
+  releaseOnExit: 1
+  matchAreaVisualLifetime: 1
+  areaShape: {fileID: 11400000, guid: 8784c43a2c423ab4187122dff06a671c, type: 2}
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  includeTriggers: 1
+  speedCurve: 1
+  reapplyMode: 0
+  suppressBaseMovement: 1
+  clearExternalVelocity: 1
+  allowWhileStopped: 0
+  interruptPattern: 1
+  interruptAttack: 1
+  useDistanceFalloff: 0
+  edgeStrengthMultiplier: 0.25

@@ -9,7 +9,7 @@ public class TestItemList
 [System.Serializable]
 public class TestItem
 {
-
+    public string name;
     [Header("Item")]
     public bool isUse = true;
     public ItemData[] item;
