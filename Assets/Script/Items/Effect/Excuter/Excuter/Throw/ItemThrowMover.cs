@@ -9,9 +9,13 @@ public class ItemThrowMover : MonoBehaviour
     [Header("Move")]
     [Tooltip("자동 계산됨. 도착 시간과 X거리 기준")]
     public float speed = 10f;
-    [Tooltip("목표 지점까지 도착하는 시간")]
+    [Tooltip("고정 모드의 도착 시간 또는 무게 모드의 기본 도착 시간(초)")]
     public float arriveTime = 0.6f;
+    [Tooltip("모든 비행 시간의 최종 상한(초). 최소 도착 시간 이상으로 설정하세요.")]
     public float maxMoveTime = 3f;
+
+    [Header("Arrival Timing")]
+    public ItemThrowArrivalTiming arrivalTiming = new ItemThrowArrivalTiming();
 
     [Header("Projectile Arc")]
     [Tooltip("최고점 높이")]
@@ -43,6 +47,8 @@ public class ItemThrowMover : MonoBehaviour
     private float peakY;
     private bool isMoving;
     private Action onArrive;
+    public float MoveDuration => moveDuration;
+    public bool IsMoving => isMoving;
 
     void Awake()
     {
@@ -51,11 +57,15 @@ public class ItemThrowMover : MonoBehaviour
     }
 
     void Update()
+        => Tick(Time.deltaTime);
+
+    public void Tick(float deltaTime)
     {
         if (!isMoving)
             return;
 
-        timer += Time.deltaTime;
+        deltaTime = float.IsNaN(deltaTime) || float.IsInfinity(deltaTime) ? 0f : Mathf.Max(0f, deltaTime);
+        timer += deltaTime;
 
         float progress = timer / moveDuration;
 
@@ -68,19 +78,27 @@ public class ItemThrowMover : MonoBehaviour
         progress = Mathf.Clamp01(progress);
 
         MoveProjectileArc(progress);
-        UpdateRotation();
+        UpdateRotation(deltaTime);
     }
 
     public void Init(
         Vector3 startPosition,
         Vector3 targetPosition,
         Sprite itemSprite,
-        Action onArrive
+        Action onArrive,
+        float itemWeight = 0f
     )
     {
         SetSprite(itemSprite);
-        InitMove(startPosition, targetPosition, arriveTime, onArrive);
+        InitMove(startPosition, targetPosition, ResolveArrivalTime(itemWeight), onArrive);
     }
+
+    public float ResolveArrivalTime(float itemWeight)
+        => arrivalTiming != null
+            ? arrivalTiming.Resolve(arriveTime, maxMoveTime, itemWeight,
+                arrivalTiming.mode == ItemThrowArrivalMode.Fixed ? 0.5f : UnityEngine.Random.value)
+            : ItemThrowArrivalTiming.ClampDuration(arriveTime, maxMoveTime);
+
     public void InitMove(
         Vector3 startPosition,
         Vector3 targetPosition,
@@ -99,8 +117,8 @@ public class ItemThrowMover : MonoBehaviour
 
         horizontalDistance = Mathf.Abs(this.targetPosition.x - this.startPosition.x);
 
-        moveDuration = Mathf.Max(0.01f, arriveTime);
-        moveDuration = Mathf.Min(moveDuration, maxMoveTime);
+        // Explicit flight times (e.g. Repeat's override) bypass random/weight timing.
+        moveDuration = ItemThrowArrivalTiming.ClampDuration(arriveTime, maxMoveTime);
 
         speed = horizontalDistance / moveDuration;
 
@@ -111,7 +129,7 @@ public class ItemThrowMover : MonoBehaviour
         timer = 0f;
         isMoving = true;
     }
-    private void SetSprite(Sprite itemSprite)
+    public void SetSprite(Sprite itemSprite)
     {
         if (itemSprite == null)
             return;
@@ -188,12 +206,12 @@ public class ItemThrowMover : MonoBehaviour
         );
     }
 
-    private void UpdateRotation()
+    private void UpdateRotation(float deltaTime)
     {
         if (!spinWhileMoving)
             return;
 
-        transform.Rotate(0f, 0f, spinSpeed * Time.deltaTime);
+        transform.Rotate(0f, 0f, spinSpeed * deltaTime);
     }
 
     private void OnDisable()

@@ -82,7 +82,8 @@ public class ItemThrowExecutor : MonoBehaviour
                 }
                 finally { completion.Complete(); }
 
-            }
+            },
+            itemWeight: inventoryItem.weight
         );
 
         flightScope.Close();

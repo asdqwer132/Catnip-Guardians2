@@ -25,6 +25,7 @@
 17. [그림·파티클·소리 연결](#17-그림파티클소리-연결)
 18. [작동하지 않을 때 확인할 것](#18-작동하지-않을-때-확인할-것)
 19. [확인·저장·Git에 올리기](#19-확인저장git에-올리기)
+20. [아이템 투척의 랜덤 도착 시간과 무게](#20-아이템-투척의-랜덤-도착-시간과-무게)
 
 ## 1. 가장 먼저 해보기: 따뜻한 수프
 
@@ -732,3 +733,58 @@ git push origin work
 다른 폴더에 만든 에셋과 폴더 `.meta`도 해당 경로를 git add에 포함한다. 다른 PC에서는 [work 가져오기 안내](WorkBranchGuide.md)에 따라 가져온다.
 
 현재 클라우드 검증은 관련 C# 컴파일과 엔진 없이 실행 가능한 관리 코드 검사까지다. Unity 임포트·물리 판정·실제 씬 플레이는 로컬 Unity에서 확인한다. 구현 범위·미정 규칙은 [추가 이펙트 제작 및 연결](AdditionalEffects.md), 원본별 연결 계획은 [ItemEffectCoverage.csv](ItemEffectCoverage.csv)를 참고한다.
+
+
+## 20. 아이템 투척의 랜덤 도착 시간과 무게
+
+`Assets/Prefab/Item/ThrowItem.prefab`의 **ItemThrowMover → Arrival Timing**을 펼쳐 설정한다. 이 프리팹은 **Weight And Random Offset**, 최소 `0.6`초 / 최대 `1.8`초 / 오프셋 `0.15`초 / 무게당 `0.2`초 / 중앙 선호 분포로 연결했다. 다른 투척 프리팹에도 같은 설정을 사용할 수 있다. 새 설정이 없는 기존 프리팹이나 프리팹 없는 생성은 **Fixed**를 기본값으로 사용한다.
+
+| 필드 | 의미 |
+| --- | --- |
+| Arrive Time | Fixed의 도착 시간 또는 무게 모드의 기본 시간 |
+| Max Move Time | 최종 비행 시간의 상한. 최소 도착 시간 이상으로 설정한다 |
+| Arrival Timing → Mode | Fixed / Random Range / Weight And Random Offset |
+| Min Arrive Time / Max Arrive Time | 최종 랜덤 도착 시간의 최소·최대(초) |
+| Random Offset | 무게 모드에서 기준 시간의 앞뒤에 허용하는 편차(초). `0.15`는 ±0.15초 |
+| Seconds Per Weight | 아이템 무게 1당 추가할 시간(초). `0`이면 무게 영향 없음 |
+| Distribution | 랜덤 값을 도착 시간 구간 안의 위치로 바꾸는 함수 |
+| Custom Curve | Distribution = Custom Curve에서 사용할 직접 편집 함수 |
+
+**Random Range**는 최소·최대 전체에서 선택한다. 예를 들어 최소 `0.5`, 최대 `2`, 분포 **Prefer Short**면 0.5~2초 중 빠른 도착 시간이 더 자주 선택된다. 이 모드에서는 무게와 Random Offset을 사용하지 않는다.
+
+**Weight And Random Offset**의 계산 순서는 다음과 같다.
+
+1. 기준 시간 = `Arrive Time + ItemData.weight × Seconds Per Weight`.
+2. 기준 시간을 최소·최대 범위 안으로 제한한다.
+3. `기준 시간 - Random Offset` ~ `기준 시간 + Random Offset`과 최소·최대 범위의 겹치는 구간을 계산한다.
+4. 선택한 Distribution 함수로 그 구간 안의 도착 시간을 한 번 추첨한다.
+
+기본 시간 `1`, 무게당 `0.2`, 오프셋 `0.15`, 최소 `0.6`, 최대 `1.8`일 때:
+
+| 던지는 아이템의 Weight | 기준 시간 | 실제 추첨 구간 |
+| --- | --- | --- |
+| `0` | `1.0`초 | `0.85~1.15`초 |
+| `1` | `1.2`초 | `1.05~1.35`초 |
+| `2` | `1.4`초 | `1.25~1.55`초 |
+| `5` | 상한으로 제한한 `1.8`초 | `1.65~1.8`초 |
+
+무게는 던지는 **ItemData → Weight**에서 읽으며 가방의 총 무게나 슬롯 수를 사용하지 않는다. 같은 추첨 위치를 비교하면 무거운 아이템의 시간이 더 길어지거나 상한에서 같아진다. 서로 다른 추첨 결과에서는 오프셋 구간이 겹칠 수 있다.
+
+### 함수 선택과 직접 편집
+
+| Distribution | 결과 |
+| --- | --- |
+| Uniform | 구간 전체를 균등하게 선택 |
+| Prefer Short | 빠른 도착 시간 선호 |
+| Prefer Long | 느린 도착 시간 선호 |
+| Prefer Middle | 구간 중앙 시간 선호 |
+| Prefer Edges | 가장 빠른 쪽·가장 느린 쪽 선호 |
+| Custom Curve | Custom Curve 필드를 클릭해 직접 함수 편집 |
+
+커브의 **X는 균등 난수 0~1**, **Y는 추첨 구간 안의 위치 0~1**이다. Y=0은 가장 빠른 시간, Y=1은 가장 느린 시간이다. 대각선 `Y=X`는 균등 분포이고, 대각선 아래로 휘면 빠른 시간, 위로 휘면 느린 시간이 많아진다. 그래프 높이를 확률 밀도로 해석하는 방식은 아니다. Y가 0~1을 벗어나면 그 범위 안으로 제한하고, 커브가 없거나 비었으면 균등 분포를 사용한다.
+
+Random Range와 무게 모드의 오프셋 추첨 모두 같은 Distribution을 사용한다. 속도는 선택한 도착 시간과 X 거리로 자동 계산한다. 비행이 시작된 뒤 무게나 설정을 바꿔도 이미 발사한 아이템의 시간은 바뀌지 않는다.
+
+**Max Move Time**은 모든 모드의 최종 상한이므로 최소 도착 시간보다 작게 두면 그 상한이 우선한다. 반복 투척에서 **Override Projectile Motion**을 끄면 투척 프리팹 설정과 실제 하위 아이템의 무게를 사용한다. 직접 지정한 **Flight Time**이나 Bounce 비행은 그 시간을 그대로 사용한다.
+
+Unity에서 `Window → General → Test Runner → EditMode → AdditionalThrowArrivalTests`로 범위·함수·커브·무게 전달·도착 콜백 검사를 실행한다. Play Mode에서는 서로 다른 Weight의 아이템을 던져 도착 시간과 착지 후 효과를 확인한다.

@@ -125,7 +125,7 @@ public sealed class RepeatItemRunner : AttackObject<RepeatItemStat>
             mover.destroyOnArrive = false;
             Sprite sprite = projectileSprite != null ? projectileSprite :
                 item != null ? item.icon : sourceItemData != null ? sourceItemData.icon : null;
-            mover.Init(start, start, sprite, null);
+            mover.SetSprite(sprite);
             if (overrideMotion || bounce)
             {
                 mover.autoArcHeightByDistance = false;
@@ -133,7 +133,7 @@ public sealed class RepeatItemRunner : AttackObject<RepeatItemStat>
                 mover.maxMoveTime = stat.itemRepeatFlightTime;
             }
             float flight = fly && !firstBounce ?
-                (overrideMotion || bounce ? stat.itemRepeatFlightTime : Mathf.Max(0.01f, Mathf.Min(mover.arriveTime, mover.maxMoveTime))) : 0f;
+                (overrideMotion || bounce ? stat.itemRepeatFlightTime : mover.ResolveArrivalTime(item != null ? item.weight : 0f)) : 0f;
             TargetRangeIndicator indicator = null;
             if (showRange && rangePrefab != null)
                 indicator = Instantiate(rangePrefab, target, Quaternion.identity);

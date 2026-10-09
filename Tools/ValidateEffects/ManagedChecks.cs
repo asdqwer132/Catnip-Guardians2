@@ -17,6 +17,61 @@ public static class Runner {
  static void UseCompletionItem(ItemData item,BuffManager manager=null,ItemEffectContext parent=null,EquipmentBag bag=null)
   =>ItemEffectExecutor.ExecuteItem(item,Vector3.zero,Vector3.right,Vector3.up,null,bag,manager,parent,triggerSpecialItems:false);
  public static void Main(){
+ Check("throw random-range endpoints and interior remain inside arrival bounds",()=>{
+  var t=new ItemThrowArrivalTiming{mode=ItemThrowArrivalMode.RandomRange,minArriveTime=.5f,maxArriveTime=2,distribution=ItemThrowArrivalDistribution.Uniform};
+  Eq(t.Resolve(1,3,0,0),.5f);Eq(t.Resolve(1,3,0,1),2);Eq(t.Resolve(1,3,0,.25f),.875f);
+ });
+ Check("throw short and long distributions favor opposite sides",()=>{
+  var t=new ItemThrowArrivalTiming{distribution=ItemThrowArrivalDistribution.PreferShort};Eq(t.TransformSample(.25f),.0625f);
+  t.distribution=ItemThrowArrivalDistribution.PreferLong;Eq(t.TransformSample(.25f),.4375f);
+ });
+ Check("throw middle and edge distributions have different probability concentrations",()=>{
+  var t=new ItemThrowArrivalTiming();int middle=0,edges=0;
+  for(int i=0;i<10000;i++){float u=(i+.5f)/10000;t.distribution=ItemThrowArrivalDistribution.PreferMiddle;float a=t.TransformSample(u);if(a>=.25f&&a<=.75f)middle++;
+   t.distribution=ItemThrowArrivalDistribution.PreferEdges;float b=t.TransformSample(u);if(b>=.25f&&b<=.75f)edges++;}
+  True(middle>7000);True(edges<4000);
+ });
+ Check("throw distribution outputs stay monotone finite and inside zero to one",()=>{
+  var t=new ItemThrowArrivalTiming();foreach(ItemThrowArrivalDistribution d in System.Enum.GetValues(typeof(ItemThrowArrivalDistribution))){t.distribution=d;float previous=-1;
+   for(int i=0;i<=1000;i++){float p=t.TransformSample(i/1000f);True(!float.IsNaN(p)&&p>=0&&p<=1&&p>=previous);previous=p;}}
+ });
+ Check("throw heavier items move the offset window later",()=>{
+  var t=new ItemThrowArrivalTiming{mode=ItemThrowArrivalMode.WeightAndRandomOffset,minArriveTime=.5f,maxArriveTime=3,randomOffset=.2f,secondsPerWeight=.25f,distribution=ItemThrowArrivalDistribution.Uniform};
+  Eq(t.Resolve(1,3,2,0),1.3f);Eq(t.Resolve(1,3,2,1),1.7f);
+  for(int i=0;i<=100;i++)True(t.Resolve(1,3,3,i/100f)>=t.Resolve(1,3,1,i/100f));
+ });
+ Check("throw offset uses the selected distribution function",()=>{
+  var t=new ItemThrowArrivalTiming{mode=ItemThrowArrivalMode.WeightAndRandomOffset,minArriveTime=1,maxArriveTime=2,randomOffset=.2f,secondsPerWeight=.5f,distribution=ItemThrowArrivalDistribution.PreferShort};
+  Eq(t.Resolve(1,3,1,.5f),1.4f);
+ });
+ Check("throw clipped offset is sampled before applying the arrival bound",()=>{
+  var t=new ItemThrowArrivalTiming{mode=ItemThrowArrivalMode.WeightAndRandomOffset,minArriveTime=1,maxArriveTime=2,randomOffset=.2f,secondsPerWeight=.5f,distribution=ItemThrowArrivalDistribution.PreferShort};
+  Eq(t.Resolve(1,3,100,.5f),1.85f);Eq(t.Resolve(1,3,100,1),2);
+ });
+ Check("throw fixed and zero-offset modes are deterministic",()=>{
+  var t=new ItemThrowArrivalTiming();Eq(t.Resolve(.7f,3,100,0),.7f);Eq(t.Resolve(.7f,3,0,1),.7f);
+  t.mode=ItemThrowArrivalMode.WeightAndRandomOffset;t.randomOffset=0;Eq(t.Resolve(1,3,2,0),1.4f);Eq(t.Resolve(1,3,2,1),1.4f);
+ });
+ Check("throw range mode ignores item weight and offset",()=>{
+  var t=new ItemThrowArrivalTiming{mode=ItemThrowArrivalMode.RandomRange};float a=t.Resolve(1,3,0,.3f);t.randomOffset=100;Eq(t.Resolve(1,3,100,.3f),a);
+ });
+ Check("throw hard movement cap and reversed bounds remain positive",()=>{
+  var t=new ItemThrowArrivalTiming{mode=ItemThrowArrivalMode.RandomRange,minArriveTime=2,maxArriveTime=1};Eq(t.Resolve(1,.5f,0,.5f),.5f);
+  Eq(ItemThrowArrivalTiming.ClampDuration(float.NaN,-1),.01f);
+ });
+ Check("throw invalid weight coefficient offset and sample stay finite",()=>{
+  var t=new ItemThrowArrivalTiming{mode=ItemThrowArrivalMode.WeightAndRandomOffset,minArriveTime=2,maxArriveTime=1,secondsPerWeight=float.PositiveInfinity,randomOffset=float.NaN};
+  Eq(t.Resolve(float.NaN,3,float.NaN,float.NaN),1);
+ });
+ Check("throw custom curve remaps samples and clamps out-of-range results",()=>{
+  var t=new ItemThrowArrivalTiming{mode=ItemThrowArrivalMode.RandomRange,minArriveTime=1,maxArriveTime=2,distribution=ItemThrowArrivalDistribution.CustomCurve,customCurve=AnimationCurve.Linear(0,.2f,1,.6f)};
+  Eq(t.Resolve(1,3,0,0),1.2f);Eq(t.Resolve(1,3,0,.5f),1.4f);Eq(t.Resolve(1,3,0,1),1.6f);
+  t.customCurve=AnimationCurve.Linear(0,-1,1,2);Eq(t.Resolve(1,3,0,0),1);Eq(t.Resolve(1,3,0,1),2);
+ });
+ Check("throw missing or empty custom curve falls back to uniform",()=>{
+  var t=new ItemThrowArrivalTiming{distribution=ItemThrowArrivalDistribution.CustomCurve,customCurve=null};Eq(t.TransformSample(.25f),.25f);
+  t.customCurve=new AnimationCurve();Eq(t.TransformSample(.25f),.25f);
+ });
  Check("cooldown seconds clamps at zero",()=>Eq(BagItemCooldownController.ChangeRemaining(3,CooldownOperation.ReduceSeconds,9),0));
  Check("cooldown fraction scales remaining",()=>Eq(BagItemCooldownController.ChangeRemaining(12,CooldownOperation.ReduceFraction,0.25f),9));
  Check("cooldown invalid values remain finite",()=>{Eq(BagItemCooldownController.ChangeRemaining(float.NaN,CooldownOperation.ReduceSeconds,1),0);Eq(BagItemCooldownController.ChangeRemaining(5,CooldownOperation.ReduceSeconds,float.NaN),5);});

@@ -62,5 +62,12 @@ namespace UnityEngine {
   public T GetComponentInParent<T>() where T:class=>null;
  }
  public class ScriptableObject : Object { }
+ public class AnimationCurve {
+  private System.Func<float,float> evaluate;public int length { get; private set; }
+  public AnimationCurve() { }
+  public static AnimationCurve Linear(float startTime,float startValue,float endTime,float endValue)
+   =>new AnimationCurve{length=2,evaluate=u=>Mathf.Lerp(startValue,endValue,Mathf.InverseLerp(startTime,endTime,u))};
+  public float Evaluate(float u)=>evaluate!=null?evaluate(u):0;
+ }
  public static class Random { private static System.Random rng=new System.Random(42); public static float value=>(float)rng.NextDouble(); }
 }
