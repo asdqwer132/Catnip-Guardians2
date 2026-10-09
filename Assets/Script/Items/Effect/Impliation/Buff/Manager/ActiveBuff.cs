@@ -33,6 +33,10 @@ public class ActiveBuff
     public BuffUseCountConsumeMode useCountConsumeMode;
 
     [NonSerialized] public BuffModifier[] modifiers;
+    [NonSerialized] internal string uiDisplayName;
+    [NonSerialized] internal Sprite uiIcon;
+    [NonSerialized] internal bool uiManagedLifetime;
+    [NonSerialized] internal bool uiEnded;
     [NonSerialized] private HashSet<ItemData> consumeItemSet;
     internal readonly ItemEffectCompletionGroup completion = new ItemEffectCompletionGroup();
     internal BuffStorage StorageOwner { get; set; }
@@ -52,6 +56,7 @@ public class ActiveBuff
     {
         get
         {
+            if (uiManagedLifetime) return uiEnded;
             if (IsInfinite)
                 return false;
 
@@ -191,6 +196,21 @@ public class ActiveBuff
         return maxTime <= 0f
             ? 0f
             : remainTime / maxTime;
+    }
+
+    public string GetUIName()
+    {
+        if (!string.IsNullOrWhiteSpace(uiDisplayName)) return uiDisplayName;
+        if (sourceItemData != null) return sourceItemData.GetDataName();
+        return sourceEffectData != null ? sourceEffectData.name : "Buff";
+    }
+
+    public Sprite GetUIIcon()
+    {
+        Sprite icon = uiIcon;
+        BuffEffect effect = sourceEffectData as BuffEffect;
+        if (icon == null && effect != null) icon = effect.buffIcon;
+        return icon != null ? icon : (sourceItemData != null ? sourceItemData.icon : null);
     }
 
     public bool MatchesQuery(BuffQueryContext query)

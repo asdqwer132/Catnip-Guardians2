@@ -15,7 +15,6 @@ public class GameSettingData { public bool showTargetRange; public bool showDama
 public class GameInputManager { public static GameInputManager instance; public bool IsGameplayInputBlocked=>false; public event Action OnMovePressed; public event Action OnPlayerRangePressed; public Vector3 MouseWorldPosition; }
 public class AudioManager { public static AudioManager instance; public void PlaySfx(string s){} public void PlaySfx(string c,string s){} public void PlayItemAudio(string s){} }
 public class SpecialItemManager { public static SpecialItemManager instance; public static SpecialItemManager Instance; public void Call(ItemEffectContext c){} public void ExecuteSpecialItems(ItemEffectContext c){} }
-public class BuffUIManager : MonoBehaviour { public void RefreshRuntimeValues(){} public void RefreshCurrentMode(){} }
 public static class UnlockCheckUtility { public static bool CanUse(IUnlockable x)=>true; }
 
 public class ImageFillUI : MonoBehaviour { public void SetFill01(float v){} public void SetFill(float a,float b){} public void SetVisible(bool v){} }

@@ -55,7 +55,7 @@ public class BuffUISlot : MonoBehaviour
             return;
 
         if (titleText != null)
-            titleText.text = GetSourceName();
+            titleText.text = activeBuff.GetUIName();
 
         if (targetText != null)
             targetText.text = GetTargetText();
@@ -89,17 +89,6 @@ public class BuffUISlot : MonoBehaviour
         return activeBuff.remainTime.ToString("0.0");
     }
 
-    private string GetSourceName()
-    {
-        if (activeBuff.sourceItemData != null)
-            return activeBuff.sourceItemData.GetDataName();
-
-        if (activeBuff.sourceEffectData != null)
-            return activeBuff.sourceEffectData.name;
-
-        return "Buff";
-    }
-
     private string GetTargetText()
     {
         string targetName = activeBuff.target != null ? activeBuff.target.GetDebugName() : "Unknown";
@@ -115,11 +104,7 @@ public class BuffUISlot : MonoBehaviour
         if (iconImage == null)
             return;
 
-        BuffEffect buffEffect = activeBuff != null ? activeBuff.sourceEffectData as BuffEffect : null;
-        Sprite icon = buffEffect != null ? buffEffect.buffIcon : null;
-
-        if (icon == null && activeBuff != null && activeBuff.sourceItemData != null)
-            icon = activeBuff.sourceItemData.icon;
+        Sprite icon = activeBuff != null ? activeBuff.GetUIIcon() : null;
 
         iconImage.sprite = icon;
         iconImage.enabled = icon != null;

@@ -314,6 +314,10 @@ public class Health : MonoBehaviour, IBuffTarget
         state.remaining = duration;
         state.context = context;
         state.completion.Track(context, endVisual, transform);
+        if (state.buffUI != null) state.buffUI.Dispose();
+        ShieldEffect effect = source as ShieldEffect;
+        state.buffUI = effect != null && effect.buffUI != null
+            ? effect.buffUI.Register(effect, context, this, duration) : null;
         NotifyShieldChanged();
     }
     public void TickShields(float deltaTime)
@@ -329,10 +333,11 @@ public class Health : MonoBehaviour, IBuffTarget
             HealthShieldState state = updating[i];
             if (!shields.Contains(state)) continue;
             state.remaining -= Mathf.Max(0f, deltaTime);
+            if (state.buffUI != null) state.buffUI.SetRemaining(state.remaining);
             bool valid = state.IsValid(this);
             if (valid && state.remaining > 0f && state.amount > 0f) continue;
             shields.Remove(state);
-            state.completion.Finish(valid);
+            state.Finish(valid);
             changed = true;
             if (LifeId != updatingLife) return;
         }
@@ -349,7 +354,7 @@ public class Health : MonoBehaviour, IBuffTarget
             HealthShieldState state = updating[i];
             if (!shields.Contains(state) || state.IsValid(this)) continue;
             shields.Remove(state);
-            state.completion.Finish(false);
+            state.Finish(false);
             changed = true;
             if (LifeId != updatingLife) return;
         }
@@ -374,7 +379,7 @@ public class Health : MonoBehaviour, IBuffTarget
             absorbed += used;
             if (state.amount > 0f) continue;
             shields.Remove(state);
-            state.completion.Finish(true);
+            state.Finish(true);
             if (LifeId != absorbingLife || IsDead || !isActiveAndEnabled) break;
         }
         if (absorbed > 0f) NotifyShieldChanged();
@@ -385,7 +390,7 @@ public class Health : MonoBehaviour, IBuffTarget
         if (shields.Count == 0) return;
         HealthShieldState[] removed = shields.ToArray();
         shields.Clear();
-        for (int i = 0; i < removed.Length; i++) removed[i].completion.Finish(false);
+        for (int i = 0; i < removed.Length; i++) removed[i].Finish(false);
         NotifyShieldChanged();
     }
     private void NotifyShieldChanged()
@@ -405,7 +410,13 @@ internal sealed class HealthShieldState
     public UnityEngine.Object source;
     public GameObject owner;
     public ItemEffectContext context;
+    public EffectBuffUIHandle buffUI;
     public readonly ItemEffectCompletionGroup completion = new ItemEffectCompletionGroup();
+    public void Finish(bool completed)
+    {
+        if (buffUI != null) { buffUI.Dispose(); buffUI = null; }
+        completion.Finish(completed);
+    }
     public bool IsValid(Health target) => target != null && target.isActiveAndEnabled && !target.IsDead &&
         lifeId == target.LifeId && context != null && context.CanContinue;
 }

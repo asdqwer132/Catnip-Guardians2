@@ -5,16 +5,19 @@ public sealed class TimeStopRunner : MonoBehaviour
     private ItemEffectContext context;
     private TimeStopHandle handle;
     private ItemEffectLease lease;
+    private EffectBuffUIHandle buffUI;
     private float remaining;
     private bool finished;
     public float RemainingTime => remaining;
 
-    public void Init(ItemEffectContext source, TimeStopTargets targets, float duration)
+    public void Init(ItemEffectContext source, TimeStopTargets targets, float duration, TimeStopEffect effect = null)
     {
         context = source;
         remaining = duration;
         lease = context.RetainLifetime();
         handle = TimeStopRuntime.Acquire(targets, context);
+        IBuffTarget target = context.owner != null ? context.owner.GetComponentInParent<IBuffTarget>() : null;
+        buffUI = effect != null && effect.buffUI != null ? effect.buffUI.Register(effect, context, target, duration) : null;
     }
 
     private void Update() { Tick(Time.deltaTime); }
@@ -26,6 +29,7 @@ public sealed class TimeStopRunner : MonoBehaviour
         if (context == null || !context.CanContinue || handle == null || !handle.IsValid)
         { Finish(false); return; }
         remaining -= Mathf.Max(0f, deltaTime);
+        if (buffUI != null) buffUI.SetRemaining(remaining);
         if (remaining <= 0f) Finish(true);
     }
 
@@ -34,6 +38,7 @@ public sealed class TimeStopRunner : MonoBehaviour
         if (finished) return;
         finished = true;
         if (handle != null) { handle.Dispose(); handle = null; }
+        if (buffUI != null) { buffUI.Dispose(); buffUI = null; }
         if (lease != null) { lease.Finish(completed); lease = null; }
         if (Application.isPlaying) Destroy(gameObject);
         else DestroyImmediate(gameObject);

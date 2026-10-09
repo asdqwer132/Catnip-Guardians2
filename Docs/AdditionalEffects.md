@@ -23,6 +23,7 @@ ItemData의 `afterCompletionItems`에는 모든 하위 효과가 자연 종료�
 | 정화 | `CleanseEffect` | 해로운 상태이면서 Dispellable인 상태만 제거 |
 | 회복·피해·체력 비용 | `HealthChangeEffect` | 식물/소유자/명중 적/소환물/범위 대상, 고정/현재 HP%/최대 HP% |
 | 지속 회복 | `RegenerationEffect` | 회복량·간격·지속·첫 회복 시점 설정 |
+| 지속 효과 UI | `EffectBuffUISettings` | 재생·보호막·시간 정지의 선택 가능한 버프 UI 표시, 이름·아이콘·실제 남은 시간 |
 | 방어·보호막 | `Health`, `ShieldEffect` | Health의 방어 공식 선택; 보호막 흡수 후 남은 HP 차감 |
 | 쿨다운 | `CooldownControlEffect`, `ItemTagDefinition` | 지정 가방·아이템·시리즈·하위 태그의 남은 시간 감소/비율 감소/준비 완료 |
 | 지속 쿨다운 버프 | `ItemCooldownStat`, `BagCooldownStat`, 전체 아이템/가방 대상 설정 | 기본 시간의 고정 초 감소, 독립적인 회복속도·지속 시간·중첩 |

@@ -16,13 +16,13 @@ python3 Tools/ValidateEffects/check.py --metadata-only
 
 검증 범위:
 
-- 아이템 이펙트, Entity 런타임, 관련 아이템 데이터, `Assets/Editor/Tests`의 테스트 코드를 실제 Unity/NUnit 참조 DLL로 컴파일합니다. 테스트 코드의 컴파일 성공과 Unity 테스트 실행은 구분합니다.
+- 아이템 이펙트, 버프 UI, Entity 런타임, 관련 아이템 데이터, `Assets/Editor/Tests`의 테스트 코드를 실제 Unity/NUnit 참조 DLL로 컴파일합니다. 테스트 코드의 컴파일 성공과 Unity 테스트 실행은 구분합니다. `AdditionalEffectBuffUITests`는 재생·보호막·시간 정지의 표시 옵션과 실제 시계·소진·취소·필터를 Unity에서 검사합니다.
 - `ManagedChecks.cs`의 58개 검사를 실행합니다. 고정 초 Modifier·전체 아이템/가방 및 사용 가방 대상 판정·회복속도 분리·시작 시간과 진행률 보존, 아이템 전체 종료 후 후속 사용의 대기·취소·순환·중첩 수명·연출 순서·자동 사용 옵션, 쿨다운 준비 상태·감소, 배율 복사, 재귀·실행량 제한, 명중 범위·풀 생명 번호, 가중치 선택, 중첩 시간 정지를 검사합니다. Modifier·대상 판정·ItemEffectExecutor의 실행과 수명 연결은 실제 코드를 사용합니다. 관리 검사에서는 씬 객체·연출 재생·개별 효과·버프 매니저 연결을 대체합니다. 실제 효과의 등록·만료·씬 객체 연결은 Unity EditMode 테스트에서 확인해야 합니다.
 - 변경한 C#·에셋·프리팹의 `.meta`, 기존 GUID 유지, Assets 전체의 GUID 중복을 확인합니다.
 
 제한과 대체 API:
 
-- API 컴파일의 `GameApi.cs`는 범위 밖의 게임 매니저와 UI를 대체합니다. 이펙트·Enemy·Health·소환물·이동·패턴·스폰 코드와 Unity API는 실제 소스와 참조 DLL을 사용합니다. 아이템 사용 입력/UI 컨트롤러는 이 컴파일 범위에서 제외합니다.
+- API 컴파일의 `GameApi.cs`는 범위 밖의 게임 매니저와 일부 UI를 대체합니다. 버프 UI·이펙트·Enemy·Health·소환물·이동·패턴·스폰 코드와 Unity API는 실제 소스와 참조 DLL을 사용합니다. 아이템 사용 입력/UI 컨트롤러는 이 컴파일 범위에서 제외합니다.
 - 실행 검사의 `ManagedApi.cs`는 게임 객체·에셋·버프 매니저를 단순한 객체로 대체하고, Unity의 네이티브 Random을 고정 시드의 .NET Random으로 대체합니다. Mathf와 Vector의 관리 코드는 실제 Unity 참조 DLL을 사용합니다. 장면 객체 생성, 물리 충돌, 엔진의 Random 분포는 실행 검사 대상이 아닙니다.
 - Unity 6000에서 `Window → General → Test Runner → EditMode`로 프로젝트 테스트를 실행하고 Play Mode에서 투사체·장판·회복·소환·정지를 확인하세요.
 

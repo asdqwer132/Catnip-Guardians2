@@ -183,6 +183,29 @@ Regeneration을 만들어 다음처럼 설정한다.
 
 AfterInterval은 첫 회복을 1초 뒤에 한다. Immediate는 시작 시에도 회복하므로 동일한 5초 설정의 총 회복 횟수가 달라진다. 즉시 회복과 지속 회복을 함께 쓰려면 ItemData의 Effect Datas에 두 에셋을 넣거나, 수프처럼 Scaled Effects의 Effects에 묶고 배율을 모두 1로 둔다.
 
+### 지속 효과를 버프 UI에 표시하기
+
+**Regeneration / Shield / Time Stop** 에셋의 **Buff UI**에서 선택한다.
+
+| 필드 | 설정 |
+| --- | --- |
+| Show In UI | 켜면 효과가 유지되는 동안 기존 버프 UI에 표시. 기본값은 꺼짐 |
+| Display Name | 예: `재생`, `보호막`, `시간 정지`. 비우면 사용한 아이템 이름, 아이템이 없으면 효과 에셋 이름 |
+| Buff Icon | 표시할 Sprite. 비우면 사용한 아이템 아이콘 |
+
+예를 들어 수프의 Regeneration 에셋에서 **Buff UI → Show In UI**를 켜고 **Display Name = 재생**으로 설정한다. 실제 회복과 함께 아이콘·남은 시간·시간 게이지가 표시되고 5초 후 사라진다. 별도의 BuffEffect나 Modifier를 만들 필요가 없다. Shield와 Time Stop도 같은 방식으로 설정한다. 일반 BuffEffect는 기존의 **Show In UI / Buff Icon**을 그대로 사용한다.
+
+씬에서 **BuffManager → Buff UI Manager**, **BuffUIManager → Buff Manager / Content Parent / Slot Prefab**을 연결해야 한다. 처음 확인할 때는 **Display Mode = All**로 두면 된다. Inspector에서 옵션을 바꾸면 **다음 적용부터** 반영한다. 실행 중인 효과의 표시 옵션은 적용 당시 설정을 유지한다.
+
+- **All**: 표시 옵션을 켠 모든 효과. **Bag / Item / ItemSeries**: 그 효과를 시작한 가방·아이템·시리즈로 필터링.
+- **Target / Group**: 실제 효과를 받은 대상의 IBuffTarget·그룹으로 필터링. 재생·보호막은 대상의 **Health 컴포넌트**를 선택한다. 식물은 Health의 **Buff Target Group**이 `PlantHealth`로 설정되어 있는지 확인한다. 부모 그룹은 하위 그룹을 포함한다.
+- Time Stop은 실행 소유자의 IBuffTarget에 표시한다. 해당 대상이 없으면 사용한 아이템을 표시 대상으로 사용하며 **All / Bag / Item / ItemSeries**에서 확인한다.
+- 남은 시간은 실제 효과의 시계와 같다. 적 상태 시간 정지로 재생·보호막이 멈추면 UI 시간도 멈추고, Time Stop 자체의 시간은 계속 흐른다. 배율이 적용된 지속 시간도 반영한다.
+- 보호막은 피해로 전부 소진되면 즉시 사라진다. 같은 보호막의 Refresh / Add는 UI 한 개를 갱신한다. 재생은 기존 동작대로 적용마다 별도 효과이므로 반복 적용 시 UI도 각각 표시한다.
+- 종료·대상 비활성화·취소·전투 초기화 시 표시를 정리한다. UI 표시를 켜도 회복량·피해·중첩·횟수 소비·종료 후 아이템 실행은 바뀌지 않는다.
+
+이 항목은 실제 효과를 보여 주는 UI 전용 표시다. 버프 정화·Clear All Buffs로 재생이나 보호막 자체를 취소하는 기능은 아니며, 효과가 살아 있는 동안 표시를 유지한다.
+
 ### 퍼센트 회복과 체력 비용
 
 Amount Mode의 **CurrentHpPercent**는 현재 HP, **MaxHpPercent**는 최대 HP 기준이다. 입력값 `20`은 20%다.
@@ -693,7 +716,7 @@ Attack Prefab을 비우면 기본 부채꼴 판정 오브젝트를 생성한다.
 1. 기존 전투 씬과 아이템 사용 흐름에서 해당 ItemData를 사용한다.
 2. 식물 회복은 HP 변화, 공격은 적 HP·처치, 상태는 등록·만료, 쿨다운은 남은 시간으로 확인한다.
 3. 여러 적, 적 한 명, 대상 없음, 효과 중 전투 초기화 상황을 확인한다.
-4. **Window → General → Test Runner → EditMode**에서 `CombatEffectTests`, `Additional*Tests`, `BuffTargetInspectorTests`를 실행한다. 버프 대상 검사는 `AdditionalBuffTargetTests`, 쿨다운 검사는 `AdditionalCooldownBuffTests`, 종료 후 아이템 사용의 대기·취소·순환·위치 검사는 `AdditionalItemCompletionTests`에 있다.
+4. **Window → General → Test Runner → EditMode**에서 `CombatEffectTests`, `Additional*Tests`, `BuffTargetInspectorTests`를 실행한다. 버프 대상 검사는 `AdditionalBuffTargetTests`, 쿨다운 검사는 `AdditionalCooldownBuffTests`, 종료 후 아이템 사용의 대기·취소·순환·위치 검사는 `AdditionalItemCompletionTests`에 있다. 지속 효과의 UI 표시·시간 정지·소진·취소·필터·기존 버프와의 분리는 `AdditionalEffectBuffUITests`에서 확인한다.
 5. 플레이 모드를 끝내고 설정을 저장한다. 플레이 중 바꾼 Inspector 값이 영구 설정으로 남았다고 가정하지 말고 에셋을 다시 확인한다.
 
 새 `.asset`과 `.meta`를 함께 Git에 올린다. 예를 들어 위 두 폴더와 기존 ItemData/공격 에셋을 수정했다면 프로젝트 루트에서 다음처럼 올린다.

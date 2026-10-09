@@ -31,6 +31,8 @@ public class RegenerationEffect : ItemEffectData
     public HealthAmountMode amountMode;
     public RegenerationFirstTick firstTick = RegenerationFirstTick.AfterInterval;
     public RegenerationStat regenerationStat = new RegenerationStat();
+    [Header("Buff UI")]
+    public EffectBuffUISettings buffUI = new EffectBuffUISettings();
     public override void Prepare(ItemEffectContext context) { context.GetSnapshotStat(this, regenerationStat); }
     public override void ExecuteEffect(ItemEffectContext context)
     {

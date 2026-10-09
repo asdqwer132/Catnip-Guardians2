@@ -6,6 +6,8 @@ public sealed class TimeStopEffect : ItemEffectData
     [Min(0.01f)] public float duration = 5f;
     [Tooltip("식물 성장, 아군 쿨다운, 플레이어 시간은 변경하지 않습니다.")]
     public TimeStopTargets targets = TimeStopTargets.EnemyActions | TimeStopTargets.EnemyProjectiles | TimeStopTargets.EnemySpawning;
+    [Header("Buff UI")]
+    public EffectBuffUISettings buffUI = new EffectBuffUISettings();
 
     public override void ExecuteEffect(ItemEffectContext context)
     {
@@ -14,6 +16,6 @@ public sealed class TimeStopEffect : ItemEffectData
         float scaledDuration = duration * context.durationMultiplier;
         if (scaledDuration <= 0f || float.IsNaN(scaledDuration) || float.IsInfinity(scaledDuration)) return;
         GameObject host = new GameObject("TimeStopRuntime");
-        host.AddComponent<TimeStopRunner>().Init(context, targets, scaledDuration);
+        host.AddComponent<TimeStopRunner>().Init(context, targets, scaledDuration, this);
     }
 }
