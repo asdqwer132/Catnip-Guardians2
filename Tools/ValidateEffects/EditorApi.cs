@@ -1,4 +1,4 @@
-// Compile-only declarations for the group Inspector checks. No Editor/GUI tests
+// Compile-only declarations for the Inspector and asset-driven combat tests. No Editor/GUI tests
 // execute against these substitutes; use Unity EditMode for those tests.
 using System;
 using System.Collections.Generic;
@@ -16,6 +16,7 @@ namespace UnityEditor
     public class SerializedProperty
     {
         public string stringValue;
+        public float floatValue;
         public bool hasMultipleDifferentValues;
         public SerializedPropertyType propertyType;
     }
@@ -93,7 +94,14 @@ namespace UnityEditor
 }
 namespace UnityEditor.SceneManagement
 {
-    public static class EditorSceneManager { public static bool IsPreviewSceneObject(UnityEngine.Object value) => false; }
+    public enum NewSceneSetup { EmptyScene, DefaultGameObjects }
+    public enum NewSceneMode { Single, Additive }
+    public static class EditorSceneManager
+    {
+        public static bool IsPreviewSceneObject(UnityEngine.Object value) => false;
+        public static UnityEngine.SceneManagement.Scene NewScene(NewSceneSetup setup, NewSceneMode mode) => default;
+        public static bool CloseScene(UnityEngine.SceneManagement.Scene scene, bool removeScene) => false;
+    }
 }
 namespace UnityEditor.Compilation
 {

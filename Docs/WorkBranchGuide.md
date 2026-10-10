@@ -41,6 +41,7 @@ git switch --track -c work origin/work
 3. `Assets/Data/AdditionalEffects`의 CSV 설정과 `Assets/Data/AdditionalEffectsExamples`의 예제를 확인한다. 16개 ItemData는 새 기능이 연결되어 있고 나머지는 Effect Datas 또는 On Hit Effects에 연결한다.
 4. [추가 이펙트 사용 설명서](AdditionalEffectsUsage.md)에 따라 대상·레이어·범위·연출을 설정한다. [구현 범위와 미정 기획](AdditionalEffects.md)도 확인한다.
 5. Test Runner의 EditMode에서 `CombatEffectTests`, `Additional*Tests`, `BuffTargetInspectorTests`를 실행하고 실제 전투 씬을 확인한다.
+6. Food1 버프와 Weapon1의 기본 적 공격은 `Food1Weapon1BuffTests`로 확인한다. 처음 실행하는 방법과 기대값은 [Food1/Weapon1 테스트 안내](Food1Weapon1Tests.md)에 있다.
 
 `.meta`는 에셋 참조에 필요하므로 스크립트/에셋과 함께 가져온다.
 

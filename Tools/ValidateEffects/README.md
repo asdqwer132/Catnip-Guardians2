@@ -43,3 +43,5 @@ python3 Tools/ValidateEffects/check.py --metadata-only
 버프 그룹 검증은 `IBuffTarget`의 문자열 getter·필드 기본값·상속·명시적 구현·추가 선언을 실제 메타데이터 수집 코드로 실행합니다. 생성자·정적 생성자·동적 getter를 실행하지 않는 것도 검사합니다. `BuffTargetInspectorTests`의 프리팹·비활성 씬·Undo 검사는 Unity EditMode에서 실행해야 합니다.
 
 그룹 Inspector·PropertyDrawer·EditMode 테스트는 `EditorApi.cs`의 대체 API 선언으로 추가 컴파일합니다. 이는 C# 연결 검증이며 UnityEditor DLL이나 실제 GUI 실행 검증을 대신하지 않습니다.
+
+`Food1Weapon1BuffTests`도 Editor API 대체 선언으로 컴파일합니다. 실제 Food1 사용 → Weapon1 장판 공격력 5.5 → 기본 적 HP 4.5 검사는 Unity EditMode에서 실행해야 합니다. 처음 실행하는 방법과 코드 설명은 [Food1/Weapon1 테스트 안내](../../Docs/Food1Weapon1Tests.md)를 참고하세요.

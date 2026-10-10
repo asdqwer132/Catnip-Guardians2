@@ -162,10 +162,11 @@ def main():
     editor_path.parent.mkdir()
     editor_files = ('Assets/Editor/BuffTargetGroupNameDrawer.cs',
                     'Assets/Editor/BuffEditor/BuffTargetResolverEditors.cs',
-                    'Assets/Editor/Tests/BuffTargetInspectorTests.cs')
+                    'Assets/Editor/Tests/BuffTargetInspectorTests.cs',
+                    'Assets/Editor/Tests/Food1Weapon1BuffTests.cs')
     project(editor_path, [ROOT / name for name in editor_files] + [HERE / 'EditorApi.cs'], refs,
             defines='UNITY_EDITOR', additional_refs=[work / 'bin/Debug/net8.0/Compile.dll'])
-    print('Compiling group Inspector and EditMode tests with Editor API substitutes; no GUI tests execute.', flush=True)
+    print('Compiling group Inspector and asset-driven EditMode tests with Editor API substitutes; no Unity tests execute.', flush=True)
     run([dotnet, 'build', editor_path, '--nologo', '-v:q'], env=environment)
     effect = ROOT / 'Assets/Script/Items/Effect'
     selected = ('Impliation/IStat.cs', 'Excuter/Data/EffectStatUtility.cs', 'Excuter/Data/EffectExecutionScale.cs',
