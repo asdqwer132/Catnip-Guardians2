@@ -124,7 +124,7 @@ Conditions를 비우면 항상 실행한다. **Condition Mode = All**이면 모�
 | 적에게 명중 효과 직접 적용 | `Items → Effects → Attack → Apply Hit Effects` |
 | 명중 후 다른 효과 실행 | `Items → Hit Effects → Execute Effects` |
 | 상태 키 / 상태 대상 설정 | `Items → Status → Definition` / `Buffs → Targets → Context Status` |
-| 상태 부여 / 조회 | `Items → Effects → Buff` / `Items → Conditions → Has Status Key` |
+| 상태 전용 부여 / 조회 | `Items → Effects → Status → Apply Status` / `Items → Conditions → Has Status Key` |
 | 버프 확장 플래그 | `Items → Buff → Flag` |
 | 상태 소비 / 정화 | `Items → Effects → Status → Consume Checked Status` / `Cleanse` |
 | 장판 정의 / 생성 | `Items → Areas → Definition` / `Items → Effects → Attack → Defined Area` |
@@ -363,6 +363,20 @@ Execute Effects 명중 에셋은 **공격의 On Hit Effects**에 넣고, 그 에
 6. 아이템 Effect Datas에 이 BuffEffect를 연결한다.
 
 예제는 `ExampleStatusKey` → `PlayerStatusTarget` → `ExampleStatusForFiveSeconds`다. 상태와 수치 버프를 함께 부여하려면 같은 BuffEffect의 Modifiers에 기존 수치 변경 에셋을 추가한다.
+
+### 상태만 직접 부여하고 남은 시간·횟수 더하기
+
+1. **Items → Status → Definition**으로 상태 키를 만든다. 기존 `Has Buff`의 `arrow`/`star` 조건에서도 확인하려면 **Exposes Player Status**를 켜고 **Player Status**를 선택한다. 이 연결은 PlayerStatus 대상에 부여했을 때 적용되며, `StatusStat.statArrow/statStar` 수치를 변경하지 않는다. 기존 수치 버프 방식도 계속 사용할 수 있고 양수인 상태는 중첩 수가 2 이상이어도 보유로 판정한다.
+2. **Items → Effects → Status → Apply Status**를 만들고 **Status**에 상태 키, **Target = PlayerStatus**를 지정한다. Modifier나 Target Resolver 에셋은 필요 없다. 적·아이템·가방 등에는 아래 표의 다른 Target을 선택한다.
+3. 시간제는 **Status Info → Use Limit Type = Time**, **Duration = 5**, **Reapply Mode = AddRemaining**으로 설정한다. 3초 남았을 때 5초를 다시 주면 8초가 된다.
+4. 횟수제는 **Use Limit Type = UseCount**, **Max Use Count = 3**, **Reapply Mode = AddRemaining**으로 설정한다. 2회 남았을 때 다시 주면 5회가 된다. **Use Count Consume Mode = AnyItemUsed**는 성공한 아이템 사용마다 1회 차감하며, **SpecificItemsUsed + Consume Items**는 지정한 아이템만 차감한다. 상태만 있는 경우 `WhenBuffApplied`는 수치 적용이 없어 차감되지 않는다.
+5. 아이템 **Effect Datas**에 효과를 연결한다. **Show In UI**, **Status Icon**으로 상태 표시를 설정한다. **Has Status Key**, **Consume Checked Status**, **Cleanse**는 이 상태에도 그대로 사용할 수 있다.
+
+`ApplyStatusEffect`의 기본값은 **AddRemaining**, **AnyItemUsed**다. 기존 BuffEffect는 기본 **Refresh**로 시간·횟수를 초기화하는 동작을 유지한다. 기존 BuffEffect에도 **Reapply Mode = AddRemaining**을 선택할 수 있다. 무한 상태에는 시간·횟수 더하기가 적용되지 않는다.
+
+**Stack Mode / Max Stack**은 상태 중첩 개수이고 **Reapply Mode**는 남은 시간·횟수 처리다. Stack Mode가 Refresh여도 AddRemaining으로 시간·횟수를 더할 수 있으며, 중첩 상한에 도달해도 시간·횟수는 더해진다. 동일한 효과 에셋·부여 아이템·부여 가방·대상에 재부여할 때 누적한다. 다른 출처는 기존 버프 규칙대로 독립적으로 유지하며 상태 키 조회는 모두 합산한다. 수명 종류(Time/UseCount/Infinite)를 바꾸면 이전 수명 양은 합산하지 않는다. 재부여 또는 새 부여가 일어난 아이템 사용에서는 그 상태를 즉시 차감하지 않고 다음 성공한 사용부터 차감한다.
+
+같은 아이템 사용 중 이미 확인한 상태가 재부여되면 `Consume Checked Status`는 이전 확인 결과로 새 등록을 제거하지 않는다. 이 효과는 기존처럼 확인한 상태 전체를 제거하며, 횟수 1회 차감은 위의 소비 사건 설정을 사용한다.
 
 ### 상태 대상과 횟수
 

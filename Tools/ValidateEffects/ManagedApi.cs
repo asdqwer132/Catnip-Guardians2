@@ -6,6 +6,7 @@ public class ItemData {
  public bool afterCompletionConsumeUseBuffs, afterCompletionTriggerSpecialItems;
 }
 public enum ItemSeries { None, Weapon, Food }
+public enum PlayerStatusList { arrow, star }
 public class InventoryItem { public ItemData itemData; public int amount; }
 public class EquipmentBag { public string name; public System.Collections.Generic.List<InventoryItem> equippedItems; }
 public class ItemEffectData : ScriptableObject { public virtual void Prepare(ItemEffectContext c){} public virtual void ExecuteEffect(ItemEffectContext c){} public void Execute(ItemEffectContext c)=>ExecuteEffect(c); }

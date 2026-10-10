@@ -97,21 +97,34 @@ public class StatusManager : MonoBehaviour, IBuffTarget, IDynamicBuffReceiver
     private void Awake()
     {
         Instance = this;
+        RefreshBuffedStat();
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this) Instance = null;
     }
 
     public bool HasStatus(PlayerStatusList playerStatus)
     {
-        bool hasStatus = false;
+        if (buffManager != null && buffManager.Storage != null)
+        {
+            BuffQueryContext query = BuffQueryContext.ForTarget(this);
+            foreach (ActiveBuff buff in buffManager.Storage.activeBuffs)
+                if (buff != null && !buff.IsExpired && buff.statusDefinition != null &&
+                    buff.statusDefinition.exposesPlayerStatus && buff.statusDefinition.playerStatus == playerStatus &&
+                    buff.MatchesQuery(query)) return true;
+        }
+
+        if (currentStat == null) return false;
         switch (playerStatus)
         {
             case PlayerStatusList.arrow:
-                if (currentStat.statArrow == 1) hasStatus = true;
-                break;
+                return currentStat.statArrow > 0f;
             case PlayerStatusList.star:
-                if (currentStat.statStar == 1) hasStatus = true;
-                break;
+                return currentStat.statStar > 0f;
         }
-        return hasStatus;
+        return false;
     }
 
 

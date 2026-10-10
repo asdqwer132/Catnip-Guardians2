@@ -10,6 +10,12 @@ public enum BuffStackMode
     Stack
 }
 
+public enum BuffReapplyMode
+{
+    Refresh = 0,
+    AddRemaining = 1
+}
+
 public enum BuffUseLimitType
 {
     Infinite = -1,

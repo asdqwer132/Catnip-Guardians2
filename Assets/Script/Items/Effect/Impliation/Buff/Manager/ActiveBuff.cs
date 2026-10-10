@@ -115,7 +115,7 @@ public class ActiveBuff
         if (stackMode == BuffStackMode.Refresh)
             maxStack = 1;
 
-        maxTime = Mathf.Max(0.01f, info.duration);
+        maxTime = EffectStatUtility.Safe(info.duration, 0.01f, float.MaxValue, 1f);
         remainTime = maxTime;
 
         maxUseCount = Mathf.Max(1, info.maxUseCount);
@@ -145,10 +145,29 @@ public class ActiveBuff
 
     public void RegisterAgain(BuffInfo info)
     {
+        BuffUseLimitType previousLimit = useLimitType;
+        float previousTime = remainTime;
+        int previousUses = remainUseCount;
+        bool wasExpired = IsExpired;
         ApplyInfo(info);
 
+        if (!wasExpired && previousLimit == useLimitType && info != null &&
+            info.reapplyMode == BuffReapplyMode.AddRemaining)
+        {
+            if (useLimitType == BuffUseLimitType.Time)
+            {
+                remainTime = (float)Math.Min(float.MaxValue, (double)Mathf.Max(0f, previousTime) + maxTime);
+                maxTime = remainTime;
+            }
+            else if (useLimitType == BuffUseLimitType.UseCount)
+            {
+                remainUseCount = (int)Math.Min(int.MaxValue, (long)Mathf.Max(0, previousUses) + maxUseCount);
+                maxUseCount = remainUseCount;
+            }
+        }
+
         if (stackMode == BuffStackMode.Stack)
-            stack = Mathf.Min(stack + 1, maxStack);
+            stack = (int)Math.Min((long)stack + 1, maxStack);
         else
             stack = 1;
     }

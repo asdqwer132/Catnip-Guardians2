@@ -11,6 +11,9 @@ public class BuffInfo : IGameStat<BuffInfo>, IEffectScalableStat
     public BuffStackMode stackMode = BuffStackMode.Refresh;
     [Min(1)] public int maxStack = 1;
 
+    [Tooltip("Refresh: 시간/횟수 초기화 / AddRemaining: 남은 시간 또는 횟수에 이번 부여량을 더합니다. Stack Mode와 별개입니다.")]
+    public BuffReapplyMode reapplyMode = BuffReapplyMode.Refresh;
+
     [Header("Timing")]
     [Tooltip("아이템 대상의 UseCount 버프는 마지막 사용 보호를 위해 Snapshot에 저장됩니다. Time/Infinite는 이 설정을 따릅니다.")]
     public BuffApplyTiming applyTiming = BuffApplyTiming.Snapshot;
@@ -33,6 +36,7 @@ public class BuffInfo : IGameStat<BuffInfo>, IEffectScalableStat
             statusDefinition = statusDefinition,
             stackMode = stackMode,
             maxStack = maxStack,
+            reapplyMode = reapplyMode,
             applyTiming = applyTiming,
             useLimitType = useLimitType,
             duration = duration,
@@ -44,7 +48,7 @@ public class BuffInfo : IGameStat<BuffInfo>, IEffectScalableStat
 
     public void Clamp()
     {
-        duration = Mathf.Max(0.01f, duration);
+        duration = EffectStatUtility.Safe(duration, 0.01f, float.MaxValue, 1f);
         maxStack = Mathf.Max(1, maxStack);
         maxUseCount = Mathf.Max(1, maxUseCount);
 

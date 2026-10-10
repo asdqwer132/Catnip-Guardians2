@@ -274,6 +274,21 @@ public class BuffManager : MonoBehaviour
         return active;
     }
 
+    // 상태 전용 효과는 Modifier 없이 기존 만료/소비/정화/완료 처리를 공유합니다.
+    public ActiveBuff RegisterStatus(ApplyStatusEffect effect, BuffInfo info,
+        ItemEffectContext context, BuffTargetHandle target)
+    {
+        if (storage == null || effect == null || info == null || info.statusDefinition == null ||
+            context == null || !context.CanContinue || target == null) return null;
+        ActiveBuff active = storage.RegisterBuff(null, info, context.sourceItemData, context.sourceBag,
+            effect, target, true, effect.showInUI);
+        active.uiDisplayName = info.statusDefinition.displayName;
+        active.uiIcon = effect.statusIcon;
+        TrackBuffCompletion(active, effect, context);
+        NotifyBuffChanged(GetNotifyScope(target));
+        return active;
+    }
+
     // 표식 등 이벤트 수신 상태도 기존 ActiveBuff 시간/중첩/횟수 규칙을 사용합니다.
     public ActiveBuff RegisterStatusForTarget(StatusDefinition status, BuffInfo info,
         ItemEffectContext context, IBuffTarget target, UnityEngine.Object registrationKey)
@@ -406,7 +421,7 @@ public class BuffManager : MonoBehaviour
         return removed;
     }
 
-    private static void TrackBuffCompletion(ActiveBuff buff, BuffEffect effect, ItemEffectContext context)
+    private static void TrackBuffCompletion(ActiveBuff buff, ItemEffectData effect, ItemEffectContext context)
     {
         if (buff == null) return;
         UnityEngine.Object obj = buff.target != null ? buff.target.targetObject : null;

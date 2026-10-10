@@ -19,6 +19,43 @@ public static class Runner {
  static void UseCompletionItem(ItemData item,BuffManager manager=null,ItemEffectContext parent=null,EquipmentBag bag=null)
   =>ItemEffectExecutor.ExecuteItem(item,Vector3.zero,Vector3.right,Vector3.up,null,bag,manager,parent,triggerSpecialItems:false);
  public static void Main(){
+ Check("status time reapplication adds only the remaining duration",()=>{
+  var info=new BuffInfo{duration=5,reapplyMode=BuffReapplyMode.AddRemaining};
+  var buff=new ActiveBuff(null,info,null,null,null,null,true,false);buff.Tick(2);buff.RegisterAgain(info);
+  Eq(buff.remainTime,8);Eq(buff.maxTime,8);Eq(buff.GetTimeRate(),1);True(buff.stack==1);Eq(info.duration,5);
+ });
+ Check("status use reapplication adds only unused charges",()=>{
+  var info=new BuffInfo{useLimitType=BuffUseLimitType.UseCount,maxUseCount=3,reapplyMode=BuffReapplyMode.AddRemaining};
+  var buff=new ActiveBuff(null,info,null,null,null,null,true,false);buff.ConsumeUse();buff.RegisterAgain(info);
+  True(buff.remainUseCount==5&&buff.maxUseCount==5);True(info.maxUseCount==3);
+ });
+ Check("legacy refresh still resets budgets while stack count is independent",()=>{
+  var info=new BuffInfo{duration=5,stackMode=BuffStackMode.Stack,maxStack=3};
+  var buff=new ActiveBuff(null,info,null,null,null,null,true,false);buff.Tick(2);buff.RegisterAgain(info);
+  Eq(buff.remainTime,5);True(buff.stack==2);info.reapplyMode=BuffReapplyMode.AddRemaining;
+  buff.Tick(1);buff.RegisterAgain(info);Eq(buff.remainTime,9);True(buff.stack==3);
+ });
+ Check("add remaining does not carry a previous lifetime mode or expired budget",()=>{
+  var buff=new ActiveBuff(null,new BuffInfo{duration=5},null,null,null,null,true,false);
+  buff.RegisterAgain(new BuffInfo{useLimitType=BuffUseLimitType.UseCount,maxUseCount=2,reapplyMode=BuffReapplyMode.AddRemaining});
+  True(buff.remainUseCount==2);buff.ConsumeUse();buff.ConsumeUse();
+  buff.RegisterAgain(new BuffInfo{useLimitType=BuffUseLimitType.UseCount,maxUseCount=2,reapplyMode=BuffReapplyMode.AddRemaining});
+  True(buff.remainUseCount==2);
+ });
+ Check("additive budgets saturate without overflow",()=>{
+  var time=new BuffInfo{duration=float.MaxValue,reapplyMode=BuffReapplyMode.AddRemaining};
+  var timed=new ActiveBuff(null,time,null,null,null,null,true,false);timed.RegisterAgain(time);
+  True(!float.IsInfinity(timed.remainTime));Eq(timed.remainTime,float.MaxValue);
+  var count=new BuffInfo{useLimitType=BuffUseLimitType.UseCount,maxUseCount=int.MaxValue,
+   reapplyMode=BuffReapplyMode.AddRemaining,stackMode=BuffStackMode.Stack,maxStack=int.MaxValue};
+  var counted=new ActiveBuff(null,count,null,null,null,null,true,false);counted.stack=int.MaxValue;counted.RegisterAgain(count);
+  True(counted.remainUseCount==int.MaxValue&&counted.stack==int.MaxValue);
+ });
+ Check("status reapplication mode survives cloning and invalid durations are finite",()=>{
+  var info=new BuffInfo{duration=float.NaN,reapplyMode=BuffReapplyMode.AddRemaining};var clone=info.Clone();clone.Clamp();
+  True(clone.reapplyMode==BuffReapplyMode.AddRemaining);Eq(clone.duration,1);
+  var buff=new ActiveBuff(null,info,null,null,null,null,true,false);Eq(buff.remainTime,1);
+ });
  Check("even full circle starts in the chosen direction without an overlapping last shot",()=>{
   for(int i=0;i<4;i++)Eq(AttackPlacement.ResolveSpreadAngle(360,i,4,AttackSpreadDistribution.Even,AttackSpreadStartMode.FromDirection,false,0),90*i);
  });
