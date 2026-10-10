@@ -340,8 +340,8 @@ Execute Effects 명중 에셋은 **공격의 On Hit Effects**에 넣고, 그 에
 
 ### DamageArea에 피해·범위 버프 주기
 
-1. **Create → GameData → Buffs → Targets → Group**으로 대상 설정 에셋을 만든다.
-2. **Target Group** 아래의 **자동 선택 → DamageArea**를 고른다. 위쪽 Target Group 입력 칸은 항상 직접 수정할 수 있다. 목록에 없는 사용자 그룹 이름도 저장되며, 다시 열어도 지워지지 않는다.
+1. **Create → 04.Items → Effects → Direct Effects → Buff → BuffSetting → Targets → Group**으로 대상 설정 에셋을 만든다.
+2. **대상 그룹(Target Group)** 아래의 **자동 선택 → DamageArea**를 고른다. 위쪽 입력 칸은 항상 직접 수정할 수 있다. 목록에 없는 사용자 그룹 이름도 저장되며, 다시 열어도 지워지지 않는다.
 3. **Buffs → Modifiers → Float Field**를 만들고 **Target Stat Type Name = DamageAreaAttackStat**, **Field Name = damageAreaPower**를 입력한다. Add Value `5`면 피해 +5, Multiply Value `0.2`면 피해 +20%다.
 4. **Items → Effects → Buff**의 Target Resolver에 1번 대상 설정을, Modifiers에 3번 Modifier를 넣는다. 원하는 지속 시간을 Buff Info에 입력하고 아이템의 Effect Datas에 연결한다.
 
@@ -350,6 +350,26 @@ Execute Effects 명중 에셋은 **공격의 On Hit Effects**에 넣고, 그 에
 이 설정은 활성 DamageArea와 버프가 유지되는 동안 새로 생성되는 DamageArea에 적용된다. 직사각형·부채꼴 DamageArea도 기본 그룹을 공유한다. 일반 이동 투사체와 소환물은 이 그룹에 포함되지 않는다. 특정 공격만 구분하려면 해당 DamageArea 프리팹의 **Buff Target Group**을 `DamageArea/Fire`처럼 직접 입력하고 같은 그룹으로 조회한다. 부모 그룹 `DamageArea`는 하위 그룹도 포함한다.
 
 **Area** 대상 설정의 Required Group에도 같은 자동 선택·직접 입력을 제공하며, 반경 안의 해당 그룹과 하위 그룹만 선택한다. 비우면 모든 그룹을 허용한다. **Direct**는 실제 대상 컴포넌트 한 개에 적용하며, DamageArea 또는 그 오브젝트의 Transform/Collider도 받을 수 있다. 프리팹 에셋을 지정하는 것으로 나중에 생성되는 모든 인스턴스를 가리키지는 않으므로 생성 공격 전체에는 Group을 사용한다.
+
+그룹 목록은 `IBuffTarget` 구현체의 선언, 비활성 대상을 포함한 현재 씬, 프로젝트 프리팹에서 자동으로 수집한다. 그룹 이름을 바꾸거나 새 프리팹을 추가하면 목록도 갱신한다. 부모 그룹은 함께 제공하며, `Enemy/Boss`는 `Enemy` 아래에 포함된다. 드롭다운을 열거나 목록이 갱신되어도 직접 입력한 이름은 유지한다.
+
+### 새 IBuffTarget 그룹 추가
+
+`IBuffTarget`을 구현한 타입에 그룹 문자열을 적고 컴파일하면 자동 선택에 추가된다. 별도의 고정 옵션 배열을 수정할 필요가 없다.
+
+```csharp
+public string BuffTargetGroup => "Attack/Lightning";
+```
+
+Inspector에서 변경할 그룹은 필드로 선언해도 된다. 기본값은 코드에서, 변경한 값은 씬과 프리팹에서 수집한다.
+
+```csharp
+[BuffTargetGroupName]
+public string buffTargetGroup = "Attack/Lightning";
+public string BuffTargetGroup => buffTargetGroup;
+```
+
+`Attack/Lightning`과 부모 `Attack`이 모두 표시된다. 복잡한 계산으로 그룹을 결정하는 getter는 씬·프리팹의 현재 값을 사용하며, 생성 전에도 여러 그룹을 표시하려면 타입에 `[BuffTargetGroups("Attack/Fire", "Attack/Ice")]`를 추가한다. 실제 버프 대상 등록은 기존 `BuffManager.RegisterBuffTarget(this)`로 처리한다.
 
 모든 가방의 아이템 공격을 강화하려면 **Buffs → Targets → All Items**를 사용한다. 공격 종류별 Modifier가 필요하다. DamageArea는 `DamageAreaAttackStat.damageAreaPower`, 이동 투사체는 `ProjectileAttackStat.projectileDamage`, 연쇄 공격은 `ChainAttackStat.chainFirstDamage`와 `chainNextDamage`를 각각 설정한다. **Include Self**를 켜면 버프를 부여한 ItemData도 포함한다. 기존 Owner의 **All**은 사용한 아이템·가방·시리즈를 합친 대상이며 전체 아이템 설정과 범위가 다르다.
 

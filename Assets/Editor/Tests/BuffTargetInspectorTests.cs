@@ -34,5 +34,56 @@ public sealed class BuffTargetInspectorTests
         }
         finally { Undo.ClearUndo(resolver); Object.DestroyImmediate(resolver); }
     }
+
+    private sealed class UnannotatedTarget : IBuffTarget
+    {
+        public Object BuffTargetObject => null;
+        public string BuffTargetGroup => "InspectorCatalog/DeclaredOnly";
+        public string BuffTargetDebugName => "Test";
+        public void RefreshBuffedStat() { }
+    }
+
+    [Test] public void GroupDiscoveryReadsAnUnannotatedImplementationWithoutAnInstance()
+    {
+        Assert.That(BuffTargetGroupDiscovery.GetDeclaredGroups(typeof(UnannotatedTarget)), Does.Contain("InspectorCatalog/DeclaredOnly"));
+        BuffTargetGroupCatalog.Invalidate();
+        Assert.That(BuffTargetGroupCatalog.Groups, Does.Not.Contain("InspectorCatalog/DeclaredOnly"));
+    }
+
+    [Test] public void GroupCatalogIncludesInactiveSceneTargetsAndTheirParentGroups()
+    {
+        var host = new GameObject("Inactive Buff Group Test");
+        host.SetActive(false);
+        try
+        {
+            var target = host.AddComponent<Health>(); target.buffTargetGroup = "InspectorCatalog/Inactive";
+            BuffTargetGroupCatalog.Invalidate();
+            Assert.That(BuffTargetGroupCatalog.Groups, Does.Contain("InspectorCatalog/Inactive"));
+            Assert.That(BuffTargetGroupCatalog.Groups, Does.Contain("InspectorCatalog"));
+        }
+        finally { Object.DestroyImmediate(host); BuffTargetGroupCatalog.Invalidate(); }
+    }
+
+    [Test] public void GroupCatalogIncludesAProjectPrefabWithoutASceneInstance()
+    {
+        string folder = "Assets/__BuffGroupTest_" + System.Guid.NewGuid().ToString("N");
+        var host = new GameObject("Prefab Buff Group Test"); host.SetActive(false);
+        try
+        {
+            AssetDatabase.CreateFolder("Assets", folder.Substring("Assets/".Length));
+            var target = host.AddComponent<Health>(); target.buffTargetGroup = "InspectorCatalog/PrefabOnly";
+            Assert.That(PrefabUtility.SaveAsPrefabAsset(host, folder + "/Target.prefab"), Is.Not.Null);
+            Object.DestroyImmediate(host); host = null;
+            BuffTargetGroupCatalog.Invalidate();
+            Assert.That(BuffTargetGroupCatalog.Groups, Does.Contain("InspectorCatalog/PrefabOnly"));
+            Assert.That(BuffTargetGroupCatalog.Groups, Does.Contain("InspectorCatalog"));
+        }
+        finally
+        {
+            if (host != null) Object.DestroyImmediate(host);
+            AssetDatabase.DeleteAsset(folder);
+            BuffTargetGroupCatalog.Invalidate();
+        }
+    }
 }
 #endif

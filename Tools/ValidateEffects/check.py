@@ -102,19 +102,21 @@ def prepare_dependencies(cache):
     return Path(dotnet), refs
 
 
-def project(path, files, refs, executable=False):
+def project(path, files, refs, executable=False, defines='', additional_refs=()):
     root = ET.Element('Project', Sdk='Microsoft.NET.Sdk')
     properties = ET.SubElement(root, 'PropertyGroup')
     values = {'TargetFramework': 'net8.0', 'EnableDefaultCompileItems': 'false', 'ImplicitUsings': 'disable',
               'Nullable': 'disable', 'GenerateAssemblyInfo': 'false', 'NoWarn': 'CS0649;CS0169;CS0414;CS0436;CS0067;CS8981'}
     if executable:
         values['OutputType'] = 'Exe'
+    if defines:
+        values['DefineConstants'] = defines
     for key, value in values.items():
         ET.SubElement(properties, key).text = value
     items = ET.SubElement(root, 'ItemGroup')
     for filename in dict.fromkeys(files):
         ET.SubElement(items, 'Compile', Include=str(filename))
-    for filename in refs.glob('*.dll'):
+    for filename in list(refs.glob('*.dll')) + list(additional_refs):
         reference = ET.SubElement(items, 'Reference', Include=filename.stem)
         ET.SubElement(reference, 'HintPath').text = str(filename)
     ET.indent(root)
@@ -151,10 +153,20 @@ def main():
     environment.update(DOTNET_CLI_HOME=str(work), DOTNET_CLI_TELEMETRY_OPTOUT='1', DOTNET_NOLOGO='1',
                        DOTNET_SKIP_FIRST_TIME_EXPERIENCE='1', DOTNET_GENERATE_ASPNET_CERTIFICATE='false')
     sources = compile_files()
+    sources += [ROOT / 'Assets/Editor/BuffTargetGroupDiscovery.cs']
     compile_path = work / 'Compile.csproj'
     project(compile_path, sources + [HERE / 'GameApi.cs'], refs)
     print('Compiling', len(sources), 'production/test files against Unity 2022.3 references; engine tests compile only.', flush=True)
     run([dotnet, 'build', compile_path, '--nologo', '-v:q'], env=environment)
+    editor_path = work / 'editor' / 'GroupInspector.csproj'
+    editor_path.parent.mkdir()
+    editor_files = ('Assets/Editor/BuffTargetGroupNameDrawer.cs',
+                    'Assets/Editor/BuffEditor/BuffTargetResolverEditors.cs',
+                    'Assets/Editor/Tests/BuffTargetInspectorTests.cs')
+    project(editor_path, [ROOT / name for name in editor_files] + [HERE / 'EditorApi.cs'], refs,
+            defines='UNITY_EDITOR', additional_refs=[work / 'bin/Debug/net8.0/Compile.dll'])
+    print('Compiling group Inspector and EditMode tests with Editor API substitutes; no GUI tests execute.', flush=True)
+    run([dotnet, 'build', editor_path, '--nologo', '-v:q'], env=environment)
     effect = ROOT / 'Assets/Script/Items/Effect'
     selected = ('Impliation/IStat.cs', 'Excuter/Data/EffectStatUtility.cs', 'Excuter/Data/EffectExecutionScale.cs',
                 'Excuter/Data/ItemEffectContext.cs', 'Excuter/Data/ItemEffectPlan.cs', 'Excuter/Data/ItemEffectLifetime.cs',
@@ -178,7 +190,7 @@ def main():
     pure_dir = work / 'managed'
     pure_dir.mkdir()
     managed_path = pure_dir / 'Managed.csproj'
-    project(managed_path, [effect / name for name in selected] + [HERE / 'ManagedApi.cs', HERE / 'ManagedChecks.cs'], refs, executable=True)
+    project(managed_path, [effect / name for name in selected] + [ROOT / 'Assets/Editor/BuffTargetGroupDiscovery.cs', HERE / 'ManagedApi.cs', HERE / 'ManagedChecks.cs', HERE / 'ManagedBuffGroupChecks.cs'], refs, executable=True)
     run([dotnet, 'run', '--project', managed_path, '--nologo'], env=environment)
     print('API compile and managed checks passed. Unity 6000.4 import/physics/play validation remains required.')
     if not metadata_ok:

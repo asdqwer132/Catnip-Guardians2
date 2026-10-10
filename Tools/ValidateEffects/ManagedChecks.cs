@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-public static class Runner {
+public static partial class Runner {
  static int passed;
  static void Check(string name, Action action){action();passed++;Console.WriteLine("PASS "+name);}
  static void True(bool condition){if(!condition)throw new Exception("Assertion failed");}
@@ -19,6 +19,7 @@ public static class Runner {
  static void UseCompletionItem(ItemData item,BuffManager manager=null,ItemEffectContext parent=null,EquipmentBag bag=null)
   =>ItemEffectExecutor.ExecuteItem(item,Vector3.zero,Vector3.right,Vector3.up,null,bag,manager,parent,triggerSpecialItems:false);
  public static void Main(){
+ RunBuffGroupChecks();
  Check("special functions execute before use-count consumption including the last use",()=>{
   var manager=new BuffManager();var item=CompletionItem(new CompletionProbe());var previous=SpecialItemManager.Instance;int observed=0;
   try{SpecialItemManager.Instance=new SpecialItemManager{onCall=context=>{True(manager.endedUses==0);observed++;}};

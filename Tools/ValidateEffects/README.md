@@ -39,3 +39,7 @@ python3 Tools/ValidateEffects/check.py --metadata-only
 특수 상태 기능은 `SpecialItemManager`의 실제 소스도 API 컴파일에 포함합니다. `AdditionalSpecialStatusTests`는 상태 키 보유에 따른 별 공격·마지막 횟수·만료·정화·대상 격리·자기 재호출 방지를 Unity에서 확인합니다. 이 테스트는 여기서 컴파일만 수행하며 Unity Editor에서 실행해야 합니다.
 
 특수 상태와 버프 분류를 분리한 회귀 검사도 포함합니다. 관리형 실행은 상태 키 누적, 분류만 있는 버프의 상태 미부여, 공유/추가 태그 결합, 재부여 시 분류 갱신을 검사합니다. `AdditionalDirectStatusTests`·`AdditionalBuffClassificationTests`의 대상별 조회와 정화 검사는 Unity에서 실행합니다.
+
+버프 그룹 검증은 `IBuffTarget`의 문자열 getter·필드 기본값·상속·명시적 구현·추가 선언을 실제 메타데이터 수집 코드로 실행합니다. 생성자·정적 생성자·동적 getter를 실행하지 않는 것도 검사합니다. `BuffTargetInspectorTests`의 프리팹·비활성 씬·Undo 검사는 Unity EditMode에서 실행해야 합니다.
+
+그룹 Inspector·PropertyDrawer·EditMode 테스트는 `EditorApi.cs`의 대체 API 선언으로 추가 컴파일합니다. 이는 C# 연결 검증이며 UnityEditor DLL이나 실제 GUI 실행 검증을 대신하지 않습니다.

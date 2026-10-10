@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "BuffTargetGroupResolver", menuName = "04.Items/Effects/Direct Effects/Buff/BuffSetting/Targets/Group")]
@@ -12,6 +12,7 @@ public class BuffTargetGroupResolver : BuffTargetResolver
         if (results == null || string.IsNullOrEmpty(targetGroup))
             return;
 
-        results.Add(BuffTargetHandle.Group(targetGroup));
+        BuffTargetHandle handle = BuffTargetHandle.Group(targetGroup);
+        if (handle != null) results.Add(handle);
     }
 }

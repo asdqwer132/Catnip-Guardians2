@@ -8,7 +8,7 @@ public sealed class BuffTargetGroupNameAttribute : PropertyAttribute
     public BuffTargetGroupNameAttribute(string emptyLabel = "(그룹 없음)") => EmptyLabel = emptyLabel;
 }
 
-// Inspector는 IBuffTarget 구현 타입의 선언과 현재 씬의 그룹을 자동 수집한다.
+// IBuffTarget의 문자열/필드 기본값은 자동 수집한다. 복잡한 동적 getter는 이 특성으로 추가 그룹을 선언할 수 있다.
 [AttributeUsage(AttributeTargets.Class, Inherited = true)]
 public sealed class BuffTargetGroupsAttribute : Attribute
 {
