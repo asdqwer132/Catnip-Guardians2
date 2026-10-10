@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbe3f4c5d0d27d444ae03b43d60d096e, type: 3}
   m_Name: Weapon28_EffectData1
   m_EditorClassIdentifier: Assembly-CSharp::ConditionalItemEffectData
-  conditionMode: 0
+  conditionMode: 1
   conditions:
-  - {fileID: 11400000, guid: 7a675cb93389e3643a090a8eedc3e235, type: 2}
+  - {fileID: 11400000, guid: cf3ed0166087a6d43a8d950c61e0a728, type: 2}
+  - {fileID: 11400000, guid: 6ab9615f8699d0a4187de46624b5b1b7, type: 2}
   visualData: {fileID: 0}
   impactVfxPrefab: {fileID: 0}
   impactBaseScale: {x: 1, y: 1, z: 1}

@@ -9,10 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ec1e90c14516044cbc1fad650d7dcbb, type: 3}
-  m_Name: Arrow_HasBuff
-  m_EditorClassIdentifier: Assembly-CSharp::HasBuffConditionData
-  subject: 1
-  requiredBuff: {fileID: 11400000, guid: 113fe2e1ce5b8aa4e8aa4cbcd715f07c, type: 2}
-  requirement: 0
+  m_Script: {fileID: 11500000, guid: 7fb18c8a201b435aafeda520a02677bf, type: 3}
+  m_Name: Arrow_HasKey 1
+  m_EditorClassIdentifier: Assembly-CSharp::HasStatusConditionData
+  status: {fileID: 11400000, guid: 9c1e19005c4a9ed4eaf71d4b75333064, type: 2}
+  target: 0
   minimumStack: 1
