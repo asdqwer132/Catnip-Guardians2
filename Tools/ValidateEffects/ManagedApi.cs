@@ -41,7 +41,8 @@ public class EffectVisualContext { public EffectVisualContext(Vector3 p, Quatern
 public class Enemy { public int HitEffectLifeId; public bool CanReceiveHitEffects=true; public int damages; public SimpleTransform transform=new SimpleTransform(); public void TakeDamage(float d, ItemEffectContext source=null){damages++;} }
 public class SimpleTransform { public Vector3 position; }
 public class HitEffectData { public int hits; public void TryExecute(HitEffectContext h){hits++;} }
-public class BuffEffect : ItemEffectData { public bool harmful; public bool dispellable=true; public BuffFlagDefinition[] flags; public Sprite buffIcon; }
+public class BuffEffect : ItemEffectData { public BuffClassificationDefinition buffClassification; public bool harmful; public bool dispellable=true; public BuffFlagDefinition[] flags; public Sprite buffIcon; }
+public class GrantSpecialStatusEffect : ItemEffectData { public BuffClassificationDefinition buffClassification; }
 public class SummonItemThrower { }
 
 public static class ItemEffectUtility { public static ItemEffectData[] Copy(ItemEffectData[] x)=>x!=null?(ItemEffectData[])x.Clone():null; public static void Execute(ItemEffectData[] e,ItemEffectContext c){} }

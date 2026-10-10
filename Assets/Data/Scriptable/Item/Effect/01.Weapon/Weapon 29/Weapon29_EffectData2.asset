@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eca5d8d4f8c6437e9e7bdbeca1539bd4, type: 3}
   m_Name: Weapon29_EffectData2
-  m_EditorClassIdentifier: Assembly-CSharp::ApplyStatusEffect
+  m_EditorClassIdentifier: Assembly-CSharp::GrantSpecialStatusEffect
   conditionMode: 0
   conditions: []
   visualData: {fileID: 0}
@@ -22,10 +22,9 @@ MonoBehaviour:
   audioSource: 
   impactVfxLifeTime: 1
   endVisualData: {fileID: 0}
-  statusKey: {fileID: 11400000, guid: ba98d46515f3419469d1ff927c3c3633, type: 2}
+  specialStatusKey: {fileID: 11400000, guid: ba98d46515f3419469d1ff927c3c3633, type: 2}
   target: 0
   lifetimeSettings:
-    statusDefinition: {fileID: 0}
     stackMode: 1
     maxStack: 1
     reapplyMode: 1

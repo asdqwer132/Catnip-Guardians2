@@ -10,11 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 368225ce34694a6880effb13060a6e7d, type: 3}
-  m_Name: StarSpecialAttackStatus
-  m_EditorClassIdentifier: Assembly-CSharp::StatusDefinition
-  displayName: "별 특수 공격"
-  harmful: 0
-  dispellable: 1
+  m_Name: Star_SpecialStatusKey
+  m_EditorClassIdentifier: Assembly-CSharp::SpecialStatusDefinition
+  displayName: Star
   interactionTags: []
-  exposesPlayerStatus: 1
+  exposesPlayerStatus: 0
   playerStatus: 1

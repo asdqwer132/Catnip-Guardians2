@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+using UnityEngine;
+using UnityEngine.Serialization;
 [System.Serializable]
 public class SpecialItem
 {
@@ -11,7 +12,8 @@ public class SpecialItemManager : MonoBehaviour
     public ItemThrowExecutor ItemThrowExecutor;
     public ItemData specialItems;
     [Tooltip("이 상태 키가 플레이어에게 활성화되어 있으면 특수 아이템을 실행합니다. StatusStat 수치는 검사하지 않습니다.")]
-    public StatusDefinition requiredStatusKey;
+    [FormerlySerializedAs("requiredStatusKey")]
+    public SpecialStatusDefinition requiredSpecialStatusKey;
     private void Awake()
     {
         Instance = this;
@@ -34,7 +36,7 @@ public class SpecialItemManager : MonoBehaviour
         => context != null && context.CanContinue && context.sourceItemData != null &&
             StatusManager.Instance != null && ItemThrowExecutor != null && specialItems != null &&
             context.sourceItemData != specialItems && context.sourceItemData.dataId != "WeaponExtra1" &&
-            StatusManager.Instance.HasStatus(requiredStatusKey);
+            StatusManager.Instance.HasSpecialStatus(requiredSpecialStatusKey);
 
     private void OnDestroy()
     {

@@ -7,8 +7,8 @@ public static class Runner {
  static void True(bool condition){if(!condition)throw new Exception("Assertion failed");}
  static void Eq(float value,float expected){if(Math.Abs(value-expected)>0.00001f)throw new Exception($"Expected {expected}, got {value}");}
  static ItemEffectContext Context()=>new ItemEffectContext(null,null,Vector3.zero,Vector3.right,null);
- static ActiveBuff BuffRecord(BuffEffect effect,StatusDefinition status=null)
-  =>new ActiveBuff(null,new BuffInfo{statusDefinition=status,useLimitType=BuffUseLimitType.Infinite},null,null,effect,null,true,false);
+ static ActiveBuff BuffRecord(BuffEffect effect)
+  =>new ActiveBuff(null,new BuffInfo{useLimitType=BuffUseLimitType.Infinite},null,null,effect,null,true,false);
  private sealed class CompletionProbe : ItemEffectData {
   public readonly List<ItemEffectContext> calls=new List<ItemEffectContext>();
   public bool wait;public Action<ItemEffectContext> onExecute;private ItemEffectLease lease;
@@ -35,36 +35,36 @@ public static class Runner {
   }finally{SpecialItemManager.Instance=previous;}
  });
  Check("direct statuses merge by status key and target across effects items and bags",()=>{
-  var storage=new BuffStorage();var key=new StatusDefinition();var target=BuffTargetHandle.Item(new ItemData());
-  var info=new BuffInfo{statusDefinition=key,duration=5,reapplyMode=BuffReapplyMode.AddRemaining,stackMode=BuffStackMode.Stack,maxStack=3};
-  var first=storage.RegisterStatus(info,new ItemData(),new EquipmentBag(),new ItemEffectData(),target,true);first.Tick(2);
-  var second=storage.RegisterStatus(info,new ItemData(),new EquipmentBag(),new ItemEffectData(),target,true);
+  var storage=new BuffStorage();var key=new SpecialStatusDefinition();var target=BuffTargetHandle.Item(new ItemData());
+  var info=new BuffInfo{duration=5,reapplyMode=BuffReapplyMode.AddRemaining,stackMode=BuffStackMode.Stack,maxStack=3};
+  var first=storage.RegisterSpecialStatus(key,info,new ItemData(),new EquipmentBag(),new ItemEffectData(),target,true);first.Tick(2);
+  var second=storage.RegisterSpecialStatus(key,info,new ItemData(),new EquipmentBag(),new ItemEffectData(),target,true);
   True(ReferenceEquals(first,second)&&storage.activeBuffs.Count==1&&second.stack==2);Eq(second.remainTime,8);
  });
  Check("same direct status shares remaining uses across grant sources",()=>{
-  var storage=new BuffStorage();var info=new BuffInfo{statusDefinition=new StatusDefinition(),useLimitType=BuffUseLimitType.UseCount,
+  var storage=new BuffStorage();var key=new SpecialStatusDefinition();var info=new BuffInfo{useLimitType=BuffUseLimitType.UseCount,
    maxUseCount=3,reapplyMode=BuffReapplyMode.AddRemaining};var target=BuffTargetHandle.Item(new ItemData());
-  var first=storage.RegisterStatus(info,new ItemData(),null,new ItemEffectData(),target,true);first.ConsumeUse();
-  var second=storage.RegisterStatus(info,new ItemData(),null,new ItemEffectData(),target,true);
+  var first=storage.RegisterSpecialStatus(key,info,new ItemData(),null,new ItemEffectData(),target,true);first.ConsumeUse();
+  var second=storage.RegisterSpecialStatus(key,info,new ItemData(),null,new ItemEffectData(),target,true);
   True(ReferenceEquals(first,second)&&second.remainUseCount==5&&storage.useCountBuffs.Count==1);
  });
  Check("different direct status keys and targets do not merge",()=>{
-  var storage=new BuffStorage();var info=new BuffInfo{statusDefinition=new StatusDefinition()};var target=BuffTargetHandle.Item(new ItemData());
-  storage.RegisterStatus(info,null,null,null,target,true);storage.RegisterStatus(info,null,null,null,BuffTargetHandle.Item(new ItemData()),true);
-  var other=info.Clone();other.statusDefinition=new StatusDefinition();storage.RegisterStatus(other,null,null,null,target,true);
+  var storage=new BuffStorage();var key=new SpecialStatusDefinition();var info=new BuffInfo();var target=BuffTargetHandle.Item(new ItemData());
+  storage.RegisterSpecialStatus(key,info,null,null,null,target,true);storage.RegisterSpecialStatus(key,info,null,null,null,BuffTargetHandle.Item(new ItemData()),true);
+  var other=info.Clone();storage.RegisterSpecialStatus(new SpecialStatusDefinition(),other,null,null,null,target,true);
   True(storage.activeBuffs.Count==3);
  });
  Check("direct statuses never merge with ordinary modifier buffs or expired registrations",()=>{
-  var storage=new BuffStorage();var info=new BuffInfo{statusDefinition=new StatusDefinition()};var target=BuffTargetHandle.Item(new ItemData());
+  var storage=new BuffStorage();var key=new SpecialStatusDefinition();var info=new BuffInfo();var target=BuffTargetHandle.Item(new ItemData());
   storage.RegisterBuff(null,info,null,null,new BuffEffect(),target,true,true);
-  var first=storage.RegisterStatus(info,null,null,null,target,true);True(storage.activeBuffs.Count==2);first.Tick(1);
-  var next=storage.RegisterStatus(info,null,null,null,target,true);True(!ReferenceEquals(first,next));Eq(next.remainTime,1);
+  var first=storage.RegisterSpecialStatus(key,info,null,null,null,target,true);True(storage.activeBuffs.Count==2);first.Tick(1);
+  var next=storage.RegisterSpecialStatus(key,info,null,null,null,target,true);True(!ReferenceEquals(first,next));Eq(next.remainTime,1);
  });
  Check("shared status lifetime mode changes synchronize categories",()=>{
-  var storage=new BuffStorage();var info=new BuffInfo{statusDefinition=new StatusDefinition(),reapplyMode=BuffReapplyMode.AddRemaining};
-  var target=BuffTargetHandle.Item(new ItemData());var first=storage.RegisterStatus(info,null,null,null,target,true);
+  var storage=new BuffStorage();var key=new SpecialStatusDefinition();var info=new BuffInfo{reapplyMode=BuffReapplyMode.AddRemaining};
+  var target=BuffTargetHandle.Item(new ItemData());var first=storage.RegisterSpecialStatus(key,info,null,null,null,target,true);
   info.useLimitType=BuffUseLimitType.UseCount;info.maxUseCount=2;
-  var next=storage.RegisterStatus(info,new ItemData(),null,null,target,true);
+  var next=storage.RegisterSpecialStatus(key,info,new ItemData(),null,null,target,true);
   True(ReferenceEquals(first,next)&&storage.timedBuffs.Count==0&&storage.useCountBuffs.Count==1&&next.remainUseCount==2);
  });
  Check("status time reapplication adds only the remaining duration",()=>{
@@ -130,11 +130,11 @@ public static class Runner {
   var buff=BuffRecord(new BuffEffect{harmful=true});True(buff.harmful&&buff.dispellable);True(new BuffCleanseFilter().Matches(buff));
   True(!new BuffCleanseFilter().Matches(BuffRecord(new BuffEffect())));
  });
- Check("legacy status harmful flag remains supported and either layer can forbid cleanse",()=>{
-  var status=new StatusDefinition{harmful=true};var effect=new BuffEffect();var filter=new BuffCleanseFilter();
-  True(filter.Matches(BuffRecord(effect,status)));
-  effect.dispellable=false;True(!filter.Matches(BuffRecord(effect,status)));
-  effect.dispellable=true;status.dispellable=false;True(!filter.Matches(BuffRecord(effect,status)));
+ Check("classification rules and local rules can independently forbid cleanse",()=>{
+  var classification=new BuffClassificationDefinition{harmful=true};var effect=new BuffEffect{buffClassification=classification};var filter=new BuffCleanseFilter();
+  True(filter.Matches(BuffRecord(effect)));
+  effect.dispellable=false;True(!filter.Matches(BuffRecord(effect)));
+  effect.dispellable=true;classification.dispellable=false;True(!filter.Matches(BuffRecord(effect)));
  });
  Check("flag cleanse can select a beneficial buff and compares asset identity",()=>{
   var poison=new BuffFlagDefinition{displayName="Poison"};var sameName=new BuffFlagDefinition{displayName="Poison"};
@@ -184,6 +184,44 @@ public static class Runner {
   buff.completion.Track(context,null);context.lifetime.Close();True(!context.lifetime.IsFinished);
   storage.RemoveBuff(buff,BuffRemovalReason.Cleansed);True(reason==BuffRemovalReason.Cleansed&&storage.activeBuffs.Count==0&&storage.infiniteBuffs.Count==0);
   True(context.lifetime.IsFinished&&context.lifetime.IsCancelled&&completions==0);
+ });
+ Check("buff classification alone never supplies a special status identity",()=>{
+  var definition=new BuffClassificationDefinition{harmful=true};var effect=new BuffEffect{buffClassification=definition};
+  var active=BuffRecord(effect);True(active.harmful&&active.dispellable&&active.specialStatusKey==null);
+  True(typeof(BuffInfo).GetField("specialStatusKey")==null&&typeof(BuffInfo).GetField("statusDefinition")==null);
+  True(typeof(SpecialStatusDefinition).GetField("harmful")==null&&typeof(SpecialStatusDefinition).GetField("dispellable")==null);
+ });
+ Check("shared classification and local tags combine without nulls or duplicates",()=>{
+  var first=new BuffFlagDefinition();var second=new BuffFlagDefinition();
+  var definition=new BuffClassificationDefinition{flags=new[]{first,null}};
+  var active=BuffRecord(new BuffEffect{buffClassification=definition,flags=new[]{first,second,null}});
+  True(active.flags.Length==2&&active.HasFlag(first)&&active.HasFlag(second));
+  True(new BuffCleanseFilter{mode=BuffCleanseMode.Flags,flagMatch=BuffFlagMatchMode.All,flags=new[]{first,second}}.Matches(active));
+ });
+ Check("definition changes affect registration only when reapplied",()=>{
+  var first=new BuffFlagDefinition();var second=new BuffFlagDefinition();
+  var definition=new BuffClassificationDefinition{harmful=true,flags=new[]{first}};
+  var active=BuffRecord(new BuffEffect{buffClassification=definition});
+  definition.harmful=false;definition.dispellable=false;definition.flags[0]=second;
+  True(active.harmful&&active.dispellable&&active.HasFlag(first)&&!active.HasFlag(second));
+  active.RegisterAgain(new BuffInfo{useLimitType=BuffUseLimitType.Infinite});
+  True(!active.harmful&&!active.dispellable&&!active.HasFlag(first)&&active.HasFlag(second));
+ });
+ Check("same special key merges across classifications and adopts latest grant rules",()=>{
+  var storage=new BuffStorage();var key=new SpecialStatusDefinition();var target=BuffTargetHandle.Item(new ItemData());
+  var first=new GrantSpecialStatusEffect();var second=new GrantSpecialStatusEffect{buffClassification=new BuffClassificationDefinition{harmful=true,dispellable=false}};
+  var info=new BuffInfo{duration=5,reapplyMode=BuffReapplyMode.AddRemaining};
+  var active=storage.RegisterSpecialStatus(key,info,null,null,first,target,true);active.Tick(2);
+  var again=storage.RegisterSpecialStatus(key,info,null,null,second,target,true);
+  True(ReferenceEquals(active,again)&&again.specialStatusKey==key&&storage.activeBuffs.Count==1);Eq(again.remainTime,8);
+  True(again.harmful&&!again.dispellable&&!new BuffCleanseFilter().Matches(again));
+ });
+ Check("different special keys stay separate even with identical classification",()=>{
+  var storage=new BuffStorage();var target=BuffTargetHandle.Item(new ItemData());var info=new BuffInfo();
+  var effect=new GrantSpecialStatusEffect{buffClassification=new BuffClassificationDefinition{harmful=true}};
+  var first=storage.RegisterSpecialStatus(new SpecialStatusDefinition(),info,null,null,effect,target,true);
+  var second=storage.RegisterSpecialStatus(new SpecialStatusDefinition(),info,null,null,effect,target,true);
+  True(!ReferenceEquals(first,second)&&storage.activeBuffs.Count==2&&first.harmful&&second.harmful);
  });
  Check("shotgun radius offset samples independent distances inside the radius band",()=>{
   Eq(AttackPlacement.ResolveShotgunDistance(5,1,0),4);Eq(AttackPlacement.ResolveShotgunDistance(5,1,.25f),4.5f);

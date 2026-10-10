@@ -42,9 +42,9 @@ def download(url, destination):
 
 
 def metadata():
-    changed = subprocess.check_output(['git', 'diff', '--name-only'], cwd=ROOT, text=True).splitlines()
-    staged = subprocess.check_output(['git', 'diff', '--cached', '--name-only'], cwd=ROOT, text=True).splitlines()
-    untracked = subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard'], cwd=ROOT, text=True).splitlines()
+    changed = subprocess.check_output(['git', 'diff', '--name-only', '-z'], cwd=ROOT, text=True).split('\0')
+    staged = subprocess.check_output(['git', 'diff', '--cached', '--name-only', '-z'], cwd=ROOT, text=True).split('\0')
+    untracked = subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard', '-z'], cwd=ROOT, text=True).split('\0')
     guids = collections.defaultdict(list)
     pattern = re.compile(r'^guid: ([0-9a-f]{32})$', re.M)
     for path in (ROOT / 'Assets').rglob('*.meta'):
@@ -165,9 +165,10 @@ def main():
                 'Impliation/Buff/Data/Modifier/BuffModifier.cs', 'Impliation/Buff/Data/Modifier/FloatFieldBuffModifier.cs',
                 'Impliation/Buff/Data/BuffModeEnums.cs', 'Impliation/Buff/Data/Resolver/IBuffTarget.cs',
                 'Impliation/Buff/Data/BuffInfo.cs', 'Impliation/Buff/Data/BuffFlagDefinition.cs',
+                'Impliation/Buff/Data/BuffClassificationDefinition.cs', 'Impliation/Buff/Data/BuffClassificationUtility.cs',
                 'Impliation/Buff/Manager/ActiveBuff.cs', 'Impliation/Buff/Manager/BuffStorage.cs',
                 'Impliation/Buff/Manager/BuffRemovalReason.cs',
-                'Impliation/Status/StatusDefinition.cs', 'Impliation/Status/BuffCleanseFilter.cs',
+                'Impliation/SpecialStatus/SpecialStatusDefinition.cs', 'Impliation/Buff/Data/BuffCleanseFilter.cs',
                 'Impliation/Buff/Data/Resolver/BuffTargetGroupNameAttribute.cs',
                 'Impliation/Buff/Manager/BuffQueryContext.cs', 'Impliation/Buff/Manager/BuffTargetHandle.cs',
                 'Impliation/Repeat/RepeatItemStat.cs', 'Impliation/Repeat/AttackPlacement.cs',

@@ -24,9 +24,9 @@ public sealed class AdditionalBuffClassificationTests
     }
     private ItemEffectContext Context(GameObject owner, ItemData item = null)
         => new ItemEffectContext(owner, item, Vector3.zero, Vector3.right, null, buffManager: manager);
-    private ContextStatusTargetResolver Targets(StatusQueryTarget target)
+    private ContextSpecialStatusTargetResolver Targets(SpecialStatusQueryTarget target)
     {
-        var resolver = Asset<ContextStatusTargetResolver>(); resolver.targets = new[] { target }; return resolver;
+        var resolver = Asset<ContextSpecialStatusTargetResolver>(); resolver.targets = new[] { target }; return resolver;
     }
     [SetUp] public void Setup()
     {
@@ -51,11 +51,11 @@ public sealed class AdditionalBuffClassificationTests
         var slow = Asset<FloatFieldBuffModifier>(); slow.fieldName = "cooldown"; slow.addValue = 2f;
         var other = Asset<FloatFieldBuffModifier>(); other.fieldName = "cooldown"; other.addValue = 1f;
         harmful.modifiers = new BuffModifier[] { slow }; beneficial.modifiers = new BuffModifier[] { other };
-        harmful.targetResolver = beneficial.targetResolver = Targets(StatusQueryTarget.SourceItem);
+        harmful.targetResolver = beneficial.targetResolver = Targets(SpecialStatusQueryTarget.SourceItem);
         harmful.Execute(context); beneficial.Execute(context);
         var stat = new ItemCooldownStat { cooldown = 5f };
         Assert.That(manager.GetBuffedStatForItem(stat, item, null).cooldown, Is.EqualTo(8f));
-        CleanseEffect cleanse = Asset<CleanseEffect>(); cleanse.targetResolver = harmful.targetResolver;
+        CleanseBuffEffect cleanse = Asset<CleanseBuffEffect>(); cleanse.targetResolver = harmful.targetResolver;
         cleanse.Execute(context);
         Assert.That(manager.GetBuffedStatForItem(stat, item, null).cooldown, Is.EqualTo(6f));
         Assert.That(manager.Storage.activeBuffs.Count, Is.EqualTo(1));
@@ -69,12 +69,12 @@ public sealed class AdditionalBuffClassificationTests
         var target = Host().AddComponent<AdditionalAreaStatusTarget>();
         var otherTarget = Host().AddComponent<AdditionalAreaStatusTarget>();
         BuffEffect tagged = Buff(false, selected), unselected = Buff(false, other);
-        tagged.targetResolver = Targets(StatusQueryTarget.Owner);
+        tagged.targetResolver = Targets(SpecialStatusQueryTarget.Owner);
         tagged.Execute(Context(target.gameObject));
         ActiveBuff matched = manager.Storage.activeBuffs[0];
         ActiveBuff kept = manager.RegisterBuffForTargetHandle(unselected, Context(target.gameObject), target);
         ActiveBuff keptTarget = manager.RegisterBuffForTargetHandle(tagged, Context(otherTarget.gameObject), otherTarget);
-        var cleanse = Asset<CleanseEffect>(); cleanse.targetResolver = tagged.targetResolver;
+        var cleanse = Asset<CleanseBuffEffect>(); cleanse.targetResolver = tagged.targetResolver;
         cleanse.filter.mode = BuffCleanseMode.Flags; cleanse.filter.flags = new[] { selected };
         cleanse.Execute(Context(target.gameObject));
         //Assert.That(manager.Storage.activeBuffs, Does.Not.Contain(matched));
@@ -106,13 +106,13 @@ public sealed class AdditionalBuffClassificationTests
     }
 
     [Test]
-    public void EitherStatusOrEffectCanForbidFlagCleanse()
+    public void EitherClassificationOrEffectCanForbidFlagCleanse()
     {
         var flag = Asset<BuffFlagDefinition>();
         var target = Host().AddComponent<AdditionalAreaStatusTarget>();
-        var status = Asset<StatusDefinition>(); status.harmful = true; status.dispellable = false;
+        var classification = Asset<BuffClassificationDefinition>(); classification.harmful = true; classification.dispellable = false;
         BuffEffect statusLocked = Buff(false, flag), effectLocked = Buff(true, flag);
-        statusLocked.buffInfo.statusDefinition = status; effectLocked.dispellable = false;
+        statusLocked.buffClassification = classification; effectLocked.dispellable = false;
         manager.RegisterBuffForTargetHandle(statusLocked, Context(target.gameObject), target);
         manager.RegisterBuffForTargetHandle(effectLocked, Context(target.gameObject), target);
         var filter = new BuffCleanseFilter { mode = BuffCleanseMode.HarmfulOrFlags, flags = new[] { flag } };
@@ -160,5 +160,35 @@ public sealed class AdditionalBuffClassificationTests
         Assert.That(reason, Is.EqualTo(BuffRemovalReason.Cleansed));
         Assert.That(context.lifetime.IsFinished, Is.True); Assert.That(context.lifetime.IsCancelled, Is.True);
         Assert.That(completions, Is.Zero);
+    }
+
+    [Test]
+    public void SharedClassificationDoesNotGrantSpecialStatusOrChangeNumericStats()
+    {
+        var target = Host().AddComponent<AdditionalAreaStatusTarget>();
+        var key = Asset<SpecialStatusDefinition>();
+        var classification = Asset<BuffClassificationDefinition>(); classification.harmful = true;
+        BuffEffect effect = Buff(); effect.buffClassification = classification;
+        var active = manager.RegisterBuffForTargetHandle(effect, Context(target.gameObject), target);
+        var stat = manager.GetBuffedStatForTarget(new StatusStat(), target);
+        Assert.That(active, Is.Not.Null); Assert.That(active.harmful, Is.True);
+        Assert.That(active.specialStatusKey, Is.Null);
+        Assert.That(manager.HasSpecialStatus(key, BuffQueryContext.ForTarget(target)), Is.False);
+        Assert.That(stat.statStar, Is.Zero);
+        Assert.That(manager.Cleanse(BuffTargetHandle.Target(target)), Is.EqualTo(1));
+    }
+
+    [Test]
+    public void SharedAndAdditionalClassificationTagsAreCombinedWithoutDuplicates()
+    {
+        var shared = Asset<BuffFlagDefinition>(); var local = Asset<BuffFlagDefinition>();
+        var classification = Asset<BuffClassificationDefinition>(); classification.flags = new[] { shared };
+        var target = Host().AddComponent<AdditionalAreaStatusTarget>();
+        BuffEffect effect = Buff(false, shared, local); effect.buffClassification = classification;
+        var active = manager.RegisterBuffForTargetHandle(effect, Context(target.gameObject), target);
+        Assert.That(active.flags, Is.EquivalentTo(new[] { shared, local }));
+        Assert.That(manager.Cleanse(BuffTargetHandle.Target(target), new BuffCleanseFilter {
+            mode = BuffCleanseMode.Flags, flagMatch = BuffFlagMatchMode.All, flags = new[] { shared, local }
+        }), Is.EqualTo(1));
     }
 }

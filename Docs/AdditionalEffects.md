@@ -19,8 +19,8 @@ ItemData의 `afterCompletionItems`에는 모든 하위 효과가 자연 종료�
 | --- | --- | --- |
 | 장판 종류·진입/이탈/종료/체류 | `AreaDefinition`, `AreaEffectData` | 장판 정의의 효과 목록에 기존 공격·버프 등을 연결 |
 | 장판 조건·소비 | `HasAreaConditionData`, `ConsumeAreaEffect` | 조건에서 확인한 실제 장판을 소비한 뒤 후속 효과 실행 |
-| 상태 키·조건·소비 | `StatusDefinition`, 기존 `BuffEffect`, `HasStatusConditionData`, `ConsumeStatusEffect` | 버프의 Status Definition에 키 지정; 수치 Modifier가 없어도 등록 가능 |
-| 버프 분류·확장 플래그·정화 | `BuffEffect`, `BuffFlagDefinition`, `BuffCleanseFilter`, `CleanseEffect` | 해로운 버프·지정 플래그·OR/AND 및 Any/All 선택; Dispellable이 꺼진 버프는 보호 |
+| 상태 키·조건·소비 | `SpecialStatusDefinition`, `GrantSpecialStatusEffect`, `HasSpecialStatusCondition`, `RemoveCheckedSpecialStatusEffect` | 특수 상태 부여 효과의 Special Status Identity Key에 키 지정; 버프 분류와 별도 |
+| 버프 분류·확장 플래그·정화 | `BuffClassificationDefinition`, `BuffEffect`, `BuffFlagDefinition`, `BuffCleanseFilter`, `CleanseBuffEffect` | 해로운 버프·지정 플래그·OR/AND 및 Any/All 선택; Dispellable이 꺼진 버프는 보호 |
 | 회복·피해·체력 비용 | `HealthChangeEffect` | 식물/소유자/명중 적/소환물/범위 대상, 고정/현재 HP%/최대 HP% |
 | 지속 회복 | `RegenerationEffect` | 회복량·간격·지속·첫 회복 시점 설정 |
 | 지속 효과 UI | `EffectBuffUISettings` | 재생·보호막·시간 정지의 선택 가능한 버프 UI 표시, 이름·아이콘·실제 남은 시간 |
@@ -63,7 +63,7 @@ Project 창의 **Create → GameData → Items → Effects / Hit Effects / Condi
 | `FirstHitExplosion_Example` | 공격 전체 최초 명중 한 번 폭발. 피해 10/반경 1은 테스트용 예제값 |
 | `ExecuteAtTenPercentHp` | 현재/최대 HP 10% 이하 처형; 제한 대상과 면역 존중 |
 | `TimeStopEnemiesFor5Seconds` | 5초 동안 적 행동·적 투사체·적 스폰 정지 |
-| `ExampleStatusForFiveSeconds`, `HasExampleStatus` | 5초 상태 키 등록과 존재 조건 |
+| `ExampleStatusForFiveSeconds` | 5초 특수 상태 등록; 존재 조건은 HasSpecialStatusCondition에 같은 키 연결 |
 | `CreateExampleDefinedArea`, `HasExampleAreaAtImpact`, `ConsumeExampleArea` | 5초/반경 2의 식별 가능한 장판 생성·충돌 위치 조회·확인한 장판 소비 |
 
 미정인 전이 거리·주기·장판 범위와 비용 정책에는 테스트용 설정을 사용했다. 실제 기획값으로 조정해야 한다. 연출이 없는 예제는 효과가 작동해도 별도 그림이 표시되지 않는다. 명중 폭발은 기존 DamageArea 프리팹을 연결했으며 로켓화살의 확정된 피해값으로 취급하지 않는다.
@@ -72,14 +72,14 @@ Project 창의 **Create → GameData → Items → Effects / Hit Effects / Condi
 
 광물의 `상태 & 장판` 분기는 다음과 같이 연결한다.
 
-1. `StatusDefinition`과 `AreaDefinition`을 각각 만든다. 상태 표시 이름과 장판 표시 이름으로 비교하지 않고 에셋 참조로 구분한다.
-2. `BuffEffect.buffInfo.statusDefinition`을 지정한다. 상태만 필요하면 Modifiers를 비워 둔다. Context Status 타깃으로 Player Status를 고르면 기존 상태 매니저에 등록한다.
-3. `HasStatusConditionData`와 `HasAreaConditionData`를 만든다. 장판 조회 위치는 Impact/Owner/Hit/Anywhere 중 선택한다.
+1. `SpecialStatusDefinition`과 `AreaDefinition`을 각각 만든다. 상태 표시 이름과 장판 표시 이름으로 비교하지 않고 에셋 참조로 구분한다.
+2. `GrantSpecialStatusEffect.specialStatusKey`를 지정하고 Target = PlayerStatus로 설정한다. 수치 버프는 별도의 BuffEffect로 연결하며 해로움·정화 가능 여부는 BuffClassificationDefinition에 설정한다.
+3. `HasSpecialStatusCondition`와 `HasAreaConditionData`를 만든다. 장판 조회 위치는 Impact/Owner/Hit/Anywhere 중 선택한다.
 4. 기존 `ConditionalItemEffectData`의 조건 모드를 All로 두고 두 조건을 연결한다.
 5. 장판을 소비하려면 `ConsumeAreaEffect.checkedCondition`에 동일한 장판 조건을 연결한다. 확인된 장판이 사라지면 다른 장판을 대신 소비하지 않는다.
 6. 소비 후 기절·버프 등의 효과를 After Consume Effects에 연결한다. 장판 소비는 자연 종료 효과를 발동하지 않는다.
 
-LED처럼 사용 전 상태를 기준으로 분기하려면 `Freeze Branch At Prepare`를 켠다. 기존 조건의 선택은 사용 시점에 고정하고, `ConsumeStatusEffect`로 확인한 이전 상태를 소비한 뒤 새 상태 버프를 연결한다. 같은 사용 중 새로 등록된 상태는 이전 상태 대신 소비하지 않는다.
+LED처럼 사용 전 상태를 기준으로 분기하려면 `Freeze Branch At Prepare`를 켠다. 기존 조건의 선택은 사용 시점에 고정하고, `RemoveCheckedSpecialStatusEffect`로 확인한 이전 상태를 소비한 뒤 새 상태 버프를 연결한다. 같은 사용 중 새로 등록된 상태는 이전 상태 대신 소비하지 않는다.
 
 ## 회복·방어·쿨다운
 
@@ -115,7 +115,7 @@ LED처럼 사용 전 상태를 기준으로 분기하려면 `Freeze Branch At Pr
 - `ScaledEffectData`는 명시된 의미의 스탯만 조정한다. 확률·개수·공격 간격 전체에 배율을 일괄 적용하지 않는다.
 - 버프 그룹 입력은 자동 선택과 직접 입력을 함께 제공한다. DamageArea는 그룹/직접/범위 대상으로 등록되며 `DamageAreaAttackStat` Modifier를 실제 공격 수치에 반영한다. 그룹 이름 `DamageArea`와 스탯 타입 이름 `DamageAreaAttackStat`을 구분한다.
 - 피해·범위 등의 실행 배율은 Snapshot와 Dynamic 버프를 계산한 뒤 적용한다. 기본 피해 10에 동적 피해 +10, 0.5배이면 최종 피해 10이다.
-- 꽃 소환물 자체의 만개 조건은 `HasStatusConditionData.target = SourceSummon`으로 조회한다. 생성한 플레이어의 상태와 구분하며 소환물 생명 번호를 확인한다.
+- 꽃 소환물 자체의 만개 조건은 `HasSpecialStatusCondition.target = SourceSummon`으로 조회한다. 생성한 플레이어의 상태와 구분하며 소환물 생명 번호를 확인한다.
 
 ## 미정 기획과 연결 범위
 

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 // 타이머/중첩/정화는 ActiveBuff가 소유한다. 이 컴포넌트는 이벤트 반응만 연결한다.
@@ -25,14 +25,15 @@ public sealed class MarkStatusController : MonoBehaviour
 
     public bool Apply(MarkHitEffectData effect, HitEffectContext context)
     {
-        if (effect == null || effect.markKey == null || effect.statusInfo == null ||
+        if (effect == null || effect.markKey == null || effect.markerLifetime == null ||
             context == null || !context.IsTargetValid) return false;
         ItemEffectContext item = context.CreateItemContext();
         if (!item.CanContinue) return false;
         Bind(context.target);
         BuffManager manager = item.buffManager != null ? item.buffManager : enemy.buffManager;
         if (health == null || manager == null) return false;
-        ActiveBuff marker = manager.RegisterStatusForTarget(effect.markKey, effect.statusInfo, item, enemy, effect);
+        ActiveBuff marker = manager.RegisterSpecialStatusForTarget(effect.markKey, effect.markerLifetime, item, enemy, effect,
+            effect.buffClassification);
         if (marker == null) return false;
         for (int i = 0; i < states.Count; i++)
         {
@@ -54,10 +55,10 @@ public sealed class MarkStatusController : MonoBehaviour
         return true;
     }
 
-    public bool HasMark(StatusDefinition key, GameObject owner = null)
+    public bool HasMark(SpecialStatusDefinition key, GameObject owner = null)
     {
         for (int i = 0; i < states.Count; i++)
-            if (key != null && states[i].marker.statusDefinition == key && IsValid(states[i]) &&
+            if (key != null && states[i].marker.specialStatusKey == key && IsValid(states[i]) &&
                 (owner == null || states[i].context.owner == owner)) return true;
         return false;
     }

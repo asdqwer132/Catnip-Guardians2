@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [Serializable]
 public class ActiveBuff
@@ -16,7 +17,8 @@ public class ActiveBuff
     public bool showInUI = true;
 
     [Header("Runtime")]
-    public StatusDefinition statusDefinition;
+    [FormerlySerializedAs("statusDefinition")]
+    public SpecialStatusDefinition specialStatusKey;
     public bool harmful;
     public bool dispellable = true;
     public BuffFlagDefinition[] flags;
@@ -101,13 +103,7 @@ public class ActiveBuff
         if (info == null)
             info = new BuffInfo();
 
-        statusDefinition = info.statusDefinition;
-        BuffEffect effect = sourceEffectData as BuffEffect;
-        harmful = (effect != null && effect.harmful) || (statusDefinition != null && statusDefinition.harmful);
-        dispellable = (effect == null || effect.dispellable) &&
-            (statusDefinition == null || statusDefinition.dispellable);
-        // 실행 중 에셋의 배열을 변경해도 이미 등록된 버프의 분류는 유지한다.
-        flags = effect != null && effect.flags != null ? (BuffFlagDefinition[])effect.flags.Clone() : null;
+        BuffClassificationUtility.Capture(sourceEffectData, out harmful, out dispellable, out flags);
         applyTiming = info.applyTiming;
         useLimitType = info.useLimitType;
         stackMode = info.stackMode;

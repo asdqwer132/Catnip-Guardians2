@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-[CreateAssetMenu(fileName = "HasStatusCondition", menuName = "GameData/Items/Conditions/Has Status Key")]
-public sealed class HasStatusConditionData : ItemEffectConditionData
+[CreateAssetMenu(fileName = "HasSpecialStatusCondition", menuName = "GameData/Items/Conditions/Has Special Status (Minimum Stacks)")]
+public sealed class HasSpecialStatusCondition : ItemEffectConditionData
 {
-    public StatusDefinition status;
-    public StatusQueryTarget target = StatusQueryTarget.PlayerStatus;
+    [FormerlySerializedAs("status")]
+    public SpecialStatusDefinition specialStatusKey;
+    public SpecialStatusQueryTarget target = SpecialStatusQueryTarget.PlayerStatus;
     [Min(1)] public int minimumStack = 1;
 
     internal struct Match
@@ -22,10 +24,10 @@ public sealed class HasStatusConditionData : ItemEffectConditionData
         if (context == null || context.plan == null) return false;
         Matches saved = matches.GetValue(context.plan, key => new Matches());
         saved.buffs.Clear();
-        BuffQueryContext query = StatusTargetUtility.Resolve(target, context);
-        if (query == null || context.buffManager == null || status == null) return false;
+        BuffQueryContext query = SpecialStatusTargetUtility.Resolve(target, context);
+        if (query == null || context.buffManager == null || specialStatusKey == null) return false;
         List<ActiveBuff> found = new List<ActiveBuff>();
-        context.buffManager.FindStatuses(status, query, found);
+        context.buffManager.FindSpecialStatuses(specialStatusKey, query, found);
         long stack = 0;
         foreach (ActiveBuff buff in found)
         {

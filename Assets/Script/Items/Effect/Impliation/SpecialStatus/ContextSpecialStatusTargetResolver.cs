@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ContextStatusTargetResolver", menuName = "GameData/Buffs/Targets/Context Status")]
-public sealed class ContextStatusTargetResolver : BuffTargetResolver
+[CreateAssetMenu(fileName = "ContextSpecialStatusTargetResolver", menuName = "GameData/Buffs/Targets/Execution Special Status Target")]
+public sealed class ContextSpecialStatusTargetResolver : BuffTargetResolver
 {
-    public StatusQueryTarget[] targets = { StatusQueryTarget.PlayerStatus };
+    public SpecialStatusQueryTarget[] targets = { SpecialStatusQueryTarget.PlayerStatus };
 
     public override void ResolveTargets(BuffRegisterContext context, List<BuffTargetHandle> results)
     {
@@ -12,7 +12,7 @@ public sealed class ContextStatusTargetResolver : BuffTargetResolver
         ItemEffectContext execution = context.itemContext;
         for (int i = 0; i < targets.Length; i++)
         {
-            BuffTargetHandle handle = StatusTargetUtility.Handle(StatusTargetUtility.Resolve(targets[i], execution));
+            BuffTargetHandle handle = SpecialStatusTargetUtility.Handle(SpecialStatusTargetUtility.Resolve(targets[i], execution));
             if (handle == null) continue;
             bool duplicate = false;
             for (int j = 0; j < results.Count; j++) if (results[j].SameTarget(handle)) { duplicate = true; break; }

@@ -58,7 +58,7 @@ public class StatusManager : MonoBehaviour, IBuffTarget, IDynamicBuffReceiver
 {
     [Header("Reference")]
     public BuffManager buffManager;
-    [Header("Stat")]
+    [Header("Legacy Numeric Status Stats")]
     public StatusStat baseStat = new StatusStat();
     [Tooltip("수치 Modifier가 적용된 최종 스탯입니다. 상태 키만 부여한 효과는 이 수치를 변경하지 않습니다.")]
     public StatusStat currentStat = new StatusStat();
@@ -137,8 +137,8 @@ public class StatusManager : MonoBehaviour, IBuffTarget, IDynamicBuffReceiver
         {
             BuffQueryContext query = BuffQueryContext.ForTarget(this);
             foreach (ActiveBuff buff in buffManager.Storage.activeBuffs)
-                if (buff != null && !buff.IsExpired && buff.statusDefinition != null &&
-                    buff.statusDefinition.exposesPlayerStatus && buff.statusDefinition.playerStatus == playerStatus &&
+                if (buff != null && !buff.IsExpired && buff.specialStatusKey != null &&
+                    buff.specialStatusKey.exposesPlayerStatus && buff.specialStatusKey.playerStatus == playerStatus &&
                     buff.MatchesQuery(query)) return true;
         }
 
@@ -154,18 +154,18 @@ public class StatusManager : MonoBehaviour, IBuffTarget, IDynamicBuffReceiver
     }
 
     // 상태 키 판정은 StatusStat 수치/기존 enum 매핑에 의존하지 않는다.
-    public bool HasStatus(StatusDefinition statusKey)
-        => statusKey != null && buffManager != null &&
-            buffManager.HasStatus(statusKey, BuffQueryContext.ForTarget(this));
+    public bool HasSpecialStatus(SpecialStatusDefinition specialStatusKey)
+        => specialStatusKey != null && buffManager != null &&
+            buffManager.HasSpecialStatus(specialStatusKey, BuffQueryContext.ForTarget(this));
 
-    public void GetActiveStatuses(List<ActiveBuff> results)
+    public void GetActiveSpecialStatuses(List<ActiveBuff> results)
     {
         if (results == null) return;
         results.Clear();
         if (buffManager == null || buffManager.Storage == null) return;
         BuffQueryContext query = BuffQueryContext.ForTarget(this);
         foreach (ActiveBuff buff in buffManager.Storage.activeBuffs)
-            if (buff != null && !buff.IsExpired && buff.statusDefinition != null && buff.MatchesQuery(query))
+            if (buff != null && !buff.IsExpired && buff.specialStatusKey != null && buff.MatchesQuery(query))
                 results.Add(buff);
     }
 

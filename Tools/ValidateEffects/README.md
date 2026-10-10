@@ -37,3 +37,5 @@ python3 Tools/ValidateEffects/check.py --metadata-only
 참조 DLL은 NuGet의 제3자 배포 패키지이며 Unity 6000 공식 Editor 설치에서 얻은 DLL이 아닙니다. 바이너리는 저장소에 포함하지 않습니다. 설정된 HTTPS 프록시와 인증서 검증을 유지해 다운로드합니다.
 
 특수 상태 기능은 `SpecialItemManager`의 실제 소스도 API 컴파일에 포함합니다. `AdditionalSpecialStatusTests`는 상태 키 보유에 따른 별 공격·마지막 횟수·만료·정화·대상 격리·자기 재호출 방지를 Unity에서 확인합니다. 이 테스트는 여기서 컴파일만 수행하며 Unity Editor에서 실행해야 합니다.
+
+특수 상태와 버프 분류를 분리한 회귀 검사도 포함합니다. 관리형 실행은 상태 키 누적, 분류만 있는 버프의 상태 미부여, 공유/추가 태그 결합, 재부여 시 분류 갱신을 검사합니다. `AdditionalDirectStatusTests`·`AdditionalBuffClassificationTests`의 대상별 조회와 정화 검사는 Unity에서 실행합니다.

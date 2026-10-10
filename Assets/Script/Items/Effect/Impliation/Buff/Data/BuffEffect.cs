@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "BuffEffect", menuName = "GameData/Items/Effects/Buff")]
@@ -8,15 +8,22 @@ public class BuffEffect : ItemEffectData
     public BuffTargetResolver targetResolver;
 
     [Header("Runtime Info")]
+    [InspectorName("Buff Lifetime / Reapplication")]
     public BuffInfo buffInfo = new BuffInfo();
     public bool includeSelf;
 
-    [Header("Classification")]
-    [Tooltip("해로운 버프로 분류합니다. StatusDefinition의 Harmful이 켜져 있어도 해로운 버프로 취급합니다.")]
+    [Header("Buff Classification")]
+    [Tooltip("공유할 해로움·정화 가능 여부·정화 태그입니다. 특수 상태는 GrantSpecialStatusEffect로 별도 부여합니다.")]
+    public BuffClassificationDefinition buffClassification;
+    [Header("Additional Classification Rules")]
+    [InspectorName("Also Harmful")]
+    [Tooltip("공유 분류에 더해 해로운 버프로 분류합니다.")]
     public bool harmful;
-    [Tooltip("끄면 Cleanse로 제거할 수 없습니다. StatusDefinition의 Dispellable이 꺼져 있어도 정화가 차단됩니다.")]
+    [InspectorName("Allow Cleanse")]
+    [Tooltip("끄면 Cleanse로 제거할 수 없습니다. 공유 분류의 Dispellable이 꺼져 있어도 보호됩니다.")]
     public bool dispellable = true;
-    [Tooltip("정화 조건 등에 사용할 확장 플래그입니다. GameData/Items/Buff/Flag에서 플래그 에셋을 만들어 연결합니다.")]
+    [InspectorName("Additional Cleanse Tags")]
+    [Tooltip("공유 분류 태그와 함께 적용합니다. GameData/Buffs/Classification/Tag에서 태그를 만드세요.")]
     public BuffFlagDefinition[] flags;
 
     [Header("UI")]
@@ -71,7 +78,7 @@ public class BuffEffect : ItemEffectData
 
     public bool HasRuntimePayload()
     {
-        if (HasValidModifier() || harmful || (buffInfo != null && buffInfo.statusDefinition != null))
+        if (HasValidModifier() || harmful || buffClassification != null)
             return true;
         if (flags != null)
             foreach (BuffFlagDefinition flag in flags)

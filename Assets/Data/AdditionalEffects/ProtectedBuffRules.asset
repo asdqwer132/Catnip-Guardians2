@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 368225ce34694a6880effb13060a6e7d, type: 3}
-  m_Name: ExampleStatusKey
-  m_EditorClassIdentifier:
-  displayName: "추가 상태 키 예제"
+  m_Script: {fileID: 11500000, guid: ccb2003ebf4342a3bebd76045cb05ecf, type: 3}
+  m_Name: ProtectedBuffRules
+  m_EditorClassIdentifier: Assembly-CSharp::BuffClassificationDefinition
+  displayName: ProtectedBuffRules
   harmful: 0
-  dispellable: 1
-  interactionTags: []
+  dispellable: 0
+  flags: []

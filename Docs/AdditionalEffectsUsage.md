@@ -59,7 +59,7 @@
 | 실행 효과 `ItemEffectData` | ItemData의 **Effect Datas**, 또는 다른 효과의 **Effects** | 회복, 연쇄 공격, 장판 생성, 시간 정지 |
 | 명중 효과 `HitEffectData` | 공격 효과의 **On Hit Effects** | 기절, 속박, 처형, 명중 후 폭발 |
 | 조건 `ItemEffectConditionData` | 실행 효과의 **Conditions** | 상태 보유, 특정 장판 존재, 소환물 존재 |
-| 정의·대상 설정 | 실행 효과의 해당 참조 필드 | Status Definition, Area Definition, Target Resolver |
+| 정의·대상 설정 | 실행 효과의 해당 참조 필드 | Special Status Identity Key, Buff Classification, Area Definition, Target Resolver |
 | 소환 행동 모듈 | 소환 효과 또는 소환 프리팹의 **Modules** | 오라, 기존 Turret / Contact / Item Throw |
 
 ```mermaid
@@ -123,10 +123,10 @@ Conditions를 비우면 항상 실행한다. **Condition Mode = All**이면 모�
 | 연쇄 / 이동 투사체 / 부채꼴 공격 | `Items → Effects → Attack → Chain Attack` / `Projectile Attack` / `Sector Damage Area` |
 | 적에게 명중 효과 직접 적용 | `Items → Effects → Attack → Apply Hit Effects` |
 | 명중 후 다른 효과 실행 | `Items → Hit Effects → Execute Effects` |
-| 상태 키 / 상태 대상 설정 | `Items → Status → Definition` / `Buffs → Targets → Context Status` |
-| 상태 전용 부여 / 조회 | `Items → Effects → Status → Grant Status (Time or Uses)` / `Items → Conditions → Has Status Key` |
-| 버프 확장 플래그 | `Items → Buff → Flag` |
-| 상태 소비 / 정화 | `Items → Effects → Status → Remove Checked Status (All)` / `Cleanse Harmful or Flagged Buffs` |
+| 상태 키 / 상태 대상 설정 | `Special Status → Identity Key` / `Buffs → Targets → Execution Special Status Target` |
+| 상태 전용 부여 / 조회 | `Items → Effects → Special Status → Grant Special Status (Time or Uses)` / `Items → Conditions → Has Special Status (Minimum Stacks)` |
+| 버프 분류 / 정화 태그 | `Buffs → Classification → Rules` / `Tag` |
+| 특수 상태 소비 / 버프 정화 | `Items → Effects → Special Status → Remove Checked Special Status (All)` / `Items → Effects → Buff Classification → Cleanse Harmful or Tagged Buffs` |
 | 장판 정의 / 생성 | `Items → Areas → Definition` / `Items → Effects → Attack → Defined Area` |
 | 장판 조회 / 소비 | `Items → Conditions → Has Area` / `Items → Effects → Area → Consume Checked Areas` |
 | True/False 분기 | `Items → Effects → Branch → Conditional` |
@@ -353,49 +353,55 @@ Execute Effects 명중 에셋은 **공격의 On Hit Effects**에 넣고, 그 에
 
 모든 가방의 아이템 공격을 강화하려면 **Buffs → Targets → All Items**를 사용한다. 공격 종류별 Modifier가 필요하다. DamageArea는 `DamageAreaAttackStat.damageAreaPower`, 이동 투사체는 `ProjectileAttackStat.projectileDamage`, 연쇄 공격은 `ChainAttackStat.chainFirstDamage`와 `chainNextDamage`를 각각 설정한다. **Include Self**를 켜면 버프를 부여한 ItemData도 포함한다. 기존 Owner의 **All**은 사용한 아이템·가방·시리즈를 합친 대상이며 전체 아이템 설정과 범위가 다르다.
 
-### StatusDefinition의 공유 역할과 특수 기능
+### 특수 상태 키와 버프 분류의 역할
 
-`StatusDefinition`은 상태 전용 부여와 수치 버프가 공유하는 **동일한 상태 키**다. 역할이 다른 두 종류의 정의가 아니다. 상태 전용 효과의 **Status Key**는 상태만 부여하고, BuffEffect의 **Attached Status Key (Optional)**은 수치 버프가 유지되는 동안 함께 조회할 상태를 붙인다. 둘 다 같은 키를 사용하면 Has Status Key·상태 소비·정화에서 같은 상태로 인식한다. 상태 이름은 표시용이며 동일 여부는 에셋 참조로 판정한다.
+| 정의 | 역할 | 사용처 |
+| --- | --- | --- |
+| `SpecialStatusDefinition` | Star·Arrow 등 특수 상태의 식별 키. 에셋 참조로 동일 여부 판정 | `GrantSpecialStatusEffect.specialStatusKey`, `HasSpecialStatusCondition`, 특수 아이템 발동, 표식 |
+| `BuffClassificationDefinition` | Harmful·Dispellable·정화 태그를 공유하는 버프 분류 설정 | `BuffEffect.buffClassification`, `GrantSpecialStatusEffect.buffClassification`, 표식의 분류 |
+| `BuffInfo` | 지속시간·횟수·중첩·재부여·소비 정책 | 수치 버프와 특수 상태의 수명 설정 |
+| `BuffFlagDefinition` | 정화 필터에서 비교하는 분류 태그 | 공유 분류의 Cleanse Classification Tags, 버프의 Additional Cleanse Tags |
 
-특수 아이템 기능은 **SpecialItemManager → Required Status Key**에 지정한 상태가 PlayerStatus 대상에 활성화되어 있을 때 실행한다. `StatusStat.statStar` 값이나 Exposes Player Status 매핑은 이 발동 조건에 쓰지 않는다. 기존 Has Buff의 enum 조건은 호환을 위해 별도의 기존 판정을 유지한다.
+특수 상태 키에는 Harmful·Dispellable이 없다. 버프 분류만 지정하면 Star·Arrow가 부여되거나 수치 스탯이 바뀌지 않는다. 수치 버프는 BuffEffect의 Modifiers로, 특수 상태는 GrantSpecialStatusEffect로 부여한다. 둘이 함께 필요하면 아이템의 Effect Datas에 각각 연결한다. 상태가 같은지는 **특수 상태 키 + 대상**으로 판정하며, 분류 에셋이 같아도 서로 다른 상태 키는 합치지 않는다. 같은 키 재부여 시 남은 시간·횟수는 수명 설정대로 누적하고 분류는 가장 최근 부여 설정을 따른다.
 
-`GameScene`의 Required Status Key는 `Assets/Data/AdditionalEffects/StarSpecialAttackStatus.asset`에 연결되어 있다. `Weapon29_EffectData2`·`Weapon30_EffectData2`는 이 상태를 횟수제로 직접 부여하며 다른 출처에서도 같은 상태의 남은 횟수에 더한다. 특수 기능은 사용 횟수를 최종 차감하기 전에 판정하므로 마지막 1회에도 실행한다. 특수 아이템 자체가 추가 특수 호출을 만들지는 않는다.
+특수 아이템 기능은 **SpecialItemManager → Required Special Status Key**에 지정한 키가 PlayerStatus 대상에 활성화되어 있을 때 실행한다. `StatusStat.statStar` 값이나 Exposes Player Status 매핑은 발동 조건에 쓰지 않는다. 기존 Has Buff의 enum 조건은 호환을 위해 기존 판정을 유지한다.
 
-### 예: 5초 동안 유지하는 상태 만들기
+`GameScene`의 Required Special Status Key는 `Assets/Data/Scriptable/Item/Effect/00.Default/01.Weapon Status/Star_SpecialStatusKey.asset`에 연결되어 있다. `Weapon29_EffectData2`·`Weapon30_EffectData2`도 이 키를 참조한다. 특수 기능은 사용 횟수를 최종 차감하기 전에 판정하므로 마지막 1회에도 실행한다. 특수 아이템 자체가 추가 특수 호출을 만들지는 않는다. 두 Arrow 키는 기존 에셋 식별을 보존하여 `Arrow_SpecialStatusKey`, `ArrowVariant_SpecialStatusKey`로 구분한다.
 
-1. **Items → Status → Definition**으로 `MyStatusKey`를 만든다. Display Name은 표시 이름이며 상태의 동일 여부는 이 에셋 참조로 구분한다.
-2. 해로운 상태라면 **Harmful**, 정화 가능하면 **Dispellable**을 켠다. Interaction Tags만 입력해도 추가 피해 등의 규칙이 생기는 것은 아니다.
-3. **Buffs → Targets → Context Status**로 대상 설정 에셋을 만들고 **Targets = PlayerStatus**를 지정한다.
-4. **Items → Effects → Buff**로 부여 효과를 만든다. Target Resolver에 3번 에셋, Buff Info → Attached Status Key (Optional)에 MyStatusKey를 연결한다.
-5. **Use Limit Type = Time**, **Duration = 5**, **Stack Mode = Refresh**로 설정한다. 상태 키만 필요하면 Modifiers는 비워도 된다.
-6. 아이템 Effect Datas에 이 BuffEffect를 연결한다.
+### 예: 5초 동안 유지하는 특수 상태 만들기
 
-예제는 `ExampleStatusKey` → `PlayerStatusTarget` → `ExampleStatusForFiveSeconds`다. 상태와 수치 버프를 함께 부여하려면 같은 BuffEffect의 Modifiers에 기존 수치 변경 에셋을 추가한다.
+1. **Special Status → Identity Key**로 `MySpecialStatusKey`를 만든다. Display Name은 표시 이름이다.
+2. **Items → Effects → Special Status → Grant Special Status (Time or Uses)**를 만든다. **Special Status Identity Key**에 키를 연결하고 **Target = PlayerStatus**로 설정한다.
+3. **Special Status Lifetime / Reapplication → Use Limit Type = Time**, **Duration = 5**로 설정한다. 재부여 시 시간을 더하려면 AddRemaining, 초기화하려면 Refresh를 선택한다.
+4. 해로움·정화 가능 여부가 필요하면 **Buffs → Classification → Rules**로 분류 에셋을 만들고 Harmful·Dispellable·Cleanse Classification Tags를 설정한다. 부여 효과의 **Buff Classification (Optional)**에 연결한다. 비우면 이로운 상태이며 정화 가능하다.
+5. 아이템 Effect Datas에 부여 효과를 연결한다.
+
+예제는 `ExampleSpecialStatusKey` → `ExampleStatusForFiveSeconds`다. `BeneficialDispellableBuffRules`, `HarmfulDispellableBuffRules`, `ProtectedBuffRules`를 재사용하거나 새 분류 정의를 만들 수 있다. 기존 키와 효과 에셋의 GUID는 유지한다.
 
 ### 상태만 직접 부여하고 남은 시간·횟수 더하기
 
-1. **Items → Status → Definition**으로 상태 키를 만든다. 기존 `Has Buff`의 `arrow`/`star` 조건에서도 확인하려면 **Exposes Player Status**를 켜고 **Player Status**를 선택한다. 이 연결은 PlayerStatus 대상에 부여했을 때 적용되며, `StatusStat.statArrow/statStar` 수치를 변경하지 않는다. 기존 수치 버프 방식도 계속 사용할 수 있고 양수인 상태는 중첩 수가 2 이상이어도 보유로 판정한다.
-2. **Items → Effects → Status → Grant Status (Time or Uses)**를 만들고 **Status Key**에 상태 키, **Target = PlayerStatus**를 지정한다. Modifier나 Target Resolver 에셋은 필요 없다. 적·아이템·가방 등에는 아래 표의 다른 Target을 선택한다.
-3. 시간제는 **Lifetime / Reapplication Settings → Use Limit Type = Time**, **Duration = 5**, **Reapply Mode = AddRemaining**으로 설정한다. 3초 남았을 때 5초를 다시 주면 8초가 된다.
+1. **Special Status → Identity Key**로 상태 키를 만든다. 기존 `Has Buff`의 `arrow`/`star` 조건에서도 확인하려면 **Exposes Player Status**를 켜고 **Player Status**를 선택한다. 이 연결은 PlayerStatus 대상에 부여했을 때 적용되며, `StatusStat.statArrow/statStar` 수치를 변경하지 않는다. 기존 수치 버프 방식도 계속 사용할 수 있고 양수인 상태는 중첩 수가 2 이상이어도 보유로 판정한다.
+2. **Items → Effects → Special Status → Grant Special Status (Time or Uses)**를 만들고 **Special Status Identity Key**에 상태 키, **Target = PlayerStatus**를 지정한다. Modifier나 Target Resolver 에셋은 필요 없다. 적·아이템·가방 등에는 아래 표의 다른 Target을 선택한다.
+3. 시간제는 **Special Status Lifetime / Reapplication → Use Limit Type = Time**, **Duration = 5**, **Reapply Mode = AddRemaining**으로 설정한다. 3초 남았을 때 5초를 다시 주면 8초가 된다.
 4. 횟수제는 **Use Limit Type = UseCount**, **Max Use Count = 3**, **Reapply Mode = AddRemaining**으로 설정한다. 2회 남았을 때 다시 주면 5회가 된다. **Use Count Consume Mode = AnyItemUsed**는 성공한 아이템 사용마다 1회 차감하며, **SpecificItemsUsed + Consume Items**는 지정한 아이템만 차감한다. 상태만 있는 경우 `WhenBuffApplied`는 수치 적용이 없어 차감되지 않는다.
-5. 아이템 **Effect Datas**에 효과를 연결한다. **Show In UI**, **Status Icon**으로 상태 표시를 설정한다. **Has Status Key**, **Remove Checked Status (All)**, **Cleanse**는 이 상태에도 그대로 사용할 수 있다.
+5. 아이템 **Effect Datas**에 효과를 연결한다. **Show In UI**, **Status Icon**으로 상태 표시를 설정한다. **Has Special Status (Minimum Stacks)**, **Remove Checked Special Status (All)**, **Cleanse**는 이 상태에도 그대로 사용할 수 있다.
 
-`ApplyStatusEffect`의 기본값은 **AddRemaining**, **AnyItemUsed**다. 기존 BuffEffect는 기본 **Refresh**로 시간·횟수를 초기화하는 동작을 유지한다. 기존 BuffEffect에도 **Reapply Mode = AddRemaining**을 선택할 수 있다. 무한 상태에는 시간·횟수 더하기가 적용되지 않는다.
+`GrantSpecialStatusEffect`의 기본값은 **AddRemaining**, **AnyItemUsed**다. 기존 BuffEffect는 기본 **Refresh**로 시간·횟수를 초기화하는 동작을 유지한다. 기존 BuffEffect에도 **Reapply Mode = AddRemaining**을 선택할 수 있다. 무한 상태에는 시간·횟수 더하기가 적용되지 않는다.
 
-**Stack Mode / Max Stack**은 상태 중첩 개수이고 **Reapply Mode**는 남은 시간·횟수 처리다. Stack Mode가 Refresh여도 AddRemaining으로 시간·횟수를 더할 수 있으며, 중첩 상한에 도달해도 시간·횟수는 더해진다. 상태 전용 부여 효과는 **동일한 Status Key 에셋 + 대상**에 재부여하면 효과·아이템·가방 출처가 달라도 하나로 누적한다. 이름이 같아도 다른 상태 키 에셋이거나 대상이 다르면 합치지 않는다. 재부여 시 Stack Mode, Max Stack, 수명 종류, 소비 규칙과 UI/종료 연출은 가장 최근 부여 설정을 따른다. 수치 Modifier가 있는 기존 BuffEffect와 표식은 별도 버프로 유지한다. 수명 종류(Time/UseCount/Infinite)를 바꾸면 이전 수명 양은 합산하지 않는다. 재부여 또는 새 부여가 일어난 아이템 사용에서는 그 상태를 즉시 차감하지 않고 다음 성공한 사용부터 차감한다.
+**Stack Mode / Max Stack**은 상태 중첩 개수이고 **Reapply Mode**는 남은 시간·횟수 처리다. Stack Mode가 Refresh여도 AddRemaining으로 시간·횟수를 더할 수 있으며, 중첩 상한에 도달해도 시간·횟수는 더해진다. 상태 전용 부여 효과는 **동일한 Special Status Identity Key 에셋 + 대상**에 재부여하면 효과·아이템·가방 출처가 달라도 하나로 누적한다. 이름이 같아도 다른 상태 키 에셋이거나 대상이 다르면 합치지 않는다. 재부여 시 Stack Mode, Max Stack, 수명 종류, 소비 규칙과 UI/종료 연출은 가장 최근 부여 설정을 따른다. 수치 Modifier가 있는 기존 BuffEffect와 표식은 별도 버프로 유지한다. 수명 종류(Time/UseCount/Infinite)를 바꾸면 이전 수명 양은 합산하지 않는다. 재부여 또는 새 부여가 일어난 아이템 사용에서는 그 상태를 즉시 차감하지 않고 다음 성공한 사용부터 차감한다.
 
-같은 아이템 사용 중 이미 확인한 상태가 재부여되면 `Remove Checked Status (All)`는 이전 확인 결과로 새 등록을 제거하지 않는다. 이 효과는 기존처럼 확인한 상태 전체를 제거하며, 횟수 1회 차감은 위의 소비 사건 설정을 사용한다.
+같은 아이템 사용 중 이미 확인한 상태가 재부여되면 `Remove Checked Special Status (All)`는 이전 확인 결과로 새 등록을 제거하지 않는다. 이 효과는 기존처럼 확인한 상태 전체를 제거하며, 횟수 1회 차감은 위의 소비 사건 설정을 사용한다.
 
 ### 플레이 중 적용 여부 확인
 
-- 플레이어의 수치 버프 결과는 **StatusManager → Stat → Current Stat**의 `statArrow`, `statStar`에서 확인한다. Base Stat은 버프 적용 전 값이다.
-- 상태 전용 부여는 StatusStat 수치를 바꾸지 않는다. **StatusManager → 적용 중인 상태 키**에서 상태 키, 중첩 수, 남은 지속시간 또는 사용 횟수를 확인한다. 이 목록은 Play Mode에서 현재 대상에 적용된 활성 상태만 표시한다.
-- 적·아이템·가방 등 전체 대상은 **BuffManager → Debug → Debug All Active Buffs**에서 Status Definition, Target, Stack, Remain Time, Remain Use Count를 확인한다. 수치 Modifier는 해당 대상 컴포넌트의 최종/현재 스탯도 함께 확인한다.
-- 상태 부여 메뉴는 **Grant Status (Time or Uses)**, 확인한 상태 전체 제거 메뉴는 **Remove Checked Status (All)**, 조건 기반 정화 메뉴는 **Cleanse Harmful or Flagged Buffs**다. 부여 Inspector에는 **Status Key** 선택을 하나만 표시하고 시간·횟수 설정은 **Lifetime / Reapplication Settings**로 구분한다. 기존 에셋의 Status/Status Info 값은 필드 이름 변경 전의 직렬화 이름으로 이어받는다.
+- 플레이어의 수치 버프 결과는 **StatusManager → Legacy Numeric Status Stats → Current Stat**의 `statArrow`, `statStar`에서 확인한다. Base Stat은 버프 적용 전 값이다.
+- 상태 전용 부여는 StatusStat 수치를 바꾸지 않는다. **StatusManager → 적용 중인 특수 상태**에서 상태 키, 중첩 수, 남은 지속시간 또는 사용 횟수를 확인한다. 이 목록은 Play Mode에서 현재 대상에 적용된 활성 상태만 표시한다.
+- 적·아이템·가방 등 전체 대상은 **BuffManager → Debug → Debug All Active Buffs**에서 Special Status Key, Harmful, Dispellable, Flags, Target, Stack, Remain Time, Remain Use Count를 확인한다. 수치 Modifier는 해당 대상 컴포넌트의 최종/현재 스탯도 함께 확인한다.
+- 상태 부여 메뉴는 **Grant Special Status (Time or Uses)**, 확인한 상태 전체 제거 메뉴는 **Remove Checked Special Status (All)**, 조건 기반 정화 메뉴는 **Cleanse Harmful or Tagged Buffs**다. 부여 Inspector에는 **Special Status Identity Key** 선택을 하나만 표시하고 시간·횟수 설정은 **Special Status Lifetime / Reapplication**로 구분한다. 기존 에셋의 Status/Status Info 값은 필드 이름 변경 전의 직렬화 이름으로 이어받는다.
 
 ### 상태 대상과 횟수
 
-| Context Status의 값 | 의미 |
+| Execution Special Status Target의 값 | 의미 |
 | --- | --- |
 | `PlayerStatus` | StatusManager에 등록된 플레이어 상태 |
 | `Owner` | 실행 소유자 위쪽에서 찾은 IBuffTarget. PlayerStatus와 동일하다고 가정하지 않음 |
@@ -408,9 +414,9 @@ Execute Effects 명중 에셋은 **공격의 On Hit Effects**에 넣고, 그 에
 
 ### 상태 조회와 소비
 
-1. **Has Status Key**를 만들고 **Status**, **Target**, **Minimum Stack**을 지정한다.
+1. **Has Special Status (Minimum Stacks)**를 만들고 **Special Status Key**, **Target**, **Minimum Stack**을 지정한다.
 2. 실행 효과 또는 Conditional의 **Conditions**에 연결한다.
-3. 상태를 없애고 후속 효과를 실행하려면 **Remove Checked Status (All)**를 만든다.
+3. 상태를 없애고 후속 효과를 실행하려면 **Remove Checked Special Status (All)**를 만든다.
 4. 소비 효과의 **Checked Condition**에 1번과 **같은 조건 에셋**을 연결한다. After Consume Effects에 후속 실행 효과를 넣는다.
 5. 소비 효과는 해당 조건이 성공한 분기에 넣는다. 조건에서 확인한 상태를 제거한 후에만 후속 효과가 실행된다.
 
@@ -418,11 +424,11 @@ Execute Effects 명중 에셋은 **공격의 On Hit Effects**에 넣고, 그 에
 
 ### 정화
 
-Cleanse의 **Target Resolver**에 Context Status 에셋을 연결한다. 식물과 플레이어를 동시에 정화하려면 Targets에 **PlantHealth**, **PlayerStatus** 두 값을 넣는다. `Milk_PlayerAndPlantTargets`와 `Food23_MilkCleanse`가 이 설정이다.
+Cleanse의 **Target Resolver**에 Execution Special Status Target 에셋을 연결한다. 식물과 플레이어를 동시에 정화하려면 Targets에 **PlantHealth**, **PlayerStatus** 두 값을 넣는다. `Milk_PlayerAndPlantTargets`와 `Food23_MilkCleanse`가 이 설정이다.
 
-BuffEffect의 **Classification → Harmful**을 켜면 해로운 버프다. **Dispellable**을 켜면 정화할 수 있다. 수치 Modifier만 있는 버프도 이 두 값을 설정하면 정화 대상이 된다. 기존 StatusDefinition의 Harmful도 함께 인정하며, BuffEffect 또는 StatusDefinition 중 한쪽이라도 Dispellable을 끄면 정화할 수 없다.
+**BuffClassificationDefinition → Harmful / Dispellable**에서 공유 분류를 정하고 BuffEffect 또는 특수 상태 부여 효과의 **Buff Classification**에 연결한다. BuffEffect의 **Additional Classification Rules → Also Harmful / Allow Cleanse / Additional Cleanse Tags**는 공유 설정에 더하는 개별 설정이다. 어느 한쪽이라도 정화를 금지하면 보호되며 태그는 합쳐진다. 기존 BuffEffect의 Harmful·Dispellable·Flags 값은 이 개별 설정으로 보존한다. SpecialStatusDefinition은 상태 식별만 담당한다.
 
-**CleanseEffect → Filter → Mode**에서 제거 조건을 선택한다.
+**CleanseBuffEffect → Filter → Mode**에서 제거 조건을 선택한다.
 
 | Mode | 제거 대상 |
 | --- | --- |
@@ -431,7 +437,7 @@ BuffEffect의 **Classification → Harmful**을 켜면 해로운 버프다. **Di
 | HarmfulOrFlags | 해로운 버프이거나 지정 플래그가 일치하는 버프 |
 | HarmfulAndFlags | 해로우면서 지정 플래그도 일치하는 버프 |
 
-플래그는 **Create → GameData → Items → Buff → Flag**에서 원하는 만큼 에셋을 만들어 확장한다. 예를 들어 `Poison`, `Curse`, `Fire` 에셋을 만들고 **BuffEffect → Flags**에 여러 개 넣는다. **CleanseEffect → Filter → Flags**에도 제거할 플래그의 **같은 에셋**을 연결한다. **Flag Match = Any**는 하나라도 일치하면, **All**은 지정한 플래그가 전부 있으면 제거한다. 이름이 같아도 서로 다른 에셋은 다른 플래그다. 빈 항목·중복은 추가 조건이 되지 않으며, 유효한 플래그가 없으면 플래그 조건은 불일치다.
+플래그는 **Create → GameData → Buffs → Classification → Tag**에서 원하는 만큼 에셋을 만들어 확장한다. 예를 들어 `Poison`, `Curse`, `Fire` 에셋을 만들고 **BuffClassificationDefinition → Cleanse Classification Tags** 또는 **BuffEffect → Additional Cleanse Tags**에 여러 개 넣는다. **CleanseBuffEffect → Filter → Cleanse Classification Tags**에도 제거할 플래그의 **같은 에셋**을 연결한다. **Flag Match = Any**는 하나라도 일치하면, **All**은 지정한 플래그가 전부 있으면 제거한다. 이름이 같아도 서로 다른 에셋은 다른 플래그다. 빈 항목·중복은 추가 조건이 되지 않으며, 유효한 플래그가 없으면 플래그 조건은 불일치다.
 
 예: 독 디버프에 Harmful·Dispellable을 켜고 Flags에 Poison을 넣는다. 모든 디버프를 해제하는 정화는 Mode = Harmful, 독만 해제하는 정화는 Mode = Flags + Flags = Poison, 해로운 독만 해제하려면 Mode = HarmfulAndFlags + Flags = Poison으로 설정한다. 새 플래그를 추가할 때 코드를 수정할 필요가 없다.
 
@@ -491,7 +497,7 @@ Checked 모드는 확인한 장판이 사라졌을 때 다른 장판을 대신 �
 `Magic20_HatRainbowBranch`는 다음 조합의 실제 예제다.
 
 1. **Condition Mode = All**.
-2. Conditions에 **HasRainbowStatus**, **HasRainbowAreaAtImpact**.
+2. Conditions에 **HasRainbowSpecialStatus**, **HasRainbowAreaAtImpact**.
 3. 상태는 PlayerStatus에 무지개 축복 키가 있는지 확인하고, 장판은 착지/효과 위치에 자신의 무지개 광맥이 있는지 확인한다.
 4. **Effect When True**는 `Magic20_CooldownReadyAfter30`.
 5. **Effect When False**는 `Magic20_CooldownReadyAfter45`.
@@ -619,7 +625,7 @@ Aura 모듈을 소환 효과의 Modules 또는 소환 프리팹의 Modules에 �
 
 오라는 범위 안에서 버프를 유지하고 이탈·발신 소환물 제거 시 **해당 오라가 부여한 버프만** 제거한다. 오라의 버프 제한은 런타임에서 Infinite로 사용되므로 Buff Info의 Duration으로 주기적으로 끝내는 설정은 아니다.
 
-소환물 자신의 만개 상태로 분기하려면 **Has Status Key → Target = SourceSummon**을 사용한다. 플레이어의 만개 상태 조회와 구분한다.
+소환물 자신의 만개 상태로 분기하려면 **Has Special Status (Minimum Stacks) → Target = SourceSummon**을 사용한다. 플레이어의 만개 상태 조회와 구분한다.
 
 ## 14. 가중치 무작위·배율·종료 후 실행
 
@@ -658,13 +664,13 @@ Effect Datas나 Effects의 배열 순서는 실행을 시작하는 순서이며,
 | Root (Movement Only) | Duration 동안 이동만 속박. 공격은 가능 |
 | Target Override | Mode = Owner / NearestOtherEnemy / RandomOtherEnemy, Duration, Priority, Selection Radius |
 | Execute | Threshold `0.1` = 현재/최대 HP 10% 이하 처형. Respect Execution Immunity와 Allow Restricted Targets로 정책 지정 |
-| Configurable Mark | Mark Key, Status Info, On Damaged / On Killed / On Natural Expiry Effects |
+| Configurable Mark | Mark Key, Marker Lifetime, Buff Classification, On Damaged / On Killed / On Natural Expiry Effects |
 
 타겟 변경의 **Owner**는 실행 소유자에게 공격 가능한 IDamageable이 있어야 한다. 미끼 소환물을 대상으로 삼으려면 Health 활성화와 함께 실행 컨텍스트의 owner에 미끼 오브젝트를 전달하는 연결이 필요하다. 일반 소환 공격은 생성한 플레이어를 owner로 유지하므로, 소환물이 공격했다는 이유만으로 Owner 타깃이 자동으로 그 소환물이 되지는 않는다. Priority로 겹친 타겟 변경의 우선순위를 정한다.
 
 처형은 본 공격 피해 이후 남은 HP를 기준으로 판단한다. 대상의 Health에 Execution Immune / Execution Restricted 설정이 있다. Health Change의 퍼센트 입력 `20`과 달리 Execute의 Threshold는 `0.2`가 20%다.
 
-표식은 StatusDefinition을 **Mark Key**에 연결하고 **Status Info**에 지속·중첩 정책을 설정한다. On Damaged Effects는 피격, On Killed Effects는 처치, On Natural Expiry Effects는 자연 만료 후 실행한다. Damage Reaction Only Once / React To Lethal Damage / Reaction Source로 반응 횟수·치명타격 포함·효과 출처를 고른다. 후속 목록이 비어 있으면 표식 자체는 추가 피해나 보상을 주지 않는다. 정화·소비는 자연 만료 반응을 실행하지 않는다.
+표식은 SpecialStatusDefinition을 **Mark Key**에 연결하고 **Marker Lifetime**에 지속·중첩 정책을 설정한다. 정화 분류는 별도의 **Buff Classification**에 연결한다. On Damaged Effects는 피격, On Killed Effects는 처치, On Natural Expiry Effects는 자연 만료 후 실행한다. Damage Reaction Only Once / React To Lethal Damage / Reaction Source로 반응 횟수·치명타격 포함·효과 출처를 고른다. 후속 목록이 비어 있으면 표식 자체는 추가 피해나 보상을 주지 않는다. 정화·소비는 자연 만료 반응을 실행하지 않는다.
 
 ### 전체 적에 명중 효과 적용
 
@@ -742,8 +748,8 @@ Attack Prefab을 비우면 기본 부채꼴 판정 오브젝트를 생성한다.
 | 피해는 있는데 그림이 없음 | Visual Data / 장판·투사체 프리팹이 비어 있는지 |
 | 회복이 없음 | 식물 생존 상태, 최대 HP 도달, 실제 Health 존재, Use Radius / Center / Shape |
 | DamageArea 버프가 안 바뀜 | Target Group = DamageArea, Modifier 타입 = DamageAreaAttackStat인지; Direct의 프리팹 참조와 생성 인스턴스를 구분했는지 |
-| 상태 조건이 실패 | 부여·조회가 같은 StatusDefinition을 참조하는지, PlayerStatus와 Owner/SourceSummon의 차이 |
-| 버프가 정화되지 않음 | BuffEffect·StatusDefinition의 Harmful·Dispellable, Filter의 Mode·플래그 에셋·Any/All, 정화 대상, Include Modifier Buffs |
+| 상태 조건이 실패 | 부여·조회가 같은 SpecialStatusDefinition을 참조하는지, PlayerStatus와 Owner/SourceSummon의 차이 |
+| 버프가 정화되지 않음 | BuffClassificationDefinition과 BuffEffect의 추가 분류 설정, Harmful·Dispellable, Filter의 Mode·플래그 에셋·Any/All, 정화 대상, Include Modifier Buffs |
 | 장판 조건이 실패 | 같은 AreaDefinition인지, Own/Allied 소유자 조건, 조회 위치가 장판 안인지 |
 | 상태·장판 소비가 안 됨 | Checked Condition을 같은 조건 에셋으로 연결했는지, 해당 실행에서 조건이 먼저 성공했는지 |
 | 분기가 예상과 다름 | Condition Mode, 조건 참조, Freeze Branch At Prepare에 따른 준비 시점 판정 |

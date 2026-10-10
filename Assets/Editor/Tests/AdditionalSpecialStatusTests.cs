@@ -19,9 +19,9 @@ public sealed class AdditionalSpecialStatusTests
     { var host = new GameObject("Special Status Test"); owned.Add(host); return host; }
     private ItemEffectContext Context(ItemData item = null)
         => new ItemEffectContext(player.gameObject, item ?? source, Vector3.zero, Vector3.right, null, buffManager: manager);
-    private ApplyStatusEffect Grant(BuffUseLimitType limit = BuffUseLimitType.Time)
+    private GrantSpecialStatusEffect Grant(BuffUseLimitType limit = BuffUseLimitType.Time)
     {
-        var effect = Asset<ApplyStatusEffect>(); effect.statusKey = special.requiredStatusKey;
+        var effect = Asset<GrantSpecialStatusEffect>(); effect.specialStatusKey = special.requiredSpecialStatusKey;
         effect.lifetimeSettings.useLimitType = limit;
         return effect;
     }
@@ -39,7 +39,7 @@ public sealed class AdditionalSpecialStatusTests
         typeof(StatusManager).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(player, null);
         manager.RegisterBuffTarget(player);
         special = Host().AddComponent<SpecialItemManager>(); SpecialItemManager.Instance = special;
-        special.requiredStatusKey = Asset<StatusDefinition>();
+        special.requiredSpecialStatusKey = Asset<SpecialStatusDefinition>();
         special.specialItems = Asset<ItemData>(); special.specialItems.dataId = "SpecialTestItem";
         specialEffect = Asset<CombatEffectRecordingEffect>();
         special.specialItems.effectDatas = new ItemEffectData[] { specialEffect };
@@ -70,9 +70,9 @@ public sealed class AdditionalSpecialStatusTests
         Assert.That(special.CanTrigger(Context()), Is.False);
         player.baseStat.statStar = 0f; player.RefreshBuffedStat();
         Grant().Execute(Context());
-        Assert.That(special.requiredStatusKey.exposesPlayerStatus, Is.False);
+        Assert.That(special.requiredSpecialStatusKey.exposesPlayerStatus, Is.False);
         Assert.That(player.currentStat.statStar, Is.Zero);
-        Assert.That(player.HasStatus(special.requiredStatusKey), Is.True);
+        Assert.That(player.HasSpecialStatus(special.requiredSpecialStatusKey), Is.True);
         special.Call(Context()); OwnCreatedMover();
         Assert.That(ThrowMoverTestProbe.LastCreated, Is.Not.Null);
         ThrowMoverTestProbe.LastCreated.Tick(ThrowMoverTestProbe.LastCreated.MoveDuration);
@@ -90,7 +90,7 @@ public sealed class AdditionalSpecialStatusTests
             player.gameObject, null, manager, triggerSpecialItems: true);
         OwnCreatedMover();
         Assert.That(ThrowMoverTestProbe.LastCreated, Is.Not.Null);
-        Assert.That(player.HasStatus(special.requiredStatusKey), Is.False);
+        Assert.That(player.HasSpecialStatus(special.requiredSpecialStatusKey), Is.False);
         ThrowMoverTestProbe.LastCreated.Tick(ThrowMoverTestProbe.LastCreated.MoveDuration);
         Assert.That(specialEffect.calls.Count, Is.EqualTo(1));
     }
@@ -99,8 +99,8 @@ public sealed class AdditionalSpecialStatusTests
     {
         Grant().Execute(Context()); new BuffTicker(manager.Storage).Tick(1f);
         Assert.That(special.CanTrigger(Context()), Is.False);
-        special.requiredStatusKey.harmful = true;
-        Grant().Execute(Context());
+        var harmfulGrant = Grant(); harmfulGrant.buffClassification = Asset<BuffClassificationDefinition>();
+        harmfulGrant.buffClassification.harmful = true; harmfulGrant.Execute(Context());
         Assert.That(special.CanTrigger(Context()), Is.True);
         manager.Cleanse(BuffTargetHandle.Target(player), new BuffCleanseFilter {
             mode = BuffCleanseMode.Harmful
@@ -110,10 +110,10 @@ public sealed class AdditionalSpecialStatusTests
 
     [Test] public void AnotherKeyOrAnotherTargetDoesNotEnableTheSpecialFunction()
     {
-        var other = Grant(); other.statusKey = Asset<StatusDefinition>();
-        other.statusKey.displayName = special.requiredStatusKey.displayName; other.Execute(Context());
+        var other = Grant(); other.specialStatusKey = Asset<SpecialStatusDefinition>();
+        other.specialStatusKey.displayName = special.requiredSpecialStatusKey.displayName; other.Execute(Context());
         Assert.That(special.CanTrigger(Context()), Is.False);
-        var itemStatus = Grant(); itemStatus.target = StatusQueryTarget.SourceItem; itemStatus.Execute(Context());
+        var itemStatus = Grant(); itemStatus.target = SpecialStatusQueryTarget.SourceItem; itemStatus.Execute(Context());
         Assert.That(special.CanTrigger(Context()), Is.False);
     }
 
@@ -123,7 +123,7 @@ public sealed class AdditionalSpecialStatusTests
         Assert.That(special.CanTrigger(Context(special.specialItems)), Is.False);
         var excluded = Asset<ItemData>(); excluded.dataId = "WeaponExtra1";
         Assert.That(special.CanTrigger(Context(excluded)), Is.False);
-        special.requiredStatusKey = null;
+        special.requiredSpecialStatusKey = null;
         Assert.That(special.CanTrigger(Context()), Is.False);
     }
 }

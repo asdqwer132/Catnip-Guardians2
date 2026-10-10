@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -275,14 +275,14 @@ public class BuffManager : MonoBehaviour
     }
 
     // 상태 전용 효과는 Modifier 없이 기존 만료/소비/정화/완료 처리를 공유합니다.
-    public ActiveBuff RegisterStatus(ApplyStatusEffect effect, BuffInfo info,
+    public ActiveBuff RegisterSpecialStatus(GrantSpecialStatusEffect effect, BuffInfo info,
         ItemEffectContext context, BuffTargetHandle target)
     {
-        if (storage == null || effect == null || info == null || info.statusDefinition == null ||
+        if (storage == null || effect == null || info == null || effect.specialStatusKey == null ||
             context == null || !context.CanContinue || target == null) return null;
-        ActiveBuff active = storage.RegisterStatus(info, context.sourceItemData, context.sourceBag,
+        ActiveBuff active = storage.RegisterSpecialStatus(effect.specialStatusKey, info, context.sourceItemData, context.sourceBag,
             effect, target, effect.showInUI);
-        active.uiDisplayName = info.statusDefinition.displayName;
+        active.uiDisplayName = effect.specialStatusKey.displayName;
         active.uiIcon = effect.statusIcon;
         TrackBuffCompletion(active, effect, context);
         NotifyBuffChanged(GetNotifyScope(target));
@@ -290,23 +290,33 @@ public class BuffManager : MonoBehaviour
     }
 
     // 표식 등 이벤트 수신 상태도 기존 ActiveBuff 시간/중첩/횟수 규칙을 사용합니다.
-    public ActiveBuff RegisterStatusForTarget(StatusDefinition status, BuffInfo info,
-        ItemEffectContext context, IBuffTarget target, UnityEngine.Object registrationKey)
+    public ActiveBuff RegisterSpecialStatusForTarget(SpecialStatusDefinition status, BuffInfo info,
+        ItemEffectContext context, IBuffTarget target, UnityEngine.Object registrationKey,
+        BuffClassificationDefinition classification = null)
     {
-        if (status == null || info == null || context == null || !context.CanContinue ||
+        if (storage == null || status == null || info == null || context == null || !context.CanContinue ||
             target == null || target.BuffTargetObject == null || registrationKey == null) return null;
         BuffEffect marker;
         if (!statusMarkers.TryGetValue(registrationKey, out marker) || marker == null)
         {
             marker = ScriptableObject.CreateInstance<BuffEffect>();
-            marker.name = registrationKey.name + " Status";
+            marker.name = registrationKey.name + " Special Status Marker";
             marker.hideFlags = HideFlags.HideAndDontSave;
             marker.includeSelf = true;
             statusMarkers[registrationKey] = marker;
         }
         marker.buffInfo = info.Clone();
-        marker.buffInfo.statusDefinition = status;
-        return RegisterBuffForTargetHandle(marker, context, target);
+        marker.buffClassification = classification;
+        BuffInfo finalInfo = context.GetCurrentStat(marker, marker.buffInfo);
+        if (finalInfo == null) return null;
+        finalInfo.Clamp();
+        // 표식은 출처별 반응 컨텍스트를 보존해야 하므로 상태 전용 누적과 별도로 등록한다.
+        ActiveBuff active = storage.RegisterBuff(null, finalInfo, context.sourceItemData,
+            context.sourceBag, marker, BuffTargetHandle.Target(target), true, marker.showInUI);
+        active.specialStatusKey = status;
+        TrackBuffCompletion(active, marker, context);
+        NotifyBuffChanged(BuffNotifyScope.Target);
+        return active;
     }
 
     // 오라나 정화가 제거한 버프는 자연 완료로 처리하지 않습니다.
@@ -363,7 +373,7 @@ public class BuffManager : MonoBehaviour
         return consumed;
     }
 
-    public int GetStatusStack(StatusDefinition status, BuffQueryContext context)
+    public int GetSpecialStatusStack(SpecialStatusDefinition status, BuffQueryContext context)
     {
         if (storage == null || status == null || context == null) return 0;
         if (context.buffTarget != null && context.buffTarget.BuffTargetObject == null) return 0;
@@ -372,7 +382,7 @@ public class BuffManager : MonoBehaviour
         for (int i = 0; i < storage.activeBuffs.Count; i++)
         {
             ActiveBuff buff = storage.activeBuffs[i];
-            if (buff == null || buff.IsExpired || buff.statusDefinition != status ||
+            if (buff == null || buff.IsExpired || buff.specialStatusKey != status ||
                 !buff.MatchesQuery(context)) continue;
             if (context.buffTarget == null && context.itemData == null && !buff.target.MatchesBag(context.bag)) continue;
             total = (int)System.Math.Min(int.MaxValue, (long)total + Mathf.Max(1, buff.stack));
@@ -380,10 +390,10 @@ public class BuffManager : MonoBehaviour
         return total;
     }
 
-    public bool HasStatus(StatusDefinition status, BuffQueryContext context, int minimumStack = 1)
-        => GetStatusStack(status, context) >= Mathf.Max(1, minimumStack);
+    public bool HasSpecialStatus(SpecialStatusDefinition status, BuffQueryContext context, int minimumStack = 1)
+        => GetSpecialStatusStack(status, context) >= Mathf.Max(1, minimumStack);
 
-    public void FindStatuses(StatusDefinition status, BuffQueryContext context, List<ActiveBuff> results)
+    public void FindSpecialStatuses(SpecialStatusDefinition status, BuffQueryContext context, List<ActiveBuff> results)
     {
         if (results == null) return;
         results.Clear();
@@ -393,7 +403,7 @@ public class BuffManager : MonoBehaviour
         for (int i = 0; i < storage.activeBuffs.Count; i++)
         {
             ActiveBuff buff = storage.activeBuffs[i];
-            if (buff != null && !buff.IsExpired && buff.statusDefinition == status && buff.MatchesQuery(context) &&
+            if (buff != null && !buff.IsExpired && buff.specialStatusKey == status && buff.MatchesQuery(context) &&
                 (context.buffTarget != null || context.itemData != null || buff.target.MatchesBag(context.bag)))
                 results.Add(buff);
         }
@@ -412,8 +422,8 @@ public class BuffManager : MonoBehaviour
             ActiveBuff buff = candidates[i];
             if (buff == null || buff.StorageOwner != storage || buff.IsExpired ||
                 !(filter != null ? filter.Matches(buff) : buff.harmful && buff.dispellable) ||
-                !StatusTargetUtility.MatchesSelection(buff.target, selection)) continue;
-            if (!includeModifierBuffs && StatusTargetUtility.HasModifiers(buff.modifiers)) continue;
+                !BuffSelectionUtility.MatchesSelection(buff.target, selection)) continue;
+            if (!includeModifierBuffs && BuffSelectionUtility.HasModifiers(buff.modifiers)) continue;
             storage.RemoveBuff(buff, BuffRemovalReason.Cleansed);
             removed++;
         }

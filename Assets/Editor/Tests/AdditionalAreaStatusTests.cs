@@ -27,14 +27,19 @@ public sealed class AdditionalAreaStatusTests
     }
     private ItemEffectContext Context(GameObject owner, BuffManager manager = null, ItemData item = null)
         => new ItemEffectContext(owner, item, Vector3.zero, Vector3.zero, null, buffManager: manager, direction: Vector3.right);
-    private BuffEffect Status(StatusDefinition key, BuffUseLimitType limit = BuffUseLimitType.Time)
+    private GrantSpecialStatusEffect Status(SpecialStatusDefinition key, BuffUseLimitType limit = BuffUseLimitType.Time,
+        BuffClassificationDefinition classification = null)
     {
-        BuffEffect effect = Asset<BuffEffect>();
-        effect.buffInfo.statusDefinition = key;
-        effect.buffInfo.useLimitType = limit;
-        effect.includeSelf = true;
+        GrantSpecialStatusEffect effect = Asset<GrantSpecialStatusEffect>();
+        effect.specialStatusKey = key;
+        effect.buffClassification = classification;
+        effect.target = SpecialStatusQueryTarget.Owner;
+        effect.lifetimeSettings.reapplyMode = BuffReapplyMode.Refresh;
+        effect.lifetimeSettings.useLimitType = limit;
         return effect;
     }
+    private ActiveBuff Register(BuffManager manager, GrantSpecialStatusEffect effect, ItemEffectContext context, IBuffTarget target)
+        => manager.RegisterSpecialStatus(effect, context.GetCurrentStat(effect, effect.lifetimeSettings), context, BuffTargetHandle.Target(target));
     private ReactiveGroundArea Area(AreaDefinition definition, GameObject owner, Vector3 position)
     {
         AreaEffectData effect = Asset<AreaEffectData>();
@@ -59,18 +64,18 @@ public sealed class AdditionalAreaStatusTests
     {
         BuffManager manager = Manager();
         AdditionalAreaStatusTarget target = Host().AddComponent<AdditionalAreaStatusTarget>();
-        StatusDefinition key = Asset<StatusDefinition>();
-        BuffEffect effect = Status(key);
-        effect.buffInfo.stackMode = BuffStackMode.Stack;
-        effect.buffInfo.maxStack = 3;
-        effect.buffInfo.duration = 2f;
+        SpecialStatusDefinition key = Asset<SpecialStatusDefinition>();
+        GrantSpecialStatusEffect effect = Status(key);
+        effect.lifetimeSettings.stackMode = BuffStackMode.Stack;
+        effect.lifetimeSettings.maxStack = 3;
+        effect.lifetimeSettings.duration = 2f;
         ItemEffectContext context = Context(target.gameObject, manager);
-        ActiveBuff first = manager.RegisterBuffForTargetHandle(effect, context, target);
+        ActiveBuff first = Register(manager, effect, context, target);
         Assert.That(first, Is.Not.Null);
-        Assert.That(manager.RegisterBuffForTargetHandle(effect, context, target), Is.SameAs(first));
-        Assert.That(manager.GetStatusStack(key, BuffQueryContext.ForTarget(target)), Is.EqualTo(2));
+        Assert.That(Register(manager, effect, context, target), Is.SameAs(first));
+        Assert.That(manager.GetSpecialStatusStack(key, BuffQueryContext.ForTarget(target)), Is.EqualTo(2));
         first.Tick(2f);
-        Assert.That(manager.HasStatus(key, BuffQueryContext.ForTarget(target)), Is.False);
+        Assert.That(manager.HasSpecialStatus(key, BuffQueryContext.ForTarget(target)), Is.False);
     }
 
     [Test]
@@ -79,19 +84,18 @@ public sealed class AdditionalAreaStatusTests
         BuffManager manager = Manager();
         AdditionalAreaStatusTarget target = Host().AddComponent<AdditionalAreaStatusTarget>();
         ItemEffectContext context = Context(target.gameObject, manager);
-        StatusDefinition harmful = Asset<StatusDefinition>();
-        harmful.harmful = true;
-        StatusDefinition locked = Asset<StatusDefinition>();
-        locked.harmful = true;
-        locked.dispellable = false;
-        StatusDefinition beneficial = Asset<StatusDefinition>();
-        manager.RegisterBuffForTargetHandle(Status(harmful), context, target);
-        manager.RegisterBuffForTargetHandle(Status(locked), context, target);
-        manager.RegisterBuffForTargetHandle(Status(beneficial), context, target);
+        SpecialStatusDefinition harmful = Asset<SpecialStatusDefinition>();
+        var harmfulRules = Asset<BuffClassificationDefinition>(); harmfulRules.harmful = true;
+        SpecialStatusDefinition locked = Asset<SpecialStatusDefinition>();
+        var lockedRules = Asset<BuffClassificationDefinition>(); lockedRules.harmful = true; lockedRules.dispellable = false;
+        SpecialStatusDefinition beneficial = Asset<SpecialStatusDefinition>();
+        Register(manager, Status(harmful, classification: harmfulRules), context, target);
+        Register(manager, Status(locked, classification: lockedRules), context, target);
+        Register(manager, Status(beneficial), context, target);
         Assert.That(manager.Cleanse(BuffTargetHandle.Target(target)), Is.EqualTo(1));
-        Assert.That(manager.HasStatus(harmful, BuffQueryContext.ForTarget(target)), Is.False);
-        Assert.That(manager.HasStatus(locked, BuffQueryContext.ForTarget(target)), Is.True);
-        Assert.That(manager.HasStatus(beneficial, BuffQueryContext.ForTarget(target)), Is.True);
+        Assert.That(manager.HasSpecialStatus(harmful, BuffQueryContext.ForTarget(target)), Is.False);
+        Assert.That(manager.HasSpecialStatus(locked, BuffQueryContext.ForTarget(target)), Is.True);
+        Assert.That(manager.HasSpecialStatus(beneficial, BuffQueryContext.ForTarget(target)), Is.True);
     }
 
     [Test]
@@ -100,15 +104,15 @@ public sealed class AdditionalAreaStatusTests
         BuffManager manager = Manager();
         AdditionalAreaStatusTarget target = Host().AddComponent<AdditionalAreaStatusTarget>();
         ItemData item = Asset<ItemData>();
-        BuffEffect effect = Status(Asset<StatusDefinition>(), BuffUseLimitType.UseCount);
-        effect.buffInfo.useCountConsumeMode = BuffUseCountConsumeMode.AnyItemUsed;
+        GrantSpecialStatusEffect effect = Status(Asset<SpecialStatusDefinition>(), BuffUseLimitType.UseCount);
+        effect.lifetimeSettings.useCountConsumeMode = BuffUseCountConsumeMode.AnyItemUsed;
         BuffItemUseToken token = manager.BeginItemUse(item, null);
-        ActiveBuff buff = manager.RegisterBuffForTargetHandle(effect, Context(target.gameObject, manager, item), target);
+        ActiveBuff buff = Register(manager, effect, Context(target.gameObject, manager, item), target);
         manager.EndItemUse(token);
         Assert.That(buff.remainUseCount, Is.EqualTo(1));
         token = manager.BeginItemUse(item, null);
         manager.EndItemUse(token);
-        Assert.That(manager.HasStatus(effect.buffInfo.statusDefinition, BuffQueryContext.ForTarget(target)), Is.False);
+        Assert.That(manager.HasSpecialStatus(effect.specialStatusKey, BuffQueryContext.ForTarget(target)), Is.False);
     }
 
     [Test]
@@ -116,18 +120,18 @@ public sealed class AdditionalAreaStatusTests
     {
         BuffManager manager = Manager();
         AdditionalAreaStatusTarget target = Host().AddComponent<AdditionalAreaStatusTarget>();
-        BuffEffect effect = Status(Asset<StatusDefinition>());
+        GrantSpecialStatusEffect effect = Status(Asset<SpecialStatusDefinition>());
         ItemEffectContext context = Context(target.gameObject, manager);
-        manager.RegisterBuffForTargetHandle(effect, context, target);
-        HasStatusConditionData condition = Asset<HasStatusConditionData>();
-        condition.status = effect.buffInfo.statusDefinition;
-        condition.target = StatusQueryTarget.Owner;
+        Register(manager, effect, context, target);
+        HasSpecialStatusCondition condition = Asset<HasSpecialStatusCondition>();
+        condition.specialStatusKey = effect.specialStatusKey;
+        condition.target = SpecialStatusQueryTarget.Owner;
         Assert.That(condition.IsSatisfied(context), Is.True);
-        manager.RegisterBuffForTargetHandle(effect, context, target);
-        ConsumeStatusEffect consume = Asset<ConsumeStatusEffect>();
+        Register(manager, effect, context, target);
+        RemoveCheckedSpecialStatusEffect consume = Asset<RemoveCheckedSpecialStatusEffect>();
         consume.checkedCondition = condition;
         consume.ExecuteEffect(context);
-        Assert.That(manager.HasStatus(condition.status, BuffQueryContext.ForTarget(target)), Is.True);
+        Assert.That(manager.HasSpecialStatus(condition.specialStatusKey, BuffQueryContext.ForTarget(target)), Is.True);
     }
 
     [Test]
@@ -136,11 +140,11 @@ public sealed class AdditionalAreaStatusTests
         BuffManager manager = Manager();
         AdditionalAreaStatusTarget target = Host().AddComponent<AdditionalAreaStatusTarget>();
         ItemEffectContext context = Context(target.gameObject, manager);
-        BuffEffect status = Status(Asset<StatusDefinition>());
-        ActiveBuff buff = manager.RegisterBuffForTargetHandle(status, context, target);
-        HasStatusConditionData condition = Asset<HasStatusConditionData>();
-        condition.target = StatusQueryTarget.Owner;
-        condition.status = status.buffInfo.statusDefinition;
+        GrantSpecialStatusEffect status = Status(Asset<SpecialStatusDefinition>());
+        ActiveBuff buff = Register(manager, status, context, target);
+        HasSpecialStatusCondition condition = Asset<HasSpecialStatusCondition>();
+        condition.target = SpecialStatusQueryTarget.Owner;
+        condition.specialStatusKey = status.specialStatusKey;
         CombatEffectRecordingEffect yes = Asset<CombatEffectRecordingEffect>();
         CombatEffectRecordingEffect no = Asset<CombatEffectRecordingEffect>();
         ConditionalItemEffectData branch = Asset<ConditionalItemEffectData>();
@@ -223,16 +227,16 @@ public sealed class AdditionalAreaStatusTests
     {
         BuffManager manager = Manager();
         AdditionalAreaStatusTarget target = Host().AddComponent<AdditionalAreaStatusTarget>();
-        StatusDefinition key = Asset<StatusDefinition>();
-        key.harmful = true;
-        ActiveBuff marker = manager.RegisterStatusForTarget(key, new BuffInfo { duration = 5f },
-            Context(target.gameObject, manager), target, Asset<StatusDefinition>());
+        SpecialStatusDefinition key = Asset<SpecialStatusDefinition>();
+        var classification = Asset<BuffClassificationDefinition>(); classification.harmful = true;
+        ActiveBuff marker = manager.RegisterSpecialStatusForTarget(key, new BuffInfo { duration = 5f },
+            Context(target.gameObject, manager), target, Asset<SpecialStatusDefinition>(), classification);
         BuffRemovalReason? removed = null;
         marker.Removed += (buff, reason) => removed = reason;
-        Assert.That(manager.HasStatus(key, BuffQueryContext.ForTarget(target)), Is.True);
+        Assert.That(manager.HasSpecialStatus(key, BuffQueryContext.ForTarget(target)), Is.True);
         manager.Cleanse(BuffTargetHandle.Target(target));
         Assert.That(removed, Is.EqualTo(BuffRemovalReason.Cleansed));
-        Assert.That(manager.HasStatus(key, BuffQueryContext.ForTarget(target)), Is.False);
+        Assert.That(manager.HasSpecialStatus(key, BuffQueryContext.ForTarget(target)), Is.False);
     }
 
     [Test]
@@ -241,17 +245,17 @@ public sealed class AdditionalAreaStatusTests
         BuffManager manager = Manager();
         AdditionalAreaStatusTarget target = Host().AddComponent<AdditionalAreaStatusTarget>();
         ItemEffectContext context = Context(target.gameObject, manager);
-        BuffEffect initial = Status(Asset<StatusDefinition>());
-        initial.buffInfo.duration = 1f;
-        BuffEffect next = Status(Asset<StatusDefinition>());
-        next.buffInfo.duration = 5f;
+        GrantSpecialStatusEffect initial = Status(Asset<SpecialStatusDefinition>());
+        initial.lifetimeSettings.duration = 1f;
+        GrantSpecialStatusEffect next = Status(Asset<SpecialStatusDefinition>());
+        next.lifetimeSettings.duration = 5f;
         ActiveBuff created = null;
         BuffRemovalReason? removed = null;
-        ActiveBuff first = manager.RegisterBuffForTargetHandle(initial, context, target);
+        ActiveBuff first = Register(manager, initial, context, target);
         first.Removed += (buff, reason) =>
         {
             removed = reason;
-            created = manager.RegisterBuffForTargetHandle(next, context, target);
+            created = Register(manager, next, context, target);
         };
         Assert.That(new BuffTicker(manager.Storage).Tick(1f), Is.True);
         Assert.That(removed, Is.EqualTo(BuffRemovalReason.NaturalExpiry));

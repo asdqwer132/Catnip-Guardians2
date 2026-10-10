@@ -11,7 +11,8 @@ public sealed class BuffCleanseFilter
     public BuffCleanseMode mode;
     [Tooltip("Any: 지정 플래그 중 하나라도 일치 / All: 지정한 모든 플래그가 일치")]
     public BuffFlagMatchMode flagMatch;
-    [Tooltip("BuffEffect와 같은 플래그 에셋을 연결합니다. 빈 항목은 무시하며, 유효한 플래그가 없으면 플래그 조건은 불일치입니다.")]
+    [InspectorName("Cleanse Classification Tags")]
+    [Tooltip("BuffClassificationDefinition 또는 BuffEffect와 같은 분류 태그를 연결합니다. 특수 상태 키와 별개입니다. 유효한 태그가 없으면 태그 조건은 불일치입니다.")]
     public BuffFlagDefinition[] flags;
 
     public bool Matches(ActiveBuff buff)
