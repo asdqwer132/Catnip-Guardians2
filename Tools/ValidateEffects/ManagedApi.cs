@@ -45,7 +45,7 @@ public class BuffEffect : ItemEffectData { public bool harmful; public bool disp
 public class SummonItemThrower { }
 
 public static class ItemEffectUtility { public static ItemEffectData[] Copy(ItemEffectData[] x)=>x!=null?(ItemEffectData[])x.Clone():null; public static void Execute(ItemEffectData[] e,ItemEffectContext c){} }
-public class SpecialItemManager { public static SpecialItemManager Instance; public int calls; public void Call(ItemEffectContext context){calls++;} }
+public class SpecialItemManager { public static SpecialItemManager Instance; public int calls; public System.Action<ItemEffectContext> onCall; public void Call(ItemEffectContext context){calls++;onCall?.Invoke(context);} }
 public static class ReactiveGroundArea { public static bool NotifyItemLanded(ItemEffectContext context)=>false; }
 // Scene objects/ScriptableObject/RNG substitutes avoid Unity native calls in managed checks.
 namespace UnityEngine {

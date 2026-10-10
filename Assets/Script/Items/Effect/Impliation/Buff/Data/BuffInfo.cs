@@ -4,8 +4,9 @@ using UnityEngine;
 [Serializable]
 public class BuffInfo : IGameStat<BuffInfo>, IEffectScalableStat
 {
-    [Header("Status Identity")]
-    [Tooltip("선택 사항. 같은 표시 이름이어도 상태 판정은 이 에셋 키로 구분합니다.")]
+    [Header("Optional Attached Status")]
+    [InspectorName("Attached Status Key (Optional)")]
+    [Tooltip("수치 버프에 함께 붙일 선택적 상태 키입니다. 상태 전용 부여와 같은 StatusDefinition을 사용하며, 버프가 유지되는 동안 같은 상태로 조회/소비합니다. 시간·횟수는 이 버프의 수명을 따릅니다.")]
     public StatusDefinition statusDefinition;
     [Header("Stack")]
     public BuffStackMode stackMode = BuffStackMode.Refresh;

@@ -19,6 +19,21 @@ public static class Runner {
  static void UseCompletionItem(ItemData item,BuffManager manager=null,ItemEffectContext parent=null,EquipmentBag bag=null)
   =>ItemEffectExecutor.ExecuteItem(item,Vector3.zero,Vector3.right,Vector3.up,null,bag,manager,parent,triggerSpecialItems:false);
  public static void Main(){
+ Check("special functions execute before use-count consumption including the last use",()=>{
+  var manager=new BuffManager();var item=CompletionItem(new CompletionProbe());var previous=SpecialItemManager.Instance;int observed=0;
+  try{SpecialItemManager.Instance=new SpecialItemManager{onCall=context=>{True(manager.endedUses==0);observed++;}};
+   ItemEffectExecutor.ExecuteItem(item,Vector3.zero,Vector3.right,Vector3.right,null,null,manager,triggerSpecialItems:true);
+   True(observed==1&&manager.endedUses==1);
+  }finally{SpecialItemManager.Instance=previous;}
+ });
+ Check("a special function failure still finalizes item-use consumption",()=>{
+  var manager=new BuffManager();var item=CompletionItem(new CompletionProbe());var previous=SpecialItemManager.Instance;bool threw=false;
+  try{SpecialItemManager.Instance=new SpecialItemManager{onCall=context=>throw new InvalidOperationException("probe")};
+   try{ItemEffectExecutor.ExecuteItem(item,Vector3.zero,Vector3.right,Vector3.right,null,null,manager,triggerSpecialItems:true);}
+   catch(InvalidOperationException){threw=true;}
+   True(threw&&manager.begunUses==1&&manager.endedUses==1);
+  }finally{SpecialItemManager.Instance=previous;}
+ });
  Check("direct statuses merge by status key and target across effects items and bags",()=>{
   var storage=new BuffStorage();var key=new StatusDefinition();var target=BuffTargetHandle.Item(new ItemData());
   var info=new BuffInfo{statusDefinition=key,duration=5,reapplyMode=BuffReapplyMode.AddRemaining,stackMode=BuffStackMode.Stack,maxStack=3};

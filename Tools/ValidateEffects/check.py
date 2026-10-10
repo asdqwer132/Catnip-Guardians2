@@ -129,7 +129,7 @@ def compile_files():
     files = [path for path in files if '/UI/' not in str(path) and path.name not in
              ('ItemUseManager.cs', 'BagSelectManager.cs', 'ItemUsePositionProvider.cs')]
     files += list((ROOT / 'Assets/Script/Items/Effect/Impliation/Buff/UI').glob('*.cs'))
-    extra = ('Items/Upgrade/Equipment/BagData.cs', 'Items/Upgrade/Inventory/InventoryItem.cs',
+    extra = ('Items/SpecialItemManager.cs', 'Items/Upgrade/Equipment/BagData.cs', 'Items/Upgrade/Inventory/InventoryItem.cs',
              'Items/Upgrade/Inventory/Search/ISearchable.cs', 'Items/Upgrade/Skill/Reward/Unlock/IUnlockable.cs',
              'Items/Upgrade/Skill/Reward/Unlock/DataType.cs')
     files += [ROOT / 'Assets/Script' / name for name in extra]

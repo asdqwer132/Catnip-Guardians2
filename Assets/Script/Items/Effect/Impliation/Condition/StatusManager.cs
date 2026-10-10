@@ -129,6 +129,11 @@ public class StatusManager : MonoBehaviour, IBuffTarget, IDynamicBuffReceiver
         return false;
     }
 
+    // 상태 키 판정은 StatusStat 수치/기존 enum 매핑에 의존하지 않는다.
+    public bool HasStatus(StatusDefinition statusKey)
+        => statusKey != null && buffManager != null &&
+            buffManager.HasStatus(statusKey, BuffQueryContext.ForTarget(this));
+
     public void GetActiveStatuses(List<ActiveBuff> results)
     {
         if (results == null) return;

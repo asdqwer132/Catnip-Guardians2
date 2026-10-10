@@ -353,12 +353,20 @@ Execute Effects 명중 에셋은 **공격의 On Hit Effects**에 넣고, 그 에
 
 모든 가방의 아이템 공격을 강화하려면 **Buffs → Targets → All Items**를 사용한다. 공격 종류별 Modifier가 필요하다. DamageArea는 `DamageAreaAttackStat.damageAreaPower`, 이동 투사체는 `ProjectileAttackStat.projectileDamage`, 연쇄 공격은 `ChainAttackStat.chainFirstDamage`와 `chainNextDamage`를 각각 설정한다. **Include Self**를 켜면 버프를 부여한 ItemData도 포함한다. 기존 Owner의 **All**은 사용한 아이템·가방·시리즈를 합친 대상이며 전체 아이템 설정과 범위가 다르다.
 
+### StatusDefinition의 공유 역할과 특수 기능
+
+`StatusDefinition`은 상태 전용 부여와 수치 버프가 공유하는 **동일한 상태 키**다. 역할이 다른 두 종류의 정의가 아니다. 상태 전용 효과의 **Status Key**는 상태만 부여하고, BuffEffect의 **Attached Status Key (Optional)**은 수치 버프가 유지되는 동안 함께 조회할 상태를 붙인다. 둘 다 같은 키를 사용하면 Has Status Key·상태 소비·정화에서 같은 상태로 인식한다. 상태 이름은 표시용이며 동일 여부는 에셋 참조로 판정한다.
+
+특수 아이템 기능은 **SpecialItemManager → Required Status Key**에 지정한 상태가 PlayerStatus 대상에 활성화되어 있을 때 실행한다. `StatusStat.statStar` 값이나 Exposes Player Status 매핑은 이 발동 조건에 쓰지 않는다. 기존 Has Buff의 enum 조건은 호환을 위해 별도의 기존 판정을 유지한다.
+
+`GameScene`의 Required Status Key는 `Assets/Data/AdditionalEffects/StarSpecialAttackStatus.asset`에 연결되어 있다. `Weapon29_EffectData2`·`Weapon30_EffectData2`는 이 상태를 횟수제로 직접 부여하며 다른 출처에서도 같은 상태의 남은 횟수에 더한다. 특수 기능은 사용 횟수를 최종 차감하기 전에 판정하므로 마지막 1회에도 실행한다. 특수 아이템 자체가 추가 특수 호출을 만들지는 않는다.
+
 ### 예: 5초 동안 유지하는 상태 만들기
 
 1. **Items → Status → Definition**으로 `MyStatusKey`를 만든다. Display Name은 표시 이름이며 상태의 동일 여부는 이 에셋 참조로 구분한다.
 2. 해로운 상태라면 **Harmful**, 정화 가능하면 **Dispellable**을 켠다. Interaction Tags만 입력해도 추가 피해 등의 규칙이 생기는 것은 아니다.
 3. **Buffs → Targets → Context Status**로 대상 설정 에셋을 만들고 **Targets = PlayerStatus**를 지정한다.
-4. **Items → Effects → Buff**로 부여 효과를 만든다. Target Resolver에 3번 에셋, Buff Info → Status Definition에 MyStatusKey를 연결한다.
+4. **Items → Effects → Buff**로 부여 효과를 만든다. Target Resolver에 3번 에셋, Buff Info → Attached Status Key (Optional)에 MyStatusKey를 연결한다.
 5. **Use Limit Type = Time**, **Duration = 5**, **Stack Mode = Refresh**로 설정한다. 상태 키만 필요하면 Modifiers는 비워도 된다.
 6. 아이템 Effect Datas에 이 BuffEffect를 연결한다.
 
