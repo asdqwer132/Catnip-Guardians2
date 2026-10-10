@@ -16,9 +16,9 @@ public sealed class AdditionalDirectStatusTests
         => new ItemEffectContext(player.gameObject, item, Vector3.zero, Vector3.right, null, buffManager: manager);
     private ApplyStatusEffect Effect(BuffUseLimitType limit)
     {
-        var effect = Asset<ApplyStatusEffect>(); effect.status = Asset<StatusDefinition>();
-        effect.status.exposesPlayerStatus = true; effect.status.playerStatus = PlayerStatusList.arrow;
-        effect.statusInfo.useLimitType = limit; effect.statusInfo.duration = 5f; effect.statusInfo.maxUseCount = 3;
+        var effect = Asset<ApplyStatusEffect>(); effect.statusKey = Asset<StatusDefinition>();
+        effect.statusKey.exposesPlayerStatus = true; effect.statusKey.playerStatus = PlayerStatusList.arrow;
+        effect.lifetimeSettings.useLimitType = limit; effect.lifetimeSettings.duration = 5f; effect.lifetimeSettings.maxUseCount = 3;
         return effect;
     }
     private void Tick(float delta) => new BuffTicker(manager.Storage).Tick(delta);
@@ -48,10 +48,10 @@ public sealed class AdditionalDirectStatusTests
         effect.Execute(Context(item)); Tick(2f); effect.Execute(Context(item));
         Assert.That(manager.Storage.activeBuffs.Count, Is.EqualTo(1));
         Assert.That(manager.Storage.activeBuffs[0].remainTime, Is.EqualTo(8f));
-        Assert.That(manager.HasStatus(effect.status, BuffQueryContext.ForTarget(player)), Is.True);
+        Assert.That(manager.HasStatus(effect.statusKey, BuffQueryContext.ForTarget(player)), Is.True);
         Assert.That(player.HasStatus(PlayerStatusList.arrow), Is.True);
         Assert.That(player.currentStat.statArrow, Is.Zero);
-        Assert.That(effect.statusInfo.duration, Is.EqualTo(5f));
+        Assert.That(effect.lifetimeSettings.duration, Is.EqualTo(5f));
         Tick(8f);
         Assert.That(player.HasStatus(PlayerStatusList.arrow), Is.False);
         Assert.That(manager.Storage.activeBuffs, Is.Empty);
@@ -73,8 +73,8 @@ public sealed class AdditionalDirectStatusTests
     [Test] public void SpecificItemsConsumeOnceAndFailedUsesDoNotConsume()
     {
         var effect = Effect(BuffUseLimitType.UseCount); var selected = Asset<ItemData>(); var other = Asset<ItemData>();
-        effect.statusInfo.useCountConsumeMode = BuffUseCountConsumeMode.SpecificItemsUsed;
-        effect.statusInfo.consumeItems = new[] { selected, selected };
+        effect.lifetimeSettings.useCountConsumeMode = BuffUseCountConsumeMode.SpecificItemsUsed;
+        effect.lifetimeSettings.consumeItems = new[] { selected, selected };
         effect.Execute(Context(other)); Use(other);
         manager.EndItemUse(manager.BeginItemUse(selected, null), false);
         Assert.That(manager.Storage.activeBuffs[0].remainUseCount, Is.EqualTo(3));
@@ -90,20 +90,48 @@ public sealed class AdditionalDirectStatusTests
         Assert.That(manager.Storage.activeBuffs[0].remainUseCount, Is.EqualTo(6));
     }
 
-    [Test] public void DifferentSourcesKeepIndependentBudgetsAndTargetsStayIsolated()
+    [Test] public void SameStatusFromDifferentItemsEffectsAndBagsSharesOneBudget()
     {
         var effect = Effect(BuffUseLimitType.Time);
-        effect.Execute(Context(Asset<ItemData>())); effect.Execute(Context(Asset<ItemData>()));
-        Assert.That(manager.Storage.activeBuffs.Count, Is.EqualTo(2));
-        Assert.That(manager.GetStatusStack(effect.status, BuffQueryContext.ForTarget(player)), Is.EqualTo(2));
+        effect.lifetimeSettings.stackMode = BuffStackMode.Stack; effect.lifetimeSettings.maxStack = 5;
+        var otherEffect = Effect(BuffUseLimitType.Time); otherEffect.statusKey = effect.statusKey;
+        otherEffect.lifetimeSettings.stackMode = BuffStackMode.Stack; otherEffect.lifetimeSettings.maxStack = 5;
+        var first = Context(Asset<ItemData>()); first.sourceBag = Host().AddComponent<EquipmentBag>();
+        var second = Context(Asset<ItemData>()); second.sourceBag = Host().AddComponent<EquipmentBag>();
+        effect.Execute(first); Tick(2f); otherEffect.Execute(second);
+        Assert.That(manager.Storage.activeBuffs.Count, Is.EqualTo(1));
+        Assert.That(manager.Storage.activeBuffs[0].remainTime, Is.EqualTo(8f));
+        Assert.That(manager.GetStatusStack(effect.statusKey, BuffQueryContext.ForTarget(player)), Is.EqualTo(2));
+    }
+
+    [Test] public void DifferentTargetsAndDifferentStatusKeysStaySeparate()
+    {
+        var effect = Effect(BuffUseLimitType.Time); effect.Execute(Context());
         var other = Host().AddComponent<AdditionalAreaStatusTarget>();
-        Assert.That(manager.HasStatus(effect.status, BuffQueryContext.ForTarget(other)), Is.False);
+        Assert.That(manager.HasStatus(effect.statusKey, BuffQueryContext.ForTarget(other)), Is.False);
+        effect.target = StatusQueryTarget.Owner;
+        effect.Execute(new ItemEffectContext(other.gameObject, null, Vector3.zero, Vector3.right, null, buffManager: manager));
+        var otherEffect = Effect(BuffUseLimitType.Time); otherEffect.Execute(Context());
+        Assert.That(manager.Storage.activeBuffs.Count, Is.EqualTo(3));
+        var statuses = new List<ActiveBuff>(); player.GetActiveStatuses(statuses);
+        Assert.That(statuses.Count, Is.EqualTo(2));
+        Assert.That(statuses[0].remainTime, Is.EqualTo(5f));
+    }
+
+    [Test] public void DifferentGrantEffectsShareUnusedCharges()
+    {
+        var first = Effect(BuffUseLimitType.UseCount); var second = Effect(BuffUseLimitType.UseCount);
+        second.statusKey = first.statusKey;
+        var item = Asset<ItemData>(); first.Execute(Context(item)); Use(item);
+        second.Execute(Context(Asset<ItemData>()));
+        Assert.That(manager.Storage.activeBuffs.Count, Is.EqualTo(1));
+        Assert.That(manager.Storage.activeBuffs[0].remainUseCount, Is.EqualTo(5));
     }
 
     [Test] public void DirectStatusRespectsStackCapAndDurationScale()
     {
         var effect = Effect(BuffUseLimitType.Time); var item = Asset<ItemData>();
-        effect.statusInfo.stackMode = BuffStackMode.Stack; effect.statusInfo.maxStack = 2;
+        effect.lifetimeSettings.stackMode = BuffStackMode.Stack; effect.lifetimeSettings.maxStack = 2;
         for (int i = 0; i < 3; i++)
         { var context = Context(item); context.durationMultiplier = 0.5f; effect.Execute(context); }
         var active = manager.Storage.activeBuffs[0];
@@ -119,7 +147,7 @@ public sealed class AdditionalDirectStatusTests
 
     [Test] public void CleanseUsesDefinitionClassificationAndCancelsCompletion()
     {
-        var effect = Effect(BuffUseLimitType.Time); effect.status.harmful = true;
+        var effect = Effect(BuffUseLimitType.Time); effect.statusKey.harmful = true;
         int completed = 0; var context = Context();
         context.lifetime = new ItemEffectLifetime(onCompleted: () => completed++);
         effect.Execute(context); context.lifetime.Close();
@@ -140,7 +168,7 @@ public sealed class AdditionalDirectStatusTests
     [Test] public void MissingDefinitionOrTargetDoesNotRegisterAnything()
     {
         var effect = Asset<ApplyStatusEffect>(); effect.Execute(Context());
-        effect.status = Asset<StatusDefinition>(); effect.target = StatusQueryTarget.HitTarget;
+        effect.statusKey = Asset<StatusDefinition>(); effect.target = StatusQueryTarget.HitTarget;
         effect.Execute(Context()); Assert.That(manager.Storage.activeBuffs, Is.Empty);
     }
 }

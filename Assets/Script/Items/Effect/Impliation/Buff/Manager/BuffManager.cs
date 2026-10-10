@@ -280,8 +280,8 @@ public class BuffManager : MonoBehaviour
     {
         if (storage == null || effect == null || info == null || info.statusDefinition == null ||
             context == null || !context.CanContinue || target == null) return null;
-        ActiveBuff active = storage.RegisterBuff(null, info, context.sourceItemData, context.sourceBag,
-            effect, target, true, effect.showInUI);
+        ActiveBuff active = storage.RegisterStatus(info, context.sourceItemData, context.sourceBag,
+            effect, target, effect.showInUI);
         active.uiDisplayName = info.statusDefinition.displayName;
         active.uiIcon = effect.statusIcon;
         TrackBuffCompletion(active, effect, context);

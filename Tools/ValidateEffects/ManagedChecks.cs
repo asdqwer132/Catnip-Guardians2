@@ -19,6 +19,39 @@ public static class Runner {
  static void UseCompletionItem(ItemData item,BuffManager manager=null,ItemEffectContext parent=null,EquipmentBag bag=null)
   =>ItemEffectExecutor.ExecuteItem(item,Vector3.zero,Vector3.right,Vector3.up,null,bag,manager,parent,triggerSpecialItems:false);
  public static void Main(){
+ Check("direct statuses merge by status key and target across effects items and bags",()=>{
+  var storage=new BuffStorage();var key=new StatusDefinition();var target=BuffTargetHandle.Item(new ItemData());
+  var info=new BuffInfo{statusDefinition=key,duration=5,reapplyMode=BuffReapplyMode.AddRemaining,stackMode=BuffStackMode.Stack,maxStack=3};
+  var first=storage.RegisterStatus(info,new ItemData(),new EquipmentBag(),new ItemEffectData(),target,true);first.Tick(2);
+  var second=storage.RegisterStatus(info,new ItemData(),new EquipmentBag(),new ItemEffectData(),target,true);
+  True(ReferenceEquals(first,second)&&storage.activeBuffs.Count==1&&second.stack==2);Eq(second.remainTime,8);
+ });
+ Check("same direct status shares remaining uses across grant sources",()=>{
+  var storage=new BuffStorage();var info=new BuffInfo{statusDefinition=new StatusDefinition(),useLimitType=BuffUseLimitType.UseCount,
+   maxUseCount=3,reapplyMode=BuffReapplyMode.AddRemaining};var target=BuffTargetHandle.Item(new ItemData());
+  var first=storage.RegisterStatus(info,new ItemData(),null,new ItemEffectData(),target,true);first.ConsumeUse();
+  var second=storage.RegisterStatus(info,new ItemData(),null,new ItemEffectData(),target,true);
+  True(ReferenceEquals(first,second)&&second.remainUseCount==5&&storage.useCountBuffs.Count==1);
+ });
+ Check("different direct status keys and targets do not merge",()=>{
+  var storage=new BuffStorage();var info=new BuffInfo{statusDefinition=new StatusDefinition()};var target=BuffTargetHandle.Item(new ItemData());
+  storage.RegisterStatus(info,null,null,null,target,true);storage.RegisterStatus(info,null,null,null,BuffTargetHandle.Item(new ItemData()),true);
+  var other=info.Clone();other.statusDefinition=new StatusDefinition();storage.RegisterStatus(other,null,null,null,target,true);
+  True(storage.activeBuffs.Count==3);
+ });
+ Check("direct statuses never merge with ordinary modifier buffs or expired registrations",()=>{
+  var storage=new BuffStorage();var info=new BuffInfo{statusDefinition=new StatusDefinition()};var target=BuffTargetHandle.Item(new ItemData());
+  storage.RegisterBuff(null,info,null,null,new BuffEffect(),target,true,true);
+  var first=storage.RegisterStatus(info,null,null,null,target,true);True(storage.activeBuffs.Count==2);first.Tick(1);
+  var next=storage.RegisterStatus(info,null,null,null,target,true);True(!ReferenceEquals(first,next));Eq(next.remainTime,1);
+ });
+ Check("shared status lifetime mode changes synchronize categories",()=>{
+  var storage=new BuffStorage();var info=new BuffInfo{statusDefinition=new StatusDefinition(),reapplyMode=BuffReapplyMode.AddRemaining};
+  var target=BuffTargetHandle.Item(new ItemData());var first=storage.RegisterStatus(info,null,null,null,target,true);
+  info.useLimitType=BuffUseLimitType.UseCount;info.maxUseCount=2;
+  var next=storage.RegisterStatus(info,new ItemData(),null,null,target,true);
+  True(ReferenceEquals(first,next)&&storage.timedBuffs.Count==0&&storage.useCountBuffs.Count==1&&next.remainUseCount==2);
+ });
  Check("status time reapplication adds only the remaining duration",()=>{
   var info=new BuffInfo{duration=5,reapplyMode=BuffReapplyMode.AddRemaining};
   var buff=new ActiveBuff(null,info,null,null,null,null,true,false);buff.Tick(2);buff.RegisterAgain(info);

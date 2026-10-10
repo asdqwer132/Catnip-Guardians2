@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 public enum PlayerStatusList
@@ -35,6 +36,7 @@ public class StatusManager : MonoBehaviour, IBuffTarget, IDynamicBuffReceiver
     public BuffManager buffManager;
     [Header("Stat")]
     public StatusStat baseStat = new StatusStat();
+    [Tooltip("수치 Modifier가 적용된 최종 스탯입니다. 상태 키만 부여한 효과는 이 수치를 변경하지 않습니다.")]
     public StatusStat currentStat = new StatusStat();
 
     public static StatusManager Instance { get; private set; }
@@ -125,6 +127,17 @@ public class StatusManager : MonoBehaviour, IBuffTarget, IDynamicBuffReceiver
                 return currentStat.statStar > 0f;
         }
         return false;
+    }
+
+    public void GetActiveStatuses(List<ActiveBuff> results)
+    {
+        if (results == null) return;
+        results.Clear();
+        if (buffManager == null || buffManager.Storage == null) return;
+        BuffQueryContext query = BuffQueryContext.ForTarget(this);
+        foreach (ActiveBuff buff in buffManager.Storage.activeBuffs)
+            if (buff != null && !buff.IsExpired && buff.statusDefinition != null && buff.MatchesQuery(query))
+                results.Add(buff);
     }
 
 

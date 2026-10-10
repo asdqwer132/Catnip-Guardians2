@@ -36,6 +36,7 @@ public class ActiveBuff
     public BuffUseCountConsumeMode useCountConsumeMode;
 
     [NonSerialized] public BuffModifier[] modifiers;
+    [NonSerialized] internal bool isDirectStatus;
     [NonSerialized] internal string uiDisplayName;
     [NonSerialized] internal Sprite uiIcon;
     [NonSerialized] internal bool uiManagedLifetime;

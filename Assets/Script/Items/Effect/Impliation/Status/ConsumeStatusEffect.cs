@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ConsumeStatusEffect", menuName = "GameData/Items/Effects/Status/Consume Checked Status")]
+[CreateAssetMenu(fileName = "ConsumeStatusEffect", menuName = "GameData/Items/Effects/Status/Remove Checked Status (All)")]
 public sealed class ConsumeStatusEffect : ItemEffectData
 {
     [Tooltip("분기 조건에서 확인한 기존 상태만 제거합니다. 먼저 조건을 실행하세요.")]

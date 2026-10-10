@@ -19,6 +19,33 @@ public class BuffStorage
 
     public readonly List<IBuffTarget> registeredTargets = new List<IBuffTarget>();
 
+    // 상태 전용 효과는 부여 출처 대신 상태 키 + 대상 하나로 누적한다.
+    // 수치 Modifier/표식처럼 별도 실행 상태를 가진 일반 버프와는 합치지 않는다.
+    public ActiveBuff RegisterStatus(BuffInfo info, ItemData sourceItemData, EquipmentBag sourceBag,
+        ItemEffectData sourceEffectData, BuffTargetHandle target, bool showInUI)
+    {
+        if (info == null || info.statusDefinition == null || target == null) return null;
+        for (int i = 0; i < activeBuffs.Count; i++)
+        {
+            ActiveBuff same = activeBuffs[i];
+            if (same == null || same.IsExpired || !same.isDirectStatus ||
+                same.statusDefinition != info.statusDefinition || same.target == null ||
+                !same.target.SameTarget(target)) continue;
+            same.sourceItemData = sourceItemData;
+            same.sourceBag = sourceBag;
+            same.sourceEffectData = sourceEffectData;
+            same.showInUI = showInUI;
+            same.RegisterAgain(info);
+            SyncBuffCategory(same);
+            return same;
+        }
+
+        var created = new ActiveBuff(null, info, sourceItemData, sourceBag, sourceEffectData,
+            target, true, showInUI) { isDirectStatus = true };
+        AddNewBuff(created);
+        return created;
+    }
+
     public ActiveBuff RegisterBuff(
         BuffModifier[] modifiers,
         BuffInfo info,
