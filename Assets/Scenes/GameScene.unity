@@ -12884,7 +12884,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemTester
   itemss:
   - name: "\uD65C \uC0AC\uC6A9\uBC95"
-    isUse: 0
+    isUse: 1
     item:
     - {fileID: 11400000, guid: ce1c82f98da4f1e4d835d49018657ff8, type: 2}
     - {fileID: 11400000, guid: f5c0a85f81b4a6341b823365aa908815, type: 2}
@@ -12903,7 +12903,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 189c991cd165b1944aa97b85d68ec2c9, type: 2}
     targetBagData: {fileID: 166470119}
   - name: "\uAC19\uC740 \uBC84\uD504 \uC911\uCCA9?"
-    isUse: 1
+    isUse: 0
     item:
     - {fileID: 11400000, guid: bc08961c0b27d9b49956f6d21ffbec71, type: 2}
     - {fileID: 11400000, guid: 5344d7d247f93f7458037fcbdd8dcf7a, type: 2}
@@ -25738,9 +25738,21 @@ MonoBehaviour:
   baseStat:
     statArrow: 0
     statStar: 0
+    status3: 0
+    status4: 0
+    status5: 0
+    status6: 0
+    status7: 0
+    status8: 0
   currentStat:
     statArrow: 0
     statStar: 0
+    status3: 0
+    status4: 0
+    status5: 0
+    status6: 0
+    status7: 0
+    status8: 0
 --- !u!1001 &1544342453
 PrefabInstance:
   m_ObjectHideFlags: 0

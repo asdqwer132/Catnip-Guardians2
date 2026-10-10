@@ -6,6 +6,12 @@ public enum PlayerStatusList
 {
     arrow = 0,
     star  = 1,
+    status3 = 2,
+    status4 = 2,
+    status5 = 2,
+    status6 = 2,
+    status7 = 2,
+    status8 = 2,
 }
 [Serializable]
 public class StatusStat : IGameStat<StatusStat>
@@ -13,13 +19,25 @@ public class StatusStat : IGameStat<StatusStat>
     [Header("Stat")]
     public float statArrow;
     public float statStar;
+    public float status3;
+    public float status4;
+    public float status5;
+    public float status6;
+    public float status7;
+    public float status8;
 
     public StatusStat Clone()
     {
         return new StatusStat
         {
             statArrow = statArrow,
-            statStar = statStar
+            statStar = statStar,
+            status3 = status3,
+            status4 = status4,
+            status5 = status5,
+            status6 = status6,
+            status7 = status7,
+            status8 = status8,
         };
     }
 
@@ -27,6 +45,12 @@ public class StatusStat : IGameStat<StatusStat>
     {
         statArrow = Mathf.Max(0f, statArrow);
         statStar = Mathf.Max(0f, statStar);
+        status3 = Mathf.Max(0f, status3);
+        status4 = Mathf.Max(0f, status4);
+        status5 = Mathf.Max(0f, status5);
+        status6 = Mathf.Max(0f, status6);
+        status7 = Mathf.Max(0f, status7);
+        status8 = Mathf.Max(0f, status8);
     }
 }
 [BuffTargetGroups("PlayerStatus")]

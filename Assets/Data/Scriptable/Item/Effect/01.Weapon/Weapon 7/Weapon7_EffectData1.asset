@@ -9,12 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b250f045bef3cf34fbfec8a0516c81f9, type: 3}
+  m_Script: {fileID: 11500000, guid: eca5d8d4f8c6437e9e7bdbeca1539bd4, type: 3}
   m_Name: Weapon7_EffectData1
-  m_EditorClassIdentifier: Assembly-CSharp::BuffEffect
+  m_EditorClassIdentifier: Assembly-CSharp::ApplyStatusEffect
   conditionMode: 0
   conditions: []
-  visualData: {fileID: 11400000, guid: 7c0d05a6a40fc5c449588f183307a9ec, type: 2}
+  visualData: {fileID: 0}
   impactVfxPrefab: {fileID: 0}
   impactBaseScale: {x: 1, y: 1, z: 1}
   scaleImpactVfxByRadius: 1
@@ -22,41 +22,18 @@ MonoBehaviour:
   audioSource: 
   impactVfxLifeTime: 1
   endVisualData: {fileID: 0}
-  targetResolver: {fileID: 11400000, guid: f3ff37221a9bf2f43a5ee69b82a95df8, type: 2}
-  buffInfo:
+  statusKey: {fileID: 11400000, guid: 1ac513d3d3509ab4c919fd3cba29d25e, type: 2}
+  target: 0
+  lifetimeSettings:
     statusDefinition: {fileID: 0}
-    stackMode: 0
-    maxStack: 1
-    applyTiming: 1
+    stackMode: 1
+    maxStack: 3
+    reapplyMode: 1
+    applyTiming: 0
     useLimitType: 1
-    duration: 5
+    duration: 1
     maxUseCount: 1
     useCountConsumeMode: 1
-    consumeItems:
-    - {fileID: 11400000, guid: 70bf65ee269e06f42869590d93bd318d, type: 2}
-    - {fileID: 11400000, guid: f5c0a85f81b4a6341b823365aa908815, type: 2}
-    - {fileID: 11400000, guid: 25070a8f7d2957849928ee59bab08e8c, type: 2}
-  includeSelf: 0
-  harmful: 0
-  dispellable: 1
-  flags: []
-  buffIcon: {fileID: 21300000, guid: ea15798493779e740a2ba93e5223c3dc, type: 3}
+    consumeItems: []
   showInUI: 1
-  modifiers:
-  - {fileID: 7971682703244128378}
---- !u!114 &7971682703244128378
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57bb8c5d3dc35cf4db784fd698670410, type: 3}
-  m_Name: Weapon7_BuffModifer Copy
-  m_EditorClassIdentifier: Assembly-CSharp::FloatFieldBuffModifier
-  targetStatTypeName: StatusStat
-  fieldName: statArrow
-  addValue: 1
-  multiplyValue: 0
+  statusIcon: {fileID: 21300000, guid: ea15798493779e740a2ba93e5223c3dc, type: 3}
