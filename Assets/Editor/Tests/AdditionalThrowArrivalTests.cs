@@ -143,6 +143,49 @@ public sealed class AdditionalThrowArrivalTests
     }
 
     [Test]
+    public void DirectionRotationFollowsArcAndOverridesSpinThroughArrival()
+    {
+        ItemThrowMover mover = Mover();
+        mover.faceMoveDirection = true; mover.spinWhileMoving = true;
+        mover.directionAngleOffset = 0f; mover.autoArcHeightByDistance = false;
+        mover.arcHeight = 2f; mover.arcPeakProgress = 0.5f;
+        mover.InitMove(Vector3.zero, new Vector3(4f, 0f, 0f), 1f, null);
+        Assert.That(Vector3.Angle(mover.transform.right, new Vector3(4f, 8f, 0f)), Is.LessThan(0.01f));
+        mover.Tick(0.5f);
+        Assert.That(Vector3.Angle(mover.transform.right, Vector3.right), Is.LessThan(0.01f));
+        mover.Tick(0.5f);
+        Assert.That(Vector3.Angle(mover.transform.right, new Vector3(4f, -8f, 0f)), Is.LessThan(0.01f));
+    }
+
+    [Test]
+    public void DirectionRotationSupportsLeftVerticalAndStationaryThrowsWithOffset()
+    {
+        ItemThrowMover mover = Mover(); mover.faceMoveDirection = true;
+        mover.autoArcHeightByDistance = false; mover.arcHeight = 0f;
+        mover.InitMove(Vector3.zero, Vector3.left, 1f, null);
+        Assert.That(Vector3.Angle(mover.transform.up, Vector3.left), Is.LessThan(0.01f));
+        mover.InitMove(Vector3.zero, Vector3.up, 1f, null);
+        mover.Tick(0.25f);
+        Assert.That(Vector3.Angle(mover.transform.up, Vector3.up), Is.LessThan(0.01f));
+        Quaternion previous = mover.transform.rotation;
+        mover.InitMove(Vector3.zero, Vector3.zero, 1f, null);
+        mover.Tick(1f);
+        Assert.That(Quaternion.Angle(previous, mover.transform.rotation), Is.LessThan(0.01f));
+    }
+
+    [Test]
+    public void DefaultRotationStillSpinsAndCanBeDisabled()
+    {
+        ItemThrowMover mover = Mover(); Assert.That(mover.faceMoveDirection, Is.False);
+        mover.spinSpeed = 90f;
+        mover.InitMove(Vector3.zero, Vector3.right, 1f, null);
+        mover.Tick(0.5f);
+        Assert.That(Mathf.DeltaAngle(mover.transform.eulerAngles.z, 45f), Is.EqualTo(0f).Within(0.01f));
+        mover.spinWhileMoving = false; mover.Tick(0.25f);
+        Assert.That(Mathf.DeltaAngle(mover.transform.eulerAngles.z, 45f), Is.EqualTo(0f).Within(0.01f));
+    }
+
+    [Test]
     public void ExplicitFlightTimeBypassesRandomAndWeightSettings()
     {
         ItemThrowMover mover = Mover(); int arrivals = 0;

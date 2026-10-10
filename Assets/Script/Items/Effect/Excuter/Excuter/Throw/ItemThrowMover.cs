@@ -34,6 +34,10 @@ public class ItemThrowMover : MonoBehaviour
     [Header("Rotation")]
     public bool spinWhileMoving = true;
     public float spinSpeed = 540f;
+    [Tooltip("포물선의 현재 이동 방향을 바라봅니다. 켜면 기본 스핀보다 우선합니다.")]
+    public bool faceMoveDirection;
+    [Tooltip("이동 방향 회전 보정(도). 위쪽을 바라보는 스프라이트는 -90, 오른쪽은 0.")]
+    public float directionAngleOffset = -90f;
 
     [Header("Destroy")]
     public bool destroyOnArrive = true;
@@ -78,7 +82,7 @@ public class ItemThrowMover : MonoBehaviour
         progress = Mathf.Clamp01(progress);
 
         MoveProjectileArc(progress);
-        UpdateRotation(deltaTime);
+        UpdateRotation(deltaTime, progress);
     }
 
     public void Init(
@@ -128,6 +132,8 @@ public class ItemThrowMover : MonoBehaviour
 
         timer = 0f;
         isMoving = true;
+        if (faceMoveDirection)
+            UpdateRotation(0f, 0f);
     }
     public void SetSprite(Sprite itemSprite)
     {
@@ -206,8 +212,22 @@ public class ItemThrowMover : MonoBehaviour
         );
     }
 
-    private void UpdateRotation(float deltaTime)
+    private void UpdateRotation(float deltaTime, float progress)
     {
+        if (faceMoveDirection)
+        {
+            float k = Mathf.Clamp(arcPeakProgress, 0.1f, 0.9f);
+            // Derivative of the same interpolating parabola used for position.
+            float dy = startPosition.y * (2f * progress - k - 1f) / k
+                + peakY * (2f * progress - 1f) / (k * (k - 1f))
+                + targetPosition.y * (2f * progress - k) / (1f - k);
+            Vector2 direction = new Vector2(targetPosition.x - startPosition.x, dy);
+            if (direction.sqrMagnitude > 0.000001f)
+                transform.rotation = Quaternion.Euler(0f, 0f,
+                    Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + directionAngleOffset);
+            return;
+        }
+
         if (!spinWhileMoving)
             return;
 
@@ -228,6 +248,8 @@ public class ItemThrowMover : MonoBehaviour
         isMoving = false;
 
         transform.position = targetPosition;
+        if (faceMoveDirection)
+            UpdateRotation(0f, 1f);
 
         Action arrived = onArrive;
         onArrive = null;
