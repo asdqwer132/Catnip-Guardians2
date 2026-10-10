@@ -24,19 +24,39 @@ MonoBehaviour:
   endVisualData: {fileID: 0}
   targetResolver: {fileID: 11400000, guid: f3ff37221a9bf2f43a5ee69b82a95df8, type: 2}
   buffInfo:
+    statusDefinition: {fileID: 0}
     stackMode: 0
     maxStack: 1
     applyTiming: 1
-    useLimitType: 0
+    useLimitType: 1
     duration: 5
-    maxUseCount: 3
-    useCountConsumeMode: 2
+    maxUseCount: 1
+    useCountConsumeMode: 1
     consumeItems:
     - {fileID: 11400000, guid: 70bf65ee269e06f42869590d93bd318d, type: 2}
     - {fileID: 11400000, guid: f5c0a85f81b4a6341b823365aa908815, type: 2}
     - {fileID: 11400000, guid: 25070a8f7d2957849928ee59bab08e8c, type: 2}
   includeSelf: 0
-  buffIcon: {fileID: 21300000, guid: 3a29433eec60bd94c91977f3d16a8a72, type: 3}
+  harmful: 0
+  dispellable: 1
+  flags: []
+  buffIcon: {fileID: 21300000, guid: ea15798493779e740a2ba93e5223c3dc, type: 3}
   showInUI: 1
   modifiers:
-  - {fileID: 11400000, guid: 2b1ed47c413dc8f499436e988e0bcadc, type: 2}
+  - {fileID: 7971682703244128378}
+--- !u!114 &7971682703244128378
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57bb8c5d3dc35cf4db784fd698670410, type: 3}
+  m_Name: Weapon7_BuffModifer Copy
+  m_EditorClassIdentifier: Assembly-CSharp::FloatFieldBuffModifier
+  targetStatTypeName: StatusStat
+  fieldName: statArrow
+  addValue: 1
+  multiplyValue: 0

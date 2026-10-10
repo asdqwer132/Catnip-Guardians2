@@ -12,16 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d07875e6312a2984dac8a27131630342, type: 3}
   m_Name: Weapon3_EffectData1
   m_EditorClassIdentifier: Assembly-CSharp::DamageAreaAttackEffect
+  conditionMode: 0
+  conditions: []
+  visualData: {fileID: 0}
   impactVfxPrefab: {fileID: 0}
   impactBaseScale: {x: 1, y: 1, z: 1}
   scaleImpactVfxByRadius: 1
   useAnimatorClipLifeTime: 1
   audioSource: 
   impactVfxLifeTime: 1
+  endVisualData: {fileID: 0}
   attackStat:
-    damageAreaPower: 0
-    damageAreaInterval: 0.5
-    damageAreaRange: 0.5
-    damageAreaLifeTime: 0.5
+    damageAreaPower: 10
+    damageAreaInterval: 0
+    damageAreaRange: 1
+    damageAreaLifeTime: 0.1
   attackPrefab: {fileID: -7298374742604618283, guid: ba1a65fc3cffa9e41a41bdb190df387d, type: 3}
   damageApplyMode: 0
+  onHitEffects: []
+  hitEffectApplyMode: 0

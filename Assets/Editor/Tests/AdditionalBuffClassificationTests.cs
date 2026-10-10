@@ -77,7 +77,7 @@ public sealed class AdditionalBuffClassificationTests
         var cleanse = Asset<CleanseEffect>(); cleanse.targetResolver = tagged.targetResolver;
         cleanse.filter.mode = BuffCleanseMode.Flags; cleanse.filter.flags = new[] { selected };
         cleanse.Execute(Context(target.gameObject));
-        Assert.That(manager.Storage.activeBuffs, Does.Not.Contain(matched));
+        //Assert.That(manager.Storage.activeBuffs, Does.Not.Contain(matched));
         Assert.That(manager.Storage.activeBuffs, Is.EquivalentTo(new[] { kept, keptTarget }));
     }
 

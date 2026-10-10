@@ -21,17 +21,18 @@ MonoBehaviour:
   useAnimatorClipLifeTime: 1
   audioSource: 
   impactVfxLifeTime: 1
-  mode: 1
+  endVisualData: {fileID: 0}
+  mode: 0
   centerSource: 0
   movementStat:
-    range: 3
-    strength: 1
-    duration: 5
+    range: 2
+    strength: 10
+    duration: 0.1
     maxDistance: 3
     pullStopDistance: 0.15
-    areaDuration: 5
+    areaDuration: 0.1
     tickInterval: 0.1
-  executionMode: 1
+  executionMode: 0
   holdAtCenter: 1
   releaseOnExit: 1
   matchAreaVisualLifetime: 1

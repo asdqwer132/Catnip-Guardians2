@@ -25,7 +25,7 @@ MonoBehaviour:
   steps:
   - entries:
     - item: {fileID: 11400000, guid: 48b5d4498bd303c47be8dde313fffbee, type: 2}
-      count: 1
+      count: 3
     items: []
     onImpactEffects: []
     effectOnlyCount: 1
@@ -37,11 +37,12 @@ MonoBehaviour:
   selection: 0
   repeatStat:
     itemRepeatCount: 1
-    itemRepeatInterval: 0.5
+    itemRepeatInterval: 0.1
     itemRepeatStepIntervalMultiplier: 1
     itemRepeatForwardOffset: 1
     itemRepeatSideOffset: 0
     itemRepeatRadius: 1
+    itemRepeatShotgunRadiusOffset: 0
     itemRepeatSpreadAngle: 120
     itemRepeatDirectionAngle: 0
     itemRepeatProjectileCountMultiplier: 1
@@ -50,12 +51,15 @@ MonoBehaviour:
     itemRepeatBombDelay: 0
     itemRepeatBombLifetime: 5
     itemRepeatTriggerRadius: 0.5
-  placement: 1
+  placement: 4
   directionMode: 0
   fixedWorldDirection: {x: 1, y: 0}
+  shotgunDistribution: 1
+  spreadStartMode: 0
+  clockwiseSpread: 0
   startPosition: 0
   throwItems: 1
-  projectilePrefab: {fileID: 2153336256934016628, guid: 7d27764ab7c84ac489fdc540376ba873, type: 3}
+  projectilePrefab: {fileID: 2153336256934016628, guid: fdaf4de901a0c524ea7022c2b2c88456, type: 3}
   projectileSprite: {fileID: 0}
   showTargetRange: 1
   targetRangeIndicatorPrefab: {fileID: 7885248462748341646, guid: f3f56727797bdb640b4b975b776cdacd, type: 3}

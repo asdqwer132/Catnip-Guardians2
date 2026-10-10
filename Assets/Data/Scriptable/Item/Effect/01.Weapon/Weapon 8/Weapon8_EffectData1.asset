@@ -15,11 +15,14 @@ MonoBehaviour:
   conditionMode: 0
   conditions:
   - {fileID: 11400000, guid: 3e0ec680d3672814aae7e325a25830cb, type: 2}
+  visualData: {fileID: 0}
   impactVfxPrefab: {fileID: 0}
   impactBaseScale: {x: 1, y: 1, z: 1}
   scaleImpactVfxByRadius: 1
   useAnimatorClipLifeTime: 1
   audioSource: 
   impactVfxLifeTime: 1
+  endVisualData: {fileID: 0}
   effectWhenTrue: {fileID: 11400000, guid: 00f2c94a473f2fa4fa7e9f76b80399ea, type: 2}
-  effectWhenFalse: {fileID: 11400000, guid: a2bb0540da733db43bf139222aa4bba4, type: 2}
+  effectWhenFalse: {fileID: 11400000, guid: 860bd383df3ae8f46ad00f54a9dd029c, type: 2}
+  freezeBranchAtPrepare: 0
