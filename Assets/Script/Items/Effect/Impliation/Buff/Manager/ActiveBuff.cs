@@ -17,6 +17,9 @@ public class ActiveBuff
 
     [Header("Runtime")]
     public StatusDefinition statusDefinition;
+    public bool harmful;
+    public bool dispellable = true;
+    public BuffFlagDefinition[] flags;
     public BuffApplyTiming applyTiming = BuffApplyTiming.Snapshot;
     public BuffUseLimitType useLimitType = BuffUseLimitType.Time;
     public BuffStackMode stackMode = BuffStackMode.Refresh;
@@ -33,6 +36,10 @@ public class ActiveBuff
     public BuffUseCountConsumeMode useCountConsumeMode;
 
     [NonSerialized] public BuffModifier[] modifiers;
+    [NonSerialized] internal string uiDisplayName;
+    [NonSerialized] internal Sprite uiIcon;
+    [NonSerialized] internal bool uiManagedLifetime;
+    [NonSerialized] internal bool uiEnded;
     [NonSerialized] private HashSet<ItemData> consumeItemSet;
     internal readonly ItemEffectCompletionGroup completion = new ItemEffectCompletionGroup();
     internal BuffStorage StorageOwner { get; set; }
@@ -52,6 +59,7 @@ public class ActiveBuff
     {
         get
         {
+            if (uiManagedLifetime) return uiEnded;
             if (IsInfinite)
                 return false;
 
@@ -93,6 +101,12 @@ public class ActiveBuff
             info = new BuffInfo();
 
         statusDefinition = info.statusDefinition;
+        BuffEffect effect = sourceEffectData as BuffEffect;
+        harmful = (effect != null && effect.harmful) || (statusDefinition != null && statusDefinition.harmful);
+        dispellable = (effect == null || effect.dispellable) &&
+            (statusDefinition == null || statusDefinition.dispellable);
+        // 실행 중 에셋의 배열을 변경해도 이미 등록된 버프의 분류는 유지한다.
+        flags = effect != null && effect.flags != null ? (BuffFlagDefinition[])effect.flags.Clone() : null;
         applyTiming = info.applyTiming;
         useLimitType = info.useLimitType;
         stackMode = info.stackMode;
@@ -191,6 +205,29 @@ public class ActiveBuff
         return maxTime <= 0f
             ? 0f
             : remainTime / maxTime;
+    }
+
+    public string GetUIName()
+    {
+        if (!string.IsNullOrWhiteSpace(uiDisplayName)) return uiDisplayName;
+        if (sourceItemData != null) return sourceItemData.GetDataName();
+        return sourceEffectData != null ? sourceEffectData.name : "Buff";
+    }
+
+    public Sprite GetUIIcon()
+    {
+        Sprite icon = uiIcon;
+        BuffEffect effect = sourceEffectData as BuffEffect;
+        if (icon == null && effect != null) icon = effect.buffIcon;
+        return icon != null ? icon : (sourceItemData != null ? sourceItemData.icon : null);
+    }
+
+    public bool HasFlag(BuffFlagDefinition flag)
+    {
+        if (flag == null || flags == null) return false;
+        foreach (BuffFlagDefinition candidate in flags)
+            if (candidate == flag) return true;
+        return false;
     }
 
     public bool MatchesQuery(BuffQueryContext query)

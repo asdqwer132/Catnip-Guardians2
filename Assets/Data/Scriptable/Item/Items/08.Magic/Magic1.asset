@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Magic1
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 8761859165611830717, guid: 4c5bfb02e0eafed49be60bd9a257042e, type: 3}
+  icon: {fileID: 21300000, guid: 4c5bfb02e0eafed49be60bd9a257042e, type: 3}
   data:
   - language: 1
     dataName: "\uB9C8\uBC95 \uC2A4\uD06C\uB864"
@@ -28,8 +28,13 @@ MonoBehaviour:
   grade: 0
   category: 0
   series: 8
+  tags: []
   weight: 1
   cooldown: 1
   effectDatas: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

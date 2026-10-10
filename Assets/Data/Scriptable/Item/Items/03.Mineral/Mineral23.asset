@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Mineral23
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 2957294874993281849, guid: b768465de9143994f8d04d38b9977ddd, type: 3}
+  icon: {fileID: 21300000, guid: b768465de9143994f8d04d38b9977ddd, type: 3}
   data:
   - language: 1
     dataName: "\uC2EC\uD64D\uC8FC\uAD34"
@@ -28,8 +28,13 @@ MonoBehaviour:
   grade: 1
   category: 0
   series: 3
+  tags: []
   weight: 1
   cooldown: 1
   effectDatas: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

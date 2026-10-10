@@ -128,6 +128,7 @@ def compile_files():
     files += list((ROOT / 'Assets/Editor/Tests').rglob('*.cs'))
     files = [path for path in files if '/UI/' not in str(path) and path.name not in
              ('ItemUseManager.cs', 'BagSelectManager.cs', 'ItemUsePositionProvider.cs')]
+    files += list((ROOT / 'Assets/Script/Items/Effect/Impliation/Buff/UI').glob('*.cs'))
     extra = ('Items/Upgrade/Equipment/BagData.cs', 'Items/Upgrade/Inventory/InventoryItem.cs',
              'Items/Upgrade/Inventory/Search/ISearchable.cs', 'Items/Upgrade/Skill/Reward/Unlock/IUnlockable.cs',
              'Items/Upgrade/Skill/Reward/Unlock/DataType.cs')
@@ -158,13 +159,19 @@ def main():
     selected = ('Impliation/IStat.cs', 'Excuter/Data/EffectStatUtility.cs', 'Excuter/Data/EffectExecutionScale.cs',
                 'Excuter/Data/ItemEffectContext.cs', 'Excuter/Data/ItemEffectPlan.cs', 'Excuter/Data/ItemEffectLifetime.cs',
                 'Excuter/Excuter/BagItemCooldownController.cs', 'Excuter/Excuter/Throw/ItemEffectExecutor.cs',
+                'Excuter/Excuter/Throw/ItemThrowArrivalTiming.cs',
                 'Impliation/Attack/DamageArea/DamageAreaAttackStat.cs',
                 'Impliation/Cooldown/ItemCooldownStat.cs', 'Impliation/Cooldown/BagCooldownStat.cs',
                 'Impliation/Buff/Data/Modifier/BuffModifier.cs', 'Impliation/Buff/Data/Modifier/FloatFieldBuffModifier.cs',
                 'Impliation/Buff/Data/BuffModeEnums.cs', 'Impliation/Buff/Data/Resolver/IBuffTarget.cs',
+                'Impliation/Buff/Data/BuffInfo.cs', 'Impliation/Buff/Data/BuffFlagDefinition.cs',
+                'Impliation/Buff/Manager/ActiveBuff.cs', 'Impliation/Buff/Manager/BuffStorage.cs',
+                'Impliation/Buff/Manager/BuffRemovalReason.cs',
+                'Impliation/Status/StatusDefinition.cs', 'Impliation/Status/BuffCleanseFilter.cs',
                 'Impliation/Buff/Data/Resolver/BuffTargetGroupNameAttribute.cs',
                 'Impliation/Buff/Manager/BuffQueryContext.cs', 'Impliation/Buff/Manager/BuffTargetHandle.cs',
-                'Impliation/Repeat/RepeatItemStat.cs', 'Impliation/Attack/HitEffect/HitEffectApplyMode.cs',
+                'Impliation/Repeat/RepeatItemStat.cs', 'Impliation/Repeat/AttackPlacement.cs',
+                'Impliation/Attack/HitEffect/HitEffectApplyMode.cs',
                 'Impliation/Attack/HitEffect/HitEffectContext.cs', 'Impliation/Attack/HitEffect/HitEffectDispatcher.cs',
                 'Impliation/Random/WeightedRandomEffect.cs', 'Impliation/EnemyControl/TimeStopRuntime.cs')
     pure_dir = work / 'managed'

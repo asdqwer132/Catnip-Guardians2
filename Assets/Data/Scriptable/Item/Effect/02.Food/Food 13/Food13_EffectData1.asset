@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec1afcbcbf3541ad9464cd91808d0b03, type: 3}
+  m_Name: Food13_EffectData1
+  m_EditorClassIdentifier: Assembly-CSharp::RepeatItemEffect
+  conditionMode: 0
+  conditions: []
+  visualData: {fileID: 0}
+  impactVfxPrefab: {fileID: 0}
+  impactBaseScale: {x: 1, y: 1, z: 1}
+  scaleImpactVfxByRadius: 1
+  useAnimatorClipLifeTime: 1
+  audioSource: 
+  impactVfxLifeTime: 1
+  endVisualData: {fileID: 0}
+  steps:
+  - entries:
+    - item: {fileID: 11400000, guid: 44cd533dda619cb43bfe907cd2f02c82, type: 2}
+      count: 10
+    items: []
+    onImpactEffects: []
+    effectOnlyCount: 1
+    overridePlacement: 0
+    placement: 0
+    travelMode: 0
+    impactTrigger: 0
+    intervalAfter: 0.5
+  selection: 0
+  repeatStat:
+    itemRepeatCount: 1
+    itemRepeatInterval: 0.5
+    itemRepeatStepIntervalMultiplier: 1
+    itemRepeatForwardOffset: 1
+    itemRepeatSideOffset: 1.5
+    itemRepeatRadius: 3
+    itemRepeatShotgunRadiusOffset: 0.25
+    itemRepeatSpreadAngle: 120
+    itemRepeatDirectionAngle: 0
+    itemRepeatProjectileCountMultiplier: 1
+    itemRepeatFlightTime: 0.3
+    itemRepeatArcHeight: 0.8
+    itemRepeatBombDelay: 0
+    itemRepeatBombLifetime: 5
+    itemRepeatTriggerRadius: 0.5
+  placement: 4
+  directionMode: 0
+  fixedWorldDirection: {x: 1, y: 0}
+  startPosition: 0
+  throwItems: 1
+  projectilePrefab: {fileID: 2153336256934016628, guid: 7d27764ab7c84ac489fdc540376ba873, type: 3}
+  projectileSprite: {fileID: 0}
+  showTargetRange: 0
+  targetRangeIndicatorPrefab: {fileID: 7885248462748341646, guid: f3f56727797bdb640b4b975b776cdacd, type: 3}
+  triggerSpecialItemsForChildren: 0
+  overrideProjectileMotion: 0
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  firstStepAtOrigin: 0
+  onStartEffects: []
+  afterLastImpactEffects: []
+  items: []

@@ -56,11 +56,90 @@ public sealed class CombatEffectTests
     }
 
     [Test]
+    public void ShotgunOffsetScattersFourDistancesWhileKeepingTheCone()
+    {
+        Random.State before = Random.state;
+        try
+        {
+            Random.InitState(147);
+            Vector3 origin = new Vector3(10f, -3f, 0f);
+            float shortest = float.MaxValue, longest = 0f;
+            for (int i = 0; i < 4; i++)
+            {
+                Vector3 offset = AttackPlacement.Position(AttackPlacementMode.Shotgun, origin, Vector3.right,
+                    i, 4, 0f, 0f, 5f, 30f, shotgunRadiusOffset: 1f) - origin;
+                Assert.That(offset.magnitude, Is.InRange(3.9999f, 6.0001f));
+                Assert.That(Vector3.Angle(Vector3.right, offset), Is.LessThanOrEqualTo(15.0001f));
+                shortest = Mathf.Min(shortest, offset.magnitude);
+                longest = Mathf.Max(longest, offset.magnitude);
+            }
+            Assert.That(longest - shortest, Is.GreaterThan(0.0001f));
+        }
+        finally { Random.state = before; }
+    }
+
+    [Test]
+    public void ShotgunOffsetScalesWithRangeAndDoesNotChangeOtherPlacements()
+    {
+        RepeatItemStat asset = new RepeatItemStat { itemRepeatRadius = 5f, itemRepeatShotgunRadiusOffset = 1f };
+        ItemEffectContext context = Context(); context.rangeMultiplier = 2f;
+        RepeatItemStat scaled = EffectExecutionScaling.Apply(asset, context);
+        Assert.That(scaled.itemRepeatRadius, Is.EqualTo(10f));
+        Assert.That(scaled.itemRepeatShotgunRadiusOffset, Is.EqualTo(2f));
+        Assert.That(asset.itemRepeatShotgunRadiusOffset, Is.EqualTo(1f));
+        Vector3 first = AttackPlacement.Position(AttackPlacementMode.CircleEven, Vector3.zero, Vector3.right,
+            1, 4, 0f, 0f, 5f, 360f);
+        Vector3 withOffset = AttackPlacement.Position(AttackPlacementMode.CircleEven, Vector3.zero, Vector3.right,
+            1, 4, 0f, 0f, 5f, 360f, shotgunRadiusOffset: 10f);
+        Assert.That(withOffset, Is.EqualTo(first));
+    }
+
+    [Test]
     public void FullCircleDoesNotOverlapFirstAndLastPoint()
     {
         Vector3 first = AttackPlacement.Position(AttackPlacementMode.CircleEven, Vector3.zero, Vector3.right, 0, 4, 0f, 0f, 2f, 360f);
         Vector3 last = AttackPlacement.Position(AttackPlacementMode.CircleEven, Vector3.zero, Vector3.right, 3, 4, 0f, 0f, 2f, 360f);
         Assert.That((first - last).sqrMagnitude, Is.GreaterThan(0.01f));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void EvenShotgunStartsInChosenDirectionAndSweepsWithoutOverlap(bool clockwise)
+    {
+        Vector3 forward = Vector3.up;
+        for (int i = 0; i < 4; i++)
+        {
+            Vector3 point = AttackPlacement.Position(AttackPlacementMode.Shotgun, Vector3.zero, forward,
+                i, 4, 0f, 0f, 5f, 360f, shotgunDistribution: AttackSpreadDistribution.Even,
+                spreadStartMode: AttackSpreadStartMode.FromDirection, clockwiseSpread: clockwise);
+            Vector3 expected = Quaternion.Euler(0f, 0f, (clockwise ? -1f : 1f) * 90f * i) * forward * 5f;
+            Assert.That((point - expected).sqrMagnitude, Is.LessThan(0.00001f));
+        }
+    }
+
+    [TestCase(AttackDirectionMode.ThrownDirection, false)]
+    [TestCase(AttackDirectionMode.FixedWorldDirection, true)]
+    public void RepeatRunnerUsesDistributionStartAndDirectionSettings(AttackDirectionMode directionMode, bool clockwise)
+    {
+        CombatEffectRecordingEffect hits = Asset<CombatEffectRecordingEffect>();
+        RepeatItemEffect effect = Asset<RepeatItemEffect>();
+        effect.repeatStat.itemRepeatCount = 2; effect.repeatStat.itemRepeatInterval = 0;
+        effect.repeatStat.itemRepeatRadius = 5f; effect.repeatStat.itemRepeatSpreadAngle = 90f;
+        effect.throwItems = false; effect.placement = AttackPlacementMode.Shotgun;
+        effect.shotgunDistribution = AttackSpreadDistribution.Even;
+        effect.spreadStartMode = AttackSpreadStartMode.FromDirection;
+        effect.directionMode = directionMode; effect.fixedWorldDirection = Vector2.left;
+        effect.clockwiseSpread = clockwise;
+        effect.steps = new[] { new RepeatItemStep { effectOnlyCount = 4, onImpactEffects = new ItemEffectData[] { hits } } };
+        ItemEffectContext context = Context(); context.direction = Vector3.up;
+        Host().AddComponent<RepeatItemRunner>().Init(effect, context);
+        Assert.That(hits.calls.Count, Is.EqualTo(4));
+        Vector3 forward = directionMode == AttackDirectionMode.ThrownDirection ? Vector3.up : Vector3.left;
+        for (int i = 0; i < 4; i++)
+        {
+            Vector3 expected = Vector3.right + Quaternion.Euler(0f, 0f, (clockwise ? -1f : 1f) * 30f * i) * forward * 5f;
+            Assert.That((hits.calls[i].targetPosition - expected).sqrMagnitude, Is.LessThan(0.00001f));
+        }
     }
 
     [Test]

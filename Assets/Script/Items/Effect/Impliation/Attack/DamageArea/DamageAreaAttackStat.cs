@@ -6,10 +6,11 @@ public class DamageAreaAttackStat : IGameStat<DamageAreaAttackStat>, IEffectScal
 {
     [Header("Damage Area")]
     public float damageAreaPower = 0f;
-    public float damageAreaInterval = 0.5f;
-    public float damageAreaRange = 0.5f;
-    public float damageAreaLifeTime = 0.5f;
+    public float damageAreaInterval = 0f;
+    [Min(0.1f)] public float damageAreaRange = 0.5f;
+    [Min(0.1f)] public float damageAreaLifeTime = 0.1f;
 
+    //
 
     public DamageAreaAttackStat Clone()
     {

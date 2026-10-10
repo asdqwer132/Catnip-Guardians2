@@ -50,6 +50,37 @@ MonoBehaviour:
   speed: 10
   arriveTime: 1
   maxMoveTime: 3
+  arrivalTiming:
+    mode: 0
+    minArriveTime: 1
+    maxArriveTime: 3
+    randomOffset: 0.15
+    secondsPerWeight: 0.2
+    distribution: 3
+    customCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 1
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 1
+        outSlope: 1
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
   arcHeight: 2
   autoArcHeightByDistance: 1
   minArcHeight: 0.5

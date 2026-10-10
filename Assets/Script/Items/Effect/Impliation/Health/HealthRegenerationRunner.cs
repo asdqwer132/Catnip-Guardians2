@@ -13,6 +13,7 @@ public sealed class HealthRegenerationRunner : MonoBehaviour
         public float elapsed;
         public float nextTick;
         public float duration;
+        public EffectBuffUIHandle buffUI;
     }
     private Health health;
     private readonly List<State> states = new List<State>();
@@ -29,7 +30,8 @@ public sealed class HealthRegenerationRunner : MonoBehaviour
         {
             effect = effect, context = context.Copy(health.transform.position, context.direction),
             lease = context.RetainLifetime(), lifeId = health.LifeId,
-            nextTick = stat.regenerationInterval, duration = stat.regenerationDuration
+            nextTick = stat.regenerationInterval, duration = stat.regenerationDuration,
+            buffUI = effect.buffUI != null ? effect.buffUI.Register(effect, context, health, stat.regenerationDuration) : null
         };
         states.Add(state);
         if (effect.firstTick == RegenerationFirstTick.Immediate) Heal(state, stat);
@@ -54,6 +56,7 @@ public sealed class HealthRegenerationRunner : MonoBehaviour
             if (!valid) { Remove(state, false); continue; }
             if (health.AreStatusTimersStopped) continue;
             state.elapsed += deltaTime;
+            if (state.buffUI != null) state.buffUI.SetRemaining(state.duration - state.elapsed);
             int budget = 128;
             while (state.nextTick <= state.elapsed + 0.00001f && state.nextTick <= state.duration + 0.00001f && budget-- > 0)
             {
@@ -77,13 +80,18 @@ public sealed class HealthRegenerationRunner : MonoBehaviour
     private void Remove(State state, bool completed)
     {
         if (!states.Remove(state)) return;
+        if (state.buffUI != null) state.buffUI.Dispose();
         if (state.lease != null) state.lease.Finish(completed);
     }
     private void OnDisable()
     {
         State[] removed = states.ToArray();
         states.Clear();
-        for (int i = 0; i < removed.Length; i++) if (removed[i].lease != null) removed[i].lease.Cancel();
+        for (int i = 0; i < removed.Length; i++)
+        {
+            if (removed[i].buffUI != null) removed[i].buffUI.Dispose();
+            if (removed[i].lease != null) removed[i].lease.Cancel();
+        }
     }
     private void OnDestroy() { OnDisable(); }
 }

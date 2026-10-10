@@ -24,6 +24,7 @@ public class BuffManager : MonoBehaviour
     private readonly Stack<BuffItemUseSession> itemUsePool = new Stack<BuffItemUseSession>();
     private readonly List<BuffItemUseSession> itemUseStack = new List<BuffItemUseSession>();
     private readonly Dictionary<UnityEngine.Object, BuffEffect> statusMarkers = new Dictionary<UnityEngine.Object, BuffEffect>();
+    private readonly List<EffectBuffUIHandle> effectUIEntries = new List<EffectBuffUIHandle>();
     private ulong nextItemUseId;
     private int notificationDepth;
 
@@ -56,11 +57,15 @@ public class BuffManager : MonoBehaviour
         if (ticker.Tick(Time.deltaTime))
             NotifyBuffChanged(BuffNotifyScope.All);
 
+        if (PruneEffectUI()) RefreshUI();
+
         // 디버그 목록은 등록/해제 시만 갱신. 시간/횟수는 같은 ActiveBuff 참조로 확인한다.
     }
 
     private void OnDestroy()
     {
+        for (int i = 0; i < effectUIEntries.Count; i++) effectUIEntries[i].Invalidate();
+        effectUIEntries.Clear();
         if (storage != null) storage.ClearAll();
         if (instance == this)
             instance = null;
@@ -380,6 +385,9 @@ public class BuffManager : MonoBehaviour
     }
 
     public int Cleanse(BuffTargetHandle selection, bool includeModifierBuffs = true)
+        => Cleanse(selection, null, includeModifierBuffs);
+
+    public int Cleanse(BuffTargetHandle selection, BuffCleanseFilter filter, bool includeModifierBuffs = true)
     {
         if (storage == null || selection == null) return 0;
         int removed = 0;
@@ -387,8 +395,8 @@ public class BuffManager : MonoBehaviour
         for (int i = 0; i < candidates.Length; i++)
         {
             ActiveBuff buff = candidates[i];
-            StatusDefinition status = buff != null ? buff.statusDefinition : null;
-            if (buff == null || buff.StorageOwner != storage || buff.IsExpired || status == null || !status.harmful || !status.dispellable ||
+            if (buff == null || buff.StorageOwner != storage || buff.IsExpired ||
+                !(filter != null ? filter.Matches(buff) : buff.harmful && buff.dispellable) ||
                 !StatusTargetUtility.MatchesSelection(buff.target, selection)) continue;
             if (!includeModifierBuffs && StatusTargetUtility.HasModifiers(buff.modifiers)) continue;
             storage.RemoveBuff(buff, BuffRemovalReason.Cleansed);
@@ -813,7 +821,7 @@ public class BuffManager : MonoBehaviour
 
     public List<ActiveBuff> GetAllVisibleBuffs()
     {
-        return query != null ? query.GetAllVisibleBuffs() : new List<ActiveBuff>();
+        return AppendEffectUI(query != null ? query.GetAllVisibleBuffs() : new List<ActiveBuff>());
     }
 
     public List<ActiveBuff> GetNormalActiveBuffs()
@@ -823,7 +831,7 @@ public class BuffManager : MonoBehaviour
 
     public List<ActiveBuff> GetNormalVisibleBuffs()
     {
-        return query != null ? query.GetNormalVisibleBuffs() : new List<ActiveBuff>();
+        return AppendEffectUI(query != null ? query.GetNormalVisibleBuffs() : new List<ActiveBuff>());
     }
 
     public List<ActiveBuff> GetInfiniteActiveBuffs()
@@ -843,7 +851,8 @@ public class BuffManager : MonoBehaviour
 
     public List<ActiveBuff> GetVisibleBagBuffsAsList(EquipmentBag bag)
     {
-        return query != null ? query.GetBagBuffsAsList(bag, true) : new List<ActiveBuff>();
+        return AppendEffectUI(query != null ? query.GetBagBuffsAsList(bag, true) : new List<ActiveBuff>(),
+            buff => bag != null && buff.sourceBag == bag);
     }
 
     public List<ActiveBuff> GetItemBuffsAsList(ItemData itemData)
@@ -853,7 +862,8 @@ public class BuffManager : MonoBehaviour
 
     public List<ActiveBuff> GetVisibleItemBuffsAsList(ItemData itemData)
     {
-        return query != null ? query.GetItemBuffsAsList(itemData, true) : new List<ActiveBuff>();
+        return AppendEffectUI(query != null ? query.GetItemBuffsAsList(itemData, true) : new List<ActiveBuff>(),
+            buff => itemData != null && buff.sourceItemData == itemData);
     }
 
     public List<ActiveBuff> GetItemSeriesBuffsAsList(ItemSeries series)
@@ -863,7 +873,8 @@ public class BuffManager : MonoBehaviour
 
     public List<ActiveBuff> GetVisibleItemSeriesBuffsAsList(ItemSeries series)
     {
-        return query != null ? query.GetItemSeriesBuffsAsList(series, true) : new List<ActiveBuff>();
+        return AppendEffectUI(query != null ? query.GetItemSeriesBuffsAsList(series, true) : new List<ActiveBuff>(),
+            buff => series != ItemSeries.None && buff.sourceItemData != null && buff.sourceItemData.series == series);
     }
 
     public List<ActiveBuff> GetTargetBuffsAsList(IBuffTarget target)
@@ -873,7 +884,8 @@ public class BuffManager : MonoBehaviour
 
     public List<ActiveBuff> GetVisibleTargetBuffsAsList(IBuffTarget target)
     {
-        return query != null ? query.GetTargetBuffsAsList(target, true) : new List<ActiveBuff>();
+        return AppendEffectUI(query != null ? query.GetTargetBuffsAsList(target, true) : new List<ActiveBuff>(),
+            buff => buff.target != null && buff.target.MatchesTarget(target));
     }
 
     public List<ActiveBuff> GetTargetGroupBuffsAsList(string targetGroup)
@@ -883,10 +895,65 @@ public class BuffManager : MonoBehaviour
 
     public List<ActiveBuff> GetVisibleTargetGroupBuffsAsList(string targetGroup)
     {
-        return query != null ? query.GetTargetGroupBuffsAsList(targetGroup, true) : new List<ActiveBuff>();
+        BuffTargetHandle group = BuffTargetHandle.Group(targetGroup);
+        return AppendEffectUI(query != null ? query.GetTargetGroupBuffsAsList(targetGroup, true) : new List<ActiveBuff>(),
+            buff => group != null && buff.target != null && group.MatchesTarget(buff.target.GetCachedTarget()));
     }
 
     #endregion
+
+    // UI-only entries stay outside gameplay buff queries, stacking, cleansing and ticking.
+    public EffectBuffUIHandle RegisterEffectUI(ItemEffectData effect, ItemEffectContext context,
+        IBuffTarget target, float duration, string displayName = null, Sprite icon = null)
+    {
+        if (effect == null || context == null || !context.CanContinue || storage == null ||
+            duration <= 0f || float.IsNaN(duration) || float.IsInfinity(duration)) return null;
+        BuffTargetHandle targetHandle = target != null ? BuffTargetHandle.Target(target) :
+            (context.sourceItemData != null ? BuffTargetHandle.Item(context.sourceItemData) : null);
+        if (target != null && targetHandle == null) return null;
+        ActiveBuff record = new ActiveBuff(null,
+            new BuffInfo { useLimitType = BuffUseLimitType.Time, duration = duration },
+            context.sourceItemData, context.sourceBag, effect, targetHandle, true, true);
+        // Preserve sub-frame durations instead of BuffInfo's gameplay minimum.
+        record.maxTime = record.remainTime = duration;
+        record.uiDisplayName = displayName;
+        record.uiIcon = icon;
+        record.uiManagedLifetime = true;
+        EffectBuffUIHandle entry = new EffectBuffUIHandle(this, record, context);
+        effectUIEntries.Add(entry);
+        RefreshUI();
+        return entry;
+    }
+
+    internal void RemoveEffectUI(EffectBuffUIHandle entry)
+    {
+        if (effectUIEntries.Remove(entry)) RefreshUI();
+    }
+
+    private bool PruneEffectUI()
+    {
+        bool changed = false;
+        for (int i = effectUIEntries.Count - 1; i >= 0; i--)
+        {
+            EffectBuffUIHandle entry = effectUIEntries[i];
+            if (entry.CanDisplay) continue;
+            entry.Invalidate();
+            effectUIEntries.RemoveAt(i);
+            changed = true;
+        }
+        return changed;
+    }
+
+    private List<ActiveBuff> AppendEffectUI(List<ActiveBuff> result, Predicate<ActiveBuff> predicate = null)
+    {
+        PruneEffectUI();
+        for (int i = 0; i < effectUIEntries.Count; i++)
+        {
+            ActiveBuff record = effectUIEntries[i].DisplayBuff;
+            if (predicate == null || predicate(record)) result.Add(record);
+        }
+        return result;
+    }
 
     public void ClearNormalBuffs()
     {

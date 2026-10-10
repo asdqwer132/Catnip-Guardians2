@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbe3f4c5d0d27d444ae03b43d60d096e, type: 3}
+  m_Name: Mineral22_EffectData1
+  m_EditorClassIdentifier: Assembly-CSharp::ConditionalItemEffectData
+  conditionMode: 1
+  conditions:
+  - {fileID: 11400000, guid: 1f5d13d15c4b4d8991897f90c209ab4b, type: 2}
+  - {fileID: 11400000, guid: 97a2e1af026c9a14da6f9c7861d3749d, type: 2}
+  visualData: {fileID: 0}
+  impactVfxPrefab: {fileID: 0}
+  impactBaseScale: {x: 1, y: 1, z: 1}
+  scaleImpactVfxByRadius: 1
+  useAnimatorClipLifeTime: 1
+  audioSource: 
+  impactVfxLifeTime: 1
+  endVisualData: {fileID: 0}
+  effectWhenTrue: {fileID: 11400000, guid: 44791cb3bba55ff4d98ee070c8a6af06, type: 2}
+  effectWhenFalse: {fileID: 11400000, guid: 860bd383df3ae8f46ad00f54a9dd029c, type: 2}
+  freezeBranchAtPrepare: 0

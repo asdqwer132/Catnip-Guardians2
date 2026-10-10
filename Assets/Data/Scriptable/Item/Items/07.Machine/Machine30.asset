@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Machine30
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: -43282413963046168, guid: 868b6efa022bf45419993421b01d91ae, type: 3}
+  icon: {fileID: 21300000, guid: 868b6efa022bf45419993421b01d91ae, type: 3}
   data:
   - language: 1
     dataName: "\uC548\uD14C\uB098"
@@ -28,8 +28,13 @@ MonoBehaviour:
   grade: 3
   category: 0
   series: 7
+  tags: []
   weight: 1
   cooldown: 1
   effectDatas: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

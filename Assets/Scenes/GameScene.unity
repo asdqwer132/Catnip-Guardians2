@@ -12883,16 +12883,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemTester
   itemss:
-  - isUse: 0
+  - name: "\uD65C \uC0AC\uC6A9\uBC95"
+    isUse: 0
     item:
-    - {fileID: 11400000, guid: 5865985a9d6396643b29abcc8a2482a0, type: 2}
     - {fileID: 11400000, guid: ce1c82f98da4f1e4d835d49018657ff8, type: 2}
-    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
+    - {fileID: 11400000, guid: f5c0a85f81b4a6341b823365aa908815, type: 2}
+    - {fileID: 11400000, guid: 70bf65ee269e06f42869590d93bd318d, type: 2}
+    - {fileID: 11400000, guid: ce1c82f98da4f1e4d835d49018657ff8, type: 2}
+    - {fileID: 11400000, guid: 93758f7537ed6684898dc8cab8237aaa, type: 2}
     targetBagData: {fileID: 166470119}
-  - isUse: 1
+  - name: "\uBC00\uC5B4\uB0B4\uAE30"
+    isUse: 0
     item:
-    - {fileID: 11400000, guid: 5865985a9d6396643b29abcc8a2482a0, type: 2}
-    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
+    - {fileID: 11400000, guid: 1b380765c9da64b42a642fbd1c40ac28, type: 2}
+    targetBagData: {fileID: 166470119}
+  - name: "\uC0BC\uC9C0\uCC3D \uC5F0\uC18D \uACF5\uACA9"
+    isUse: 1
+    item:
+    - {fileID: 11400000, guid: 189c991cd165b1944aa97b85d68ec2c9, type: 2}
     targetBagData: {fileID: 166470119}
 --- !u!1 &907073005
 GameObject:
@@ -27646,7 +27654,7 @@ MonoBehaviour:
     moveSpeed: 1
     maxMoveSpeed: 10
     cooldownRecoveryRate: 1
-    minRange: 3
+    minRange: 0
     maxRange: 5
   currentStat:
     moveSpeed: 5

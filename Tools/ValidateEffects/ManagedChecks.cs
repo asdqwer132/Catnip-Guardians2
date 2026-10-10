@@ -7,6 +7,8 @@ public static class Runner {
  static void True(bool condition){if(!condition)throw new Exception("Assertion failed");}
  static void Eq(float value,float expected){if(Math.Abs(value-expected)>0.00001f)throw new Exception($"Expected {expected}, got {value}");}
  static ItemEffectContext Context()=>new ItemEffectContext(null,null,Vector3.zero,Vector3.right,null);
+ static ActiveBuff BuffRecord(BuffEffect effect,StatusDefinition status=null)
+  =>new ActiveBuff(null,new BuffInfo{statusDefinition=status,useLimitType=BuffUseLimitType.Infinite},null,null,effect,null,true,false);
  private sealed class CompletionProbe : ItemEffectData {
   public readonly List<ItemEffectContext> calls=new List<ItemEffectContext>();
   public bool wait;public Action<ItemEffectContext> onExecute;private ItemEffectLease lease;
@@ -17,6 +19,163 @@ public static class Runner {
  static void UseCompletionItem(ItemData item,BuffManager manager=null,ItemEffectContext parent=null,EquipmentBag bag=null)
   =>ItemEffectExecutor.ExecuteItem(item,Vector3.zero,Vector3.right,Vector3.up,null,bag,manager,parent,triggerSpecialItems:false);
  public static void Main(){
+ Check("even full circle starts in the chosen direction without an overlapping last shot",()=>{
+  for(int i=0;i<4;i++)Eq(AttackPlacement.ResolveSpreadAngle(360,i,4,AttackSpreadDistribution.Even,AttackSpreadStartMode.FromDirection,false,0),90*i);
+ });
+ Check("even centered fan includes both edges and keeps a single shot on its axis",()=>{
+  for(int i=0;i<4;i++)Eq(AttackPlacement.ResolveSpreadAngle(90,i,4,AttackSpreadDistribution.Even,AttackSpreadStartMode.CenteredOnDirection,false,0),-45+30*i);
+  Eq(AttackPlacement.ResolveSpreadAngle(90,0,1,AttackSpreadDistribution.Even,AttackSpreadStartMode.CenteredOnDirection,false,0),0);
+ });
+ Check("clockwise fan reverses sweep from the selected direction",()=>{
+  for(int i=0;i<4;i++)Eq(AttackPlacement.ResolveSpreadAngle(90,i,4,AttackSpreadDistribution.Even,AttackSpreadStartMode.FromDirection,true,0),-30*i);
+ });
+ Check("random fan respects centered and directional intervals independently of shot index",()=>{
+  Eq(AttackPlacement.ResolveSpreadAngle(90,0,4,AttackSpreadDistribution.Random,AttackSpreadStartMode.CenteredOnDirection,false,0),-45);
+  Eq(AttackPlacement.ResolveSpreadAngle(90,3,4,AttackSpreadDistribution.Random,AttackSpreadStartMode.CenteredOnDirection,false,1),45);
+  Eq(AttackPlacement.ResolveSpreadAngle(90,2,4,AttackSpreadDistribution.Random,AttackSpreadStartMode.FromDirection,true,.25f),-22.5f);
+ });
+ Check("even shotgun angles coexist with independent random radius offsets",()=>{
+  float[] samples={0,.25f,.75f,1};
+  for(int i=0;i<4;i++){
+   Eq(AttackPlacement.ResolveSpreadAngle(60,i,4,AttackSpreadDistribution.Even,AttackSpreadStartMode.CenteredOnDirection,false,samples[i]),-30+20*i);
+   Eq(AttackPlacement.ResolveShotgunDistance(5,1,samples[i]),4+2*samples[i]);
+  }
+ });
+ Check("direct modifier debuff is harmful without a status key",()=>{
+  var buff=BuffRecord(new BuffEffect{harmful=true});True(buff.harmful&&buff.dispellable);True(new BuffCleanseFilter().Matches(buff));
+  True(!new BuffCleanseFilter().Matches(BuffRecord(new BuffEffect())));
+ });
+ Check("legacy status harmful flag remains supported and either layer can forbid cleanse",()=>{
+  var status=new StatusDefinition{harmful=true};var effect=new BuffEffect();var filter=new BuffCleanseFilter();
+  True(filter.Matches(BuffRecord(effect,status)));
+  effect.dispellable=false;True(!filter.Matches(BuffRecord(effect,status)));
+  effect.dispellable=true;status.dispellable=false;True(!filter.Matches(BuffRecord(effect,status)));
+ });
+ Check("flag cleanse can select a beneficial buff and compares asset identity",()=>{
+  var poison=new BuffFlagDefinition{displayName="Poison"};var sameName=new BuffFlagDefinition{displayName="Poison"};
+  var filter=new BuffCleanseFilter{mode=BuffCleanseMode.Flags,flags=new[]{poison}};
+  True(filter.Matches(BuffRecord(new BuffEffect{flags=new[]{poison}})));
+  True(!filter.Matches(BuffRecord(new BuffEffect{flags=new[]{sameName}})));
+ });
+ Check("flag any and all support multiple independent tags",()=>{
+  var poison=new BuffFlagDefinition();var curse=new BuffFlagDefinition();var buff=BuffRecord(new BuffEffect{flags=new[]{poison}});
+  var filter=new BuffCleanseFilter{mode=BuffCleanseMode.Flags,flags=new[]{poison,curse}};
+  True(filter.Matches(buff));filter.flagMatch=BuffFlagMatchMode.All;True(!filter.Matches(buff));
+  True(filter.Matches(BuffRecord(new BuffEffect{flags=new[]{poison,curse}})));
+ });
+ Check("null empty and duplicate cleanse flags never broaden removal unexpectedly",()=>{
+  var flag=new BuffFlagDefinition();var buff=BuffRecord(new BuffEffect{flags=new[]{flag}});
+  foreach(var match in new[]{BuffFlagMatchMode.Any,BuffFlagMatchMode.All}){
+   var filter=new BuffCleanseFilter{mode=BuffCleanseMode.Flags,flagMatch=match};True(!filter.Matches(buff));
+   filter.flags=new BuffFlagDefinition[0];True(!filter.Matches(buff));filter.flags=new BuffFlagDefinition[]{null};True(!filter.Matches(buff));
+   filter.flags=new[]{null,flag,flag};True(filter.Matches(buff));
+  }
+ });
+ Check("harmful-or-flags and harmful-and-flags have distinct selection behavior",()=>{
+  var flag=new BuffFlagDefinition();var filter=new BuffCleanseFilter{mode=BuffCleanseMode.HarmfulOrFlags,flags=new[]{flag}};
+  var harmful=BuffRecord(new BuffEffect{harmful=true});var tagged=BuffRecord(new BuffEffect{flags=new[]{flag}});
+  True(filter.Matches(harmful));True(filter.Matches(tagged));
+  filter.mode=BuffCleanseMode.HarmfulAndFlags;True(!filter.Matches(harmful));True(!filter.Matches(tagged));
+  True(filter.Matches(BuffRecord(new BuffEffect{harmful=true,flags=new[]{flag}})));
+ });
+ Check("non-dispellable buff resists every cleanse mode including matching tags",()=>{
+  var flag=new BuffFlagDefinition();var buff=BuffRecord(new BuffEffect{harmful=true,dispellable=false,flags=new[]{flag}});
+  foreach(BuffCleanseMode mode in Enum.GetValues(typeof(BuffCleanseMode)))True(!new BuffCleanseFilter{mode=mode,flags=new[]{flag}}.Matches(buff));
+ });
+ Check("registered classification survives asset edits until the buff is refreshed",()=>{
+  var first=new BuffFlagDefinition();var second=new BuffFlagDefinition();var effect=new BuffEffect{harmful=true,flags=new[]{first}};var buff=BuffRecord(effect);
+  effect.harmful=false;effect.dispellable=false;effect.flags[0]=second;
+  True(buff.harmful&&buff.dispellable&&buff.HasFlag(first)&&!buff.HasFlag(second));
+  buff.RegisterAgain(new BuffInfo{useLimitType=BuffUseLimitType.Infinite});
+  True(!buff.harmful&&!buff.dispellable&&!buff.HasFlag(first)&&buff.HasFlag(second));
+ });
+ Check("refresh retains a single buff and cleansed removal reports cancellation",()=>{
+  var storage=new BuffStorage();var flag=new BuffFlagDefinition();var effect=new BuffEffect{harmful=true,flags=new[]{flag}};
+  var target=BuffTargetHandle.Item(new ItemData());var info=new BuffInfo{useLimitType=BuffUseLimitType.Infinite};
+  var buff=storage.RegisterBuff(null,info,null,null,effect,target,true,false);
+  True(ReferenceEquals(buff,storage.RegisterBuff(null,info,null,null,effect,target,true,false)));True(storage.activeBuffs.Count==1);
+  BuffRemovalReason reason=BuffRemovalReason.Cancelled;buff.Removed+=(removed,why)=>reason=why;
+  int completions=0;var context=Context();context.lifetime=new ItemEffectLifetime(onCompleted:()=>completions++);
+  buff.completion.Track(context,null);context.lifetime.Close();True(!context.lifetime.IsFinished);
+  storage.RemoveBuff(buff,BuffRemovalReason.Cleansed);True(reason==BuffRemovalReason.Cleansed&&storage.activeBuffs.Count==0&&storage.infiniteBuffs.Count==0);
+  True(context.lifetime.IsFinished&&context.lifetime.IsCancelled&&completions==0);
+ });
+ Check("shotgun radius offset samples independent distances inside the radius band",()=>{
+  Eq(AttackPlacement.ResolveShotgunDistance(5,1,0),4);Eq(AttackPlacement.ResolveShotgunDistance(5,1,.25f),4.5f);
+  Eq(AttackPlacement.ResolveShotgunDistance(5,1,.75f),5.5f);Eq(AttackPlacement.ResolveShotgunDistance(5,1,1),6);
+ });
+ Check("shotgun zero offset preserves fixed radius",()=>{
+  for(int i=0;i<=100;i++)Eq(AttackPlacement.ResolveShotgunDistance(5,0,i/100f),5);
+ });
+ Check("shotgun offset larger than radius cannot produce backward distances",()=>{
+  Eq(AttackPlacement.ResolveShotgunDistance(.2f,1,0),0);Eq(AttackPlacement.ResolveShotgunDistance(.2f,1,.5f),.6f);
+  Eq(AttackPlacement.ResolveShotgunDistance(.2f,1,1),1.2f);
+ });
+ Check("shotgun offset follows range scaling without changing the source stat",()=>{
+  var source=new RepeatItemStat{itemRepeatRadius=5,itemRepeatShotgunRadiusOffset=1};var context=Context();context.rangeMultiplier=2;
+  var scaled=EffectExecutionScaling.Apply(source,context);Eq(scaled.itemRepeatRadius,10);Eq(scaled.itemRepeatShotgunRadiusOffset,2);Eq(source.itemRepeatShotgunRadiusOffset,1);
+  Eq(AttackPlacement.ResolveShotgunDistance(scaled.itemRepeatRadius,scaled.itemRepeatShotgunRadiusOffset,.25f),9);
+ });
+ Check("shotgun invalid radius offset and sample remain finite",()=>{
+  Eq(AttackPlacement.ResolveShotgunDistance(float.NaN,float.PositiveInfinity,float.NaN),0);
+  var stat=new RepeatItemStat{itemRepeatShotgunRadiusOffset=-1};stat.Clamp();Eq(stat.itemRepeatShotgunRadiusOffset,0);
+  stat.itemRepeatShotgunRadiusOffset=float.NaN;stat.Clamp();Eq(stat.itemRepeatShotgunRadiusOffset,0);
+ });
+ Check("throw random-range endpoints and interior remain inside arrival bounds",()=>{
+  var t=new ItemThrowArrivalTiming{mode=ItemThrowArrivalMode.RandomRange,minArriveTime=.5f,maxArriveTime=2,distribution=ItemThrowArrivalDistribution.Uniform};
+  Eq(t.Resolve(1,3,0,0),.5f);Eq(t.Resolve(1,3,0,1),2);Eq(t.Resolve(1,3,0,.25f),.875f);
+ });
+ Check("throw short and long distributions favor opposite sides",()=>{
+  var t=new ItemThrowArrivalTiming{distribution=ItemThrowArrivalDistribution.PreferShort};Eq(t.TransformSample(.25f),.0625f);
+  t.distribution=ItemThrowArrivalDistribution.PreferLong;Eq(t.TransformSample(.25f),.4375f);
+ });
+ Check("throw middle and edge distributions have different probability concentrations",()=>{
+  var t=new ItemThrowArrivalTiming();int middle=0,edges=0;
+  for(int i=0;i<10000;i++){float u=(i+.5f)/10000;t.distribution=ItemThrowArrivalDistribution.PreferMiddle;float a=t.TransformSample(u);if(a>=.25f&&a<=.75f)middle++;
+   t.distribution=ItemThrowArrivalDistribution.PreferEdges;float b=t.TransformSample(u);if(b>=.25f&&b<=.75f)edges++;}
+  True(middle>7000);True(edges<4000);
+ });
+ Check("throw distribution outputs stay monotone finite and inside zero to one",()=>{
+  var t=new ItemThrowArrivalTiming();foreach(ItemThrowArrivalDistribution d in System.Enum.GetValues(typeof(ItemThrowArrivalDistribution))){t.distribution=d;float previous=-1;
+   for(int i=0;i<=1000;i++){float p=t.TransformSample(i/1000f);True(!float.IsNaN(p)&&p>=0&&p<=1&&p>=previous);previous=p;}}
+ });
+ Check("throw heavier items move the offset window later",()=>{
+  var t=new ItemThrowArrivalTiming{mode=ItemThrowArrivalMode.WeightAndRandomOffset,minArriveTime=.5f,maxArriveTime=3,randomOffset=.2f,secondsPerWeight=.25f,distribution=ItemThrowArrivalDistribution.Uniform};
+  Eq(t.Resolve(1,3,2,0),1.3f);Eq(t.Resolve(1,3,2,1),1.7f);
+  for(int i=0;i<=100;i++)True(t.Resolve(1,3,3,i/100f)>=t.Resolve(1,3,1,i/100f));
+ });
+ Check("throw offset uses the selected distribution function",()=>{
+  var t=new ItemThrowArrivalTiming{mode=ItemThrowArrivalMode.WeightAndRandomOffset,minArriveTime=1,maxArriveTime=2,randomOffset=.2f,secondsPerWeight=.5f,distribution=ItemThrowArrivalDistribution.PreferShort};
+  Eq(t.Resolve(1,3,1,.5f),1.4f);
+ });
+ Check("throw clipped offset is sampled before applying the arrival bound",()=>{
+  var t=new ItemThrowArrivalTiming{mode=ItemThrowArrivalMode.WeightAndRandomOffset,minArriveTime=1,maxArriveTime=2,randomOffset=.2f,secondsPerWeight=.5f,distribution=ItemThrowArrivalDistribution.PreferShort};
+  Eq(t.Resolve(1,3,100,.5f),1.85f);Eq(t.Resolve(1,3,100,1),2);
+ });
+ Check("throw fixed and zero-offset modes are deterministic",()=>{
+  var t=new ItemThrowArrivalTiming();Eq(t.Resolve(.7f,3,100,0),.7f);Eq(t.Resolve(.7f,3,0,1),.7f);
+  t.mode=ItemThrowArrivalMode.WeightAndRandomOffset;t.randomOffset=0;Eq(t.Resolve(1,3,2,0),1.4f);Eq(t.Resolve(1,3,2,1),1.4f);
+ });
+ Check("throw range mode ignores item weight and offset",()=>{
+  var t=new ItemThrowArrivalTiming{mode=ItemThrowArrivalMode.RandomRange};float a=t.Resolve(1,3,0,.3f);t.randomOffset=100;Eq(t.Resolve(1,3,100,.3f),a);
+ });
+ Check("throw hard movement cap and reversed bounds remain positive",()=>{
+  var t=new ItemThrowArrivalTiming{mode=ItemThrowArrivalMode.RandomRange,minArriveTime=2,maxArriveTime=1};Eq(t.Resolve(1,.5f,0,.5f),.5f);
+  Eq(ItemThrowArrivalTiming.ClampDuration(float.NaN,-1),.01f);
+ });
+ Check("throw invalid weight coefficient offset and sample stay finite",()=>{
+  var t=new ItemThrowArrivalTiming{mode=ItemThrowArrivalMode.WeightAndRandomOffset,minArriveTime=2,maxArriveTime=1,secondsPerWeight=float.PositiveInfinity,randomOffset=float.NaN};
+  Eq(t.Resolve(float.NaN,3,float.NaN,float.NaN),1);
+ });
+ Check("throw custom curve remaps samples and clamps out-of-range results",()=>{
+  var t=new ItemThrowArrivalTiming{mode=ItemThrowArrivalMode.RandomRange,minArriveTime=1,maxArriveTime=2,distribution=ItemThrowArrivalDistribution.CustomCurve,customCurve=AnimationCurve.Linear(0,.2f,1,.6f)};
+  Eq(t.Resolve(1,3,0,0),1.2f);Eq(t.Resolve(1,3,0,.5f),1.4f);Eq(t.Resolve(1,3,0,1),1.6f);
+  t.customCurve=AnimationCurve.Linear(0,-1,1,2);Eq(t.Resolve(1,3,0,0),1);Eq(t.Resolve(1,3,0,1),2);
+ });
+ Check("throw missing or empty custom curve falls back to uniform",()=>{
+  var t=new ItemThrowArrivalTiming{distribution=ItemThrowArrivalDistribution.CustomCurve,customCurve=null};Eq(t.TransformSample(.25f),.25f);
+  t.customCurve=new AnimationCurve();Eq(t.TransformSample(.25f),.25f);
+ });
  Check("cooldown seconds clamps at zero",()=>Eq(BagItemCooldownController.ChangeRemaining(3,CooldownOperation.ReduceSeconds,9),0));
  Check("cooldown fraction scales remaining",()=>Eq(BagItemCooldownController.ChangeRemaining(12,CooldownOperation.ReduceFraction,0.25f),9));
  Check("cooldown invalid values remain finite",()=>{Eq(BagItemCooldownController.ChangeRemaining(float.NaN,CooldownOperation.ReduceSeconds,1),0);Eq(BagItemCooldownController.ChangeRemaining(5,CooldownOperation.ReduceSeconds,float.NaN),5);});

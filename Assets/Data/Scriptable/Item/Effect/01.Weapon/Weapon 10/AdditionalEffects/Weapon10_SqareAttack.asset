@@ -21,15 +21,16 @@ MonoBehaviour:
   useAnimatorClipLifeTime: 1
   audioSource: 
   impactVfxLifeTime: 1
+  endVisualData: {fileID: 0}
   attackStat:
-    damageAreaPower: 1
-    damageAreaInterval: 0.5
-    damageAreaRange: 0.5
-    damageAreaLifeTime: 0.5
+    damageAreaPower: 5
+    damageAreaInterval: 0
+    damageAreaRange: 0.1
+    damageAreaLifeTime: 0.1
   attackPrefab: {fileID: 6979488993338471827, guid: eb9a5a68d579cba43b0f25e62589538f, type: 3}
   damageApplyMode: 0
   onHitEffects:
   - {fileID: 11400000, guid: a06c34ebb6572464d9b3e541b58b5292, type: 2}
   hitEffectApplyMode: 0
-  attackWidth: 4
-  attackHeight: 4
+  attackWidth: 0.5
+  attackHeight: 5

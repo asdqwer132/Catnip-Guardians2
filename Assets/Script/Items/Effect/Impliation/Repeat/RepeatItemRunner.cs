@@ -8,6 +8,9 @@ public sealed class RepeatItemRunner : AttackObject<RepeatItemStat>
     private RepeatItemStep[] steps;
     private RepeatItemSelection selection;
     private AttackPlacementMode placement;
+    private AttackSpreadDistribution shotgunDistribution;
+    private AttackSpreadStartMode spreadStartMode;
+    private bool clockwiseSpread;
     private RepeatItemStartPosition startPosition;
     private ItemThrowMover prefab;
     private Sprite projectileSprite;
@@ -33,6 +36,9 @@ public sealed class RepeatItemRunner : AttackObject<RepeatItemStat>
         steps = runtimeSteps;
         selection = effect.selection;
         placement = effect.placement;
+        shotgunDistribution = effect.shotgunDistribution;
+        spreadStartMode = effect.spreadStartMode;
+        clockwiseSpread = effect.clockwiseSpread;
         startPosition = effect.startPosition;
         throwItems = effect.throwItems;
         triggerSpecial = effect.triggerSpecialItemsForChildren;
@@ -107,7 +113,8 @@ public sealed class RepeatItemRunner : AttackObject<RepeatItemStat>
             int positionCount = payloads.Count > 1 ? payloads.Count : total;
             Vector3 target = firstAtOrigin && useIndex == 0 ? origin :
                 AttackPlacement.Position(mode, origin, direction, positionIndex, positionCount,
-                    stat.itemRepeatForwardOffset, stat.itemRepeatSideOffset, stat.itemRepeatRadius, stat.itemRepeatSpreadAngle);
+                    stat.itemRepeatForwardOffset, stat.itemRepeatSideOffset, stat.itemRepeatRadius, stat.itemRepeatSpreadAngle,
+                    stat.itemRepeatShotgunRadiusOffset, shotgunDistribution, spreadStartMode, clockwiseSpread);
             serialPosition++;
             ItemData item = payloads[shot];
             Vector3 shotDirection = (target - start).sqrMagnitude > 0.000001f ? (target - start).normalized : direction;
@@ -125,7 +132,7 @@ public sealed class RepeatItemRunner : AttackObject<RepeatItemStat>
             mover.destroyOnArrive = false;
             Sprite sprite = projectileSprite != null ? projectileSprite :
                 item != null ? item.icon : sourceItemData != null ? sourceItemData.icon : null;
-            mover.Init(start, start, sprite, null);
+            mover.SetSprite(sprite);
             if (overrideMotion || bounce)
             {
                 mover.autoArcHeightByDistance = false;
@@ -133,7 +140,7 @@ public sealed class RepeatItemRunner : AttackObject<RepeatItemStat>
                 mover.maxMoveTime = stat.itemRepeatFlightTime;
             }
             float flight = fly && !firstBounce ?
-                (overrideMotion || bounce ? stat.itemRepeatFlightTime : Mathf.Max(0.01f, Mathf.Min(mover.arriveTime, mover.maxMoveTime))) : 0f;
+                (overrideMotion || bounce ? stat.itemRepeatFlightTime : mover.ResolveArrivalTime(item != null ? item.weight : 0f)) : 0f;
             TargetRangeIndicator indicator = null;
             if (showRange && rangePrefab != null)
                 indicator = Instantiate(rangePrefab, target, Quaternion.identity);

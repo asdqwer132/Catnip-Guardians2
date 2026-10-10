@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Food11 1
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 8474638641336598268, guid: a9414f5c02d68f0478c99389f7ca06f4, type: 3}
+  icon: {fileID: 21300000, guid: 825e04b456f02914bba033911ae25df7, type: 3}
   data:
   - language: 1
     dataName: "\uCCB4\uB9AC"
@@ -22,7 +22,7 @@ MonoBehaviour:
     dataName: cherry
     description: Small fruits with red flesh and sweet juice
   dataNumbering: 011
-  dataId: Food11
+  dataId: Food11E1
   dataType: 1
   requireUnlock: 0
   grade: 0
@@ -35,3 +35,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5b85473dc23a23f4697610b1b0d39df2, type: 2}
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

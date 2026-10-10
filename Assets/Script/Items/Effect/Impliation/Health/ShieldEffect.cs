@@ -24,6 +24,8 @@ public class ShieldEffect : ItemEffectData
     public HealthTargetSettings targets = new HealthTargetSettings();
     public ShieldStat shieldStat = new ShieldStat();
     public ShieldReapplyMode reapplyMode;
+    [Header("Buff UI")]
+    public EffectBuffUISettings buffUI = new EffectBuffUISettings();
     protected override bool OwnsEndVisual => false;
     public override void Prepare(ItemEffectContext context) { context.GetSnapshotStat(this, shieldStat); }
     public override void ExecuteEffect(ItemEffectContext context)

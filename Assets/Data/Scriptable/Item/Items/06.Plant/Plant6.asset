@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Plant6
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: -3067675165346497274, guid: cb0ca3f0cfbd6554ea515546918d5adc, type: 3}
+  icon: {fileID: 21300000, guid: cb0ca3f0cfbd6554ea515546918d5adc, type: 3}
   data:
   - language: 1
     dataName: "\uBAA9\uD654\uAF43"
@@ -28,8 +28,13 @@ MonoBehaviour:
   grade: 0
   category: 0
   series: 6
+  tags: []
   weight: 1
   cooldown: 1
   effectDatas: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

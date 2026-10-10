@@ -25,6 +25,8 @@
 17. [그림·파티클·소리 연결](#17-그림파티클소리-연결)
 18. [작동하지 않을 때 확인할 것](#18-작동하지-않을-때-확인할-것)
 19. [확인·저장·Git에 올리기](#19-확인저장git에-올리기)
+20. [아이템 투척의 랜덤 도착 시간과 무게](#20-아이템-투척의-랜덤-도착-시간과-무게)
+21. [리피트 샷건의 랜덤 거리](#21-리피트-샷건의-랜덤-거리)
 
 ## 1. 가장 먼저 해보기: 따뜻한 수프
 
@@ -123,6 +125,7 @@ Conditions를 비우면 항상 실행한다. **Condition Mode = All**이면 모�
 | 명중 후 다른 효과 실행 | `Items → Hit Effects → Execute Effects` |
 | 상태 키 / 상태 대상 설정 | `Items → Status → Definition` / `Buffs → Targets → Context Status` |
 | 상태 부여 / 조회 | `Items → Effects → Buff` / `Items → Conditions → Has Status Key` |
+| 버프 확장 플래그 | `Items → Buff → Flag` |
 | 상태 소비 / 정화 | `Items → Effects → Status → Consume Checked Status` / `Cleanse` |
 | 장판 정의 / 생성 | `Items → Areas → Definition` / `Items → Effects → Attack → Defined Area` |
 | 장판 조회 / 소비 | `Items → Conditions → Has Area` / `Items → Effects → Area → Consume Checked Areas` |
@@ -182,6 +185,29 @@ Regeneration을 만들어 다음처럼 설정한다.
 | Regeneration Duration | `5`초 |
 
 AfterInterval은 첫 회복을 1초 뒤에 한다. Immediate는 시작 시에도 회복하므로 동일한 5초 설정의 총 회복 횟수가 달라진다. 즉시 회복과 지속 회복을 함께 쓰려면 ItemData의 Effect Datas에 두 에셋을 넣거나, 수프처럼 Scaled Effects의 Effects에 묶고 배율을 모두 1로 둔다.
+
+### 지속 효과를 버프 UI에 표시하기
+
+**Regeneration / Shield / Time Stop** 에셋의 **Buff UI**에서 선택한다.
+
+| 필드 | 설정 |
+| --- | --- |
+| Show In UI | 켜면 효과가 유지되는 동안 기존 버프 UI에 표시. 기본값은 꺼짐 |
+| Display Name | 예: `재생`, `보호막`, `시간 정지`. 비우면 사용한 아이템 이름, 아이템이 없으면 효과 에셋 이름 |
+| Buff Icon | 표시할 Sprite. 비우면 사용한 아이템 아이콘 |
+
+예를 들어 수프의 Regeneration 에셋에서 **Buff UI → Show In UI**를 켜고 **Display Name = 재생**으로 설정한다. 실제 회복과 함께 아이콘·남은 시간·시간 게이지가 표시되고 5초 후 사라진다. 별도의 BuffEffect나 Modifier를 만들 필요가 없다. Shield와 Time Stop도 같은 방식으로 설정한다. 일반 BuffEffect는 기존의 **Show In UI / Buff Icon**을 그대로 사용한다.
+
+씬에서 **BuffManager → Buff UI Manager**, **BuffUIManager → Buff Manager / Content Parent / Slot Prefab**을 연결해야 한다. 처음 확인할 때는 **Display Mode = All**로 두면 된다. Inspector에서 옵션을 바꾸면 **다음 적용부터** 반영한다. 실행 중인 효과의 표시 옵션은 적용 당시 설정을 유지한다.
+
+- **All**: 표시 옵션을 켠 모든 효과. **Bag / Item / ItemSeries**: 그 효과를 시작한 가방·아이템·시리즈로 필터링.
+- **Target / Group**: 실제 효과를 받은 대상의 IBuffTarget·그룹으로 필터링. 재생·보호막은 대상의 **Health 컴포넌트**를 선택한다. 식물은 Health의 **Buff Target Group**이 `PlantHealth`로 설정되어 있는지 확인한다. 부모 그룹은 하위 그룹을 포함한다.
+- Time Stop은 실행 소유자의 IBuffTarget에 표시한다. 해당 대상이 없으면 사용한 아이템을 표시 대상으로 사용하며 **All / Bag / Item / ItemSeries**에서 확인한다.
+- 남은 시간은 실제 효과의 시계와 같다. 적 상태 시간 정지로 재생·보호막이 멈추면 UI 시간도 멈추고, Time Stop 자체의 시간은 계속 흐른다. 배율이 적용된 지속 시간도 반영한다.
+- 보호막은 피해로 전부 소진되면 즉시 사라진다. 같은 보호막의 Refresh / Add는 UI 한 개를 갱신한다. 재생은 기존 동작대로 적용마다 별도 효과이므로 반복 적용 시 UI도 각각 표시한다.
+- 종료·대상 비활성화·취소·전투 초기화 시 표시를 정리한다. UI 표시를 켜도 회복량·피해·중첩·횟수 소비·종료 후 아이템 실행은 바뀌지 않는다.
+
+이 항목은 실제 효과를 보여 주는 UI 전용 표시다. 버프 정화·Clear All Buffs로 재생이나 보호막 자체를 취소하는 기능은 아니며, 효과가 살아 있는 동안 표시를 유지한다.
 
 ### 퍼센트 회복과 체력 비용
 
@@ -365,7 +391,24 @@ Execute Effects 명중 에셋은 **공격의 On Hit Effects**에 넣고, 그 에
 
 Cleanse의 **Target Resolver**에 Context Status 에셋을 연결한다. 식물과 플레이어를 동시에 정화하려면 Targets에 **PlantHealth**, **PlayerStatus** 두 값을 넣는다. `Milk_PlayerAndPlantTargets`와 `Food23_MilkCleanse`가 이 설정이다.
 
-Harmful과 Dispellable이 모두 켜진 StatusDefinition이 등록된 버프만 제거한다. **Include Modifier Buffs**를 켜면 상태와 수치 변경이 함께 있는 복합 버프도 제거한다. 상태 키가 없는 기존 수치 버프나 별도 기절·속박 컨트롤러의 효과까지 일괄 해제하는 기능은 아니다.
+BuffEffect의 **Classification → Harmful**을 켜면 해로운 버프다. **Dispellable**을 켜면 정화할 수 있다. 수치 Modifier만 있는 버프도 이 두 값을 설정하면 정화 대상이 된다. 기존 StatusDefinition의 Harmful도 함께 인정하며, BuffEffect 또는 StatusDefinition 중 한쪽이라도 Dispellable을 끄면 정화할 수 없다.
+
+**CleanseEffect → Filter → Mode**에서 제거 조건을 선택한다.
+
+| Mode | 제거 대상 |
+| --- | --- |
+| Harmful | 해로운 버프. 기본 설정 |
+| Flags | 지정한 플래그를 가진 버프. 이롭거나 해로운지와 관계없이 선택 |
+| HarmfulOrFlags | 해로운 버프이거나 지정 플래그가 일치하는 버프 |
+| HarmfulAndFlags | 해로우면서 지정 플래그도 일치하는 버프 |
+
+플래그는 **Create → GameData → Items → Buff → Flag**에서 원하는 만큼 에셋을 만들어 확장한다. 예를 들어 `Poison`, `Curse`, `Fire` 에셋을 만들고 **BuffEffect → Flags**에 여러 개 넣는다. **CleanseEffect → Filter → Flags**에도 제거할 플래그의 **같은 에셋**을 연결한다. **Flag Match = Any**는 하나라도 일치하면, **All**은 지정한 플래그가 전부 있으면 제거한다. 이름이 같아도 서로 다른 에셋은 다른 플래그다. 빈 항목·중복은 추가 조건이 되지 않으며, 유효한 플래그가 없으면 플래그 조건은 불일치다.
+
+예: 독 디버프에 Harmful·Dispellable을 켜고 Flags에 Poison을 넣는다. 모든 디버프를 해제하는 정화는 Mode = Harmful, 독만 해제하는 정화는 Mode = Flags + Flags = Poison, 해로운 독만 해제하려면 Mode = HarmfulAndFlags + Flags = Poison으로 설정한다. 새 플래그를 추가할 때 코드를 수정할 필요가 없다.
+
+**Include Modifier Buffs**를 켜면 조건에 맞는 수치 변경 버프도 함께 제거한다. 끄면 Modifier가 없는 버프만 제거한다. 제거할 때 버프 전체가 해제되며, 같은 버프 안의 Modifier 일부나 플래그 하나만 떼어내지는 않는다. 플래그만 있는 버프도 Buff Info의 지속·중첩·사용 횟수 설정으로 등록할 수 있다. 분류와 플래그는 등록 시 복사하고 같은 버프가 다시 부여되면 갱신한다. 코드에서 활성 버프의 `harmful`, `dispellable`, `HasFlag(flag)`로 확인할 수 있다.
+
+정화의 대상은 Target Resolver가 선택한 대상이다. 별도 기절·속박 컨트롤러나 UI 전용 재생·보호막 표시는 이 버프 정화에 포함되지 않는다. 정화로 제거한 버프는 자연 종료 연출이나 종료 후 자동 아이템 사용을 실행하지 않는다. Unity Test Runner의 EditMode에서 **AdditionalBuffClassificationTests**와 **AdditionalAreaStatusTests**로 등록·수치 복구·플래그 선택·기존 상태 호환을 검사한다.
 
 ## 10. 장판 생성·조회·소비·체류
 
@@ -671,7 +714,7 @@ Attack Prefab을 비우면 기본 부채꼴 판정 오브젝트를 생성한다.
 | 회복이 없음 | 식물 생존 상태, 최대 HP 도달, 실제 Health 존재, Use Radius / Center / Shape |
 | DamageArea 버프가 안 바뀜 | Target Group = DamageArea, Modifier 타입 = DamageAreaAttackStat인지; Direct의 프리팹 참조와 생성 인스턴스를 구분했는지 |
 | 상태 조건이 실패 | 부여·조회가 같은 StatusDefinition을 참조하는지, PlayerStatus와 Owner/SourceSummon의 차이 |
-| 상태가 정화되지 않음 | StatusDefinition의 Harmful·Dispellable, 정화 대상 설정, Include Modifier Buffs |
+| 버프가 정화되지 않음 | BuffEffect·StatusDefinition의 Harmful·Dispellable, Filter의 Mode·플래그 에셋·Any/All, 정화 대상, Include Modifier Buffs |
 | 장판 조건이 실패 | 같은 AreaDefinition인지, Own/Allied 소유자 조건, 조회 위치가 장판 안인지 |
 | 상태·장판 소비가 안 됨 | Checked Condition을 같은 조건 에셋으로 연결했는지, 해당 실행에서 조건이 먼저 성공했는지 |
 | 분기가 예상과 다름 | Condition Mode, 조건 참조, Freeze Branch At Prepare에 따른 준비 시점 판정 |
@@ -693,7 +736,7 @@ Attack Prefab을 비우면 기본 부채꼴 판정 오브젝트를 생성한다.
 1. 기존 전투 씬과 아이템 사용 흐름에서 해당 ItemData를 사용한다.
 2. 식물 회복은 HP 변화, 공격은 적 HP·처치, 상태는 등록·만료, 쿨다운은 남은 시간으로 확인한다.
 3. 여러 적, 적 한 명, 대상 없음, 효과 중 전투 초기화 상황을 확인한다.
-4. **Window → General → Test Runner → EditMode**에서 `CombatEffectTests`, `Additional*Tests`, `BuffTargetInspectorTests`를 실행한다. 버프 대상 검사는 `AdditionalBuffTargetTests`, 쿨다운 검사는 `AdditionalCooldownBuffTests`, 종료 후 아이템 사용의 대기·취소·순환·위치 검사는 `AdditionalItemCompletionTests`에 있다.
+4. **Window → General → Test Runner → EditMode**에서 `CombatEffectTests`, `Additional*Tests`, `BuffTargetInspectorTests`를 실행한다. 버프 대상 검사는 `AdditionalBuffTargetTests`, 쿨다운 검사는 `AdditionalCooldownBuffTests`, 종료 후 아이템 사용의 대기·취소·순환·위치 검사는 `AdditionalItemCompletionTests`에 있다. 지속 효과의 UI 표시·시간 정지·소진·취소·필터·기존 버프와의 분리는 `AdditionalEffectBuffUITests`에서 확인한다.
 5. 플레이 모드를 끝내고 설정을 저장한다. 플레이 중 바꾼 Inspector 값이 영구 설정으로 남았다고 가정하지 말고 에셋을 다시 확인한다.
 
 새 `.asset`과 `.meta`를 함께 Git에 올린다. 예를 들어 위 두 폴더와 기존 ItemData/공격 에셋을 수정했다면 프로젝트 루트에서 다음처럼 올린다.
@@ -709,3 +752,99 @@ git push origin work
 다른 폴더에 만든 에셋과 폴더 `.meta`도 해당 경로를 git add에 포함한다. 다른 PC에서는 [work 가져오기 안내](WorkBranchGuide.md)에 따라 가져온다.
 
 현재 클라우드 검증은 관련 C# 컴파일과 엔진 없이 실행 가능한 관리 코드 검사까지다. Unity 임포트·물리 판정·실제 씬 플레이는 로컬 Unity에서 확인한다. 구현 범위·미정 규칙은 [추가 이펙트 제작 및 연결](AdditionalEffects.md), 원본별 연결 계획은 [ItemEffectCoverage.csv](ItemEffectCoverage.csv)를 참고한다.
+
+
+## 20. 아이템 투척의 랜덤 도착 시간과 무게
+
+`Assets/Prefab/Item/ThrowItem.prefab`의 **ItemThrowMover → Arrival Timing**을 펼쳐 설정한다. 이 프리팹은 **Weight And Random Offset**, 최소 `0.6`초 / 최대 `1.8`초 / 오프셋 `0.15`초 / 무게당 `0.2`초 / 중앙 선호 분포로 연결했다. 다른 투척 프리팹에도 같은 설정을 사용할 수 있다. 새 설정이 없는 기존 프리팹이나 프리팹 없는 생성은 **Fixed**를 기본값으로 사용한다.
+
+| 필드 | 의미 |
+| --- | --- |
+| Arrive Time | Fixed의 도착 시간 또는 무게 모드의 기본 시간 |
+| Max Move Time | 최종 비행 시간의 상한. 최소 도착 시간 이상으로 설정한다 |
+| Arrival Timing → Mode | Fixed / Random Range / Weight And Random Offset |
+| Min Arrive Time / Max Arrive Time | 최종 랜덤 도착 시간의 최소·최대(초) |
+| Random Offset | 무게 모드에서 기준 시간의 앞뒤에 허용하는 편차(초). `0.15`는 ±0.15초 |
+| Seconds Per Weight | 아이템 무게 1당 추가할 시간(초). `0`이면 무게 영향 없음 |
+| Distribution | 랜덤 값을 도착 시간 구간 안의 위치로 바꾸는 함수 |
+| Custom Curve | Distribution = Custom Curve에서 사용할 직접 편집 함수 |
+
+**Random Range**는 최소·최대 전체에서 선택한다. 예를 들어 최소 `0.5`, 최대 `2`, 분포 **Prefer Short**면 0.5~2초 중 빠른 도착 시간이 더 자주 선택된다. 이 모드에서는 무게와 Random Offset을 사용하지 않는다.
+
+**Weight And Random Offset**의 계산 순서는 다음과 같다.
+
+1. 기준 시간 = `Arrive Time + ItemData.weight × Seconds Per Weight`.
+2. 기준 시간을 최소·최대 범위 안으로 제한한다.
+3. `기준 시간 - Random Offset` ~ `기준 시간 + Random Offset`과 최소·최대 범위의 겹치는 구간을 계산한다.
+4. 선택한 Distribution 함수로 그 구간 안의 도착 시간을 한 번 추첨한다.
+
+기본 시간 `1`, 무게당 `0.2`, 오프셋 `0.15`, 최소 `0.6`, 최대 `1.8`일 때:
+
+| 던지는 아이템의 Weight | 기준 시간 | 실제 추첨 구간 |
+| --- | --- | --- |
+| `0` | `1.0`초 | `0.85~1.15`초 |
+| `1` | `1.2`초 | `1.05~1.35`초 |
+| `2` | `1.4`초 | `1.25~1.55`초 |
+| `5` | 상한으로 제한한 `1.8`초 | `1.65~1.8`초 |
+
+무게는 던지는 **ItemData → Weight**에서 읽으며 가방의 총 무게나 슬롯 수를 사용하지 않는다. 같은 추첨 위치를 비교하면 무거운 아이템의 시간이 더 길어지거나 상한에서 같아진다. 서로 다른 추첨 결과에서는 오프셋 구간이 겹칠 수 있다.
+
+### 함수 선택과 직접 편집
+
+| Distribution | 결과 |
+| --- | --- |
+| Uniform | 구간 전체를 균등하게 선택 |
+| Prefer Short | 빠른 도착 시간 선호 |
+| Prefer Long | 느린 도착 시간 선호 |
+| Prefer Middle | 구간 중앙 시간 선호 |
+| Prefer Edges | 가장 빠른 쪽·가장 느린 쪽 선호 |
+| Custom Curve | Custom Curve 필드를 클릭해 직접 함수 편집 |
+
+커브의 **X는 균등 난수 0~1**, **Y는 추첨 구간 안의 위치 0~1**이다. Y=0은 가장 빠른 시간, Y=1은 가장 느린 시간이다. 대각선 `Y=X`는 균등 분포이고, 대각선 아래로 휘면 빠른 시간, 위로 휘면 느린 시간이 많아진다. 그래프 높이를 확률 밀도로 해석하는 방식은 아니다. Y가 0~1을 벗어나면 그 범위 안으로 제한하고, 커브가 없거나 비었으면 균등 분포를 사용한다.
+
+Random Range와 무게 모드의 오프셋 추첨 모두 같은 Distribution을 사용한다. 속도는 선택한 도착 시간과 X 거리로 자동 계산한다. 비행이 시작된 뒤 무게나 설정을 바꿔도 이미 발사한 아이템의 시간은 바뀌지 않는다.
+
+**Max Move Time**은 모든 모드의 최종 상한이므로 최소 도착 시간보다 작게 두면 그 상한이 우선한다. 반복 투척에서 **Override Projectile Motion**을 끄면 투척 프리팹 설정과 실제 하위 아이템의 무게를 사용한다. 직접 지정한 **Flight Time**이나 Bounce 비행은 그 시간을 그대로 사용한다.
+
+Unity에서 `Window → General → Test Runner → EditMode → AdditionalThrowArrivalTests`로 범위·함수·커브·무게 전달·도착 콜백 검사를 실행한다. Play Mode에서는 서로 다른 Weight의 아이템을 던져 도착 시간과 착지 후 효과를 확인한다.
+
+
+## 21. 리피트 샷건의 랜덤 거리
+
+**RepeatItemEffect → Repeat Stat → Item Repeat Shotgun Radius Offset**으로 발사체마다 다른 착지 거리를 설정한다. 각도는 기존 **Item Repeat Spread Angle**을 사용하고, 거리는 **Item Repeat Radius ± Item Repeat Shotgun Radius Offset** 안에서 매 발사체마다 독립적으로 추첨한다. 거리는 배치 중심을 기준으로 계산한다.
+
+4개를 동시에 던지는 예:
+
+| 필드 | 값 |
+| --- | --- |
+| Placement | Shotgun |
+| Repeat Stat → Item Repeat Count | `1` (아이템 묶음 1회) |
+| Steps → Entries → Item | 던질 ItemData |
+| Steps → Entries → Count | `4` (이 스텝에서 동시에 던질 개수) |
+| Repeat Stat → Item Repeat Radius | `5` |
+| Repeat Stat → Item Repeat Spread Angle | `30`도 |
+| Repeat Stat → Item Repeat Shotgun Radius Offset | `1` |
+
+이 설정은 앞쪽 30도 안에서 네 발의 각도와 거리를 각각 추첨한다. 각 착지점의 거리는 `4~6`이며 같은 반지름의 선 위에만 모이지 않는다. 오프셋을 `0.3`으로 줄이면 `4.7~5.3` 안에서 조금만 흩어진다.
+
+오프셋 `0`은 기존의 고정 반지름 동작이다. 오프셋이 반지름보다 크면 추첨 구간의 하한을 `0`으로 제한하며 음수 거리로 뒤쪽에 착지하지 않는다. 범위 배율을 적용하면 반지름과 오프셋을 함께 조정한다. 이 필드는 Shotgun에서 사용하며 다른 배치 모드의 위치 계산은 기존과 같다. 기존 효과 에셋에는 기본값 `0`으로 추가되므로 사용할 에셋에서 원하는 값을 입력한다.
+
+스텝의 **Override Placement**를 켰다면 해당 스텝의 Placement도 Shotgun으로 설정한다. **First Step At Origin**을 켜면 첫 묶음이 원점에 고정되므로 처음부터 흩어 던질 때는 끈다.
+
+### 랜덤·균등 각도와 시작 방향
+
+RepeatItemEffect의 Placement 아래에서 다음을 설정한다.
+
+| 필드 | 선택 |
+| --- | --- |
+| Shotgun Distribution | Random: 매 발사체 각도를 독립적으로 추첨 / Even: 펼침 각도를 균등하게 나눔 |
+| Direction Mode | ThrownDirection: 원본 아이템을 던진 방향 / FixedWorldDirection: Fixed World Direction 사용 |
+| Fixed World Direction | 고정 방향. `(1, 0)` 오른쪽, `(0, 1)` 위쪽 |
+| Spread Start Mode | CenteredOnDirection: 기준 방향 양옆으로 펼침 / FromDirection: 첫 발이 기준 방향에서 시작 |
+| Clockwise Spread | 켜면 시계 방향, 끄면 반시계 방향으로 펼침 |
+
+예: **Placement = Shotgun**, **Shotgun Distribution = Even**, **Direction Mode = ThrownDirection**, **Spread Start Mode = FromDirection**, 펼침 각도 `360`, 발사 개수 `4`이면 던진 방향을 첫 지점으로 `0°·90°·180°·270°`에 배치한다. 첫 발과 마지막 발은 겹치지 않는다. 펼침 각도 `90`이면 `0°·30°·60°·90°`이고, CenteredOnDirection이면 `-45°·-15°·15°·45°`다. **Item Repeat Direction Angle**로 기준 방향 자체를 회전시킬 수도 있다.
+
+각도를 균등하게 해도 **Shotgun Radius Offset**이 `1`이면 거리는 발마다 `Radius ± 1`에서 추첨한다. 같은 원의 둘레에 정확히 놓으려면 오프셋을 `0`으로 설정한다. 무작위 방식의 FromDirection은 기준 방향에서 펼침 각도만큼의 구간에서 각도를 뽑는다. 한 발만 균등 배치할 때는 기준 방향에 놓는다.
+
+**CircleEven**은 원 둘레의 균등 각도, **CircleRandom**은 원 내부의 무작위 위치다. 둘 모두 Direction Mode·Spread Start Mode·Clockwise Spread를 사용하며, Shotgun Distribution·Shotgun Radius Offset은 Shotgun에만 적용한다. 다중 발사는 각 묶음 안에서 균등 배치하고, 한 발씩 여러 번 반복하면 전체 반복 횟수로 나눠 배치한다. 기존 에셋은 Random·CenteredOnDirection·반시계 방향으로 기존 설정을 유지한다. Unity EditMode의 **CombatEffectTests**에서 배치와 RepeatItemRunner 연결을 검사한다.
