@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d07875e6312a2984dac8a27131630342, type: 3}
-  m_Name: Weapon20Extra3_EffectData1
+  m_Name: Weapon21_EffectData2
   m_EditorClassIdentifier: Assembly-CSharp::DamageAreaAttackEffect
   conditionMode: 0
   conditions: []
@@ -23,11 +23,11 @@ MonoBehaviour:
   impactVfxLifeTime: 1
   endVisualData: {fileID: 0}
   attackStat:
-    damageAreaPower: 0
-    damageAreaInterval: 0.5
-    damageAreaRange: 0.5
-    damageAreaLifeTime: 0.5
+    damageAreaPower: 1
+    damageAreaInterval: 1
+    damageAreaRange: 3
+    damageAreaLifeTime: 5
   attackPrefab: {fileID: -7298374742604618283, guid: ba1a65fc3cffa9e41a41bdb190df387d, type: 3}
-  damageApplyMode: 0
+  damageApplyMode: 2
   onHitEffects: []
   hitEffectApplyMode: 0

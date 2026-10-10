@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b250f045bef3cf34fbfec8a0516c81f9, type: 3}
-  m_Name: Weapon22_EffectData1
+  m_Name: Weapon30_EffectData2
   m_EditorClassIdentifier: Assembly-CSharp::BuffEffect
   conditionMode: 0
   conditions: []
@@ -22,16 +22,16 @@ MonoBehaviour:
   audioSource: 
   impactVfxLifeTime: 1
   endVisualData: {fileID: 0}
-  targetResolver: {fileID: 11400000, guid: 6ffa8f9a788b54547af5963426c14f00, type: 2}
+  targetResolver: {fileID: 11400000, guid: f3ff37221a9bf2f43a5ee69b82a95df8, type: 2}
   buffInfo:
     statusDefinition: {fileID: 0}
-    stackMode: 0
-    maxStack: 1
-    applyTiming: 1
-    useLimitType: 0
-    duration: 15
-    maxUseCount: 1
-    useCountConsumeMode: 2
+    stackMode: 1
+    maxStack: 3
+    applyTiming: 0
+    useLimitType: 1
+    duration: 1
+    maxUseCount: 3
+    useCountConsumeMode: 1
     consumeItems: []
   includeSelf: 0
   harmful: 0
@@ -40,8 +40,8 @@ MonoBehaviour:
   buffIcon: {fileID: 0}
   showInUI: 1
   modifiers:
-  - {fileID: 3869710346113303313}
---- !u!114 &3869710346113303313
+  - {fileID: 5944442224200532080}
+--- !u!114 &5944442224200532080
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -51,9 +51,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 57bb8c5d3dc35cf4db784fd698670410, type: 3}
-  m_Name: Float Modifier
+  m_Name: Weapon30_BuffModifier Copy
   m_EditorClassIdentifier: Assembly-CSharp::FloatFieldBuffModifier
-  targetStatTypeName: HealthStat
-  fieldName: defense
-  addValue: 10
+  targetStatTypeName: StatusStat
+  fieldName: statStar
+  addValue: 1
   multiplyValue: 0

@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec1afcbcbf3541ad9464cd91808d0b03, type: 3}
+  m_Script: {fileID: 11500000, guid: d07875e6312a2984dac8a27131630342, type: 3}
   m_Name: Weapon20Extra1_EffectData1
-  m_EditorClassIdentifier: Assembly-CSharp::RepeatItemEffect
+  m_EditorClassIdentifier: Assembly-CSharp::DamageAreaAttackEffect
   conditionMode: 0
   conditions: []
   visualData: {fileID: 0}
@@ -22,49 +22,12 @@ MonoBehaviour:
   audioSource: 
   impactVfxLifeTime: 1
   endVisualData: {fileID: 0}
-  steps:
-  - entries:
-    - item: {fileID: 11400000, guid: 0cc59d794443a844aa710122e4cb9d84, type: 2}
-      count: 1
-    items: []
-    onImpactEffects: []
-    effectOnlyCount: 1
-    overridePlacement: 0
-    placement: 0
-    travelMode: 0
-    impactTrigger: 0
-    intervalAfter: 1
-  selection: 0
-  repeatStat:
-    itemRepeatCount: 1
-    itemRepeatInterval: 0.5
-    itemRepeatStepIntervalMultiplier: 1
-    itemRepeatForwardOffset: 1
-    itemRepeatSideOffset: 0
-    itemRepeatRadius: 1
-    itemRepeatSpreadAngle: 120
-    itemRepeatDirectionAngle: 0
-    itemRepeatProjectileCountMultiplier: 1
-    itemRepeatFlightTime: 0.3
-    itemRepeatArcHeight: 0.8
-    itemRepeatBombDelay: 0
-    itemRepeatBombLifetime: 5
-    itemRepeatTriggerRadius: 0.5
-  placement: 1
-  directionMode: 0
-  fixedWorldDirection: {x: 1, y: 0}
-  startPosition: 0
-  throwItems: 1
-  projectilePrefab: {fileID: 2153336256934016628, guid: 7d27764ab7c84ac489fdc540376ba873, type: 3}
-  projectileSprite: {fileID: 0}
-  showTargetRange: 1
-  targetRangeIndicatorPrefab: {fileID: 7885248462748341646, guid: f3f56727797bdb640b4b975b776cdacd, type: 3}
-  triggerSpecialItemsForChildren: 0
-  overrideProjectileMotion: 0
-  enemyLayerMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  firstStepAtOrigin: 0
-  onStartEffects: []
-  afterLastImpactEffects: []
-  items: []
+  attackStat:
+    damageAreaPower: 0
+    damageAreaInterval: 0.5
+    damageAreaRange: 0.5
+    damageAreaLifeTime: 0.5
+  attackPrefab: {fileID: -7298374742604618283, guid: ba1a65fc3cffa9e41a41bdb190df387d, type: 3}
+  damageApplyMode: 0
+  onHitEffects: []
+  hitEffectApplyMode: 0

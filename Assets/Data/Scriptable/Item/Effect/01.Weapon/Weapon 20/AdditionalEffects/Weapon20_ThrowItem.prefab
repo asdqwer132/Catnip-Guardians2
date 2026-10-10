@@ -48,7 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemThrowMover
   spriteRenderer: {fileID: 8496178843327898776}
   speed: 10
-  arriveTime: 0.5
+  arriveTime: 3
   maxMoveTime: 3
   arrivalTiming:
     mode: 0
@@ -86,9 +86,11 @@ MonoBehaviour:
   minArcHeight: 0
   maxArcHeight: 0
   arcHeightDistanceMultiplier: 0
-  arcPeakProgress: 0.5
+  arcPeakProgress: 0.1
   spinWhileMoving: 0
   spinSpeed: 540
+  faceMoveDirection: 1
+  directionAngleOffset: -45
   destroyOnArrive: 1
 --- !u!114 &7886578856767586819
 MonoBehaviour:

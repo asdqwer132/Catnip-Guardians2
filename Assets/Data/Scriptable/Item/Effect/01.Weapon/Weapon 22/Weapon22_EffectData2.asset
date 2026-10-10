@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b250f045bef3cf34fbfec8a0516c81f9, type: 3}
-  m_Name: Weapon22_EffectData1
+  m_Name: Weapon22_EffectData2
   m_EditorClassIdentifier: Assembly-CSharp::BuffEffect
   conditionMode: 0
   conditions: []
@@ -22,7 +22,7 @@ MonoBehaviour:
   audioSource: 
   impactVfxLifeTime: 1
   endVisualData: {fileID: 0}
-  targetResolver: {fileID: 11400000, guid: 6ffa8f9a788b54547af5963426c14f00, type: 2}
+  targetResolver: {fileID: 11400000, guid: 6510477e7f8f4111b82f85ad25380713, type: 2}
   buffInfo:
     statusDefinition: {fileID: 0}
     stackMode: 0
@@ -53,7 +53,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57bb8c5d3dc35cf4db784fd698670410, type: 3}
   m_Name: Float Modifier
   m_EditorClassIdentifier: Assembly-CSharp::FloatFieldBuffModifier
-  targetStatTypeName: HealthStat
-  fieldName: defense
-  addValue: 10
+  targetStatTypeName: ItemCooldownStat
+  fieldName: cooldownRecoveryRate
+  addValue: 0.2
   multiplyValue: 0
