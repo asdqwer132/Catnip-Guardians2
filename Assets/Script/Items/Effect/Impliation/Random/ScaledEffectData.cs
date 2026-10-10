@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ScaledEffect", menuName = "GameData/Items/Effects/Scaled Effects")]
+[CreateAssetMenu(fileName = "ScaledEffect", menuName = "04.Items/Effects/Use Effects/Scaled Effects")]
 public sealed class ScaledEffectData : ItemEffectData
 {
     public ItemEffectData[] effects;

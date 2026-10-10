@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "StunHitEffect", menuName = "GameData/Items/Hit Effects/Stun")]
+[CreateAssetMenu(fileName = "StunHitEffect", menuName = "04.Items/Effects/Hit Effects/Stun")]
 public class StunHitEffectData : HitEffectData
 {
     [Header("Stun")]

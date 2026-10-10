@@ -262,7 +262,7 @@ public sealed class AdditionalEnemyControlTests
         SpecialStatusDefinition key = ScriptableObject.CreateInstance<SpecialStatusDefinition>();
         owned.Add(key);
         mark.markKey = key;
-        mark.onDamagedEffects = new ItemEffectData[] { recording };
+        mark.onDamageEffects = new ItemEffectData[] { recording };
         mark.reactionSource = MarkReactionSource.DamageSource;
         ItemEffectContext markContext = Context();
         markContext.owner = creator;

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ChainAttackEffect", menuName = "GameData/Items/Effects/Attack/Chain Attack")]
+[CreateAssetMenu(fileName = "ChainAttackEffect", menuName = "04.Items/Effects/Direct Effects/Attack/Chain Attack")]
 public sealed class ChainAttackEffect : ItemEffectData
 {
     public ChainAttackStat attackStat = new ChainAttackStat();

@@ -18,7 +18,7 @@ public class ShieldStat : IGameStat<ShieldStat>, IEffectScalableStat
     public void ApplyExecutionScale(EffectExecutionScale scale) { shieldDuration *= scale.Duration; }
 }
 
-[CreateAssetMenu(fileName = "Shield", menuName = "GameData/Items/Effects/Health/Shield")]
+[CreateAssetMenu(fileName = "Shield", menuName = "04.Items/Effects/Direct Effects/Health/Shield")]
 public class ShieldEffect : ItemEffectData
 {
     public HealthTargetSettings targets = new HealthTargetSettings();

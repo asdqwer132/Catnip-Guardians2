@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "HasSummonCondition", menuName = "GameData/Items/Conditions/Has Summon")]
+[CreateAssetMenu(fileName = "HasSummonCondition", menuName = "04.Items/Conditions/Has Summon")]
 public sealed class HasSummonConditionData : ItemEffectConditionData
 {
     public SummonSelection selection = new SummonSelection();

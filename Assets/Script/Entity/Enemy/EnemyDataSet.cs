@@ -2,7 +2,7 @@
 using UnityEngine;
 [Serializable]
 
-[CreateAssetMenu(fileName = "EnemySetData", menuName = "GameData/Entities/Enemy/Enemy Set Data")]
+[CreateAssetMenu(fileName = "EnemySetData", menuName = "01.Entities/Enemy/Enemy Set Data")]
 public class EnemyDataSet : ScriptableObject
 {
     [Header("Animation")]

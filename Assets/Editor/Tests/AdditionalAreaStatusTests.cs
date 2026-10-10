@@ -181,7 +181,7 @@ public sealed class AdditionalAreaStatusTests
     }
 
     [Test]
-    public void ConsumeAreaUsesTheCheckedHandleAndSkipsNaturalEndEffects()
+    public void ConsumeAreaUsesTheCheckedHandleAndSkipsNaturalEnEffects()
     {
         GameObject owner = Host();
         AreaDefinition type = Asset<AreaDefinition>();

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ApplyHitEffectsEffect", menuName = "GameData/Items/Effects/Attack/Apply Hit Effects")]
+[CreateAssetMenu(fileName = "ApplyHitEffectsEffect", menuName = "04.Items/Effects/Direct Effects/Attack/Apply Hit Effects")]
 public sealed class ApplyHitEffectsEffect : ItemEffectData
 {
     public TargetSelection selection = new TargetSelection();

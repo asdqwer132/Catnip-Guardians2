@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ThenEffect", menuName = "GameData/Items/Effects/Then Effects")]
+[CreateAssetMenu(fileName = "ThenEffect", menuName = "04.Items/Effects/Use Effects/Then Effects")]
 public sealed class ThenEffectData : ItemEffectData
 {
     public ItemEffectData[] effects;

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public enum AreaConsumeMode { FirstCheckedArea, AllCheckedAreas, AllMatchingOwnerAreas }
 
-[CreateAssetMenu(fileName = "ConsumeAreaEffect", menuName = "GameData/Items/Effects/Area/Consume Checked Areas")]
+[CreateAssetMenu(fileName = "ConsumeAreaEffect", menuName = "04.Items/Effects/Direct Effects/Area/Consume Checked Areas")]
 public sealed class ConsumeAreaEffect : ItemEffectData
 {
     public HasAreaConditionData checkedCondition;

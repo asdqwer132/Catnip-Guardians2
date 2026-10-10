@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ContextSpecialStatusTargetResolver", menuName = "GameData/Buffs/Targets/Execution Special Status Target")]
+[CreateAssetMenu(fileName = "ContextSpecialStatusTargetResolver", menuName = "04.Items/Effects/Direct Effects/Buff/BuffSetting/Targets/Execution Special Status Target")]
 public sealed class ContextSpecialStatusTargetResolver : BuffTargetResolver
 {
     public SpecialStatusQueryTarget[] targets = { SpecialStatusQueryTarget.PlayerStatus };

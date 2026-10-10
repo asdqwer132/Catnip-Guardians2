@@ -123,7 +123,7 @@ public sealed class MarkStatusController : MonoBehaviour
                 if (result.killed && !state.killReacted)
                 {
                     state.killReacted = true;
-                    React(state, state.effect.onKilledEffects, result.sourceContext);
+                    React(state, state.effect.onKilleEffects, result.sourceContext);
                     RemoveMarker(state);
                 }
                 continue;
@@ -135,12 +135,12 @@ public sealed class MarkStatusController : MonoBehaviour
                     (!state.effect.damageReactionOnlyOnce || !state.damageReacted))
                 {
                     state.damageReacted = true;
-                    React(state, state.effect.onDamagedEffects, result.sourceContext);
+                    React(state, state.effect.onDamageEffects, result.sourceContext);
                 }
                 if (result.killed && !state.killReacted && IsCurrentLife(state) && state.context.CanContinue)
                 {
                     state.killReacted = true;
-                    React(state, state.effect.onKilledEffects, result.sourceContext);
+                    React(state, state.effect.onKilleEffects, result.sourceContext);
                     RemoveMarker(state);
                 }
             }

@@ -4,7 +4,7 @@ using UnityEngine;
 public enum RepeatItemSelection { InOrder, Random }
 public enum RepeatItemStartPosition { EffectPosition, OwnerPosition }
 
-[CreateAssetMenu(fileName = "RepeatItemEffect", menuName = "GameData/Items/Effects/Repeat Item")]
+[CreateAssetMenu(fileName = "RepeatItemEffect", menuName = "04.Items/Effects/Use Effects/Repeat Item")]
 public class RepeatItemEffect : ItemEffectData
 {
     [Header("Repeat Steps")]

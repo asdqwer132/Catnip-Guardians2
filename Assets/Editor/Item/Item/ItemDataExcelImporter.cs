@@ -244,7 +244,7 @@ namespace ItemDataExcelTools
                         if (found.Length == 1) item.Icon = found[0];
                         else result.Warnings.Add("Items " + row.Number + "행: ID와 일치하는 아이콘이 없습니다: " + id);
                     }
-                    item.Effects = ReadEffects(items.Value(row, "effectDatas"), existing, resolver);
+                    item.Effects = ReaEffects(items.Value(row, "effectDatas"), existing, resolver);
                     result.Items.Add(item);
                 }
                 catch (Exception exception) { result.Errors.Add("Items " + row.Number + "행: " + exception.Message); }
@@ -301,7 +301,7 @@ namespace ItemDataExcelTools
                 .SelectMany(AssetDatabase.LoadAllAssetsAtPath).OfType<Sprite>().Distinct().ToList();
         }
 
-        private static ItemEffectData[] ReadEffects(string text, ItemData existing, AssetResolver resolver)
+        private static ItemEffectData[] ReaEffects(string text, ItemData existing, AssetResolver resolver)
         {
             text = text.Trim();
             if (text.Length == 0) return existing == null ? new ItemEffectData[0] : existing.effectDatas;

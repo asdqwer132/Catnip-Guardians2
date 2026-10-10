@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "EnemyRetreatAction", menuName = "GameData/Entities/Enemy/Patterns/Actions/Retreat")]
+[CreateAssetMenu(fileName = "EnemyRetreatAction", menuName = "01.Entities/Enemy/Patterns/Actions/Retreat")]
 public class EnemyRetreatAction : EnemyPatternAction
 {
     [Header("Move")]

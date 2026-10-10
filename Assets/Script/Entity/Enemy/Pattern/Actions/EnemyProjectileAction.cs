@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "EnemyProjectileAction", menuName = "GameData/Entities/Enemy/Patterns/Actions/Projectile")]
+[CreateAssetMenu(fileName = "EnemyProjectileAction", menuName = "01.Entities/Enemy/Patterns/Actions/Projectile")]
 public class EnemyProjectileAction : EnemyPatternAction
 {
     public EnemySimpleProjectile projectilePrefab;

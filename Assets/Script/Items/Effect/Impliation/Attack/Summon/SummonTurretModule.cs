@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SummonTurret", menuName = "GameData/Items/Summon Modules/Turret")]
+[CreateAssetMenu(fileName = "SummonTurret", menuName = "04.Items/Effects/Direct Effects/Summon/Summon Modules/Turret")]
 public sealed class SummonTurretModule : SummonBehaviourModule
 {
     [Tooltip("RandomPosition은 사용하지 않습니다. 적에게 조준해 자체 탄환을 발사합니다.")]

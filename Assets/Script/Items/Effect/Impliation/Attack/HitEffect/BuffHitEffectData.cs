@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "BuffHitEffect", menuName = "GameData/Items/Hit Effects/Buff")]
+[CreateAssetMenu(fileName = "BuffHitEffect", menuName = "04.Items/Effects/Hit Effects/Buff")]
 public class BuffHitEffectData : HitEffectData
 {
     [Header("Buff")]

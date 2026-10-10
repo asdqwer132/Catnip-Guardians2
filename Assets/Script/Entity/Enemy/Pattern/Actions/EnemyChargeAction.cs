@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "EnemyChargeAction", menuName = "GameData/Entities/Enemy/Patterns/Actions/Charge")]
+[CreateAssetMenu(fileName = "EnemyChargeAction", menuName = "01.Entities/Enemy/Patterns/Actions/Charge")]
 public class EnemyChargeAction : EnemyPatternAction
 {
     [Header("Move")]

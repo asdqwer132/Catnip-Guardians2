@@ -2,7 +2,7 @@
 
 [CreateAssetMenu(
     fileName = "SummonAttackEffect",
-    menuName = "GameData/Items/Effects/Attack/Summon"
+    menuName = "04.Items/Effects/Direct Effects/Summon/Summon"
 )]
 public class SummonAttackEffect : ItemEffectData
 {

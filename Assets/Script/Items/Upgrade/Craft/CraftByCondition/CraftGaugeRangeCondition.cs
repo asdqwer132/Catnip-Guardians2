@@ -10,7 +10,7 @@ public sealed class CraftGaugeContribution
 }
 
 /// <summary>Each material contributes points. Use overlapping ranges for additive bonuses.</summary>
-[CreateAssetMenu(fileName = "GaugeRangeCondition", menuName = "GameData/Crafting/Conditions/Gauge Range")]
+[CreateAssetMenu(fileName = "GaugeRangeCondition", menuName = "03.Upgrade/Crafting/Conditions/Gauge Range")]
 public sealed class CraftGaugeRangeCondition : CraftCondition
 {
     public CraftGaugeContribution[] contributions = new CraftGaugeContribution[0];

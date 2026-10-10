@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SummonPull", menuName = "GameData/Items/Summon Modules/Pull")]
+[CreateAssetMenu(fileName = "SummonPull", menuName = "04.Items/Effects/Direct Effects/Summon/Summon Modules/Pull")]
 public sealed class SummonPullModule : SummonBehaviourModule
 {
     [Min(0f)] public float pullSpeed = 5f;

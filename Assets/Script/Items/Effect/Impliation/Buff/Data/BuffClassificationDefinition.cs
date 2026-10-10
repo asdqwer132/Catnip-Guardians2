@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "BuffClassification", menuName = "GameData/Buffs/Classification/Rules")]
+[CreateAssetMenu(fileName = "BuffClassification", menuName = "04.Items/Effects/Direct Effects/Buff/BuffSetting/Classification/Rules")]
 public sealed class BuffClassificationDefinition : ScriptableObject
 {
     public string displayName;

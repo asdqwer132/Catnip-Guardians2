@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-[CreateAssetMenu(fileName = "HasSpecialStatusCondition", menuName = "GameData/Items/Conditions/Has Special Status (Minimum Stacks)")]
+[CreateAssetMenu(fileName = "HasSpecialStatusCondition", menuName = "04.Items/Conditions/Has Special Status (Minimum Stacks)")]
 public sealed class HasSpecialStatusCondition : ItemEffectConditionData
 {
     [FormerlySerializedAs("status")]

@@ -7,7 +7,7 @@ public enum EnemyTargetOverrideMode
     RandomOtherEnemy
 }
 
-[CreateAssetMenu(fileName = "TargetOverrideHitEffect", menuName = "GameData/Items/Hit Effects/Target Override")]
+[CreateAssetMenu(fileName = "TargetOverrideHitEffect", menuName = "04.Items/Effects/Hit Effects/Target Override")]
 public sealed class TargetOverrideHitEffectData : HitEffectData
 {
     [Tooltip("미끼는 Owner에 공격 가능한 미끼 소환물을 전달합니다. 혼란의 적끼리 공격 여부는 데이터에서 선택합니다.")]

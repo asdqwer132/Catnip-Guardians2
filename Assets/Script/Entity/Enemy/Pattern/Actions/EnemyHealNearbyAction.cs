@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "EnemyHealNearbyAction", menuName = "GameData/Entities/Enemy/Patterns/Actions/Heal Nearby")]
+[CreateAssetMenu(fileName = "EnemyHealNearbyAction", menuName = "01.Entities/Enemy/Patterns/Actions/Heal Nearby")]
 public class EnemyHealNearbyAction : EnemyPatternAction
 {
     [Min(0f)] public float radius = 2f;

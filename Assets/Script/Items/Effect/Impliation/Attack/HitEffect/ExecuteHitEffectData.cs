@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ExecuteHitEffect", menuName = "GameData/Items/Hit Effects/Execute")]
+[CreateAssetMenu(fileName = "ExecuteHitEffect", menuName = "04.Items/Effects/Hit Effects/Execute")]
 public class ExecuteHitEffectData : HitEffectData
 {
     [Range(0f, 1f)] public float threshold = 0.1f;

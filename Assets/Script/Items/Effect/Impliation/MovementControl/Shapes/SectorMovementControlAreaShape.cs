@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SectorMovementControlArea", menuName = "GameData/Items/Effects/Movement/Shapes/Sector")]
+[CreateAssetMenu(fileName = "SectorMovementControlArea", menuName = "04.Items/Effects/Direct Effects/Movement/Shapes/Sector")]
 public sealed class SectorMovementControlAreaShape : MovementControlAreaShape
 {
     [Range(0f, 360f)] public float angle = 90f;

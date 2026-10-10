@@ -7,7 +7,7 @@ public enum EnemyCircleMoveFinishMode
     ByDuration
 }
 
-[CreateAssetMenu(fileName = "EnemyCircleMoveAction", menuName = "GameData/Entities/Enemy/Patterns/Actions/Circle Move Around Target")]
+[CreateAssetMenu(fileName = "EnemyCircleMoveAction", menuName = "01.Entities/Enemy/Patterns/Actions/Circle Move Around Target")]
 public class EnemyCircleMoveAction : EnemyPatternAction
 {
     [Header("Finish")]

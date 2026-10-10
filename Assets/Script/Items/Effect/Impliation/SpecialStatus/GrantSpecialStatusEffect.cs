@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-[CreateAssetMenu(fileName = "GrantSpecialStatusEffect", menuName = "GameData/Items/Effects/Special Status/Grant Special Status (Time or Uses)")]
+[CreateAssetMenu(fileName = "GrantSpecialStatusEffect", menuName = "04.Items/Effects/Direct Effects/Special Status/Grant Special Status (Time or Uses)")]
 public sealed class GrantSpecialStatusEffect : ItemEffectData
 {
     [FormerlySerializedAs("status")]

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "CleanseBuffEffect", menuName = "GameData/Items/Effects/Buff Classification/Cleanse Harmful or Tagged Buffs")]
+[CreateAssetMenu(fileName = "CleanseBuffEffect", menuName = "04.Items/Effects/Direct Effects/Buff/CleanBuff")]
 public sealed class CleanseBuffEffect : ItemEffectData
 {
     public BuffTargetResolver targetResolver;

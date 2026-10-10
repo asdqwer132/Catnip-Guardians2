@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SummonContactDamage", menuName = "GameData/Items/Summon Modules/Contact Damage")]
+[CreateAssetMenu(fileName = "SummonContactDamage", menuName = "04.Items/Effects/Direct Effects/Summon/Summon Modules/Contact Damage")]
 public sealed class SummonContactDamageModule : SummonBehaviourModule
 {
     [Min(0.01f)] public float contactRadius = 0.3f;

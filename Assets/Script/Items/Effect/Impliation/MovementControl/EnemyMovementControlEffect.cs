@@ -15,7 +15,7 @@ public enum EnemyMovementControlExecutionMode
     PersistentArea = 1
 }
 
-[CreateAssetMenu(fileName = "EnemyMovementControlEffect", menuName = "GameData/Items/Effects/Movement/Control")]
+[CreateAssetMenu(fileName = "EnemyMovementControlEffect", menuName = "04.Items/Effects/Direct Effects/Movement/Control")]
 public class EnemyMovementControlEffect : ItemEffectData
 {
     [Header("Movement")]

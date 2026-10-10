@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "AreaDefinition", menuName = "GameData/Items/Areas/Definition")]
+[CreateAssetMenu(fileName = "AreaDefinition", menuName = "04.Items/Effects/Direct Effects/Area/Definition")]
 public sealed class AreaDefinition : ScriptableObject
 {
     public string displayName;

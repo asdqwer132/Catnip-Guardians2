@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec1afcbcbf3541ad9464cd91808d0b03, type: 3}
+  m_Name: RepeatItemEffect
+  m_EditorClassIdentifier: Assembly-CSharp::RepeatItemEffect
+  conditionMode: 0
+  conditions: []
+  visualData: {fileID: 0}
+  impactVfxPrefab: {fileID: 0}
+  impactBaseScale: {x: 1, y: 1, z: 1}
+  scaleImpactVfxByRadius: 1
+  useAnimatorClipLifeTime: 1
+  audioSource: 
+  impactVfxLifeTime: 1
+  endVisualData: {fileID: 0}
+  steps: []
+  selection: 0
+  repeatStat:
+    itemRepeatCount: 3
+    itemRepeatInterval: 0.2
+    itemRepeatStepIntervalMultiplier: 1
+    itemRepeatForwardOffset: 0
+    itemRepeatSideOffset: 0
+    itemRepeatRadius: 2
+    itemRepeatShotgunRadiusOffset: 0
+    itemRepeatSpreadAngle: 360
+    itemRepeatDirectionAngle: 0
+    itemRepeatProjectileCountMultiplier: 1
+    itemRepeatFlightTime: 0.3
+    itemRepeatArcHeight: 0.8
+    itemRepeatBombDelay: 0
+    itemRepeatBombLifetime: 5
+    itemRepeatTriggerRadius: 0.5
+  placement: 0
+  directionMode: 0
+  fixedWorldDirection: {x: 1, y: 0}
+  shotgunDistribution: 0
+  spreadStartMode: 0
+  clockwiseSpread: 0
+  startPosition: 0
+  throwItems: 1
+  projectilePrefab: {fileID: 0}
+  projectileSprite: {fileID: 0}
+  showTargetRange: 0
+  targetRangeIndicatorPrefab: {fileID: 0}
+  triggerSpecialItemsForChildren: 0
+  overrideProjectileMotion: 0
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  firstStepAtOrigin: 0
+  onStartEffects: []
+  afterLastImpactEffects: []
+  items: []

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ReactiveGroundEffect", menuName = "GameData/Items/Effects/Attack/Reactive Ground")]
+[CreateAssetMenu(fileName = "ReactiveGroundEffect", menuName = "04.Items/Effects/Direct Effects/Area/Reactive Ground")]
 public class ReactiveGroundEffect : ItemEffectData
 {
     [Tooltip("비워 두면 기존 장판 설정을 유지합니다. 설정하면 종류/스탯/생명주기 효과를 이 정의에서 가져옵니다.")]

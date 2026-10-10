@@ -10,7 +10,7 @@ public sealed class CraftChanceRule
     public float chancePercent;
 }
 
-[CreateAssetMenu(fileName = "CraftItem", menuName = "GameData/Crafting/Item")]
+[CreateAssetMenu(fileName = "CraftItem", menuName = "03.Upgrade/Crafting/Item")]
 public sealed class CraftItemData : ScriptableObject
 {
     public ItemData resultItem;

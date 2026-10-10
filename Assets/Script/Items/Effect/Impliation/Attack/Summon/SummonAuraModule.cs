@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SummonAura", menuName = "GameData/Items/Summon Modules/Aura")]
+[CreateAssetMenu(fileName = "SummonAura", menuName = "04.Items/Effects/Direct Effects/Summon/Summon Modules/Aura")]
 public sealed class SummonAuraModule : SummonBehaviourModule
 {
     public SummonSelection targets = new SummonSelection();

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SectorDamageAreaAttackEffect", menuName = "GameData/Items/Effects/Attack/Sector Damage Area")]
+[CreateAssetMenu(fileName = "SectorDamageAreaAttackEffect", menuName = "04.Items/Effects/Direct Effects/Attack/Sector Damage")]
 public sealed class SectorDamageAreaAttackEffect : DamageAreaAttackEffect
 {
     [Range(0f, 360f)] public float sectorAngle = 90f;

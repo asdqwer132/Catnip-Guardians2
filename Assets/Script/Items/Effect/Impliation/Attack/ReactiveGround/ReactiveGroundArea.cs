@@ -13,7 +13,7 @@ public sealed class ReactiveGroundArea : AttackObject<ReactiveGroundStat>
     private bool sameOwner, replaceIncoming, scaleVisual, initialized, reacting, finishing;
     private float elapsed, tickElapsed, nextReaction, specialUntil;
     private AreaDefinition definition;
-    private ItemEffectData[] startEffects, enterEffects, tickEffects, exitEffects, endEffects, residenceEffects;
+    private ItemEffectData[] startEffects, enterEffects, tickEffects, exitEffects, enEffects, residenceEffects;
     private readonly EnemyQueryBuffer targetQuery = new EnemyQueryBuffer();
     private readonly Dictionary<Enemy, Residence> residents = new Dictionary<Enemy, Residence>();
     private readonly HashSet<Enemy> inside = new HashSet<Enemy>();
@@ -49,7 +49,7 @@ public sealed class ReactiveGroundArea : AttackObject<ReactiveGroundStat>
             enterEffects = ItemEffectUtility.Copy(definition.onEnter);
             tickEffects = ItemEffectUtility.Copy(definition.onTick);
             exitEffects = ItemEffectUtility.Copy(definition.onExit);
-            endEffects = ItemEffectUtility.Copy(definition.onNaturalEnd);
+            enEffects = ItemEffectUtility.Copy(definition.onNaturalEnd);
             residenceEffects = ItemEffectUtility.Copy(definition.onResidence);
             targetMask = definition.targetMask;
             residenceThreshold = EffectStatUtility.Safe(definition.residenceThreshold, 0f, 600f, 0f);
@@ -102,7 +102,7 @@ public sealed class ReactiveGroundArea : AttackObject<ReactiveGroundStat>
             finishing = true;
             active.Remove(this);
             AreaRegistry.Unregister(this);
-            ItemEffectUtility.Execute(endEffects, context.Copy(transform.position, context.direction));
+            ItemEffectUtility.Execute(enEffects, context.Copy(transform.position, context.direction));
             CompleteLifetime();
             gameObject.SetActive(false);
             Destroy(gameObject);

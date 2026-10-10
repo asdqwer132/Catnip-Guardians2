@@ -24,7 +24,7 @@ public class RegenerationStat : IGameStat<RegenerationStat>, IEffectScalableStat
     }
 }
 
-[CreateAssetMenu(fileName = "Regeneration", menuName = "GameData/Items/Effects/Health/Regeneration")]
+[CreateAssetMenu(fileName = "Regeneration", menuName = "04.Items/Effects/Direct Effects/Health/Regeneration")]
 public class RegenerationEffect : ItemEffectData
 {
     public HealthTargetSettings targets = new HealthTargetSettings();

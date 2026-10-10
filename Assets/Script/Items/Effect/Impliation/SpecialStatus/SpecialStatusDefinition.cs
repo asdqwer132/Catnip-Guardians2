@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SpecialStatusKey", menuName = "GameData/Special Status/Identity Key")]
+[CreateAssetMenu(fileName = "SpecialStatusKey", menuName = "04.Items/Effects/Direct Effects/Special Status/Identity Key")]
 public sealed class SpecialStatusDefinition : ScriptableObject
 {
     [Tooltip("Star·Arrow처럼 특수 기능이 확인하는 상태의 식별 키입니다. 표시 이름이 같아도 다른 에셋이면 별개 상태입니다. 해로움·정화 가능 여부는 BuffClassificationDefinition에서 설정합니다.")]

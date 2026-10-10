@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "DamageOverTimeHitEffect", menuName = "GameData/Items/Hit Effects/Damage Over Time")]
+[CreateAssetMenu(fileName = "DamageOverTimeHitEffect", menuName = "04.Items/Effects/Hit Effects/Damage Over Time")]
 public class DamageOverTimeHitEffectData : HitEffectData
 {
     [Header("Damage Over Time")]

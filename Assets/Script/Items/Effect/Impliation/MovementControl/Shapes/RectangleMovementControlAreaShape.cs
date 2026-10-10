@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "RectangleMovementControlArea", menuName = "GameData/Items/Effects/Movement/Shapes/Rectangle")]
+[CreateAssetMenu(fileName = "RectangleMovementControlArea", menuName = "04.Items/Effects/Direct Effects/Movement/Shapes/Rectangle")]
 public sealed class RectangleMovementControlAreaShape : MovementControlAreaShape
 {
     [Min(0.01f)] public float widthMultiplier = 0.5f;

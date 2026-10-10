@@ -4,7 +4,7 @@ using UnityEngine;
 public enum CooldownOperation { ReduceSeconds, ReduceFraction, Ready }
 public enum CooldownBagSelection { SourceBag, AllBags }
 
-[CreateAssetMenu(fileName = "CooldownControlEffect", menuName = "GameData/Items/Effects/Cooldown Control")]
+[CreateAssetMenu(fileName = "CooldownControlEffect", menuName = "04.Items/Effects/Direct Effects/Cooldown Control")]
 public sealed class CooldownControlEffect : ItemEffectData
 {
     public CooldownBagSelection bags;

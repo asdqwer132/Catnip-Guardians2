@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "HasAreaCondition", menuName = "GameData/Items/Conditions/Has Area")]
+[CreateAssetMenu(fileName = "HasAreaCondition", menuName = "04.Items/Conditions/Has Area")]
 public sealed class HasAreaConditionData : ItemEffectConditionData
 {
     public AreaDefinition definition;

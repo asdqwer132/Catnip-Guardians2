@@ -9,7 +9,7 @@ public sealed class SummonTransformRequirement
     [Range(1, 128)] public int count = 1;
 }
 
-[CreateAssetMenu(fileName = "SummonTransformEffect", menuName = "GameData/Items/Effects/Summon/Transform")]
+[CreateAssetMenu(fileName = "SummonTransformEffect", menuName = "04.Items/Effects/Direct Effects/Summon/Transform")]
 public sealed class SummonTransformEffect : ItemEffectData
 {
     public SummonSelection selection = new SummonSelection();

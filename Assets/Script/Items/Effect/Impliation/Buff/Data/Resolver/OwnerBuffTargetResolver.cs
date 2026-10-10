@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "OwnerBuffTargetResolver", menuName = "GameData/Buffs/Targets/Owner")]
+[CreateAssetMenu(fileName = "OwnerBuffTargetResolver", menuName = "04.Items/Effects/Direct Effects/Buff/BuffSetting/Targets/Owner")]
 public class OwnerBuffTargetResolver : BuffTargetResolver
 {
     public enum OwnerTargetMode

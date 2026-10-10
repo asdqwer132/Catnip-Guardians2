@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "BuffEffect", menuName = "GameData/Items/Effects/Buff")]
+[CreateAssetMenu(fileName = "BuffEffect", menuName = "04.Items/Effects/Direct Effects/Buff/Buff")]
 public class BuffEffect : ItemEffectData
 {
     [Header("Target")]
@@ -23,7 +23,7 @@ public class BuffEffect : ItemEffectData
     [Tooltip("끄면 Cleanse로 제거할 수 없습니다. 공유 분류의 Dispellable이 꺼져 있어도 보호됩니다.")]
     public bool dispellable = true;
     [InspectorName("Additional Cleanse Tags")]
-    [Tooltip("공유 분류 태그와 함께 적용합니다. GameData/Buffs/Classification/Tag에서 태그를 만드세요.")]
+    [Tooltip("공유 분류 태그와 함께 적용합니다. 04.Items/Buffs/Classification/Tag에서 태그를 만드세요.")]
     public BuffFlagDefinition[] flags;
 
     [Header("UI")]

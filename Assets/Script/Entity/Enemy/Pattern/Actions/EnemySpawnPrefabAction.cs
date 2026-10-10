@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "EnemySpawnPrefabAction", menuName = "GameData/Entities/Enemy/Patterns/Actions/Spawn Prefab")]
+[CreateAssetMenu(fileName = "EnemySpawnPrefabAction", menuName = "01.Entities/Enemy/Patterns/Actions/Spawn Prefab")]
 public class EnemySpawnPrefabAction : EnemyPatternAction
 {
     public GameObject spawnPrefab;

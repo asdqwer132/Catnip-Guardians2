@@ -2,7 +2,7 @@
 
 [CreateAssetMenu(
     fileName = "UnlockSkillReward",
-    menuName = "GameData/Skills/Rewards/Unlock"
+    menuName = "03.Upgrade/Skills/Rewards/Unlock"
 )]
 public class UnlockSkillReward : SkillRewardData
 {

@@ -19,7 +19,7 @@ public sealed class SummonModificationSettings
     public float addRemainingLifetime;
 }
 
-[CreateAssetMenu(fileName = "SummonModifyEffect", menuName = "GameData/Items/Effects/Summon/Modify")]
+[CreateAssetMenu(fileName = "SummonModifyEffect", menuName = "04.Items/Effects/Direct Effects/Summon/Modify")]
 public sealed class SummonModifyEffect : ItemEffectData
 {
     public SummonSelection selection = new SummonSelection();

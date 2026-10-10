@@ -9,7 +9,7 @@ public sealed class CraftGaugeAmount
 }
 
 // Defines what one unit of this inventory item adds before manager-specific weights.
-[CreateAssetMenu(fileName = "MaterialGauge", menuName = "GameData/Crafting/Material Gauge")]
+[CreateAssetMenu(fileName = "MaterialGauge", menuName = "03.Upgrade/Crafting/Material Gauge")]
 public sealed class CraftMaterialGaugeData : ScriptableObject
 {
     public ItemData itemData;

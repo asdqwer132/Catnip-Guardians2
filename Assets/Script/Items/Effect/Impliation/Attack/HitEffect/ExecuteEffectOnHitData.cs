@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ExecuteEffectOnHitData", menuName = "GameData/Items/Hit Effects/Execute Effects")]
+[CreateAssetMenu(fileName = "ExecuteEffectOnHitData", menuName = "04.Items/Effects/Hit Effects/Execute Effects")]
 public sealed class ExecuteEffectOnHitData : HitEffectData
 {
     public ItemEffectData[] effects;

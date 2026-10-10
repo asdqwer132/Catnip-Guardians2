@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "EnemyTelegraphAction", menuName = "GameData/Entities/Enemy/Patterns/Actions/Telegraph")]
+[CreateAssetMenu(fileName = "EnemyTelegraphAction", menuName = "01.Entities/Enemy/Patterns/Actions/Telegraph")]
 public class EnemyTelegraphAction : EnemyPatternAction
 {
     public GameObject telegraphPrefab;

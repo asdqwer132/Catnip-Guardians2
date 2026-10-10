@@ -6,7 +6,7 @@ public enum SkillMapType
 }
 [CreateAssetMenu(
     fileName = "SkillMapData",
-    menuName = "GameData/Skills/Map"
+    menuName = "03.Upgrade/Skills/Map"
 )]
 public class SkillMapData : DefaultData
 {

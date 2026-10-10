@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "RemoveCheckedSpecialStatusEffect", menuName = "GameData/Items/Effects/Special Status/Remove Checked Special Status (All)")]
+[CreateAssetMenu(fileName = "RemoveCheckedSpecialStatusEffect", menuName = "04.Items/Effects/Direct Effects/Special Status/Remove Checked Special Status (All)")]
 public sealed class RemoveCheckedSpecialStatusEffect : ItemEffectData
 {
     [Tooltip("분기 조건에서 확인한 기존 상태만 제거합니다. 먼저 조건을 실행하세요.")]

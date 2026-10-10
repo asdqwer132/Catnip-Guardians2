@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "RootHitEffect", menuName = "GameData/Items/Hit Effects/Root (Movement Only)")]
+[CreateAssetMenu(fileName = "RootHitEffect", menuName = "04.Items/Effects/Hit Effects/Root (Movement Only)")]
 public sealed class RootHitEffectData : HitEffectData
 {
     [Min(0.01f)] public float duration = 1f;

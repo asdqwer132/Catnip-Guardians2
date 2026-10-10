@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "EnemyPatternSetData", menuName = "GameData/Entities/Enemy/Patterns/Set")]
+[CreateAssetMenu(fileName = "EnemyPatternSetData", menuName = "01.Entities/Enemy/Patterns/Set")]
 public class EnemyPatternSetData : ScriptableObject
 {
     [Header("Pattern Cooldown Random")]

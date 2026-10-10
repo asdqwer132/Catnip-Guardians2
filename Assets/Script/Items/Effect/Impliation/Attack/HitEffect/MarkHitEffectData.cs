@@ -3,7 +3,7 @@ using UnityEngine.Serialization;
 
 public enum MarkReactionSource { MarkCreator, DamageSource }
 
-[CreateAssetMenu(fileName = "MarkHitEffect", menuName = "GameData/Items/Hit Effects/Configurable Mark")]
+[CreateAssetMenu(fileName = "MarkHitEffect", menuName = "04.Items/Effects/Hit Effects/Configurable Mark")]
 public sealed class MarkHitEffectData : HitEffectData
 {
     public SpecialStatusDefinition markKey;
@@ -11,8 +11,8 @@ public sealed class MarkHitEffectData : HitEffectData
     [FormerlySerializedAs("statusInfo")]
     public BuffInfo markerLifetime = new BuffInfo { duration = 5f };
     [Tooltip("반응 효과를 연결하지 않으면 표식 자체는 피해나 보상을 추가하지 않습니다.")]
-    public ItemEffectData[] onDamagedEffects;
-    public ItemEffectData[] onKilledEffects;
+    public ItemEffectData[] onDamageEffects;
+    public ItemEffectData[] onKilleEffects;
     public ItemEffectData[] onNaturalExpiryEffects;
     public bool reactToLethalDamage = true;
     public bool damageReactionOnlyOnce;

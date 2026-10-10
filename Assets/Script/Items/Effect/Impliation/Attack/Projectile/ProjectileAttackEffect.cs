@@ -4,7 +4,7 @@ public enum ProjectileAttackPath { Straight, Return, Orbit, Homing }
 public enum ProjectileRehitPolicy { OncePerLife, OncePerPathCycle, Interval }
 public enum ProjectileOrbitCenter { EffectPosition, OwnerPosition }
 
-[CreateAssetMenu(fileName = "ProjectileAttackEffect", menuName = "GameData/Items/Effects/Attack/Projectile Attack")]
+[CreateAssetMenu(fileName = "ProjectileAttackEffect", menuName = "04.Items/Effects/Direct Effects/Attack/Projectile")]
 public sealed class ProjectileAttackEffect : ItemEffectData
 {
     public ProjectileAttackStat attackStat = new ProjectileAttackStat();

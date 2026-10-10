@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Float Field Buff Modifier", menuName = "GameData/Buffs/Modifiers/Float Field")]
+[CreateAssetMenu(fileName = "Float Field Buff Modifier", menuName = "04.Items/Effects/Direct Effects/Buff/BuffSetting/Modifiers/Float Field")]
 public class FloatFieldBuffModifier : BuffModifier
 {
     private readonly Dictionary<Type, FieldInfo> fieldCache = new Dictionary<Type, FieldInfo>();

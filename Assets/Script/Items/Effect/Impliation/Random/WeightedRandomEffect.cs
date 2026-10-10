@@ -19,7 +19,7 @@ public sealed class WeightedEffectEntry
     }
 }
 
-[CreateAssetMenu(fileName = "WeightedRandomEffect", menuName = "GameData/Items/Effects/Weighted Random")]
+[CreateAssetMenu(fileName = "WeightedRandomEffect", menuName = "04.Items/Effects/Use Effects/Weighted Random")]
 public sealed class WeightedRandomEffect : ItemEffectData
 {
     public WeightedEffectEntry[] entries;

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "EnemyTeleportAction", menuName = "GameData/Entities/Enemy/Patterns/Actions/Teleport")]
+[CreateAssetMenu(fileName = "EnemyTeleportAction", menuName = "01.Entities/Enemy/Patterns/Actions/Teleport")]
 public class EnemyTeleportAction : EnemyPatternAction
 {
     [Min(0f)] public float distanceFromTarget = 1f;

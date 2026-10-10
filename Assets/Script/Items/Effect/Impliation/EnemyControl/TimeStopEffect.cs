@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "TimeStopEffect", menuName = "GameData/Items/Effects/Time Stop")]
+[CreateAssetMenu(fileName = "TimeStopEffect", menuName = "04.Items/Effects/Direct Effects/Time Stop")]
 public sealed class TimeStopEffect : ItemEffectData
 {
     [Min(0.01f)] public float duration = 5f;

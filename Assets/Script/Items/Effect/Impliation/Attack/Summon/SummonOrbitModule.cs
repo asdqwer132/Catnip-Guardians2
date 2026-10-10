@@ -2,7 +2,7 @@ using UnityEngine;
 
 public enum SummonOrbitCenter { SpawnPosition, Owner }
 
-[CreateAssetMenu(fileName = "SummonOrbit", menuName = "GameData/Items/Summon Modules/Orbit")]
+[CreateAssetMenu(fileName = "SummonOrbit", menuName = "04.Items/Effects/Direct Effects/Summon/Summon Modules/Orbit")]
 public sealed class SummonOrbitModule : SummonBehaviourModule
 {
     public SummonOrbitCenter center = SummonOrbitCenter.Owner;

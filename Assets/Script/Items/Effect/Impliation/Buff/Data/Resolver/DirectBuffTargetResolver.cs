@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "DirectBuffTargetResolver", menuName = "GameData/Buffs/Targets/Direct")]
+[CreateAssetMenu(fileName = "DirectBuffTargetResolver", menuName = "04.Items/Effects/Direct Effects/Buff/BuffSetting/Targets/Direct")]
 public class DirectBuffTargetResolver : BuffTargetResolver
 {
     [Tooltip("DamageArea 등 IBuffTarget 컴포넌트 또는 해당 오브젝트의 Transform/Collider를 지정합니다. 생성되는 공격 전체는 Group을 사용하세요.")]

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "EnemyWaitAction", menuName = "GameData/Entities/Enemy/Patterns/Actions/Wait")]
+[CreateAssetMenu(fileName = "EnemyWaitAction", menuName = "01.Entities/Enemy/Patterns/Actions/Wait")]
 public class EnemyWaitAction : EnemyPatternAction
 {
     [Header("Wait")]

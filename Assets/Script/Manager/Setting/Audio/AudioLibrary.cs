@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-[CreateAssetMenu(fileName = "AudioLibrary", menuName = "GameData/Audio Library")]
+[CreateAssetMenu(fileName = "AudioLibrary", menuName = "02.Settings/Audio Library")]
 public class AudioLibrary : ScriptableObject
 {
 #if UNITY_EDITOR

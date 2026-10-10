@@ -10,7 +10,7 @@ public class HealthChangeStat : IGameStat<HealthChangeStat>
     public void Clamp() { healthChangeAmount = EffectStatUtility.Safe(healthChangeAmount, 0f, 100000000f, 1f); }
 }
 
-[CreateAssetMenu(fileName = "HealthChange", menuName = "GameData/Items/Effects/Health/Health Change")]
+[CreateAssetMenu(fileName = "HealthChange", menuName = "04.Items/Effects/Direct Effects/Health/Health Change")]
 public class HealthChangeEffect : ItemEffectData
 {
     public HealthTargetSettings targets = new HealthTargetSettings();
