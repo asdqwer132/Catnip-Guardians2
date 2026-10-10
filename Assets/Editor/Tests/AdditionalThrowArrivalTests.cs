@@ -173,6 +173,31 @@ public sealed class AdditionalThrowArrivalTests
         Assert.That(Quaternion.Angle(previous, mover.transform.rotation), Is.LessThan(0.01f));
     }
 
+    [TestCase(false, 3f)]
+    [TestCase(false, -3f)]
+    [TestCase(true, 3f)]
+    [TestCase(true, -3f)]
+    public void ZeroArcMovesInAStraightLineAndKeepsFacingTheTarget(bool automatic, float targetY)
+    {
+        ItemThrowMover mover = Mover(); mover.faceMoveDirection = true;
+        mover.directionAngleOffset = 0f; mover.autoArcHeightByDistance = automatic;
+        mover.arcHeight = mover.minArcHeight = mover.maxArcHeight = mover.arcHeightDistanceMultiplier = 0f;
+        mover.arcPeakProgress = 0.1f;
+        Vector3 start = new Vector3(-2f, 1f, 0f);
+        Vector3 target = new Vector3(4f, targetY, 0f);
+        int arrivals = 0;
+        mover.InitMove(start, target, 1f, () => arrivals++);
+        Assert.That(Vector3.Angle(mover.transform.right, target - start), Is.LessThan(0.01f));
+        for (int step = 1; step <= 4; step++)
+        {
+            mover.Tick(0.25f);
+            Assert.That(Vector3.Distance(mover.transform.position, Vector3.Lerp(start, target, step / 4f)),
+                Is.LessThan(0.0001f));
+            Assert.That(Vector3.Angle(mover.transform.right, target - start), Is.LessThan(0.01f));
+        }
+        Assert.That(arrivals, Is.EqualTo(1));
+    }
+
     [Test]
     public void DefaultRotationStillSpinsAndCanBeDisabled()
     {

@@ -177,6 +177,9 @@ public class ItemThrowMover : MonoBehaviour
 
     private float GetParabolaY(float progress)
     {
+        if (finalArcHeight == 0f)
+            return Mathf.Lerp(startPosition.y, targetPosition.y, progress);
+
         float p = progress;
 
         float k = Mathf.Clamp(
@@ -216,11 +219,15 @@ public class ItemThrowMover : MonoBehaviour
     {
         if (faceMoveDirection)
         {
-            float k = Mathf.Clamp(arcPeakProgress, 0.1f, 0.9f);
-            // Derivative of the same interpolating parabola used for position.
-            float dy = startPosition.y * (2f * progress - k - 1f) / k
-                + peakY * (2f * progress - 1f) / (k * (k - 1f))
-                + targetPosition.y * (2f * progress - k) / (1f - k);
+            float dy = targetPosition.y - startPosition.y;
+            if (finalArcHeight != 0f)
+            {
+                float k = Mathf.Clamp(arcPeakProgress, 0.1f, 0.9f);
+                // Derivative of the same interpolating parabola used for position.
+                dy = startPosition.y * (2f * progress - k - 1f) / k
+                    + peakY * (2f * progress - 1f) / (k * (k - 1f))
+                    + targetPosition.y * (2f * progress - k) / (1f - k);
+            }
             Vector2 direction = new Vector2(targetPosition.x - startPosition.x, dy);
             if (direction.sqrMagnitude > 0.000001f)
                 transform.rotation = Quaternion.Euler(0f, 0f,
