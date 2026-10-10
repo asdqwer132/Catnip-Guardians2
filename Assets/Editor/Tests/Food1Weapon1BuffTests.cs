@@ -10,7 +10,7 @@ using UnityEngine.SceneManagement;
 // 테스트는 보통 준비(Arrange) → 실행(Act) → 확인(Assert)의 세 단계로 읽으면 됩니다.
 // 실제 Food1/Weapon1 에셋과 DefaultEnemy 프리팹을 사용합니다.
 // 충돌 알림만 직접 보내므로 이동, 물리 엔진의 충돌 감지, 애니메이션 시간은 검사하지 않습니다.
-[NonParallelizable] // 활성 씬과 BuffManager.instance를 사용하므로 동시에 실행하지 않습니다.
+// Unity EditMode Test Runner의 기본 순차 실행을 사용합니다.
 public sealed class Food1Weapon1BuffTests
 {
     private const string FoodPath = "Assets/Data/Scriptable/Item/Items/02.Food/Food1.asset";
