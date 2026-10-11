@@ -17,6 +17,7 @@ public class BuffInfo : IGameStat<BuffInfo>, IEffectScalableStat
 
     [Header("Limit")]
     public BuffUseLimitType useLimitType = BuffUseLimitType.Time;
+    [Tooltip("Time 버프를 부여할 때 계산하는 지속시간(초). BuffInfo.duration 모디파이어로 늘릴 수 있으며, 이미 부여된 버프의 남은 시간은 바뀌지 않습니다.")]
     [Min(0.01f)] public float duration = 1f;
     [Min(1)] public int maxUseCount = 1;
 

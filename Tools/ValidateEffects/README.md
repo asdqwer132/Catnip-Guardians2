@@ -44,4 +44,6 @@ python3 Tools/ValidateEffects/check.py --metadata-only
 
 그룹 Inspector·PropertyDrawer·EditMode 테스트는 `EditorApi.cs`의 대체 API 선언으로 추가 컴파일합니다. 이는 C# 연결 검증이며 UnityEditor DLL이나 실제 GUI 실행 검증을 대신하지 않습니다.
 
+Float Field Modifier Inspector도 같은 방식으로 컴파일합니다. `EditorMetadataChecks.cs`는 실제 스탯/필드 목록을 조회하는 `BuffDurationEditorTests` 한 개만 관리 코드로 실행해 `BuffInfo.duration`의 선택 가능 여부를 확인합니다. GUI와 Unity 씬 API는 실행하지 않습니다. `AdditionalBuffDurationTests`의 실제 버프 부여·재부여·시간 유지 검사는 Unity EditMode에서 실행해야 합니다.
+
 `Food1Weapon1BuffTests`도 Editor API 대체 선언으로 컴파일합니다. 실제 Food1 사용 → Weapon1 장판 공격력 5.5 → 기본 적 HP 4.5 검사는 Unity EditMode에서 실행해야 합니다. 처음 실행하는 방법과 코드 설명은 [Food1/Weapon1 테스트 안내](../../Docs/Food1Weapon1Tests.md)를 참고하세요.

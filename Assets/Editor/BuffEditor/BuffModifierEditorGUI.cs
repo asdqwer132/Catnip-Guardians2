@@ -47,7 +47,7 @@ internal static class BuffModifierEditorGUI
                 Type type = types[i];
                 if (type == null || !type.IsClass || type.IsAbstract || type.ContainsGenericParameters)
                     continue;
-                if (type == typeof(BuffInfo) || !IsGameStat(type))
+                if (!IsGameStat(type))
                     continue;
                 if (GetFloatFields(type).Count == 0)
                     continue;
@@ -147,6 +147,10 @@ internal static class BuffModifierEditorGUI
         else
         {
             DrawStatField(selectedType, fieldName);
+            if (selectedType == typeof(BuffInfo))
+                EditorGUILayout.HelpBox("BuffInfo.duration은 새로 부여하거나 재부여할 버프/특수 상태의 지속시간(초)입니다. " +
+                    "Target Resolver는 버프를 부여하는 아이템에 적용되는 All Items, SourceBag 등으로 지정하세요. " +
+                    "Time 방식에 사용하며 이미 적용 중인 버프의 남은 시간은 변경하지 않습니다.", MessageType.Info);
         }
 
         EditorGUILayout.Space(6);
@@ -166,7 +170,8 @@ internal static class BuffModifierEditorGUI
         for (int i = 0; i < StatTypes.Count; i++)
         {
             Type type = StatTypes[i];
-            names.Add(new GUIContent(type.Name, type.FullName));
+            string label = type == typeof(BuffInfo) ? "BuffInfo (버프 부여 지속시간)" : type.Name;
+            names.Add(new GUIContent(label, type.FullName));
             if (typeName.stringValue == type.Name || typeName.stringValue == type.FullName)
                 selected = i + 1;
         }

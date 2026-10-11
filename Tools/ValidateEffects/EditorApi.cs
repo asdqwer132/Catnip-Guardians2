@@ -24,6 +24,7 @@ namespace UnityEditor
     {
         public SerializedObject(UnityEngine.Object target) { }
         public void Update() { }
+        public bool UpdateIfRequiredOrScript() => false;
         public bool ApplyModifiedProperties() => false;
         public SerializedProperty FindProperty(string name) => null;
     }
@@ -88,9 +89,18 @@ namespace UnityEditor
     }
     public static class EditorGUILayout
     {
+        public static void BeginHorizontal() { }
+        public static void EndHorizontal() { }
+        public static void Space(float pixels) { }
+        public static void LabelField(string label, GUIStyle style) { }
+        public static string TextField(string label, string value) => value;
+        public static string TextField(GUIContent label, string value) => value;
+        public static int Popup(GUIContent label, int selected, GUIContent[] options) => selected;
         public static bool PropertyField(SerializedProperty property, GUIContent label) => false;
         public static void HelpBox(string message, MessageType type) { }
     }
+    public static class EditorStyles { public static GUIStyle boldLabel, miniButton; }
+    public static class ObjectNames { public static string NicifyVariableName(string value) => value; }
 }
 namespace UnityEditor.SceneManagement
 {

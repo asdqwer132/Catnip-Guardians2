@@ -162,12 +162,21 @@ def main():
     editor_path.parent.mkdir()
     editor_files = ('Assets/Editor/BuffTargetGroupNameDrawer.cs',
                     'Assets/Editor/BuffEditor/BuffTargetResolverEditors.cs',
+                    'Assets/Editor/BuffEditor/BuffModifierEditorGUI.cs',
+                    'Assets/Editor/BuffEditor/FloatFieldBuffModifierEditor.cs',
                     'Assets/Editor/Tests/BuffTargetInspectorTests.cs',
+                    'Assets/Editor/Tests/BuffDurationEditorTests.cs',
                     'Assets/Editor/Tests/Food1Weapon1BuffTests.cs')
     project(editor_path, [ROOT / name for name in editor_files] + [HERE / 'EditorApi.cs'], refs,
             defines='UNITY_EDITOR', additional_refs=[work / 'bin/Debug/net8.0/Compile.dll'])
-    print('Compiling group Inspector and asset-driven EditMode tests with Editor API substitutes; no Unity tests execute.', flush=True)
+    print('Compiling group Inspector and asset-driven EditMode tests with Editor API substitutes; no native Unity/GUI tests execute.', flush=True)
     run([dotnet, 'build', editor_path, '--nologo', '-v:q'], env=environment)
+    editor_metadata_path = work / 'editor-metadata' / 'EditorMetadataChecks.csproj'
+    editor_metadata_path.parent.mkdir()
+    project(editor_metadata_path, [HERE / 'EditorMetadataChecks.cs'], refs, executable=True,
+            additional_refs=[work / 'bin/Debug/net8.0/Compile.dll',
+                             editor_path.parent / 'bin/Debug/net8.0/GroupInspector.dll'])
+    run([dotnet, 'run', '--project', editor_metadata_path, '--nologo'], env=environment)
     effect = ROOT / 'Assets/Script/Items/Effect'
     selected = ('Impliation/IStat.cs', 'Excuter/Data/EffectStatUtility.cs', 'Excuter/Data/EffectExecutionScale.cs',
                 'Excuter/Data/ItemEffectContext.cs', 'Excuter/Data/ItemEffectPlan.cs', 'Excuter/Data/ItemEffectLifetime.cs',

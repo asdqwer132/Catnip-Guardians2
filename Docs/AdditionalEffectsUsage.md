@@ -373,6 +373,27 @@ public string BuffTargetGroup => buffTargetGroup;
 
 모든 가방의 아이템 공격을 강화하려면 **Buffs → Targets → All Items**를 사용한다. 공격 종류별 Modifier가 필요하다. DamageArea는 `DamageAreaAttackStat.damageAreaPower`, 이동 투사체는 `ProjectileAttackStat.projectileDamage`, 연쇄 공격은 `ChainAttackStat.chainFirstDamage`와 `chainNextDamage`를 각각 설정한다. **Include Self**를 켜면 버프를 부여한 ItemData도 포함한다. 기존 Owner의 **All**은 사용한 아이템·가방·시리즈를 합친 대상이며 전체 아이템 설정과 범위가 다르다.
 
+### 앞으로 부여할 버프의 지속시간 늘리기
+
+기존 Float Field Modifier로 버프 자체의 부여 시간을 늘릴 수 있다. **스탯 종류 → BuffInfo (버프 부여 지속시간)**, **수정할 필드 → Duration (duration)**을 선택한다. 공격 장판의 수명을 늘리는 `DamageAreaAttackStat.damageAreaLifeTime`과는 다른 설정이다.
+
+1. **Create → 04.Items → Effects → Direct Effects → Buff → BuffSetting → Targets → All Items**로 대상 설정을 만든다.
+2. 같은 **BuffSetting → Modifiers → Float Field**에서 Modifier를 만들고 **BuffInfo / duration**을 선택한다.
+3. **더하기 (+) = 2**이면 부여 시간 +2초다. **곱하기 배율 변화 = 0.5**이면 +50%다. 둘 다 쓰면 `(기본 시간 + 더하기) × (1 + 배율 변화)`로 계산한다. 기본 8초에 +2초와 +50%를 적용하면 15초다.
+4. **Create → 04.Items → Effects → Direct Effects → Buff → Buff**로 지속시간 증가용 BuffEffect를 만든다. Target Resolver에 All Items를, Modifiers에 2번 Modifier를 연결한다.
+5. 증가용 BuffEffect 자체의 **Buff Lifetime / Reapplication → Use Limit Type = Time**, **Duration = 30**, **Apply Timing = Dynamic**을 지정한다. 여기의 30초는 지속시간 증가 기능이 유지되는 시간이다. 다른 아이템만 늘릴 때는 **Include Self**를 끈다.
+6. 이 BuffEffect를 별도 아이템의 **Effect Datas**에 연결하고 사용한 뒤 Food1을 사용한다. 증가 기능이 유지되는 30초 동안 Food1이 부여하는 공격력 버프는 기존 8초 대신 **12초** 유지된다.
+
+Target Resolver는 **버프를 부여하는 아이템**에 적용되어야 한다. All Items는 전체 아이템, Owner의 SourceBag는 사용한 가방의 아이템, SourceItemSeries는 사용한 아이템의 시리즈를 대상으로 한다. DamageArea 그룹을 지정하면 장판의 스탯 조회 대상이 되므로 Food1이 부여할 버프 시간에는 적용되지 않는다. 같은 ItemData의 다른 버프에도 적용하려면 **Include Self**를 켜고 지속시간 증가 효과를 먼저 실행한다. 이 경우 자기 자신을 재부여할 때에도 증가할 수 있으므로 부여 순서와 재사용 설정을 확인한다.
+
+**바로 쓸 수 있는 예제:** `Assets/Data/AdditionalEffectsExamples/BuffDuration/AllItems_BuffDurationPlus50PercentFor30Seconds.asset`을 별도 아이템의 Effect Datas에 연결한다. 공유 AllItemsTarget과 `BuffDurationPlus50Percent_Modifier`를 참조하며 Include Self는 꺼져 있다. Food1·Weapon1의 원본 설정은 수정하지 않는다.
+
+이 설정은 **새 부여와 재부여 시점**에 지속시간을 계산한다. 이미 8초로 부여된 버프가 6초 남았을 때 증가 기능을 사용해도 그 남은 시간은 6초다. 그 뒤 Food1을 재사용하면 Refresh 설정에서는 12초로 다시 시작하고, AddRemaining 설정에서는 남은 시간에 새 부여량 12초를 더한다. 증가 기능이 만료되어도 이미 부여된 12초 버프의 시간은 유지되며 이후 부여량은 기본 8초로 돌아온다.
+
+일반 BuffEffect와 BuffInfo를 쓰는 특수 상태 부여에 적용한다. **Time** 방식에 의미가 있으며 UseCount의 사용 횟수나 Infinite는 늘리지 않는다. 회복·기절·시간 정지 등 다른 효과의 수명 스탯은 해당 효과 타입의 필드를 따로 설정한다.
+
+Play Mode에서 **BuffManager → Debug All Active Buffs**의 해당 Food1 버프 **Max Time / Remain Time**이 12인지 확인한다. Unity EditMode의 `AdditionalBuffDurationTests`는 +초/+비율, Snapshot/Dynamic, 재부여, 증가 기능 제거, 자기 아이템 제외와 횟수 유지 등을 검사한다. `BuffDurationEditorTests`는 드롭다운에 BuffInfo와 duration이 포함되는지 확인한다.
+
 ### 특수 상태 키와 버프 분류의 역할
 
 | 정의 | 역할 | 사용처 |
