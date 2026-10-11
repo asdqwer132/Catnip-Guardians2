@@ -443,6 +443,7 @@ public static partial class Runner {
  Check("default parent keeps unrelated child failure isolated",()=>{int done=0;var root=new ItemEffectLifetime(onCompleted:()=>done++);var child=new ItemEffectLifetime(root);root.Close();child.Close(false);True(!root.IsCancelled&&done==1);});
  Check("execution multiplier scales dynamic additions too",()=>{var c=Context();c.buffManager=new BuffManager{DynamicDamageAdd=10};c.damageMultiplier=.5f;var effect=new ItemEffectData();var actual=c.GetCurrentStat(effect,new DamageAreaAttackStat{damageAreaPower=10});Eq(actual.damageAreaPower,10);});
  Check("automatic child snapshot suppresses use-buff consumption",()=>{var c=Context();c.buffManager=new BuffManager();c.consumeUseBuffs=false;c.GetSnapshotStat(new ItemEffectData(),new DamageAreaAttackStat());True(!c.buffManager.LastConsume);True(!c.Copy(Vector3.zero,Vector3.right).consumeUseBuffs);});
+ RunAllTargetsChecks();
  Console.WriteLine($"{passed} managed logic checks passed using actual production code and Unity reference math.");
  }
 }

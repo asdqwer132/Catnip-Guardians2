@@ -48,7 +48,9 @@ public enum BuffTargetKind
     AllItems,
     Target,
     Group,
-    AllBags
+    AllBags,
+    // 기존 에셋의 0~6 저장값은 유지합니다.
+    AllTargets = 7
 }
 
 public enum BuffNotifyScope

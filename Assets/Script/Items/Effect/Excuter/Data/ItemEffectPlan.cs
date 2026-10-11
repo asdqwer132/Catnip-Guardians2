@@ -30,7 +30,7 @@ public sealed class ItemEffectPlan
         T snapshot = context.buffManager != null
             ? context.buffManager.GetBuffedStatForItem(baseStat, context.sourceItemData,
                 context.sourceBag, BuffCalculationMode.SnapshotOnly, context.consumeUseBuffs)
-            : baseStat.Clone();
+            : BuffStatCloneUtility.Clone(baseStat);
         if (snapshot != null) snapshot.Clamp();
         stats.Add(effect, snapshot);
         return snapshot;

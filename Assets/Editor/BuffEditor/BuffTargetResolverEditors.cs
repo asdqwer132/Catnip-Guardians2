@@ -2,6 +2,18 @@
 using UnityEditor;
 using UnityEngine;
 
+[CustomEditor(typeof(AllTargetsBuffTargetResolver))]
+[CanEditMultipleObjects]
+public sealed class AllTargetsBuffTargetResolverEditor : Editor
+{
+    public override void OnInspectorGUI()
+    {
+        EditorGUILayout.HelpBox("All Targets: 모든 아이템·가방과 IBuffTarget 오브젝트를 포함합니다. " +
+            "Enemy, Player, StatusManager, Health, DamageArea, Summon 및 사용자 정의 그룹도 포함합니다. " +
+            "버프 유지 중 새로 생성되는 대상도 포함하며, 수치 변경 범위는 Modifier의 스탯/필드로 정합니다.", MessageType.Info);
+    }
+}
+
 [CustomEditor(typeof(BuffTargetGroupResolver))]
 [CanEditMultipleObjects]
 public sealed class BuffTargetGroupResolverEditor : Editor

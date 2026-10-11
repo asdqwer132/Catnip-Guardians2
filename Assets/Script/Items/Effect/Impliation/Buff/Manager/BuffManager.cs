@@ -455,7 +455,7 @@ public class BuffManager : MonoBehaviour
         if (storage == null)
             return baseStat;
 
-        T result = baseStat.Clone();
+        T result = BuffStatCloneUtility.Clone(baseStat);
 
         if (result == null)
             return baseStat;
@@ -498,7 +498,7 @@ public class BuffManager : MonoBehaviour
             for (int i = 0; i < storage.activeBuffs.Count; i++)
             {
                 ActiveBuff buff = storage.activeBuffs[i];
-                if (!CanUseBuff(buff, context, calculationMode))
+                if (!CanUseBuff(buff, context, calculationMode) || BuffStatCloneUtility.WasApplied(stat, buff))
                     continue;
 
                 entries.Add(new BuffStatEntry
@@ -526,6 +526,9 @@ public class BuffManager : MonoBehaviour
             }
 
             stat.Clamp();
+
+            for (int i = 0; i < entries.Count; i++)
+                if (entries[i].applied) BuffStatCloneUtility.RecordApplied(stat, entries[i].buff);
 
             // 변경 알림에 따른 재계산은 실제 사용이 아니므로 차감하지 않는다.
             if (notificationDepth > 0 || !consumeUseCount)
@@ -676,12 +679,13 @@ public class BuffManager : MonoBehaviour
         T baseStat,
         IBuffTarget target,
         BuffCalculationMode calculationMode = BuffCalculationMode.All,
-        bool consumeUseCount = false
+        bool consumeUseCount = false,
+        ItemData sourceItemData = null
     ) where T : class, IGameStat<T>
     {
         return GetBuffedStat(
             baseStat,
-            BuffQueryContext.ForTarget(target),
+            BuffQueryContext.ForTarget(target, sourceItemData),
             calculationMode,
             consumeUseCount
         );
@@ -1010,6 +1014,9 @@ public class BuffManager : MonoBehaviour
     private BuffNotifyScope GetNotifyScope(BuffTargetHandle target)
     {
         if (target == null)
+            return BuffNotifyScope.All;
+
+        if (target.kind == BuffTargetKind.AllTargets)
             return BuffNotifyScope.All;
 
         if (target.kind == BuffTargetKind.Target || target.kind == BuffTargetKind.Group)

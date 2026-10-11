@@ -358,7 +358,7 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget, IDamagea
         {
             current = buffManager.GetBuffedStatForItem(current, sourceItemData, sourceBag,
                 BuffCalculationMode.DynamicOnly) ?? current;
-            current = buffManager.GetBuffedStatForTarget(current, this) ?? current;
+            current = buffManager.GetBuffedStatForTarget(current, this, sourceItemData: sourceItemData) ?? current;
         }
         ApplyStat(current);
     }

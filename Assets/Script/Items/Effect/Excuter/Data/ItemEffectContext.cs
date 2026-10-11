@@ -74,7 +74,7 @@ public class ItemEffectContext
     public T GetUnscaledSnapshotStat<T>(ItemEffectData effect, T stat) where T : class, IGameStat<T>
     {
         T snapshot = plan.GetSnapshot(effect, stat, this);
-        return snapshot != null ? snapshot.Clone() : null;
+        return BuffStatCloneUtility.Clone(snapshot);
     }
 
     public T GetCurrentStat<T>(ItemEffectData effect, T stat) where T : class, IGameStat<T>
@@ -83,7 +83,7 @@ public class ItemEffectContext
         if (snapshot == null) return null;
         T current = buffManager != null
             ? buffManager.GetBuffedStatForItem(snapshot, sourceItemData, sourceBag, BuffCalculationMode.DynamicOnly)
-            : snapshot.Clone();
+            : BuffStatCloneUtility.Clone(snapshot);
         return EffectExecutionScaling.Apply(current, this);
     }
 

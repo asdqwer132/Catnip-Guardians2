@@ -254,10 +254,10 @@ public class ActiveBuff
         if (!target.Matches(query))
             return false;
 
-        if (!includeSelf &&
-            query != null &&
-            query.itemData != null &&
-            sourceItemData == query.itemData)
+        ItemData queriedItem = query != null ? query.itemData : null;
+        if (target.kind == BuffTargetKind.AllTargets && query != null && query.buffTarget != null)
+            queriedItem = query.targetSourceItemData;
+        if (!includeSelf && queriedItem != null && sourceItemData == queriedItem)
         {
             return false;
         }

@@ -139,7 +139,7 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>, IBuffTarget
 
     protected override DamageAreaAttackStat ApplyTargetBuffs(DamageAreaAttackStat currentStat)
         => buffManager != null
-            ? buffManager.GetBuffedStatForTarget(currentStat, this, BuffCalculationMode.All)
+            ? buffManager.GetBuffedStatForTarget(currentStat, this, BuffCalculationMode.All, sourceItemData: sourceItemData)
             : currentStat;
 
     private void RegisterBuffTarget()

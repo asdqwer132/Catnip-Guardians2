@@ -131,7 +131,7 @@ Conditions를 비우면 항상 실행한다. **Condition Mode = All**이면 모�
 | 장판 조회 / 소비 | `Items → Conditions → Has Area` / `Items → Effects → Area → Consume Checked Areas` |
 | True/False 분기 | `Items → Effects → Branch → Conditional` |
 | 쿨다운 / 아이템 하위 태그 | `Items → Effects → Cooldown Control` / `Items → Item Tag` |
-| 전체 아이템 / 전체 가방 버프 대상 | `Buffs → Targets → All Items` / `All Bags` |
+| 전체 아이템 / 전체 가방 / 전체 버프 대상 | `Buffs → Targets → All Items` / `All Bags` / `All Targets` |
 | 소환물 종류 / 조회 | `Items → Summons → Definition` / `Items → Conditions → Has Summon` |
 | 소환물 개조 / 합체 / 오라 | `Items → Effects → Summon → Modify` / `Transform` / `Items → Summon Modules → Aura` |
 | 무작위 / 배율 / 종료 후 실행 | `Items → Effects → Weighted Random` / `Scaled Effects` / `Then Effects` |
@@ -372,6 +372,20 @@ public string BuffTargetGroup => buffTargetGroup;
 `Attack/Lightning`과 부모 `Attack`이 모두 표시된다. 복잡한 계산으로 그룹을 결정하는 getter는 씬·프리팹의 현재 값을 사용하며, 생성 전에도 여러 그룹을 표시하려면 타입에 `[BuffTargetGroups("Attack/Fire", "Attack/Ice")]`를 추가한다. 실제 버프 대상 등록은 기존 `BuffManager.RegisterBuffTarget(this)`로 처리한다.
 
 모든 가방의 아이템 공격을 강화하려면 **Buffs → Targets → All Items**를 사용한다. 공격 종류별 Modifier가 필요하다. DamageArea는 `DamageAreaAttackStat.damageAreaPower`, 이동 투사체는 `ProjectileAttackStat.projectileDamage`, 연쇄 공격은 `ChainAttackStat.chainFirstDamage`와 `chainNextDamage`를 각각 설정한다. **Include Self**를 켜면 버프를 부여한 ItemData도 포함한다. 기존 Owner의 **All**은 사용한 아이템·가방·시리즈를 합친 대상이며 전체 아이템 설정과 범위가 다르다.
+
+### 아이템·가방·모든 오브젝트에 같은 버프 적용하기
+
+**All Targets**는 아이템, 가방, 모든 `IBuffTarget`을 함께 포함한다. DamageArea, Summon, Enemy, Player, StatusManager, Health 및 나중에 추가한 사용자 그룹도 그룹 이름과 관계없이 포함된다. 대상 목록을 현재 오브젝트들로 고정하지 않으므로 버프가 유지되는 동안 새로 생성한 대상에도 적용된다.
+
+1. **Create → 04.Items → Effects → Direct Effects → Buff → BuffSetting → Targets → All Targets**로 리솔버를 만든다. 또는 `Assets/Data/Scriptable/Item/Effect/00.Default/00.BuffTarget/AllTargetsTarget.asset`을 그대로 사용한다.
+2. BuffEffect의 **Target Resolver**에 연결한다.
+3. **Modifiers**에서 변경할 스탯 타입과 필드를 지정한다. 예를 들어 `DamageAreaAttackStat.damageAreaPower`는 장판 공격력, `HealthStat.defense`는 Health 방어력, `BagCooldownStat.cooldown`은 가방 공통 쿨다운을 변경한다. 여러 종류를 바꾸려면 각각의 Modifier를 추가한다.
+
+**All Items**는 아이템 조회, **All Bags**는 가방 조회, **All Targets**는 두 조회와 실제 오브젝트 조회를 모두 포함한다. Owner의 **All**은 사용한 아이템·가방·시리즈 범위다. All Targets는 적도 포함하므로 적과 아군이 같은 스탯 타입을 사용하면 양쪽에 적용된다. 아군만 필요하면 Group이나 Direct를 사용한다.
+
+아이템 계산에서 이미 적용한 전체 버프는 그 아이템이 생성한 DamageArea/Summon의 대상 계산에서 다시 적용하지 않는다. 공격력 5에 +50%라면 최종값은 7.5다. 서로 다른 출처의 버프는 기존 중첩 규칙대로 함께 적용된다. **Include Self**를 끄면 부여한 ItemData와 그 아이템에서 생성한 DamageArea/Summon을 제외한다. 출처가 없는 오브젝트와 가방은 포함한다.
+
+현재 대상의 수치를 즉시 갱신하고 해제 시 복원하려면 **Apply Timing = Dynamic**을 사용한다. 아이템에서 **Snapshot**이나 횟수제 버프로 캡처한 스탯은 기존처럼 생성된 공격에 유지된다. 전체 범위를 조회·정화할 때에도 All Targets를 사용할 수 있으며, 정화의 분류/플래그 조건은 그대로 적용된다.
 
 ### 앞으로 부여할 버프의 지속시간 늘리기
 

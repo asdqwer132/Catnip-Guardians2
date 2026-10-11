@@ -56,6 +56,9 @@ public class BuffTargetHandle
     public static BuffTargetHandle AllBags()
         => new BuffTargetHandle { kind = BuffTargetKind.AllBags };
 
+    public static BuffTargetHandle AllTargets()
+        => new BuffTargetHandle { kind = BuffTargetKind.AllTargets };
+
     public static BuffTargetHandle Target(IBuffTarget target)
     {
         if (target == null)
@@ -104,11 +107,14 @@ public class BuffTargetHandle
     }
 
     public bool MatchesBag(EquipmentBag targetBag)
-        => targetBag != null && (kind == BuffTargetKind.AllBags ||
+        => targetBag != null && (kind == BuffTargetKind.AllTargets || kind == BuffTargetKind.AllBags ||
            (kind == BuffTargetKind.Bag && bag != null && bag == targetBag));
 
     public bool MatchesItem(ItemData targetItemData, EquipmentBag targetBag)
     {
+        if (kind == BuffTargetKind.AllTargets)
+            return targetItemData != null || targetBag != null;
+
         if (kind == BuffTargetKind.AllItems)
             return true;
 
@@ -131,6 +137,9 @@ public class BuffTargetHandle
     {
         if (target == null)
             return false;
+
+        if (kind == BuffTargetKind.AllTargets)
+            return target.BuffTargetObject != null;
 
         if (kind == BuffTargetKind.Group)
             return MatchesGroup(target.BuffTargetGroup);
@@ -196,6 +205,9 @@ public class BuffTargetHandle
 
     public string GetDebugName()
     {
+        if (kind == BuffTargetKind.AllTargets)
+            return "All Targets";
+
         if (kind == BuffTargetKind.Item)
             return itemData != null ? itemData.GetDataName() : "Null Item";
 

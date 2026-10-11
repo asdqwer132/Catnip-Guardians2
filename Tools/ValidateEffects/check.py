@@ -189,9 +189,14 @@ def main():
                 'Impliation/Buff/Data/BuffInfo.cs', 'Impliation/Buff/Data/BuffFlagDefinition.cs',
                 'Impliation/Buff/Data/BuffClassificationDefinition.cs', 'Impliation/Buff/Data/BuffClassificationUtility.cs',
                 'Impliation/Buff/Manager/ActiveBuff.cs', 'Impliation/Buff/Manager/BuffStorage.cs',
+                'Impliation/Buff/Manager/BuffStatCloneUtility.cs',
                 'Impliation/Buff/Manager/BuffRemovalReason.cs',
                 'Impliation/SpecialStatus/SpecialStatusDefinition.cs', 'Impliation/Buff/Data/BuffCleanseFilter.cs',
                 'Impliation/Buff/Data/Resolver/BuffTargetGroupNameAttribute.cs',
+                'Impliation/Buff/Data/Resolver/BuffSelectionUtility.cs',
+                'Impliation/Buff/Data/Resolver/BuffTargetResolver.cs',
+                'Impliation/Buff/Data/Resolver/AllTargetsBuffTargetResolver.cs',
+                'Impliation/Buff/Manager/BuffRegisterContext.cs',
                 'Impliation/Buff/Manager/BuffQueryContext.cs', 'Impliation/Buff/Manager/BuffTargetHandle.cs',
                 'Impliation/Repeat/RepeatItemStat.cs', 'Impliation/Repeat/AttackPlacement.cs',
                 'Impliation/Attack/HitEffect/HitEffectApplyMode.cs',
@@ -200,7 +205,7 @@ def main():
     pure_dir = work / 'managed'
     pure_dir.mkdir()
     managed_path = pure_dir / 'Managed.csproj'
-    project(managed_path, [effect / name for name in selected] + [ROOT / 'Assets/Editor/BuffTargetGroupDiscovery.cs', HERE / 'ManagedApi.cs', HERE / 'ManagedChecks.cs', HERE / 'ManagedBuffGroupChecks.cs'], refs, executable=True)
+    project(managed_path, [effect / name for name in selected] + [ROOT / 'Assets/Editor/BuffTargetGroupDiscovery.cs', HERE / 'ManagedApi.cs', HERE / 'ManagedChecks.cs', HERE / 'ManagedBuffGroupChecks.cs', HERE / 'ManagedAllTargetsChecks.cs'], refs, executable=True)
     run([dotnet, 'run', '--project', managed_path, '--nologo'], env=environment)
     print('API compile and managed checks passed. Unity 6000.4 import/physics/play validation remains required.')
     if not metadata_ok:

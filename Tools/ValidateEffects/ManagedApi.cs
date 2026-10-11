@@ -19,13 +19,13 @@ public class BuffManager {
  public float DynamicDamageAdd;
  public FloatFieldBuffModifier[] CooldownModifiers;
  public T GetBuffedStatForItem<T>(T stat, ItemData item, EquipmentBag bag, BuffCalculationMode mode, bool count=false) where T:class,IGameStat<T> {
-  LastConsume=count;T copy=stat.Clone();var damage=copy as DamageAreaAttackStat;
+  LastConsume=count;T copy=BuffStatCloneUtility.Clone(stat);var damage=copy as DamageAreaAttackStat;
   if(damage!=null && mode==BuffCalculationMode.DynamicOnly)damage.damageAreaPower+=DynamicDamageAdd;
   ApplyCooldownModifiers(copy);
   return copy;
  }
  public T GetBuffedStat<T>(T stat, BuffQueryContext query, BuffCalculationMode mode, bool count=false) where T:class,IGameStat<T> {
-  LastConsume=count;T copy=stat.Clone();ApplyCooldownModifiers(copy);return copy;
+  LastConsume=count;T copy=BuffStatCloneUtility.Clone(stat);ApplyCooldownModifiers(copy);return copy;
  }
  private void ApplyCooldownModifiers<T>(T stat) where T:class,IGameStat<T> {
   if(CooldownModifiers==null)return;

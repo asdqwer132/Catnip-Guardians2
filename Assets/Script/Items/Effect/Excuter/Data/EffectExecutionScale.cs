@@ -28,7 +28,7 @@ public static class EffectExecutionScaling
     public static T Apply<T>(T snapshot, ItemEffectContext context) where T : class, IGameStat<T>
     {
         if (snapshot == null) return null;
-        T result = snapshot.Clone();
+        T result = BuffStatCloneUtility.Clone(snapshot);
         IEffectScalableStat scalable = result as IEffectScalableStat;
         if (scalable != null) scalable.ApplyExecutionScale(new EffectExecutionScale(context));
         result.Clamp();

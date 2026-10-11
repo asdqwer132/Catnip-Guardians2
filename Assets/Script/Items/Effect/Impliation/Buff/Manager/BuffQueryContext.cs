@@ -4,6 +4,8 @@ public class BuffQueryContext
     public EquipmentBag bag;
     public IBuffTarget buffTarget;
     public bool isBagQuery;
+    // 전체 버프의 Include Self 판정에 사용하는 공격/소환물 출처입니다.
+    public ItemData targetSourceItemData;
 
     public static BuffQueryContext ForItem(ItemData itemData, EquipmentBag bag)
     {
@@ -14,11 +16,12 @@ public class BuffQueryContext
         };
     }
 
-    public static BuffQueryContext ForTarget(IBuffTarget target)
+    public static BuffQueryContext ForTarget(IBuffTarget target, ItemData sourceItemData = null)
     {
         return new BuffQueryContext
         {
-            buffTarget = target
+            buffTarget = target,
+            targetSourceItemData = sourceItemData
         };
     }
 
