@@ -24,17 +24,21 @@ MonoBehaviour:
   endVisualData: {fileID: 0}
   targets:
     target: 0
-    useRadius: 0
+    useRadius: 1
     radius: 5
     center: 0
     shape: 0
-    width: 0.4
+    width: 5
     length: 5
     sameOwnerOnly: 1
     maximumTargets: 128
   amountMode: 0
   firstTick: 0
   regenerationStat:
-    regenerationAmount: 100
-    regenerationInterval: 2.5
+    regenerationAmount: 1
+    regenerationInterval: 1
     regenerationDuration: 5
+  buffUI:
+    showInUI: 1
+    displayName: 
+    buffIcon: {fileID: 21300000, guid: 07e0b61d44be19e419ea250929d7d4fb, type: 3}

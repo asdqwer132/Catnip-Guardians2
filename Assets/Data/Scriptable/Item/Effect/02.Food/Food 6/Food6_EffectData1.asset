@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FloatFieldBuffModifier
   targetStatTypeName: ItemCooldownStat
   fieldName: cooldownRecoveryRate
-  addValue: 3
+  addValue: 0.1
   multiplyValue: 0
 --- !u!114 &11400000
 MonoBehaviour:
@@ -42,13 +42,18 @@ MonoBehaviour:
   buffInfo:
     stackMode: 0
     maxStack: 1
+    reapplyMode: 0
     applyTiming: 1
     useLimitType: 0
-    duration: 10
+    duration: 8
     maxUseCount: 1
     useCountConsumeMode: 0
     consumeItems: []
   includeSelf: 0
+  buffClassification: {fileID: 0}
+  harmful: 0
+  dispellable: 1
+  flags: []
   buffIcon: {fileID: 0}
   showInUI: 1
   modifiers:

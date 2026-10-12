@@ -4,9 +4,9 @@ using Unity.VisualScripting;
 using UnityEngine;
 public enum PlayerStatusList
 {
-    arrow = 0,
-    star  = 1,
-    status3 = 2,
+    Arrow = 0,
+    BrokeStar  = 1,
+    BlassCrystar = 2,
     status4 = 2,
     status5 = 2,
     status6 = 2,
@@ -145,9 +145,9 @@ public class StatusManager : MonoBehaviour, IBuffTarget, IDynamicBuffReceiver
         if (currentStat == null) return false;
         switch (playerStatus)
         {
-            case PlayerStatusList.arrow:
+            case PlayerStatusList.Arrow:
                 return currentStat.statArrow > 0f;
-            case PlayerStatusList.star:
+            case PlayerStatusList.BrokeStar:
                 return currentStat.statStar > 0f;
         }
         return false;

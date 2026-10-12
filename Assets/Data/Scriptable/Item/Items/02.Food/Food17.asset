@@ -30,8 +30,10 @@ MonoBehaviour:
   series: 2
   tags: []
   weight: 1
-  cooldown: 1
-  effectDatas: []
+  cooldown: 20
+  effectDatas:
+  - {fileID: 11400000, guid: 5bd137932c1949942b40f43789ad4a48, type: 2}
+  - {fileID: 11400000, guid: 6fb9e02fdc4a16a46b56e14f9a545b77, type: 2}
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

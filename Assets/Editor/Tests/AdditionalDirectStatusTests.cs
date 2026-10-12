@@ -17,7 +17,7 @@ public sealed class AdditionalDirectStatusTests
     private GrantSpecialStatusEffect Effect(BuffUseLimitType limit)
     {
         var effect = Asset<GrantSpecialStatusEffect>(); effect.specialStatusKey = Asset<SpecialStatusDefinition>();
-        effect.specialStatusKey.exposesPlayerStatus = true; effect.specialStatusKey.playerStatus = PlayerStatusList.arrow;
+        effect.specialStatusKey.exposesPlayerStatus = true; effect.specialStatusKey.playerStatus = PlayerStatusList.Arrow;
         effect.lifetimeSettings.useLimitType = limit; effect.lifetimeSettings.duration = 5f; effect.lifetimeSettings.maxUseCount = 3;
         return effect;
     }
@@ -49,11 +49,11 @@ public sealed class AdditionalDirectStatusTests
         Assert.That(manager.Storage.activeBuffs.Count, Is.EqualTo(1));
         Assert.That(manager.Storage.activeBuffs[0].remainTime, Is.EqualTo(8f));
         Assert.That(manager.HasSpecialStatus(effect.specialStatusKey, BuffQueryContext.ForTarget(player)), Is.True);
-        Assert.That(player.HasStatus(PlayerStatusList.arrow), Is.True);
+        Assert.That(player.HasStatus(PlayerStatusList.Arrow), Is.True);
         Assert.That(player.currentStat.statArrow, Is.Zero);
         Assert.That(effect.lifetimeSettings.duration, Is.EqualTo(5f));
         Tick(8f);
-        Assert.That(player.HasStatus(PlayerStatusList.arrow), Is.False);
+        Assert.That(player.HasStatus(PlayerStatusList.Arrow), Is.False);
         Assert.That(manager.Storage.activeBuffs, Is.Empty);
     }
 
@@ -64,9 +64,9 @@ public sealed class AdditionalDirectStatusTests
         Assert.That(manager.Storage.activeBuffs.Count, Is.EqualTo(1));
         Assert.That(manager.Storage.activeBuffs[0].remainUseCount, Is.EqualTo(5));
         for (int i = 0; i < 4; i++) Use(item);
-        Assert.That(player.HasStatus(PlayerStatusList.arrow), Is.True);
+        Assert.That(player.HasStatus(PlayerStatusList.Arrow), Is.True);
         Use(item);
-        Assert.That(player.HasStatus(PlayerStatusList.arrow), Is.False);
+        Assert.That(player.HasStatus(PlayerStatusList.Arrow), Is.False);
         Assert.That(manager.Storage.activeBuffs, Is.Empty);
     }
 
@@ -141,7 +141,7 @@ public sealed class AdditionalDirectStatusTests
     [Test] public void LegacyStatusStillRecognizesStackedStatBuffs()
     {
         player.baseStat.statArrow = 2f; player.RefreshBuffedStat();
-        Assert.That(player.HasStatus(PlayerStatusList.arrow), Is.True);
+        Assert.That(player.HasStatus(PlayerStatusList.Arrow), Is.True);
         Assert.That(Asset<HasBuffConditionData>().IsSatisfied(Context()), Is.True);
     }
 
@@ -154,7 +154,7 @@ public sealed class AdditionalDirectStatusTests
         Assert.That(context.lifetime.IsFinished, Is.False);
         manager.Cleanse(BuffTargetHandle.Target(player), new BuffCleanseFilter());
         Assert.That(context.lifetime.IsCancelled, Is.True); Assert.That(completed, Is.Zero);
-        Assert.That(player.HasStatus(PlayerStatusList.arrow), Is.False);
+        Assert.That(player.HasStatus(PlayerStatusList.Arrow), Is.False);
     }
 
     [Test] public void NaturalExpiryFinishesTheEffectLifetime()

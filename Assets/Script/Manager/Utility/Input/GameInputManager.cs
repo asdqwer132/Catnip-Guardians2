@@ -49,7 +49,7 @@ public class GameInputManager : MonoBehaviour
         }
 
         instance = this;
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
 
         mainCamera = Camera.main;
     }

@@ -9,6 +9,7 @@ public class BagSelectManager : MonoBehaviour
     public GameObject[] toggles;
 
     [Header("Default")]
+    public bool isTest = false;
     public int currentBagIndex = 0;
 
     public event Action<int> OnBagSelected;
@@ -77,8 +78,11 @@ public class BagSelectManager : MonoBehaviour
             return;
         }
 
-        if (!UnlockCheckUtility.CanUse(targetManager.GetBagData()))
+        if (!UnlockCheckUtility.CanUse(targetManager.GetBagData()) && !isTest)
+        {
+            Debug.LogWarning("해당 가방이 잠겨있습니다: " + index);
             return;
+        }
 
         if (currentBagIndex == index)
         {

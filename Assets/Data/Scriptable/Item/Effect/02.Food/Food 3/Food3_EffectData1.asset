@@ -24,18 +24,18 @@ MonoBehaviour:
   endVisualData: {fileID: 0}
   targets:
     target: 0
-    useRadius: 0
+    useRadius: 1
     radius: 5
     center: 0
     shape: 0
-    width: 0.4
+    width: 5
     length: 5
     sameOwnerOnly: 1
     maximumTargets: 128
   kind: 0
   amountMode: 0
   healthStat:
-    healthChangeAmount: 0
+    healthChangeAmount: 15
   damagePolicy:
     canKill: 1
     bypassDefense: 0

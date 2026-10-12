@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b250f045bef3cf34fbfec8a0516c81f9, type: 3}
+  m_Script: {fileID: 11500000, guid: 13c72d6b34c242f38ce3cae2bdd4e217, type: 3}
   m_Name: Food4_EffectData1
-  m_EditorClassIdentifier: Assembly-CSharp::BuffEffect
+  m_EditorClassIdentifier: Assembly-CSharp::WeightedRandomEffect
   conditionMode: 0
   conditions: []
   visualData: {fileID: 0}
@@ -22,34 +22,16 @@ MonoBehaviour:
   audioSource: 
   impactVfxLifeTime: 1
   endVisualData: {fileID: 0}
-  targetResolver: {fileID: 0}
-  buffInfo:
-    stackMode: 0
-    maxStack: 1
-    applyTiming: 0
-    useLimitType: 0
-    duration: 1
-    maxUseCount: 1
-    useCountConsumeMode: 0
-    consumeItems: []
-  includeSelf: 0
-  buffIcon: {fileID: 0}
-  showInUI: 1
-  modifiers:
-  - {fileID: 2442657084466227678}
---- !u!114 &2442657084466227678
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57bb8c5d3dc35cf4db784fd698670410, type: 3}
-  m_Name: Float Modifier
-  m_EditorClassIdentifier: Assembly-CSharp::FloatFieldBuffModifier
-  targetStatTypeName: DamageAreaAttackStat
-  fieldName: damageAreaPower
-  addValue: 0
-  multiplyValue: 0
+  entries:
+  - weight: 7
+    item: {fileID: 0}
+    effects:
+    - {fileID: 11400000, guid: a7d81f3b332cd504790bb384c6392b4e, type: 2}
+  - weight: 3
+    item: {fileID: 0}
+    effects:
+    - {fileID: 11400000, guid: a53b6f963d6987b44b43ba77a471b08f, type: 2}
+  selectionCount: 1
+  allowDuplicates: 1
+  consumeUseBuffs: 0
+  triggerSpecialItems: 0
