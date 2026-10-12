@@ -13,15 +13,15 @@ public static partial class Runner
             var stat = new SummonSpawnStat { count = float.NaN, lifetime = -1f, spreadRadius = float.PositiveInfinity };
             stat.Clamp(); True(stat.SpawnCount == 1); Eq(stat.lifetime, 0.01f); Eq(stat.spreadRadius, 0f);
         });
-        Check("actor stats sanitize functional fields independently of creation stats", () => {
-            var stat = new SummonActorStat { attackInterval = float.NaN, attackPower = -2f, detectionRange = float.PositiveInfinity };
-            stat.Clamp(); Eq(stat.attackInterval, 0.5f); Eq(stat.attackPower, 0f); Eq(stat.detectionRange, 0.5f);
+        Check("contact damage stats sanitize functional fields independently of creation stats", () => {
+            var stat = new SummonContactDamageStat { interval = float.NaN, damage = -2f, radius = float.PositiveInfinity };
+            stat.Clamp(); Eq(stat.interval, 0.5f); Eq(stat.damage, 0f); Eq(stat.radius, 0.3f);
         });
-        Check("spawn and actor clones leave their original configuration intact", () => {
+        Check("spawn and module clones leave their original configuration intact", () => {
             var spawn = new SummonSpawnStat { count = 3f, lifetime = 7f };
-            var actor = new SummonActorStat { attackPower = 10f };
-            var a = spawn.Clone(); var b = actor.Clone(); a.count = 9f; b.attackPower = 100f;
-            Eq(spawn.count, 3f); Eq(actor.attackPower, 10f);
+            var actor = new SummonContactDamageStat { damage = 10f };
+            var a = spawn.Clone(); var b = actor.Clone(); a.count = 9f; b.damage = 100f;
+            Eq(spawn.count, 3f); Eq(actor.damage, 10f);
         });
         Check("even full circle creates distinct 2D positions around the target", () => {
             var stat = new SummonSpawnStat { count = 4f, spreadRadius = 2f };
@@ -67,48 +67,46 @@ public static partial class Runner
             Eq(scaled.lifetime,10f); Eq(scaled.spreadRadius,6f); Eq(scaled.forwardSpacing,3f); Eq(scaled.count,3f);
             Eq(stat.lifetime,5f); Eq(stat.spreadRadius,2f);
         });
-        Check("actor execution scaling leaves damage for the actual attack path", () => {
-            var stat = new SummonActorStat { attackPower = 10f, detectionRange = 4f, damageMultiplier = 1.5f };
+        Check("module execution scaling leaves damage for the actual attack path", () => {
+            var stat = new SummonContactDamageStat { damage = 10f, radius = 4f };
             var context = Context(); context.rangeMultiplier = 2f; context.damageMultiplier = 3f;
             var scaled = EffectExecutionScaling.Apply(stat,context);
-            Eq(scaled.detectionRange,8f); Eq(scaled.attackPower,10f); Eq(scaled.damageMultiplier,1.5f);
+            Eq(scaled.radius,8f); Eq(scaled.damage,10f);
         });
-        Check("typed creation modifiers change spawn fields without matching actor stats", () => {
+        Check("typed creation modifiers change spawn fields without matching contact damage stats", () => {
             var modifier = new FloatFieldBuffModifier { targetStatTypeName = nameof(SummonSpawnStat), fieldName = nameof(SummonSpawnStat.count), addValue = 2f };
-            var spawn = new SummonSpawnStat(); var actor = new SummonActorStat();
+            var spawn = new SummonSpawnStat(); var actor = new SummonContactDamageStat();
             True(modifier.CanApplyTo(spawn,null)); True(!modifier.CanApplyTo(actor,null));
-            modifier.ApplyTo(spawn,1,null); True(spawn.SpawnCount == 3); Eq(actor.attackPower,0f);
+            modifier.ApplyTo(spawn,1,null); True(spawn.SpawnCount == 3); Eq(actor.damage,10f);
         });
-        Check("typed actor modifiers change function fields without matching creation stats", () => {
-            var modifier = new FloatFieldBuffModifier { targetStatTypeName = nameof(SummonActorStat), fieldName = nameof(SummonActorStat.attackPower), multiplyValue = 0.5f };
-            var actor = new SummonActorStat { attackPower = 10f }; var spawn = new SummonSpawnStat();
+        Check("typed module modifiers change function fields without matching creation stats", () => {
+            var modifier = new FloatFieldBuffModifier { targetStatTypeName = nameof(SummonContactDamageStat), fieldName = nameof(SummonContactDamageStat.damage), multiplyValue = 0.5f };
+            var actor = new SummonContactDamageStat { damage = 10f }; var spawn = new SummonSpawnStat();
             True(modifier.CanApplyTo(actor,null)); True(!modifier.CanApplyTo(spawn,null));
-            modifier.ApplyTo(actor,1,null); Eq(actor.attackPower,15f); Eq(spawn.count,1f);
+            modifier.ApplyTo(actor,1,null); Eq(actor.damage,15f); Eq(spawn.count,1f);
         });
-        Check("owned actor cache is separate from the effect creation snapshot", () => {
-            var context = Context(); var key = new ItemEffectData();
-            var spawn = context.plan.GetSnapshot(key,new SummonSpawnStat { count = 2f },context);
-            var actor = context.plan.GetOwnedSnapshot(key,new SummonActorStat { attackPower = 7f },context);
-            Eq(spawn.count,2f); Eq(actor.attackPower,7f);
+        Check("each module clone keeps its own runtime values", () => {
+            var profile = new SummonContactDamageStat { damage = 7f };
+            var a = profile.Clone(); var b = profile.Clone(); a.damage = 99f;
+            Eq(profile.damage,7f); Eq(b.damage,7f);
         });
-        Check("same owner shares one captured stat and different owners keep their own settings", () => {
-            var context = Context(); var owner = new object(); var stat = new SummonActorStat { attackPower = 7f };
-            var first = context.plan.GetOwnedSnapshot(owner,stat,context); stat.attackPower = 99f;
-            True(ReferenceEquals(first,context.plan.GetOwnedSnapshot(owner,stat,context)));
-            Eq(first.attackPower,7f);
-            Eq(context.plan.GetOwnedSnapshot(new object(),stat,context).attackPower,99f);
+        Check("typed contact modifiers do not match turret damage", () => {
+            var modifier = new FloatFieldBuffModifier { targetStatTypeName = nameof(SummonContactDamageStat), fieldName = "damage", addValue = 5f };
+            True(!modifier.CanApplyTo(new SummonTurretStat(),null));
         });
-        Check("owned actor snapshots produce independent per-instance copies", () => {
-            var context = Context(); var snapshot = context.plan.GetOwnedSnapshot(new object(),new SummonActorStat { attackPower = 7f },context);
-            var a = BuffStatCloneUtility.Clone(snapshot); var b = BuffStatCloneUtility.Clone(snapshot); a.attackPower = 99f;
-            Eq(snapshot.attackPower,7f); Eq(b.attackPower,7f);
+        Check("orbit and periodic profiles clamp invalid inputs independently", () => {
+            var orbit = new SummonOrbitStat { angularSpeed = -9000f, radius = float.NaN };
+            orbit.Clamp(); Eq(orbit.angularSpeed,-3600f); Eq(orbit.radius,2f);
+            var periodic = new SummonPeriodicSpawnStat { interval = float.NaN, activationCount = -2f };
+            periodic.Clamp(); Eq(periodic.interval,1f); Eq(periodic.activationCount,1f);
         });
-        Check("owned actor capture and clones retain universal application history", () => {
-            var buff = GlobalRecord(new BuffStorage());
-            var baseStat = new SummonActorStat { attackPower = 7.5f }; BuffStatCloneUtility.RecordApplied(baseStat,buff);
-            var context = Context(); var snapshot = context.plan.GetOwnedSnapshot(new object(),baseStat,context);
-            True(BuffStatCloneUtility.WasApplied(snapshot,buff));
-            True(BuffStatCloneUtility.WasApplied(BuffStatCloneUtility.Clone(snapshot),buff));
+        Check("turret range and projectile duration scale once", () => {
+            var context = Context(); context.rangeMultiplier = 2f; context.durationMultiplier = 3f;
+            var profile = new SummonTurretStat { range = 4f, projectileRadius = 0.1f, projectileLifetime = 2f };
+            var runtime = EffectExecutionScaling.Apply(profile,context);
+            Eq(runtime.range,8f); Eq(runtime.projectileRadius,0.2f); Eq(runtime.projectileLifetime,6f);
+            Eq(profile.projectileLifetime,2f);
         });
+        RunSummonContactAndScheduleChecks();
     }
 }

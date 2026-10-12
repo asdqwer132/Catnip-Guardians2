@@ -159,12 +159,16 @@ public sealed class AdditionalSummonTests
     {
         BuffManager manager = Host().AddComponent<BuffManager>();
         FloatFieldBuffModifier modifier = Asset<FloatFieldBuffModifier>();
-        modifier.fieldName = nameof(SummonActorStat.attackPower);
+        modifier.fieldName = nameof(SummonContactDamageStat.damage);
         modifier.addValue = 5f;
         BuffEffect buff = Asset<BuffEffect>();
         buff.modifiers = new BuffModifier[] { modifier };
         SummonDefinition turret = Asset<SummonDefinition>();
         SummonActor target = Summon(turret);
+        SummonContactDamageModule contact = Asset<SummonContactDamageModule>();
+        contact.stats = Asset<SummonContactDamageStatDefinition>();
+        contact.stats.baseStat.damage = 0f;
+        target.ConfigureModules(new SummonBehaviourModule[] { contact });
         target.Initialize(new ItemEffectContext(null, Asset<ItemData>(), Vector3.zero, Vector3.zero,
             null, buffManager: manager), 100f);
         SummonAuraModule aura = Asset<SummonAuraModule>();
@@ -181,20 +185,20 @@ public sealed class AdditionalSummonTests
         try
         {
             a.Tick(0.1f); b.Tick(0.1f);
-            SummonActorStat boosted = manager.GetBuffedStatForTarget(new SummonActorStat(), target);
-            Assert.That(boosted.attackPower, Is.EqualTo(10f));
-            Assert.That(target.AttackPower, Is.EqualTo(10f), "실제 소환물의 최종 기능 스탯도 갱신되어야 합니다.");
+            SummonContactDamageStat boosted = manager.GetBuffedStatForTarget(new SummonContactDamageStat { damage = 0f }, target);
+            Assert.That(boosted.damage, Is.EqualTo(10f));
+            Assert.That(target.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(10f), "실제 소환물의 최종 기능 스탯도 갱신되어야 합니다.");
             a.Dispose();
             Assert.That(firstSource.CanContinue, Is.True);
-            boosted = manager.GetBuffedStatForTarget(new SummonActorStat(), target);
-            Assert.That(boosted.attackPower, Is.EqualTo(5f));
-            Assert.That(target.AttackPower, Is.EqualTo(5f));
+            boosted = manager.GetBuffedStatForTarget(new SummonContactDamageStat { damage = 0f }, target);
+            Assert.That(boosted.damage, Is.EqualTo(5f));
+            Assert.That(target.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(5f));
             target.transform.position = Vector3.one * 100f;
             b.Tick(0.1f);
             Assert.That(secondSource.CanContinue, Is.True);
-            boosted = manager.GetBuffedStatForTarget(new SummonActorStat(), target);
-            Assert.That(boosted.attackPower, Is.Zero);
-            Assert.That(target.AttackPower, Is.Zero);
+            boosted = manager.GetBuffedStatForTarget(new SummonContactDamageStat { damage = 0f }, target);
+            Assert.That(boosted.damage, Is.Zero);
+            Assert.That(target.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.Zero);
         }
         finally { a.Dispose(); b.Dispose(); firstSource.lifetime.Close(); secondSource.lifetime.Close(); }
     }
@@ -205,13 +209,12 @@ public sealed class AdditionalSummonTests
         SummonActor summon = Summon();
         ItemEffectContext parent = Context();
         parent.damageMultiplier = 2f;
-        summon.baseActorStat.attackPower = 8f;
         summon.Initialize(parent, 100f);
         summon.AddModification(new SummonModificationSettings { damageMultiplier = 3f }, Context());
         CombatEffectRecordingEffect record = Asset<CombatEffectRecordingEffect>();
         ItemData item = Asset<ItemData>();
         item.effectDatas = new ItemEffectData[] { record };
-        Assert.That(summon.ThrowItem(item, summon.transform.position, useActorAttackPower: true), Is.True);
+        Assert.That(summon.ThrowItem(item, summon.transform.position, damageOverride: 8f), Is.True);
         ItemEffectContext execution = record.calls[0];
         Assert.That(execution.damageMultiplier, Is.EqualTo(6f));
         Assert.That(execution.damageOverride, Is.EqualTo(8f));

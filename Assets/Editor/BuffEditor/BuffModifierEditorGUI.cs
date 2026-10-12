@@ -154,9 +154,9 @@ internal static class BuffModifierEditorGUI
             else if (selectedType == typeof(SummonSpawnStat))
                 EditorGUILayout.HelpBox("소환 생성 스탯: 수명·개수·배치입니다. All Items/Owner 등 아이템 대상에 적용하며 " +
                     "이번에 생성할 소환물에 사용합니다. count는 계산 후 소수점을 버립니다.", MessageType.Info);
-            else if (selectedType == typeof(SummonActorStat))
-                EditorGUILayout.HelpBox("소환물 기능 스탯: 프리팹의 공격력·주기·탐색 범위·피해/회복 배율입니다. " +
-                    "Group = Summon 또는 Direct/All Targets로 적용할 수 있습니다.", MessageType.Info);
+            else if (IsSummonModuleStat(selectedType))
+                EditorGUILayout.HelpBox("선택한 기능 모듈의 런타임 스탯에 적용합니다. " +
+                    "Group = Summon 또는 Direct/All Targets를 사용하세요. 기본 스탯 프로필은 변경하지 않습니다.", MessageType.Info);
         }
 
         EditorGUILayout.Space(6);
@@ -176,9 +176,7 @@ internal static class BuffModifierEditorGUI
         for (int i = 0; i < StatTypes.Count; i++)
         {
             Type type = StatTypes[i];
-            string label = type == typeof(BuffInfo) ? "BuffInfo (버프 부여 지속시간)" :
-                type == typeof(SummonSpawnStat) ? "SummonSpawnStat (소환 생성: 수명·개수·배치)" :
-                type == typeof(SummonActorStat) ? "SummonActorStat (소환물 기능: 공격·범위·배율)" : type.Name;
+            string label = GetStatLabel(type);
             names.Add(new GUIContent(label, type.FullName));
             if (typeName.stringValue == type.Name || typeName.stringValue == type.FullName)
                 selected = i + 1;
@@ -208,6 +206,27 @@ internal static class BuffModifierEditorGUI
         }
         if (!fieldFound)
             fieldName.stringValue = fields.Count > 0 ? fields[0].Name : string.Empty;
+    }
+
+    private static bool IsSummonModuleStat(Type type)
+        => type != null && type.BaseType != null && type.BaseType.IsGenericType &&
+            type.BaseType.GetGenericTypeDefinition() == typeof(SummonModuleStat<>);
+
+    // Popup의 경로를 통해 생성 / 공격 / 이동 / 지원 스탯을 각각 구분합니다.
+    internal static string GetStatLabel(Type type)
+    {
+        if (type == typeof(BuffInfo)) return "BuffInfo (버프 부여 지속시간)";
+        if (type == typeof(SummonSpawnStat)) return "소환/생성/SummonSpawnStat (수명·개수·배치)";
+        if (type == typeof(SummonContactDamageStat)) return "소환/공격/SummonContactDamageStat (접촉 피해)";
+        if (type == typeof(SummonContactEffectStat)) return "소환/공격/SummonContactEffectStat (접촉 이펙트)";
+        if (type == typeof(SummonTurretStat)) return "소환/공격/SummonTurretStat (포탑)";
+        if (type == typeof(SummonItemThrowStat)) return "소환/공격/SummonItemThrowStat (아이템 투척)";
+        if (type == typeof(SummonOrbitStat)) return "소환/이동/SummonOrbitStat (공전)";
+        if (type == typeof(SummonPullStat)) return "소환/이동/SummonPullStat (끌어당김)";
+        if (type == typeof(SummonAuraStat)) return "소환/지원/SummonAuraStat (오라)";
+        if (type == typeof(SummonPeriodicSpawnStat)) return "소환/지원/SummonPeriodicSpawnStat (주기적 소환)";
+        if (type == typeof(SummonHealthStat)) return "소환/지원/SummonHealthStat (체력)";
+        return type.Name;
     }
 
     private static void DrawStatField(Type selectedType, SerializedProperty fieldName)

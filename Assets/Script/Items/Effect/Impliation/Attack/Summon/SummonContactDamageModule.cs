@@ -1,58 +1,43 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "SummonContactDamage", menuName = "04.Items/Effects/Direct Effects/Summon/Summon Modules/Contact Damage")]
 public sealed class SummonContactDamageModule : SummonBehaviourModule
 {
-    [Min(0.01f)] public float contactRadius = 0.3f;
-    [Min(0f)] public float baseDamage = 10f;
-    [Min(0f)] public float attackPowerMultiplier = 1f;
-    [Min(0.01f)] public float hitInterval = 0.5f;
-    public HitEffectData[] onHitEffects;
-    public override void Prepare(ItemEffectContext context) => HitEffectPreparation.Prepare(onHitEffects, context);
-    public override SummonBehaviourRuntime CreateRuntime(SummonActor summon) => new Runtime(summon, this);
-
-    private sealed class Runtime : SummonBehaviourRuntime
+    [Header("기본 스탯 프로필 · 접촉 피해")]
+    public SummonContactDamageStatDefinition stats;
+    public override SummonModuleStatDefinition StatDefinition => stats;
+    public override SummonBehaviourRuntime CreateRuntime(SummonActor actor) => new Runtime(actor, this);
+    private sealed class Runtime : SummonModuleRuntime<SummonContactDamageStat>
     {
-        private struct HitState { public int life; public float next; }
-        private readonly Dictionary<Enemy, HitState> hitTimes = new Dictionary<Enemy, HitState>();
-        private readonly List<Enemy> removed = new List<Enemy>();
         private readonly EnemyQueryBuffer query = new EnemyQueryBuffer();
-        private readonly float radius, damage, power, interval;
-        private readonly HitEffectData[] effects;
-        private readonly HitEffectAttackState attackState = new HitEffectAttackState();
-        private float elapsed;
-        public Runtime(SummonActor summon, SummonContactDamageModule data) : base(summon)
-        {
-            radius = EffectStatUtility.Safe(data.contactRadius, 0.01f, 100f, 0.3f);
-            damage = EffectStatUtility.Safe(data.baseDamage, 0f, 1000000f, 10f);
-            power = EffectStatUtility.Safe(data.attackPowerMultiplier, 0f, 100f, 1f);
-            interval = EffectStatUtility.Safe(data.hitInterval, 0.01f, 60f, 0.5f);
-            effects = data.onHitEffects != null ? (HitEffectData[])data.onHitEffects.Clone() : null;
-        }
+        private readonly SummonContactActivationGate contacts = new SummonContactActivationGate(SummonContactTriggerMode.WhileTouching);
+        private bool disposed;
+        public Runtime(SummonActor actor, SummonContactDamageModule module) : base(actor, module, module.stats) { }
         public override void Tick(float deltaTime)
         {
-            elapsed += deltaTime;
-            query.Scan(summon.transform.position, radius, summon.enemyLayerMask);
+            contacts.BeginStep(deltaTime);
+            query.Scan(summon.transform.position, stat.radius, summon.enemyLayerMask);
+            int life = summon.LifeId, profile = summon.ProfileVersion;
             bool attacked = false;
+            SummonContactDamageStat attack = null;
             foreach (Enemy enemy in query.Enemies)
             {
-                if (!summon.CanAct) break;
-                if (enemy == null || enemy.IsDead || !enemy.isActiveAndEnabled) continue;
-                HitState previous;
-                if (hitTimes.TryGetValue(enemy, out previous) && previous.life == enemy.HitEffectLifeId && elapsed < previous.next)
-                    continue;
-                hitTimes[enemy] = new HitState { life = enemy.HitEffectLifeId, next = elapsed + interval };
-                attacked |= SummonDamageUtility.Hit(enemy, summon.CalculateDamage(damage + summon.AttackPower * power), effects,
-                    summon.CreateAttackContext(enemy.transform.position, enemy.transform.position - summon.transform.position), attackState);
+                if (disposed || !summon.CanAct || summon.LifeId != life || summon.ProfileVersion != profile) break;
+                if (enemy == null || !enemy.CanReceiveHitEffects) continue;
+                attacked |= contacts.TryActivate(enemy, enemy.HitEffectLifeId, stat.interval, int.MaxValue, () =>
+                {
+                    // 한 번의 접촉 피해 갱신에서 마지막 사용 버프를 모든 적에게 유지합니다.
+                    if (attack == null) attack = CaptureActivationStat();
+                    if (disposed || !summon.CanAct || summon.LifeId != life || summon.ProfileVersion != profile) return false;
+                    return SummonDamageUtility.Hit(enemy, summon.CalculateDamage(attack.damage), null,
+                        summon.CreateAttackContext(enemy.transform.position, enemy.transform.position - summon.transform.position));
+                });
             }
-            if (attacked) summon.NotifyAttack();
-            // 밖으로 나갔다 들어와도 interval 안에는 중복 피해를 주지 않는다.
-            removed.Clear();
-            foreach (KeyValuePair<Enemy, HitState> pair in hitTimes)
-                if (pair.Key == null || (!query.Enemies.Contains(pair.Key) && elapsed >= pair.Value.next)) removed.Add(pair.Key);
-            foreach (Enemy enemy in removed) hitTimes.Remove(enemy);
+            if (attacked && summon.CanAct && summon.LifeId == life) summon.NotifyAttack();
+            if (!disposed) contacts.EndStep(stat.interval, ValidEnemy);
         }
-        public override void Dispose() => hitTimes.Clear();
+        private static bool ValidEnemy(object value, int life)
+            => value is Enemy enemy && enemy != null && enemy.CanReceiveHitEffects && enemy.HitEffectLifeId == life;
+        public override void Dispose() { disposed = true; contacts.Clear(); }
     }
 }

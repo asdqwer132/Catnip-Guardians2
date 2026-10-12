@@ -385,7 +385,7 @@ public string BuffTargetGroup => buffTargetGroup;
 
 아이템 계산에서 이미 적용한 전체 버프는 그 아이템이 생성한 DamageArea/Summon의 대상 계산에서 다시 적용하지 않는다. 공격력 5에 +50%라면 최종값은 7.5다. 서로 다른 출처의 버프는 기존 중첩 규칙대로 함께 적용된다. **Include Self**를 끄면 부여한 ItemData와 그 아이템에서 생성한 DamageArea/Summon을 제외한다. 출처가 없는 오브젝트와 가방은 포함한다.
 
-현재 대상의 수치를 즉시 갱신하고 해제 시 복원하려면 **Apply Timing = Dynamic**을 사용한다. 아이템에서 **Snapshot**이나 횟수제 버프로 캡처한 스탯은 기존처럼 생성된 공격에 유지된다. 전체 범위를 조회·정화할 때에도 All Targets를 사용할 수 있으며, 정화의 분류/플래그 조건은 그대로 적용된다.
+현재 대상의 수치를 즉시 갱신하고 해제 시 복원하려면 **Apply Timing = Dynamic**을 사용한다. 아이템에서 **Snapshot**이나 횟수제 버프로 캡처한 공격 스탯은 기존처럼 생성된 공격에 유지된다. 소환물의 모듈 기능 스탯은 실제 소환물 대상에서 계산하며, 버프 종료 후 기존 소환물의 값도 갱신된다. 전체 범위를 조회·정화할 때에도 All Targets를 사용할 수 있으며, 정화의 분류/플래그 조건은 그대로 적용된다.
 
 ### 앞으로 부여할 버프의 지속시간 늘리기
 
@@ -636,9 +636,9 @@ Ready는 남은 시간을 0으로 만들고 준비 완료 상태를 유지한다
 
 ### 먼저 종류와 기본 소환을 설정
 
-생성 효과 **SummonSpawnEffect**에는 **Spawn Stat**(수명·개수·배치)과 **Summon Prefab**을 설정한다. 프리팹의 **SummonActor**에는 **Base Actor Stat**(공격력·주기·탐색 범위·배율), **Modules**, **Definition**을 설정한다. 생성 효과는 프리팹의 기능 설정을 덮어쓰지 않는다. 상세 설정과 두 스탯의 버프 예제는 [소환 구조 설명](SummonArchitecture.md)을 참고한다.
+생성 효과 **SummonSpawnEffect**에는 **Spawn Stat**(수명·개수·배치)과 **Summon Prefab**을 설정한다. 프리팹의 **SummonActor**에는 **Modules**와 **Definition**을 설정하고, 기본 기능 수치는 각 모듈의 **Stats 프로필**에서 설정한다. 생성 효과는 프리팹의 기능 설정을 덮어쓰지 않는다. 상세 설정과 모듈별 스탯의 버프 예제는 [소환 구조 설명](SummonArchitecture.md)을 참고한다.
 
-소환물을 체력 있는 미끼로 사용하려면 Definition의 **Enable Health**를 켜고 **Max Health**를 입력한다. 종류 이름 대신 Definition 에셋 참조로 조회한다.
+소환물을 체력 있는 미끼로 사용하려면 **Health 모듈**을 추가하고 Stats 프로필에서 **Max Health**와 **Defense**를 입력한다. 종류 이름 대신 Definition 에셋 참조로 조회한다.
 
 ### 조회와 개조
 
@@ -938,3 +938,7 @@ RepeatItemEffect의 Placement 아래에서 다음을 설정한다.
 각도를 균등하게 해도 **Shotgun Radius Offset**이 `1`이면 거리는 발마다 `Radius ± 1`에서 추첨한다. 같은 원의 둘레에 정확히 놓으려면 오프셋을 `0`으로 설정한다. 무작위 방식의 FromDirection은 기준 방향에서 펼침 각도만큼의 구간에서 각도를 뽑는다. 한 발만 균등 배치할 때는 기준 방향에 놓는다.
 
 **CircleEven**은 원 둘레의 균등 각도, **CircleRandom**은 원 내부의 무작위 위치다. 둘 모두 Direction Mode·Spread Start Mode·Clockwise Spread를 사용하며, Shotgun Distribution·Shotgun Radius Offset은 Shotgun에만 적용한다. 다중 발사는 각 묶음 안에서 균등 배치하고, 한 발씩 여러 번 반복하면 전체 반복 횟수로 나눠 배치한다. 기존 에셋은 Random·CenteredOnDirection·반시계 방향으로 기존 설정을 유지한다. Unity EditMode의 **CombatEffectTests**에서 배치와 RepeatItemRunner 연결을 검사한다.
+
+## 소환 모듈의 기본 스탯과 런타임 스탯
+
+소환물 기능의 모든 기본 수치는 각 모듈의 **Stats 프로필**에서 설정한다. 모듈 인스펙터에서 프로필을 선택하고 기본값을 편집하며, 실행 중 Actor의 **모듈별 현재 스탯**에서 버프 결과를 확인한다. 버프 스탯 드롭다운은 소환/생성·공격·이동·지원으로 구분한다. **Contact Effects**는 접촉 이펙트와 횟수 제한, **Periodic Spawn**은 주기마다 다른 소환 효과를 실행한다. 자세한 설정과 연결 가능한 예제는 [소환 모듈 설명](SummonArchitecture.md)을 참고한다.

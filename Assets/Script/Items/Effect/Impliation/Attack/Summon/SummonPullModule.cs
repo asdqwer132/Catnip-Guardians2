@@ -4,29 +4,25 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SummonPull", menuName = "04.Items/Effects/Direct Effects/Summon/Summon Modules/Pull")]
 public sealed class SummonPullModule : SummonBehaviourModule
 {
-    [Min(0f)] public float pullSpeed = 5f;
-    [Min(0.01f)] public float tickInterval = 0.05f;
-    [Min(0f)] public float stopDistance = 0.1f;
+    [Header("기본 스탯 프로필 · 끌어당김")]
+    public SummonPullStatDefinition stats;
+    public override SummonModuleStatDefinition StatDefinition => stats;
     public bool holdAtCenter = true;
     public bool allowWhileStopped;
     public bool interruptPattern = true;
     public bool interruptAttack = true;
     public override SummonBehaviourRuntime CreateRuntime(SummonActor summon) => new Runtime(summon, this);
 
-    private sealed class Runtime : SummonBehaviourRuntime
+    private sealed class Runtime : SummonModuleRuntime<SummonPullStat>
     {
         private readonly EnemyQueryBuffer query = new EnemyQueryBuffer();
         private readonly Dictionary<Enemy, int> affected = new Dictionary<Enemy, int>();
         private readonly List<Enemy> removed = new List<Enemy>();
-        private readonly float speed, interval, stop;
         private readonly bool hold, stopped, interruptPattern, interruptAttack;
         private float timer;
         private bool disposed;
-        public Runtime(SummonActor summon, SummonPullModule data) : base(summon)
+        public Runtime(SummonActor summon, SummonPullModule data) : base(summon, data, data.stats)
         {
-            speed = EffectStatUtility.Safe(data.pullSpeed, 0f, 1000f, 5f);
-            interval = EffectStatUtility.Safe(data.tickInterval, 0.01f, 1f, 0.05f);
-            stop = EffectStatUtility.Safe(data.stopDistance, 0f, 100f, 0.1f);
             hold = data.holdAtCenter;
             stopped = data.allowWhileStopped;
             interruptPattern = data.interruptPattern;
@@ -36,8 +32,8 @@ public sealed class SummonPullModule : SummonBehaviourModule
         {
             timer -= deltaTime;
             if (disposed || timer > 0f) return;
-            timer = interval;
-            query.Scan(summon.transform.position, summon.AttackRange, summon.enemyLayerMask);
+            timer = stat.tickInterval;
+            query.Scan(summon.transform.position, stat.range, summon.enemyLayerMask);
             foreach (Enemy enemy in query.Enemies)
             {
                 if (!summon.CanAct || disposed) break;
@@ -50,10 +46,10 @@ public sealed class SummonPullModule : SummonBehaviourModule
                     reapplyMode = ActorMovementControlReapplyMode.Replace,
                     center = summon.transform.position,
                     fallbackDirection = Vector2.right,
-                    strength = speed,
-                    duration = interval * 2f,
-                    maxDistance = summon.AttackRange,
-                    pullStopDistance = stop,
+                    strength = stat.speed,
+                    duration = stat.tickInterval * 2f,
+                    maxDistance = stat.range,
+                    pullStopDistance = stat.stopDistance,
                     suppressBaseMovement = true,
                     clearExternalVelocity = true,
                     allowWhileStopped = stopped,

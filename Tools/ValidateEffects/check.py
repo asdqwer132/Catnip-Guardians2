@@ -164,6 +164,7 @@ def main():
                     'Assets/Editor/BuffEditor/BuffTargetResolverEditors.cs',
                     'Assets/Editor/BuffEditor/BuffModifierEditorGUI.cs',
                     'Assets/Editor/BuffEditor/FloatFieldBuffModifierEditor.cs',
+                    'Assets/Editor/SummonModuleEditor.cs', 'Assets/Editor/SummonActorEditor.cs',
                     'Assets/Editor/Tests/BuffTargetInspectorTests.cs',
                     'Assets/Editor/Tests/BuffDurationEditorTests.cs',
                     'Assets/Editor/Tests/SummonArchitectureEditorTests.cs',
@@ -184,7 +185,9 @@ def main():
                 'Excuter/Excuter/BagItemCooldownController.cs', 'Excuter/Excuter/Throw/ItemEffectExecutor.cs',
                 'Excuter/Excuter/Throw/ItemThrowArrivalTiming.cs',
                 'Impliation/Attack/DamageArea/DamageAreaAttackStat.cs',
-                'Impliation/Attack/Summon/SummonSpawnStat.cs', 'Impliation/Attack/Summon/SummonActorStat.cs',
+                'Impliation/Attack/Summon/SummonSpawnStat.cs', 'Impliation/Attack/Summon/Stats/SummonModuleStats.cs',
+                'Impliation/Attack/Summon/SummonContactActivationGate.cs',
+                'Impliation/Attack/Summon/SummonPeriodicSpawnSchedule.cs',
                 'Impliation/Cooldown/ItemCooldownStat.cs', 'Impliation/Cooldown/BagCooldownStat.cs',
                 'Impliation/Buff/Data/Modifier/BuffModifier.cs', 'Impliation/Buff/Data/Modifier/FloatFieldBuffModifier.cs',
                 'Impliation/Buff/Data/BuffModeEnums.cs', 'Impliation/Buff/Data/Resolver/IBuffTarget.cs',
@@ -207,7 +210,7 @@ def main():
     pure_dir = work / 'managed'
     pure_dir.mkdir()
     managed_path = pure_dir / 'Managed.csproj'
-    project(managed_path, [effect / name for name in selected] + [ROOT / 'Assets/Editor/BuffTargetGroupDiscovery.cs', HERE / 'ManagedApi.cs', HERE / 'ManagedChecks.cs', HERE / 'ManagedBuffGroupChecks.cs', HERE / 'ManagedAllTargetsChecks.cs', HERE / 'ManagedSummonChecks.cs'], refs, executable=True)
+    project(managed_path, [effect / name for name in selected] + [ROOT / 'Assets/Editor/BuffTargetGroupDiscovery.cs', HERE / 'ManagedApi.cs', HERE / 'ManagedChecks.cs', HERE / 'ManagedBuffGroupChecks.cs', HERE / 'ManagedAllTargetsChecks.cs', HERE / 'ManagedSummonChecks.cs', HERE / 'ManagedSummonModuleChecks.cs'], refs, executable=True)
     run([dotnet, 'run', '--project', managed_path, '--nologo'], env=environment)
     print('API compile and managed checks passed. Unity 6000.4 import/physics/play validation remains required.')
     if not metadata_ok:

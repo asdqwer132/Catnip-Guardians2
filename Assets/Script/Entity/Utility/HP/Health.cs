@@ -126,6 +126,17 @@ public class Health : MonoBehaviour, IBuffTarget
         baseHealthStat.defense = EffectStatUtility.Safe(defense, 0f, 100000000f, 0f);
         RefreshBuffedStat();
     }
+    // 소환물의 체력 모듈 등 외부 소유자가 제공하는 기준값을 갱신합니다.
+    // 런타임 버프 갱신은 현재 HP를 유지하고, 처음 생성할 때만 체력을 채웁니다.
+    public void SetBaseStats(HealthStat stats, bool initialize = false)
+    {
+        if (stats == null) return;
+        EnsureStats();
+        baseHealthStat = stats.Clone();
+        baseHealthStat.Clamp();
+        if (initialize) Init(baseHealthStat.maxHp);
+        else RefreshBuffedStat();
+    }
     public void SetBuffManager(BuffManager manager)
     {
         if (buffManager != manager) UnregisterBuffTarget();

@@ -60,7 +60,10 @@ public sealed class SummonSpawnTests
         GameObject prefab = Host("Test Summon Prefab");
         prefab.SetActive(false);
         SummonActor actor = prefab.AddComponent<SummonActor>();
-        actor.baseActorStat = new SummonActorStat { attackPower = 10f, detectionRange = 4f, attackInterval = 2f };
+        SummonContactDamageModule contact = Asset<SummonContactDamageModule>();
+        contact.stats = Asset<SummonContactDamageStatDefinition>();
+        contact.stats.baseStat = new SummonContactDamageStat { damage = 10f, radius = 4f, interval = 2f };
+        actor.modules = new SummonBehaviourModule[] { contact };
         SummonSpawnEffect effect = Asset<SummonSpawnEffect>();
         effect.summonPrefab = actor;
         effect.spawnStat.count = count;
@@ -109,9 +112,9 @@ public sealed class SummonSpawnTests
         Assert.That(b.Count, Is.EqualTo(1));
         foreach (SummonActor actor in a) Assert.That(actor.RemainingLifeTime, Is.EqualTo(3f));
         Assert.That(b[0].RemainingLifeTime, Is.EqualTo(9f));
-        foreach (SummonActor actor in a) Assert.That(actor.AttackPower, Is.EqualTo(10f));
-        Assert.That(b[0].AttackPower, Is.EqualTo(10f));
-        Assert.That(first.summonPrefab.baseActorStat.attackPower, Is.EqualTo(10f));
+        foreach (SummonActor actor in a) Assert.That(actor.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(10f));
+        Assert.That(b[0].GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(10f));
+        Assert.That(((SummonContactDamageModule)first.summonPrefab.modules[0]).stats.baseStat.damage, Is.EqualTo(10f));
         Assert.That(first.spawnStat.count, Is.EqualTo(2f));
     }
 
@@ -131,7 +134,7 @@ public sealed class SummonSpawnTests
             Assert.That(Vector2.Distance(actor.transform.position, new Vector2(10f, 20f)), Is.EqualTo(2f).Within(0.0001f));
             Assert.That(actor.transform.position.z, Is.Zero);
             Assert.That(actor.RemainingLifeTime, Is.EqualTo(10f));
-            Assert.That(actor.AttackPower, Is.EqualTo(10f));
+            Assert.That(actor.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(10f));
         }
         Assert.That(effect.spawnStat.count, Is.EqualTo(1f), "원본 생성 에셋은 변경하지 않습니다.");
         Assert.That(effect.spawnStat.lifetime, Is.EqualTo(5f));
@@ -145,17 +148,17 @@ public sealed class SummonSpawnTests
         BuffTargetGroupResolver group = Asset<BuffTargetGroupResolver>();
         group.targetGroup = "Summon";
         ActiveBuff buff = Grant(group,
-            Modifier(nameof(SummonActorStat), nameof(SummonActorStat.attackPower), multiply: 0.5f),
-            Modifier(nameof(SummonActorStat), nameof(SummonActorStat.attackInterval), multiply: -0.5f));
-        Assert.That(existing.AttackPower, Is.EqualTo(15f));
-        Assert.That(existing.AttackInterval, Is.EqualTo(1f));
+            Modifier(nameof(SummonContactDamageStat), nameof(SummonContactDamageStat.damage), multiply: 0.5f),
+            Modifier(nameof(SummonContactDamageStat), nameof(SummonContactDamageStat.interval), multiply: -0.5f));
+        Assert.That(existing.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(15f));
+        Assert.That(existing.GetRuntimeStat<SummonContactDamageStat>(0).interval, Is.EqualTo(1f));
         List<SummonActor> future = Spawn(effect);
         Assert.That(future.Count, Is.EqualTo(1));
-        Assert.That(future[0].AttackPower, Is.EqualTo(15f));
+        Assert.That(future[0].GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(15f));
         manager.RemoveBuffHandle(buff);
-        Assert.That(existing.AttackPower, Is.EqualTo(10f));
-        Assert.That(future[0].AttackPower, Is.EqualTo(10f));
-        Assert.That(effect.summonPrefab.baseActorStat.attackPower, Is.EqualTo(10f));
+        Assert.That(existing.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(10f));
+        Assert.That(future[0].GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(10f));
+        Assert.That(((SummonContactDamageModule)effect.summonPrefab.modules[0]).stats.baseStat.damage, Is.EqualTo(10f));
     }
 
     [Test]
@@ -163,7 +166,7 @@ public sealed class SummonSpawnTests
     {
         Grant(Asset<AllTargetsBuffTargetResolver>(),
             Modifier(nameof(SummonSpawnStat), nameof(SummonSpawnStat.count), add: 1f),
-            Modifier(nameof(SummonActorStat), nameof(SummonActorStat.attackPower), multiply: 0.5f));
+            Modifier(nameof(SummonContactDamageStat), nameof(SummonContactDamageStat.damage), multiply: 0.5f));
         SummonSpawnEffect effect = Effect();
         effect.spawnStat.spreadRadius = 1f;
         ItemEffectContext context = Context();
@@ -174,38 +177,37 @@ public sealed class SummonSpawnTests
         Assert.That(actors.Count, Is.EqualTo(2));
         foreach (SummonActor actor in actors)
         {
-            Assert.That(actor.AttackPower, Is.EqualTo(15f), "아이템 조회와 소환물 조회에서 두 번 곱하면 안 됩니다.");
-            Assert.That(actor.CalculateDamage(actor.AttackPower), Is.EqualTo(30f));
-            Assert.That(actor.AttackRange, Is.EqualTo(12f));
+            Assert.That(actor.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(15f), "아이템 조회와 소환물 조회에서 두 번 곱하면 안 됩니다.");
+            Assert.That(actor.CalculateDamage(actor.GetRuntimeStat<SummonContactDamageStat>(0).damage), Is.EqualTo(30f));
+            Assert.That(actor.GetRuntimeStat<SummonContactDamageStat>(0).radius, Is.EqualTo(12f));
             Assert.That(actor.RemainingLifeTime, Is.EqualTo(10f));
             Assert.That(Vector2.Distance(actor.transform.position, new Vector2(10f, 20f)), Is.EqualTo(3f).Within(0.0001f));
         }
     }
 
     [Test]
-    public void LastUseBuffCoversTheWholeBatchAndRestoresOnlyFutureSpawns()
+    public void FunctionalBuffIsConsumedOnActivationAndRuntimeRestoresAfterItsLastUse()
     {
-        FloatFieldBuffModifier modifier = Modifier(nameof(SummonActorStat), nameof(SummonActorStat.attackPower), multiply: 0.5f);
         BuffEffect buff = Asset<BuffEffect>();
         buff.targetResolver = Asset<AllTargetsBuffTargetResolver>();
-        buff.modifiers = new BuffModifier[] { modifier };
+        buff.modifiers = new BuffModifier[] { Modifier(nameof(SummonContactDamageStat), nameof(SummonContactDamageStat.damage), multiply: 0.5f) };
         buff.includeSelf = true;
         buff.buffInfo.useLimitType = BuffUseLimitType.UseCount;
         buff.buffInfo.maxUseCount = 1;
         manager.RegisterBuff(buff, Context());
         SummonSpawnEffect effect = Effect(3f);
-        ItemEffectContext context = Context();
-        BuffItemUseToken token = manager.BeginItemUse(context.sourceItemData, null);
-        List<SummonActor> actors;
-        try { actors = Spawn(effect, context); }
-        finally { manager.EndItemUse(token); }
+        List<SummonActor> actors = Spawn(effect);
+        Assert.That(manager.Storage.activeBuffs.Count, Is.EqualTo(1), "생성과 인스펙터 조회는 기능 버프를 소비하지 않습니다.");
+        foreach (SummonActor actor in actors)
+            Assert.That(actor.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(15f));
+        // 실제 공격 모듈도 이 API로 한 번의 공격에 사용할 값을 캡처합니다.
+        SummonContactDamageStat attack = actors[0].CalculateModuleStat(
+            ((SummonContactDamageModule)effect.summonPrefab.modules[0]).stats.baseStat, consumeUseCount: true);
+        Assert.That(attack.damage, Is.EqualTo(15f), "마지막 횟수의 공격에는 버프값을 사용합니다.");
         Assert.That(manager.Storage.activeBuffs, Is.Empty);
         foreach (SummonActor actor in actors)
-        {
-            actor.RefreshBuffedStat();
-            Assert.That(actor.AttackPower, Is.EqualTo(15f), "마지막 사용의 모든 소환물이 버프를 유지해야 합니다.");
-        }
-        foreach (SummonActor actor in Spawn(effect)) Assert.That(actor.AttackPower, Is.EqualTo(10f));
+            Assert.That(actor.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(10f), "버프가 끝나면 기존 소환물의 런타임 값도 돌아옵니다.");
+        Assert.That(((SummonContactDamageModule)effect.summonPrefab.modules[0]).stats.baseStat.damage, Is.EqualTo(10f));
     }
 
     [Test]

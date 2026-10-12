@@ -8,13 +8,18 @@ namespace UnityEditor
 {
     public sealed class InitializeOnLoadAttribute : Attribute { }
     public sealed class CanEditMultipleObjectsAttribute : Attribute { }
-    public sealed class CustomEditorAttribute : Attribute { public CustomEditorAttribute(Type type) { } }
+    public sealed class CustomEditorAttribute : Attribute { public CustomEditorAttribute(Type type, bool children = false) { } }
     public sealed class CustomPropertyDrawerAttribute : Attribute { public CustomPropertyDrawerAttribute(Type type) { } }
     public enum MessageType { None, Info, Warning, Error }
     public enum SerializedPropertyType { String }
     public enum PlayModeStateChange { EnteredEditMode, ExitingEditMode, EnteredPlayMode, ExitingPlayMode }
     public class SerializedProperty
     {
+        public string name;
+        public SerializedProperty Copy() => this;
+        public SerializedProperty GetEndProperty() => this;
+        public bool NextVisible(bool enterChildren) => false;
+        public static bool EqualContents(SerializedProperty a, SerializedProperty b) => false;
         public string stringValue;
         public float floatValue;
         public bool hasMultipleDifferentValues;
@@ -30,8 +35,10 @@ namespace UnityEditor
     }
     public class Editor : ScriptableObject
     {
+        public UnityEngine.Object target;
         public SerializedObject serializedObject;
         public virtual void OnInspectorGUI() { }
+        public virtual bool RequiresConstantRepaint() => false;
         protected static void DrawPropertiesExcluding(SerializedObject value, params string[] excluded) { }
     }
     public class PropertyDrawer
@@ -78,6 +85,8 @@ namespace UnityEditor
     }
     public static class EditorGUI
     {
+        public static void BeginDisabledGroup(bool disabled) { }
+        public static void EndDisabledGroup() { }
         public static bool showMixedValue;
         public static void BeginProperty(Rect rect, GUIContent label, SerializedProperty property) { }
         public static void EndProperty() { }
@@ -89,6 +98,9 @@ namespace UnityEditor
     }
     public static class EditorGUILayout
     {
+        public static bool PropertyField(SerializedProperty property, bool includeChildren) => false;
+        public static bool PropertyField(SerializedProperty property, GUIContent label, bool includeChildren) => false;
+        public static float FloatField(string label, float value) => value;
         public static void BeginHorizontal() { }
         public static void EndHorizontal() { }
         public static void Space(float pixels) { }

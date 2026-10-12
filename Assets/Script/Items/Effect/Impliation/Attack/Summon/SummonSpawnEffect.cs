@@ -18,6 +18,16 @@ public sealed class SummonSpawnEffect : ItemEffectData
     public AttackSpreadStartMode spreadStartMode = AttackSpreadStartMode.CenteredOnDirection;
     public bool clockwiseSpread;
 
+    protected override bool CanStart(ItemEffectContext context)
+        => base.CanStart(context) && summonPrefab != null && spawnStat != null;
+
+    protected override bool TryExecuteWithConditions(ItemEffectContext context)
+    {
+        if (!AreConditionsSatisfied(context) || context.GetCurrentStat(this, spawnStat).SpawnCount == 0) return false;
+        PlayImpactVfx(context);
+        return Spawn(context) > 0;
+    }
+
     public override void Prepare(ItemEffectContext context)
         => context.GetUnscaledSnapshotStat(this, spawnStat);
 
@@ -26,7 +36,7 @@ public sealed class SummonSpawnEffect : ItemEffectData
     // 목록을 받으면 합체/후속 코드에서도 이번에 생성된 전체 소환물을 확인할 수 있습니다.
     public int Spawn(ItemEffectContext context, List<SummonActor> results = null)
     {
-        if (context == null || !context.CanContinue || context.sourceItemData == null ||
+        if (context == null || !context.CanContinue ||
             spawnStat == null || summonPrefab == null) return 0;
 
         SummonSpawnStat current = context.GetCurrentStat(this, spawnStat);
@@ -39,7 +49,7 @@ public sealed class SummonSpawnEffect : ItemEffectData
             Vector3 position = current.GetPosition(placementMode, context.targetPosition, direction,
                 i, count, spreadStartMode, clockwiseSpread);
             SummonActor actor = Instantiate(summonPrefab, position, Quaternion.identity);
-            actor.Initialize(context, current.lifetime, summonPrefab);
+            actor.Initialize(context, current.lifetime);
             if (!actor.gameObject.activeSelf) actor.gameObject.SetActive(true);
             results?.Add(actor);
             spawned++;

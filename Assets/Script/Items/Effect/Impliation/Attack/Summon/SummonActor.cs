@@ -1,22 +1,25 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.Scripting.APIUpdating;
 
+[Serializable]
+public sealed class SummonModuleRuntimeView
+{
+    public SummonBehaviourModule module;
+    [SerializeReference] public object currentStat;
+}
+
 public enum SummonThrowTargetMode { NearestEnemy, RandomEnemy, RandomPosition }
 
-// 프리팹의 기능 스탯과 모듈을 소유합니다. 생성 개수/배치/수명은 SpawnEffect가 전달합니다.
+// 모듈의 실행 상태를 관리합니다. 기본 기능 스탯은 각 모듈의 프로필에 있습니다. 생성 개수/배치/수명은 SpawnEffect가 전달합니다.
 [BuffTargetGroups("Summon")]
 [MovedFrom(true, null, "Assembly-CSharp", "SummonItemThrower")]
 public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, IDamageable
 {
-    [Header("Actor Function Stats")]
-    public SummonActorStat baseActorStat = new SummonActorStat();
-    [Header("Identity / Health")]
+    [Header("소환물 종류 / 태그")]
     public SummonDefinition definition;
-    [Header("Component")]
-    public CircleCollider2D rangeCollider;
-    public Transform rangeVisual;
     [Header("Behaviour Modules")]
     [Tooltip("행동 에셋을 원하는 순서로 조합합니다. 이동 모듈을 공격 모듈보다 앞에 배치하세요.")]
     public SummonBehaviourModule[] modules;
@@ -25,11 +28,10 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
     [Header("Detect")]
     public LayerMask enemyLayerMask;
     [Header("Runtime Stat")]
-    [SerializeField] private SummonActorStat currentActorStat = new SummonActorStat();
+    [SerializeField] private List<SummonModuleRuntimeView> runtimeModuleStats = new List<SummonModuleRuntimeView>();
     [FormerlySerializedAs("lifeTime")]
     [SerializeField] private float spawnLifetime = 5f;
     private float extraLifetime;
-    private SummonActorStat snapshotActorStat;
     private ItemData sourceItemData;
     private EquipmentBag sourceBag;
     private BuffManager buffManager;
@@ -42,19 +44,17 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
     private ItemEffectContext executionContext;
     private SummonBehaviourModule[] effectiveModules;
     private Health health;
+    private bool hasHealthModule;
+    private int healthInitializedLife = int.MinValue;
     private float timer;
     private bool initialized, registered, finishing;
 
     public UnityEngine.Object BuffTargetObject => this;
     public string BuffTargetGroup => "Summon";
     public string BuffTargetDebugName => name;
-    public float AttackPower => currentActorStat.attackPower;
-    public float AttackRange => currentActorStat.detectionRange;
-    public float AttackInterval => currentActorStat.attackInterval;
-    public SummonActorStat CurrentActorStat => BuffStatCloneUtility.Clone(currentActorStat);
     public GameObject Owner => owner;
     public SummonDefinition Definition => definition;
-    public Health Health => health != null ? health : GetComponent<Health>();
+    public Health Health => hasHealthModule ? health : null;
     public Transform DamageTransform => transform;
     // HP 없는 일반 공격 소환물은 적의 피격 대상으로 선택하지 않는다.
     public bool IsDead => finishing || Health == null || Health.IsDead;
@@ -70,8 +70,6 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
     protected virtual void Awake()
     {
         if (itemThrowExecutor == null) itemThrowExecutor = GetComponent<ItemThrowExecutor>();
-        if (rangeCollider == null) rangeCollider = GetComponent<CircleCollider2D>();
-        ApplyRadius();
     }
 
     protected override void OnEnable()
@@ -89,7 +87,6 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
         {
             RegisterDynamicBuffReceiver();
             RefreshBuffedStat();
-            InitializeHealth();
             RefreshProfiles(true);
         }
         RegisterBuffTarget();
@@ -125,27 +122,27 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
             buffManager: buffManager, direction: direction) { sourceSummon = this, sourceSummonLifeId = LifeId };
     }
 
-    public ItemEffectContext CreateAttackContext(Vector3 target, Vector3 direction)
+    public ItemEffectContext CreateAttackContext(Vector3 target, Vector3 direction, float damageMultiplier = 1f, float healingMultiplier = 1f)
     {
         ItemEffectContext context = CreateContext(target, direction);
-        context.damageMultiplier *= CurrentDamageMultiplier;
-        context.healingMultiplier *= CurrentHealingMultiplier;
+        context.damageMultiplier *= CurrentDamageMultiplier * damageMultiplier;
+        context.healingMultiplier *= CurrentHealingMultiplier * healingMultiplier;
         return context;
     }
 
-    public bool TryTarget(SummonThrowTargetMode mode, out Vector3 target)
+    public bool TryTarget(SummonThrowTargetMode mode, float range, out Vector3 target)
     {
         target = transform.position;
         if (mode == SummonThrowTargetMode.RandomPosition)
-        { target += (Vector3)(Random.insideUnitCircle * AttackRange); return true; }
-        query.Scan(transform.position, AttackRange, enemyLayerMask);
+        { target += (Vector3)(UnityEngine.Random.insideUnitCircle * range); return true; }
+        query.Scan(transform.position, range, enemyLayerMask);
         Enemy enemy = EnemyQueryBuffer.Select(query.Enemies, transform.position, mode == SummonThrowTargetMode.RandomEnemy);
         if (enemy == null) return false;
         target = enemy.transform.position;
         return true;
     }
 
-    public bool ThrowItem(ItemData item, Vector3 target, bool useActorAttackPower = false)
+    public bool ThrowItem(ItemData item, Vector3 target, float? damageOverride = null, float damageMultiplier = 1f, float healingMultiplier = 1f)
     {
         if (!CanAct || item == null) return false;
         if (itemThrowExecutor == null)
@@ -156,8 +153,8 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
             itemThrowExecutor.itemEffectExecutor = executor;
             itemThrowExecutor.showTargetRange = false;
         }
-        ItemEffectContext context = CreateAttackContext(target, (target - transform.position).normalized);
-        if (useActorAttackPower) context.damageOverride = AttackPower;
+        ItemEffectContext context = CreateAttackContext(target, (target - transform.position).normalized, damageMultiplier, healingMultiplier);
+        if (damageOverride.HasValue) context.damageOverride = damageOverride;
         if ((target - transform.position).sqrMagnitude <= 0.0001f)
         {
             ItemEffectExecutor.ExecuteItem(item, transform.position, target, context.direction,
@@ -170,7 +167,7 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
         return thrown;
     }
 
-    public void Initialize(ItemEffectContext context, float lifetime, SummonActor statOwner = null)
+    public void Initialize(ItemEffectContext context, float lifetime)
     {
         if (context == null || !context.CanContinue) return;
         UnregisterBuffTarget();
@@ -194,31 +191,37 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
         spawnLifetime = EffectStatUtility.Safe(lifetime, 0.01f, 600f, 5f);
         executionContext = context.Copy(transform.position, context.direction);
         effectLease = context.RetainLifetime();
-        if (baseActorStat == null) baseActorStat = new SummonActorStat();
-        // 기능 스탯의 원본은 생성 효과가 아니라 이 소환물 프리팹에 있습니다.
-        // 아이템 생성 버프의 마지막 사용도 각 소환물의 독립된 Snapshot에 유지합니다.
-        snapshotActorStat = BuffStatCloneUtility.Clone(context.plan.GetOwnedSnapshot(
-            statOwner != null ? statOwner : this, baseActorStat, context));
         initialized = true;
         RefreshBuffedStat();
         RegisterDynamicBuffReceiver();
         RegisterBuffTarget();
-        InitializeHealth();
         RefreshProfiles(true);
     }
 
-    private void InitializeHealth()
+    public Health ConfigureHealth(SummonHealthStat stat, bool initialize, HealthDefenseFormula defenseFormula)
     {
-        if (health != null) health.OnDead -= OnSummonDead;
-        health = GetComponent<Health>();
-        if (health == null && definition != null && definition.enableHealth) health = gameObject.AddComponent<Health>();
-        if (health == null) return;
+        if (health == null) health = GetComponent<Health>();
+        if (health == null) health = gameObject.AddComponent<Health>();
+        hasHealthModule = true;
+        health.enabled = true;
+        health.OnDead -= OnSummonDead;
+        health.OnDead += OnSummonDead;
         health.team = HealthTeam.Ally;
         health.buffTargetGroup = "SummonHealth";
+        health.defenseFormula = defenseFormula;
         health.SetBuffManager(buffManager);
-        float maxHp = definition != null && definition.enableHealth ? definition.maxHealth : health.MaxHp;
-        health.Init(EffectStatUtility.Safe(maxHp, 0.01f, 1000000f, 10f));
-        health.OnDead += OnSummonDead;
+        bool fill = initialize && healthInitializedLife != LifeId;
+        healthInitializedLife = LifeId;
+        health.SetBaseStats(new HealthStat { maxHp = stat.maxHealth, hp = stat.maxHealth, defense = stat.defense }, fill);
+        return health;
+    }
+
+    public void ReleaseHealthModule()
+    {
+        hasHealthModule = false;
+        if (health == null) return;
+        health.OnDead -= OnSummonDead;
+        health.enabled = false;
     }
 
     private void OnSummonDead() => Despawn(true);
@@ -241,7 +244,7 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
     {
         get
         {
-            float result = currentActorStat.damageMultiplier;
+            float result = 1f;
             foreach (SummonModification modification in modifications)
                 if (modification.IsValid(this)) result *= modification.DamageMultiplier;
             return EffectStatUtility.Safe(result, 0f, 1000000f, 1f);
@@ -251,7 +254,7 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
     {
         get
         {
-            float result = currentActorStat.healingMultiplier;
+            float result = 1f;
             foreach (SummonModification modification in modifications)
                 if (modification.IsValid(this)) result *= modification.HealingMultiplier;
             return EffectStatUtility.Safe(result, 0f, 1000000f, 1f);
@@ -314,13 +317,20 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
     {
         DisposeBehaviours();
         if (effectiveModules == null) return;
+        bool hasHealth = false;
         foreach (SummonBehaviourModule module in effectiveModules)
             if (module != null)
             {
+                if (module is SummonHealthModule)
+                {
+                    if (hasHealth) continue; // 하나의 HP에 여러 기본 체력 프로필을 적용하지 않습니다.
+                    hasHealth = true;
+                }
                 module.Prepare(CreateAttackContext(transform.position, Vector3.right));
                 SummonBehaviourRuntime behaviour = module.CreateRuntime(this);
                 if (behaviour != null) behaviours.Add(behaviour);
             }
+        RefreshRuntimeInspector();
     }
 
     private void Update()
@@ -352,21 +362,28 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
         }
     }
 
+    public T CalculateModuleStat<T>(T baseStat, bool consumeUseCount = false) where T : class, IGameStat<T>
+    {
+        T current = buffManager != null
+            ? buffManager.GetBuffedStatForTarget(baseStat, this, consumeUseCount: consumeUseCount, sourceItemData: sourceItemData)
+            : BuffStatCloneUtility.Clone(baseStat);
+        return executionContext != null ? EffectExecutionScaling.Apply(current, executionContext) : current;
+    }
+
+    public T GetRuntimeStat<T>(int moduleIndex) where T : class, IGameStat<T>
+        => moduleIndex >= 0 && moduleIndex < behaviours.Count ? BuffStatCloneUtility.Clone(behaviours[moduleIndex].RuntimeStat as T) : null;
+
     public void RefreshBuffedStat()
     {
-        if (snapshotActorStat == null) return;
-        SummonActorStat current = snapshotActorStat;
-        if (buffManager != null)
-        {
-            if (sourceItemData != null || sourceBag != null)
-                current = buffManager.GetBuffedStatForItem(current, sourceItemData, sourceBag,
-                    BuffCalculationMode.DynamicOnly) ?? current;
-            current = buffManager.GetBuffedStatForTarget(current, this, sourceItemData: sourceItemData) ?? current;
-        }
-        currentActorStat = executionContext != null ? EffectExecutionScaling.Apply(current, executionContext)
-            : BuffStatCloneUtility.Clone(current);
-        currentActorStat.Clamp();
-        ApplyRadius();
+        foreach (SummonBehaviourRuntime behaviour in behaviours.ToArray()) behaviour.RefreshBuffedStat();
+        RefreshRuntimeInspector();
+    }
+    private void RefreshRuntimeInspector()
+    {
+        runtimeModuleStats.Clear();
+        foreach (SummonBehaviourRuntime behaviour in behaviours)
+            if (behaviour.RuntimeStat != null)
+                runtimeModuleStats.Add(new SummonModuleRuntimeView { module = behaviour.Module, currentStat = behaviour.RuntimeStat });
     }
 
     public void OnDynamicBuffChanged() => RefreshBuffedStat();
@@ -377,14 +394,6 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
     protected override void UnregisterDynamicBuffReceiverInternal()
     {
         if (buffManager != null) buffManager.UnregisterDynamicBuffReceiver(this);
-    }
-
-    private void ApplyRadius()
-    {
-        if (rangeVisual != null && rangeVisual != transform)
-            rangeVisual.localScale = new Vector3(AttackRange * 2f, AttackRange * 2f, 1f);
-        if (rangeCollider != null)
-        { rangeCollider.radius = AttackRange; rangeCollider.isTrigger = true; }
     }
 
     private void RegisterBuffTarget()
@@ -400,8 +409,10 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
     }
     private void DisposeBehaviours()
     {
-        foreach (SummonBehaviourRuntime behaviour in behaviours) behaviour.Dispose();
+        SummonBehaviourRuntime[] removed = behaviours.ToArray();
         behaviours.Clear();
+        runtimeModuleStats.Clear();
+        foreach (SummonBehaviourRuntime behaviour in removed) behaviour.Dispose();
     }
     protected override void OnDisable()
     {

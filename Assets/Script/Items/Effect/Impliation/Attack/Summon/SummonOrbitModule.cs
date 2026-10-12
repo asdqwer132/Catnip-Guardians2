@@ -6,34 +6,31 @@ public enum SummonOrbitCenter { SpawnPosition, Owner }
 public sealed class SummonOrbitModule : SummonBehaviourModule
 {
     public SummonOrbitCenter center = SummonOrbitCenter.Owner;
-    [Min(0f)] public float orbitRadius = 2f;
-    public float angularSpeed = 90f;
-    public float initialAngle;
+    [Header("기본 스탯 프로필 · 공전")]
+    public SummonOrbitStatDefinition stats;
+    public override SummonModuleStatDefinition StatDefinition => stats;
     [Tooltip("소환 지점의 현재 각도부터 공전합니다. 끄면 Initial Angle을 사용합니다.")]
     public bool startFromSpawnAngle = true;
     public override SummonBehaviourRuntime CreateRuntime(SummonActor summon) => new Runtime(summon, this);
 
-    private sealed class Runtime : SummonBehaviourRuntime
+    private sealed class Runtime : SummonModuleRuntime<SummonOrbitStat>
     {
         private readonly SummonOrbitCenter mode;
         private readonly Vector3 spawn;
-        private readonly float radius, speed;
         private float angle;
-        public Runtime(SummonActor summon, SummonOrbitModule data) : base(summon)
+        public Runtime(SummonActor summon, SummonOrbitModule data) : base(summon, data, data.stats)
         {
             mode = data.center;
             spawn = summon.transform.position;
-            radius = EffectStatUtility.Safe(data.orbitRadius, 0f, 100f, 2f);
-            speed = EffectStatUtility.Safe(data.angularSpeed, -3600f, 3600f, 90f);
             Vector3 offset = spawn - Center;
             angle = data.startFromSpawnAngle && offset.sqrMagnitude > 0.000001f ?
-                Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg : EffectStatUtility.Safe(data.initialAngle, -360f, 360f, 0f);
+                Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg : stat.initialAngle;
         }
         private Vector3 Center => mode == SummonOrbitCenter.Owner && summon.Owner != null ? summon.Owner.transform.position : spawn;
         public override void Tick(float deltaTime)
         {
-            angle = Mathf.Repeat(angle + speed * deltaTime, 360f);
-            Vector3 position = Center + new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad), 0f) * radius;
+            angle = Mathf.Repeat(angle + stat.angularSpeed * deltaTime, 360f);
+            Vector3 position = Center + new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad), 0f) * stat.radius;
             position.z = 0f;
             summon.transform.position = position;
         }

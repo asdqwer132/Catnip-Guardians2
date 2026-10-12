@@ -1,17 +1,28 @@
 using System.Collections.Generic;
+using System;
 using UnityEngine;
+
+// 오라가 실제로 사용하는 필터만 노출합니다. 반경/기준 위치는 소환물 스탯과 위치를 사용합니다.
+[Serializable]
+public sealed class SummonAuraTargetFilter
+{
+    public SummonOwnerScope ownerScope = SummonOwnerScope.SameOwner;
+    public SummonDefinition[] definitions;
+    public string[] requiredTags;
+}
 
 [CreateAssetMenu(fileName = "SummonAura", menuName = "04.Items/Effects/Direct Effects/Summon/Summon Modules/Aura")]
 public sealed class SummonAuraModule : SummonBehaviourModule
 {
-    public SummonSelection targets = new SummonSelection();
+    public SummonAuraTargetFilter targets = new SummonAuraTargetFilter();
     public BuffEffect buff;
     public bool includeEmitter;
-    [Min(0.01f)] public float radiusMultiplier = 1f;
-    [Min(0.01f)] public float scanInterval = 0.1f;
+    [Header("기본 스탯 프로필 · 오라")]
+    public SummonAuraStatDefinition stats;
+    public override SummonModuleStatDefinition StatDefinition => stats;
     public override SummonBehaviourRuntime CreateRuntime(SummonActor summon) => new Runtime(summon, this);
 
-    private sealed class Runtime : SummonBehaviourRuntime
+    private sealed class Runtime : SummonModuleRuntime<SummonAuraStat>
     {
         private struct Entry { public int life; public ActiveBuff buff; }
         private readonly Dictionary<SummonActor, Entry> applied = new Dictionary<SummonActor, Entry>();
@@ -22,27 +33,24 @@ public sealed class SummonAuraModule : SummonBehaviourModule
         private readonly ItemEffectContext context;
         private readonly BuffManager manager;
         private readonly bool includeEmitter;
-        private readonly float radiusMultiplier, interval;
         private float timer;
 
-        public Runtime(SummonActor summon, SummonAuraModule data) : base(summon)
+        public Runtime(SummonActor summon, SummonAuraModule data) : base(summon, data, data.stats)
         {
-            SummonSelection configured = data.targets ?? new SummonSelection();
+            SummonAuraTargetFilter configured = data.targets ?? new SummonAuraTargetFilter();
             selection = new SummonSelection
             {
                 ownerScope = configured.ownerScope,
                 definitions = configured.definitions != null ? (SummonDefinition[])configured.definitions.Clone() : null,
                 requiredTags = configured.requiredTags != null ? (string[])configured.requiredTags.Clone() : null,
                 limitRadius = true,
-                maximumTargets = Mathf.Clamp(configured.maximumTargets, 1, 512),
+                maximumTargets = Mathf.Clamp(Mathf.FloorToInt(stat.maximumTargets), 1, 512),
                 origin = SummonQueryOrigin.TargetPosition
             };
             context = summon.CreateContext(summon.transform.position, Vector3.right);
             manager = context.buffManager;
             includeEmitter = data.includeEmitter;
-            radiusMultiplier = EffectStatUtility.Safe(data.radiusMultiplier, 0.01f, 100f, 1f);
-            interval = EffectStatUtility.Safe(data.scanInterval, 0.01f, 10f, 0.1f);
-            timer = interval;
+            timer = stat.scanInterval;
             if (data.buff != null)
             {
                 // 각 안테나가 독립된 등록 키를 가져야 한 안테나의 제거가 다른 강화에 영향을 주지 않는다.
@@ -58,10 +66,11 @@ public sealed class SummonAuraModule : SummonBehaviourModule
         {
             if (effect == null || manager == null || !summon.CanAct || !context.CanContinue) return;
             timer += deltaTime;
-            if (timer < interval) return;
+            if (timer < stat.scanInterval) return;
             timer = 0f;
             context.targetPosition = summon.transform.position;
-            selection.radius = summon.AttackRange * radiusMultiplier;
+            selection.radius = stat.range;
+            selection.maximumTargets = Mathf.Clamp(Mathf.FloorToInt(stat.maximumTargets), 1, 512);
             SummonRegistry.Collect(selection, context, matches);
             if (!includeEmitter) matches.Remove(summon);
             removed.Clear();

@@ -33,14 +33,17 @@ public abstract class ItemEffectData : ScriptableObject
 
     public virtual void Prepare(ItemEffectContext context) { }
 
-    public void Execute(ItemEffectContext context)
+    public void Execute(ItemEffectContext context) => TryExecute(context);
+
+    // 후속 모듈이 순환 방지 등으로 거절된 실행을 성공 횟수로 세지 않도록 결과를 제공합니다.
+    public bool TryExecute(ItemEffectContext context)
     {
         if (context == null || !context.CanContinue || !CanStart(context))
-            return;
+            return false;
         if (!context.TryBeginEffectExecution(this))
         {
             Debug.LogWarning("ItemEffectData: 순환 실행 경로를 발견해 건너뜁니다.", this);
-            return;
+            return false;
         }
         ItemEffectContext execution = context.Copy(context.targetPosition, context.direction);
         execution.currentEffectData = this;
@@ -55,14 +58,22 @@ public abstract class ItemEffectData : ScriptableObject
         try
         {
             execution.plan.Prepare(this, execution);
-            ExecuteWithConditions(execution);
-            succeeded = true;
+            if (!CanStart(execution)) return false;
+            succeeded = TryExecuteWithConditions(execution);
         }
         finally
         {
             context.EndEffectExecution(this);
             scope.Close(succeeded);
         }
+        return succeeded;
+    }
+
+    // 기본 효과의 기존 실행 경로를 보존합니다. 생성처럼 결과를 아는 효과는 재정의할 수 있습니다.
+    protected virtual bool TryExecuteWithConditions(ItemEffectContext context)
+    {
+        ExecuteWithConditions(context);
+        return true;
     }
 
     protected virtual void ExecuteWithConditions(ItemEffectContext context)

@@ -64,7 +64,7 @@ Create → GameData → Items → Effects → Attack → Reactive Ground로 생�
 
 ## 소환수 행동 조합
 
-소환 생성은 **SummonSpawnEffect / SummonSpawnStat**, 소환물 기능은 프리팹의 **SummonActor / SummonActorStat**으로 분리합니다. 생성 효과에는 수명·개수·배치를, 소환물에는 공격력·주기·탐색 범위·모듈을 설정합니다. 기존 소환 스크립트 GUID와 Summon 버프 대상 그룹은 유지합니다. 설정과 버프 예제는 [소환 구조 설명](SummonArchitecture.md)을 참고하세요.
+소환 생성은 **SummonSpawnEffect / SummonSpawnStat**, 소환물 기능은 **각 모듈의 Stats 프로필**에서 설정합니다. 생성 효과에는 수명·개수·배치를, 모듈에는 해당 기능의 기본 스탯을 설정합니다. SummonActor는 모듈을 실행하고 버프가 반영된 런타임 스탯을 표시합니다. 기존 소환 스크립트 GUID와 Summon 버프 대상 그룹은 유지합니다. 설정과 버프 예제는 [소환 구조 설명](SummonArchitecture.md)을 참고하세요.
 
 Create → 04.Items → Effects → Direct Effects → Summon → Summon Modules에서 행동 에셋을 만들고 프리팹의 **Modules**에 원하는 순서로 넣습니다. 이동 모듈을 공격 모듈보다 앞에 두면 이동한 위치에서 같은 프레임에 공격합니다. 기능이 다른 소환물은 별도 프리팹이나 Variant로 구성합니다. 빈 모듈 목록은 기능 없는 소환물입니다.
 
@@ -87,7 +87,7 @@ Turret와 Contact Damage의 기본 피해는 `Base Damage + Actor Attack Power �
 
 각 모듈 에셋은 설정만 공유하고 타이머, 재명중 간격, 흡인 대상, 공전 각도는 소환수마다 독립적입니다. 흡인 종료 시 자신이 적용한 이동만 해제하고, 풀에서 재생성된 적의 새 생명에는 이전 제어/명중 상태를 전달하지 않습니다.
 
-기존 공용 프리팹의 투척은 Item Throw 모듈로 이관했습니다. 모듈에 던질 아이템과 Use Actor Attack Power 옵션을 설정합니다.
+기존 공용 프리팹의 투척은 Item Throw 모듈로 이관했습니다. 모듈에 던질 아이템과 Use Module Damage 옵션을 설정합니다.
 
 ## 검증
 

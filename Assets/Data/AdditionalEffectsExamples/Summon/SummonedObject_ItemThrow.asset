@@ -13,10 +13,7 @@ MonoBehaviour:
   m_Name: SummonedObject_ItemThrow
   m_EditorClassIdentifier:
   item: {fileID: 11400000, guid: 93758f7537ed6684898dc8cab8237aaa, type: 2}
-  useActorAttackPower: 0
+  useModuleDamage: 0
   targetMode: 0
-  count: 1
   spreadMode: 0
-  spreadRadius: 1
-  spreadAngle: 30
-  intervalMultiplier: 1
+  stats: {fileID: 11400000, guid: e0be4ade49ec42288d3282943458bed2, type: 2}

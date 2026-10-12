@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cf1b2247af5b8246baf3175c0e3897f, type: 3}
+  m_Name: PeriodicSpawn_Food28Pair
+  m_EditorClassIdentifier: Assembly-CSharp::SummonSpawnEffect
+  conditionMode: 0
+  conditions: []
+  visualData: {fileID: 0}
+  impactVfxPrefab: {fileID: 0}
+  impactBaseScale: {x: 1, y: 1, z: 1}
+  scaleImpactVfxByRadius: 1
+  useAnimatorClipLifeTime: 1
+  audioSource:
+  impactVfxLifeTime: 1
+  endVisualData: {fileID: 0}
+  spawnStat:
+    lifetime: 1
+    count: 2
+    spreadRadius: 0
+    spreadAngle: 360
+    forwardSpacing: 1
+    sideSpacing: 0
+  summonPrefab: {fileID: 4251149784486190187, guid: e8b9ff6c9fe74afc91a7f4e5d4b8fb88, type: 3}
+  placementMode: 2
+  spreadStartMode: 0
+  clockwiseSpread: 0

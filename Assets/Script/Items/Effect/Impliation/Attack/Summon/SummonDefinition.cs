@@ -5,8 +5,6 @@ using UnityEngine;
 public sealed class SummonDefinition : ScriptableObject
 {
     public string[] tags;
-    public bool enableHealth;
-    [Min(0.01f)] public float maxHealth = 10f;
 
     public bool HasTag(string tag)
     {

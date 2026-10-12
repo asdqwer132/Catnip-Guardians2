@@ -114,18 +114,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: baf9862b17c6f1d438bdd08334308f00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SummonActor
-  rangeCollider: {fileID: -3564356176302842844}
-  rangeVisual: {fileID: 6746801340493453165}
   itemThrowExecutor: {fileID: 147120439898794231}
   enemyLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  baseActorStat:
-    attackPower: 0
-    attackInterval: 2
-    detectionRange: 0.5
-    damageMultiplier: 1
-    healingMultiplier: 1
   spawnLifetime: 20
   modules:
   - {fileID: 11400000, guid: 3d6858fbedc74a16b0cd9c3b35c49c28, type: 2}
