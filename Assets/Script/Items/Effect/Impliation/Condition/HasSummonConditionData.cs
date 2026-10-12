@@ -9,7 +9,7 @@ public sealed class HasSummonConditionData : ItemEffectConditionData
     {
         if (context == null || !context.CanContinue || selection == null) return false;
         int count = 0, minimum = Mathf.Clamp(minimumCount, 1, 512);
-        foreach (SummonItemThrower summon in SummonRegistry.Active)
+        foreach (SummonActor summon in SummonRegistry.Active)
             if (selection.Matches(summon, context) && ++count >= minimum) return true;
         return false;
     }

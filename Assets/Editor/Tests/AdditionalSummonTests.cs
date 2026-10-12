@@ -5,6 +5,13 @@ using UnityEngine;
 public sealed class AdditionalSummonTests
 {
     private readonly List<Object> owned = new List<Object>();
+    private BuffManager previousManager;
+    [SetUp]
+    public void SetUp()
+    {
+        previousManager = BuffManager.instance;
+        BuffManager.instance = null;
+    }
     private T Asset<T>() where T : ScriptableObject
     {
         T result = ScriptableObject.CreateInstance<T>();
@@ -19,12 +26,11 @@ public sealed class AdditionalSummonTests
     }
     private ItemEffectContext Context(GameObject owner = null)
         => new ItemEffectContext(owner, Asset<ItemData>(), Vector3.zero, Vector3.zero, null);
-    private SummonItemThrower Summon(SummonDefinition definition = null, GameObject owner = null)
+    private SummonActor Summon(SummonDefinition definition = null, GameObject owner = null)
     {
-        SummonItemThrower result = Host().AddComponent<SummonItemThrower>();
+        SummonActor result = Host().AddComponent<SummonActor>();
         result.definition = definition;
-        result.useLegacyThrowWhenNoModules = false;
-        result.InitWithSnapshotAndDynamicBuff(new SummonStat { summonLifeTime = 100f }, null, null, null, owner);
+        result.Initialize(Context(owner), 100f);
         return result;
     }
     [TearDown]
@@ -33,6 +39,7 @@ public sealed class AdditionalSummonTests
         for (int i = owned.Count - 1; i >= 0; i--)
             if (owned[i] != null) Object.DestroyImmediate(owned[i]);
         owned.Clear();
+        BuffManager.instance = previousManager;
     }
 
     [Test]
@@ -40,12 +47,12 @@ public sealed class AdditionalSummonTests
     {
         GameObject owner = Host(), other = Host();
         SummonDefinition turret = Asset<SummonDefinition>(), flower = Asset<SummonDefinition>();
-        SummonItemThrower selected = Summon(turret, owner);
+        SummonActor selected = Summon(turret, owner);
         selected.name = "FlowerName";
         Summon(turret, other);
         Summon(flower, owner);
         var selection = new SummonSelection { definitions = new[] { turret } };
-        var matches = new List<SummonItemThrower>();
+        var matches = new List<SummonActor>();
         ItemEffectContext context = Context(owner);
         SummonRegistry.Collect(selection, context, matches);
         Assert.That(matches, Is.EquivalentTo(new[] { selected }));
@@ -60,7 +67,7 @@ public sealed class AdditionalSummonTests
     [Test]
     public void ExpiredCoveredProfileNeverReturnsAfterTopProfileExpires()
     {
-        SummonItemThrower summon = Summon();
+        SummonActor summon = Summon();
         SummonBehaviourModule original = Asset<SummonOrbitModule>();
         SummonBehaviourModule shortProfile = Asset<SummonPullModule>();
         SummonBehaviourModule longProfile = Asset<SummonContactDamageModule>();
@@ -78,7 +85,7 @@ public sealed class AdditionalSummonTests
     [Test]
     public void AttackCountModificationConsumesOnlySuccessfulAttackNotifications()
     {
-        SummonItemThrower summon = Summon();
+        SummonActor summon = Summon();
         summon.AddModification(new SummonModificationSettings { damageMultiplier = 2f, attackCount = 1 }, Context());
         summon.Advance(1f);
         Assert.That(summon.AttackCount, Is.Zero);
@@ -93,16 +100,18 @@ public sealed class AdditionalSummonTests
     [Test]
     public void ItemProfileRestoresAndSharedConfigurationRemainsUnchanged()
     {
-        SummonItemThrower summon = Summon();
+        SummonActor summon = Summon();
         ItemData original = Asset<ItemData>(), upgraded = Asset<ItemData>();
-        summon.itemDatas = original;
+        SummonItemThrowModule module = Asset<SummonItemThrowModule>();
+        module.item = original;
+        summon.ConfigureModules(new[] { module });
         SummonModificationSettings settings = new SummonModificationSettings
         { replaceAttackItem = true, attackItem = upgraded, duration = 1f, damageMultiplier = 2f };
         summon.AddModification(settings, Context());
         settings.damageMultiplier = 100f;
         Assert.That(summon.ResolveAttackItem(original), Is.SameAs(upgraded));
         Assert.That(summon.CalculateDamage(5f), Is.EqualTo(10f));
-        Assert.That(summon.itemDatas, Is.SameAs(original));
+        Assert.That(module.item, Is.SameAs(original));
         summon.Advance(1.1f);
         Assert.That(summon.ResolveAttackItem(original), Is.SameAs(original));
         Assert.That(summon.CalculateDamage(5f), Is.EqualTo(5f));
@@ -112,20 +121,20 @@ public sealed class AdditionalSummonTests
     public void TransformRequiresDistinctParticipantsAndCannotReuseNonConsumedBones()
     {
         SummonDefinition bone = Asset<SummonDefinition>();
-        SummonItemThrower first = Summon(bone);
+        SummonActor first = Summon(bone);
         SummonTransformEffect transform = Asset<SummonTransformEffect>();
         transform.requirements = new[] {
             new SummonTransformRequirement { definition = bone },
             new SummonTransformRequirement { definition = bone }
         };
-        transform.result = Asset<SummonAttackEffect>();
-        transform.result.attackPrefab = Summon(Asset<SummonDefinition>());
-        transform.result.attackStat = new SummonStat { summonLifeTime = 100f };
+        transform.result = Asset<SummonSpawnEffect>();
+        transform.result.summonPrefab = Summon(Asset<SummonDefinition>());
+        transform.result.spawnStat = new SummonSpawnStat { lifetime = 100f };
         ItemEffectContext context = Context();
         Assert.That(transform.consumeParticipants, Is.False);
         Assert.That(transform.TryTransform(context, out _), Is.False);
-        SummonItemThrower second = Summon(bone);
-        Assert.That(transform.TryTransform(context, out SummonItemThrower created), Is.True);
+        SummonActor second = Summon(bone);
+        Assert.That(transform.TryTransform(context, out SummonActor created), Is.True);
         owned.Add(created.gameObject);
         Assert.That(first.CanAct && second.CanAct, Is.True);
         Assert.That(transform.TryTransform(context, out _), Is.False);
@@ -135,12 +144,12 @@ public sealed class AdditionalSummonTests
     [Test]
     public void PooledSummonDropsPreviousRuntimeModifiers()
     {
-        SummonItemThrower summon = Summon();
+        SummonActor summon = Summon();
         summon.AddModification(new SummonModificationSettings { damageMultiplier = 3f }, Context());
         Assert.That(summon.CalculateDamage(2f), Is.EqualTo(6f));
         summon.gameObject.SetActive(false);
         summon.gameObject.SetActive(true);
-        summon.InitWithSnapshotAndDynamicBuff(new SummonStat { summonLifeTime = 100f }, null, null, null, null);
+        summon.Initialize(Context(), 100f);
         Assert.That(summon.CalculateDamage(2f), Is.EqualTo(2f));
         Assert.That(summon.AttackCount, Is.Zero);
     }
@@ -150,37 +159,42 @@ public sealed class AdditionalSummonTests
     {
         BuffManager manager = Host().AddComponent<BuffManager>();
         FloatFieldBuffModifier modifier = Asset<FloatFieldBuffModifier>();
-        modifier.fieldName = nameof(SummonStat.summonAttackPower);
+        modifier.fieldName = nameof(SummonActorStat.attackPower);
         modifier.addValue = 5f;
         BuffEffect buff = Asset<BuffEffect>();
         buff.modifiers = new BuffModifier[] { modifier };
         SummonDefinition turret = Asset<SummonDefinition>();
-        SummonItemThrower target = Summon(turret);
+        SummonActor target = Summon(turret);
+        target.Initialize(new ItemEffectContext(null, Asset<ItemData>(), Vector3.zero, Vector3.zero,
+            null, buffManager: manager), 100f);
         SummonAuraModule aura = Asset<SummonAuraModule>();
         aura.buff = buff;
         aura.targets.definitions = new[] { turret };
-        SummonItemThrower first = Summon(), second = Summon();
+        SummonActor first = Summon(), second = Summon();
         ItemEffectContext firstSource = new ItemEffectContext(null, Asset<ItemData>(), Vector3.zero, Vector3.zero, null, buffManager: manager)
         { lifetime = new ItemEffectLifetime() };
         ItemEffectContext secondSource = new ItemEffectContext(null, Asset<ItemData>(), Vector3.zero, Vector3.zero, null, buffManager: manager)
         { lifetime = new ItemEffectLifetime() };
-        first.SetExecutionContext(firstSource);
-        second.SetExecutionContext(secondSource);
+        first.Initialize(firstSource, 100f);
+        second.Initialize(secondSource, 100f);
         SummonBehaviourRuntime a = aura.CreateRuntime(first), b = aura.CreateRuntime(second);
         try
         {
             a.Tick(0.1f); b.Tick(0.1f);
-            SummonStat boosted = manager.GetBuffedStatForTarget(new SummonStat(), target);
-            Assert.That(boosted.summonAttackPower, Is.EqualTo(10f));
+            SummonActorStat boosted = manager.GetBuffedStatForTarget(new SummonActorStat(), target);
+            Assert.That(boosted.attackPower, Is.EqualTo(10f));
+            Assert.That(target.AttackPower, Is.EqualTo(10f), "실제 소환물의 최종 기능 스탯도 갱신되어야 합니다.");
             a.Dispose();
             Assert.That(firstSource.CanContinue, Is.True);
-            boosted = manager.GetBuffedStatForTarget(new SummonStat(), target);
-            Assert.That(boosted.summonAttackPower, Is.EqualTo(5f));
+            boosted = manager.GetBuffedStatForTarget(new SummonActorStat(), target);
+            Assert.That(boosted.attackPower, Is.EqualTo(5f));
+            Assert.That(target.AttackPower, Is.EqualTo(5f));
             target.transform.position = Vector3.one * 100f;
             b.Tick(0.1f);
             Assert.That(secondSource.CanContinue, Is.True);
-            boosted = manager.GetBuffedStatForTarget(new SummonStat(), target);
-            Assert.That(boosted.summonAttackPower, Is.Zero);
+            boosted = manager.GetBuffedStatForTarget(new SummonActorStat(), target);
+            Assert.That(boosted.attackPower, Is.Zero);
+            Assert.That(target.AttackPower, Is.Zero);
         }
         finally { a.Dispose(); b.Dispose(); firstSource.lifetime.Close(); secondSource.lifetime.Close(); }
     }
@@ -188,17 +202,16 @@ public sealed class AdditionalSummonTests
     [Test]
     public void ThrownItemReceivesSummonDamageOnceWithoutMutatingSharedItem()
     {
-        SummonItemThrower summon = Summon();
+        SummonActor summon = Summon();
         ItemEffectContext parent = Context();
         parent.damageMultiplier = 2f;
-        summon.SetExecutionContext(parent);
-        summon.InitWithSnapshotAndDynamicBuff(new SummonStat { summonAttackPower = 8f, summonLifeTime = 100f }, null, null, null, null);
-        summon.overrideThrownItemDamage = true;
+        summon.baseActorStat.attackPower = 8f;
+        summon.Initialize(parent, 100f);
         summon.AddModification(new SummonModificationSettings { damageMultiplier = 3f }, Context());
         CombatEffectRecordingEffect record = Asset<CombatEffectRecordingEffect>();
         ItemData item = Asset<ItemData>();
         item.effectDatas = new ItemEffectData[] { record };
-        Assert.That(summon.ThrowItem(item, summon.transform.position), Is.True);
+        Assert.That(summon.ThrowItem(item, summon.transform.position, useActorAttackPower: true), Is.True);
         ItemEffectContext execution = record.calls[0];
         Assert.That(execution.damageMultiplier, Is.EqualTo(6f));
         Assert.That(execution.damageOverride, Is.EqualTo(8f));
@@ -212,7 +225,7 @@ public sealed class AdditionalSummonTests
     [Test]
     public void NaturalModifierCompletionCanReenterWithoutLosingNewProfile()
     {
-        SummonItemThrower summon = Summon();
+        SummonActor summon = Summon();
         int completed = 0;
         ItemEffectContext context = Context();
         context.lifetime = new ItemEffectLifetime(onCompleted: () =>
@@ -230,7 +243,7 @@ public sealed class AdditionalSummonTests
     [Test]
     public void ForcedSummonDisableCancelsModifierCompletion()
     {
-        SummonItemThrower summon = Summon();
+        SummonActor summon = Summon();
         int completed = 0;
         ItemEffectContext context = Context();
         context.lifetime = new ItemEffectLifetime(onCompleted: () => completed++);

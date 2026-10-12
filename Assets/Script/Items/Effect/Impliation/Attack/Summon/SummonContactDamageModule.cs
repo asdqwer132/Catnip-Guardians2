@@ -10,7 +10,7 @@ public sealed class SummonContactDamageModule : SummonBehaviourModule
     [Min(0.01f)] public float hitInterval = 0.5f;
     public HitEffectData[] onHitEffects;
     public override void Prepare(ItemEffectContext context) => HitEffectPreparation.Prepare(onHitEffects, context);
-    public override SummonBehaviourRuntime CreateRuntime(SummonItemThrower summon) => new Runtime(summon, this);
+    public override SummonBehaviourRuntime CreateRuntime(SummonActor summon) => new Runtime(summon, this);
 
     private sealed class Runtime : SummonBehaviourRuntime
     {
@@ -22,7 +22,7 @@ public sealed class SummonContactDamageModule : SummonBehaviourModule
         private readonly HitEffectData[] effects;
         private readonly HitEffectAttackState attackState = new HitEffectAttackState();
         private float elapsed;
-        public Runtime(SummonItemThrower summon, SummonContactDamageModule data) : base(summon)
+        public Runtime(SummonActor summon, SummonContactDamageModule data) : base(summon)
         {
             radius = EffectStatUtility.Safe(data.contactRadius, 0.01f, 100f, 0.3f);
             damage = EffectStatUtility.Safe(data.baseDamage, 0f, 1000000f, 10f);

@@ -18,7 +18,7 @@ public sealed class SummonSelection
     public SummonQueryOrigin origin;
     [Range(1, 512)] public int maximumTargets = 128;
 
-    public bool Matches(SummonItemThrower summon, ItemEffectContext context)
+    public bool Matches(SummonActor summon, ItemEffectContext context)
     {
         if (summon == null || !summon.CanAct || context == null) return false;
         if (ownerScope == SummonOwnerScope.SameOwner && summon.Owner != context.owner) return false;
@@ -41,15 +41,15 @@ public sealed class SummonSelection
 // 활성 소환물만 추적하며 풀에서 새로 초기화된 소환물은 LifeId가 달라진다.
 public static class SummonRegistry
 {
-    private static readonly List<SummonItemThrower> active = new List<SummonItemThrower>();
-    public static IReadOnlyList<SummonItemThrower> Active => active;
-    internal static void Register(SummonItemThrower summon)
+    private static readonly List<SummonActor> active = new List<SummonActor>();
+    public static IReadOnlyList<SummonActor> Active => active;
+    internal static void Register(SummonActor summon)
     {
         if (summon != null && !active.Contains(summon)) active.Add(summon);
     }
-    internal static void Unregister(SummonItemThrower summon) => active.Remove(summon);
+    internal static void Unregister(SummonActor summon) => active.Remove(summon);
 
-    public static void Collect(SummonSelection selection, ItemEffectContext context, List<SummonItemThrower> results)
+    public static void Collect(SummonSelection selection, ItemEffectContext context, List<SummonActor> results)
     {
         results.Clear();
         if (selection == null || context == null || !context.CanContinue) return;

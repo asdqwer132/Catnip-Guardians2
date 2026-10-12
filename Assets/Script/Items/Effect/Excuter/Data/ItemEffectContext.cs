@@ -12,7 +12,7 @@ public class ItemEffectContext
     public HitEffectUseState hitUseState = new HitEffectUseState();
     public Enemy hitTarget;
     public int hitTargetLifeId;
-    public SummonItemThrower sourceSummon;
+    public SummonActor sourceSummon;
     public int sourceSummonLifeId;
     public float damageMultiplier = 1f;
     public float healingMultiplier = 1f;

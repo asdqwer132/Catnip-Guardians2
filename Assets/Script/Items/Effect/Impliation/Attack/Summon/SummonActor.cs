@@ -1,54 +1,57 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.Scripting.APIUpdating;
 
 public enum SummonThrowTargetMode { NearestEnemy, RandomEnemy, RandomPosition }
 
-// 기존 프리팹의 클래스/GUID와 버프 타깃을 유지하는 공통 소환수 호스트.
+// 프리팹의 기능 스탯과 모듈을 소유합니다. 생성 개수/배치/수명은 SpawnEffect가 전달합니다.
 [BuffTargetGroups("Summon")]
-public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget, IDamageable
+[MovedFrom(true, null, "Assembly-CSharp", "SummonItemThrower")]
+public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, IDamageable
 {
+    [Header("Actor Function Stats")]
+    public SummonActorStat baseActorStat = new SummonActorStat();
     [Header("Identity / Health")]
     public SummonDefinition definition;
-    [Tooltip("켜면 아이템 투척 피해를 summonAttackPower로 지정합니다. 끄면 아이템 자체 피해를 사용합니다.")]
-    public bool overrideThrownItemDamage;
     [Header("Component")]
     public CircleCollider2D rangeCollider;
     public Transform rangeVisual;
     [Header("Behaviour Modules")]
     [Tooltip("행동 에셋을 원하는 순서로 조합합니다. 이동 모듈을 공격 모듈보다 앞에 배치하세요.")]
     public SummonBehaviourModule[] modules;
-    [Tooltip("모듈 목록이 비어 있으면 기존 아이템 투척 설정으로 동작합니다.")]
-    public bool useLegacyThrowWhenNoModules = true;
-    [Header("Legacy Throw")]
+    [Header("Item Throw Component")]
     public ItemThrowExecutor itemThrowExecutor;
-    public ItemData itemDatas;
-    public SummonThrowTargetMode targetMode = SummonThrowTargetMode.NearestEnemy;
     [Header("Detect")]
     public LayerMask enemyLayerMask;
     [Header("Runtime Stat")]
-    [SerializeField] private float summonAttackPower;
-    [SerializeField] private float summonAttackRange = 5f;
-    [SerializeField] private float summonThrowInterval = 1f;
-    [SerializeField] private float lifeTime = 5f;
-    private float damageMultiplier = 1f, healingMultiplier = 1f, extraLifetime;
+    [SerializeField] private SummonActorStat currentActorStat = new SummonActorStat();
+    [FormerlySerializedAs("lifeTime")]
+    [SerializeField] private float spawnLifetime = 5f;
+    private float extraLifetime;
+    private SummonActorStat snapshotActorStat;
+    private ItemData sourceItemData;
+    private EquipmentBag sourceBag;
+    private BuffManager buffManager;
+    private ItemEffectLease effectLease;
+    private GameObject owner;
     private readonly List<SummonBehaviourRuntime> behaviours = new List<SummonBehaviourRuntime>();
     private readonly List<SummonModification> modifications = new List<SummonModification>();
     private readonly HashSet<SummonTransformEffect> completedTransforms = new HashSet<SummonTransformEffect>();
     private readonly EnemyQueryBuffer query = new EnemyQueryBuffer();
     private ItemEffectContext executionContext;
     private SummonBehaviourModule[] effectiveModules;
-    private ItemData effectiveItem;
-    private bool effectiveLegacyThrow;
     private Health health;
-    private float timer, throwTimer;
+    private float timer;
     private bool initialized, registered, finishing;
 
     public UnityEngine.Object BuffTargetObject => this;
     public string BuffTargetGroup => "Summon";
     public string BuffTargetDebugName => name;
-    public float AttackPower => summonAttackPower;
-    public float AttackRange => summonAttackRange;
-    public float AttackInterval => summonThrowInterval;
+    public float AttackPower => currentActorStat.attackPower;
+    public float AttackRange => currentActorStat.detectionRange;
+    public float AttackInterval => currentActorStat.attackInterval;
+    public SummonActorStat CurrentActorStat => BuffStatCloneUtility.Clone(currentActorStat);
     public GameObject Owner => owner;
     public SummonDefinition Definition => definition;
     public Health Health => health != null ? health : GetComponent<Health>();
@@ -59,8 +62,7 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget, IDamagea
     public int ProfileVersion { get; private set; }
     public int AttackCount { get; private set; }
     public IReadOnlyList<SummonBehaviourModule> ActiveModules => effectiveModules ?? new SummonBehaviourModule[0];
-    public ItemData ActiveAttackItem => effectiveItem;
-    public float RemainingLifeTime => Mathf.Max(0f, lifeTime + extraLifetime - timer);
+    public float RemainingLifeTime => Mathf.Max(0f, spawnLifetime + extraLifetime - timer);
     public bool IsTransformReserved { get; internal set; }
     public bool CanAct => initialized && !finishing && isActiveAndEnabled &&
         (Health == null || !Health.IsDead) && (executionContext == null || executionContext.CanContinue);
@@ -77,7 +79,7 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget, IDamagea
         base.OnEnable();
         unchecked { LifeId++; }
         SummonRegistry.Register(this);
-        timer = throwTimer = 0f;
+        timer = 0f;
         extraLifetime = 0f;
         AttackCount = 0;
         completedTransforms.Clear();
@@ -85,7 +87,8 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget, IDamagea
         finishing = false;
         if (initialized)
         {
-            if (useSnapshotAndDynamicBuff) { RegisterDynamicBuffReceiver(); OnDynamicBuffChanged(); }
+            RegisterDynamicBuffReceiver();
+            RefreshBuffedStat();
             InitializeHealth();
             RefreshProfiles(true);
         }
@@ -94,24 +97,19 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget, IDamagea
 
     private void Start()
     {
-        // 씬에 직접 배치한 기존 프리팹도 직렬화된 스탯으로 동작한다.
+        // 씬에 직접 배치한 기존 소환물도 자신의 기능 설정으로 시작합니다.
         if (initialized) return;
-        initialized = true;
-        InitializeHealth();
-        RefreshProfiles(true);
+        Initialize(new ItemEffectContext(null, null, transform.position, transform.position, null,
+            buffManager: BuffManager.instance), spawnLifetime);
     }
 
     public void ConfigureModules(SummonBehaviourModule[] overrides)
     {
         modules = overrides != null ? (SummonBehaviourModule[])overrides.Clone() : new SummonBehaviourModule[0];
-        useLegacyThrowWhenNoModules = false;
         if (initialized) RefreshProfiles(true);
     }
 
     public void ConfigureDefinition(SummonDefinition value) { definition = value; }
-
-    public void SetExecutionContext(ItemEffectContext context)
-        => executionContext = context != null ? context.Copy(transform.position, context.direction) : null;
 
     public ItemEffectContext CreateContext(Vector3 target, Vector3 direction)
     {
@@ -147,7 +145,7 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget, IDamagea
         return true;
     }
 
-    public bool ThrowItem(ItemData item, Vector3 target)
+    public bool ThrowItem(ItemData item, Vector3 target, bool useActorAttackPower = false)
     {
         if (!CanAct || item == null) return false;
         if (itemThrowExecutor == null)
@@ -159,7 +157,7 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget, IDamagea
             itemThrowExecutor.showTargetRange = false;
         }
         ItemEffectContext context = CreateAttackContext(target, (target - transform.position).normalized);
-        if (overrideThrownItemDamage) context.damageOverride = AttackPower;
+        if (useActorAttackPower) context.damageOverride = AttackPower;
         if ((target - transform.position).sqrMagnitude <= 0.0001f)
         {
             ItemEffectExecutor.ExecuteItem(item, transform.position, target, context.direction,
@@ -172,10 +170,14 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget, IDamagea
         return thrown;
     }
 
-    public override void InitWithSnapshotAndDynamicBuff(SummonStat snapshotAttackStat, ItemData sourceItemData,
-        EquipmentBag sourceBag, BuffManager buffManager, GameObject owner)
+    public void Initialize(ItemEffectContext context, float lifetime, SummonActor statOwner = null)
     {
+        if (context == null || !context.CanContinue) return;
         UnregisterBuffTarget();
+        UnregisterDynamicBuffReceiverInternal();
+        if (effectLease != null) effectLease.Cancel();
+        effectLease = null;
+        initialized = false;
         ClearModifications();
         DisposeBehaviours();
         unchecked { LifeId++; }
@@ -183,11 +185,24 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget, IDamagea
         IsTransformReserved = false;
         AttackCount = 0;
         extraLifetime = 0f;
-        timer = throwTimer = 0f;
+        timer = 0f;
         finishing = false;
-        base.InitWithSnapshotAndDynamicBuff(snapshotAttackStat, sourceItemData, sourceBag, buffManager, owner);
-        RegisterBuffTarget();
+        sourceItemData = context.sourceItemData;
+        sourceBag = context.sourceBag;
+        buffManager = context.buffManager;
+        owner = context.owner;
+        spawnLifetime = EffectStatUtility.Safe(lifetime, 0.01f, 600f, 5f);
+        executionContext = context.Copy(transform.position, context.direction);
+        effectLease = context.RetainLifetime();
+        if (baseActorStat == null) baseActorStat = new SummonActorStat();
+        // 기능 스탯의 원본은 생성 효과가 아니라 이 소환물 프리팹에 있습니다.
+        // 아이템 생성 버프의 마지막 사용도 각 소환물의 독립된 Snapshot에 유지합니다.
+        snapshotActorStat = BuffStatCloneUtility.Clone(context.plan.GetOwnedSnapshot(
+            statOwner != null ? statOwner : this, baseActorStat, context));
         initialized = true;
+        RefreshBuffedStat();
+        RegisterDynamicBuffReceiver();
+        RegisterBuffTarget();
         InitializeHealth();
         RefreshProfiles(true);
     }
@@ -226,7 +241,7 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget, IDamagea
     {
         get
         {
-            float result = damageMultiplier;
+            float result = currentActorStat.damageMultiplier;
             foreach (SummonModification modification in modifications)
                 if (modification.IsValid(this)) result *= modification.DamageMultiplier;
             return EffectStatUtility.Safe(result, 0f, 1000000f, 1f);
@@ -236,7 +251,7 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget, IDamagea
     {
         get
         {
-            float result = healingMultiplier;
+            float result = currentActorStat.healingMultiplier;
             foreach (SummonModification modification in modifications)
                 if (modification.IsValid(this)) result *= modification.HealingMultiplier;
             return EffectStatUtility.Safe(result, 0f, 1000000f, 1f);
@@ -271,17 +286,14 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget, IDamagea
                 if (LifeId != life || finishing || !isActiveAndEnabled) return;
             }
         SummonBehaviourModule[] nextModules = modules;
-        effectiveItem = itemDatas;
-        effectiveLegacyThrow = useLegacyThrowWhenNoModules;
         foreach (SummonModification modification in modifications)
         {
-            if (modification.ReplaceModules) { nextModules = modification.Modules; effectiveLegacyThrow = false; }
-            if (modification.ReplaceAttackItem) effectiveItem = modification.AttackItem;
+            if (modification.ReplaceModules) nextModules = modification.Modules;
         }
         if (!force && ReferenceEquals(effectiveModules, nextModules)) return;
         effectiveModules = nextModules;
         ProfileVersion++;
-        if (initialized) InitializeBehaviours();
+        if (initialized && isActiveAndEnabled) InitializeBehaviours();
     }
 
     public ItemData ResolveAttackItem(ItemData configured)
@@ -326,7 +338,7 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget, IDamagea
         RefreshProfiles();
         if (LifeId != life || !CanAct) return;
         timer += deltaTime;
-        if (timer >= lifeTime + extraLifetime)
+        if (timer >= spawnLifetime + extraLifetime)
         {
             Despawn(true);
             return;
@@ -338,57 +350,46 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget, IDamagea
             behaviours[i].Tick(deltaTime);
             if (ProfileVersion != currentProfile) break;
         }
-        if (behaviours.Count == 0 && effectiveLegacyThrow && CanAct)
-        {
-            throwTimer += deltaTime;
-            if (throwTimer >= AttackInterval)
-            {
-                throwTimer = 0f;
-                Vector3 target;
-                if (TryTarget(targetMode, out target)) ThrowItem(effectiveItem, target);
-            }
-        }
     }
 
-    protected override void RefreshStatFromSnapshotAndDynamicBuff()
+    public void RefreshBuffedStat()
     {
-        if (snapshotAttackStat == null) return;
-        SummonStat current = snapshotAttackStat;
+        if (snapshotActorStat == null) return;
+        SummonActorStat current = snapshotActorStat;
         if (buffManager != null)
         {
-            current = buffManager.GetBuffedStatForItem(current, sourceItemData, sourceBag,
-                BuffCalculationMode.DynamicOnly) ?? current;
+            if (sourceItemData != null || sourceBag != null)
+                current = buffManager.GetBuffedStatForItem(current, sourceItemData, sourceBag,
+                    BuffCalculationMode.DynamicOnly) ?? current;
             current = buffManager.GetBuffedStatForTarget(current, this, sourceItemData: sourceItemData) ?? current;
         }
-        ApplyStat(current);
+        currentActorStat = executionContext != null ? EffectExecutionScaling.Apply(current, executionContext)
+            : BuffStatCloneUtility.Clone(current);
+        currentActorStat.Clamp();
+        ApplyRadius();
     }
 
-    public void RefreshBuffedStat() => RefreshStatFromSnapshotAndDynamicBuff();
-
-    protected override void ApplyStat(SummonStat current)
+    public void OnDynamicBuffChanged() => RefreshBuffedStat();
+    private void RegisterDynamicBuffReceiver()
     {
-        SummonStat stat = current.Clone();
-        stat.Clamp();
-        summonAttackPower = stat.summonAttackPower;
-        summonAttackRange = stat.summonAttackRange;
-        summonThrowInterval = stat.summonThrowInterval;
-        lifeTime = stat.summonLifeTime;
-        damageMultiplier = stat.summonDamageMultiplier;
-        healingMultiplier = stat.summonHealingMultiplier;
-        ApplyRadius();
+        if (isActiveAndEnabled && buffManager != null) buffManager.RegisterDynamicBuffReceiver(this);
+    }
+    protected override void UnregisterDynamicBuffReceiverInternal()
+    {
+        if (buffManager != null) buffManager.UnregisterDynamicBuffReceiver(this);
     }
 
     private void ApplyRadius()
     {
         if (rangeVisual != null && rangeVisual != transform)
-            rangeVisual.localScale = new Vector3(summonAttackRange * 2f, summonAttackRange * 2f, 1f);
+            rangeVisual.localScale = new Vector3(AttackRange * 2f, AttackRange * 2f, 1f);
         if (rangeCollider != null)
-        { rangeCollider.radius = summonAttackRange; rangeCollider.isTrigger = true; }
+        { rangeCollider.radius = AttackRange; rangeCollider.isTrigger = true; }
     }
 
     private void RegisterBuffTarget()
     {
-        if (registered || buffManager == null) return;
+        if (registered || buffManager == null || !initialized || !isActiveAndEnabled) return;
         buffManager.RegisterBuffTarget(this);
         registered = true;
     }
@@ -411,19 +412,28 @@ public class SummonItemThrower : AttackObject<SummonStat>, IBuffTarget, IDamagea
         UnregisterBuffTarget();
         SummonRegistry.Unregister(this);
         base.OnDisable();
+        ItemEffectLease cancelled = effectLease;
+        effectLease = null;
+        if (cancelled != null) cancelled.Cancel();
     }
     public void Despawn(bool completed)
     {
         if (finishing) return;
         finishing = true;
-        if (completed) CompleteLifetime();
+        if (completed)
+        {
+            ItemEffectLease completedLease = effectLease;
+            effectLease = null;
+            if (completedLease != null) completedLease.Finish();
+        }
         gameObject.SetActive(false);
-        Destroy(gameObject);
+        if (Application.isPlaying) Destroy(gameObject);
+        else DestroyImmediate(gameObject);
     }
     public override void Clear() => Despawn(false);
-    public static void ClearAllActiveThrowers()
+    public static void ClearAllActiveSummons()
     {
-        var active = new List<SummonItemThrower>(SummonRegistry.Active);
-        foreach (SummonItemThrower summon in active) if (summon != null) summon.Clear();
+        var active = new List<SummonActor>(SummonRegistry.Active);
+        foreach (SummonActor summon in active) if (summon != null) summon.Clear();
     }
 }

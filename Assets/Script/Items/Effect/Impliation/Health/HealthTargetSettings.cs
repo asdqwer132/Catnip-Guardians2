@@ -38,10 +38,10 @@ public class HealthTargetSettings
         }
         else if (target == HealthTargetMode.AlliedSummons)
         {
-            IReadOnlyList<SummonItemThrower> summons = SummonRegistry.Active;
+            IReadOnlyList<SummonActor> summons = SummonRegistry.Active;
             for (int i = 0; i < summons.Count && results.Count < Mathf.Clamp(maximumTargets, 1, 512); i++)
             {
-                SummonItemThrower summon = summons[i];
+                SummonActor summon = summons[i];
                 if (summon == null || !summon.CanAct || (sameOwnerOnly && summon.Owner != context.owner)) continue;
                 Add(summon.Health, context, results);
             }

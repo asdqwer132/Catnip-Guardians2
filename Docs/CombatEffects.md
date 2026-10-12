@@ -64,9 +64,9 @@ Create → GameData → Items → Effects → Attack → Reactive Ground로 생�
 
 ## 소환수 행동 조합
 
-기존 SummonedObject 프리팹의 SummonItemThrower 컴포넌트를 공통 소환수 호스트로 사용합니다. 클래스/GUID, Summon 버프 타깃 그룹, 공격 범위·수명 스탯은 유지했습니다.
+소환 생성은 **SummonSpawnEffect / SummonSpawnStat**, 소환물 기능은 프리팹의 **SummonActor / SummonActorStat**으로 분리합니다. 생성 효과에는 수명·개수·배치를, 소환물에는 공격력·주기·탐색 범위·모듈을 설정합니다. 기존 소환 스크립트 GUID와 Summon 버프 대상 그룹은 유지합니다. 설정과 버프 예제는 [소환 구조 설명](SummonArchitecture.md)을 참고하세요.
 
-Create → GameData → Items → Summon Modules에서 행동 에셋을 만들고 프리팹의 **Modules**에 원하는 순서로 넣습니다. 이동 모듈을 공격 모듈보다 앞에 두면 이동한 위치에서 같은 프레임에 공격합니다. **SummonAttackEffect → Override Modules**를 켜면 같은 프리팹을 쓰면서 이펙트별 행동 목록을 재정의할 수 있습니다. 이 상태의 빈 목록은 행동 없는 소환수입니다.
+Create → 04.Items → Effects → Direct Effects → Summon → Summon Modules에서 행동 에셋을 만들고 프리팹의 **Modules**에 원하는 순서로 넣습니다. 이동 모듈을 공격 모듈보다 앞에 두면 이동한 위치에서 같은 프레임에 공격합니다. 기능이 다른 소환물은 별도 프리팹이나 Variant로 구성합니다. 빈 모듈 목록은 기능 없는 소환물입니다.
 
 | 모듈 | 설정 및 역할 |
 | --- | --- |
@@ -83,14 +83,14 @@ Create → GameData → Items → Summon Modules에서 행동 에셋을 만들�
 - 떠다니는 접촉 공격: Orbit + Contact Damage. Owner 중심 공전으로 설정.
 - 움직이는 아이템 포탑: Orbit + Item Throw.
 
-Turret와 Contact Damage의 최종 피해는 `Base Damage + Summon Attack Power × Attack Power Multiplier`입니다. Turret/Item Throw의 간격은 `Summon Throw Interval × Interval Multiplier`입니다. Enemy Layer Mask를 실제 적 레이어에 맞추세요. Turret의 탄환은 적을 대상으로만 충돌하며 지형에는 막히지 않습니다. 스프라이트 또는 표시 가능한 Projectile Prefab을 지정해야 탄환이 보입니다.
+Turret와 Contact Damage의 기본 피해는 `Base Damage + Actor Attack Power × Attack Power Multiplier`이며 피해 배율을 추가로 적용합니다. Turret/Item Throw의 간격은 `Actor Attack Interval × Interval Multiplier`입니다. Enemy Layer Mask를 실제 적 레이어에 맞추세요. Turret의 탄환은 적을 대상으로만 충돌하며 지형에는 막히지 않습니다. 스프라이트 또는 표시 가능한 Projectile Prefab을 지정해야 탄환이 보입니다.
 
 각 모듈 에셋은 설정만 공유하고 타이머, 재명중 간격, 흡인 대상, 공전 각도는 소환수마다 독립적입니다. 흡인 종료 시 자신이 적용한 이동만 해제하고, 풀에서 재생성된 적의 새 생명에는 이전 제어/명중 상태를 전달하지 않습니다.
 
-기존 프리팹에 모듈이 없으면 Use Legacy Throw When No Modules 기본값으로 기존 투척 동작이 유지됩니다.
+기존 공용 프리팹의 투척은 Item Throw 모듈로 이관했습니다. 모듈에 던질 아이템과 Use Actor Attack Power 옵션을 설정합니다.
 
 ## 검증
 
 Assets/Editor/Tests/CombatEffectTests.cs에 EditMode 테스트를 추가했습니다. Unity Test Runner의 EditMode에서 CombatEffectTests를 실행하세요. 분산, 개수, 구형 데이터 변환, 장판 반응/대체/소유자 필터, 소환수별 공전 상태 분리를 검사합니다.
 
-현재 클라우드에는 Unity Editor가 없어 실제 Unity 임포트·컴파일·물리·플레이 검증은 수행하지 못했습니다. 별도 .NET API 테스트 환경에서 변경한 C#을 컴파일하고 EditMode 테스트 17개 및 수명·폭발·접촉·흡인 등 시뮬레이션 검사 12개(총 29개)를 실행해 모두 통과했으며, 이 검사는 Unity 엔진 검증을 대체하지 않습니다. Unity에서 투척 비행, 지연/근접 폭발, 장판 수명, 다중 콜라이더 접촉 피해, 포탑 탄환의 고속 충돌, 흡인 종료 및 전투 초기화를 확인하세요.
+클라우드에서는 Tools/ValidateEffects/check.py로 실제 관리 코드 검사, C#/Editor API 컴파일과 GUID 검증을 실행합니다. Unity 오브젝트·물리·플레이 검증은 Unity Editor에서 별도로 실행합니다. 소환 구조 회귀 검사는 SummonSpawnTests와 SummonArchitectureEditorTests에 있습니다. Unity에서 투척 비행, 지연/근접 폭발, 장판 수명, 다중 콜라이더 접촉 피해, 포탑 탄환의 고속 충돌, 흡인 종료 및 전투 초기화를 확인하세요.

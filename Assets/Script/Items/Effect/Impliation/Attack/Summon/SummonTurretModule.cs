@@ -16,7 +16,7 @@ public sealed class SummonTurretModule : SummonBehaviourModule
     public bool homing;
     public HitEffectData[] onHitEffects;
     public override void Prepare(ItemEffectContext context) => HitEffectPreparation.Prepare(onHitEffects, context);
-    public override SummonBehaviourRuntime CreateRuntime(SummonItemThrower summon) => new Runtime(summon, this);
+    public override SummonBehaviourRuntime CreateRuntime(SummonActor summon) => new Runtime(summon, this);
 
     private sealed class Runtime : SummonBehaviourRuntime
     {
@@ -27,7 +27,7 @@ public sealed class SummonTurretModule : SummonBehaviourModule
         private readonly bool random, homing;
         private readonly HitEffectData[] effects;
         private float timer;
-        public Runtime(SummonItemThrower summon, SummonTurretModule data) : base(summon)
+        public Runtime(SummonActor summon, SummonTurretModule data) : base(summon)
         {
             prefab = data.projectilePrefab;
             sprite = data.projectileSprite;

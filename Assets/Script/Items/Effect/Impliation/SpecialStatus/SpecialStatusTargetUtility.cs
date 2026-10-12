@@ -30,7 +30,7 @@ public static class SpecialStatusTargetUtility
                 return plant != null && plant.health != null && !plant.IsDead
                     ? BuffQueryContext.ForTarget(plant.health) : null;
             case SpecialStatusQueryTarget.SourceSummon:
-                SummonItemThrower summon = context.sourceSummon;
+                SummonActor summon = context.sourceSummon;
                 return summon != null && summon.CanAct && summon.LifeId == context.sourceSummonLifeId
                     ? BuffQueryContext.ForTarget(summon) : null;
         }

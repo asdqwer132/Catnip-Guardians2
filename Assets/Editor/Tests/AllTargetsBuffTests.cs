@@ -161,13 +161,12 @@ public sealed class AllTargetsBuffTests
     public void ItemAndSummonQueriesApplyUniversalBuffOnlyOnce(BuffApplyTiming timing)
     {
         Grant(GlobalEffect(timing,
-            Modifier(nameof(SummonStat), nameof(SummonStat.summonAttackPower), multiply: 0.5f)));
+            Modifier(nameof(SummonActorStat), nameof(SummonActorStat.attackPower), multiply: 0.5f)));
         ItemData item = Asset<ItemData>();
-        ItemEffectContext context = Context(item, Asset<SummonAttackEffect>());
-        SummonStat snapshot = context.GetUnscaledSnapshotStat(context.currentEffectData,
-            new SummonStat { summonAttackPower = 5f, summonLifeTime = 60f });
-        SummonItemThrower summon = Host("Summon").AddComponent<SummonItemThrower>();
-        summon.InitWithSnapshotAndDynamicBuff(snapshot, item, null, manager, null);
+        ItemEffectContext context = Context(item, Asset<SummonSpawnEffect>());
+        SummonActor summon = Host("Summon").AddComponent<SummonActor>();
+        summon.baseActorStat.attackPower = 5f;
+        summon.Initialize(context, 60f);
         Assert.That(summon.AttackPower, Is.EqualTo(7.5f).Within(0.0001f));
         summon.RefreshBuffedStat();
         Assert.That(summon.AttackPower, Is.EqualTo(7.5f).Within(0.0001f));

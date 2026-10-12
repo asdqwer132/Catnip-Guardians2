@@ -151,6 +151,12 @@ internal static class BuffModifierEditorGUI
                 EditorGUILayout.HelpBox("BuffInfo.duration은 새로 부여하거나 재부여할 버프/특수 상태의 지속시간(초)입니다. " +
                     "Target Resolver는 버프를 부여하는 아이템에 적용되는 All Items, SourceBag 등으로 지정하세요. " +
                     "Time 방식에 사용하며 이미 적용 중인 버프의 남은 시간은 변경하지 않습니다.", MessageType.Info);
+            else if (selectedType == typeof(SummonSpawnStat))
+                EditorGUILayout.HelpBox("소환 생성 스탯: 수명·개수·배치입니다. All Items/Owner 등 아이템 대상에 적용하며 " +
+                    "이번에 생성할 소환물에 사용합니다. count는 계산 후 소수점을 버립니다.", MessageType.Info);
+            else if (selectedType == typeof(SummonActorStat))
+                EditorGUILayout.HelpBox("소환물 기능 스탯: 프리팹의 공격력·주기·탐색 범위·피해/회복 배율입니다. " +
+                    "Group = Summon 또는 Direct/All Targets로 적용할 수 있습니다.", MessageType.Info);
         }
 
         EditorGUILayout.Space(6);
@@ -170,7 +176,9 @@ internal static class BuffModifierEditorGUI
         for (int i = 0; i < StatTypes.Count; i++)
         {
             Type type = StatTypes[i];
-            string label = type == typeof(BuffInfo) ? "BuffInfo (버프 부여 지속시간)" : type.Name;
+            string label = type == typeof(BuffInfo) ? "BuffInfo (버프 부여 지속시간)" :
+                type == typeof(SummonSpawnStat) ? "SummonSpawnStat (소환 생성: 수명·개수·배치)" :
+                type == typeof(SummonActorStat) ? "SummonActorStat (소환물 기능: 공격·범위·배율)" : type.Name;
             names.Add(new GUIContent(label, type.FullName));
             if (typeName.stringValue == type.Name || typeName.stringValue == type.FullName)
                 selected = i + 1;

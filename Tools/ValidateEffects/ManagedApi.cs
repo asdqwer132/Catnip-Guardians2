@@ -43,13 +43,27 @@ public class SimpleTransform { public Vector3 position; }
 public class HitEffectData { public int hits; public void TryExecute(HitEffectContext h){hits++;} }
 public class BuffEffect : ItemEffectData { public BuffClassificationDefinition buffClassification; public bool harmful; public bool dispellable=true; public BuffFlagDefinition[] flags; public Sprite buffIcon; }
 public class GrantSpecialStatusEffect : ItemEffectData { public BuffClassificationDefinition buffClassification; }
-public class SummonItemThrower { }
+public class SummonActor { }
 
 public static class ItemEffectUtility { public static ItemEffectData[] Copy(ItemEffectData[] x)=>x!=null?(ItemEffectData[])x.Clone():null; public static void Execute(ItemEffectData[] e,ItemEffectContext c){} }
 public class SpecialItemManager { public static SpecialItemManager Instance; public int calls; public System.Action<ItemEffectContext> onCall; public void Call(ItemEffectContext context){calls++;onCall?.Invoke(context);} }
 public static class ReactiveGroundArea { public static bool NotifyItemLanded(ItemEffectContext context)=>false; }
 // Scene objects/ScriptableObject/RNG substitutes avoid Unity native calls in managed checks.
 namespace UnityEngine {
+ // Quaternion.Euler invokes a native Unity ECall. The managed harness only substitutes
+ // the planar rotation used by AttackPlacement; engine-backed tests use Unity's Quaternion.
+ public struct Quaternion {
+  private float radians;
+  public static Quaternion identity=>new Quaternion();
+  public static Quaternion Euler(float x,float y,float z) {
+   if(x!=0f||y!=0f)throw new System.NotSupportedException("Managed checks support only planar Z rotation.");
+   return new Quaternion{radians=z*Mathf.Deg2Rad};
+  }
+  public static Vector3 operator*(Quaternion rotation,Vector3 point) {
+   float cosine=Mathf.Cos(rotation.radians),sine=Mathf.Sin(rotation.radians);
+   return new Vector3(point.x*cosine-point.y*sine,point.x*sine+point.y*cosine,point.z);
+  }
+ }
  public class Object { public string name; }
  public class Component : Object {
   public GameObject gameObject;public Transform transform;

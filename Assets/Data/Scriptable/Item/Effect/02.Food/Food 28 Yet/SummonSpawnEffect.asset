@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8cf1b2247af5b8246baf3175c0e3897f, type: 3}
-  m_Name: SummonAttackEffect
-  m_EditorClassIdentifier: Assembly-CSharp::SummonAttackEffect
+  m_Name: SummonSpawnEffect
+  m_EditorClassIdentifier: Assembly-CSharp::SummonSpawnEffect
   conditionMode: 0
   conditions: []
   visualData: {fileID: 0}
@@ -22,16 +22,14 @@ MonoBehaviour:
   audioSource: 
   impactVfxLifeTime: 1
   endVisualData: {fileID: 0}
-  attackStat:
-    summonAttackPower: 10
-    summonThrowInterval: 0.5
-    summonAttackRange: 0.5
-    summonLifeTime: 1
-    summonDamageMultiplier: 1
-    summonHealingMultiplier: 1
-  attackPrefab: {fileID: 4251149784486190187, guid: c0cf74d67546f4d4ab62e5ed895f374d, type: 3}
-  definition: {fileID: 0}
-  overrideThrownItemDamage: 0
-  overrideModules: 0
-  modules:
-  - {fileID: 11400000, guid: 67f04a442d93d0d4bb5091170a86fcec, type: 2}
+  spawnStat:
+    lifetime: 1
+    count: 1
+    spreadRadius: 0
+    spreadAngle: 360
+    forwardSpacing: 1
+    sideSpacing: 0
+  summonPrefab: {fileID: 4251149784486190187, guid: e8b9ff6c9fe74afc91a7f4e5d4b8fb88, type: 3}
+  placementMode: 2
+  spreadStartMode: 0
+  clockwiseSpread: 0

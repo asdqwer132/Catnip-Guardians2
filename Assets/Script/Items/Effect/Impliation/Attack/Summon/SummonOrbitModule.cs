@@ -11,7 +11,7 @@ public sealed class SummonOrbitModule : SummonBehaviourModule
     public float initialAngle;
     [Tooltip("소환 지점의 현재 각도부터 공전합니다. 끄면 Initial Angle을 사용합니다.")]
     public bool startFromSpawnAngle = true;
-    public override SummonBehaviourRuntime CreateRuntime(SummonItemThrower summon) => new Runtime(summon, this);
+    public override SummonBehaviourRuntime CreateRuntime(SummonActor summon) => new Runtime(summon, this);
 
     private sealed class Runtime : SummonBehaviourRuntime
     {
@@ -19,7 +19,7 @@ public sealed class SummonOrbitModule : SummonBehaviourModule
         private readonly Vector3 spawn;
         private readonly float radius, speed;
         private float angle;
-        public Runtime(SummonItemThrower summon, SummonOrbitModule data) : base(summon)
+        public Runtime(SummonActor summon, SummonOrbitModule data) : base(summon)
         {
             mode = data.center;
             spawn = summon.transform.position;
@@ -29,7 +29,7 @@ public sealed class SummonOrbitModule : SummonBehaviourModule
             angle = data.startFromSpawnAngle && offset.sqrMagnitude > 0.000001f ?
                 Mathf.Atan2(offset.y, offset.x) * Mathf.Rad2Deg : EffectStatUtility.Safe(data.initialAngle, -360f, 360f, 0f);
         }
-        private Vector3 Center => mode == SummonOrbitCenter.Owner && summon.owner != null ? summon.owner.transform.position : spawn;
+        private Vector3 Center => mode == SummonOrbitCenter.Owner && summon.Owner != null ? summon.Owner.transform.position : spawn;
         public override void Tick(float deltaTime)
         {
             angle = Mathf.Repeat(angle + speed * deltaTime, 360f);

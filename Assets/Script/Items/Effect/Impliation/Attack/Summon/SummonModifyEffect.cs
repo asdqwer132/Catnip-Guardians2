@@ -15,7 +15,7 @@ public sealed class SummonModificationSettings
     public ItemData attackItem;
     public bool replaceModules;
     public SummonBehaviourModule[] modules;
-    [Tooltip("이 효과 적용 시 현재 남은 수명에 더합니다. 일반 수명 버프는 기존 BuffEffect를 사용합니다.")]
+    [Tooltip("이 효과 적용 시 이미 생성된 소환물의 남은 수명에 더합니다. 새 소환물의 생성 수명 버프는 SummonSpawnStat.lifetime을 사용합니다.")]
     public float addRemainingLifetime;
 }
 
@@ -30,9 +30,9 @@ public sealed class SummonModifyEffect : ItemEffectData
     public override void ExecuteEffect(ItemEffectContext context)
     {
         if (context == null || !context.CanContinue) return;
-        var targets = new List<SummonItemThrower>();
+        var targets = new List<SummonActor>();
         SummonRegistry.Collect(selection, context, targets);
-        foreach (SummonItemThrower summon in targets)
+        foreach (SummonActor summon in targets)
         {
             if (!context.CanContinue) break;
             summon.AddModification(modification, context);
@@ -58,7 +58,7 @@ public sealed class SummonModification : IDisposable
     private ItemEffectLease lease;
     private bool disposed;
 
-    internal SummonModification(SummonItemThrower summon, SummonModificationSettings settings, ItemEffectContext source)
+    internal SummonModification(SummonActor summon, SummonModificationSettings settings, ItemEffectContext source)
     {
         lifeId = summon.LifeId;
         context = source != null ? source.Copy(summon.transform.position, source.direction) : null;
@@ -76,9 +76,9 @@ public sealed class SummonModification : IDisposable
         lease = context != null ? context.RetainLifetime() : null;
     }
 
-    internal bool IsValid(SummonItemThrower summon) => !disposed && summon.LifeId == lifeId &&
+    internal bool IsValid(SummonActor summon) => !disposed && summon.LifeId == lifeId &&
         (context == null || context.CanContinue) && (!timed || remaining > 0f) && (!counted || attacks > 0);
-    internal bool HasCompletedNaturally(SummonItemThrower summon) => !disposed && summon.LifeId == lifeId &&
+    internal bool HasCompletedNaturally(SummonActor summon) => !disposed && summon.LifeId == lifeId &&
         (context == null || context.CanContinue) && ((timed && remaining <= 0f) || (counted && attacks <= 0));
     internal void Tick(float deltaTime) { if (timed) remaining -= deltaTime; }
     internal void ConsumeAttack() { if (counted) attacks = Mathf.Max(0, attacks - 1); }

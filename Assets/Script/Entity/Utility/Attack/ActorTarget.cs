@@ -103,7 +103,7 @@ public sealed class TargetOverrideHandle : IDisposable
     private readonly int enemyLifeId;
     private readonly Health healthTarget;
     private readonly int healthLifeId;
-    private readonly SummonItemThrower summonTarget;
+    private readonly SummonActor summonTarget;
     private readonly int summonLifeId;
     internal IDamageable Target { get; private set; }
     internal int Priority { get; private set; }
@@ -122,7 +122,7 @@ public sealed class TargetOverrideHandle : IDisposable
         enemyTarget = target as Enemy;
         enemyLifeId = enemyTarget != null ? enemyTarget.HitEffectLifeId : 0;
         HealthActor actor = target as HealthActor;
-        summonTarget = target as SummonItemThrower;
+        summonTarget = target as SummonActor;
         summonLifeId = summonTarget != null ? summonTarget.LifeId : 0;
         healthTarget = actor != null ? actor.health : summonTarget != null ? summonTarget.Health : null;
         healthLifeId = healthTarget != null ? healthTarget.LifeId : 0;

@@ -444,6 +444,8 @@ public static partial class Runner {
  Check("execution multiplier scales dynamic additions too",()=>{var c=Context();c.buffManager=new BuffManager{DynamicDamageAdd=10};c.damageMultiplier=.5f;var effect=new ItemEffectData();var actual=c.GetCurrentStat(effect,new DamageAreaAttackStat{damageAreaPower=10});Eq(actual.damageAreaPower,10);});
  Check("automatic child snapshot suppresses use-buff consumption",()=>{var c=Context();c.buffManager=new BuffManager();c.consumeUseBuffs=false;c.GetSnapshotStat(new ItemEffectData(),new DamageAreaAttackStat());True(!c.buffManager.LastConsume);True(!c.Copy(Vector3.zero,Vector3.right).consumeUseBuffs);});
  RunAllTargetsChecks();
+ RunSummonChecks();
  Console.WriteLine($"{passed} managed logic checks passed using actual production code and Unity reference math.");
+ Console.WriteLine("Scene APIs and planar Quaternion rotation use managed substitutes; Unity engine checks do not execute here.");
  }
 }

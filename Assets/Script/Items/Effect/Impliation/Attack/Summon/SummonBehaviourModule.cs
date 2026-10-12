@@ -5,13 +5,13 @@ using UnityEngine;
 public abstract class SummonBehaviourModule : ScriptableObject
 {
     public virtual void Prepare(ItemEffectContext context) { }
-    public abstract SummonBehaviourRuntime CreateRuntime(SummonItemThrower summon);
+    public abstract SummonBehaviourRuntime CreateRuntime(SummonActor summon);
 }
 
 public abstract class SummonBehaviourRuntime : IDisposable
 {
-    protected readonly SummonItemThrower summon;
-    protected SummonBehaviourRuntime(SummonItemThrower summon) { this.summon = summon; }
+    protected readonly SummonActor summon;
+    protected SummonBehaviourRuntime(SummonActor summon) { this.summon = summon; }
     public abstract void Tick(float deltaTime);
     public virtual void Dispose() { }
 }

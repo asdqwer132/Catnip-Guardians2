@@ -636,7 +636,7 @@ Ready는 남은 시간을 0으로 만들고 준비 완료 상태를 유지한다
 
 ### 먼저 종류와 기본 소환을 설정
 
-Summon Definition을 만들고 기존 SummonAttackEffect의 **Definition**에 넣는다. 생성 효과의 Definition을 비우면 소환 프리팹의 종류를 사용한다. 소환 생성에는 기존 소환 프리팹과 Attack Stat이 필요하다.
+생성 효과 **SummonSpawnEffect**에는 **Spawn Stat**(수명·개수·배치)과 **Summon Prefab**을 설정한다. 프리팹의 **SummonActor**에는 **Base Actor Stat**(공격력·주기·탐색 범위·배율), **Modules**, **Definition**을 설정한다. 생성 효과는 프리팹의 기능 설정을 덮어쓰지 않는다. 상세 설정과 두 스탯의 버프 예제는 [소환 구조 설명](SummonArchitecture.md)을 참고한다.
 
 소환물을 체력 있는 미끼로 사용하려면 Definition의 **Enable Health**를 켜고 **Max Health**를 입력한다. 종류 이름 대신 Definition 에셋 참조로 조회한다.
 
@@ -658,17 +658,17 @@ Modify의 **Modification**에서 Duration / Attack Count / Damage Multiplier / H
 
 ### 합체
 
-Transform의 **Requirements**에 필요한 Definition과 Count를 넣고 **Result**에 결과 SummonAttackEffect를 연결한다. 필요한 소환물이 모두 있어야 결과를 만든다.
+Transform의 **Requirements**에 필요한 Definition과 Count를 넣고 **Result**에 결과 SummonSpawnEffect를 연결한다. 필요한 소환물이 모두 있어야 결과를 만들며 Result의 생성 개수를 따른다.
 
 - **Consume Participants**: 재료 소환물을 없애려면 켠다. 기본값은 꺼짐.
 - **Require Fresh Participants**: 같은 재료를 같은 합체 에셋에 다시 쓰지 않으려면 켠다. 기본값은 켜짐.
-- Result에는 정상 작동하는 소환 프리팹·스탯·모듈을 설정한다.
+- Result에는 생성 스탯과 소환물 프리팹을, 프리팹에는 기능 스탯과 모듈을 설정한다.
 
 합체의 재료 소비 여부·조건·결과 종류는 아이템 기획에 맞춰 직접 설정한다.
 
 ### 오라
 
-Aura 모듈을 소환 효과의 Modules 또는 소환 프리팹의 Modules에 추가한다. 생성 효과의 **Override Modules**가 켜져 있으면 효과 쪽 목록이 사용된다.
+Aura 모듈을 소환 프리팹 **SummonActor → Modules**에 추가한다. 모든 기능 모듈은 소환물에서 구성한다.
 
 | 필드 | 의미 |
 | --- | --- |

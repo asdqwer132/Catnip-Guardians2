@@ -20347,24 +20347,22 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: baf9862b17c6f1d438bdd08334308f00, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SummonItemThrower
-  owner: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::SummonActor
   definition: {fileID: 0}
-  overrideThrownItemDamage: 0
   rangeCollider: {fileID: 0}
   rangeVisual: {fileID: 0}
-  modules: []
-  useLegacyThrowWhenNoModules: 1
   itemThrowExecutor: {fileID: 0}
-  itemDatas: {fileID: 0}
-  targetMode: 0
   enemyLayerMask:
     serializedVersion: 2
     m_Bits: 0
-  summonAttackPower: 0
-  summonAttackRange: 5
-  summonThrowInterval: 1
-  lifeTime: 5
+  baseActorStat:
+    attackPower: 0
+    attackInterval: 1
+    detectionRange: 5
+    damageMultiplier: 1
+    healingMultiplier: 1
+  spawnLifetime: 5
+  modules: []
 --- !u!212 &1049915110
 SpriteRenderer:
   serializedVersion: 2

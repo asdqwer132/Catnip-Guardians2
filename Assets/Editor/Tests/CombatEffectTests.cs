@@ -372,8 +372,8 @@ public sealed class CombatEffectTests
         module.startFromSpawnAngle = false;
         module.orbitRadius = 2f;
         module.angularSpeed = 90f;
-        SummonItemThrower a = Host().AddComponent<SummonItemThrower>();
-        SummonItemThrower b = Host().AddComponent<SummonItemThrower>();
+        SummonActor a = Host().AddComponent<SummonActor>();
+        SummonActor b = Host().AddComponent<SummonActor>();
         SummonBehaviourRuntime first = module.CreateRuntime(a), second = module.CreateRuntime(b);
         first.Tick(1f);
         second.Tick(0f);
@@ -393,10 +393,10 @@ public sealed class CombatEffectTests
         ReactiveGroundStat ground = new ReactiveGroundStat { groundRadius = float.PositiveInfinity };
         ground.Clamp();
         Assert.That(ground.groundRadius, Is.EqualTo(2f));
-        SummonStat summon = new SummonStat { summonThrowInterval = float.NaN, summonLifeTime = -1f };
+        SummonActorStat summon = new SummonActorStat { attackInterval = float.NaN };
         summon.Clamp();
-        Assert.That(summon.summonThrowInterval, Is.EqualTo(0.5f));
-        SummonStat copy = summon.Clone(); copy.summonAttackPower = 100f;
-        Assert.That(summon.summonAttackPower, Is.EqualTo(0f));
+        Assert.That(summon.attackInterval, Is.EqualTo(0.5f));
+        SummonActorStat copy = summon.Clone(); copy.attackPower = 100f;
+        Assert.That(summon.attackPower, Is.EqualTo(0f));
     }
 }

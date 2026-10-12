@@ -11,7 +11,7 @@ public sealed class SummonPullModule : SummonBehaviourModule
     public bool allowWhileStopped;
     public bool interruptPattern = true;
     public bool interruptAttack = true;
-    public override SummonBehaviourRuntime CreateRuntime(SummonItemThrower summon) => new Runtime(summon, this);
+    public override SummonBehaviourRuntime CreateRuntime(SummonActor summon) => new Runtime(summon, this);
 
     private sealed class Runtime : SummonBehaviourRuntime
     {
@@ -22,7 +22,7 @@ public sealed class SummonPullModule : SummonBehaviourModule
         private readonly bool hold, stopped, interruptPattern, interruptAttack;
         private float timer;
         private bool disposed;
-        public Runtime(SummonItemThrower summon, SummonPullModule data) : base(summon)
+        public Runtime(SummonActor summon, SummonPullModule data) : base(summon)
         {
             speed = EffectStatUtility.Safe(data.pullSpeed, 0f, 1000f, 5f);
             interval = EffectStatUtility.Safe(data.tickInterval, 0.01f, 1f, 0.05f);

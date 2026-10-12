@@ -105,11 +105,11 @@ LED처럼 사용 전 상태를 기준으로 분기하려면 `Freeze Branch At Pr
 
 ## 소환물과 무작위 연결
 
-- `SummonAttackEffect.definition`을 지정하면 종류/태그로 조회할 수 있다. 개조는 해당 소환물의 런타임 상태에만 적용한다.
+- 소환 생성은 `SummonSpawnEffect.spawnStat`, 기능은 프리팹의 `SummonActor.baseActorStat`과 Modules에 설정한다. 소환물의 Definition으로 종류/태그를 조회한다. [소환 구조와 버프 설정](SummonArchitecture.md)을 참고한다. 개조는 해당 소환물의 런타임 상태에만 적용한다.
 - 개조의 Duration/Attack Count가 끝나면 이전의 유효 공격 프로필을 복구한다. Attack Count는 실제 소환 공격이 성공했을 때만 소비한다.
 - 소환물 HP는 Definition에 설정한다. 미끼 대상은 실제 피해를 받을 수 있는 소환물을 사용한다.
 - 합체는 요구 Definition/개수를 먼저 확보한 후 결과 소환물을 만든다. `Consume Participants`는 기본 꺼짐이며 기획에서 재료 소비를 확정한 경우 켠다. 같은 재료로 반복 생성할지도 별도 선택한다.
-- 소환수의 아이템 투척 공격력 덮어쓰기는 명시적으로 켠 경우에만 적용한다. 기존 Turret/Contact Damage의 공격력 계산은 유지한다.
+- 소환수의 아이템 투척 공격력 덮어쓰기는 Item Throw 모듈의 Use Actor Attack Power를 켠 경우에만 적용한다. 기존 Turret/Contact Damage의 공격력 계산은 유지한다.
 - `WeightedRandomEffect`에 아이템 또는 효과 목록과 가중치를 지정한다. 자동 사용의 재고/가방 슬롯은 소비하지 않으며 사용 횟수 버프와 추가 공격은 각각 옵션이다.
 - 마법사의 상자는 CSV의 Common/Magic 후보 14개 에셋을 연결했다. 후보 중 아직 기존 효과가 비어 있는 아이템은 행별 검토표대로 효과를 연결해야 실제 공격/상태가 발동한다. 상자 자체의 추첨·동시 실행은 구현되어 있다.
 - `ScaledEffectData`는 명시된 의미의 스탯만 조정한다. 확률·개수·공격 간격 전체에 배율을 일괄 적용하지 않는다.

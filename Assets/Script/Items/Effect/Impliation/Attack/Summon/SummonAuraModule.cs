@@ -9,14 +9,14 @@ public sealed class SummonAuraModule : SummonBehaviourModule
     public bool includeEmitter;
     [Min(0.01f)] public float radiusMultiplier = 1f;
     [Min(0.01f)] public float scanInterval = 0.1f;
-    public override SummonBehaviourRuntime CreateRuntime(SummonItemThrower summon) => new Runtime(summon, this);
+    public override SummonBehaviourRuntime CreateRuntime(SummonActor summon) => new Runtime(summon, this);
 
     private sealed class Runtime : SummonBehaviourRuntime
     {
         private struct Entry { public int life; public ActiveBuff buff; }
-        private readonly Dictionary<SummonItemThrower, Entry> applied = new Dictionary<SummonItemThrower, Entry>();
-        private readonly List<SummonItemThrower> matches = new List<SummonItemThrower>();
-        private readonly List<SummonItemThrower> removed = new List<SummonItemThrower>();
+        private readonly Dictionary<SummonActor, Entry> applied = new Dictionary<SummonActor, Entry>();
+        private readonly List<SummonActor> matches = new List<SummonActor>();
+        private readonly List<SummonActor> removed = new List<SummonActor>();
         private readonly SummonSelection selection;
         private readonly BuffEffect effect;
         private readonly ItemEffectContext context;
@@ -25,7 +25,7 @@ public sealed class SummonAuraModule : SummonBehaviourModule
         private readonly float radiusMultiplier, interval;
         private float timer;
 
-        public Runtime(SummonItemThrower summon, SummonAuraModule data) : base(summon)
+        public Runtime(SummonActor summon, SummonAuraModule data) : base(summon)
         {
             SummonSelection configured = data.targets ?? new SummonSelection();
             selection = new SummonSelection
@@ -65,15 +65,15 @@ public sealed class SummonAuraModule : SummonBehaviourModule
             SummonRegistry.Collect(selection, context, matches);
             if (!includeEmitter) matches.Remove(summon);
             removed.Clear();
-            foreach (KeyValuePair<SummonItemThrower, Entry> pair in applied)
+            foreach (KeyValuePair<SummonActor, Entry> pair in applied)
                 if (pair.Key == null || pair.Key.LifeId != pair.Value.life || !matches.Contains(pair.Key) ||
                     pair.Value.buff == null || pair.Value.buff.StorageOwner != manager.Storage) removed.Add(pair.Key);
-            foreach (SummonItemThrower target in removed)
+            foreach (SummonActor target in removed)
             {
                 manager.RemoveBuffHandle(applied[target].buff);
                 applied.Remove(target);
             }
-            foreach (SummonItemThrower target in matches)
+            foreach (SummonActor target in matches)
             {
                 if (!summon.CanAct || !context.CanContinue) break;
                 if (applied.ContainsKey(target)) continue;

@@ -4,13 +4,15 @@ using UnityEngine;
 public sealed class SummonItemThrowModule : SummonBehaviourModule
 {
     public ItemData item;
+    [Tooltip("켜면 던질 아이템의 기본 피해 대신 이 소환물의 Attack Power를 사용합니다.")]
+    public bool useActorAttackPower;
     public SummonThrowTargetMode targetMode;
     [Range(1, 128)] public int count = 1;
     public AttackPlacementMode spreadMode = AttackPlacementMode.FixedPoint;
     [Min(0f)] public float spreadRadius = 1f;
     [Range(0f, 360f)] public float spreadAngle = 30f;
     [Min(0.01f)] public float intervalMultiplier = 1f;
-    public override SummonBehaviourRuntime CreateRuntime(SummonItemThrower summon) => new Runtime(summon, this);
+    public override SummonBehaviourRuntime CreateRuntime(SummonActor summon) => new Runtime(summon, this);
 
     private sealed class Runtime : SummonBehaviourRuntime
     {
@@ -19,10 +21,12 @@ public sealed class SummonItemThrowModule : SummonBehaviourModule
         private readonly AttackPlacementMode spread;
         private readonly int count;
         private readonly float radius, angle, multiplier;
+        private readonly bool useActorAttackPower;
         private float timer;
-        public Runtime(SummonItemThrower summon, SummonItemThrowModule data) : base(summon)
+        public Runtime(SummonActor summon, SummonItemThrowModule data) : base(summon)
         {
             item = data.item;
+            useActorAttackPower = data.useActorAttackPower;
             mode = data.targetMode;
             spread = data.spreadMode;
             count = Mathf.Clamp(data.count, 1, 128);
@@ -47,7 +51,7 @@ public sealed class SummonItemThrowModule : SummonBehaviourModule
                     AttackPlacement.Position(spread, summon.transform.position, forward, i, count, 0f, 0f,
                         Vector3.Distance(target, summon.transform.position), angle) :
                     AttackPlacement.Position(spread, target, forward, i, count, 0f, 0f, radius, angle);
-                summon.ThrowItem(summon.ResolveAttackItem(item), position);
+                summon.ThrowItem(summon.ResolveAttackItem(item), position, useActorAttackPower);
                 if (summon.ProfileVersion != profileVersion) break;
             }
         }

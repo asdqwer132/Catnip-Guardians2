@@ -8,5 +8,7 @@ public static class EditorMetadataChecks
     {
         new BuffDurationEditorTests().ModifierStatDropdownIncludesBuffInfoAndItsDurationField();
         Console.WriteLine("PASS actual modifier dropdown metadata includes BuffInfo.duration (no Unity GUI execution).");
+        new SummonArchitectureEditorTests().ModifierDropdownSeparatesCreationAndActorFields();
+        Console.WriteLine("PASS actual modifier dropdown separates SummonSpawnStat and SummonActorStat (no Unity GUI execution).");
     }
 }
