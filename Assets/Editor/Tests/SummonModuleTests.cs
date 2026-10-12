@@ -153,6 +153,38 @@ public sealed class SummonModuleTests
         Assert.That(module.stats.baseStat.damage, Is.EqualTo(10f));
     }
     [Test]
+    [TestCase(SummonContactFirstHitTiming.Immediate, 990f)]
+    [TestCase(SummonContactFirstHitTiming.AfterInterval, 1000f)]
+    public void ContactDamageFirstHitTimingSelectsImmediateOrDelayedHpLoss(SummonContactFirstHitTiming timing, float firstHp)
+    {
+        Enemy enemy = Enemy(); var module = Asset<SummonContactDamageModule>();
+        module.stats = Asset<SummonContactDamageStatDefinition>();
+        module.stats.baseStat = new SummonContactDamageStat { damage = 10f, radius = 1f, interval = 0.5f };
+        module.firstHitTiming = timing; SummonActor actor = Actor(module);
+        // 첫 조회로 진입 시점을 기록합니다. 인터벌 후 모드는 아직 HP를 줄이지 않습니다.
+        actor.Advance(0f); Assert.That(enemy.health.Hp, Is.EqualTo(firstHp));
+        actor.Advance(0.25f); Assert.That(enemy.health.Hp, Is.EqualTo(firstHp));
+        actor.Advance(0.25f); Assert.That(enemy.health.Hp, Is.EqualTo(firstHp - 10f));
+        // 이후 두 모드 모두 같은 주기로 반복합니다.
+        actor.Advance(0.49f); Assert.That(enemy.health.Hp, Is.EqualTo(firstHp - 10f));
+        actor.Advance(0.01f); Assert.That(enemy.health.Hp, Is.EqualTo(firstHp - 20f));
+    }
+    [Test]
+    public void ContactDamageIntervalBuffCanCompleteTheFirstHitWait()
+    {
+        Enemy enemy = Enemy(); var module = Asset<SummonContactDamageModule>();
+        module.stats = Asset<SummonContactDamageStatDefinition>();
+        module.stats.baseStat = new SummonContactDamageStat { damage = 10f, radius = 1f, interval = 1f };
+        module.firstHitTiming = SummonContactFirstHitTiming.AfterInterval; SummonActor actor = Actor(module);
+        actor.Advance(0f); actor.Advance(0.5f); Assert.That(enemy.health.Hp, Is.EqualTo(1000f));
+        ActiveBuff buff = Buff(nameof(SummonContactDamageStat), "interval", -0.5f);
+        actor.Advance(0f); Assert.That(enemy.health.Hp, Is.EqualTo(990f));
+        manager.RemoveBuffHandle(buff);
+        actor.Advance(0.5f); Assert.That(enemy.health.Hp, Is.EqualTo(990f));
+        actor.Advance(0.5f); Assert.That(enemy.health.Hp, Is.EqualTo(980f));
+        Assert.That(module.stats.baseStat.interval, Is.EqualTo(1f));
+    }
+    [Test]
     public void PeriodicModuleAlternatesDifferentSpawnCountsAndStopsAtCycleLimit()
     {
         var first = Spawn(1f); var second = Spawn(2f);

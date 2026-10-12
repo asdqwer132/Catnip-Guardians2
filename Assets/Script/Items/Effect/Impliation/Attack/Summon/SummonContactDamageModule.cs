@@ -5,14 +5,21 @@ public sealed class SummonContactDamageModule : SummonBehaviourModule
 {
     [Header("기본 스탯 프로필 · 접촉 피해")]
     public SummonContactDamageStatDefinition stats;
+    [Header("피해 주기 시작")]
+    [Tooltip("즉시: 접촉 시 첫 피해. 인터벌 후: 진입 후 Interval만큼 기다린 뒤 첫 피해. 이후에는 두 옵션 모두 Interval마다 반복합니다.")]
+    public SummonContactFirstHitTiming firstHitTiming = SummonContactFirstHitTiming.Immediate;
     public override SummonModuleStatDefinition StatDefinition => stats;
     public override SummonBehaviourRuntime CreateRuntime(SummonActor actor) => new Runtime(actor, this);
     private sealed class Runtime : SummonModuleRuntime<SummonContactDamageStat>
     {
         private readonly EnemyQueryBuffer query = new EnemyQueryBuffer();
-        private readonly SummonContactActivationGate contacts = new SummonContactActivationGate(SummonContactTriggerMode.WhileTouching);
+        private readonly SummonContactActivationGate contacts;
         private bool disposed;
-        public Runtime(SummonActor actor, SummonContactDamageModule module) : base(actor, module, module.stats) { }
+        public Runtime(SummonActor actor, SummonContactDamageModule module) : base(actor, module, module.stats)
+        {
+            contacts = new SummonContactActivationGate(SummonContactTriggerMode.WhileTouching,
+                firstHitTiming: module.firstHitTiming);
+        }
         public override void Tick(float deltaTime)
         {
             contacts.BeginStep(deltaTime);

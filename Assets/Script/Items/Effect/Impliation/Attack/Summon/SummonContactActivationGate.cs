@@ -3,6 +3,11 @@ using System.Collections.Generic;
 
 public enum SummonContactTriggerMode { OnEnter, WhileTouching }
 public enum SummonContactLimitScope { PerSummon, PerTarget }
+public enum SummonContactFirstHitTiming
+{
+    [UnityEngine.InspectorName("즉시")] Immediate = 0,
+    [UnityEngine.InspectorName("인터벌 후")] AfterInterval = 1
+}
 
 // 물리 조회와 분리한 접촉/횟수 상태입니다. 공유 모듈 에셋에는 실행 상태를 저장하지 않습니다.
 public sealed class SummonContactActivationGate
@@ -19,14 +24,16 @@ public sealed class SummonContactActivationGate
     private readonly SummonContactTriggerMode mode;
     private readonly bool limited;
     private readonly SummonContactLimitScope scope;
+    private readonly SummonContactFirstHitTiming firstHitTiming;
     private long step;
     private double elapsed;
     private int total, pending, version;
     public int ActivationCount => total;
 
     public SummonContactActivationGate(SummonContactTriggerMode mode, bool limited = false,
-        SummonContactLimitScope scope = SummonContactLimitScope.PerSummon)
-    { this.mode = mode; this.limited = limited; this.scope = scope; }
+        SummonContactLimitScope scope = SummonContactLimitScope.PerSummon,
+        SummonContactFirstHitTiming firstHitTiming = SummonContactFirstHitTiming.Immediate)
+    { this.mode = mode; this.limited = limited; this.scope = scope; this.firstHitTiming = firstHitTiming; }
 
     public void BeginStep(float deltaTime)
     {
@@ -41,10 +48,14 @@ public sealed class SummonContactActivationGate
             contacts[target] = state = new Contact { life = lifeId };
         bool alreadyInside = state.lastSeen == step || state.lastSeen == step - 1;
         state.lastSeen = step;
+        // 인터벌 후 모드는 매 진입부터 한 주기를 기다립니다. 같은 적의 생명이 바뀌어도 새 접촉입니다.
+        bool waitOnEntry = mode == SummonContactTriggerMode.WhileTouching &&
+            firstHitTiming == SummonContactFirstHitTiming.AfterInterval;
+        if (waitOnEntry && !alreadyInside) state.attemptTime = elapsed;
         maximum = Math.Max(1, maximum);
         if (state.inFlight || state.lastAttempt == step ||
             (mode == SummonContactTriggerMode.OnEnter && alreadyInside) ||
-            (mode == SummonContactTriggerMode.WhileTouching && state.lastAttempt >= 0 &&
+            (mode == SummonContactTriggerMode.WhileTouching && (state.lastAttempt >= 0 || waitOnEntry) &&
                 elapsed - state.attemptTime + 0.000001d < EffectStatUtility.Safe(interval, 0.01f, 600f, 0.5f)) ||
             (limited && (scope == SummonContactLimitScope.PerTarget ? state.activations : total + pending) >= maximum))
             return false;

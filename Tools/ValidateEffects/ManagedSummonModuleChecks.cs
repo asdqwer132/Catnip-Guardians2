@@ -5,6 +5,66 @@ public static partial class Runner
 {
     private static void RunSummonContactAndScheduleChecks()
     {
+        Check("delayed contact waits one interval before its first hit and then repeats", () => {
+            var gate = new SummonContactActivationGate(SummonContactTriggerMode.WhileTouching,
+                firstHitTiming: SummonContactFirstHitTiming.AfterInterval);
+            var target = new object(); int hits = 0; Func<bool> hit = () => { hits++; return true; };
+            gate.BeginStep(0f); True(!gate.TryActivate(target,1,0.5f,1,hit)); gate.EndStep(0.5f);
+            gate.BeginStep(0.49f); True(!gate.TryActivate(target,1,0.5f,1,hit)); gate.EndStep(0.5f);
+            True(hits == 0);
+            gate.BeginStep(0.01f); True(gate.TryActivate(target,1,0.5f,1,hit));
+            True(!gate.TryActivate(target,1,0.5f,1,hit)); gate.EndStep(0.5f);
+            gate.BeginStep(0.49f); True(!gate.TryActivate(target,1,0.5f,1,hit)); gate.EndStep(0.5f);
+            gate.BeginStep(0.01f); True(gate.TryActivate(target,1,0.5f,1,hit)); True(hits == 2);
+        });
+        Check("each delayed target starts its own wait when it enters", () => {
+            var gate = new SummonContactActivationGate(SummonContactTriggerMode.WhileTouching,
+                firstHitTiming: SummonContactFirstHitTiming.AfterInterval);
+            var a = new object(); var b = new object();
+            gate.BeginStep(10f); True(!gate.TryActivate(a,1,1f,1,() => true)); gate.EndStep(1f);
+            gate.BeginStep(0.5f); True(!gate.TryActivate(a,1,1f,1,() => true));
+            True(!gate.TryActivate(b,1,1f,1,() => true)); gate.EndStep(1f);
+            gate.BeginStep(0.5f); True(gate.TryActivate(a,1,1f,1,() => true));
+            True(!gate.TryActivate(b,1,1f,1,() => true)); gate.EndStep(1f);
+            gate.BeginStep(0.5f); True(!gate.TryActivate(a,1,1f,1,() => true));
+            True(gate.TryActivate(b,1,1f,1,() => true));
+        });
+        Check("leaving before the first delayed hit restarts the wait on reentry", () => {
+            var gate = new SummonContactActivationGate(SummonContactTriggerMode.WhileTouching,
+                firstHitTiming: SummonContactFirstHitTiming.AfterInterval); var target = new object();
+            gate.BeginStep(0f); True(!gate.TryActivate(target,1,1f,1,() => true)); gate.EndStep(1f);
+            gate.BeginStep(0.75f); gate.EndStep(1f); // 범위를 벗어났습니다.
+            gate.BeginStep(0.25f); True(!gate.TryActivate(target,1,1f,1,() => true)); gate.EndStep(1f);
+            gate.BeginStep(0.75f); True(!gate.TryActivate(target,1,1f,1,() => true)); gate.EndStep(1f);
+            gate.BeginStep(0.25f); True(gate.TryActivate(target,1,1f,1,() => true));
+        });
+        Check("delayed contact reentry also waits a full interval after a previous hit", () => {
+            var gate = new SummonContactActivationGate(SummonContactTriggerMode.WhileTouching,
+                firstHitTiming: SummonContactFirstHitTiming.AfterInterval); var target = new object();
+            gate.BeginStep(0f); gate.TryActivate(target,1,1f,1,() => true); gate.EndStep(1f);
+            gate.BeginStep(1f); True(gate.TryActivate(target,1,1f,1,() => true)); gate.EndStep(1f);
+            gate.BeginStep(0.25f); gate.EndStep(1f);
+            gate.BeginStep(0.25f); True(!gate.TryActivate(target,1,1f,1,() => true)); gate.EndStep(1f);
+            gate.BeginStep(0.5f); True(!gate.TryActivate(target,1,1f,1,() => true)); gate.EndStep(1f);
+            gate.BeginStep(0.5f); True(gate.TryActivate(target,1,1f,1,() => true));
+        });
+        Check("buffed intervals affect an in-progress first-hit wait without spending activation counts", () => {
+            var gate = new SummonContactActivationGate(SummonContactTriggerMode.WhileTouching,true,
+                firstHitTiming: SummonContactFirstHitTiming.AfterInterval); var target = new object();
+            gate.BeginStep(0f); True(!gate.TryActivate(target,1,1f,1,() => true)); gate.EndStep(1f);
+            gate.BeginStep(0.5f); True(!gate.TryActivate(target,1,2f,1,() => true)); gate.EndStep(2f);
+            True(gate.ActivationCount == 0);
+            gate.BeginStep(0f); True(gate.TryActivate(target,1,0.5f,1,() => true)); gate.EndStep(0.5f);
+            True(gate.ActivationCount == 1);
+            gate.BeginStep(0.5f); True(!gate.TryActivate(target,1,0.5f,1,() => true));
+        });
+        Check("a recycled target starts a fresh delayed wait for its new life", () => {
+            var gate = new SummonContactActivationGate(SummonContactTriggerMode.WhileTouching,
+                firstHitTiming: SummonContactFirstHitTiming.AfterInterval); var target = new object();
+            gate.BeginStep(0f); gate.TryActivate(target,1,1f,1,() => true); gate.EndStep(1f);
+            gate.BeginStep(1f); True(!gate.TryActivate(target,2,1f,1,() => true)); gate.EndStep(1f);
+            gate.BeginStep(1f); True(gate.TryActivate(target,2,1f,1,() => true));
+        });
         Check("contact entry fires once until exit and reentry", () => {
             var gate = new SummonContactActivationGate(SummonContactTriggerMode.OnEnter); var target = new object();
             gate.BeginStep(0f); True(gate.TryActivate(target,1,1f,1,() => true)); gate.EndStep(1f);
