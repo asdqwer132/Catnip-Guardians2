@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a99148ec30946be83315495fe0965f5, type: 3}
   m_Name: PeriodicSpawn_Alternating
   m_EditorClassIdentifier:
-  stats: {fileID: 11400000, guid: 41bed109bcc241519b6da517f98ddcf5, type: 2}
+  baseStat:
+    interval: 2
+    activationCount: 3
   spawnEffects:
-  - {fileID: 11400000, guid: 0a2c8a9897ec4a74cb125638960d029e, type: 2}
+  - {fileID: 11400000, guid: dafbe2ad4cdf4ce4e939be8210837cda, type: 2}
   - {fileID: 11400000, guid: 7a36a3aa986c40b1b5db1b6920698e4e, type: 2}
   order: 0
   limitActivations: 1

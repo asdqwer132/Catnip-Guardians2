@@ -3,9 +3,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SummonContactEffects", menuName = "04.Items/Effects/Direct Effects/Summon/Summon Modules/Contact Effects")]
 public sealed class SummonContactEffectModule : SummonBehaviourModule
 {
-    [Header("기본 스탯 프로필 · 접촉 이펙트")]
-    public SummonContactEffectStatDefinition stats;
-    public override SummonModuleStatDefinition StatDefinition => stats;
+    [Header("기본 스탯 · 접촉 이펙트")]
+    public SummonContactEffectStat baseStat = new SummonContactEffectStat();
+    public override System.Type StatType => typeof(SummonContactEffectStat);
     [Header("발동 방식")]
     public SummonContactTriggerMode triggerMode;
     public bool limitActivations;
@@ -21,7 +21,7 @@ public sealed class SummonContactEffectModule : SummonBehaviourModule
         private readonly SummonContactActivationGate contacts;
         private readonly HitEffectData[] effects;
         private bool disposed;
-        public Runtime(SummonActor actor, SummonContactEffectModule module) : base(actor, module, module.stats)
+        public Runtime(SummonActor actor, SummonContactEffectModule module) : base(actor, module, module.baseStat)
         {
             contacts = new SummonContactActivationGate(module.triggerMode, module.limitActivations, module.limitScope);
             effects = module.contactEffects != null ? (HitEffectData[])module.contactEffects.Clone() : new HitEffectData[0];

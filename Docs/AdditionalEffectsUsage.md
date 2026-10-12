@@ -636,9 +636,9 @@ Ready는 남은 시간을 0으로 만들고 준비 완료 상태를 유지한다
 
 ### 먼저 종류와 기본 소환을 설정
 
-생성 효과 **SummonSpawnEffect**에는 **Spawn Stat**(수명·개수·배치)과 **Summon Prefab**을 설정한다. 프리팹의 **SummonActor**에는 **Modules**와 **Definition**을 설정하고, 기본 기능 수치는 각 모듈의 **Stats 프로필**에서 설정한다. 생성 효과는 프리팹의 기능 설정을 덮어쓰지 않는다. 상세 설정과 모듈별 스탯의 버프 예제는 [소환 구조 설명](SummonArchitecture.md)을 참고한다.
+생성 효과 **SummonSpawnEffect**에는 **Spawn Stat**(수명·개수·배치)과 **Summon Prefab**을 설정한다. 프리팹의 **SummonActor**에는 **Modules**와 **Definition**을 설정하고, 기본 기능 수치는 각 모듈 내부의 **기본 스탯**에서 설정한다. 생성 효과는 프리팹의 기능 설정을 덮어쓰지 않는다. 상세 설정과 모듈별 스탯의 버프 예제는 [소환 구조 설명](SummonArchitecture.md)을 참고한다.
 
-소환물을 체력 있는 미끼로 사용하려면 **Health 모듈**을 추가하고 Stats 프로필에서 **Max Health**와 **Defense**를 입력한다. 종류 이름 대신 Definition 에셋 참조로 조회한다.
+소환물을 체력 있는 미끼로 사용하려면 **Health 모듈**을 추가하고 모듈의 기본 스탯에서 **Max Health**와 **Defense**를 입력한다. 종류 이름 대신 Definition 에셋 참조로 조회한다.
 
 ### 조회와 개조
 
@@ -941,4 +941,4 @@ RepeatItemEffect의 Placement 아래에서 다음을 설정한다.
 
 ## 소환 모듈의 기본 스탯과 런타임 스탯
 
-소환물 기능의 모든 기본 수치는 각 모듈의 **Stats 프로필**에서 설정한다. 모듈 인스펙터에서 프로필을 선택하고 기본값을 편집하며, 실행 중 Actor의 **모듈별 현재 스탯**에서 버프 결과를 확인한다. 버프 스탯 드롭다운은 소환/생성·공격·이동·지원으로 구분한다. **Contact Effects**는 접촉 이펙트와 횟수 제한, **Periodic Spawn**은 주기마다 다른 소환 효과를 실행한다. 자세한 설정과 연결 가능한 예제는 [소환 모듈 설명](SummonArchitecture.md)을 참고한다.
+소환물 기능의 모든 기본 수치는 각 모듈 내부의 **기본 스탯**에서 설정한다. 모듈 인스펙터에서 기본값을 직접 편집하며, 실행 중 Actor의 **모듈별 현재 스탯**에서 버프 결과를 확인한다. 버프 스탯 드롭다운은 소환/생성·공격·이동·지원으로 구분한다. **Contact Effects**는 접촉 이펙트와 횟수 제한, **Periodic Spawn**은 주기마다 다른 소환 효과를 실행한다. 자세한 설정과 연결 가능한 예제는 [소환 모듈 설명](SummonArchitecture.md)을 참고한다.

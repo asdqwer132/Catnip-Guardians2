@@ -3,16 +3,16 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SummonHealth", menuName = "04.Items/Effects/Direct Effects/Summon/Summon Modules/Health")]
 public sealed class SummonHealthModule : SummonBehaviourModule
 {
-    [Header("기본 스탯 프로필 · 체력")]
-    public SummonHealthStatDefinition stats;
+    [Header("기본 스탯 · 체력")]
+    public SummonHealthStat baseStat = new SummonHealthStat();
     public HealthDefenseFormula defenseFormula = HealthDefenseFormula.FlatReduction;
-    public override SummonModuleStatDefinition StatDefinition => stats;
+    public override System.Type StatType => typeof(SummonHealthStat);
     public override SummonBehaviourRuntime CreateRuntime(SummonActor actor) => new Runtime(actor, this);
     private sealed class Runtime : SummonModuleRuntime<SummonHealthStat>
     {
         private readonly HealthDefenseFormula formula;
         private bool disposed;
-        public Runtime(SummonActor actor, SummonHealthModule module) : base(actor, module, module.stats)
+        public Runtime(SummonActor actor, SummonHealthModule module) : base(actor, module, module.baseStat)
         {
             formula = module.defenseFormula;
             actor.ConfigureHealth(stat, initialize: true, defenseFormula: formula);

@@ -17,9 +17,9 @@ public sealed class SummonAuraModule : SummonBehaviourModule
     public SummonAuraTargetFilter targets = new SummonAuraTargetFilter();
     public BuffEffect buff;
     public bool includeEmitter;
-    [Header("기본 스탯 프로필 · 오라")]
-    public SummonAuraStatDefinition stats;
-    public override SummonModuleStatDefinition StatDefinition => stats;
+    [Header("기본 스탯 · 오라")]
+    public SummonAuraStat baseStat = new SummonAuraStat();
+    public override System.Type StatType => typeof(SummonAuraStat);
     public override SummonBehaviourRuntime CreateRuntime(SummonActor summon) => new Runtime(summon, this);
 
     private sealed class Runtime : SummonModuleRuntime<SummonAuraStat>
@@ -35,7 +35,7 @@ public sealed class SummonAuraModule : SummonBehaviourModule
         private readonly bool includeEmitter;
         private float timer;
 
-        public Runtime(SummonActor summon, SummonAuraModule data) : base(summon, data, data.stats)
+        public Runtime(SummonActor summon, SummonAuraModule data) : base(summon, data, data.baseStat)
         {
             SummonAuraTargetFilter configured = data.targets ?? new SummonAuraTargetFilter();
             selection = new SummonSelection

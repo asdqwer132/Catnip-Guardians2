@@ -166,8 +166,8 @@ public sealed class AllTargetsBuffTests
         ItemEffectContext context = Context(item, Asset<SummonSpawnEffect>());
         SummonActor summon = Host("Summon").AddComponent<SummonActor>();
         SummonContactDamageModule module = Asset<SummonContactDamageModule>();
-        module.stats = Asset<SummonContactDamageStatDefinition>();
-        module.stats.baseStat.damage = 5f;
+
+        module.baseStat.damage = 5f;
         summon.modules = new SummonBehaviourModule[] { module };
         summon.Initialize(context, 60f);
         Assert.That(summon.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(7.5f).Within(0.0001f));

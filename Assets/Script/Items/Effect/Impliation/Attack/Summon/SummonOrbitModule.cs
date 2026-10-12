@@ -6,9 +6,9 @@ public enum SummonOrbitCenter { SpawnPosition, Owner }
 public sealed class SummonOrbitModule : SummonBehaviourModule
 {
     public SummonOrbitCenter center = SummonOrbitCenter.Owner;
-    [Header("기본 스탯 프로필 · 공전")]
-    public SummonOrbitStatDefinition stats;
-    public override SummonModuleStatDefinition StatDefinition => stats;
+    [Header("기본 스탯 · 공전")]
+    public SummonOrbitStat baseStat = new SummonOrbitStat();
+    public override System.Type StatType => typeof(SummonOrbitStat);
     [Tooltip("소환 지점의 현재 각도부터 공전합니다. 끄면 Initial Angle을 사용합니다.")]
     public bool startFromSpawnAngle = true;
     public override SummonBehaviourRuntime CreateRuntime(SummonActor summon) => new Runtime(summon, this);
@@ -18,7 +18,7 @@ public sealed class SummonOrbitModule : SummonBehaviourModule
         private readonly SummonOrbitCenter mode;
         private readonly Vector3 spawn;
         private float angle;
-        public Runtime(SummonActor summon, SummonOrbitModule data) : base(summon, data, data.stats)
+        public Runtime(SummonActor summon, SummonOrbitModule data) : base(summon, data, data.baseStat)
         {
             mode = data.center;
             spawn = summon.transform.position;

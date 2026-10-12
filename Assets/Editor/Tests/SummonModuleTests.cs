@@ -66,11 +66,11 @@ public sealed class SummonModuleTests
     private SummonContactEffectModule Contact(SummonRecordingHitEffect effect)
     {
         var module = Asset<SummonContactEffectModule>();
-        module.stats = Asset<SummonContactEffectStatDefinition>();
-        module.stats.baseStat.radius = 1f;
+
+        module.baseStat.radius = 1f;
         module.contactEffects = new HitEffectData[] { effect };
         module.limitActivations = true;
-        module.stats.baseStat.activationCount = 2f;
+        module.baseStat.activationCount = 2f;
         return module;
     }
     private SummonSpawnEffect Spawn(float count)
@@ -94,10 +94,10 @@ public sealed class SummonModuleTests
     }
 
     [Test]
-    public void DirectBuffChangesOnlyOneInstanceOfASharedModuleProfile()
+    public void DirectBuffChangesOnlyOneInstanceOfASharedModule()
     {
-        var module = Asset<SummonContactDamageModule>(); module.stats = Asset<SummonContactDamageStatDefinition>();
-        module.stats.baseStat.damage = 10f;
+        var module = Asset<SummonContactDamageModule>();
+        module.baseStat.damage = 10f;
         SummonActor a = Actor(module), b = Actor(module);
         var modifier = Asset<FloatFieldBuffModifier>();
         modifier.targetStatTypeName = nameof(SummonContactDamageStat); modifier.fieldName = "damage"; modifier.addValue = 5f;
@@ -107,11 +107,43 @@ public sealed class SummonModuleTests
         manager.RegisterBuff(buff, Context());
         Assert.That(a.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(15f));
         Assert.That(b.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(10f));
-        Assert.That(module.stats.baseStat.damage, Is.EqualTo(10f));
+        Assert.That(module.baseStat.damage, Is.EqualTo(10f));
         a.GetRuntimeStat<SummonContactDamageStat>(0).damage = 999f;
         Assert.That(a.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(15f), "확인 API는 런타임을 수정하는 참조를 노출하지 않습니다.");
     }
 
+    [Test]
+    public void InlineBaseStatsAreCapturedForEachInstanceWithoutSharingRuntimeState()
+    {
+        var module = Asset<SummonContactDamageModule>(); module.baseStat.damage = 10f;
+        SummonActor first = Actor(module);
+        module.baseStat.damage = 20f;
+        SummonActor second = Actor(module);
+        // 모듈 편집은 이후 생성할 소환물의 기준값을 바꿉니다. 기존 생명의 기준값은 유지됩니다.
+        first.RefreshBuffedStat();
+        Assert.That(first.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(10f));
+        Assert.That(second.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(20f));
+        ActiveBuff buff = Buff(nameof(SummonContactDamageStat), "damage", 5f);
+        Assert.That(first.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(15f));
+        Assert.That(second.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(25f));
+        Assert.That(module.baseStat.damage, Is.EqualTo(20f), "버프는 모듈의 기본값을 수정하지 않습니다.");
+        manager.RemoveBuffHandle(buff);
+        Assert.That(first.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(10f));
+        Assert.That(second.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(20f));
+    }
+    [Test]
+    public void InlineBaseStatsAreClonedBeforeRuntimeValidation()
+    {
+        var module = Asset<SummonContactDamageModule>();
+        module.baseStat = new SummonContactDamageStat { damage = -5f, radius = float.PositiveInfinity, interval = float.NaN };
+        SummonActor actor = Actor(module);
+        SummonContactDamageStat current = actor.GetRuntimeStat<SummonContactDamageStat>(0);
+        Assert.That(current.damage, Is.Zero);
+        Assert.That(current.radius, Is.EqualTo(0.3f)); Assert.That(current.interval, Is.EqualTo(0.5f));
+        Assert.That(module.baseStat.damage, Is.EqualTo(-5f));
+        Assert.That(float.IsPositiveInfinity(module.baseStat.radius), Is.True);
+        Assert.That(float.IsNaN(module.baseStat.interval), Is.True);
+    }
     [Test]
     public void ContactEffectsDoNotDealAutomaticDamageAndRespectReentryLimit()
     {
@@ -132,7 +164,7 @@ public sealed class SummonModuleTests
     {
         Enemy(); var effect = Asset<SummonRecordingHitEffect>(); effect.succeeds = false;
         var module = Contact(effect); module.triggerMode = SummonContactTriggerMode.WhileTouching;
-        module.stats.baseStat.repeatInterval = 0.5f; module.stats.baseStat.activationCount = 1f;
+        module.baseStat.repeatInterval = 0.5f; module.baseStat.activationCount = 1f;
         SummonActor a = Actor(module), b = Actor(module);
         a.Advance(0f); b.Advance(0f); Assert.That(effect.calls.Count, Is.EqualTo(2));
         effect.succeeds = true; a.Advance(0.5f); b.Advance(0.5f);
@@ -143,14 +175,14 @@ public sealed class SummonModuleTests
     public void ContactDamageBuffChangesActualEnemyHpWithoutChangingProfile()
     {
         Enemy enemy = Enemy(); var module = Asset<SummonContactDamageModule>();
-        module.stats = Asset<SummonContactDamageStatDefinition>();
-        module.stats.baseStat = new SummonContactDamageStat { damage = 10f, radius = 1f, interval = 0.5f };
+
+        module.baseStat = new SummonContactDamageStat { damage = 10f, radius = 1f, interval = 0.5f };
         SummonActor actor = Actor(module); ActiveBuff buff = Buff(nameof(SummonContactDamageStat), "damage", 5f);
         Assert.That(actor.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(15f));
         actor.Advance(0f); Assert.That(enemy.health.Hp, Is.EqualTo(985f));
         manager.RemoveBuffHandle(buff); actor.Advance(0.5f);
         Assert.That(enemy.health.Hp, Is.EqualTo(975f));
-        Assert.That(module.stats.baseStat.damage, Is.EqualTo(10f));
+        Assert.That(module.baseStat.damage, Is.EqualTo(10f));
     }
     [Test]
     [TestCase(SummonContactFirstHitTiming.Immediate, 990f)]
@@ -158,8 +190,8 @@ public sealed class SummonModuleTests
     public void ContactDamageFirstHitTimingSelectsImmediateOrDelayedHpLoss(SummonContactFirstHitTiming timing, float firstHp)
     {
         Enemy enemy = Enemy(); var module = Asset<SummonContactDamageModule>();
-        module.stats = Asset<SummonContactDamageStatDefinition>();
-        module.stats.baseStat = new SummonContactDamageStat { damage = 10f, radius = 1f, interval = 0.5f };
+
+        module.baseStat = new SummonContactDamageStat { damage = 10f, radius = 1f, interval = 0.5f };
         module.firstHitTiming = timing; SummonActor actor = Actor(module);
         // 첫 조회로 진입 시점을 기록합니다. 인터벌 후 모드는 아직 HP를 줄이지 않습니다.
         actor.Advance(0f); Assert.That(enemy.health.Hp, Is.EqualTo(firstHp));
@@ -173,8 +205,8 @@ public sealed class SummonModuleTests
     public void ContactDamageIntervalBuffCanCompleteTheFirstHitWait()
     {
         Enemy enemy = Enemy(); var module = Asset<SummonContactDamageModule>();
-        module.stats = Asset<SummonContactDamageStatDefinition>();
-        module.stats.baseStat = new SummonContactDamageStat { damage = 10f, radius = 1f, interval = 1f };
+
+        module.baseStat = new SummonContactDamageStat { damage = 10f, radius = 1f, interval = 1f };
         module.firstHitTiming = SummonContactFirstHitTiming.AfterInterval; SummonActor actor = Actor(module);
         actor.Advance(0f); actor.Advance(0.5f); Assert.That(enemy.health.Hp, Is.EqualTo(1000f));
         ActiveBuff buff = Buff(nameof(SummonContactDamageStat), "interval", -0.5f);
@@ -182,28 +214,28 @@ public sealed class SummonModuleTests
         manager.RemoveBuffHandle(buff);
         actor.Advance(0.5f); Assert.That(enemy.health.Hp, Is.EqualTo(990f));
         actor.Advance(0.5f); Assert.That(enemy.health.Hp, Is.EqualTo(980f));
-        Assert.That(module.stats.baseStat.interval, Is.EqualTo(1f));
+        Assert.That(module.baseStat.interval, Is.EqualTo(1f));
     }
     [Test]
     public void PeriodicModuleAlternatesDifferentSpawnCountsAndStopsAtCycleLimit()
     {
         var first = Spawn(1f); var second = Spawn(2f);
-        var module = Asset<SummonPeriodicSpawnModule>(); module.stats = Asset<SummonPeriodicSpawnStatDefinition>();
-        module.stats.baseStat.interval = 1f; module.stats.baseStat.activationCount = 2f;
+        var module = Asset<SummonPeriodicSpawnModule>();
+        module.baseStat.interval = 1f; module.baseStat.activationCount = 2f;
         module.limitActivations = true; module.spawnEffects = new[] { first, second };
         SummonActor actor = Actor(module); int initial = SummonRegistry.Active.Count;
         actor.Advance(0.5f); Assert.That(SummonRegistry.Active.Count, Is.EqualTo(initial));
         actor.Advance(0.5f); Assert.That(SummonRegistry.Active.Count, Is.EqualTo(initial + 1));
         actor.Advance(1f); Assert.That(SummonRegistry.Active.Count, Is.EqualTo(initial + 3));
         actor.Advance(1f); Assert.That(SummonRegistry.Active.Count, Is.EqualTo(initial + 3));
-        Assert.That(module.stats.baseStat.activationCount, Is.EqualTo(2f));
+        Assert.That(module.baseStat.activationCount, Is.EqualTo(2f));
     }
     [Test]
     public void ZeroSpawnCycleDoesNotSpendLimitAndCreationBuffCanEnableTheNextCycle()
     {
         var spawn = Spawn(0f);
-        var module = Asset<SummonPeriodicSpawnModule>(); module.stats = Asset<SummonPeriodicSpawnStatDefinition>();
-        module.limitActivations = true; module.stats.baseStat.activationCount = 1f; module.spawnEffects = new[] { spawn };
+        var module = Asset<SummonPeriodicSpawnModule>();
+        module.limitActivations = true; module.baseStat.activationCount = 1f; module.spawnEffects = new[] { spawn };
         SummonActor actor = Actor(module); int initial = SummonRegistry.Active.Count;
         actor.Advance(1f); Assert.That(SummonRegistry.Active.Count, Is.EqualTo(initial));
         var modifier = Asset<FloatFieldBuffModifier>();
@@ -219,8 +251,8 @@ public sealed class SummonModuleTests
     [Test]
     public void DynamicPeriodicBuffChangesIntervalAndLimitForExistingInstance()
     {
-        var module = Asset<SummonPeriodicSpawnModule>(); module.stats = Asset<SummonPeriodicSpawnStatDefinition>();
-        module.stats.baseStat.interval = 2f; module.stats.baseStat.activationCount = 1f;
+        var module = Asset<SummonPeriodicSpawnModule>();
+        module.baseStat.interval = 2f; module.baseStat.activationCount = 1f;
         module.limitActivations = true; module.spawnEffects = new[] { Spawn(1f) };
         SummonActor actor = Actor(module); int initial = SummonRegistry.Active.Count;
         actor.Advance(1f); Assert.That(SummonRegistry.Active.Count, Is.EqualTo(initial));
@@ -232,7 +264,7 @@ public sealed class SummonModuleTests
     [Test]
     public void CancelledPeriodicSourceProducesNoChildrenAndNaturalParentCompletionKeepsChildren()
     {
-        var module = Asset<SummonPeriodicSpawnModule>(); module.stats = Asset<SummonPeriodicSpawnStatDefinition>();
+        var module = Asset<SummonPeriodicSpawnModule>();
         module.spawnEffects = new[] { Spawn(1f) };
         SummonActor actor = Actor(module); var lifetime = new ItemEffectLifetime();
         actor.Initialize(Context(lifetime), 100f); int initial = SummonRegistry.Active.Count;
@@ -246,18 +278,18 @@ public sealed class SummonModuleTests
         Assert.That(SummonRegistry.Active.Count, Is.EqualTo(before.Count));
     }
     [Test]
-    public void HealthModuleBuffAndProfileRebuildPreserveDamageAndRemoveHealthWhenModuleIsRemoved()
+    public void HealthModuleBuffAndModuleRebuildPreserveDamageAndRemoveHealthWhenModuleIsRemoved()
     {
-        var module = Asset<SummonHealthModule>(); module.stats = Asset<SummonHealthStatDefinition>();
-        module.stats.baseStat = new SummonHealthStat { maxHealth = 100f, defense = 3f };
+        var module = Asset<SummonHealthModule>();
+        module.baseStat = new SummonHealthStat { maxHealth = 100f, defense = 3f };
         SummonActor actor = Actor(module); actor.TakeDamage(13f);
         Assert.That(actor.Health.Hp, Is.EqualTo(90f));
         ActiveBuff buff = Buff(nameof(SummonHealthStat), "maxHealth", 50f);
         Assert.That(actor.Health.MaxHp, Is.EqualTo(150f)); Assert.That(actor.Health.Hp, Is.EqualTo(90f));
         actor.ConfigureModules(new SummonBehaviourModule[] { module });
-        Assert.That(actor.Health.Hp, Is.EqualTo(90f), "프로필 재생성은 새 생명이 아니므로 체력을 채우면 안 됩니다.");
+        Assert.That(actor.Health.Hp, Is.EqualTo(90f), "모듈 재생성은 새 생명이 아니므로 체력을 채우면 안 됩니다.");
         manager.RemoveBuffHandle(buff); Assert.That(actor.Health.MaxHp, Is.EqualTo(100f));
-        Assert.That(module.stats.baseStat.maxHealth, Is.EqualTo(100f));
+        Assert.That(module.baseStat.maxHealth, Is.EqualTo(100f));
         actor.ConfigureModules(new SummonBehaviourModule[0]); Assert.That(actor.Health, Is.Null);
     }
 }

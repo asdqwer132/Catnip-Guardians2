@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-// 기본 수치는 모듈의 프로필에 저장하고, 버프는 복제한 런타임 수치에만 적용합니다.
+// 기본 수치는 모듈 내부에 저장하고, 버프는 복제한 런타임 수치에만 적용합니다.
 public abstract class SummonModuleStat<T> : IGameStat<T>, IEffectScalableStat where T : class, IGameStat<T>
 {
     public T Clone() => (T)(object)MemberwiseClone();

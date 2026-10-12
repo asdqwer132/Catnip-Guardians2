@@ -3,9 +3,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SummonPeriodicSpawn", menuName = "04.Items/Effects/Direct Effects/Summon/Summon Modules/Periodic Spawn")]
 public sealed class SummonPeriodicSpawnModule : SummonBehaviourModule
 {
-    [Header("기본 스탯 프로필 · 주기적 소환")]
-    public SummonPeriodicSpawnStatDefinition stats;
-    public override SummonModuleStatDefinition StatDefinition => stats;
+    [Header("기본 스탯 · 주기적 소환")]
+    public SummonPeriodicSpawnStat baseStat = new SummonPeriodicSpawnStat();
+    public override System.Type StatType => typeof(SummonPeriodicSpawnStat);
     [Header("소환할 효과와 순서")]
     public SummonSpawnEffect[] spawnEffects;
     public SummonPeriodicSpawnOrder order;
@@ -18,7 +18,7 @@ public sealed class SummonPeriodicSpawnModule : SummonBehaviourModule
         private readonly bool limited;
         private readonly SummonPeriodicSpawnSchedule schedule = new SummonPeriodicSpawnSchedule();
         private bool disposed;
-        public Runtime(SummonActor actor, SummonPeriodicSpawnModule module) : base(actor, module, module.stats)
+        public Runtime(SummonActor actor, SummonPeriodicSpawnModule module) : base(actor, module, module.baseStat)
         {
             effects = module.spawnEffects != null ? (SummonSpawnEffect[])module.spawnEffects.Clone() : new SummonSpawnEffect[0];
             order = module.order; limited = module.limitActivations;

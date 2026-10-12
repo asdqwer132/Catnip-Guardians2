@@ -12,7 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b33ca0e1fa5e4e998456502850c99a14, type: 3}
   m_Name: ContactEffects_ThreeTimes
   m_EditorClassIdentifier:
-  stats: {fileID: 11400000, guid: 1938de888c5c48cebf00d03cd6e07afe, type: 2}
+  baseStat:
+    radius: 0.8
+    repeatInterval: 0.5
+    activationCount: 3
   triggerMode: 0
   limitActivations: 1
   limitScope: 0

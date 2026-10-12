@@ -13,7 +13,7 @@ public sealed class SummonModuleRuntimeView
 
 public enum SummonThrowTargetMode { NearestEnemy, RandomEnemy, RandomPosition }
 
-// 모듈의 실행 상태를 관리합니다. 기본 기능 스탯은 각 모듈의 프로필에 있습니다. 생성 개수/배치/수명은 SpawnEffect가 전달합니다.
+// 모듈의 실행 상태를 관리합니다. 기본 기능 스탯은 각 모듈 내부에 있습니다. 생성 개수/배치/수명은 SpawnEffect가 전달합니다.
 [BuffTargetGroups("Summon")]
 [MovedFrom(true, null, "Assembly-CSharp", "SummonItemThrower")]
 public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, IDamageable
@@ -323,7 +323,7 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
             {
                 if (module is SummonHealthModule)
                 {
-                    if (hasHealth) continue; // 하나의 HP에 여러 기본 체력 프로필을 적용하지 않습니다.
+                    if (hasHealth) continue; // 하나의 HP에 여러 기본 체력 스탯을 적용하지 않습니다.
                     hasHealth = true;
                 }
                 module.Prepare(CreateAttackContext(transform.position, Vector3.right));

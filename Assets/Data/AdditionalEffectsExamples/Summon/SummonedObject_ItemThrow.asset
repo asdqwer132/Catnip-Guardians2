@@ -16,4 +16,12 @@ MonoBehaviour:
   useModuleDamage: 0
   targetMode: 0
   spreadMode: 0
-  stats: {fileID: 11400000, guid: e0be4ade49ec42288d3282943458bed2, type: 2}
+  baseStat:
+    damage: 0
+    damageMultiplier: 1
+    healingMultiplier: 1
+    range: 0.5
+    interval: 2
+    shotCount: 1
+    spreadRadius: 1
+    spreadAngle: 30

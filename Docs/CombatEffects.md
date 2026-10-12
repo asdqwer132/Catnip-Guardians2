@@ -64,7 +64,7 @@ Create → GameData → Items → Effects → Attack → Reactive Ground로 생�
 
 ## 소환수 행동 조합
 
-소환 생성은 **SummonSpawnEffect / SummonSpawnStat**, 소환물 기능은 **각 모듈의 Stats 프로필**에서 설정합니다. 생성 효과에는 수명·개수·배치를, 모듈에는 해당 기능의 기본 스탯을 설정합니다. SummonActor는 모듈을 실행하고 버프가 반영된 런타임 스탯을 표시합니다. 기존 소환 스크립트 GUID와 Summon 버프 대상 그룹은 유지합니다. 설정과 버프 예제는 [소환 구조 설명](SummonArchitecture.md)을 참고하세요.
+소환 생성은 **SummonSpawnEffect / SummonSpawnStat**, 소환물 기능은 **각 모듈 내부의 기본 스탯**에서 설정합니다. 생성 효과에는 수명·개수·배치를, 모듈에는 해당 기능의 기본 스탯을 설정합니다. SummonActor는 모듈을 실행하고 버프가 반영된 런타임 스탯을 표시합니다. 기존 소환 스크립트 GUID와 Summon 버프 대상 그룹은 유지합니다. 설정과 버프 예제는 [소환 구조 설명](SummonArchitecture.md)을 참고하세요.
 
 Create → 04.Items → Effects → Direct Effects → Summon → Summon Modules에서 행동 에셋을 만들고 프리팹의 **Modules**에 원하는 순서로 넣습니다. 이동 모듈을 공격 모듈보다 앞에 두면 이동한 위치에서 같은 프레임에 공격합니다. 기능이 다른 소환물은 별도 프리팹이나 Variant로 구성합니다. 빈 모듈 목록은 기능 없는 소환물입니다.
 

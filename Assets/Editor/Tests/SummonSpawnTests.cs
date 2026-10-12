@@ -61,8 +61,8 @@ public sealed class SummonSpawnTests
         prefab.SetActive(false);
         SummonActor actor = prefab.AddComponent<SummonActor>();
         SummonContactDamageModule contact = Asset<SummonContactDamageModule>();
-        contact.stats = Asset<SummonContactDamageStatDefinition>();
-        contact.stats.baseStat = new SummonContactDamageStat { damage = 10f, radius = 4f, interval = 2f };
+
+        contact.baseStat = new SummonContactDamageStat { damage = 10f, radius = 4f, interval = 2f };
         actor.modules = new SummonBehaviourModule[] { contact };
         SummonSpawnEffect effect = Asset<SummonSpawnEffect>();
         effect.summonPrefab = actor;
@@ -114,7 +114,7 @@ public sealed class SummonSpawnTests
         Assert.That(b[0].RemainingLifeTime, Is.EqualTo(9f));
         foreach (SummonActor actor in a) Assert.That(actor.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(10f));
         Assert.That(b[0].GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(10f));
-        Assert.That(((SummonContactDamageModule)first.summonPrefab.modules[0]).stats.baseStat.damage, Is.EqualTo(10f));
+        Assert.That(((SummonContactDamageModule)first.summonPrefab.modules[0]).baseStat.damage, Is.EqualTo(10f));
         Assert.That(first.spawnStat.count, Is.EqualTo(2f));
     }
 
@@ -158,7 +158,7 @@ public sealed class SummonSpawnTests
         manager.RemoveBuffHandle(buff);
         Assert.That(existing.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(10f));
         Assert.That(future[0].GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(10f));
-        Assert.That(((SummonContactDamageModule)effect.summonPrefab.modules[0]).stats.baseStat.damage, Is.EqualTo(10f));
+        Assert.That(((SummonContactDamageModule)effect.summonPrefab.modules[0]).baseStat.damage, Is.EqualTo(10f));
     }
 
     [Test]
@@ -202,12 +202,12 @@ public sealed class SummonSpawnTests
             Assert.That(actor.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(15f));
         // 실제 공격 모듈도 이 API로 한 번의 공격에 사용할 값을 캡처합니다.
         SummonContactDamageStat attack = actors[0].CalculateModuleStat(
-            ((SummonContactDamageModule)effect.summonPrefab.modules[0]).stats.baseStat, consumeUseCount: true);
+            ((SummonContactDamageModule)effect.summonPrefab.modules[0]).baseStat, consumeUseCount: true);
         Assert.That(attack.damage, Is.EqualTo(15f), "마지막 횟수의 공격에는 버프값을 사용합니다.");
         Assert.That(manager.Storage.activeBuffs, Is.Empty);
         foreach (SummonActor actor in actors)
             Assert.That(actor.GetRuntimeStat<SummonContactDamageStat>(0).damage, Is.EqualTo(10f), "버프가 끝나면 기존 소환물의 런타임 값도 돌아옵니다.");
-        Assert.That(((SummonContactDamageModule)effect.summonPrefab.modules[0]).stats.baseStat.damage, Is.EqualTo(10f));
+        Assert.That(((SummonContactDamageModule)effect.summonPrefab.modules[0]).baseStat.damage, Is.EqualTo(10f));
     }
 
     [Test]

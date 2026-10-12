@@ -9,9 +9,9 @@ public sealed class SummonItemThrowModule : SummonBehaviourModule
     [FormerlySerializedAs("useActorAttackPower")]
     public bool useModuleDamage;
     public SummonThrowTargetMode targetMode;
-    [Header("기본 스탯 프로필 · 투척")]
-    public SummonItemThrowStatDefinition stats;
-    public override SummonModuleStatDefinition StatDefinition => stats;
+    [Header("기본 스탯 · 투척")]
+    public SummonItemThrowStat baseStat = new SummonItemThrowStat();
+    public override System.Type StatType => typeof(SummonItemThrowStat);
     public AttackPlacementMode spreadMode = AttackPlacementMode.FixedPoint;
     public override SummonBehaviourRuntime CreateRuntime(SummonActor summon) => new Runtime(summon, this);
 
@@ -22,7 +22,7 @@ public sealed class SummonItemThrowModule : SummonBehaviourModule
         private readonly AttackPlacementMode spread;
         private readonly bool useModuleDamage;
         private float timer;
-        public Runtime(SummonActor summon, SummonItemThrowModule data) : base(summon, data, data.stats)
+        public Runtime(SummonActor summon, SummonItemThrowModule data) : base(summon, data, data.baseStat)
         {
             item = data.item;
             useModuleDamage = data.useModuleDamage;

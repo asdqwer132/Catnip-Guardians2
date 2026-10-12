@@ -12,5 +12,7 @@ public static class EditorMetadataChecks
         Console.WriteLine("PASS actual modifier dropdown separates creation and nine module stat categories (no Unity GUI execution).");
         new SummonArchitectureEditorTests().InspectorLabelsGroupCreationAttackMovementAndSupportStats();
         Console.WriteLine("PASS actual inspector labels group creation, attack, movement and support stats (no Unity GUI execution).");
+        new SummonArchitectureEditorTests().EveryFunctionalModuleOwnsAnInlineStatValue();
+        Console.WriteLine("PASS all nine modules own serializable inline base stats (no Unity GUI execution).");
     }
 }

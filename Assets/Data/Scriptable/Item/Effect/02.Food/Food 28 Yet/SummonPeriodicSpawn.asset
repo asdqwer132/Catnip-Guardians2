@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a99148ec30946be83315495fe0965f5, type: 3}
   m_Name: SummonPeriodicSpawn
   m_EditorClassIdentifier: Assembly-CSharp::SummonPeriodicSpawnModule
-  stats: {fileID: 0}
+  baseStat:
+    interval: 1
+    activationCount: 1
   spawnEffects: []
   order: 0
   limitActivations: 0

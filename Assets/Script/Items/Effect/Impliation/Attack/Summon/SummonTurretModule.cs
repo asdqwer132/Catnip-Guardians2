@@ -5,9 +5,9 @@ public sealed class SummonTurretModule : SummonBehaviourModule
 {
     [Tooltip("RandomPosition은 사용하지 않습니다. 적에게 조준해 자체 탄환을 발사합니다.")]
     public bool randomTarget;
-    [Header("기본 스탯 프로필 · 포탑")]
-    public SummonTurretStatDefinition stats;
-    public override SummonModuleStatDefinition StatDefinition => stats;
+    [Header("기본 스탯 · 포탑")]
+    public SummonTurretStat baseStat = new SummonTurretStat();
+    public override System.Type StatType => typeof(SummonTurretStat);
     public SummonProjectile projectilePrefab;
     public Sprite projectileSprite;
     public bool homing;
@@ -23,7 +23,7 @@ public sealed class SummonTurretModule : SummonBehaviourModule
         private readonly bool random, homing;
         private readonly HitEffectData[] effects;
         private float timer;
-        public Runtime(SummonActor summon, SummonTurretModule data) : base(summon, data, data.stats)
+        public Runtime(SummonActor summon, SummonTurretModule data) : base(summon, data, data.baseStat)
         {
             prefab = data.projectilePrefab;
             sprite = data.projectileSprite;

@@ -370,9 +370,9 @@ public sealed class CombatEffectTests
         SummonOrbitModule module = Asset<SummonOrbitModule>();
         module.center = SummonOrbitCenter.SpawnPosition;
         module.startFromSpawnAngle = false;
-        module.stats = Asset<SummonOrbitStatDefinition>();
-        module.stats.baseStat.radius = 2f;
-        module.stats.baseStat.angularSpeed = 90f;
+
+        module.baseStat.radius = 2f;
+        module.baseStat.angularSpeed = 90f;
         SummonActor a = Host().AddComponent<SummonActor>();
         SummonActor b = Host().AddComponent<SummonActor>();
         SummonBehaviourRuntime first = module.CreateRuntime(a), second = module.CreateRuntime(b);

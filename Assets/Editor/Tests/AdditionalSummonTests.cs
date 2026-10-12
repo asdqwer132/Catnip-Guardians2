@@ -166,8 +166,8 @@ public sealed class AdditionalSummonTests
         SummonDefinition turret = Asset<SummonDefinition>();
         SummonActor target = Summon(turret);
         SummonContactDamageModule contact = Asset<SummonContactDamageModule>();
-        contact.stats = Asset<SummonContactDamageStatDefinition>();
-        contact.stats.baseStat.damage = 0f;
+
+        contact.baseStat.damage = 0f;
         target.ConfigureModules(new SummonBehaviourModule[] { contact });
         target.Initialize(new ItemEffectContext(null, Asset<ItemData>(), Vector3.zero, Vector3.zero,
             null, buffManager: manager), 100f);

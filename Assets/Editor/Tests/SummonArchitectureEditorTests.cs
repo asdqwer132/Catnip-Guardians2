@@ -8,6 +8,27 @@ using UnityEditor;
 public sealed class SummonArchitectureEditorTests
 {
     [Test]
+    public void EveryFunctionalModuleOwnsAnInlineStatValue()
+    {
+        Type[] modules = { typeof(SummonContactDamageModule), typeof(SummonContactEffectModule), typeof(SummonTurretModule),
+            typeof(SummonItemThrowModule), typeof(SummonOrbitModule), typeof(SummonPullModule), typeof(SummonAuraModule),
+            typeof(SummonPeriodicSpawnModule), typeof(SummonHealthModule) };
+        Type[] stats = { typeof(SummonContactDamageStat), typeof(SummonContactEffectStat), typeof(SummonTurretStat),
+            typeof(SummonItemThrowStat), typeof(SummonOrbitStat), typeof(SummonPullStat), typeof(SummonAuraStat),
+            typeof(SummonPeriodicSpawnStat), typeof(SummonHealthStat) };
+        for (int i = 0; i < modules.Length; i++)
+        {
+            FieldInfo field = modules[i].GetField("baseStat");
+            Assert.That(field, Is.Not.Null, modules[i].Name);
+            Assert.That(field.FieldType, Is.EqualTo(stats[i]));
+            Assert.That(typeof(UnityEngine.Object).IsAssignableFrom(field.FieldType), Is.False,
+                "기본 스탯은 별도 에셋 참조가 아닌 모듈 내부의 값이어야 합니다.");
+            Assert.That(Attribute.IsDefined(field.FieldType, typeof(SerializableAttribute)), Is.True);
+            Assert.That(modules[i].GetField("stats"), Is.Null);
+        }
+    }
+
+    [Test]
     public void InspectorLabelsGroupCreationAttackMovementAndSupportStats()
     {
         Assert.That(BuffModifierEditorGUI.GetStatLabel(typeof(SummonSpawnStat)), Does.StartWith("소환/생성/"));
@@ -40,24 +61,26 @@ public sealed class SummonArchitectureEditorTests
     }
 
     [Test]
-    public void Food28KeepsCreationSettingsInEffectAndFunctionSettingsInModuleProfile()
+    public void Food28KeepsLatestCreationAndContactSettingsInTheirOwnAssets()
     {
-        const string path = "Assets/Data/Scriptable/Item/Effect/02.Food/Food 28 Yet/SummonSpawnEffect.asset";
+        const string path = "Assets/Data/Scriptable/Item/Effect/02.Food/Food 28 Yet/SummonSpawnEffect 1.asset";
         SummonSpawnEffect effect = AssetDatabase.LoadAssetAtPath<SummonSpawnEffect>(path);
         Assert.That(effect, Is.Not.Null);
-        Assert.That(effect.spawnStat.lifetime, Is.EqualTo(1f));
+        Assert.That(effect.spawnStat.lifetime, Is.EqualTo(1.1f));
         Assert.That(effect.spawnStat.SpawnCount, Is.EqualTo(1));
         Assert.That(effect.summonPrefab, Is.Not.Null);
 
-        Assert.That(effect.summonPrefab.modules, Has.Length.EqualTo(1));
-        Assert.That(effect.summonPrefab.modules[0], Is.InstanceOf<SummonContactDamageModule>());
-        var contact = (SummonContactDamageModule)effect.summonPrefab.modules[0];
-        Assert.That(contact.stats, Is.Not.Null);
-        Assert.That(contact.stats.baseStat.damage, Is.EqualTo(20f)); // 이전 10 + Actor 공격력 10을 보존합니다.
-        Assert.That(contact.stats.baseStat.interval, Is.EqualTo(1f));
+        var contact = AssetDatabase.LoadAssetAtPath<SummonContactDamageModule>(
+            "Assets/Data/Scriptable/Item/Effect/02.Food/Food 28 Yet/SummonContactDamage.asset");
+        Assert.That(contact, Is.Not.Null);
+        Assert.That(Array.Exists(effect.summonPrefab.modules, module => module == contact), Is.True);
+        Assert.That(contact.baseStat, Is.Not.Null);
+        Assert.That(contact.baseStat.damage, Is.EqualTo(5f), "최신 브랜치에서 사용자가 변경한 값을 보존합니다.");
+        Assert.That(contact.baseStat.interval, Is.EqualTo(1f));
+        Assert.That(contact.firstHitTiming, Is.EqualTo(SummonContactFirstHitTiming.AfterInterval));
         ItemData food = AssetDatabase.LoadAssetAtPath<ItemData>("Assets/Data/Scriptable/Item/Items/02.Food/Food28.asset");
         Assert.That(food, Is.Not.Null);
-        Assert.That(Array.Exists(food.effectDatas, entry => entry == effect), Is.True, "효과 GUID를 보존해 Food28 연결이 이어져야 합니다.");
+        Assert.That(Array.Exists(food.effectDatas, entry => entry == effect), Is.True, "이름이 바뀐 생성 효과에 Food28 연결을 이어야 합니다.");
     }
 }
 #endif

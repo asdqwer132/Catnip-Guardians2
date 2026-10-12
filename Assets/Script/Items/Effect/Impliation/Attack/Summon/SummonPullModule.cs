@@ -4,9 +4,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SummonPull", menuName = "04.Items/Effects/Direct Effects/Summon/Summon Modules/Pull")]
 public sealed class SummonPullModule : SummonBehaviourModule
 {
-    [Header("기본 스탯 프로필 · 끌어당김")]
-    public SummonPullStatDefinition stats;
-    public override SummonModuleStatDefinition StatDefinition => stats;
+    [Header("기본 스탯 · 끌어당김")]
+    public SummonPullStat baseStat = new SummonPullStat();
+    public override System.Type StatType => typeof(SummonPullStat);
     public bool holdAtCenter = true;
     public bool allowWhileStopped;
     public bool interruptPattern = true;
@@ -21,7 +21,7 @@ public sealed class SummonPullModule : SummonBehaviourModule
         private readonly bool hold, stopped, interruptPattern, interruptAttack;
         private float timer;
         private bool disposed;
-        public Runtime(SummonActor summon, SummonPullModule data) : base(summon, data, data.stats)
+        public Runtime(SummonActor summon, SummonPullModule data) : base(summon, data, data.baseStat)
         {
             hold = data.holdAtCenter;
             stopped = data.allowWhileStopped;
