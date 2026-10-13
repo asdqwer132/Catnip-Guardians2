@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b250f045bef3cf34fbfec8a0516c81f9, type: 3}
+  m_Script: {fileID: 11500000, guid: eca5d8d4f8c6437e9e7bdbeca1539bd4, type: 3}
   m_Name: Mineral2_EffectData1
-  m_EditorClassIdentifier: Assembly-CSharp::BuffEffect
+  m_EditorClassIdentifier: Assembly-CSharp::GrantSpecialStatusEffect
   conditionMode: 0
   conditions: []
   visualData: {fileID: 0}
@@ -22,34 +22,18 @@ MonoBehaviour:
   audioSource: 
   impactVfxLifeTime: 1
   endVisualData: {fileID: 0}
-  targetResolver: {fileID: 0}
-  buffInfo:
-    stackMode: 0
-    maxStack: 1
+  specialStatusKey: {fileID: 11400000, guid: dde54c61a2a54db46b11b00554ce36ff, type: 2}
+  buffClassification: {fileID: 0}
+  target: 0
+  lifetimeSettings:
+    stackMode: 1
+    maxStack: 3
+    reapplyMode: 1
     applyTiming: 0
-    useLimitType: 0
+    useLimitType: 1
     duration: 1
-    maxUseCount: 1
-    useCountConsumeMode: 0
+    maxUseCount: 5
+    useCountConsumeMode: 1
     consumeItems: []
-  includeSelf: 0
-  buffIcon: {fileID: 0}
   showInUI: 1
-  modifiers:
-  - {fileID: 2442657084466227678}
---- !u!114 &2442657084466227678
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57bb8c5d3dc35cf4db784fd698670410, type: 3}
-  m_Name: Float Modifier
-  m_EditorClassIdentifier: Assembly-CSharp::FloatFieldBuffModifier
-  targetStatTypeName: StatusStat
-  fieldName: statStar
-  addValue: 1
-  multiplyValue: 0
+  statusIcon: {fileID: 21300000, guid: ea15798493779e740a2ba93e5223c3dc, type: 3}

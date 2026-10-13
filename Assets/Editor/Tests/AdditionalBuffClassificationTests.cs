@@ -174,7 +174,7 @@ public sealed class AdditionalBuffClassificationTests
         Assert.That(active, Is.Not.Null); Assert.That(active.harmful, Is.True);
         Assert.That(active.specialStatusKey, Is.Null);
         Assert.That(manager.HasSpecialStatus(key, BuffQueryContext.ForTarget(target)), Is.False);
-        Assert.That(stat.statStar, Is.Zero);
+        Assert.That(stat.BrokeStar, Is.Zero);
         Assert.That(manager.Cleanse(BuffTargetHandle.Target(target)), Is.EqualTo(1));
     }
 

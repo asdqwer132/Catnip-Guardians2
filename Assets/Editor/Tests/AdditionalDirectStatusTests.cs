@@ -50,7 +50,7 @@ public sealed class AdditionalDirectStatusTests
         Assert.That(manager.Storage.activeBuffs[0].remainTime, Is.EqualTo(8f));
         Assert.That(manager.HasSpecialStatus(effect.specialStatusKey, BuffQueryContext.ForTarget(player)), Is.True);
         Assert.That(player.HasStatus(PlayerStatusList.Arrow), Is.True);
-        Assert.That(player.currentStat.statArrow, Is.Zero);
+        Assert.That(player.currentStat.Arrow, Is.Zero);
         Assert.That(effect.lifetimeSettings.duration, Is.EqualTo(5f));
         Tick(8f);
         Assert.That(player.HasStatus(PlayerStatusList.Arrow), Is.False);
@@ -140,7 +140,7 @@ public sealed class AdditionalDirectStatusTests
 
     [Test] public void LegacyStatusStillRecognizesStackedStatBuffs()
     {
-        player.baseStat.statArrow = 2f; player.RefreshBuffedStat();
+        player.baseStat.Arrow = 2f; player.RefreshBuffedStat();
         Assert.That(player.HasStatus(PlayerStatusList.Arrow), Is.True);
         Assert.That(Asset<HasBuffConditionData>().IsSatisfied(Context()), Is.True);
     }

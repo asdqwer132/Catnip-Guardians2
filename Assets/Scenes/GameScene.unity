@@ -2358,7 +2358,6 @@ Transform:
   - {fileID: 332667246}
   - {fileID: 2078391368}
   - {fileID: 907073007}
-  - {fileID: 1312036863}
   m_Father: {fileID: 129445879}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &378844625
@@ -12947,10 +12946,35 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 008a01da1bbfad245a54583112a921ee, type: 2}
     targetBagData: {fileID: 166470119}
   - name: "\uC18C\uD658"
-    isUse: 1
+    isUse: 0
     item:
     - {fileID: 11400000, guid: 75665f6e9d24410408fe03daf1fa101c, type: 2}
     targetBagData: {fileID: 166470119}
+  - name: "\uC7A5\uD310 \uC774\uD399\uD2B8"
+    isUse: 0
+    item:
+    - {fileID: 11400000, guid: 5865985a9d6396643b29abcc8a2482a0, type: 2}
+    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
+    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
+    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
+    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
+    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
+    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
+    targetBagData: {fileID: 166470119}
+  - name: "\uC0C1\uD0DC"
+    isUse: 1
+    item:
+    - {fileID: 11400000, guid: bdd1b8010bd91cc4ab6f91fc945e27ac, type: 2}
+    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
+    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
+    targetBagData: {fileID: 166470119}
+  - name: "\uC0C1\uD0DC2"
+    isUse: 1
+    item:
+    - {fileID: 11400000, guid: 5344d7d247f93f7458037fcbdd8dcf7a, type: 2}
+    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
+    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
+    targetBagData: {fileID: 332667247}
 --- !u!1 &907073005
 GameObject:
   m_ObjectHideFlags: 0
@@ -23926,52 +23950,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1298166223}
   m_CullTransparentMesh: 1
---- !u!1 &1312036862
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1312036863}
-  - component: {fileID: 1312036864}
-  m_Layer: 0
-  m_Name: SpecialItemManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1312036863
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1312036862}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 378844624}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1312036864
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1312036862}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6438ca3d08a7d294d9f62da964874b33, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SpecialItemManager
-  ItemThrowExecutor: {fileID: 378844626}
-  statusManager: {fileID: 0}
 --- !u!1 &1318438113
 GameObject:
   m_ObjectHideFlags: 0
@@ -25680,6 +25658,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1541019570}
   - component: {fileID: 1541019571}
+  - component: {fileID: 1541019572}
   m_Layer: 0
   m_Name: PlayerStatus
   m_TagString: Untagged
@@ -25716,23 +25695,39 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StatusManager
   buffManager: {fileID: 511510869}
   baseStat:
-    statArrow: 0
-    statStar: 0
-    status3: 0
-    status4: 0
-    status5: 0
-    status6: 0
-    status7: 0
-    status8: 0
+    Arrow: 0
+    BrokeStar: 0
+    BlassCrystar: 0
+    MineralCoal: 0
+    MineralGround: 0
+    MineralLight: 0
+    MineralRainbow: 0
+    BlacksmithResilient: 0
+    BlacksmithDelicate: 0
   currentStat:
-    statArrow: 0
-    statStar: 0
-    status3: 0
-    status4: 0
-    status5: 0
-    status6: 0
-    status7: 0
-    status8: 0
+    Arrow: 0
+    BrokeStar: 0
+    BlassCrystar: 0
+    MineralCoal: 0
+    MineralGround: 0
+    MineralLight: 0
+    MineralRainbow: 0
+    BlacksmithResilient: 0
+    BlacksmithDelicate: 0
+--- !u!114 &1541019572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1541019569}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6438ca3d08a7d294d9f62da964874b33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpecialItemManager
+  ItemThrowExecutor: {fileID: 378844626}
+  statusManager: {fileID: 1541019571}
 --- !u!1001 &1544342453
 PrefabInstance:
   m_ObjectHideFlags: 0

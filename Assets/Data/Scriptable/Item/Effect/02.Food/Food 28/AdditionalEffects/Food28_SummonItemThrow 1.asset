@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 033f0ae9f1fd4b759ab1c0ec4df61a41, type: 3}
+  m_Name: Food28_SummonItemThrow 1
+  m_EditorClassIdentifier: Assembly-CSharp::SummonItemThrowModule
+  item: {fileID: 11400000, guid: bdf039ac2848dc34cbf80b35c838825e, type: 2}
+  useModuleDamage: 0
+  targetMode: 2
+  baseStat:
+    damage: 10
+    damageMultiplier: 1
+    healingMultiplier: 1
+    range: 3
+    interval: 1
+    shotCount: 2
+    spreadRadius: 1
+    spreadAngle: 30
+    forwardSpacing: 1
+    sideSpacing: 1
+  spreadMode: 3

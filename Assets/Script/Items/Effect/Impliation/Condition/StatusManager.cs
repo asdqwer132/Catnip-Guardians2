@@ -4,53 +4,60 @@ using Unity.VisualScripting;
 using UnityEngine;
 public enum PlayerStatusList
 {
+    //weapon
     Arrow = 0,
     BrokeStar  = 1,
+    //food
     BlassCrystar = 2,
-    status4 = 2,
-    status5 = 2,
-    status6 = 2,
-    status7 = 2,
-    status8 = 2,
+    //mineral
+    MineralCoal = 3,
+    MineralGround = 4,
+    MineralLight = 5,
+    MineralRainbow = 6,
+    BlacksmithDelicate = 7,
+    BlacksmithResilient = 8,
 }
 [Serializable]
 public class StatusStat : IGameStat<StatusStat>
 {
     [Header("Stat")]
-    public float statArrow;
-    public float statStar;
-    public float status3;
-    public float status4;
-    public float status5;
-    public float status6;
-    public float status7;
-    public float status8;
+    public float Arrow;
+    public float BrokeStar;
+    public float BlassCrystar;
+    public float MineralCoal;
+    public float MineralGround;
+    public float MineralLight;
+    public float MineralRainbow;
+    public float BlacksmithResilient;
+    public float BlacksmithDelicate;
 
     public StatusStat Clone()
     {
         return new StatusStat
         {
-            statArrow = statArrow,
-            statStar = statStar,
-            status3 = status3,
-            status4 = status4,
-            status5 = status5,
-            status6 = status6,
-            status7 = status7,
-            status8 = status8,
+            Arrow = Arrow,
+            BrokeStar = BrokeStar,
+            BlassCrystar = BlassCrystar,
+            MineralCoal = MineralCoal,
+            MineralGround = MineralGround,
+            MineralLight = MineralLight,
+            MineralRainbow = MineralRainbow,
+            BlacksmithResilient = BlacksmithResilient,
+            BlacksmithDelicate = BlacksmithDelicate,
         };
     }
 
     public void Clamp()
     {
-        statArrow = Mathf.Max(0f, statArrow);
-        statStar = Mathf.Max(0f, statStar);
-        status3 = Mathf.Max(0f, status3);
-        status4 = Mathf.Max(0f, status4);
-        status5 = Mathf.Max(0f, status5);
-        status6 = Mathf.Max(0f, status6);
-        status7 = Mathf.Max(0f, status7);
-        status8 = Mathf.Max(0f, status8);
+        Arrow = Mathf.Max(0f, Arrow);
+        BrokeStar = Mathf.Max(0f, BrokeStar);
+        BlassCrystar = Mathf.Max(0f, BlassCrystar);
+        MineralCoal = Mathf.Max(0f, MineralCoal);
+        MineralGround = Mathf.Max(0f, MineralGround);
+        MineralLight = Mathf.Max(0f, MineralLight);
+        MineralRainbow = Mathf.Max(0f, MineralRainbow);
+        BlacksmithResilient = Mathf.Max(0f, BlacksmithResilient);
+        BlacksmithDelicate = Mathf.Max(0f, BlacksmithDelicate);
     }
 }
 [BuffTargetGroups("PlayerStatus")]
@@ -146,9 +153,9 @@ public class StatusManager : MonoBehaviour, IBuffTarget, IDynamicBuffReceiver
         switch (playerStatus)
         {
             case PlayerStatusList.Arrow:
-                return currentStat.statArrow > 0f;
+                return currentStat.Arrow > 0f;
             case PlayerStatusList.BrokeStar:
-                return currentStat.statStar > 0f;
+                return currentStat.BrokeStar > 0f;
         }
         return false;
     }

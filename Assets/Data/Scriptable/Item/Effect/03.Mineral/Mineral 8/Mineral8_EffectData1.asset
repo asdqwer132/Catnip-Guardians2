@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ConditionalItemEffectData
   conditionMode: 1
   conditions:
+  - {fileID: 11400000, guid: 2c30adb26d81e734692935b8b6f5937f, type: 2}
   - {fileID: 11400000, guid: 1f5d13d15c4b4d8991897f90c209ab4b, type: 2}
-  - {fileID: 11400000, guid: 97a2e1af026c9a14da6f9c7861d3749d, type: 2}
   visualData: {fileID: 0}
   impactVfxPrefab: {fileID: 0}
   impactBaseScale: {x: 1, y: 1, z: 1}
@@ -24,6 +24,6 @@ MonoBehaviour:
   audioSource: 
   impactVfxLifeTime: 1
   endVisualData: {fileID: 0}
-  effectWhenTrue: {fileID: 11400000, guid: 44791cb3bba55ff4d98ee070c8a6af06, type: 2}
+  effectWhenTrue: {fileID: 11400000, guid: a11be3e0fec154143af0506a3fb4b661, type: 2}
   effectWhenFalse: {fileID: 11400000, guid: 860bd383df3ae8f46ad00f54a9dd029c, type: 2}
   freezeBranchAtPrepare: 0
