@@ -25,7 +25,7 @@ MonoBehaviour:
   throwStartAnchor: 0
   throwTargetAnchor: 0
   throwOffsetSpace: 0
-  throwStartOffset: {x: 0, y: 3, z: 0}
+  throwStartOffset: {x: 0, y: 0, z: 0}
   throwTargetOffset: {x: 0, y: 0, z: 0}
   targetPlacement: 0
   directionMode: 0
@@ -54,7 +54,31 @@ MonoBehaviour:
         randomOffset: 0.15
         secondsPerWeight: 0.2
         distribution: 3
-      arcHeight: 1.5
+        customCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 1
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 1
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+      arcHeight: 2
       autoArcHeightByDistance: 1
       minArcHeight: 0.6
       maxArcHeight: 3

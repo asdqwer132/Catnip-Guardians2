@@ -14,7 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allowedSeries: 03000000
   allowedItems: []
-  excludedItems: []
+  excludedItems:
+  - {fileID: 11400000, guid: bdd1b8010bd91cc4ab6f91fc945e27ac, type: 2}
+  - {fileID: 11400000, guid: 69ed25483bcc6f94dad0d72a12218066, type: 2}
+  - {fileID: 11400000, guid: a170e004c8061994288073676ede55e3, type: 2}
+  - {fileID: 11400000, guid: 304e6bae1e14d5e4ea8fbd2127bdee27, type: 2}
+  - {fileID: 11400000, guid: c3ddea453aad37e45b0bf4b0ee9b50c8, type: 2}
+  - {fileID: 11400000, guid: 1deecb0944cae224c9f562e1962d7e12, type: 2}
+  - {fileID: 11400000, guid: e6c36b06cde33dc4c8403ea61178be14, type: 2}
+  - {fileID: 11400000, guid: 3e75dca69a0cb8541a278c2c2a04564d, type: 2}
+  - {fileID: 11400000, guid: ac86a6595780bfd45b43e8c8be867097, type: 2}
   excludedItemIds: []
   probability: 1
   itemSource: 0
@@ -23,7 +32,7 @@ MonoBehaviour:
   throwStartAnchor: 0
   throwTargetAnchor: 0
   throwOffsetSpace: 0
-  throwStartOffset: {x: 0, y: 3, z: 0}
+  throwStartOffset: {x: 0, y: 0, z: 0}
   throwTargetOffset: {x: 0, y: 0, z: 0}
   targetPlacement: 0
   directionMode: 0
@@ -43,7 +52,7 @@ MonoBehaviour:
     allowStationaryThrow: 1
     overrideMotion: 1
     motion:
-      arriveTime: 0.3
+      arriveTime: 1
       maxMoveTime: 3
       arrivalTiming:
         mode: 0
@@ -52,14 +61,38 @@ MonoBehaviour:
         randomOffset: 0.15
         secondsPerWeight: 0.2
         distribution: 3
-      arcHeight: 0
+        customCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0
+            outSlope: 1
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 1
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+      arcHeight: 3
       autoArcHeightByDistance: 0
       minArcHeight: 0
       maxArcHeight: 0
       arcHeightDistanceMultiplier: 0
       arcPeakProgress: 0.45
-      spinWhileMoving: 0
+      spinWhileMoving: 1
       spinSpeed: 540
-      faceMoveDirection: 1
+      faceMoveDirection: 0
       directionAngleOffset: -90
   consumeUseBuffs: 0
