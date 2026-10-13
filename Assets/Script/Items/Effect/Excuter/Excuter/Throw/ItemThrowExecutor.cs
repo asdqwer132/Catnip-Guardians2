@@ -22,7 +22,8 @@ public class ItemThrowExecutor : MonoBehaviour
         EquipmentBag currentBag,
         int currentCycleId,
         ItemEffectContext parentContext = null,
-        bool triggerSpecialItems = true
+        bool triggerSpecialItems = true,
+        ItemThrowOptions options = null
     )
     {
         if (inventoryItem == null || (parentContext != null && !parentContext.CanContinue))
@@ -36,26 +37,32 @@ public class ItemThrowExecutor : MonoBehaviour
 
         Vector3 direction = targetPosition - startPosition;
         if (direction.sqrMagnitude <= 0.0001f)
-            return false;
+        {
+            if (options == null || !options.allowStationaryThrow) return false;
+            if (parentContext == null || !parentContext.TryGetDirection(out direction)) direction = Vector3.up;
+        }
 
         direction.z = 0f;
         direction.Normalize();
 
-        ItemThrowMover mover = CreateThrowMover(startPosition);
+        ItemThrowMover selectedPrefab = options != null && options.projectilePrefab != null ? options.projectilePrefab : throwMoverPrefab;
+        ItemThrowMover mover = CreateThrowMover(startPosition, selectedPrefab);
 
         if (mover == null)
             return false;
 
         RegisterRuntimeObject(mover);
+        options?.ApplyTo(mover);
 
-        Sprite itemSprite = inventoryItem.icon;
+        Sprite itemSprite = options != null && options.projectileSprite != null ? options.projectileSprite : inventoryItem.icon;
 
         TargetRangeIndicator rangeIndicator = CreateTargetRangeIndicator(targetPosition);
 
         if (rangeIndicator != null)
             RegisterRuntimeObject(rangeIndicator);
 
-        BuffManager manager = itemEffectExecutor.buffManager != null ? itemEffectExecutor.buffManager : BuffManager.instance;
+        BuffManager manager = parentContext != null && parentContext.buffManager != null ? parentContext.buffManager :
+            itemEffectExecutor.buffManager != null ? itemEffectExecutor.buffManager : BuffManager.instance;
         ItemEffectContext flight = new ItemEffectContext(owner, inventoryItem, startPosition, targetPosition,
             currentBag, buffManager: manager, direction: direction);
         flight.InheritExecution(parentContext);
@@ -90,12 +97,12 @@ public class ItemThrowExecutor : MonoBehaviour
         return true;
     }
 
-    private ItemThrowMover CreateThrowMover(Vector3 startPosition)
+    private ItemThrowMover CreateThrowMover(Vector3 startPosition, ItemThrowMover selectedPrefab)
     {
-        if (throwMoverPrefab != null)
+        if (selectedPrefab != null)
         {
             return Instantiate(
-                throwMoverPrefab,
+                selectedPrefab,
                 startPosition,
                 Quaternion.identity
             );

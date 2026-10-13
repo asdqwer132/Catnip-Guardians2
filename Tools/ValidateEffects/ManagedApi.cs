@@ -49,11 +49,18 @@ public class SummonActor { }
 public class SpecialItemManager { public static SpecialItemManager Instance; public int calls; public System.Action<ItemEffectContext> onCall; public void Call(ItemEffectContext context){calls++;onCall?.Invoke(context);} }
 public class ItemThrowExecutor {
  public ItemEffectExecutor itemEffectExecutor;
+ public ItemThrowOptions lastOptions;
  public readonly System.Collections.Generic.List<ItemEffectContext> flights=new System.Collections.Generic.List<ItemEffectContext>();
- public bool Throw(ItemData item,Vector3 start,Vector3 target,GameObject owner,EquipmentBag bag,int cycle,ItemEffectContext parentContext=null,bool triggerSpecialItems=true) {
+ public bool Throw(ItemData item,Vector3 start,Vector3 target,GameObject owner,EquipmentBag bag,int cycle,ItemEffectContext parentContext=null,bool triggerSpecialItems=true,ItemThrowOptions options=null) {
+  lastOptions=options;
   var flight=new ItemEffectContext(owner,item,start,target,bag,buffManager:parentContext?.buffManager,direction:target-start);
   flight.InheritExecution(parentContext);flights.Add(flight);return true;
  }
+}
+public class ItemThrowMover {
+ public float arriveTime,maxMoveTime,arcHeight,minArcHeight,maxArcHeight,arcHeightDistanceMultiplier,arcPeakProgress,spinSpeed,directionAngleOffset;
+ public bool autoArcHeightByDistance,spinWhileMoving,faceMoveDirection;
+ public ItemThrowArrivalTiming arrivalTiming;
 }
 public static class ReactiveGroundArea { public static bool NotifyItemLanded(ItemEffectContext context)=>false; }
 // Scene objects/ScriptableObject/RNG substitutes avoid Unity native calls in managed checks.
@@ -94,7 +101,8 @@ namespace UnityEngine {
   public float Evaluate(float u)=>evaluate!=null?evaluate(u):0;
  }
  public static class Random {
-  private static System.Random rng=new System.Random(42); public static float value=>(float)rng.NextDouble();
+  private static System.Random rng=new System.Random(42); public static int DrawCount;
+  public static float value { get { DrawCount++; return (float)rng.NextDouble(); } }
   public static float Range(float minimum,float maximum)=>Mathf.Lerp(minimum,maximum,value);
  }
 }

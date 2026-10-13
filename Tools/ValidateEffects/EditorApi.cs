@@ -26,6 +26,7 @@ namespace UnityEditor
         public static bool EqualContents(SerializedProperty a, SerializedProperty b) => false;
         public string stringValue;
         public float floatValue;
+        public int intValue;
         public bool hasMultipleDifferentValues;
         public SerializedPropertyType propertyType;
     }

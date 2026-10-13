@@ -19,6 +19,47 @@ MonoBehaviour:
   probability: 1
   itemSource: 0
   configuredItem: {fileID: 11400000, guid: 5865985a9d6396643b29abcc8a2482a0, type: 2}
-  delivery: 0
+  delivery: 1
+  throwStartAnchor: 0
+  throwTargetAnchor: 0
+  throwOffsetSpace: 0
   throwStartOffset: {x: 0, y: 3, z: 0}
+  throwTargetOffset: {x: 0, y: 0, z: 0}
+  targetPlacement: 0
+  directionMode: 0
+  fixedWorldDirection: {x: 1, y: 0}
+  directionAngle: 0
+  forwardOffset: 0
+  sideOffset: 0
+  radius: 2
+  spreadAngle: 360
+  shotgunRadiusOffset: 0
+  shotgunDistribution: 0
+  spreadStartMode: 0
+  clockwiseSpread: 0
+  throwOptions:
+    projectilePrefab: {fileID: 2153336256934016628, guid: 7d27764ab7c84ac489fdc540376ba873, type: 3}
+    projectileSprite: {fileID: 0}
+    allowStationaryThrow: 1
+    overrideMotion: 1
+    motion:
+      arriveTime: 0.3
+      maxMoveTime: 3
+      arrivalTiming:
+        mode: 0
+        minArriveTime: 0.6
+        maxArriveTime: 1.8
+        randomOffset: 0.15
+        secondsPerWeight: 0.2
+        distribution: 3
+      arcHeight: 0
+      autoArcHeightByDistance: 0
+      minArcHeight: 0
+      maxArcHeight: 0
+      arcHeightDistanceMultiplier: 0
+      arcPeakProgress: 0.45
+      spinWhileMoving: 0
+      spinSpeed: 540
+      faceMoveDirection: 1
+      directionAngleOffset: -90
   consumeUseBuffs: 0

@@ -22,6 +22,9 @@ public sealed class ItemThrowArrivalTiming
     [Tooltip("CustomCurve일 때 사용. X=균등 난수 0~1, Y=추첨 구간 내 위치 0~1. Y=0은 가장 빠른 시간, Y=1은 가장 느린 시간입니다. 확률 밀도 곡선이 아닌 난수 변환 함수입니다.")]
     public AnimationCurve customCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
 
+    // 곡선은 조회만 하고, 실행 중 바뀔 수 있는 시간/모드 값은 호출마다 복제합니다.
+    public ItemThrowArrivalTiming Clone() => (ItemThrowArrivalTiming)MemberwiseClone();
+
     // The caller supplies one random sample so a launch can capture a stable duration.
     public float Resolve(float baseArriveTime, float maxMoveTime, float itemWeight, float sample)
     {
