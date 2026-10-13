@@ -198,7 +198,12 @@ def main():
                 'Impliation/Buff/Manager/ActiveBuff.cs', 'Impliation/Buff/Manager/BuffStorage.cs',
                 'Impliation/Buff/Manager/BuffStatCloneUtility.cs',
                 'Impliation/Buff/Manager/BuffRemovalReason.cs',
-                'Impliation/SpecialStatus/SpecialStatusDefinition.cs', 'Impliation/Buff/Data/BuffCleanseFilter.cs',
+                'Impliation/SpecialStatus/SpecialStatusDefinition.cs',
+                'Impliation/SpecialStatus/SpecialStatusItemUseModule.cs',
+                'Impliation/SpecialStatus/UseItemStatusReactionModule.cs',
+                'Impliation/SpecialStatus/ExecuteEffectsStatusReactionModule.cs',
+                'Impliation/SpecialStatus/SpecialStatusItemUseDispatcher.cs',
+                'Excuter/Data/ItemEffectUtility.cs', 'Impliation/Buff/Data/BuffCleanseFilter.cs',
                 'Impliation/Buff/Data/Resolver/BuffTargetGroupNameAttribute.cs',
                 'Impliation/Buff/Data/Resolver/BuffSelectionUtility.cs',
                 'Impliation/Buff/Data/Resolver/BuffTargetResolver.cs',
@@ -212,7 +217,7 @@ def main():
     pure_dir = work / 'managed'
     pure_dir.mkdir()
     managed_path = pure_dir / 'Managed.csproj'
-    project(managed_path, [effect / name for name in selected] + [ROOT / 'Assets/Editor/BuffTargetGroupDiscovery.cs', HERE / 'ManagedApi.cs', HERE / 'ManagedChecks.cs', HERE / 'ManagedBuffGroupChecks.cs', HERE / 'ManagedAllTargetsChecks.cs', HERE / 'ManagedSummonChecks.cs', HERE / 'ManagedSummonModuleChecks.cs', HERE / 'ManagedPrefabVisualChecks.cs'], refs, executable=True)
+    project(managed_path, [effect / name for name in selected] + [ROOT / 'Assets/Editor/BuffTargetGroupDiscovery.cs', HERE / 'ManagedApi.cs', HERE / 'ManagedChecks.cs', HERE / 'ManagedBuffGroupChecks.cs', HERE / 'ManagedAllTargetsChecks.cs', HERE / 'ManagedSummonChecks.cs', HERE / 'ManagedSummonModuleChecks.cs', HERE / 'ManagedPrefabVisualChecks.cs', HERE / 'ManagedStatusReactionChecks.cs'], refs, executable=True)
     run([dotnet, 'run', '--project', managed_path, '--nologo'], env=environment)
     print('API compile and managed checks passed. Unity 6000.4 import/physics/play validation remains required.')
     if not metadata_ok:

@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eca5d8d4f8c6437e9e7bdbeca1539bd4, type: 3}
+  m_Name: BlacksmithDelicateFor20Seconds
+  m_EditorClassIdentifier:
+  conditionMode: 0
+  conditions: []
+  visualData: {fileID: 0}
+  endVisualData: {fileID: 0}
+  specialStatusKey: {fileID: 11400000, guid: 8deacab56c7545dc8a584b358a528dbe, type: 2}
+  buffClassification: {fileID: 0}
+  target: 0
+  lifetimeSettings:
+    stackMode: 0
+    maxStack: 1
+    reapplyMode: 1
+    applyTiming: 0
+    useLimitType: 0
+    duration: 20
+    maxUseCount: 1
+    useCountConsumeMode: 1
+    consumeItems: []
+  showInUI: 1
+  statusIcon: {fileID: 21300000, guid: da78688f62a37ba4199190b7c2c4b798, type: 3}

@@ -20,6 +20,7 @@ public class ItemEffectContext
     public float durationMultiplier = 1f;
     public float? damageOverride;
     public bool consumeUseBuffs = true;
+    public bool allowItemUseReactions = true;
     private ExecutionBudget executionBudget = new ExecutionBudget();
 
     private sealed class ExecutionBudget { public int remaining = 4096; }
@@ -41,7 +42,7 @@ public class ItemEffectContext
             damageMultiplier = damageMultiplier, healingMultiplier = healingMultiplier,
             rangeMultiplier = rangeMultiplier, durationMultiplier = durationMultiplier,
             damageOverride = damageOverride, executionBudget = executionBudget,
-            consumeUseBuffs = consumeUseBuffs
+            consumeUseBuffs = consumeUseBuffs, allowItemUseReactions = allowItemUseReactions
         };
     }
 
@@ -63,6 +64,7 @@ public class ItemEffectContext
         damageOverride = parent.damageOverride;
         executionBudget = parent.executionBudget;
         consumeUseBuffs = parent.consumeUseBuffs;
+        allowItemUseReactions = parent.allowItemUseReactions;
     }
 
     public T GetSnapshotStat<T>(ItemEffectData effect, T stat) where T : class, IGameStat<T>

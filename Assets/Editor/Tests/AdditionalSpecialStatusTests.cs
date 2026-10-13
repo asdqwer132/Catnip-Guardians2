@@ -12,6 +12,9 @@ public sealed class AdditionalSpecialStatusTests
     private ItemThrowMover previousMover;
     private ItemData source;
     private CombatEffectRecordingEffect specialEffect;
+    private SpecialStatusDefinition key;
+    private ItemData bonusItem;
+    private UseItemStatusReactionModule module;
 
     private T Asset<T>() where T : ScriptableObject
     { T asset = ScriptableObject.CreateInstance<T>(); owned.Add(asset); return asset; }
@@ -21,7 +24,7 @@ public sealed class AdditionalSpecialStatusTests
         => new ItemEffectContext(player.gameObject, item ?? source, Vector3.zero, Vector3.right, null, buffManager: manager);
     private GrantSpecialStatusEffect Grant(BuffUseLimitType limit = BuffUseLimitType.Time)
     {
-        var effect = Asset<GrantSpecialStatusEffect>(); effect.specialStatusKey = special.requiredSpecialStatusKey;
+        var effect = Asset<GrantSpecialStatusEffect>(); effect.specialStatusKey = key;
         effect.lifetimeSettings.useLimitType = limit;
         return effect;
     }
@@ -39,10 +42,15 @@ public sealed class AdditionalSpecialStatusTests
         typeof(StatusManager).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(player, null);
         manager.RegisterBuffTarget(player);
         special = Host().AddComponent<SpecialItemManager>(); SpecialItemManager.Instance = special;
-        special.requiredSpecialStatusKey = Asset<SpecialStatusDefinition>();
-        special.specialItems = Asset<ItemData>(); special.specialItems.dataId = "SpecialTestItem";
+        key = Asset<SpecialStatusDefinition>();
+        bonusItem = Asset<ItemData>(); bonusItem.dataId = "SpecialTestItem";
+        module = Asset<UseItemStatusReactionModule>(); module.itemSource = StatusReactionItemSource.ConfiguredItem;
+        module.configuredItem = bonusItem; module.delivery = StatusReactionItemDelivery.ThrowAtImpact;
+        module.consumeUseBuffs = true;
+        module.excludedItems = new[] { bonusItem }; module.excludedItemIds = new[] { "WeaponExtra1" };
+        key.onItemUsedModules = new SpecialStatusItemUseModule[] { module };
         specialEffect = Asset<CombatEffectRecordingEffect>();
-        special.specialItems.effectDatas = new ItemEffectData[] { specialEffect };
+        bonusItem.effectDatas = new ItemEffectData[] { specialEffect };
         source = Asset<ItemData>(); source.dataId = "NormalTestItem";
         source.effectDatas = new ItemEffectData[] { Asset<CombatEffectRecordingEffect>() };
         var executor = Host().AddComponent<ItemEffectExecutor>(); executor.buffManager = manager;
@@ -70,9 +78,9 @@ public sealed class AdditionalSpecialStatusTests
         Assert.That(special.CanTrigger(Context()), Is.False);
         player.baseStat.statStar = 0f; player.RefreshBuffedStat();
         Grant().Execute(Context());
-        Assert.That(special.requiredSpecialStatusKey.exposesPlayerStatus, Is.False);
+        Assert.That(key.exposesPlayerStatus, Is.False);
         Assert.That(player.currentStat.statStar, Is.Zero);
-        Assert.That(player.HasSpecialStatus(special.requiredSpecialStatusKey), Is.True);
+        Assert.That(player.HasSpecialStatus(key), Is.True);
         special.Call(Context()); OwnCreatedMover();
         Assert.That(ThrowMoverTestProbe.LastCreated, Is.Not.Null);
         ThrowMoverTestProbe.LastCreated.Tick(ThrowMoverTestProbe.LastCreated.MoveDuration);
@@ -90,7 +98,7 @@ public sealed class AdditionalSpecialStatusTests
             player.gameObject, null, manager, triggerSpecialItems: true);
         OwnCreatedMover();
         Assert.That(ThrowMoverTestProbe.LastCreated, Is.Not.Null);
-        Assert.That(player.HasSpecialStatus(special.requiredSpecialStatusKey), Is.False);
+        Assert.That(player.HasSpecialStatus(key), Is.False);
         ThrowMoverTestProbe.LastCreated.Tick(ThrowMoverTestProbe.LastCreated.MoveDuration);
         Assert.That(specialEffect.calls.Count, Is.EqualTo(1));
     }
@@ -111,7 +119,7 @@ public sealed class AdditionalSpecialStatusTests
     [Test] public void AnotherKeyOrAnotherTargetDoesNotEnableTheSpecialFunction()
     {
         var other = Grant(); other.specialStatusKey = Asset<SpecialStatusDefinition>();
-        other.specialStatusKey.displayName = special.requiredSpecialStatusKey.displayName; other.Execute(Context());
+        other.specialStatusKey.displayName = key.displayName; other.Execute(Context());
         Assert.That(special.CanTrigger(Context()), Is.False);
         var itemStatus = Grant(); itemStatus.target = SpecialStatusQueryTarget.SourceItem; itemStatus.Execute(Context());
         Assert.That(special.CanTrigger(Context()), Is.False);
@@ -120,10 +128,24 @@ public sealed class AdditionalSpecialStatusTests
     [Test] public void SpecialItemAndExcludedItemCannotRecursivelyTrigger()
     {
         Grant().Execute(Context());
-        Assert.That(special.CanTrigger(Context(special.specialItems)), Is.False);
+        Assert.That(special.CanTrigger(Context(bonusItem)), Is.False);
         var excluded = Asset<ItemData>(); excluded.dataId = "WeaponExtra1";
         Assert.That(special.CanTrigger(Context(excluded)), Is.False);
-        special.requiredSpecialStatusKey = null;
+        key.onItemUsedModules = null;
         Assert.That(special.CanTrigger(Context()), Is.False);
+    }
+
+    [Test] public void ModuleThrowRetainsOriginalCompletionAndOwnerUntilTheBonusLands()
+    {
+        Grant().Execute(Context()); int completed = 0;
+        var parent = Context(); parent.lifetime = new ItemEffectLifetime(onCompleted: () => completed++);
+        ItemEffectExecutor.ExecuteItem(source,Vector3.zero,Vector3.right,Vector3.right,
+            player.gameObject,null,manager,parent);
+        OwnCreatedMover(); parent.lifetime.Close();
+        Assert.That(completed, Is.Zero, "원본 완료는 모듈이 던진 추가 아이템도 기다립니다.");
+        ThrowMoverTestProbe.LastCreated.Tick(ThrowMoverTestProbe.LastCreated.MoveDuration);
+        Assert.That(completed, Is.EqualTo(1));
+        Assert.That(specialEffect.calls[0].owner, Is.SameAs(player.gameObject));
+        Assert.That(specialEffect.calls[0].allowItemUseReactions, Is.False);
     }
 }

@@ -419,9 +419,9 @@ Play Mode에서 **BuffManager → Debug All Active Buffs**의 해당 Food1 버�
 
 특수 상태 키에는 Harmful·Dispellable이 없다. 버프 분류만 지정하면 Star·Arrow가 부여되거나 수치 스탯이 바뀌지 않는다. 수치 버프는 BuffEffect의 Modifiers로, 특수 상태는 GrantSpecialStatusEffect로 부여한다. 둘이 함께 필요하면 아이템의 Effect Datas에 각각 연결한다. 상태가 같은지는 **특수 상태 키 + 대상**으로 판정하며, 분류 에셋이 같아도 서로 다른 상태 키는 합치지 않는다. 같은 키 재부여 시 남은 시간·횟수는 수명 설정대로 누적하고 분류는 가장 최근 부여 설정을 따른다.
 
-특수 아이템 기능은 **SpecialItemManager → Required Special Status Key**에 지정한 키가 PlayerStatus 대상에 활성화되어 있을 때 실행한다. `StatusStat.statStar` 값이나 Exposes Player Status 매핑은 발동 조건에 쓰지 않는다. 기존 Has Buff의 enum 조건은 호환을 위해 기존 판정을 유지한다.
+특수 상태 키의 **On Item Used Modules**에 반응 모듈을 연결한다. **SpecialItemManager**는 PlayerStatus 대상의 활성 상태를 조회해 모듈에 아이템 사용 사건을 전달한다. `StatusStat.statStar` 값이나 Exposes Player Status 매핑은 발동 조건에 쓰지 않는다. 기존 Has Buff의 enum 조건은 호환을 위해 기존 판정을 유지한다. 모듈은 같은 아이템/지정 아이템 사용·투척과 기존 효과 목록 실행을 조합할 수 있다. 자세한 설정은 [StatusItemUseReactions.md](StatusItemUseReactions.md)를 참고한다.
 
-`GameScene`의 Required Special Status Key는 `Assets/Data/Scriptable/Item/Effect/00.Default/01.Weapon Status/Star_SpecialStatusKey.asset`에 연결되어 있다. `Weapon29_EffectData2`·`Weapon30_EffectData2`도 이 키를 참조한다. 특수 기능은 사용 횟수를 최종 차감하기 전에 판정하므로 마지막 1회에도 실행한다. 특수 아이템 자체가 추가 특수 호출을 만들지는 않는다. 두 Arrow 키는 기존 에셋 식별을 보존하여 `Arrow_SpecialStatusKey`, `ArrowVariant_SpecialStatusKey`로 구분한다.
+`Assets/Data/Scriptable/Item/Effect/00.Default/01.Weapon Status/Star_SpecialStatusKey.asset`에는 **BrokeStar_ExtraItem** 모듈이 연결되어 있다. `Weapon29_EffectData2`·`Weapon30_EffectData2`는 기존과 같은 상태 키를 참조한다. 특수 기능은 사용 횟수를 최종 차감하기 전에 판정하므로 마지막 1회에도 실행한다. 추가 사용과 그 하위 실행에서는 상태 모듈을 재호출하지 않는다. 두 Arrow 키는 기존 에셋 식별을 보존하여 `Arrow_SpecialStatusKey`, `ArrowVariant_SpecialStatusKey`로 구분한다.
 
 ### 예: 5초 동안 유지하는 특수 상태 만들기
 

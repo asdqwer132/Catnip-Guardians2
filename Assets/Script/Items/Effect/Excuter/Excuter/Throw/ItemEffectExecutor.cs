@@ -84,7 +84,7 @@ public class ItemEffectExecutor : MonoBehaviour
             {
                 // 함수 종료 알림은 한 아이템당 한 번. 실제 수명 종료는 ItemEffectLifetime이 담당한다.
                 // 마지막 사용 횟수를 차감하기 전에 상태 기반 특수 기능을 실행한다.
-                if (succeeded && triggerSpecialItems && SpecialItemManager.Instance != null)
+                if (succeeded && triggerSpecialItems && context.allowItemUseReactions && SpecialItemManager.Instance != null)
                     SpecialItemManager.Instance.Call(context);
             }
             finally

@@ -8,6 +8,10 @@ public sealed class SpecialStatusDefinition : ScriptableObject
     [Tooltip("특수 상태의 상호작용 정보입니다. 정화용 버프 분류 태그와 별개입니다.")]
     public string[] interactionTags;
 
+    [Header("아이템 사용 시 상태 반응")]
+    [Tooltip("이 키가 PlayerStatus 대상에 활성화되어 있을 때 사용 후 실행합니다. 같은 상태의 중첩·같은 모듈 중복은 추가 판정하지 않습니다.")]
+    public SpecialStatusItemUseModule[] onItemUsedModules;
+
     [Header("Legacy Player Status")]
     [Tooltip("켜면 PlayerStatus 대상에 부여한 이 상태를 기존 Has Buff 조건(arrow/star)에서도 인식합니다. StatusStat 수치는 변경하지 않습니다.")]
     public bool exposesPlayerStatus;

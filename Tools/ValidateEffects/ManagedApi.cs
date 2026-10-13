@@ -1,15 +1,16 @@
 using UnityEngine;
 public class ItemData {
+ public string dataId;
  public float cooldown; public ItemSeries series; public Sprite icon; public float Cooldown=>cooldown; public string GetDataName()=>"Managed Item";
  public ItemEffectData[] effectDatas; public EffectVisualData endVisualData; public bool endVisualAtOwner;
  public ItemData[] afterCompletionItems; public bool afterCompletionItemsAtOwner;
  public bool afterCompletionConsumeUseBuffs, afterCompletionTriggerSpecialItems;
 }
-public enum ItemSeries { None, Weapon, Food }
+public enum ItemSeries { None, Weapon, Food, Mineral }
 public enum PlayerStatusList { arrow, star }
 public class InventoryItem { public ItemData itemData; public int amount; }
 public class EquipmentBag { public string name; public System.Collections.Generic.List<InventoryItem> equippedItems; }
-public class ItemEffectData : ScriptableObject { public virtual void Prepare(ItemEffectContext c){} public virtual void ExecuteEffect(ItemEffectContext c){} public void Execute(ItemEffectContext c)=>ExecuteEffect(c); }
+public class ItemEffectData : ScriptableObject { public virtual void Prepare(ItemEffectContext c){} public virtual void ExecuteEffect(ItemEffectContext c){} public void Execute(ItemEffectContext c)=>ExecuteEffect(c); public bool CanExecute(ItemEffectContext c)=>c!=null&&c.CanContinue; }
 public class BuffManager {
  public static BuffManager instance;
  public int begunUses, endedUses;
@@ -45,8 +46,15 @@ public class BuffEffect : ItemEffectData { public BuffClassificationDefinition b
 public class GrantSpecialStatusEffect : ItemEffectData { public BuffClassificationDefinition buffClassification; }
 public class SummonActor { }
 
-public static class ItemEffectUtility { public static ItemEffectData[] Copy(ItemEffectData[] x)=>x!=null?(ItemEffectData[])x.Clone():null; public static void Execute(ItemEffectData[] e,ItemEffectContext c){} }
 public class SpecialItemManager { public static SpecialItemManager Instance; public int calls; public System.Action<ItemEffectContext> onCall; public void Call(ItemEffectContext context){calls++;onCall?.Invoke(context);} }
+public class ItemThrowExecutor {
+ public ItemEffectExecutor itemEffectExecutor;
+ public readonly System.Collections.Generic.List<ItemEffectContext> flights=new System.Collections.Generic.List<ItemEffectContext>();
+ public bool Throw(ItemData item,Vector3 start,Vector3 target,GameObject owner,EquipmentBag bag,int cycle,ItemEffectContext parentContext=null,bool triggerSpecialItems=true) {
+  var flight=new ItemEffectContext(owner,item,start,target,bag,buffManager:parentContext?.buffManager,direction:target-start);
+  flight.InheritExecution(parentContext);flights.Add(flight);return true;
+ }
+}
 public static class ReactiveGroundArea { public static bool NotifyItemLanded(ItemEffectContext context)=>false; }
 // Scene objects/ScriptableObject/RNG substitutes avoid Unity native calls in managed checks.
 namespace UnityEngine {
