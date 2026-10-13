@@ -9,7 +9,7 @@ public enum DamageApplyMode
 }
 
 [BuffTargetGroups("DamageArea")]
-public class DamageArea : AttackObject<DamageAreaAttackStat>, IBuffTarget
+public class DamageArea : AttackObject<DamageAreaAttackStat>, IBuffTarget, IPrefabVisualLifetime, IPrefabRangeProvider
 {
     private static readonly List<DamageArea> activeDamageAreas =
         new List<DamageArea>();
@@ -39,6 +39,17 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>, IBuffTarget
     [SerializeField] private float lifeTime = 0.2f;
 
     private float timer;
+    public Transform ControlledRangeVisual => rangeVisual;
+    public bool TryGetVisualLifetime(out float remaining)
+    { remaining = Mathf.Max(0f, lifeTime - timer); return isActiveAndEnabled; }
+
+    public virtual void CollectPrefabRanges(List<PrefabVisualRange> results)
+    {
+        CircleCollider2D collider = circleCollider != null ? circleCollider : GetComponent<CircleCollider2D>();
+        PrefabVisualRange range;
+        if (PrefabVisualRange.TryCollider(collider, "Damage Area", out range))
+        { range.kind = PrefabRangeKind.Damage; results.Add(range); }
+    }
 
     private readonly HashSet<EnemyLifeKey> hitObjects = new HashSet<EnemyLifeKey>();
     private readonly Dictionary<EnemyLifeKey, float> periodicTimers = new Dictionary<EnemyLifeKey, float>();

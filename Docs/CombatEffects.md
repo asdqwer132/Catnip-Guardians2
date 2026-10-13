@@ -54,7 +54,7 @@ Create → GameData → Items → Effects → Attack → Reactive Ground로 생�
 - **Ground Reaction Cooldown**은 같은 장판의 연속 반응을 제한합니다. 산탄 각 발마다 반응시키려면 0으로 설정합니다.
 - **Replace Incoming Item Effects**를 켜면 반응한 아이템의 기본 Effect Datas를 실행하지 않습니다. 버프 사용 횟수 및 인벤토리 소비 규칙은 유지합니다.
 - 피해/버프의 출처는 장판 생성 아이템입니다. 투척 아이템은 반응 필터에 사용됩니다. 겹친 장판들은 각각 한 번 반응하며, 하나라도 Replace가 켜져 있으면 투척 아이템의 기본 효과가 대체됩니다.
-- **Area Visual Prefab**은 장판이 살아 있는 동안 표시할 프리팹입니다. 단위 지름으로 제작하고 Scale Visual By Radius를 켜면 실제 반경에 맞춰 확대됩니다. 기존 Visual Data는 생성 시 연출에 사용할 수 있습니다.
+- **Area Definition → Visual Prefab**은 장판이 살아 있는 동안 표시할 프리팹입니다. 단위 지름으로 제작하고 정의의 Scale Visual By Radius를 켜면 실제 반경에 맞춰 확대됩니다. 영역 스탯과 유지 비주얼은 정의에서만 설정하고 생성 효과에는 그 정의를 연결합니다. Visual Data는 생성 시 연출에 사용할 수 있습니다. 클립 없이 프리팹 자체를 움직이는 방법은 [PrefabVisuals.md](PrefabVisuals.md)를 참고합니다.
 
 예: 기본으로 약한 지속 피해, 지정 아이템 착지 시 강한 폭발. Default Effects에 작은 DamageArea, Special Effects에 큰 DamageArea를 연결하고 Accepted Items에 반응할 아이템을 넣습니다. Ground Special Duration을 2로 주면 2초 동안 강한 효과가 Tick마다 발동합니다.
 

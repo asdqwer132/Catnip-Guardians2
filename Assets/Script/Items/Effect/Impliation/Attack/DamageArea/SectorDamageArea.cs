@@ -3,6 +3,15 @@ using UnityEngine;
 [RequireComponent(typeof(CircleCollider2D))]
 public sealed class SectorDamageArea : DamageArea
 {
+    public override void CollectPrefabRanges(System.Collections.Generic.List<PrefabVisualRange> results)
+    {
+        CircleCollider2D collider = circleCollider != null ? circleCollider : GetComponent<CircleCollider2D>();
+        PrefabVisualRange range;
+        if (!PrefabVisualRange.TryCollider(collider, "Sector Damage Area", out range)) return;
+        range.shape = PrefabRangeShape.Sector; range.kind = PrefabRangeKind.Damage;
+        range.forward = transform.up; range.angle = EffectStatUtility.Safe(sectorAngle, 0f, 360f, 90f);
+        results.Add(range);
+    }
     [Range(0f, 360f)] public float sectorAngle = 90f;
 
     public static bool ContainsDirection(Vector2 forward, Vector2 offset, float angle)

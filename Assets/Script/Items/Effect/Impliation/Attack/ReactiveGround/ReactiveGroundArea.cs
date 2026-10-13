@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public sealed class ReactiveGroundArea : AttackObject<ReactiveGroundStat>
+public sealed class ReactiveGroundArea : AttackObject<ReactiveGroundStat>, IPrefabVisualLifetime, IPrefabRangeProvider
 {
     private static readonly List<ReactiveGroundArea> active = new List<ReactiveGroundArea>();
     private ItemEffectContext context;
@@ -34,6 +34,15 @@ public sealed class ReactiveGroundArea : AttackObject<ReactiveGroundStat>
     public bool IsRegistered => initialized && !finishing && isActiveAndEnabled &&
         context != null && context.CanContinue && stat != null && elapsed < stat.groundLifetime;
     public float RemainingLifetime => stat != null ? Mathf.Max(0f, stat.groundLifetime - elapsed) : 0f;
+    public Transform ControlledRangeVisual => visual;
+    public bool TryGetVisualLifetime(out float remaining)
+    { remaining = RemainingLifetime; return initialized && stat != null && !finishing; }
+    public void CollectPrefabRanges(List<PrefabVisualRange> results)
+    {
+        if (stat != null)
+            results.Add(PrefabVisualRange.Circle(transform.position, stat.groundRadius,
+                definition != null ? definition.name : "Area", PrefabRangeKind.Support));
+    }
     public bool Contains(Vector3 position) => IsRegistered &&
         ((Vector2)(position - transform.position)).sqrMagnitude <= stat.groundRadius * stat.groundRadius;
 
@@ -63,9 +72,8 @@ public sealed class ReactiveGroundArea : AttackObject<ReactiveGroundStat>
         accepted = effect.acceptedItems != null ? (ItemData[])effect.acceptedItems.Clone() : null;
         sameOwner = effect.onlySameOwner;
         replaceIncoming = effect.replaceIncomingItemEffects;
-        scaleVisual = effect.scaleVisualByRadius;
-        GameObject visualPrefab = effect.areaVisualPrefab != null ? effect.areaVisualPrefab :
-            (definition != null ? definition.visualPrefab : null);
+        scaleVisual = definition.scaleVisualByRadius;
+        GameObject visualPrefab = definition.visualPrefab;
         if (visualPrefab != null)
         {
             visual = Instantiate(visualPrefab, transform).transform;
@@ -240,10 +248,4 @@ public sealed class ReactiveGroundArea : AttackObject<ReactiveGroundStat>
         base.OnDisable();
     }
 
-#if UNITY_EDITOR
-    private void OnDrawGizmosSelected()
-    {
-        if (stat != null) Gizmos.DrawWireSphere(transform.position, stat.groundRadius);
-    }
-#endif
 }

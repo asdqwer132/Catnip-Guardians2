@@ -5,6 +5,13 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider2D))]
 public class DirectionalRectangleDamageArea : DamageArea
 {
+    public override void CollectPrefabRanges(System.Collections.Generic.List<PrefabVisualRange> results)
+    {
+        BoxCollider2D collider = boxCollider != null ? boxCollider : GetComponent<BoxCollider2D>();
+        PrefabVisualRange range;
+        if (PrefabVisualRange.TryCollider(collider, "Rectangle Damage Area", out range))
+        { range.kind = PrefabRangeKind.Damage; results.Add(range); }
+    }
     [Header("Rectangle Collider")]
     public BoxCollider2D boxCollider;
 

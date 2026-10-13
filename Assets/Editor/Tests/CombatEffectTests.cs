@@ -235,11 +235,12 @@ public sealed class CombatEffectTests
         ItemData source, bool replace = false, ItemData[] accepted = null, GameObject owner = null)
     {
         ReactiveGroundEffect effect = Asset<ReactiveGroundEffect>();
+        effect.areaDefinition = Asset<AreaDefinition>();
         effect.defaultEffects = new ItemEffectData[] { defaults };
         effect.specialEffects = new ItemEffectData[] { specials };
         effect.acceptedItems = accepted;
         effect.replaceIncomingItemEffects = replace;
-        effect.groundStat.groundReactionCooldown = 0;
+        effect.areaDefinition.stat.groundReactionCooldown = 0;
         ReactiveGroundArea area = Host().AddComponent<ReactiveGroundArea>();
         area.Init(effect, Context(source, owner));
         return area;
@@ -324,6 +325,7 @@ public sealed class CombatEffectTests
         CombatEffectRecordingEffect defaults = Asset<CombatEffectRecordingEffect>();
         CombatEffectRecordingEffect specials = Asset<CombatEffectRecordingEffect>();
         ReactiveGroundEffect ground = Asset<ReactiveGroundEffect>();
+        ground.areaDefinition = Asset<AreaDefinition>();
         ground.defaultEffects = new ItemEffectData[] { defaults };
         ground.specialEffects = new ItemEffectData[] { specials };
         ItemData item = Asset<ItemData>();

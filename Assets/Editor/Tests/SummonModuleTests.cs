@@ -94,6 +94,24 @@ public sealed class SummonModuleTests
     }
 
     [Test]
+    public void SummonRangesFollowRuntimeBuffsWithoutScalingTheVisualOrChangingModuleDefaults()
+    {
+        var contact = Asset<SummonContactDamageModule>(); contact.baseStat.radius = 1f;
+        var turret = Asset<SummonTurretModule>(); turret.baseStat.range = 4f;
+        SummonActor actor = Actor(contact, turret);
+        actor.transform.localScale = new Vector3(7f, 7f, 1f);
+        var ranges = new List<PrefabVisualRange>(); actor.CollectPrefabRanges(ranges);
+        Assert.That(ranges.Count, Is.EqualTo(2)); Assert.That(ranges[0].radius, Is.EqualTo(1f));
+        Assert.That(ranges[1].radius, Is.EqualTo(4f));
+        ActiveBuff buff = Buff(nameof(SummonContactDamageStat), "radius", 2f);
+        ranges.Clear(); actor.CollectPrefabRanges(ranges);
+        Assert.That(ranges[0].radius, Is.EqualTo(3f), "기즈모는 모듈 기본값 대신 현재 버프 적용 반경을 표시합니다.");
+        Assert.That(ranges[1].radius, Is.EqualTo(4f)); Assert.That(contact.baseStat.radius, Is.EqualTo(1f));
+        manager.RemoveBuffHandle(buff); ranges.Clear(); actor.CollectPrefabRanges(ranges);
+        Assert.That(ranges[0].radius, Is.EqualTo(1f));
+    }
+
+    [Test]
     public void DirectBuffChangesOnlyOneInstanceOfASharedModule()
     {
         var module = Asset<SummonContactDamageModule>();

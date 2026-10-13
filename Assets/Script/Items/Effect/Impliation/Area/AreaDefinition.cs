@@ -5,8 +5,13 @@ public sealed class AreaDefinition : ScriptableObject
 {
     public string displayName;
     public string[] tags;
+    [Header("영역 기본 스탯")]
     public ReactiveGroundStat stat = new ReactiveGroundStat();
+    [Header("영역 수명 동안 표시할 비주얼")]
+    [Tooltip("단위 지름으로 제작한 프리팹을 연결하세요. 등장/유지/종료 연출은 프리팹의 PrefabVisualAnimator에서 설정합니다.")]
     public GameObject visualPrefab;
+    public bool scaleVisualByRadius = true;
+    [Header("영역 생명주기 효과")]
     public ItemEffectData[] onStart;
     public ItemEffectData[] onEnter;
     public ItemEffectData[] onTick;

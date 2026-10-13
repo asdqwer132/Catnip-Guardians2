@@ -510,7 +510,7 @@ Cleanse의 **Target Resolver**에 Execution Special Status Target 에셋을 연�
 4. **Defined Area**를 만들고 **Area Definition**에 1번 에셋을 연결한다.
 5. 이 생성 효과를 ItemData의 Effect Datas에 연결한다.
 
-정의의 범위·수명 대신 같은 종류의 다른 수치를 쓰려면 생성 효과의 **Override Definition Stat**을 켜고 **Ground Stat**을 입력한다. 장판의 종류는 같은 Area Definition으로 유지된다.
+영역의 기본 스탯과 유지 비주얼은 **Area Definition**에서만 설정한다. 생성 효과의 **Area Definition**은 필수이며, 별도 Ground Stat / Override Definition Stat / Area Visual Prefab은 없다. 범위·수명을 실행 중 바꾸려면 `ReactiveGroundStat`을 대상으로 버프를 준다. 버프는 런타임 복제본에 적용되어 정의 에셋의 기본값은 유지된다. **Visual Prefab / Scale Visual By Radius**도 정의에서 설정한다. 생성 효과에 있는 **Visual Data / End Visual Data**는 시작·완료 시 한 번 재생할 별도 연출이다. 프리팹 자체의 반복 연출은 [PrefabVisuals.md](PrefabVisuals.md)를 참고한다.
 
 | Area Definition 목록 | 실행 시점·위치 |
 | --- | --- |
@@ -790,7 +790,7 @@ Attack Prefab을 비우면 기본 부채꼴 판정 오브젝트를 생성한다.
 
 강제 비활성화·취소·전투 초기화에는 후속 아이템을 사용하지 않는다. 종료되지 않는 무한 버프나 소환 효과가 남아 있으면 계속 기다린다. 비어 있는 ItemData, 자기 자신, `A → B → A` 같은 순환과 너무 긴 실행 경로는 건너뛴다.
 
-장판의 지속 표시에는 **Area Visual Prefab** 또는 Area Definition의 **Visual Prefab**을, 이동 투사체에는 **Projectile Visual Prefab / Projectile Sprite**를 사용한다. Visual Data 하나를 넣는다고 장판 수명 내내 표시되거나 투사체를 따라 움직이는 것은 아니다.
+장판의 지속 표시에는 **Area Definition → Visual Prefab**을, 이동 투사체에는 **Projectile Visual Prefab / Projectile Sprite**를 사용한다. 영역의 유지 비주얼은 정의 한 곳에서 관리한다. Visual Data 하나를 넣는다고 장판 수명 내내 표시되거나 투사체를 따라 움직이는 것은 아니다.
 
 ## 18. 작동하지 않을 때 확인할 것
 

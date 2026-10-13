@@ -16,7 +16,7 @@ public enum SummonThrowTargetMode { NearestEnemy, RandomEnemy, RandomPosition }
 // 모듈의 실행 상태를 관리합니다. 기본 기능 스탯은 각 모듈 내부에 있습니다. 생성 개수/배치/수명은 SpawnEffect가 전달합니다.
 [BuffTargetGroups("Summon")]
 [MovedFrom(true, null, "Assembly-CSharp", "SummonItemThrower")]
-public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, IDamageable
+public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, IDamageable, IPrefabVisualLifetime, IPrefabRangeProvider
 {
     [Header("소환물 종류 / 태그")]
     public SummonDefinition definition;
@@ -63,6 +63,42 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
     public int AttackCount { get; private set; }
     public IReadOnlyList<SummonBehaviourModule> ActiveModules => effectiveModules ?? new SummonBehaviourModule[0];
     public float RemainingLifeTime => Mathf.Max(0f, spawnLifetime + extraLifetime - timer);
+    public Transform ControlledRangeVisual => null;
+    public bool TryGetVisualLifetime(out float remaining)
+    { remaining = RemainingLifeTime; return initialized && !finishing; }
+    public void CollectPrefabRanges(List<PrefabVisualRange> results)
+    {
+        if (initialized)
+        {
+            foreach (SummonModuleRuntimeView view in runtimeModuleStats)
+                CollectModuleRange(view.module, view.currentStat, results);
+            return;
+        }
+        // 프리팹 편집 중에는 실제 실행할 모듈의 기본값을 복제·정규화해서 표시합니다.
+        foreach (SummonBehaviourModule module in effectiveModules ?? modules ?? new SummonBehaviourModule[0])
+        {
+            object current = null;
+            if (module is SummonContactDamageModule contact) { var value = contact.baseStat?.Clone() ?? new SummonContactDamageStat(); value.Clamp(); current = value; }
+            else if (module is SummonContactEffectModule effect) { var value = effect.baseStat?.Clone() ?? new SummonContactEffectStat(); value.Clamp(); current = value; }
+            else if (module is SummonTurretModule turret) { var value = turret.baseStat?.Clone() ?? new SummonTurretStat(); value.Clamp(); current = value; }
+            else if (module is SummonItemThrowModule throwing) { var value = throwing.baseStat?.Clone() ?? new SummonItemThrowStat(); value.Clamp(); current = value; }
+            else if (module is SummonPullModule pull) { var value = pull.baseStat?.Clone() ?? new SummonPullStat(); value.Clamp(); current = value; }
+            else if (module is SummonAuraModule aura) { var value = aura.baseStat?.Clone() ?? new SummonAuraStat(); value.Clamp(); current = value; }
+            CollectModuleRange(module, current, results);
+        }
+    }
+    private void CollectModuleRange(SummonBehaviourModule module, object current, List<PrefabVisualRange> results)
+    {
+        float radius; PrefabRangeKind kind = PrefabRangeKind.Detection;
+        if (current is SummonContactDamageStat contact) { radius = contact.radius; kind = PrefabRangeKind.Damage; }
+        else if (current is SummonContactEffectStat effect) { radius = effect.radius; kind = PrefabRangeKind.Damage; }
+        else if (current is SummonTurretStat turret) radius = turret.range;
+        else if (current is SummonItemThrowStat throwing) radius = throwing.range;
+        else if (current is SummonPullStat pull) radius = pull.range;
+        else if (current is SummonAuraStat aura) { radius = aura.range; kind = PrefabRangeKind.Support; }
+        else return;
+        results.Add(PrefabVisualRange.Circle(transform.position, radius, module != null ? module.name : current.GetType().Name, kind));
+    }
     public bool IsTransformReserved { get; internal set; }
     public bool CanAct => initialized && !finishing && isActiveAndEnabled &&
         (Health == null || !Health.IsDead) && (executionContext == null || executionContext.CanContinue);
