@@ -186,10 +186,14 @@ def main():
                 'Excuter/Displayer/PrefabVisualAnimationSettings.cs', 'Excuter/Displayer/PrefabVisualRange.cs',
                 'Excuter/Data/ItemEffectContext.cs', 'Excuter/Data/ItemEffectPlan.cs', 'Excuter/Data/ItemEffectLifetime.cs',
                 'Excuter/Excuter/BagItemCooldownController.cs', 'Excuter/Excuter/Throw/ItemEffectExecutor.cs',
+                'Excuter/Excuter/ItemUseDeliverySettings.cs',
                 'Excuter/Excuter/Throw/ItemThrowArrivalTiming.cs',
                 'Excuter/Excuter/Throw/ItemThrowOptions.cs',
                 'Impliation/Attack/DamageArea/DamageAreaAttackStat.cs',
                 'Impliation/Attack/Summon/SummonSpawnStat.cs', 'Impliation/Attack/Summon/Stats/SummonModuleStats.cs',
+                'Impliation/Attack/Summon/SummonDefinition.cs', 'Impliation/Attack/Summon/SummonRegistry.cs',
+                'Impliation/Attack/Summon/SummonGroupDefinition.cs', 'Impliation/Attack/Summon/SummonGroupActivationGate.cs',
+                'Impliation/Attack/Summon/SummonGroupRuntime.cs',
                 'Impliation/Attack/Summon/SummonContactActivationGate.cs',
                 'Impliation/Attack/Summon/SummonPeriodicSpawnSchedule.cs',
                 'Impliation/Cooldown/ItemCooldownStat.cs', 'Impliation/Cooldown/BagCooldownStat.cs',
@@ -219,7 +223,7 @@ def main():
     pure_dir = work / 'managed'
     pure_dir.mkdir()
     managed_path = pure_dir / 'Managed.csproj'
-    project(managed_path, [effect / name for name in selected] + [ROOT / 'Assets/Editor/BuffTargetGroupDiscovery.cs', HERE / 'ManagedApi.cs', HERE / 'ManagedChecks.cs', HERE / 'ManagedBuffGroupChecks.cs', HERE / 'ManagedAllTargetsChecks.cs', HERE / 'ManagedSummonChecks.cs', HERE / 'ManagedSummonModuleChecks.cs', HERE / 'ManagedPrefabVisualChecks.cs', HERE / 'ManagedStatusReactionChecks.cs'], refs, executable=True)
+    project(managed_path, [effect / name for name in selected] + [ROOT / 'Assets/Editor/BuffTargetGroupDiscovery.cs', HERE / 'ManagedApi.cs', HERE / 'ManagedChecks.cs', HERE / 'ManagedBuffGroupChecks.cs', HERE / 'ManagedAllTargetsChecks.cs', HERE / 'ManagedSummonChecks.cs', HERE / 'ManagedSummonModuleChecks.cs', HERE / 'ManagedPrefabVisualChecks.cs', HERE / 'ManagedStatusReactionChecks.cs', HERE / 'ManagedSummonGroupChecks.cs'], refs, executable=True)
     run([dotnet, 'run', '--project', managed_path, '--nologo'], env=environment)
     print('API compile and managed checks passed. Unity 6000.4 import/physics/play validation remains required.')
     if not metadata_ok:

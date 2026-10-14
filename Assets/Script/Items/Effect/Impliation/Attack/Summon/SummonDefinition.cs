@@ -5,6 +5,8 @@ using UnityEngine;
 public sealed class SummonDefinition : ScriptableObject
 {
     public string[] tags;
+    [Tooltip("같은 무리의 종류/개체 수를 셀 때 사용하는 그룹입니다. 비우면 무리 반응에 참여하지 않습니다.")]
+    public SummonGroupDefinition summonGroup;
 
     public bool HasTag(string tag)
     {

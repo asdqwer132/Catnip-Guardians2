@@ -43,60 +43,22 @@ public sealed class UseItemStatusReactionModule : SpecialStatusItemUseModule
         => itemSource == StatusReactionItemSource.ConfiguredItem ? configuredItem : context?.sourceItemData;
 
     protected override bool CanPerform(ItemEffectContext context, ItemThrowExecutor throwExecutor)
-    {
-        ItemData item = ResolveItem(context);
-        if (item == null) return false;
-        if (delivery == StatusReactionItemDelivery.ExecuteAtImpact) return ItemEffectExecutor.CanExecuteItemEffect(item);
-        // 미리보기에서 산탄·원형 배치나 비행 시간의 난수를 소비하지 않습니다.
-        return throwExecutor != null && throwExecutor.itemEffectExecutor != null;
-    }
+        => ItemUseDeliverySettings.CanUse(ResolveItem(context), (ItemUseDeliveryMode)delivery, throwExecutor);
+
+    // 기존 에셋의 필드와 Inspector를 유지하면서 공용 전달 코드에 설정을 넘깁니다.
+    public ItemUseDeliverySettings CreateDeliverySettings() => new ItemUseDeliverySettings {
+        mode = (ItemUseDeliveryMode)delivery, startAnchor = (ItemUsePositionAnchor)throwStartAnchor,
+        targetAnchor = (ItemUsePositionAnchor)throwTargetAnchor, offsetSpace = (ItemUseOffsetSpace)throwOffsetSpace,
+        startOffset = throwStartOffset, targetOffset = throwTargetOffset, placement = targetPlacement,
+        directionMode = directionMode, fixedWorldDirection = fixedWorldDirection, directionAngle = directionAngle,
+        forwardOffset = forwardOffset, sideOffset = sideOffset, radius = radius, spreadAngle = spreadAngle,
+        shotgunRadiusOffset = shotgunRadiusOffset, shotgunDistribution = shotgunDistribution,
+        spreadStartMode = spreadStartMode, clockwiseSpread = clockwiseSpread, throwOptions = throwOptions
+    };
 
     public bool TryGetThrowPath(ItemEffectContext context, out Vector3 start, out Vector3 target)
-    {
-        start = target = Vector3.zero;
-        if (context == null) return false;
-        Vector3 forward = AttackPlacement.Direction(context, directionMode, fixedWorldDirection,
-            EffectStatUtility.Safe(directionAngle, -360f, 360f, 0f));
-        start = Anchor(context, throwStartAnchor) + Offset(throwStartOffset, forward);
-        Vector3 origin = Anchor(context, throwTargetAnchor) + Offset(throwTargetOffset, forward);
-        // Forward는 원본에서 한 단계 이동합니다. 다른 배치는 추가 아이템 한 발의 위치입니다.
-        target = AttackPlacement.Position(targetPlacement, origin, forward, targetPlacement == AttackPlacementMode.Forward ? 1 : 0, 1,
-            EffectStatUtility.Safe(forwardOffset, -100f, 100f, 0f), EffectStatUtility.Safe(sideOffset, -100f, 100f, 0f),
-            EffectStatUtility.Safe(radius, 0f, 100f, 2f), EffectStatUtility.Safe(spreadAngle, 0f, 360f, 360f),
-            EffectStatUtility.Safe(shotgunRadiusOffset, 0f, 100f, 0f), shotgunDistribution, spreadStartMode, clockwiseSpread);
-        start.z = target.z = 0f;
-        return true;
-    }
-
-    private static Vector3 Anchor(ItemEffectContext context, StatusReactionThrowAnchor anchor)
-    {
-        if (anchor == StatusReactionThrowAnchor.OwnerPosition)
-            return context.owner != null ? context.owner.transform.position : context.usePosition;
-        return anchor == StatusReactionThrowAnchor.OriginalUsePosition ? context.usePosition : context.targetPosition;
-    }
-
-    private Vector3 Offset(Vector3 offset, Vector3 forward)
-    {
-        float x = EffectStatUtility.Safe(offset.x, -10000f, 10000f, 0f);
-        float y = EffectStatUtility.Safe(offset.y, -10000f, 10000f, 0f);
-        return throwOffsetSpace == StatusReactionOffsetSpace.ForwardAndSide
-            ? forward * x + new Vector3(forward.y, -forward.x, 0f) * y : new Vector3(x, y, 0f);
-    }
+        => CreateDeliverySettings().TryGetThrowPath(context, out start, out target);
 
     protected override bool Perform(ItemEffectContext context, ItemThrowExecutor throwExecutor)
-    {
-        ItemData item = ResolveItem(context);
-        ItemEffectContext child = ReactionContext(context, consumeUseBuffs);
-        if (delivery == StatusReactionItemDelivery.ThrowAtImpact)
-        {
-            Vector3 start, target;
-            if (!TryGetThrowPath(context, out start, out target)) return false;
-            return throwExecutor.Throw(item, start, target, context.owner, context.sourceBag, 0, child,
-                triggerSpecialItems: false, options: throwOptions);
-        }
-        ItemEffectExecutor.ExecuteItem(item, context.usePosition, context.targetPosition, context.direction,
-            context.owner, context.sourceBag, context.buffManager, child,
-            triggerSpecialItems: false, consumeUseBuffs: consumeUseBuffs);
-        return context.CanContinue;
-    }
+        => CreateDeliverySettings().TryUse(ResolveItem(context), ReactionContext(context, consumeUseBuffs), throwExecutor, consumeUseBuffs);
 }

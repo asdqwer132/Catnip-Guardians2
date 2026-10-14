@@ -44,7 +44,18 @@ public class SimpleTransform { public Vector3 position; }
 public class HitEffectData { public int hits; public void TryExecute(HitEffectContext h){hits++;} }
 public class BuffEffect : ItemEffectData { public BuffClassificationDefinition buffClassification; public bool harmful; public bool dispellable=true; public BuffFlagDefinition[] flags; public Sprite buffIcon; }
 public class GrantSpecialStatusEffect : ItemEffectData { public BuffClassificationDefinition buffClassification; }
-public class SummonActor { }
+public class SummonActor : MonoBehaviour {
+ public SummonDefinition Definition; public GameObject Owner; public int LifeId=1;
+ public bool active=true, IsGroupReady=true; public ItemEffectContext execution;
+ public ItemThrowExecutor executor;
+ public bool CanAct=>active&&(execution==null||execution.CanContinue);
+ public ItemEffectContext CreateContext(Vector3 target,Vector3 direction) {
+  var origin=execution??new ItemEffectContext(Owner,null,transform.position,target,null);
+  var result=origin.Copy(target,direction);result.usePosition=transform.position;result.sourceSummon=this;result.sourceSummonLifeId=LifeId;return result;
+ }
+ public bool TryGetSpawnDirection(out Vector3 direction) {direction=Vector3.right;return execution!=null&&execution.TryGetDirection(out direction);}
+ public ItemThrowExecutor GetOrCreateItemThrowExecutor()=>executor??(executor=new ItemThrowExecutor{itemEffectExecutor=new ItemEffectExecutor()});
+}
 
 public class SpecialItemManager { public static SpecialItemManager Instance; public int calls; public System.Action<ItemEffectContext> onCall; public void Call(ItemEffectContext context){calls++;onCall?.Invoke(context);} }
 public class ItemThrowExecutor {

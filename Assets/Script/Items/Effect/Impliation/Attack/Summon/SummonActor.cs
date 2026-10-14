@@ -48,6 +48,8 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
     private int healthInitializedLife = int.MinValue;
     private float timer;
     private bool initialized, registered, finishing;
+    private bool groupReady, groupPendingReady, groupPendingActivation;
+    public bool IsGroupReady => groupReady;
 
     public UnityEngine.Object BuffTargetObject => this;
     public string BuffTargetGroup => "Summon";
@@ -124,6 +126,8 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
             RegisterDynamicBuffReceiver();
             RefreshBuffedStat();
             RefreshProfiles(true);
+            if (groupPendingReady) NotifyGroupReady();
+            else groupPendingActivation = true;
         }
         RegisterBuffTarget();
     }
@@ -142,7 +146,26 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
         if (initialized) RefreshProfiles(true);
     }
 
-    public void ConfigureDefinition(SummonDefinition value) { definition = value; }
+    public void ConfigureDefinition(SummonDefinition value)
+    { definition = value; SummonGroupRuntime.NotifyFieldChanged(); }
+
+    public bool TryGetSpawnDirection(out Vector3 direction)
+    {
+        direction = Vector3.right;
+        return executionContext != null && executionContext.TryGetDirection(out direction);
+    }
+
+    private void LateUpdate()
+    {
+        // 재활성화 직후 같은 프레임의 Initialize가 새 소유자/정의를 설정할 시간을 줍니다.
+        if (groupPendingActivation && initialized && isActiveAndEnabled) NotifyGroupReady();
+    }
+    private void NotifyGroupReady()
+    {
+        groupPendingReady = groupPendingActivation = false;
+        groupReady = CanAct;
+        if (groupReady) SummonGroupRuntime.NotifyReady(this);
+    }
 
     public ItemEffectContext CreateContext(Vector3 target, Vector3 direction)
     {
@@ -181,14 +204,7 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
     public bool ThrowItem(ItemData item, Vector3 target, float? damageOverride = null, float damageMultiplier = 1f, float healingMultiplier = 1f)
     {
         if (!CanAct || item == null) return false;
-        if (itemThrowExecutor == null)
-        {
-            ItemEffectExecutor executor = gameObject.AddComponent<ItemEffectExecutor>();
-            executor.buffManager = buffManager;
-            itemThrowExecutor = gameObject.AddComponent<ItemThrowExecutor>();
-            itemThrowExecutor.itemEffectExecutor = executor;
-            itemThrowExecutor.showTargetRange = false;
-        }
+        GetOrCreateItemThrowExecutor();
         ItemEffectContext context = CreateAttackContext(target, (target - transform.position).normalized, damageMultiplier, healingMultiplier);
         if (damageOverride.HasValue) context.damageOverride = damageOverride;
         if ((target - transform.position).sqrMagnitude <= 0.0001f)
@@ -203,9 +219,23 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
         return thrown;
     }
 
+    public ItemThrowExecutor GetOrCreateItemThrowExecutor()
+    {
+        if (itemThrowExecutor != null) return itemThrowExecutor;
+        ItemEffectExecutor executor = GetComponent<ItemEffectExecutor>();
+        if (executor == null) { executor = gameObject.AddComponent<ItemEffectExecutor>(); executor.buffManager = buffManager; }
+        itemThrowExecutor = GetComponent<ItemThrowExecutor>();
+        if (itemThrowExecutor == null) itemThrowExecutor = gameObject.AddComponent<ItemThrowExecutor>();
+        if (itemThrowExecutor.itemEffectExecutor == null) itemThrowExecutor.itemEffectExecutor = executor;
+        itemThrowExecutor.showTargetRange = false;
+        return itemThrowExecutor;
+    }
+
     public void Initialize(ItemEffectContext context, float lifetime)
     {
         if (context == null || !context.CanContinue) return;
+        groupReady = groupPendingReady = groupPendingActivation = false;
+        SummonGroupRuntime.NotifyFieldChanged();
         UnregisterBuffTarget();
         UnregisterDynamicBuffReceiverInternal();
         if (effectLease != null) effectLease.Cancel();
@@ -232,6 +262,8 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
         RegisterDynamicBuffReceiver();
         RegisterBuffTarget();
         RefreshProfiles(true);
+        groupPendingReady = true;
+        if (isActiveAndEnabled) NotifyGroupReady();
     }
 
     public Health ConfigureHealth(SummonHealthStat stat, bool initialize, HealthDefenseFormula defenseFormula)
@@ -452,12 +484,14 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
     }
     protected override void OnDisable()
     {
+        groupReady = groupPendingReady = groupPendingActivation = false;
         unchecked { LifeId++; }
         if (health != null) health.OnDead -= OnSummonDead;
         ClearModifications();
         DisposeBehaviours();
         UnregisterBuffTarget();
         SummonRegistry.Unregister(this);
+        SummonGroupRuntime.NotifyFieldChanged();
         base.OnDisable();
         ItemEffectLease cancelled = effectLease;
         effectLease = null;

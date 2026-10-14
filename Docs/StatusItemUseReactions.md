@@ -62,6 +62,8 @@
 
 시작점과 목표점이 같아도 **Allow Stationary Throw**를 켜면 설정한 시간 동안 제자리 아크/스핀 후 실행한다. 끄면 그 투척은 실행하지 않는다. 위치 판정은 XY 평면에서 한다. 공용 실행기·선택한 프리팹·다른 상태 모듈의 값은 바꾸지 않고 생성한 런타임 투척물에만 모션을 적용한다.
 
+즉시 사용·투척 전달 코드는 `ItemUseDeliverySettings`로 공유하며 [소환 무리의 조건 달성 아이템](SummonGroups.md)에서도 사용한다. 상태 모듈의 기존 필드와 에셋 설정은 유지한다.
+
 ## BrokeStar 이전
 
 기존 `Star_SpecialStatusKey`의 GUID를 유지하고 `BrokeStar_ExtraItem.asset` 모듈을 연결했다. 설정은 **Configured Item = WeaponExtra1**, **Probability = 1**, **Delivery = Throw At Impact**, **Throw Start Offset = (0, 3, 0)**다. WeaponExtra1 자체는 제외한다. 기존 추가 투척의 횟수제 버프 소비는 켠 상태로 유지했다.
