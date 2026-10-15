@@ -3,11 +3,17 @@ using UnityEngine;
 public class SettingUIButton : MonoBehaviour
 {
     public bool isTimeStop = false;
+    public void ResetTutorialProgress()
+    {
+        if (TutorialProgressManager.instance != null) TutorialProgressManager.instance.ResetProgress();
+        else TutorialSave.ResetProgress();
+    }
+    public void ResetStoryProgress() => StorySave.ResetStoryProgress();
     public void OpenSetting()
     {
         if (SettingWindowController.instance == null)
         {
-            Debug.LogWarning("SettingWindowController°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("SettingWindowControllerê°€ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
@@ -18,7 +24,7 @@ public class SettingUIButton : MonoBehaviour
     {
         if (SettingWindowController.instance == null)
         {
-            Debug.LogWarning("SettingWindowController°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("SettingWindowControllerê°€ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 

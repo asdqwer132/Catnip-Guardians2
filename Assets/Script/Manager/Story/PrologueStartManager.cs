@@ -4,13 +4,13 @@ public class PrologueStartManager : MonoBehaviour
 {
     [Header("Scene Names")]
     public string storySceneName = "StoryScene";
-    public string gameSceneName = "GameScene";
+    public string gameSceneName = GameSceneRoutes.General;
 
     public void StartGame()
     {
         if (SceneMoveManager.instance == null)
         {
-            Debug.LogWarning("SceneMoveManager°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("SceneMoveManagerê°€ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 

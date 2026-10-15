@@ -7,6 +7,9 @@ using UnityEngine;
 namespace UnityEditor
 {
     public sealed class InitializeOnLoadAttribute : Attribute { }
+    public sealed class MenuItem : Attribute { public MenuItem(string path) { } }
+    public sealed class SceneAsset : UnityEngine.Object { }
+    public static class SessionState { public static string GetString(string key, string fallback) => fallback; public static void SetString(string key, string value) { } public static void EraseString(string key) { } }
     public sealed class CanEditMultipleObjectsAttribute : Attribute { }
     public sealed class CustomEditorAttribute : Attribute { public CustomEditorAttribute(Type type, bool children = false) { } }
     [Flags] public enum GizmoType { Selected = 1, NonSelected = 2 }
@@ -54,6 +57,7 @@ namespace UnityEditor
     }
     public static class EditorApplication
     {
+        public static bool isPlaying;
         public static double timeSinceStartup;
         public static event Action hierarchyChanged, projectChanged;
         public static event Action<PlayModeStateChange> playModeStateChanged;
@@ -73,6 +77,7 @@ namespace UnityEditor
     }
     public static class AssetDatabase
     {
+        public static string GetAssetPath(UnityEngine.Object value) => "";
         public static string[] FindAssets(string filter, string[] folders) => Array.Empty<string>();
         public static string GUIDToAssetPath(string guid) => null;
         public static T LoadAssetAtPath<T>(string path) where T : UnityEngine.Object => null;
@@ -121,10 +126,13 @@ namespace UnityEditor
 }
 namespace UnityEditor.SceneManagement
 {
+    public enum OpenSceneMode { Single, Additive }
     public enum NewSceneSetup { EmptyScene, DefaultGameObjects }
     public enum NewSceneMode { Single, Additive }
     public static class EditorSceneManager
     {
+        public static UnityEditor.SceneAsset playModeStartScene;
+        public static UnityEngine.SceneManagement.Scene OpenScene(string path, OpenSceneMode mode) => default;
         public static bool IsPreviewSceneObject(UnityEngine.Object value) => false;
         public static UnityEngine.SceneManagement.Scene NewScene(NewSceneSetup setup, NewSceneMode mode) => default;
         public static bool CloseScene(UnityEngine.SceneManagement.Scene scene, bool removeScene) => false;

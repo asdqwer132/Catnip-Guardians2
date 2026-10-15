@@ -13,7 +13,7 @@ public class TutorialEventExecutor : MonoBehaviour
     public GameObject[] targetObjects;
 
     [Header("Scene")]
-    public string defaultSceneName = "GameScene";
+    public string defaultSceneName = GameSceneRoutes.General;
 
     private void Awake()
     {
@@ -260,13 +260,13 @@ public class TutorialEventExecutor : MonoBehaviour
     {
         if (SceneMoveManager.instance == null)
         {
-            Debug.LogWarning("SceneMoveManager°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("SceneMoveManagerê°€ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
         if (string.IsNullOrEmpty(sceneName))
         {
-            Debug.LogWarning("ÀÌµ¿ÇÒ ¾À ÀÌ¸§ÀÌ ºñ¾îÀÖ½À´Ï´Ù.");
+            Debug.LogWarning("ì´ë™í•  ì”¬ ì´ë¦„ì´ ë¹„ì–´ìˆìŠµë‹ˆë‹¤.");
             return;
         }
 
@@ -279,7 +279,7 @@ public class TutorialEventExecutor : MonoBehaviour
             progressManager = TutorialProgressManager.instance;
 
         if (progressManager == null)
-            Debug.LogWarning("TutorialProgressManager°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("TutorialProgressManagerê°€ ì—†ìŠµë‹ˆë‹¤.");
     }
 
     private GameObject GetTargetObject(int index)

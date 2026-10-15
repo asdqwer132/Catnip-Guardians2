@@ -85,7 +85,7 @@ public class GameSession : MonoBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
+        if (gameObject.scene.name != GameSceneRoutes.Core) DontDestroyOnLoad(gameObject);
     }
 
     // =========================================================
@@ -189,7 +189,7 @@ public class GameSession : MonoBehaviour
         if (buffSkillManager == null)
             return;
 
-        // ±‚¡∏ µÓ∑œ ¡¶∞≈
+        // Í∏∞Ï°¥ Îì±Î°ù Ï†úÍ±∞
         buffSkillManager.ClearRegisteredBuffItems();
 
         if (!HasSkillBuffData)

@@ -80,8 +80,8 @@ public class GameEndManager : MonoBehaviour
     }
 
     /// <summary>
-    /// °ÔÀÓ Á¾·á »óÅÂ¸¸ ÃÊ±âÈ­ÇÑ´Ù.
-    /// ¿©±â¼­ ´ÙÀ½ ¶ó¿îµå ½ÃÀÛ, ¾÷±×·¹ÀÌµå ½ÃÀÛ °°Àº Èå¸§À» Ã³¸®ÇÏ¸é ¾È µÊ.
+    /// ê²Œì„ ì¢…ë£Œ ìƒíƒœë§Œ ì´ˆê¸°í™”í•œë‹¤.
+    /// ì—¬ê¸°ì„œ ë‹¤ìŒ ë¼ìš´ë“œ ì‹œì‘, ì—…ê·¸ë ˆì´ë“œ ì‹œì‘ ê°™ì€ íë¦„ì„ ì²˜ë¦¬í•˜ë©´ ì•ˆ ë¨.
     /// </summary>
     public void ResetGameEnd()
     {
@@ -95,7 +95,7 @@ public class GameEndManager : MonoBehaviour
     }
 
     /// <summary>
-    /// ¿£µù ÆĞ³ÎÀÇ Upgrade ¹öÆ°¿¡¼­ È£ÃâµÉ ÇÔ¼ö.
+    /// ì—”ë”© íŒ¨ë„ì˜ Upgrade ë²„íŠ¼ì—ì„œ í˜¸ì¶œë  í•¨ìˆ˜.
     /// </summary>
     public void OpenUpgradePanelFromEnd()
     {
@@ -103,7 +103,8 @@ public class GameEndManager : MonoBehaviour
             return;
 
         SetCursorDefault();
-        moveManager.GoUpgradeScene();
+        var loader = moveManager != null ? moveManager : SceneMoveManager.instance;
+        if (loader != null) loader.GoUpgradeScene();
         //Time.timeScale = 1f;
 
         //HideResultPanel();
@@ -155,15 +156,15 @@ public class GameEndManager : MonoBehaviour
         switch (currentEndType)
         {
             case GameEndType.Win:
-                titleText.text = "¶ó¿îµå Å¬¸®¾î";
+                titleText.text = "ë¼ìš´ë“œ í´ë¦¬ì–´";
                 break;
 
             case GameEndType.Lose:
-                titleText.text = "°ÔÀÓ ¿À¹ö";
+                titleText.text = "ê²Œì„ ì˜¤ë²„";
                 break;
 
             default:
-                titleText.text = "°á°ú";
+                titleText.text = "ê²°ê³¼";
                 break;
         }
     }
@@ -174,10 +175,10 @@ public class GameEndManager : MonoBehaviour
             return;
 
         if (killCountText != null)
-            killCountText.text = $"Ã³Ä¡ÇÑ Àû : {GameStatisticsManager.Instance.RoundKillCount}";
+            killCountText.text = $"ì²˜ì¹˜í•œ ì  : {GameStatisticsManager.Instance.RoundKillCount}";
 
         if (goldText != null)
-            goldText.text = $"È¹µæ °ñµå : {GameStatisticsManager.Instance.RoundGold}";
+            goldText.text = $"íšë“ ê³¨ë“œ : {GameStatisticsManager.Instance.RoundGold}";
 
         if (currencyText != null)
             currencyText.text = MakeCurrencyText();
@@ -186,7 +187,7 @@ public class GameEndManager : MonoBehaviour
     private string MakeCurrencyText()
     {
         if (GameStatisticsManager.Instance == null)
-            return "È¹µæ ÀçÈ­ ¾øÀ½";
+            return "íšë“ ì¬í™” ì—†ìŒ";
 
         StringBuilder builder = new StringBuilder();
 
@@ -209,7 +210,7 @@ public class GameEndManager : MonoBehaviour
         }
 
         if (builder.Length == 0)
-            return "È¹µæ ÀçÈ­ ¾øÀ½";
+            return "íšë“ ì¬í™” ì—†ìŒ";
 
         return builder.ToString();
     }

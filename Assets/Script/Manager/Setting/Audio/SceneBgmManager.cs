@@ -23,7 +23,7 @@ public class SceneBgmManager : MonoBehaviour
 
     private void OnEnable()
     {
-        SceneManager.sceneLoaded += OnSceneLoaded;
+        SceneManager.activeSceneChanged += OnActiveSceneChanged;
     }
 
     private void Start()
@@ -34,10 +34,10 @@ public class SceneBgmManager : MonoBehaviour
 
     private void OnDisable()
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
+        SceneManager.activeSceneChanged -= OnActiveSceneChanged;
     }
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    private void OnActiveSceneChanged(Scene previous, Scene scene)
     {
         PlayBgmBySceneName(scene.name);
     }
@@ -67,7 +67,7 @@ public class SceneBgmManager : MonoBehaviour
 
         if (AudioManager.instance == null)
         {
-            Debug.LogWarning("AudioManager°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("AudioManagerê°€ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
@@ -85,7 +85,7 @@ public class SceneBgmManager : MonoBehaviour
 
     private SceneBgmData GetSceneBgmData(string sceneName)
     {
-        for (int i = 0; i < sceneBgms.Length; i++)
+        for (int i = 0; sceneBgms != null && i < sceneBgms.Length; i++)
         {
             if (sceneBgms[i] == null)
                 continue;

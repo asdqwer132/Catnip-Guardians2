@@ -32,7 +32,7 @@ public class SettingManager : MonoBehaviour
         }
 
         instance = this;
-        DontDestroyOnLoad(gameObject);
+        if (gameObject.scene.name != GameSceneRoutes.Core) DontDestroyOnLoad(gameObject);
 
         Load();
     }
@@ -41,7 +41,7 @@ public class SettingManager : MonoBehaviour
     {
         ApplyAll();
         BroadcastSettingChanged(SettingChangeType.All);
-        SettingWindowController.instance.CloseSetting();
+        if (SettingWindowController.instance != null) SettingWindowController.instance.CloseSetting();
     }
 
     public GameSettingData GetSetting()
@@ -56,7 +56,7 @@ public class SettingManager : MonoBehaviour
 
         if (listener is not ISettingChangeListener settingListener)
         {
-            Debug.LogWarning($"{listener.name}Àº ISettingChangeListener¸¦ ±¸ÇöÇÏÁö ¾Ê¾Ò½À´Ï´Ù.");
+            Debug.LogWarning($"{listener.name}ì€ ISettingChangeListenerë¥¼ êµ¬í˜„í•˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
             return;
         }
 
@@ -256,7 +256,7 @@ public class SettingManager : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning($"{listener.name}Àº ISettingChangeListener¸¦ ±¸ÇöÇÏÁö ¾Ê¾Ò½À´Ï´Ù.");
+                Debug.LogWarning($"{listener.name}ì€ ISettingChangeListenerë¥¼ êµ¬í˜„í•˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
             }
         }
     }

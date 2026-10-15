@@ -7,7 +7,7 @@ public class StoryManager : MonoBehaviour
     public StoryChapterPanel[] chapterPanels;
 
     [Header("Scene")]
-    public string returnSceneName = "GameScene";
+    public string returnSceneName = GameSceneRoutes.General;
 
     [Header("Buttons")]
     public Button prevButton;
@@ -38,7 +38,7 @@ public class StoryManager : MonoBehaviour
     {
         if (chapterPanels == null || chapterPanels.Length == 0)
         {
-            Debug.LogWarning("µî·ÏµÈ Ã©ÅÍ ÆĞ³ÎÀÌ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("ë“±ë¡ëœ ì±•í„° íŒ¨ë„ì´ ì—†ìŠµë‹ˆë‹¤.");
             MoveToReturnScene();
             return;
         }
@@ -133,7 +133,7 @@ public class StoryManager : MonoBehaviour
         if (SceneMoveManager.instance != null)
             SceneMoveManager.instance.LoadScene(returnSceneName);
         else
-            Debug.LogWarning("SceneMoveManager°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("SceneMoveManagerê°€ ì—†ìŠµë‹ˆë‹¤.");
     }
 
     private void ClampProgress()

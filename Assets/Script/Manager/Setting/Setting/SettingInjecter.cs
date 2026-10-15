@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SettingInjecter : MonoBehaviour, ISettingChangeListener
 {
@@ -6,6 +7,7 @@ public class SettingInjecter : MonoBehaviour, ISettingChangeListener
 
     [Header("Camera")]
     public Camera targetCamera;
+    private bool followMainCamera;
 
     [Header("Layer Names")]
     public string damagePopupLayerName = "DamagePopup";
@@ -14,6 +16,7 @@ public class SettingInjecter : MonoBehaviour, ISettingChangeListener
     private void Awake()
     {
         instance = this;
+        followMainCamera = targetCamera == null;
 
         if (targetCamera == null)
             targetCamera = Camera.main;
@@ -21,14 +24,25 @@ public class SettingInjecter : MonoBehaviour, ISettingChangeListener
 
     private void OnEnable()
     {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        SceneManager.activeSceneChanged += OnActiveSceneChanged;
         if (SettingManager.instance != null)
             SettingManager.instance.AddListener(this);
     }
 
     private void OnDisable()
     {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+        SceneManager.activeSceneChanged -= OnActiveSceneChanged;
         if (SettingManager.instance != null)
             SettingManager.instance.RemoveListener(this);
+    }
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode) => RefreshCamera();
+    private void OnActiveSceneChanged(Scene previous, Scene next) => RefreshCamera();
+    private void RefreshCamera()
+    {
+        if (followMainCamera) targetCamera = Camera.main;
+        if (SettingManager.instance != null) ApplyAll(SettingManager.instance.GetSetting());
     }
 
     public void OnSettingChanged(GameSettingData setting, SettingChangeType changeType)
@@ -73,7 +87,7 @@ public class SettingInjecter : MonoBehaviour, ISettingChangeListener
 
         if (layer == -1)
         {
-            Debug.LogWarning($"Á¸ÀçÇÏÁö ¾Ê´Â ·¹ÀÌ¾îÀÔ´Ï´Ù: {layerName}");
+            Debug.LogWarning($"ì¡´ì¬í•˜ì§€ ì•ŠëŠ” ë ˆì´ì–´ì…ë‹ˆë‹¤: {layerName}");
             return;
         }
 

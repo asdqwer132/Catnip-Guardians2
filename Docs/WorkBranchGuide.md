@@ -1,5 +1,7 @@
 # work 브랜치에서 추가 이펙트 가져오기
 
+현재 씬은 코어·메인·스토리·게임 제너럴·배틀·아이템·업그레이드로 분리되어 있습니다. 실행 흐름, 화면 비율과 직접 만든 UI의 연결 방법은 [씬 연결 안내](SceneFlow.md)를 확인하세요.
+
 Unity를 닫고 `Assets`, `Packages`, `ProjectSettings` 폴더가 있는 프로젝트 루트에서 터미널을 연다. GitHub Desktop을 사용하면 Repository → Open in Terminal로 열 수 있다.
 
 ## 현재 파일 확인

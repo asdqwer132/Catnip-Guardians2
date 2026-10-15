@@ -14,6 +14,10 @@ public class GameInputManager : MonoBehaviour
 
     [Header("Debug")]
     public bool logInput;
+    [Header("전투 입력 영역")]
+    public Camera gameplayCamera;
+    public bool restrictPointerToGameplayCamera;
+    private bool usePressed, movePressed;
 
     public event Action<Vector2> OnMousePositionChanged;
 
@@ -51,7 +55,7 @@ public class GameInputManager : MonoBehaviour
         instance = this;
         //DontDestroyOnLoad(gameObject);
 
-        mainCamera = Camera.main;
+        mainCamera = gameplayCamera != null ? gameplayCamera : Camera.main;
     }
 
     private void Update()
@@ -87,26 +91,32 @@ public class GameInputManager : MonoBehaviour
 
         if (Mouse.current != null)
         {
-            if (Mouse.current.leftButton.wasPressedThisFrame)
+            bool inside = !restrictPointerToGameplayCamera ||
+                (mainCamera != null && mainCamera.enabled && mainCamera.pixelRect.Contains(MouseScreenPosition));
+            if (inside && Mouse.current.leftButton.wasPressedThisFrame)
             {
+                usePressed = true;
                 //Debug.Log("Use Item Pressed");
                 OnUseItemPressed?.Invoke();
             }
 
-            if (Mouse.current.leftButton.wasReleasedThisFrame)
+            if (usePressed && Mouse.current.leftButton.wasReleasedThisFrame)
             {
+                usePressed = false;
                 Log("Use Item Released");
                 OnUseItemReleased?.Invoke();
             }
 
-            if (Mouse.current.rightButton.wasPressedThisFrame)
+            if (inside && Mouse.current.rightButton.wasPressedThisFrame)
             {
+                movePressed = true;
                 Log("Move Pressed");
                 OnMovePressed?.Invoke();
             }
 
-            if (Mouse.current.rightButton.wasReleasedThisFrame)
+            if (movePressed && Mouse.current.rightButton.wasReleasedThisFrame)
             {
+                movePressed = false;
                 Log("Move Released");
                 OnMoveReleased?.Invoke();
             }

@@ -33,6 +33,7 @@ public class CurrencyManager : MonoBehaviour
 
     private Dictionary<CurrencyType, int> currencies =
         new Dictionary<CurrencyType, int>();
+    private readonly HashSet<CurrencyUIGroup> registeredGroups = new HashSet<CurrencyUIGroup>();
 
     private void Awake()
     {
@@ -43,7 +44,7 @@ public class CurrencyManager : MonoBehaviour
         }
 
         instance = this;
-        DontDestroyOnLoad(gameObject);
+        if (gameObject.scene.name != GameSceneRoutes.Core) DontDestroyOnLoad(gameObject);
 
         InitCurrencies();
         InitUIGroups();
@@ -53,6 +54,14 @@ public class CurrencyManager : MonoBehaviour
     {
         UpdateAllUI();
     }
+
+    public void RegisterUI(CurrencyUIGroup group)
+    {
+        if (group == null || !registeredGroups.Add(group)) return;
+        foreach (CurrencyType type in Enum.GetValues(typeof(CurrencyType))) group.UpdateUI(type, GetCurrency(type));
+    }
+    public void UnregisterUI(CurrencyUIGroup group) => registeredGroups.Remove(group);
+    private void OnDestroy() { if (instance == this) instance = null; }
 
     private void InitCurrencies()
     {
@@ -234,12 +243,11 @@ public class CurrencyManager : MonoBehaviour
 
         int amount = currencies[type];
 
-        if (uiGroups == null)
-            return;
-
-        for (int i = 0; i < uiGroups.Length; i++)
+        foreach (var group in registeredGroups)
+            if (group != null) group.UpdateUI(type, amount);
+        for (int i = 0; uiGroups != null && i < uiGroups.Length; i++)
         {
-            if (uiGroups[i] == null)
+            if (uiGroups[i] == null || registeredGroups.Contains(uiGroups[i]))
                 continue;
 
             uiGroups[i].UpdateUI(type, amount);

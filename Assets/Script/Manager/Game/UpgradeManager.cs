@@ -100,7 +100,7 @@ public class UpgradeManager : MonoBehaviour
             }
         }
 
-        if (sceneMoveManager != null)
-            sceneMoveManager.GoGameScene();
+        var loader = sceneMoveManager != null ? sceneMoveManager : SceneMoveManager.instance;
+        if (loader != null) loader.GoGameScene();
     }
 }

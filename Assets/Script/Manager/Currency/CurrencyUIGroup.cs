@@ -15,6 +15,10 @@ public class CurrencyUIGroup : MonoBehaviour
     [Header("Currency UIs")]
     public CurrencyUI[] currencyUIs;
 
+    private void OnEnable() { if (CurrencyManager.instance != null) CurrencyManager.instance.RegisterUI(this); }
+    private void Start() { if (CurrencyManager.instance != null) CurrencyManager.instance.RegisterUI(this); }
+    private void OnDisable() { if (CurrencyManager.instance != null) CurrencyManager.instance.UnregisterUI(this); }
+
     public void UpdateUI(CurrencyType type, int amount)
     {
         if (currencyUIs == null)
