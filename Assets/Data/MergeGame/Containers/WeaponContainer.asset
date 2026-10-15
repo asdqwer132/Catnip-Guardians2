@@ -1,0 +1,159 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c20cb2550c05433eb8a90b39fc80615f, type: 3}
+  m_Name: WeaponContainer
+  m_EditorClassIdentifier:
+  displayName: "무기"
+  series: 1
+  color: {r: 0.9, g: 0.4, b: 0.3, a: 1}
+  baseStats:
+    width: 6
+    height: 8
+    injectionInterval: 1.5
+    inletCount: 1
+    dragRadius: 0.6
+    clickCooldown: 0.3
+    dragCooldown: 1
+    maximumItems: 96
+  injectionMaterials:
+  - {fileID: 11400000, guid: fa3464a86d46a3c4e80853d2d8d84338, type: 2}
+  - {fileID: 11400000, guid: 8e9ad0b64ab344d49939a1071de8de6d, type: 2}
+  - {fileID: 11400000, guid: 93432b520869c5c4bb34b5703e60ada9, type: 2}
+  - {fileID: 11400000, guid: e534d433e78d5b048a5aab12fdcfbe4e, type: 2}
+  - {fileID: 11400000, guid: ba9f3bf45703dc24eabb69f562c53c02, type: 2}
+  - {fileID: 11400000, guid: 660ecb7e9a8792c4ab6ddf379a819c30, type: 2}
+  - {fileID: 11400000, guid: 7b9a7ea8c86ba4948a0a2dd408ba4708, type: 2}
+  - {fileID: 11400000, guid: 8b8d0e37b315751498df205f51057aeb, type: 2}
+  - {fileID: 11400000, guid: a50977c0d156ec0479acc3b30e9260bc, type: 2}
+  items:
+  - item: {fileID: 11400000, guid: fa3464a86d46a3c4e80853d2d8d84338, type: 2}
+    mergeResult: {fileID: 11400000, guid: 93758f7537ed6684898dc8cab8237aaa, type: 2}
+    radius: 0.25
+  - item: {fileID: 11400000, guid: 8e9ad0b64ab344d49939a1071de8de6d, type: 2}
+    mergeResult: {fileID: 11400000, guid: 9a41f7892b5c8e445987b81b88bacb9b, type: 2}
+    radius: 0.25
+  - item: {fileID: 11400000, guid: 93432b520869c5c4bb34b5703e60ada9, type: 2}
+    mergeResult: {fileID: 11400000, guid: 7601222dac94105479d5a73a6a36a988, type: 2}
+    radius: 0.25
+  - item: {fileID: 11400000, guid: e534d433e78d5b048a5aab12fdcfbe4e, type: 2}
+    mergeResult: {fileID: 11400000, guid: 19d360826f837e448b8bf16b44b85a1f, type: 2}
+    radius: 0.25
+  - item: {fileID: 11400000, guid: ba9f3bf45703dc24eabb69f562c53c02, type: 2}
+    mergeResult: {fileID: 11400000, guid: 61c6e66301b82a84d861eeb9b36bff4e, type: 2}
+    radius: 0.25
+  - item: {fileID: 11400000, guid: 660ecb7e9a8792c4ab6ddf379a819c30, type: 2}
+    mergeResult: {fileID: 11400000, guid: 5198d7a4c1d07734abe4cfe98c135102, type: 2}
+    radius: 0.25
+  - item: {fileID: 11400000, guid: 7b9a7ea8c86ba4948a0a2dd408ba4708, type: 2}
+    mergeResult: {fileID: 11400000, guid: ce1c82f98da4f1e4d835d49018657ff8, type: 2}
+    radius: 0.25
+  - item: {fileID: 11400000, guid: 8b8d0e37b315751498df205f51057aeb, type: 2}
+    mergeResult: {fileID: 11400000, guid: 70bf65ee269e06f42869590d93bd318d, type: 2}
+    radius: 0.25
+  - item: {fileID: 11400000, guid: a50977c0d156ec0479acc3b30e9260bc, type: 2}
+    mergeResult: {fileID: 11400000, guid: f5c0a85f81b4a6341b823365aa908815, type: 2}
+    radius: 0.25
+  - item: {fileID: 11400000, guid: 93758f7537ed6684898dc8cab8237aaa, type: 2}
+    mergeResult: {fileID: 11400000, guid: 9a41f7892b5c8e445987b81b88bacb9b, type: 2}
+    radius: 0.32
+  - item: {fileID: 11400000, guid: 9a41f7892b5c8e445987b81b88bacb9b, type: 2}
+    mergeResult: {fileID: 11400000, guid: 7601222dac94105479d5a73a6a36a988, type: 2}
+    radius: 0.338
+  - item: {fileID: 11400000, guid: 7601222dac94105479d5a73a6a36a988, type: 2}
+    mergeResult: {fileID: 11400000, guid: 19d360826f837e448b8bf16b44b85a1f, type: 2}
+    radius: 0.356
+  - item: {fileID: 11400000, guid: 19d360826f837e448b8bf16b44b85a1f, type: 2}
+    mergeResult: {fileID: 11400000, guid: 61c6e66301b82a84d861eeb9b36bff4e, type: 2}
+    radius: 0.374
+  - item: {fileID: 11400000, guid: 61c6e66301b82a84d861eeb9b36bff4e, type: 2}
+    mergeResult: {fileID: 11400000, guid: 5198d7a4c1d07734abe4cfe98c135102, type: 2}
+    radius: 0.392
+  - item: {fileID: 11400000, guid: 5198d7a4c1d07734abe4cfe98c135102, type: 2}
+    mergeResult: {fileID: 11400000, guid: ce1c82f98da4f1e4d835d49018657ff8, type: 2}
+    radius: 0.41
+  - item: {fileID: 11400000, guid: ce1c82f98da4f1e4d835d49018657ff8, type: 2}
+    mergeResult: {fileID: 11400000, guid: 70bf65ee269e06f42869590d93bd318d, type: 2}
+    radius: 0.428
+  - item: {fileID: 11400000, guid: 70bf65ee269e06f42869590d93bd318d, type: 2}
+    mergeResult: {fileID: 11400000, guid: f5c0a85f81b4a6341b823365aa908815, type: 2}
+    radius: 0.446
+  - item: {fileID: 11400000, guid: f5c0a85f81b4a6341b823365aa908815, type: 2}
+    mergeResult: {fileID: 11400000, guid: 25070a8f7d2957849928ee59bab08e8c, type: 2}
+    radius: 0.464
+  - item: {fileID: 11400000, guid: 25070a8f7d2957849928ee59bab08e8c, type: 2}
+    mergeResult: {fileID: 11400000, guid: 321fec68ed60adf4189b393bfb9ec8b3, type: 2}
+    radius: 0.482
+  - item: {fileID: 11400000, guid: 321fec68ed60adf4189b393bfb9ec8b3, type: 2}
+    mergeResult: {fileID: 11400000, guid: 75a130af3194b5947874800331b3c56a, type: 2}
+    radius: 0.5
+  - item: {fileID: 11400000, guid: 75a130af3194b5947874800331b3c56a, type: 2}
+    mergeResult: {fileID: 11400000, guid: e3af23af1e17ea6488352a48579e256a, type: 2}
+    radius: 0.518
+  - item: {fileID: 11400000, guid: e3af23af1e17ea6488352a48579e256a, type: 2}
+    mergeResult: {fileID: 11400000, guid: a541dbd8a642a58459ac49a7118f97ff, type: 2}
+    radius: 0.536
+  - item: {fileID: 11400000, guid: a541dbd8a642a58459ac49a7118f97ff, type: 2}
+    mergeResult: {fileID: 11400000, guid: 271dcdeca2152e74592b600c81f05199, type: 2}
+    radius: 0.554
+  - item: {fileID: 11400000, guid: 271dcdeca2152e74592b600c81f05199, type: 2}
+    mergeResult: {fileID: 11400000, guid: 66342c9a5fc3be04fa9f583575d5ede0, type: 2}
+    radius: 0.572
+  - item: {fileID: 11400000, guid: 66342c9a5fc3be04fa9f583575d5ede0, type: 2}
+    mergeResult: {fileID: 11400000, guid: 313c0f3f83dcff846aa033a97622c55a, type: 2}
+    radius: 0.59
+  - item: {fileID: 11400000, guid: 313c0f3f83dcff846aa033a97622c55a, type: 2}
+    mergeResult: {fileID: 11400000, guid: 42f629b3901f5ea408b2bcfd9c8e545c, type: 2}
+    radius: 0.608
+  - item: {fileID: 11400000, guid: 42f629b3901f5ea408b2bcfd9c8e545c, type: 2}
+    mergeResult: {fileID: 11400000, guid: 1b380765c9da64b42a642fbd1c40ac28, type: 2}
+    radius: 0.626
+  - item: {fileID: 11400000, guid: 1b380765c9da64b42a642fbd1c40ac28, type: 2}
+    mergeResult: {fileID: 11400000, guid: 189c991cd165b1944aa97b85d68ec2c9, type: 2}
+    radius: 0.644
+  - item: {fileID: 11400000, guid: 189c991cd165b1944aa97b85d68ec2c9, type: 2}
+    mergeResult: {fileID: 11400000, guid: 9ca59424d9b979e4182ec49ed8ca7aab, type: 2}
+    radius: 0.662
+  - item: {fileID: 11400000, guid: 9ca59424d9b979e4182ec49ed8ca7aab, type: 2}
+    mergeResult: {fileID: 11400000, guid: 7834f6d27dda7df4b9c3a7d5a5f8b8a6, type: 2}
+    radius: 0.68
+  - item: {fileID: 11400000, guid: 7834f6d27dda7df4b9c3a7d5a5f8b8a6, type: 2}
+    mergeResult: {fileID: 11400000, guid: f36bd251139a9264181b78493cbb756e, type: 2}
+    radius: 0.698
+  - item: {fileID: 11400000, guid: f36bd251139a9264181b78493cbb756e, type: 2}
+    mergeResult: {fileID: 11400000, guid: 5749aac6279ca30439302b367ee28748, type: 2}
+    radius: 0.716
+  - item: {fileID: 11400000, guid: 5749aac6279ca30439302b367ee28748, type: 2}
+    mergeResult: {fileID: 11400000, guid: 33602595d24b3564eb69ca06686496d7, type: 2}
+    radius: 0.734
+  - item: {fileID: 11400000, guid: 33602595d24b3564eb69ca06686496d7, type: 2}
+    mergeResult: {fileID: 11400000, guid: fee9270c19884934e8700ee75acdce97, type: 2}
+    radius: 0.752
+  - item: {fileID: 11400000, guid: fee9270c19884934e8700ee75acdce97, type: 2}
+    mergeResult: {fileID: 11400000, guid: ad6729834ce463a4ba68ff2b37c1f6d4, type: 2}
+    radius: 0.77
+  - item: {fileID: 11400000, guid: ad6729834ce463a4ba68ff2b37c1f6d4, type: 2}
+    mergeResult: {fileID: 11400000, guid: 0224418aa5b85f14382a59cc6309ad6d, type: 2}
+    radius: 0.788
+  - item: {fileID: 11400000, guid: 0224418aa5b85f14382a59cc6309ad6d, type: 2}
+    mergeResult: {fileID: 11400000, guid: bc08961c0b27d9b49956f6d21ffbec71, type: 2}
+    radius: 0.806
+  - item: {fileID: 11400000, guid: bc08961c0b27d9b49956f6d21ffbec71, type: 2}
+    mergeResult: {fileID: 11400000, guid: 5344d7d247f93f7458037fcbdd8dcf7a, type: 2}
+    radius: 0.824
+  - item: {fileID: 11400000, guid: 5344d7d247f93f7458037fcbdd8dcf7a, type: 2}
+    mergeResult: {fileID: 0}
+    radius: 0.842
+  throwOptions:
+    projectilePrefab: {fileID: 2153336256934016628, guid: 7d27764ab7c84ac489fdc540376ba873, type: 3}
+    projectileSprite: {fileID: 0}
+    allowStationaryThrow: 1
+    overrideMotion: 0

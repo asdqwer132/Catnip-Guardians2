@@ -23,12 +23,13 @@ public class InitManager : MonoBehaviour
     public ItemTester itemTester;
 
     public bool isInited = false;
+    public MergeGameSceneController mergeGame;
 
     public void InitAll()
     {
         plantManager.SetPlants();
         enemyManager.Init(plantManager.CurrentPlant);
-        bagManager.Init();
+        if (mergeGame == null && bagManager != null) bagManager.Init();
 
         if (GameSession.Instance != null)
         {
@@ -42,7 +43,7 @@ public class InitManager : MonoBehaviour
             isInited = true;    
         }
 
-        itemTester.Init();
+        if (mergeGame == null && itemTester != null) itemTester.Init();
     }
 
     public void ResetEntity()
@@ -53,19 +54,22 @@ public class InitManager : MonoBehaviour
     public void RoundInit()
     {
         //subPlantManager.ThrowAllItems();
-        itemUseManager.Init();
+        if (mergeGame == null && itemUseManager != null) itemUseManager.Init();
+        if (ItemRuntimeObjectManager.Instance != null) ItemRuntimeObjectManager.Instance.ClearAll();
         buffManager.ClearAllBuffs();
         buffSkillManager.ExecuteAllRegisteredBuffItems(buffSkillManager.gameObject, 0);
         statisticsManager.ResetRound();
-        if (ItemRuntimeObjectManager.Instance != null)
-            ItemRuntimeObjectManager.Instance.ClearAll();
+        if (mergeGame != null) mergeGame.InitializeRound();
 
         UIInit();
     }
     private void UIInit()
     {
-        bagUIInitializer.InitAll();
-        selectedBagPreviewUI.Init();
+        if (mergeGame == null)
+        {
+            if (bagUIInitializer != null) bagUIInitializer.InitAll();
+            if (selectedBagPreviewUI != null) selectedBagPreviewUI.Init();
+        }
         buffUIManager.Init();
         OffscreenTargetIndicatorManager.Instance.ClearAll();
 

@@ -7,6 +7,13 @@ public class ItemData {
  public bool afterCompletionConsumeUseBuffs, afterCompletionTriggerSpecialItems;
 }
 public enum ItemSeries { None, Weapon, Food, Mineral }
+public class SkillApplyContext { }
+public abstract class SkillRewardData : UnityEngine.ScriptableObject { public abstract void Apply(SkillApplyContext c); public virtual void Remove(SkillApplyContext c){} }
+public class MergeGameSession {
+ public static MergeGameSession Instance;
+ public MergeContainerUpgradeLedger upgrades = new MergeContainerUpgradeLedger();
+ public static MergeGameSession Ensure()=>Instance??(Instance=new MergeGameSession());
+}
 public enum PlayerStatusList { arrow, star }
 public class InventoryItem { public ItemData itemData; public int amount; }
 public class EquipmentBag { public string name; public System.Collections.Generic.List<InventoryItem> equippedItems; }

@@ -15,6 +15,8 @@ import tarfile
 import tempfile
 import xml.etree.ElementTree as ET
 import zipfile
+sys.dont_write_bytecode = True
+from check_merge_game import check_merge_game
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -127,6 +129,7 @@ def compile_files():
     files = list((ROOT / 'Assets/Script/Items/Effect').rglob('*.cs'))
     files += list((ROOT / 'Assets/Script/Items/Data').rglob('*.cs'))
     files += list((ROOT / 'Assets/Script/Entity').rglob('*.cs'))
+    files += list((ROOT / 'Assets/Script/MergeGame').rglob('*.cs'))
     files += list((ROOT / 'Assets/Editor/Tests').rglob('*.cs'))
     files = [path for path in files if '/UI/' not in str(path) and path.name not in
              ('ItemUseManager.cs', 'BagSelectManager.cs', 'ItemUsePositionProvider.cs')]
@@ -135,6 +138,19 @@ def compile_files():
              'Items/Upgrade/Inventory/Search/ISearchable.cs', 'Items/Upgrade/Skill/Reward/Unlock/IUnlockable.cs',
              'Items/Upgrade/Skill/Reward/Unlock/DataType.cs')
     files += [ROOT / 'Assets/Script' / name for name in extra]
+    scene_flow = ('Items/Upgrade/Inventory/InventoryManager.cs',
+                  'Items/Upgrade/Skill/SkillTreeManager.cs', 'Items/Upgrade/Skill/Data/SkillRewardData.cs',
+                  'Items/Upgrade/Skill/Data/SkillNodeData.cs', 'Items/Upgrade/Skill/Data/SkillMapData.cs',
+                  'Items/Upgrade/Skill/Data/SkillApplyContext.cs',
+                  'Items/Upgrade/Skill/Reward/Unlock/UnlockSkillReward.cs',
+                  'Items/Upgrade/Skill/Reward/Unlock/UnlockManager.cs',
+                  'Items/Upgrade/Skill/Reward/Buff/BuffSkillManager.cs',
+                  'Items/Upgrade/Skill/UI/RefreshBroadcaster.cs', 'Items/Upgrade/Skill/UI/RefreshType.cs',
+                  'Manager/Currency/CurrencyManager.cs', 'Manager/Currency/CurrencyUIGroup.cs',
+                  'Manager/Utility/Input/GameInputManager.cs', 'Manager/Utility/Input/GameInputBlockType.cs',
+                  'Manager/Game/InitManager.cs', 'Manager/Game/UpgradeManager.cs',
+                  'Items/Effect/Excuter/Excuter/ItemUsePositionProvider.cs')
+    files += [ROOT / 'Assets/Script' / name for name in scene_flow]
     return list(dict.fromkeys(files))
 
 
@@ -144,6 +160,7 @@ def main():
     parser.add_argument('--cache', type=Path, default=Path(tempfile.gettempdir()) / 'catnip-validation-cache')
     args = parser.parse_args()
     metadata_ok = metadata()
+    check_merge_game()
     if args.metadata_only:
         return 0 if metadata_ok else 1
     dotnet, refs = prepare_dependencies(args.cache.resolve())
@@ -155,7 +172,7 @@ def main():
     sources = compile_files()
     sources += [ROOT / 'Assets/Editor/BuffTargetGroupDiscovery.cs']
     compile_path = work / 'Compile.csproj'
-    project(compile_path, sources + [HERE / 'GameApi.cs'], refs)
+    project(compile_path, sources + [HERE / 'GameApi.cs', HERE / 'SceneFlowApi.cs'], refs)
     print('Compiling', len(sources), 'production/test files against Unity 2022.3 references; engine tests compile only.', flush=True)
     run([dotnet, 'build', compile_path, '--nologo', '-v:q'], env=environment)
     editor_path = work / 'editor' / 'GroupInspector.csproj'
@@ -223,7 +240,11 @@ def main():
     pure_dir = work / 'managed'
     pure_dir.mkdir()
     managed_path = pure_dir / 'Managed.csproj'
-    project(managed_path, [effect / name for name in selected] + [ROOT / 'Assets/Editor/BuffTargetGroupDiscovery.cs', HERE / 'ManagedApi.cs', HERE / 'ManagedChecks.cs', HERE / 'ManagedBuffGroupChecks.cs', HERE / 'ManagedAllTargetsChecks.cs', HERE / 'ManagedSummonChecks.cs', HERE / 'ManagedSummonModuleChecks.cs', HERE / 'ManagedPrefabVisualChecks.cs', HERE / 'ManagedStatusReactionChecks.cs', HERE / 'ManagedSummonGroupChecks.cs'], refs, executable=True)
+    merge_sources = ['MergeContainerDefinition.cs', 'MergeContainerBoard.cs', 'MergeContainerUpgradeLedger.cs',
+                     'MergeContainerUpgradeReward.cs', 'MergeContainerSupply.cs']
+    project(managed_path, [effect / name for name in selected] +
+            [ROOT / 'Assets/Script/MergeGame' / name for name in merge_sources] +
+            [ROOT / 'Assets/Editor/BuffTargetGroupDiscovery.cs', HERE / 'ManagedApi.cs', HERE / 'ManagedChecks.cs', HERE / 'ManagedBuffGroupChecks.cs', HERE / 'ManagedAllTargetsChecks.cs', HERE / 'ManagedSummonChecks.cs', HERE / 'ManagedSummonModuleChecks.cs', HERE / 'ManagedPrefabVisualChecks.cs', HERE / 'ManagedStatusReactionChecks.cs', HERE / 'ManagedSummonGroupChecks.cs', HERE / 'ManagedMergeContainerChecks.cs'], refs, executable=True)
     run([dotnet, 'run', '--project', managed_path, '--nologo'], env=environment)
     print('API compile and managed checks passed. Unity 6000.4 import/physics/play validation remains required.')
     if not metadata_ok:

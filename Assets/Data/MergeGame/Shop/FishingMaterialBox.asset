@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b981b44f6bdba44eb09234b25940801, type: 3}
+  m_Name: FishingMaterialBox
+  m_EditorClassIdentifier:
+  icon: {fileID: 21300000, guid: e229f9c4d6c93e34fb69a7445a09cc15, type: 3}
+  data:
+  - language: 1
+    dataName: "낚시 재료 상자"
+    description: "합성 통에 투입할 재료를 하나 얻습니다."
+  - language: 0
+    dataName: "Fishing Material Box"
+    description: Get one material for the merge container.
+  dataId: FishingMergeMaterialBox
+  dataType: 0
+  requireUnlock: 0
+  costs:
+  - currencyType: 0
+    amount: 10
+  itemSeries: 5
+  gachaItems:
+  - itemData: {fileID: 11400000, guid: b25d0e14f5d71b64284f803a3150569d, type: 2}
+    weight: 1
+  - itemData: {fileID: 11400000, guid: f7f2e7040e90c9e4484f58062d27073e, type: 2}
+    weight: 1
+  - itemData: {fileID: 11400000, guid: 6da6c591cb8d00344b56bea187015c82, type: 2}
+    weight: 1
+  - itemData: {fileID: 11400000, guid: 6ecc145d869b1d5469b0ad5ada4e686d, type: 2}
+    weight: 1
+  - itemData: {fileID: 11400000, guid: 7630bc8e0dc98c44a868a87d01ff538b, type: 2}
+    weight: 1
+  - itemData: {fileID: 11400000, guid: 209c96ede098737479af084775813528, type: 2}
+    weight: 1
+  - itemData: {fileID: 11400000, guid: 89a1d4bdcbb6ee142945aec755769496, type: 2}
+    weight: 1
+  - itemData: {fileID: 11400000, guid: 232c99ff1ce22dc4d938e9df150e38fd, type: 2}
+    weight: 1
+  - itemData: {fileID: 11400000, guid: 31c0954250555eb46bd5d85e5ab8fbaf, type: 2}
+    weight: 1
+  - itemData: {fileID: 11400000, guid: 12dbe0f620655604f98fff4f359eb353, type: 2}
+    weight: 1
+  - itemData: {fileID: 11400000, guid: 20765a989b874c841b224cce27864158, type: 2}
+    weight: 1
+  - itemData: {fileID: 11400000, guid: 043386c041db104499a3282e8d8d1a81, type: 2}
+    weight: 1
+  - itemData: {fileID: 11400000, guid: 469a657d824d65a459d20b33b396ad1c, type: 2}
+    weight: 1
+  - itemData: {fileID: 11400000, guid: 7a249f017af959a4ea52f150962eba1b, type: 2}
+    weight: 1
+  - itemData: {fileID: 11400000, guid: 2b3a4a5589ee5a544889a4e500e02c63, type: 2}
+    weight: 1
+  idleClip: {fileID: 7400000, guid: 6ad9381c2699f3a45b7c06080366b51f, type: 2}
+  openClip: {fileID: 7400000, guid: 429f1c2be2a3ea442977338868bfcd31, type: 2}
+  openTriggerName: Open

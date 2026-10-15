@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 606bb820635defc49b80fccb1aeef576, type: 3}
+  m_Name: Merge_Machine_DragArea_2
+  m_EditorClassIdentifier:
+  icon: {fileID: 0}
+  data:
+  - language: 1
+    dataName: "기계 · 드래그 범위 2"
+    description: "드래그 선택 반경이 0.25 증가합니다."
+  - language: 0
+    dataName: "Machine DragArea 2"
+    description: "드래그 선택 반경이 0.25 증가합니다."
+  dataId: Merge_Machine_DragArea_2
+  dataType: 0
+  requireUnlock: 0
+  skillMap: {fileID: 11400000, guid: 43078c3a10d74dbcbe0ba9f3360f321e, type: 2}
+  costs:
+  - currencyType: 0
+    amount: 100
+  requiredSkills:
+  - {fileID: 11400000, guid: 1526bfea361d41f483a7d02d429a0bc0, type: 2}
+  rewards:
+  - {fileID: 11400000, guid: fe566e27c1314d7499066c899e04d5de, type: 2}

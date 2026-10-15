@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4ee838b4841d77438c126095ce2b574, type: 3}
+  m_Name: ContainerSkillMap
+  m_EditorClassIdentifier:
+  icon: {fileID: 0}
+  data:
+  - language: 1
+    dataName: 통 강화
+    description: 시리즈별 합성 통을 강화합니다.
+  - language: 0
+    dataName: Container Skills
+    description: Upgrade each series container.
+  dataId: MergeContainers
+  dataType: 0
+  requireUnlock: 0
+  totalNodeCount: 96
+  type: 0

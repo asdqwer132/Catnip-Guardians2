@@ -11,7 +11,7 @@ public class SubPlantInventorySlotUI : ClickableItemSlotUI
             return;
         }
 
-        if (ItemCombinationManager.instance == null)
+        if (SubPlantManager.instance == null)
         {
             Debug.LogWarning("ItemCombinationManager가 없습니다.");
             return;

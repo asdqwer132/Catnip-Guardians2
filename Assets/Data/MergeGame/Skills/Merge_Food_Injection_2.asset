@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 606bb820635defc49b80fccb1aeef576, type: 3}
+  m_Name: Merge_Food_Injection_2
+  m_EditorClassIdentifier:
+  icon: {fileID: 0}
+  data:
+  - language: 1
+    dataName: "음식 · 주입 속도 2"
+    description: "초당 재료 주입 속도가 25% 증가합니다."
+  - language: 0
+    dataName: "Food Injection 2"
+    description: "초당 재료 주입 속도가 25% 증가합니다."
+  dataId: Merge_Food_Injection_2
+  dataType: 0
+  requireUnlock: 0
+  skillMap: {fileID: 11400000, guid: 43078c3a10d74dbcbe0ba9f3360f321e, type: 2}
+  costs:
+  - currencyType: 0
+    amount: 100
+  requiredSkills:
+  - {fileID: 11400000, guid: ed0642d69e66426cbda89de699ea9d37, type: 2}
+  rewards:
+  - {fileID: 11400000, guid: bed0d9c1d2c942fe820e07ba293fba95, type: 2}

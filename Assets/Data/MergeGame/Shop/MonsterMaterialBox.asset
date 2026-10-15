@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b981b44f6bdba44eb09234b25940801, type: 3}
+  m_Name: MonsterMaterialBox
+  m_EditorClassIdentifier:
+  icon: {fileID: 21300000, guid: 38df0aed140ea3b45bb2ecca87a3e755, type: 3}
+  data:
+  - language: 1
+    dataName: "몬스터 재료 상자"
+    description: "합성 통에 투입할 재료를 하나 얻습니다."
+  - language: 0
+    dataName: "Monster Material Box"
+    description: Get one material for the merge container.
+  dataId: MonsterMergeMaterialBox
+  dataType: 0
+  requireUnlock: 0
+  costs:
+  - currencyType: 0
+    amount: 10
+  itemSeries: 4
+  gachaItems:
+  - itemData: {fileID: 11400000, guid: 24eaffdbee409b9488bcb46db632357d, type: 2}
+    weight: 1
+  - itemData: {fileID: 11400000, guid: f11385fef7ea89a46bbdba450c009134, type: 2}
+    weight: 1
+  - itemData: {fileID: 11400000, guid: 8bf9a7a1ba902d04298d2b8c8b475d0d, type: 2}
+    weight: 1
+  - itemData: {fileID: 11400000, guid: 13370338b6cc53543ac3c18c2f1dcc00, type: 2}
+    weight: 1
+  - itemData: {fileID: 11400000, guid: c7186ce52ce15ad488c86ec111c343d5, type: 2}
+    weight: 1
+  - itemData: {fileID: 11400000, guid: 0347de90968cc02499b899a0159556b0, type: 2}
+    weight: 1
+  - itemData: {fileID: 11400000, guid: f6e93d544d48dd748ba8554f45407dda, type: 2}
+    weight: 1
+  - itemData: {fileID: 11400000, guid: 4d2488c2cf61d9c4985abb5b928cd4fe, type: 2}
+    weight: 1
+  - itemData: {fileID: 11400000, guid: e859f9eb3fe18b845be714b178139d69, type: 2}
+    weight: 1
+  idleClip: {fileID: 7400000, guid: 6ad9381c2699f3a45b7c06080366b51f, type: 2}
+  openClip: {fileID: 7400000, guid: 429f1c2be2a3ea442977338868bfcd31, type: 2}
+  openTriggerName: Open

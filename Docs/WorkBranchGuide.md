@@ -1,5 +1,7 @@
 # work 브랜치에서 추가 이펙트 가져오기
 
+현재 게임 씬은 왼쪽 전투·오른쪽 시리즈별 합성 통을 사용합니다. 업그레이드 씬의 일반 제작/가방 편성은 비활성화했고, 통 스킬과 사전을 추가했습니다. 플레이 순서와 설정은 [합성 통 안내](MergeGame.md)를 먼저 확인하세요. 기존 가방 관련 설명은 이전 시스템의 참고 자료입니다.
+
 Unity를 닫고 `Assets`, `Packages`, `ProjectSettings` 폴더가 있는 프로젝트 루트에서 터미널을 연다. GitHub Desktop을 사용하면 Repository → Open in Terminal로 열 수 있다.
 
 ## 현재 파일 확인
