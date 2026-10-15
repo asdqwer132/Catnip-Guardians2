@@ -15,7 +15,6 @@ public class InitManager : MonoBehaviour
     public GameItemBagManager bagManager;
 
     [Header("UI")]
-    public BagUIInitializer bagUIInitializer;
     public SelectedBagPreviewUI selectedBagPreviewUI;
     public BuffUIManager buffUIManager;
 
@@ -64,7 +63,6 @@ public class InitManager : MonoBehaviour
     }
     private void UIInit()
     {
-        bagUIInitializer.InitAll();
         selectedBagPreviewUI.Init();
         buffUIManager.Init();
         OffscreenTargetIndicatorManager.Instance.ClearAll();
