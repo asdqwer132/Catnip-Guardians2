@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // 이름이나 공통 BuffTargetGroup 대신 에셋 참조로 소환 종류를 구분한다.
-[CreateAssetMenu(fileName = "SummonDefinition", menuName = "04.Items/Effects/Direct Effects/Summons/Definition")]
+[CreateAssetMenu(fileName = "SummonDefinition", menuName = "04.Items/Effects/Direct Effects/Summon/Definition/Definition")]
 public sealed class SummonDefinition : ScriptableObject
 {
     public string[] tags;

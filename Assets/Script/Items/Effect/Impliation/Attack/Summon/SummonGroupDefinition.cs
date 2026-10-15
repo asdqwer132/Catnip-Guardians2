@@ -39,7 +39,7 @@ public sealed class SummonGroupItemRule
         => comparison == SummonGroupCountComparison.Exactly ? actual == required : actual >= required;
 }
 
-[CreateAssetMenu(fileName = "SummonGroup", menuName = "04.Items/Effects/Direct Effects/Summons/Group")]
+[CreateAssetMenu(fileName = "SummonGroup", menuName = "04.Items/Effects/Direct Effects/Summon/Definition/Group")]
 public sealed class SummonGroupDefinition : ScriptableObject
 {
     public string displayName;

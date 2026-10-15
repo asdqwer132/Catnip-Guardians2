@@ -87,7 +87,8 @@ public static class SummonGroupRuntime
                     ? source.GetOrCreateItemThrowExecutor() : null;
                 if (rule.itemUse != null) succeeded = rule.itemUse.TryUse(rule.item, reward, executor, rule.consumeUseBuffs);
             }
-            finally { gate.Complete(succeeded); }
+            finally {
+                gate.Complete(succeeded); }
         }
     }
 }

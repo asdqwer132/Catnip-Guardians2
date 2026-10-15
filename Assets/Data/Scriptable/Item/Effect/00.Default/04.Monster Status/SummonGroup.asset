@@ -1,0 +1,74 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35578e1d32bd4584a9762a3f87661fc5, type: 3}
+  m_Name: SummonGroup
+  m_EditorClassIdentifier: Assembly-CSharp::SummonGroupDefinition
+  displayName: 
+  ownerScope: 0
+  itemRules:
+  - requirementMode: 0
+    requiredKinds: 3
+    requiredInstances: 3
+    comparison: 0
+    triggerMode: 0
+    item: {fileID: 11400000, guid: 5344d7d247f93f7458037fcbdd8dcf7a, type: 2}
+    itemUse:
+      mode: 1
+      startAnchor: 0
+      targetAnchor: 0
+      offsetSpace: 0
+      startOffset: {x: 0, y: 3, z: 0}
+      targetOffset: {x: 0, y: 0, z: 0}
+      placement: 0
+      directionMode: 0
+      fixedWorldDirection: {x: 0, y: 0}
+      directionAngle: 0
+      forwardOffset: 0
+      sideOffset: 0
+      radius: 0
+      spreadAngle: 0
+      shotgunRadiusOffset: 0
+      shotgunDistribution: 0
+      spreadStartMode: 0
+      clockwiseSpread: 0
+      throwOptions:
+        projectilePrefab: {fileID: 0}
+        projectileSprite: {fileID: 0}
+        allowStationaryThrow: 0
+        overrideMotion: 0
+        motion:
+          arriveTime: 0
+          maxMoveTime: 0
+          arrivalTiming:
+            mode: 0
+            minArriveTime: 0
+            maxArriveTime: 0
+            randomOffset: 0
+            secondsPerWeight: 0
+            distribution: 0
+            customCurve:
+              serializedVersion: 2
+              m_Curve: []
+              m_PreInfinity: 0
+              m_PostInfinity: 0
+              m_RotationOrder: 0
+          arcHeight: 0
+          autoArcHeightByDistance: 0
+          minArcHeight: 0
+          maxArcHeight: 0
+          arcHeightDistanceMultiplier: 0
+          arcPeakProgress: 0
+          spinWhileMoving: 0
+          spinSpeed: 0
+          faceMoveDirection: 0
+          directionAngleOffset: 0
+    consumeUseBuffs: 0
