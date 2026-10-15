@@ -38,7 +38,9 @@ Current Scene Only에서도 코어 씬을 직접 실행하면 코어의 시작 �
 
 설정 창·오디오·재화·게임 세션까지 함께 테스트하려면 **Current Scene With Core**를 선택하세요. 코어 없이 실행하면 이 공용 기능은 제공되지 않으며, 상점 구매처럼 재화가 필요한 동작은 기존 매니저의 연결 확인을 따릅니다. 전투 결과 확정은 코어 재화 매니저가 없어도 예외 없이 처리합니다. 없는 매니저나 UI를 코드로 새로 만들지는 않습니다.
 
-각 씬에는 독립 실행용 EventSystem과 씬 이동 연결이 있습니다. `SceneEventSystemOwner`는 OnEnable/OnDisable에서 직접 등록·해제하며, 전역 객체 검색 없이 코어 우선으로 하나만 활성화합니다. `EventSystem.current`는 Unity의 자체 등록 과정에 맡깁니다. 편집 중 코어 UI를 함께 확인하려면 **Catnip → Scenes → Open Core Additively**를 사용하세요.
+각 씬에는 독립 실행용 EventSystem과 씬 이동 연결이 있습니다. **EventSystem과 Input System UI Input Module 컴포넌트는 편집 모드에서 꺼 두고, Scene Event System Owner만 켜 둡니다.** Owner의 **Input Modules**에는 같은 오브젝트의 입력 모듈을 연결합니다. 꺼진 초기 상태는 입력을 사용하지 않는다는 뜻이 아니라, 씬 로딩 시 Unity가 먼저 중복 등록하는 것을 막기 위한 설정입니다.
+
+`SceneEventSystemOwner`는 OnEnable/OnDisable에서 직접 등록·해제하며, 전역 객체 검색 없이 코어 우선으로 하나만 활성화합니다. 이전 소유자를 먼저 끈 뒤 새 소유자를 켜므로 교체 중에도 두 EventSystem이 겹치지 않습니다. 코어가 없으면 해당 씬의 입력이 켜지고, 코어가 제거되면 남아 있는 씬이 입력을 이어받습니다. `EventSystem.current`는 Unity의 자체 등록 과정에 맡깁니다. 편집 중 코어 UI를 함께 확인하려면 **Catnip → Scenes → Open Core Additively**를 사용하세요.
 
 기존 UI의 모양과 배치는 직접 편집합니다. UI를 생성하는 코드나 생성 메뉴는 추가하지 않았습니다. Main의 중복 설정·로딩 Canvas와 씬별 중복 EventSystem은 코어 쪽으로 통일했고, 기존 스토리 초기화 버튼은 코어 설정 Canvas로 옮겼습니다.
 

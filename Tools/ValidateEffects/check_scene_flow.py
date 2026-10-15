@@ -53,11 +53,22 @@ def check_scene_flow():
     assert '  restrictPointerToGameplayCamera: 1\n' in scenes['GameBattleScene'][0]
     # Every scene can process standalone UI; the owner component arbitrates additive combinations.
     event_script = '76c392e42b5098c458856cdf6ecaaaa1'
+    module_script = '01614664b831546d2ae94a42149d80ac'
     owner_guid = guid('Script/Manager/Utility/Scene/SceneEventSystemOwner.cs')
     loader_guid = guid('Script/Manager/Utility/Scene/SceneMoveManager.cs')
-    for name, (text, _) in scenes.items():
+    for name, (text, blocks) in scenes.items():
         assert text.count('guid: ' + event_script) == 1, (name, 'one local EventSystem required')
         assert owner_guid in text, (name, 'additive EventSystem arbitration required')
+        event_id, event = next((key, body) for key, (_, body) in blocks.items() if event_script in body)
+        _, owner = next((key, body) for key, (_, body) in blocks.items() if owner_guid in body)
+        event_host = re.search(r'^  m_GameObject: \{fileID: (\d+)\}', event, re.M)[1]
+        assert f'  m_GameObject: {{fileID: {event_host}}}\n' in owner, (name, 'owner must control its local EventSystem')
+        assert '  m_Enabled: 0\n' in event, (name, event_id, 'EventSystem must start disabled to prevent automatic duplicate registration')
+        assert '  m_Enabled: 1\n' in owner, (name, 'owner must enable standalone input at runtime')
+        module_id, module = next((key, body) for key, (_, body) in blocks.items() if module_script in body)
+        assert f'  m_GameObject: {{fileID: {event_host}}}\n' in module
+        assert '  m_Enabled: 0\n' in module, (name, 'input module must start disabled')
+        assert f'  inputModules:\n  - {{fileID: {module_id}}}\n' in owner, (name, 'explicit runtime input module required')
         if name != 'CoreScene': assert loader_guid in text, (name, 'standalone navigation required')
     play_settings = (assets / 'Data/ScenePlaySettings.asset').read_text()
     assert guid('Script/Manager/Utility/Scene/ScenePlaySettings.cs') in play_settings

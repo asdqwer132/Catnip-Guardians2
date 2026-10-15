@@ -118,7 +118,7 @@ def project(path, files, refs, executable=False, defines='', additional_refs=())
     items = ET.SubElement(root, 'ItemGroup')
     for filename in dict.fromkeys(files):
         ET.SubElement(items, 'Compile', Include=str(filename))
-    for filename in list(refs.glob('*.dll')) + list(additional_refs):
+    for filename in (list(refs.glob('*.dll')) if refs is not None else []) + list(additional_refs):
         reference = ET.SubElement(items, 'Reference', Include=filename.stem)
         ET.SubElement(reference, 'HintPath').text = str(filename)
     ET.indent(root)
@@ -244,6 +244,14 @@ def main():
     scene_logic = [ROOT / 'Assets/Script/Manager/Utility/Scene' / name for name in ('GameSceneRoutes.cs', 'GameViewportLayout.cs', 'SceneStartupPolicy.cs', 'ScenePlaySettings.cs')]
     project(managed_path, [effect / name for name in selected] + scene_logic + [ROOT / 'Assets/Editor/BuffTargetGroupDiscovery.cs', HERE / 'ManagedApi.cs', HERE / 'ManagedChecks.cs', HERE / 'ManagedBuffGroupChecks.cs', HERE / 'ManagedAllTargetsChecks.cs', HERE / 'ManagedSummonChecks.cs', HERE / 'ManagedSummonModuleChecks.cs', HERE / 'ManagedPrefabVisualChecks.cs', HERE / 'ManagedStatusReactionChecks.cs', HERE / 'ManagedSummonGroupChecks.cs', HERE / 'ManagedSceneFlowChecks.cs'], refs, executable=True)
     run([dotnet, 'run', '--project', managed_path, '--nologo'], env=environment)
+    # Exercise the real owner callbacks with duplicate-registration checks on every enabled write.
+    input_dir = work / 'scene-input'
+    input_dir.mkdir()
+    input_path = input_dir / 'SceneInput.csproj'
+    project(input_path, [ROOT / 'Assets/Script/Manager/Utility/Scene/SceneEventSystemOwner.cs',
+                         ROOT / 'Assets/Script/Manager/Utility/Scene/GameSceneRoutes.cs',
+                         HERE / 'ManagedEventSystemChecks.cs'], None, executable=True)
+    run([dotnet, 'run', '--project', input_path, '--nologo'], env=environment)
     print('API compile and managed checks passed. Unity 6000.4 import/physics/play validation remains required.')
     if not metadata_ok:
         print('Metadata validation failed; see the missing/invalid GUID report above.', file=sys.stderr)
