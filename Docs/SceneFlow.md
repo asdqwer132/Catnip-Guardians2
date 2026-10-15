@@ -20,11 +20,11 @@ CoreScene (항상 유지)
 | Startup Scene | 기본 `GameGeneralScene`. `MainScene`, `GameBattleScene`, `GameItemScene` 등 원하는 목적지 입력 가능 |
 | Only When Core Is Active | 기본 켜짐. 다른 활성 씬 옆에 코어만 추가했을 때 시작 화면으로 이동하는 것을 방지 |
 
-`GameGeneralScene`을 실행했을 때만 배틀과 아이템 씬을 함께 엽니다. 제너럴의 **Auto Load Children**을 끄면 하위 씬 자동 로딩도 생략합니다. 배틀/아이템 씬 이름을 직접 지정하면 해당 씬으로 이동하며 제너럴로 변환하지 않습니다.
+`GameGeneralScene`은 통합 실행용입니다. **Load Core Scene**은 기본 켜짐이며 설정 창·재화·세션이 있는 코어를 먼저 불러옵니다. 이미 코어가 있으면 다시 불러오지 않습니다. **Auto Load Children**도 기본 켜짐이며 배틀과 아이템 씬을 함께 엽니다. 각 옵션을 끄면 해당 자동 로딩을 생략합니다. 배틀/아이템 씬을 직접 실행할 때는 이 옵션이 적용되지 않습니다.
 
 ## 각 씬을 독립 테스트하기
 
-기본 Editor 설정은 **Current Scene Only**입니다. 배틀 씬을 열고 Play하면 배틀만, 아이템 씬을 열고 Play하면 아이템만 실행합니다. 다른 씬을 편집 중 함께 열어 뒀어도 현재 활성 씬 에셋만 실행합니다. 종료하면 원래 편집 상태로 돌아갑니다.
+기본 Editor 설정은 **Current Scene Only**입니다. 배틀 씬을 열고 Play하면 배틀만, 아이템 씬을 열고 Play하면 아이템만 실행합니다. 다른 씬을 편집 중 함께 열어 뒀어도 현재 활성 씬 에셋만 실행합니다. 제너럴을 선택한 경우에는 제너럴의 Load Core Scene / Auto Load Children 설정을 따릅니다. 종료하면 원래 편집 상태로 돌아갑니다.
 
 **Catnip → Scenes → Select Play Settings**를 누르거나 `Assets/Data/ScenePlaySettings.asset`을 선택하고 **Play Mode**를 바꾸세요.
 
@@ -38,7 +38,7 @@ Current Scene Only에서도 코어 씬을 직접 실행하면 코어의 시작 �
 
 설정 창·오디오·재화·게임 세션까지 함께 테스트하려면 **Current Scene With Core**를 선택하세요. 코어 없이 실행하면 이 공용 기능은 제공되지 않으며, 상점 구매처럼 재화가 필요한 동작은 기존 매니저의 연결 확인을 따릅니다. 전투 결과 확정은 코어 재화 매니저가 없어도 예외 없이 처리합니다. 없는 매니저나 UI를 코드로 새로 만들지는 않습니다.
 
-각 씬에는 독립 실행용 EventSystem과 씬 이동 연결이 있습니다. Additive로 함께 열었을 때는 `SceneEventSystemOwner`가 코어 우선으로 하나만 활성화해 입력 중복을 막습니다. 편집 중 코어 UI를 함께 확인하려면 **Catnip → Scenes → Open Core Additively**를 사용하세요.
+각 씬에는 독립 실행용 EventSystem과 씬 이동 연결이 있습니다. `SceneEventSystemOwner`는 OnEnable/OnDisable에서 직접 등록·해제하며, 전역 객체 검색 없이 코어 우선으로 하나만 활성화합니다. `EventSystem.current`는 Unity의 자체 등록 과정에 맡깁니다. 편집 중 코어 UI를 함께 확인하려면 **Catnip → Scenes → Open Core Additively**를 사용하세요.
 
 기존 UI의 모양과 배치는 직접 편집합니다. UI를 생성하는 코드나 생성 메뉴는 추가하지 않았습니다. Main의 중복 설정·로딩 Canvas와 씬별 중복 EventSystem은 코어 쪽으로 통일했고, 기존 스토리 초기화 버튼은 코어 설정 Canvas로 옮겼습니다.
 
@@ -54,6 +54,8 @@ Current Scene Only에서도 코어 씬을 직접 실행하면 코어의 시작 �
 | Gap | 두 화면 사이 간격. 해당 축의 전체 화면 대비 비율이며 기본 0 |
 | Fit Scene Canvases | 기존 배틀·아이템 Canvas를 각 카메라에 연결해 해당 영역에 표시. 코어 Canvas는 전체 화면 유지 |
 | Battle Scene / Item Scene | 함께 불러올 씬 이름 |
+| Load Core Scene | 기본 켜짐. 제너럴에서 시작해도 코어의 설정 창·재화·세션 사용 |
+| Auto Load Children | 기본 켜짐. 제너럴에서 배틀·아이템 씬 자동 로딩 |
 | Item Layer | 아이템 씬의 오브젝트를 표시할 전용 레이어. 기본 31번 `GameItem` |
 | Isolate Item Physics | 아이템 씬에 별도 PhysicsScene2D 사용. 제너럴 컨트롤러가 FixedUpdate에서 시뮬레이션 |
 

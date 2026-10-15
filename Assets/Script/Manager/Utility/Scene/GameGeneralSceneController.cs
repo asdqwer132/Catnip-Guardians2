@@ -10,6 +10,8 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     public string itemScene = GameSceneRoutes.Item;
     [Tooltip("켜면 제너럴 씬이 배틀/아이템 씬을 함께 엽니다. 개별 씬 실행에는 영향을 주지 않습니다.")]
     public bool autoLoadChildren = true;
+    [Tooltip("제너럴 통합 실행에 필요한 설정/재화/세션을 코어에서 불러옵니다. 배틀/아이템 단독 실행에는 영향이 없습니다.")]
+    public bool loadCoreScene = true;
     [Header("화면 분할")]
     public GameScreenLayout layout;
     [Range(0.1f, 0.9f)] public float battleRatio = 0.5f;
@@ -35,7 +37,13 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     }
     private IEnumerator Start()
     {
+        yield return EnsureCore();
         if (autoLoadChildren && (SceneMoveManager.instance == null || !SceneMoveManager.instance.IsLoading)) yield return LoadChildren();
+    }
+    private IEnumerator EnsureCore()
+    {
+        if (loadCoreScene && !SceneManager.GetSceneByName(GameSceneRoutes.Core).isLoaded)
+            yield return SceneManager.LoadSceneAsync(GameSceneRoutes.Core, LoadSceneMode.Additive);
     }
     public IEnumerator LoadChildren()
     {
@@ -48,6 +56,7 @@ public sealed class GameGeneralSceneController : MonoBehaviour
         loading = true;
         try
         {
+            yield return EnsureCore();
             battle = SceneManager.GetSceneByName(battleScene);
             if (!battle.isLoaded) yield return SceneManager.LoadSceneAsync(battleScene, LoadSceneMode.Additive);
             battle = SceneManager.GetSceneByName(battleScene);

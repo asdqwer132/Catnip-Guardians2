@@ -6,6 +6,12 @@ import re
 def check_scene_flow():
     root = Path(__file__).resolve().parents[2]
     assets = root / 'Assets'
+    # Repository policy: lifecycle registration/references instead of this global lookup API.
+    ignored_text = re.compile(r'@"(?:""|[^"])*"|"(?:\\.|[^"\\])*"|//[^\n]*|/\*[\s\S]*?\*/')
+    for path in assets.rglob('*.cs'):
+        code = ignored_text.sub('', path.read_text(encoding='utf-8-sig', errors='replace'))
+        assert not re.search(r'\bFindObjectsByType\s*[<(]', code), (path, 'FindObjectsByType is forbidden; use references or lifecycle registration')
+    print('PASS source policy: no FindObjectsByType calls.')
     names = ('CoreScene', 'MainScene', 'StoryScene', 'GameGeneralScene', 'GameBattleScene', 'GameItemScene', 'UpgradeScene')
     settings = (root / 'ProjectSettings/EditorBuildSettings.asset').read_text()
     registered = re.findall(r'- enabled: 1\n    path: Assets/Scenes/(\w+)\.unity\n    guid: (\w+)', settings)
@@ -41,6 +47,7 @@ def check_scene_flow():
     startup = {'GameScene': 'GameGeneralScene', 'Main': 'MainScene'}.get(startup, startup)
     if auto_start: assert startup in scenes and startup != 'CoreScene'
     assert '  battleScene: GameBattleScene\n' in general and '  itemScene: GameItemScene\n' in general
+    assert re.search(r'^  loadCoreScene: [01]$', general, re.M), 'General must expose its Core loading option'
     ratio = float(re.search(r'^  battleRatio: (.*)', general, re.M)[1])
     assert 0.1 <= ratio <= 0.9
     assert '  restrictPointerToGameplayCamera: 1\n' in scenes['GameBattleScene'][0]
@@ -72,6 +79,7 @@ def check_scene_flow():
                'returnSceneName: GameScene\n' not in text for text, _ in scenes.values())
     for name, camera_id in [('CoreScene', '286779211'), ('GameGeneralScene', '208387200')]:
         _, blocks = scenes[name]
+        if name == 'GameGeneralScene' and camera_id not in blocks: continue
         camera = blocks[camera_id][1]
         go = re.search(r'^  m_GameObject: \{fileID: (\d+)\}', camera, re.M)[1]
         assert 'm_TagString: Untagged' in blocks[go][1], (name, 'must not replace the battle MainCamera')

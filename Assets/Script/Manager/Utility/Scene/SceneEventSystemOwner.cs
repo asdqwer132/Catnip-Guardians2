@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -6,6 +7,7 @@ using UnityEngine.EventSystems;
 [DefaultExecutionOrder(-10000)]
 public sealed class SceneEventSystemOwner : MonoBehaviour
 {
+    private static readonly List<SceneEventSystemOwner> owners = new List<SceneEventSystemOwner>();
     private EventSystem events;
     private BaseInputModule[] modules;
     private bool[] enabledModules;
@@ -16,11 +18,27 @@ public sealed class SceneEventSystemOwner : MonoBehaviour
         modules = GetComponents<BaseInputModule>(); enabledModules = new bool[modules.Length];
         for (int i = 0; i < modules.Length; i++) enabledModules[i] = modules[i].enabled;
     }
-    private void OnEnable() => Refresh();
-    private void OnDisable() => Refresh();
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetOwners() => owners.Clear();
+    private void OnEnable()
+    {
+        if (!owners.Contains(this)) owners.Add(this);
+        Refresh();
+    }
+    private void OnDisable()
+    {
+        owners.Remove(this); SetInputEnabled(false); Refresh();
+    }
+    private void SetInputEnabled(bool value)
+    {
+        if (events == null || !available) return;
+        events.enabled = value;
+        for (int i = 0; i < modules.Length; i++)
+            if (modules[i] != null) modules[i].enabled = value && enabledModules[i];
+    }
     private static void Refresh()
     {
-        var owners = FindObjectsByType<SceneEventSystemOwner>(FindObjectsSortMode.InstanceID);
+        owners.RemoveAll(owner => owner == null);
         SceneEventSystemOwner selected = null;
         foreach (var owner in owners)
         {
@@ -29,12 +47,9 @@ public sealed class SceneEventSystemOwner : MonoBehaviour
         }
         foreach (var owner in owners)
         {
-            if (owner.events == null || !owner.available) continue;
-            bool use = owner == selected;
-            owner.events.enabled = use;
-            for (int i = 0; i < owner.modules.Length; i++)
-                if (owner.modules[i] != null) owner.modules[i].enabled = use && owner.enabledModules[i];
+            owner.SetInputEnabled(owner == selected);
         }
-        if (selected != null) EventSystem.current = selected.events;
+        // current는 EventSystem.OnEnable/OnDisable이 관리합니다.
+        // 여기서 강제로 지정하면 Unity 등록 전 호출되어 unknown EventSystem 오류가 납니다.
     }
 }
