@@ -15,7 +15,7 @@ public static class GameSceneRoutes
         if (string.IsNullOrWhiteSpace(name)) return "";
         name = Path.GetFileNameWithoutExtension(name.Trim());
         // 이전 버튼/튜토리얼 데이터의 씬 이름도 새 진입점으로 보냅니다.
-        if (name == "GameScene" || name == Battle || name == Item) return General;
+        if (name == "GameScene") return General;
         if (name == "Main") return Main;
         return name;
     }

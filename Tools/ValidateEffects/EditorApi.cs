@@ -15,7 +15,7 @@ namespace UnityEditor
     [Flags] public enum GizmoType { Selected = 1, NonSelected = 2 }
     public sealed class DrawGizmoAttribute : Attribute { public DrawGizmoAttribute(GizmoType type) { } }
     public static class Handles { public static void Label(Vector3 position, string text) { } }
-    public static class Selection { public static Transform[] transforms => Array.Empty<Transform>(); }
+    public static class Selection { public static UnityEngine.Object activeObject; public static Transform[] transforms => Array.Empty<Transform>(); }
     public sealed class CustomPropertyDrawerAttribute : Attribute { public CustomPropertyDrawerAttribute(Type type) { } }
     public enum MessageType { None, Info, Warning, Error }
     public enum SerializedPropertyType { String }

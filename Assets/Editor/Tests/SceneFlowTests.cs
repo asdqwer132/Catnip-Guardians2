@@ -5,12 +5,43 @@ using UnityEngine;
 public sealed class SceneFlowTests
 {
     [TestCase("GameScene", GameSceneRoutes.General)]
-    [TestCase("GameBattleScene", GameSceneRoutes.General)]
-    [TestCase("Assets/Scenes/GameItemScene.unity", GameSceneRoutes.General)]
+    [TestCase("GameBattleScene", GameSceneRoutes.Battle)]
+    [TestCase("Assets/Scenes/GameItemScene.unity", GameSceneRoutes.Item)]
     [TestCase("Main", GameSceneRoutes.Main)]
     [TestCase("UpgradeScene", GameSceneRoutes.Upgrade)]
     public void SceneLinksResolveToTheCorrectEntryPoint(string input, string expected)
         => Assert.That(GameSceneRoutes.Resolve(input), Is.EqualTo(expected));
+
+    [TestCase(ScenePlayMode.CurrentSceneOnly, GameSceneRoutes.Battle, "")]
+    [TestCase(ScenePlayMode.CurrentSceneWithCore, GameSceneRoutes.Core, GameSceneRoutes.Battle)]
+    [TestCase(ScenePlayMode.CoreStartupScene, GameSceneRoutes.Core, "")]
+    public void EditorPlayModesKeepAnIndependentBattleTestSeparateFromTheGeneralScene(ScenePlayMode mode, string entry, string target)
+    {
+        Assert.That(SceneStartupPolicy.EditorEntry("Assets/Scenes/GameBattleScene.unity", mode), Is.EqualTo(entry));
+        Assert.That(SceneStartupPolicy.EditorCoreTarget("Assets/Scenes/GameBattleScene.unity", mode), Is.EqualTo(target));
+    }
+    [Test] public void CoreAutoStartCanBeDisabledOrSuppressedDuringAnIndependentTest()
+    {
+        Assert.That(SceneStartupPolicy.CoreDestination(GameSceneRoutes.General, true, true, true, ""), Is.EqualTo(GameSceneRoutes.General));
+        Assert.That(SceneStartupPolicy.CoreDestination(GameSceneRoutes.General, false, true, true, ""), Is.Empty);
+        Assert.That(SceneStartupPolicy.CoreDestination(GameSceneRoutes.General, true, false, true, ""), Is.Empty);
+        Assert.That(SceneStartupPolicy.CoreDestination(GameSceneRoutes.General, true, true, true, GameSceneRoutes.Item), Is.EqualTo(GameSceneRoutes.Item));
+        Assert.That(SceneStartupPolicy.CoreDestination(GameSceneRoutes.Battle, true, true, true, ""), Is.EqualTo(GameSceneRoutes.Battle));
+    }
+    [Test] public void StandaloneBattleCanConfirmItsResultWithoutACoreCurrencyManager()
+    {
+        var previous = CurrencyManager.instance;
+        var host = new GameObject("Standalone battle statistics test"); host.SetActive(false);
+        try
+        {
+            CurrencyManager.instance = null;
+            var statistics = host.AddComponent<GameStatisticsManager>();
+            statistics.AddCurrency(CurrencyType.Gold, 5);
+            Assert.DoesNotThrow(statistics.Confirm);
+            Assert.That(statistics.RoundGold, Is.EqualTo(5));
+        }
+        finally { CurrencyManager.instance = previous; Object.DestroyImmediate(host); }
+    }
 
     [Test] public void SplitKeepsBothViewsInsideTheScreenWithAGap()
     {

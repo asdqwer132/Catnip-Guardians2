@@ -53,6 +53,7 @@ public class GameStatisticsManager : MonoBehaviour
     }
     public void Confirm()
     {
+        if (CurrencyManager.instance == null) return;
         foreach (var currency in roundCurrencies)
         {
             CurrencyManager.instance.AddCurrency(currency.currencyType, currency.amount);

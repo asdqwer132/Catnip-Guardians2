@@ -8,6 +8,8 @@ public sealed class GameGeneralSceneController : MonoBehaviour
 {
     public string battleScene = GameSceneRoutes.Battle;
     public string itemScene = GameSceneRoutes.Item;
+    [Tooltip("켜면 제너럴 씬이 배틀/아이템 씬을 함께 엽니다. 개별 씬 실행에는 영향을 주지 않습니다.")]
+    public bool autoLoadChildren = true;
     [Header("화면 분할")]
     public GameScreenLayout layout;
     [Range(0.1f, 0.9f)] public float battleRatio = 0.5f;
@@ -33,7 +35,7 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     }
     private IEnumerator Start()
     {
-        if (SceneMoveManager.instance == null || !SceneMoveManager.instance.IsLoading) yield return LoadChildren();
+        if (autoLoadChildren && (SceneMoveManager.instance == null || !SceneMoveManager.instance.IsLoading)) yield return LoadChildren();
     }
     public IEnumerator LoadChildren()
     {

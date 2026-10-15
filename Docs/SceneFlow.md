@@ -2,20 +2,43 @@
 
 ## 실행 흐름
 
-빌드의 첫 씬은 `CoreScene`입니다. 코어의 설정 Canvas·로딩 Canvas·EventSystem·CurrencyManager·GameSession은 유지하고 나머지 화면을 Additive로 교체합니다.
+빌드의 첫 씬은 `CoreScene`입니다. 기본 흐름은 **코어 → 게임 제너럴 → 배틀 + 아이템**입니다. 코어를 통해 시작했을 때는 설정 Canvas·로딩 Canvas·CurrencyManager·GameSession을 유지하고 나머지 화면을 Additive로 교체합니다.
 
 ```text
 CoreScene (항상 유지)
- ├─ MainScene → StoryScene → GameGeneralScene
- ├─ GameGeneralScene
+ ├─ GameGeneralScene (기본 시작 화면)
  │   ├─ GameBattleScene
  │   └─ GameItemScene
  └─ UpgradeScene → GameGeneralScene
 ```
 
-`Core Scene Bootstrap → Startup Scene`의 기본값은 `MainScene`입니다. `GameGeneralScene`은 두 하위 씬을 불러오는 진입점입니다. 업그레이드 진입 시 세 게임 씬을 함께 내리고, 전투 복귀 시 다시 함께 엽니다. 재화와 GameSession 데이터는 코어에 남습니다. 여기서 유지는 씬 사이의 유지를 뜻하며 새 디스크 저장 기능은 아닙니다.
+`CoreScene → Core Scene Bootstrap`에서 다음을 설정합니다.
 
-Unity에서 어느 씬을 열고 Play해도 `CoreScenePlayBootstrap`이 코어부터 실행한 뒤 열어 둔 화면으로 이동합니다. 배틀/아이템 씬에서 Play하면 제너럴을 통해 두 게임 씬이 함께 열립니다. Play를 종료하면 원래 편집 씬으로 돌아옵니다. 편집 중 코어 UI를 함께 확인하려면 **Catnip → Scenes → Open Core Additively**를 사용하세요.
+| 필드 | 의미 |
+| --- | --- |
+| Auto Load Startup Scene | 기본 켜짐. 끄면 코어에서 다른 씬으로 자동 이동하지 않음 |
+| Startup Scene | 기본 `GameGeneralScene`. `MainScene`, `GameBattleScene`, `GameItemScene` 등 원하는 목적지 입력 가능 |
+| Only When Core Is Active | 기본 켜짐. 다른 활성 씬 옆에 코어만 추가했을 때 시작 화면으로 이동하는 것을 방지 |
+
+`GameGeneralScene`을 실행했을 때만 배틀과 아이템 씬을 함께 엽니다. 제너럴의 **Auto Load Children**을 끄면 하위 씬 자동 로딩도 생략합니다. 배틀/아이템 씬 이름을 직접 지정하면 해당 씬으로 이동하며 제너럴로 변환하지 않습니다.
+
+## 각 씬을 독립 테스트하기
+
+기본 Editor 설정은 **Current Scene Only**입니다. 배틀 씬을 열고 Play하면 배틀만, 아이템 씬을 열고 Play하면 아이템만 실행합니다. 다른 씬을 편집 중 함께 열어 뒀어도 현재 활성 씬 에셋만 실행합니다. 종료하면 원래 편집 상태로 돌아갑니다.
+
+**Catnip → Scenes → Select Play Settings**를 누르거나 `Assets/Data/ScenePlaySettings.asset`을 선택하고 **Play Mode**를 바꾸세요.
+
+| Play Mode | 배틀 씬에서 Play했을 때 |
+| --- | --- |
+| Current Scene Only (기본) | 배틀 씬만 실행. 코어·제너럴·아이템을 자동으로 불러오지 않음 |
+| Current Scene With Core | 공용 매니저를 먼저 초기화한 뒤 **코어 + 배틀만** 실행. 코어의 Startup Scene으로 이동하지 않음 |
+| Core Startup Scene | 코어부터 시작하고 코어의 Auto Load Startup Scene / Startup Scene 설정을 사용 |
+
+Current Scene Only에서도 코어 씬을 직접 실행하면 코어의 시작 설정을 따릅니다. 따라서 기본 상태에서 코어 Play는 제너럴로, 배틀 Play는 배틀 단독으로, 아이템 Play는 아이템 단독으로 시작합니다.
+
+설정 창·오디오·재화·게임 세션까지 함께 테스트하려면 **Current Scene With Core**를 선택하세요. 코어 없이 실행하면 이 공용 기능은 제공되지 않으며, 상점 구매처럼 재화가 필요한 동작은 기존 매니저의 연결 확인을 따릅니다. 전투 결과 확정은 코어 재화 매니저가 없어도 예외 없이 처리합니다. 없는 매니저나 UI를 코드로 새로 만들지는 않습니다.
+
+각 씬에는 독립 실행용 EventSystem과 씬 이동 연결이 있습니다. Additive로 함께 열었을 때는 `SceneEventSystemOwner`가 코어 우선으로 하나만 활성화해 입력 중복을 막습니다. 편집 중 코어 UI를 함께 확인하려면 **Catnip → Scenes → Open Core Additively**를 사용하세요.
 
 기존 UI의 모양과 배치는 직접 편집합니다. UI를 생성하는 코드나 생성 메뉴는 추가하지 않았습니다. Main의 중복 설정·로딩 Canvas와 씬별 중복 EventSystem은 코어 쪽으로 통일했고, 기존 스토리 초기화 버튼은 코어 설정 Canvas로 옮겼습니다.
 
@@ -53,7 +76,7 @@ Unity에서 어느 씬을 열고 Play해도 `CoreScenePlayBootstrap`이 코어�
 
 기존 `Is Time Stop` 필드는 기존 동작을 유지합니다. **꺼져 있으면** 설정 창을 열 때 일시정지하고, **켜면** 시간 진행을 유지합니다. 배틀의 Esc도 코어 설정 창을 열고 닫습니다. 설정을 닫으면 열기 전 시간 배율과 전투 입력 차단 상태를 복원하므로 결과 창 등에서 이미 멈춘 게임을 재개하지 않습니다.
 
-스토리·아이템처럼 설정 버튼이 없는 씬에 버튼이 필요하면 위 방식으로 직접 만들어 연결하면 됩니다. 코어의 설정 창 자체는 모든 화면에서 사용할 수 있습니다. 튜토리얼·스토리 초기화 버튼도 현재 씬의 오브젝트에 대한 직접 참조 없이 작동합니다.
+스토리·아이템처럼 설정 버튼이 없는 씬에 버튼이 필요하면 위 방식으로 직접 만들어 연결하면 됩니다. 코어가 로드되어 있으면 설정 창을 모든 화면에서 사용할 수 있습니다. 튜토리얼·스토리 초기화 버튼도 현재 씬의 오브젝트에 대한 직접 참조 없이 작동합니다.
 
 ## 씬 이동과 공용 데이터
 
@@ -68,7 +91,7 @@ Unity에서 어느 씬을 열고 Play해도 `CoreScenePlayBootstrap`이 코어�
 | LoadScene(string) | 이름에 맞는 화면 |
 | ReloadCurrentScene() | 현재 화면. 제너럴이면 두 하위 씬도 재생성 |
 
-코드에서는 `SceneMoveManager.instance.LoadScene(...)`을 사용합니다. `SceneManager.LoadScene(..., Single)`을 직접 호출하면 코어도 내려가므로 화면 전환은 공통 로더를 거칩니다. 예전 데이터에 남은 `GameScene`, `Main` 이름은 새 진입점으로 변환합니다.
+코드에서는 `SceneMoveManager.instance.LoadScene(...)`을 사용합니다. 코어가 있으면 코어를 유지하는 Additive 전환을, 없으면 독립 실행용 Single 전환을 사용합니다. 예전 데이터의 `GameScene`, `Main` 이름만 새 진입점으로 변환하며 `GameBattleScene`과 `GameItemScene`은 그대로 유지합니다.
 
 재화 표시는 직접 만든 UI에 `CurrencyUIGroup`을 붙이고 **Currency UIs → Type / Text Obj / Text UI**를 연결합니다. 활성화되면 코어 CurrencyManager에 등록되어 현재 값을 표시하며 씬이 내려가면 해제됩니다. 코어 매니저에 다른 씬의 텍스트를 직접 연결할 필요가 없습니다.
 
@@ -82,4 +105,4 @@ python3 Tools/ValidateEffects/check.py --cache /workspace/.cache/catnip-validati
 
 클라우드에서는 관련 C# 컴파일, 실제 씬/프리팹 참조, 순수 화면 비율·씬 이름 변환 계산을 검증합니다. Unity 렌더링·버튼 입력·Additive 비동기 로딩을 실행하는 검사는 아닙니다.
 
-Unity에서는 Test Runner → EditMode → `SceneFlowTests`를 실행하세요. 이후 각 씬에서 Play하여 코어가 하나만 유지되는지, Main → Story → 제너럴 → 결과 → 업그레이드 → 제너럴 흐름, 설정 열기/닫기와 재화 갱신, 좌우·상하 비율 변경을 확인하세요. 오른쪽 영역을 클릭했을 때 배틀의 이동/아이템 사용 입력이 발생하지 않아야 합니다.
+Unity에서는 Test Runner → EditMode → `SceneFlowTests`를 실행하세요. 기본 모드에서 배틀·아이템·메인·스토리·업그레이드를 각각 Play해 해당 씬만 열리는지 확인합니다. 코어에서 Play했을 때는 기본 제너럴 진입을, With Core 모드에서는 코어 + 선택 씬만 열리는지 확인합니다. Auto Load Startup Scene을 끄거나 Startup Scene을 변경하는 경우도 확인 대상입니다. 제너럴 통합 실행에서는 설정·재화·분할 비율과 UI 입력을 확인하며 오른쪽 클릭이 배틀 입력을 발생시키지 않아야 합니다.

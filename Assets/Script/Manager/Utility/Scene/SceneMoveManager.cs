@@ -23,11 +23,17 @@ public class SceneMoveManager : MonoBehaviour
     {
         if (instance != null && instance != this) { instance.LoadScene(sceneName); return; }
         sceneName = GameSceneRoutes.Resolve(sceneName);
-        if (string.IsNullOrEmpty(sceneName) || sceneName == GameSceneRoutes.Core) return;
+        if (string.IsNullOrEmpty(sceneName)) return;
         if (!Application.CanStreamedLevelBeLoaded(sceneName))
         { Debug.LogError($"빌드 목록에 없는 씬입니다: {sceneName}", this); return; }
         if (!SceneManager.GetSceneByName(GameSceneRoutes.Core).isLoaded)
-        { Debug.LogError("CoreScene에서 시작하세요. Editor의 Play는 코어를 먼저 엽니다.", this); return; }
+        {
+            if (IsLoading) return;
+            // 독립 테스트에서는 코어를 요구하지 않습니다. 새 씬의 로컬 로더가 이어받습니다.
+            IsLoading = true; Time.timeScale = 1f;
+            SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single); return;
+        }
+        if (sceneName == GameSceneRoutes.Core) return;
         if (IsLoading) { pendingScene = sceneName; return; }
         StartCoroutine(LoadSceneRoutine(sceneName));
     }
@@ -70,7 +76,7 @@ public class SceneMoveManager : MonoBehaviour
             foreach (var root in destination.GetRootGameObjects())
             {
                 var general = root.GetComponentInChildren<GameGeneralSceneController>();
-                if (general != null) yield return general.LoadChildren();
+                if (general != null && general.autoLoadChildren) yield return general.LoadChildren();
             }
         }
         finally

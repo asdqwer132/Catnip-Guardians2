@@ -139,6 +139,7 @@ def compile_files():
     files += [ROOT / 'Assets/Script' / name for name in extra]
     files += list((ROOT / 'Assets/Script/Manager/Utility/Scene').glob('*.cs'))
     files += list((ROOT / 'Assets/Script/Manager/Currency').glob('*.cs'))
+    files += list((ROOT / 'Assets/Script/Manager/Game/Statistics').glob('*.cs'))
     files += list((ROOT / 'Assets/Script/Manager/Story').glob('*.cs'))
     scene_extra = ('Manager/Utility/Input/GameInputManager.cs', 'Manager/Utility/Input/GameInputBlockType.cs',
                    'Manager/Game/GameSession.cs', 'Manager/Game/GameEndManager.cs', 'Manager/Game/UpgradeManager.cs',
@@ -240,7 +241,7 @@ def main():
     pure_dir = work / 'managed'
     pure_dir.mkdir()
     managed_path = pure_dir / 'Managed.csproj'
-    scene_logic = [ROOT / 'Assets/Script/Manager/Utility/Scene' / name for name in ('GameSceneRoutes.cs', 'GameViewportLayout.cs')]
+    scene_logic = [ROOT / 'Assets/Script/Manager/Utility/Scene' / name for name in ('GameSceneRoutes.cs', 'GameViewportLayout.cs', 'SceneStartupPolicy.cs', 'ScenePlaySettings.cs')]
     project(managed_path, [effect / name for name in selected] + scene_logic + [ROOT / 'Assets/Editor/BuffTargetGroupDiscovery.cs', HERE / 'ManagedApi.cs', HERE / 'ManagedChecks.cs', HERE / 'ManagedBuffGroupChecks.cs', HERE / 'ManagedAllTargetsChecks.cs', HERE / 'ManagedSummonChecks.cs', HERE / 'ManagedSummonModuleChecks.cs', HERE / 'ManagedPrefabVisualChecks.cs', HERE / 'ManagedStatusReactionChecks.cs', HERE / 'ManagedSummonGroupChecks.cs', HERE / 'ManagedSceneFlowChecks.cs'], refs, executable=True)
     run([dotnet, 'run', '--project', managed_path, '--nologo'], env=environment)
     print('API compile and managed checks passed. Unity 6000.4 import/physics/play validation remains required.')

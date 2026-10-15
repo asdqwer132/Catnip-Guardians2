@@ -35,16 +35,26 @@ def check_scene_flow():
         assert (assets / f'Script/Manager/Utility/Scene/{script}.cs').exists()
     assert guid('Script/Manager/Utility/Scene/CoreSceneBootstrap.cs') in core
     assert guid('Script/Manager/Utility/Scene/GameGeneralSceneController.cs') in general
-    startup = re.search(r'^  startupScene: (\w+)', core, re.M)[1]
-    assert startup in scenes and startup != 'CoreScene'
+    auto_start = re.search(r'^  autoLoadStartupScene: ([01])', core, re.M)[1] == '1'
+    startup = re.search(r'^  startupScene: *(.*)', core, re.M)[1].strip().strip('"')
+    startup = Path(startup).stem
+    startup = {'GameScene': 'GameGeneralScene', 'Main': 'MainScene'}.get(startup, startup)
+    if auto_start: assert startup in scenes and startup != 'CoreScene'
     assert '  battleScene: GameBattleScene\n' in general and '  itemScene: GameItemScene\n' in general
     ratio = float(re.search(r'^  battleRatio: (.*)', general, re.M)[1])
     assert 0.1 <= ratio <= 0.9
     assert '  restrictPointerToGameplayCamera: 1\n' in scenes['GameBattleScene'][0]
-    # One EventSystem services both split views and the global overlay.
+    # Every scene can process standalone UI; the owner component arbitrates additive combinations.
     event_script = '76c392e42b5098c458856cdf6ecaaaa1'
-    assert sum(text.count('guid: ' + event_script) for text, _ in scenes.values()) == 1
-    assert event_script in core
+    owner_guid = guid('Script/Manager/Utility/Scene/SceneEventSystemOwner.cs')
+    loader_guid = guid('Script/Manager/Utility/Scene/SceneMoveManager.cs')
+    for name, (text, _) in scenes.items():
+        assert text.count('guid: ' + event_script) == 1, (name, 'one local EventSystem required')
+        assert owner_guid in text, (name, 'additive EventSystem arbitration required')
+        if name != 'CoreScene': assert loader_guid in text, (name, 'standalone navigation required')
+    play_settings = (assets / 'Data/ScenePlaySettings.asset').read_text()
+    assert guid('Script/Manager/Utility/Scene/ScenePlaySettings.cs') in play_settings
+    assert int(re.search(r'^  playMode: (\d+)', play_settings, re.M)[1]) in range(3)
     prefab_guid = guid('Prefab/UI/Setting/Canvas/SettingCanvas.prefab')
     assert core.count('m_SourcePrefab: {fileID: 100100000, guid: ' + prefab_guid) == 1
     assert all(prefab_guid not in text for name, (text, _) in scenes.items() if name != 'CoreScene')
@@ -60,13 +70,14 @@ def check_scene_flow():
     assert 'm_OnClick.m_PersistentCalls' not in instance
     assert all('m_StringArgument: GameScene\n' not in text and 'gameSceneName: GameScene\n' not in text and
                'returnSceneName: GameScene\n' not in text for text, _ in scenes.values())
-    for name, camera_id in [('CoreScene', '286779211'), ('GameGeneralScene', '208387200'), ('GameItemScene', '1889333136')]:
+    for name, camera_id in [('CoreScene', '286779211'), ('GameGeneralScene', '208387200')]:
         _, blocks = scenes[name]
         camera = blocks[camera_id][1]
         go = re.search(r'^  m_GameObject: \{fileID: (\d+)\}', camera, re.M)[1]
         assert 'm_TagString: Untagged' in blocks[go][1], (name, 'must not replace the battle MainCamera')
     assert '  m_Enabled: 0\n' in scenes['CoreScene'][1]['286779211'][1]
-    print('PASS scene flow: seven registered scenes, persistent Core bindings, one EventSystem, settings relay, camera ownership and local references.')
+    assert 'm_TagString: MainCamera' in scenes['GameItemScene'][1]['1889333134'][1]
+    print('PASS scene flow: seven registered scenes, standalone UI/input/navigation bindings, configurable Core entry, settings relay and local references.')
 
 
 if __name__ == '__main__':
