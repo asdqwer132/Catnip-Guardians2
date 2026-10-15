@@ -1,8 +1,6 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.EventSystems;
-using TMPro;
 
 public class GameInputManager : MonoBehaviour
 {
@@ -16,8 +14,6 @@ public class GameInputManager : MonoBehaviour
 
     [Header("Debug")]
     public bool logInput;
-    [Tooltip("분할 화면에서 전투 카메라 영역의 클릭만 게임 입력으로 전달합니다.")]
-    public bool restrictPointerToGameplayCamera;
 
     public event Action<Vector2> OnMousePositionChanged;
 
@@ -86,12 +82,10 @@ public class GameInputManager : MonoBehaviour
     
     private void CheckGameplayInput()
     {
-        if (IsTyping()) return;
         if (IsBlocked(GameInputBlockType.Gameplay))
             return;
 
-        if (Mouse.current != null && (!restrictPointerToGameplayCamera ||
-            (mainCamera != null && mainCamera.pixelRect.Contains(MouseScreenPosition))))
+        if (Mouse.current != null)
         {
             if (Mouse.current.leftButton.wasPressedThisFrame)
             {
@@ -145,7 +139,6 @@ public class GameInputManager : MonoBehaviour
 
     private void CheckUIInput()
     {
-        if (IsTyping()) return;
         if (IsBlocked(GameInputBlockType.UI))
             return;
 
@@ -197,12 +190,6 @@ public class GameInputManager : MonoBehaviour
             Log("Number " + (index + 1));
             OnNumberPressed?.Invoke(index);
         }
-    }
-    private static bool IsTyping()
-    {
-        if (EventSystem.current == null || EventSystem.current.currentSelectedGameObject == null) return false;
-        var field = EventSystem.current.currentSelectedGameObject.GetComponentInParent<TMP_InputField>();
-        return field != null && field.isFocused;
     }
 
     public bool IsBlocked(GameInputBlockType targetBlock)

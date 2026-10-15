@@ -15,13 +15,13 @@ public class SkillTreeManager : MonoBehaviour
     [Header("Debug")]
     [SerializeField] private bool debugLog = true;
 
-    // ì „ì²´ ìŠ¤í‚¬ íŠ¸ë¦¬ì—ì„œ í•´ê¸ˆëœ ëª¨ë“  ìŠ¤í‚¬ ID
+    // ÀüÃ¼ ½ºÅ³ Æ®¸®¿¡¼­ ÇØ±İµÈ ¸ğµç ½ºÅ³ ID
     private readonly HashSet<string> unlockedSkillIds
         = new HashSet<string>();
 
-    // ìŠ¤í‚¬ ë§µë³„ í•´ê¸ˆëœ ìŠ¤í‚¬ ID
+    // ½ºÅ³ ¸Êº° ÇØ±İµÈ ½ºÅ³ ID
     // Key   : SkillMapData.dataId
-    // Value : í•´ë‹¹ ë§µì—ì„œ í•´ê¸ˆëœ SkillNodeData.dataId ëª©ë¡
+    // Value : ÇØ´ç ¸Ê¿¡¼­ ÇØ±İµÈ SkillNodeData.dataId ¸ñ·Ï
     private readonly Dictionary<string, HashSet<string>> unlockedSkillIdsByMap
         = new Dictionary<string, HashSet<string>>();
 
@@ -64,15 +64,9 @@ public class SkillTreeManager : MonoBehaviour
         if (node == null)
             return false;
 
-        // í•©ì„± í†µ ëª¨ë“œì—ì„œëŠ” ì œê±°í•œ ê°€ë°©/ê°€ë°© ìŠ¬ë¡¯ì— ì¬í™”ë¥¼ ì“¸ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.
-        if (MergeGameSession.Instance != null && node.rewards != null)
-            foreach (var reward in node.rewards)
-                if (reward is UnlockSkillReward unlock &&
-                    (unlock.UnlockType == DataType.Bag || unlock.UnlockType == DataType.BagSlot)) return false;
-
         if (string.IsNullOrEmpty(node.dataId))
         {
-            Debug.LogWarning("ìŠ¤í‚¬ IDê°€ ë¹„ì–´ìˆìŠµë‹ˆë‹¤: " + node.name);
+            Debug.LogWarning("½ºÅ³ ID°¡ ºñ¾îÀÖ½À´Ï´Ù: " + node.name);
             return false;
         }
 
@@ -93,7 +87,7 @@ public class SkillTreeManager : MonoBehaviour
         if (!CanUnlock(node))
         {
             if (debugLog)
-                Debug.Log("ìŠ¤í‚¬ í•´ê¸ˆ ì‹¤íŒ¨: " + GetSkillName(node));
+                Debug.Log("½ºÅ³ ÇØ±İ ½ÇÆĞ: " + GetSkillName(node));
 
             return false;
         }
@@ -101,15 +95,15 @@ public class SkillTreeManager : MonoBehaviour
         if (!SpendCost(node))
         {
             if (debugLog)
-                Debug.Log("ìŠ¤í‚¬ ë¹„ìš© ì†Œëª¨ ì‹¤íŒ¨: " + GetSkillName(node));
+                Debug.Log("½ºÅ³ ºñ¿ë ¼Ò¸ğ ½ÇÆĞ: " + GetSkillName(node));
 
             return false;
         }
 
-        // ì „ì²´ í•´ê¸ˆ ëª©ë¡ì— ë“±ë¡
+        // ÀüÃ¼ ÇØ±İ ¸ñ·Ï¿¡ µî·Ï
         unlockedSkillIds.Add(node.dataId);
 
-        // í•´ë‹¹ ìŠ¤í‚¬ ë§µì˜ í•´ê¸ˆ ëª©ë¡ì—ë„ ë“±ë¡
+        // ÇØ´ç ½ºÅ³ ¸ÊÀÇ ÇØ±İ ¸ñ·Ï¿¡µµ µî·Ï
         AddUnlockedSkillToMap(node);
 
         RefreshContext();
@@ -131,8 +125,8 @@ public class SkillTreeManager : MonoBehaviour
         if (debugLog)
         {
             Debug.Log(
-                $"ìŠ¤í‚¬ í•´ê¸ˆ ì„±ê³µ: {node.GetDataName()} " +
-                $"/ ë§µ í•´ê¸ˆ ê°œìˆ˜: {GetUnlockedSkillCount(node.skillMap)}"
+                $"½ºÅ³ ÇØ±İ ¼º°ø: {node.GetDataName()} " +
+                $"/ ¸Ê ÇØ±İ °³¼ö: {GetUnlockedSkillCount(node.skillMap)}"
             );
         }
 
@@ -149,7 +143,7 @@ public class SkillTreeManager : MonoBehaviour
             if (debugLog)
             {
                 Debug.LogWarning(
-                    $"ìŠ¤í‚¬ ë…¸ë“œì— ìŠ¤í‚¬ ë§µì´ ì§€ì •ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤: {node.name}",
+                    $"½ºÅ³ ³ëµå¿¡ ½ºÅ³ ¸ÊÀÌ ÁöÁ¤µÇÁö ¾Ê¾Ò½À´Ï´Ù: {node.name}",
                     node
                 );
             }
@@ -162,7 +156,7 @@ public class SkillTreeManager : MonoBehaviour
         if (string.IsNullOrEmpty(mapId))
         {
             Debug.LogWarning(
-                $"ìŠ¤í‚¬ ë§µ IDê°€ ë¹„ì–´ìˆìŠµë‹ˆë‹¤. " +
+                $"½ºÅ³ ¸Ê ID°¡ ºñ¾îÀÖ½À´Ï´Ù. " +
                 $"Node: {node.name}, Map: {node.skillMap.name}",
                 node.skillMap
             );
@@ -188,7 +182,7 @@ public class SkillTreeManager : MonoBehaviour
 
         if (CurrencyManager.instance == null)
         {
-            Debug.LogWarning("CurrencyManager.instanceê°€ ì—†ìŠµë‹ˆë‹¤.");
+            Debug.LogWarning("CurrencyManager.instance°¡ ¾ø½À´Ï´Ù.");
             return false;
         }
 
@@ -202,7 +196,7 @@ public class SkillTreeManager : MonoBehaviour
 
         if (CurrencyManager.instance == null)
         {
-            Debug.LogWarning("CurrencyManager.instanceê°€ ì—†ìŠµë‹ˆë‹¤.");
+            Debug.LogWarning("CurrencyManager.instance°¡ ¾ø½À´Ï´Ù.");
             return false;
         }
 
@@ -214,7 +208,7 @@ public class SkillTreeManager : MonoBehaviour
         if (node == null)
             return false;
 
-        // ìš”êµ¬ ìŠ¤í‚¬ì´ ì—†ìœ¼ë©´ ì‹œì‘ ë…¸ë“œì´ë¯€ë¡œ í•´ê¸ˆ ê°€ëŠ¥
+        // ¿ä±¸ ½ºÅ³ÀÌ ¾øÀ¸¸é ½ÃÀÛ ³ëµåÀÌ¹Ç·Î ÇØ±İ °¡´É
         if (node.requiredSkills == null || node.requiredSkills.Count == 0)
             return true;
 
@@ -232,12 +226,12 @@ public class SkillTreeManager : MonoBehaviour
 
             hasValidRequiredSkill = true;
 
-            // í•˜ë‚˜ë¼ë„ í•´ê¸ˆë˜ì–´ ìˆìœ¼ë©´ í†µê³¼
+            // ÇÏ³ª¶óµµ ÇØ±İµÇ¾î ÀÖÀ¸¸é Åë°ú
             if (IsUnlocked(requiredSkill.dataId))
                 return true;
         }
 
-        // ë¦¬ìŠ¤íŠ¸ëŠ” ìˆì§€ë§Œ ìœ íš¨í•œ ìš”êµ¬ ìŠ¤í‚¬ì´ ì—†ìœ¼ë©´ ì‹œì‘ ë…¸ë“œì²˜ëŸ¼ ì²˜ë¦¬
+        // ¸®½ºÆ®´Â ÀÖÁö¸¸ À¯È¿ÇÑ ¿ä±¸ ½ºÅ³ÀÌ ¾øÀ¸¸é ½ÃÀÛ ³ëµåÃ³·³ Ã³¸®
         if (!hasValidRequiredSkill)
             return true;
 
@@ -260,17 +254,16 @@ public class SkillTreeManager : MonoBehaviour
         }
     }
 
-    // ì „ì²´ ìŠ¤í‚¬ íŠ¸ë¦¬ ê¸°ì¤€ í•´ê¸ˆ ì—¬ë¶€
+    // ÀüÃ¼ ½ºÅ³ Æ®¸® ±âÁØ ÇØ±İ ¿©ºÎ
     public bool IsUnlocked(string skillId)
     {
         if (string.IsNullOrEmpty(skillId))
             return false;
 
-        return unlockedSkillIds.Contains(skillId) ||
-            (MergeGameSession.Instance != null && MergeGameSession.Instance.upgrades.Has(skillId));
+        return unlockedSkillIds.Contains(skillId);
     }
 
-    // íŠ¹ì • ìŠ¤í‚¬ ë§µ ê¸°ì¤€ í•´ê¸ˆ ì—¬ë¶€
+    // Æ¯Á¤ ½ºÅ³ ¸Ê ±âÁØ ÇØ±İ ¿©ºÎ
     public bool IsUnlockedInMap(
         SkillMapData skillMap,
         string skillId)
@@ -291,10 +284,17 @@ public class SkillTreeManager : MonoBehaviour
         if (string.IsNullOrEmpty(skillId))
             return false;
 
-        return GetUnlockedSkillIds(mapId).Contains(skillId);
+        if (!unlockedSkillIdsByMap.TryGetValue(
+                mapId,
+                out HashSet<string> mapSkillIds))
+        {
+            return false;
+        }
+
+        return mapSkillIds.Contains(skillId);
     }
 
-    // íŠ¹ì • ìŠ¤í‚¬ ë§µì—ì„œ í•´ê¸ˆëœ ë…¸ë“œ ê°œìˆ˜
+    // Æ¯Á¤ ½ºÅ³ ¸Ê¿¡¼­ ÇØ±İµÈ ³ëµå °³¼ö
     public int GetUnlockedSkillCount(SkillMapData skillMap)
     {
         if (skillMap == null)
@@ -309,11 +309,18 @@ public class SkillTreeManager : MonoBehaviour
         if (string.IsNullOrEmpty(mapId))
             return 0;
 
-        return GetUnlockedSkillIds(mapId).Count;
+        if (!unlockedSkillIdsByMap.TryGetValue(
+                mapId,
+                out HashSet<string> mapSkillIds))
+        {
+            return 0;
+        }
+
+        return mapSkillIds.Count;
     }
 
-    // íŠ¹ì • ìŠ¤í‚¬ ë§µì—ì„œ í•´ê¸ˆëœ ë…¸ë“œ ID ëª©ë¡
-    // ì™¸ë¶€ì—ì„œ ë‚´ë¶€ HashSetì„ ë³€ê²½í•˜ì§€ ëª»í•˜ë„ë¡ ë³µì‚¬ë³¸ ë°˜í™˜
+    // Æ¯Á¤ ½ºÅ³ ¸Ê¿¡¼­ ÇØ±İµÈ ³ëµå ID ¸ñ·Ï
+    // ¿ÜºÎ¿¡¼­ ³»ºÎ HashSetÀ» º¯°æÇÏÁö ¸øÇÏµµ·Ï º¹»çº» ¹İÈ¯
     public HashSet<string> GetUnlockedSkillIds(SkillMapData skillMap)
     {
         if (skillMap == null)
@@ -327,13 +334,17 @@ public class SkillTreeManager : MonoBehaviour
         if (string.IsNullOrEmpty(mapId))
             return new HashSet<string>();
 
-        var result = unlockedSkillIdsByMap.TryGetValue(mapId, out HashSet<string> mapSkillIds)
-            ? new HashSet<string>(mapSkillIds) : new HashSet<string>();
-        if (MergeGameSession.Instance != null) result.UnionWith(MergeGameSession.Instance.upgrades.InMap(mapId));
-        return result;
+        if (!unlockedSkillIdsByMap.TryGetValue(
+                mapId,
+                out HashSet<string> mapSkillIds))
+        {
+            return new HashSet<string>();
+        }
+
+        return new HashSet<string>(mapSkillIds);
     }
 
-    // íŠ¹ì • ë§µì˜ í•´ê¸ˆ ì •ë³´ë§Œ ì´ˆê¸°í™”
+    // Æ¯Á¤ ¸ÊÀÇ ÇØ±İ Á¤º¸¸¸ ÃÊ±âÈ­
     public void ClearSkillsInMap(SkillMapData skillMap)
     {
         if (skillMap == null)
@@ -344,24 +355,39 @@ public class SkillTreeManager : MonoBehaviour
 
     public void ClearSkillsInMap(string mapId)
     {
-        if (string.IsNullOrEmpty(mapId)) return;
-        if (MergeGameSession.Instance != null) MergeGameSession.Instance.upgrades.ClearMap(mapId);
-        if (unlockedSkillIdsByMap.TryGetValue(mapId, out HashSet<string> mapSkillIds))
-            foreach (string skillId in mapSkillIds) unlockedSkillIds.Remove(skillId);
+        if (string.IsNullOrEmpty(mapId))
+            return;
+
+        if (!unlockedSkillIdsByMap.TryGetValue(
+                mapId,
+                out HashSet<string> mapSkillIds))
+        {
+            return;
+        }
+
+        // ÀüÃ¼ ÇØ±İ ¸ñ·Ï¿¡¼­µµ ÇØ´ç ¸ÊÀÇ ½ºÅ³µéÀ» Á¦°Å
+        foreach (string skillId in mapSkillIds)
+        {
+            unlockedSkillIds.Remove(skillId);
+        }
+
         unlockedSkillIdsByMap.Remove(mapId);
+
         OnSkillTreeChanged?.Invoke();
+
+        if (debugLog)
+            Debug.Log($"½ºÅ³ ¸Ê ÇØ±İ Á¤º¸ ÃÊ±âÈ­: {mapId}");
     }
 
     public void ClearAllSkills()
     {
-        if (MergeGameSession.Instance != null) MergeGameSession.Instance.upgrades.purchases.Clear();
         unlockedSkillIds.Clear();
         unlockedSkillIdsByMap.Clear();
 
         OnSkillTreeChanged?.Invoke();
 
         if (debugLog)
-            Debug.Log("ëª¨ë“  ìŠ¤í‚¬ í•´ê¸ˆ ì •ë³´ ì´ˆê¸°í™”");
+            Debug.Log("¸ğµç ½ºÅ³ ÇØ±İ Á¤º¸ ÃÊ±âÈ­");
     }
 
     private string GetSkillName(SkillNodeData node)

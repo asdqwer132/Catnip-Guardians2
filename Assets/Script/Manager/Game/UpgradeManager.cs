@@ -3,7 +3,6 @@ using UnityEngine;
 public class UpgradeManager : MonoBehaviour
 {
     private bool isInited = false;
-    public MergeUpgradeSceneController mergeUpgrade;
 
     [Header("Managers")]
     public ItemInitManager itemInitManager;
@@ -35,10 +34,10 @@ public class UpgradeManager : MonoBehaviour
         if (shopManager != null)
             shopManager.InitShop();
 
-        if (mergeUpgrade == null && equipmentBagManager != null)
+        if (equipmentBagManager != null)
             equipmentBagManager.Init();
 
-        if (mergeUpgrade == null && itemInitManager != null)
+        if (itemInitManager != null)
             itemInitManager.ApplyDefaultInventoryItems();
 
         if (unlockManager != null)
@@ -47,7 +46,7 @@ public class UpgradeManager : MonoBehaviour
         // 가방 복원
         if (GameSession.Instance != null &&
             GameSession.Instance.HasEquipmentBagData &&
-            equipmentBagManager != null && mergeUpgrade == null)
+            equipmentBagManager != null)
         {
             GameSession.Instance.LoadEquipmentBags(
                 equipmentBagManager.bags
@@ -85,7 +84,7 @@ public class UpgradeManager : MonoBehaviour
         if (GameSession.Instance != null)
         {
             // 가방 저장
-            if (mergeUpgrade == null && equipmentBagManager != null)
+            if (equipmentBagManager != null)
             {
                 GameSession.Instance.SaveEquipmentBags(
                     equipmentBagManager.bags
@@ -101,7 +100,6 @@ public class UpgradeManager : MonoBehaviour
             }
         }
 
-        if (mergeUpgrade != null) MergeGameSession.Ensure().SaveInventory(InventoryManager.instance);
         if (sceneMoveManager != null)
             sceneMoveManager.GoGameScene();
     }

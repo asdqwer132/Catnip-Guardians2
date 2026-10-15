@@ -25890,14 +25890,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemBoxPoolManager
   allBoxList:
-  - {fileID: 11400000, guid: e5c0db86470946cfa51a393b96e09ae8, type: 2}
-  - {fileID: 11400000, guid: f23c5573ba474f9d82e37eb26629e7aa, type: 2}
-  - {fileID: 11400000, guid: 2452f3795350413499d0895c634bea81, type: 2}
-  - {fileID: 11400000, guid: 25daf8b610904cab894a5fa81abb781e, type: 2}
-  - {fileID: 11400000, guid: c09025c8f4ba4046981b89e741cae6b0, type: 2}
-  - {fileID: 11400000, guid: 446d495f324a41ec9505c337e45b63f0, type: 2}
-  - {fileID: 11400000, guid: ef859fbbc4394ebea44426bb8cb2ba0d, type: 2}
-  - {fileID: 11400000, guid: f413fe11f7d94ac4a090f86c12609ba8, type: 2}
+  - {fileID: 11400000, guid: 705548d4ce2ec7d45ab57affcf4b01fc, type: 2}
+  - {fileID: 11400000, guid: ce619ab0bf3ffbb4eaea948b123af8ff, type: 2}
+  - {fileID: 11400000, guid: bf470ad5eea9b254f9f4362a28a49ab6, type: 2}
   allowDuplicate: 1
 --- !u!4 &642885260
 Transform:
@@ -46044,7 +46039,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1119029933
 RectTransform:
   m_ObjectHideFlags: 0
@@ -49272,7 +49267,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1215514384}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c402833f006d163498fffc47c5308712, type: 3}
   m_Name: 
@@ -53960,7 +53955,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1405850955}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 62de384168d48b04ebdaef78f969da4c, type: 3}
   m_Name: 
@@ -53976,7 +53971,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1405850955}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 03ed5e27f47c928499dcea1f2f2fd0a4, type: 3}
   m_Name: 
@@ -54001,7 +53996,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1405850955}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 35382185e041b3f49b914fdce501f870, type: 3}
   m_Name: 
@@ -60901,7 +60896,6 @@ MonoBehaviour:
   - {fileID: 1529918438}
   equipmentBagManager: {fileID: 1657215417}
   sceneMoveManager: {fileID: 1632709418}
-  mergeUpgrade: {fileID: 910000000003}
 --- !u!114 &1644459206
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -61556,7 +61550,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1657215416}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4d5d6534d2e862d4db01e78c738dbdfd, type: 3}
   m_Name: 
@@ -70196,7 +70190,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1968320537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -71360,7 +71354,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2007016489}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: edd4de030e4f4244e9f623c5c5036a7a, type: 3}
   m_Name: 
@@ -71559,7 +71553,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2017198889
 RectTransform:
   m_ObjectHideFlags: 0
@@ -73970,7 +73964,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2109833232
 RectTransform:
   m_ObjectHideFlags: 0
@@ -81668,70 +81662,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7564827998020386016, guid: 5c3e916e74074f548b64853f55c15a64, type: 3}
   m_PrefabInstance: {fileID: 2144910485}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &910000000001
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 910000000002}
-  - component: {fileID: 910000000003}
-  m_Layer: 0
-  m_Name: Merge Upgrade Flow
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &910000000002
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 910000000001}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &910000000003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 910000000001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f591b5b6ebba409088ab9a894f8ab283, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::MergeUpgradeSceneController
-  catalog: {fileID: 11400000, guid: c558f5f289fe4a83a3521d2a00f2e3a3, type: 2}
-  skillPanel: {fileID: 1523631102}
-  shopPanel: {fileID: 971256503}
-  subPlantPanel: {fileID: 1185784521}
-  removedPanels:
-  - {fileID: 2017198888}
-  - {fileID: 1968320536}
-  removedNavigation:
-  - {fileID: 1119029932}
-  - {fileID: 2109833231}
-  removedControllers:
-  - {fileID: 1215514386}
-  - {fileID: 1405850956}
-  - {fileID: 1405850957}
-  - {fileID: 1405850958}
-  - {fileID: 1657215417}
-  - {fileID: 2007016490}
-  navigationParent: {fileID: 1150114800}
-  upgradeManager: {fileID: 1644459205}
-  subPlantManager: {fileID: 1986217060}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -81749,4 +81679,3 @@ SceneRoots:
   - {fileID: 1853164046}
   - {fileID: 17200065}
   - {fileID: 2118770578}
-  - {fileID: 910000000002}
