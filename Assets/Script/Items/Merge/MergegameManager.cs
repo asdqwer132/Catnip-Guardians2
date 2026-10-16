@@ -24,6 +24,7 @@ public class MergegameManager : MonoBehaviour
     [Min(1)] public int maximumActiveItems = 50;
     [Min(0)] public int prewarmCount = 4;
     [Min(0f)] public float resultMergeDelay = 0.1f;
+    [Min(0f)] public float dropOffest = 0.02f;
 
     [Header("테스트 입력 · Input System")]
     public bool acceptKeyboardInput = true;
@@ -105,6 +106,7 @@ public class MergegameManager : MonoBehaviour
     public void DropCurrent() => TryDropCurrent();
     public void NextMaterial() => SelectNextMaterial();
     public void SetMaterial(int index) => SelectMaterial(index);
+
     public bool SelectNextMaterial()
     {
         currentMaterial = MergeTree.NextMaterial(mergeMaterials, currentMaterial);
@@ -135,7 +137,9 @@ public class MergegameManager : MonoBehaviour
         EnsureSelection();
         if (!MergeTree.IsAvailable(currentMaterial)) return Reject("사용할 재료가 없습니다.");
         var material = currentMaterial;
-        Vector3 position = spawnPoint.position;
+        float offset = UnityEngine.Random.Range(0, 2) == 1 ? -1f : 1f;
+        Debug.Log(offset);
+        Vector3 position = spawnPoint.position + new Vector3(offset * dropOffest, 0f, 0f);
         if (IsBlocked(position, material.MergeItem.Radius)) return Reject("투입 위치가 막혀 있습니다.");
         dropping = true;
         int before = revision;
