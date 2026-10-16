@@ -9,6 +9,8 @@ public class ItemData {
 public enum ItemSeries { None, Weapon, Food, Mineral }
 public enum PlayerStatusList { arrow, star }
 public class InventoryItem { public ItemData itemData; public int amount; }
+public class ItemRecipeData { public ItemData resultItem; public RecipeMaterial[] materials; }
+public class RecipeMaterial { public ItemData itemData; public int amount; }
 public class EquipmentBag { public string name; public System.Collections.Generic.List<InventoryItem> equippedItems; }
 public class ItemEffectData : ScriptableObject { public virtual void Prepare(ItemEffectContext c){} public virtual void ExecuteEffect(ItemEffectContext c){} public void Execute(ItemEffectContext c)=>ExecuteEffect(c); public bool CanExecute(ItemEffectContext c)=>c!=null&&c.CanContinue; public bool TryExecute(ItemEffectContext c){if(!CanExecute(c))return false;ExecuteEffect(c);return true;} }
 // Creation is an engine substitute; maintained-group tests execute the actual reaction runtime.

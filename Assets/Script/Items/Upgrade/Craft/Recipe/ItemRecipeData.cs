@@ -1,4 +1,3 @@
-﻿using NUnit.Framework.Interfaces;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Recipe", menuName = "03.Upgrade/Crafting/Recipe")]
@@ -21,6 +20,7 @@ public class ItemRecipeData : ScriptableObject, ISearchable
 #if UNITY_EDITOR
     private void OnValidate()
     {
+        if (resultItem == null) return;
         if (itemGrade == ItemGrade.None)
             itemGrade = resultItem.grade;
         if (itemSeries == ItemSeries.None)

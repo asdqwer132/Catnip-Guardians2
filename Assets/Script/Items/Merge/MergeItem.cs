@@ -4,5 +4,6 @@ using UnityEngine;
 public class MergeItem : ScriptableObject
 {
     public ItemData item;
-    public float radius;
+    [Min(0.01f)] public float radius = 0.5f;
+    public float Radius => EffectStatUtility.Safe(radius, 0.01f, 1000f, 0.5f);
 }

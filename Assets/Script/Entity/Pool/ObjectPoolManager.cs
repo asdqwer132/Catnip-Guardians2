@@ -4,6 +4,8 @@ using UnityEngine;
 public class ObjectPoolManager : MonoBehaviour
 {
     public static ObjectPoolManager instance;
+    [Tooltip("끄면 명시적으로 연결한 로컬 풀로만 사용하며 공용 instance를 바꾸지 않습니다.")]
+    public bool registerAsDefaultPool = true;
 
     [Header("Default Parent")]
     public Transform poolParent;
@@ -11,10 +13,12 @@ public class ObjectPoolManager : MonoBehaviour
     [Header("Active Parents")]
     public Transform enemyActiveParent;
     public Transform effectActiveParent;
+    public Transform mergeItemActiveParent;
 
     [Header("Inactive Pool Parents")]
     public Transform enemyPoolParent;
     public Transform effectPoolParent;
+    public Transform mergeItemPoolParent;
 
     private readonly Dictionary<GameObject, Queue<PooledObject>> poolDictionary =
         new Dictionary<GameObject, Queue<PooledObject>>();
@@ -23,7 +27,7 @@ public class ObjectPoolManager : MonoBehaviour
 
     private void Awake()
     {
-        instance = this;
+        if (registerAsDefaultPool) instance = this;
 
         if (poolParent == null)
             poolParent = transform;
@@ -275,6 +279,9 @@ public class ObjectPoolManager : MonoBehaviour
             case PoolObjectGroup.Effect:
                 return effectActiveParent;
 
+            case PoolObjectGroup.MergeItem:
+                return mergeItemActiveParent != null ? mergeItemActiveParent : poolParent;
+
             default:
                 return null;
         }
@@ -289,6 +296,9 @@ public class ObjectPoolManager : MonoBehaviour
 
             case PoolObjectGroup.Effect:
                 return effectPoolParent != null ? effectPoolParent : poolParent;
+
+            case PoolObjectGroup.MergeItem:
+                return mergeItemPoolParent != null ? mergeItemPoolParent : poolParent;
 
             default:
                 return poolParent;

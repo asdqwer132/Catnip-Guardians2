@@ -170,6 +170,34 @@ MonoBehaviour:
   currentMaterial:
     MergeItem: {fileID: 0}
     count: 0
+  objectPool: {fileID: 910000500001}
+  spawnPoint: {fileID: 985560683}
+  mergeItems:
+  - {fileID: 11400000, guid: 732db44c43735b14f9e2162a159ab9bb, type: 2}
+  - {fileID: 11400000, guid: 09bac1e0f87a1364688029d864d7328d, type: 2}
+  - {fileID: 11400000, guid: e3b4fcb4bd4337447b1cd33353fed100, type: 2}
+  - {fileID: 11400000, guid: 2f8f254750f20a74fb3cdfb7f493658b, type: 2}
+  - {fileID: 11400000, guid: f552058213e46ee4ca0b0ef2e3a578ae, type: 2}
+  dropInterval: 0.5
+  maximumActiveItems: 50
+  prewarmCount: 4
+  resultMergeDelay: 0.1
+  acceptKeyboardInput: 0
+  dropBinding: <Keyboard>/space
+  nextMaterialBinding: <Keyboard>/q
+  logActions: 1
+  onCurrentMaterialChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  onMaterialsChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  onBoardChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  onItemMerged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &88323783
 GameObject:
   m_ObjectHideFlags: 0
@@ -855,6 +883,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1122774686}
+  - component: {fileID: 910000500001}
   m_Layer: 0
   m_Name: MegerGeneralManager
   m_TagString: Untagged
@@ -1041,6 +1070,34 @@ MonoBehaviour:
   currentMaterial:
     MergeItem: {fileID: 0}
     count: 0
+  objectPool: {fileID: 910000500001}
+  spawnPoint: {fileID: 985560683}
+  mergeItems:
+  - {fileID: 11400000, guid: 732db44c43735b14f9e2162a159ab9bb, type: 2}
+  - {fileID: 11400000, guid: 09bac1e0f87a1364688029d864d7328d, type: 2}
+  - {fileID: 11400000, guid: e3b4fcb4bd4337447b1cd33353fed100, type: 2}
+  - {fileID: 11400000, guid: 2f8f254750f20a74fb3cdfb7f493658b, type: 2}
+  - {fileID: 11400000, guid: f552058213e46ee4ca0b0ef2e3a578ae, type: 2}
+  dropInterval: 0.5
+  maximumActiveItems: 50
+  prewarmCount: 4
+  resultMergeDelay: 0.1
+  acceptKeyboardInput: 1
+  dropBinding: <Keyboard>/space
+  nextMaterialBinding: <Keyboard>/q
+  logActions: 1
+  onCurrentMaterialChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  onMaterialsChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  onBoardChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  onItemMerged:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1828698572
 GameObject:
   m_ObjectHideFlags: 0
@@ -1284,6 +1341,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   priority: 50
   requireEnabledCamera: 1
+--- !u!114 &910000500001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1122774685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825544a4c3793ce4ca457e82536875bf, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ObjectPoolManager
+  registerAsDefaultPool: 0
+  poolParent: {fileID: 1122774686}
+  enemyActiveParent: {fileID: 0}
+  effectActiveParent: {fileID: 0}
+  mergeItemActiveParent: {fileID: 98602615}
+  enemyPoolParent: {fileID: 0}
+  effectPoolParent: {fileID: 0}
+  mergeItemPoolParent: {fileID: 1122774686}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

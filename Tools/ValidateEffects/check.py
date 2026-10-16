@@ -17,6 +17,7 @@ import xml.etree.ElementTree as ET
 import zipfile
 sys.dont_write_bytecode = True
 from check_scene_flow import check_scene_flow
+from check_merge_game import check_merge_game
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
@@ -138,6 +139,8 @@ def compile_files():
              'Items/Upgrade/Skill/Reward/Unlock/DataType.cs')
     files += [ROOT / 'Assets/Script' / name for name in extra]
     files += list((ROOT / 'Assets/Script/Manager/Utility/Scene').glob('*.cs'))
+    files += list((ROOT / 'Assets/Script/Items/Merge').glob('*.cs'))
+    files += [ROOT / 'Assets/Script/Items/Upgrade/Craft/Recipe/ItemRecipeData.cs']
     files += list((ROOT / 'Assets/Script/Manager/Currency').glob('*.cs'))
     files += list((ROOT / 'Assets/Script/Manager/Game/Statistics').glob('*.cs'))
     files += list((ROOT / 'Assets/Script/Manager/Story').glob('*.cs'))
@@ -161,6 +164,7 @@ def main():
     args = parser.parse_args()
     metadata_ok = metadata()
     check_scene_flow()
+    check_merge_game()
     if args.metadata_only:
         return 0 if metadata_ok else 1
     dotnet, refs = prepare_dependencies(args.cache.resolve())
@@ -245,6 +249,8 @@ def main():
     pure_dir.mkdir()
     managed_path = pure_dir / 'Managed.csproj'
     scene_logic = [ROOT / 'Assets/Script/Manager/Utility/Scene' / name for name in ('GameSceneRoutes.cs', 'GameViewportLayout.cs', 'SceneStartupPolicy.cs', 'ScenePlaySettings.cs')]
+    scene_logic += [ROOT / 'Assets/Script/Items/Merge' / name for name in ('MergeItem.cs', 'MergeTree.cs')]
+    scene_logic += [HERE / 'ManagedMergeGameChecks.cs']
     project(managed_path, [effect / name for name in selected] + scene_logic + [ROOT / 'Assets/Editor/BuffTargetGroupDiscovery.cs', HERE / 'ManagedApi.cs', HERE / 'ManagedChecks.cs', HERE / 'ManagedBuffGroupChecks.cs', HERE / 'ManagedAllTargetsChecks.cs', HERE / 'ManagedSummonChecks.cs', HERE / 'ManagedSummonModuleChecks.cs', HERE / 'ManagedPrefabVisualChecks.cs', HERE / 'ManagedStatusReactionChecks.cs', HERE / 'ManagedSummonGroupChecks.cs', HERE / 'ManagedSustainedSummonChecks.cs', HERE / 'ManagedSceneFlowChecks.cs'], refs, executable=True)
     run([dotnet, 'run', '--project', managed_path, '--nologo'], env=environment)
     # Exercise the real owner callbacks with duplicate-registration checks on every enabled write.

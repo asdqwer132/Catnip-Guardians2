@@ -16,6 +16,8 @@ python3 Tools/ValidateEffects/check.py --metadata-only
 
 검증 범위:
 
+- [사용자 게임아이템씬 머지 연결](../../Docs/MergeGame.md)의 실제 MergegameManager/머지 피스/공용 풀과 Unity 검사를 함께 API 컴파일한다. 등록된 두 재료 조합만의 판정, 가변 레시피 목록, 재고 선택/순환/소진과 반지름 안전 처리를 실행한다. `check_merge_game.py`는 사용자 씬/프리팹의 명시적 풀·투입점·결과 정의·컴포넌트 참조와 카메라 독립성을 검사한다. Unity의 실제 낙하·충돌·키 입력 및 MergeGameTests 실행은 클라우드에서 수행하지 않는다.
+
 - [씬 연결](../../Docs/SceneFlow.md)의 로더·카메라/Canvas 연결·설정·재화·입력 코드를 함께 API 컴파일합니다. 일곱 씬의 빌드 등록, 공용 설정 버튼과 EventSystem, 씬 내부 참조도 검사하며 실제 화면 비율 계산과 이전 씬 이름 변환은 관리 코드로 실행합니다. Input System 및 범위 밖 서비스의 대체 선언은 `SceneFlowApi.cs`에 있습니다. Additive 비동기 로딩·렌더링·버튼 클릭·설정 일시정지는 Unity에서 확인해야 하며 `SceneFlowTests`의 엔진 검사는 여기서 컴파일만 합니다.
   현재 씬 단독 실행, 코어와 현재 씬만 실행, 코어의 시작 설정 사용, 자동 이동 끄기와 목적지 변경도 실제 `SceneStartupPolicy`로 검사합니다. 각 씬의 로컬 EventSystem/로더 연결과 EventSystem·입력 모듈의 비활성 초기값을 검사합니다. `ManagedEventSystemChecks.cs`는 실제 `SceneEventSystemOwner` 콜백을 별도 관리형 모형에서 실행하여 코어 시작·하위 씬 추가·뒤늦은 코어 진입·코어 제거·단독 입력 복구를 검사하고, enabled 변경 순간에 두 EventSystem이 겹치면 실패합니다. 이 모형은 Unity 생명주기나 uGUI를 실행하지 않으므로 실제 씬 로딩·등록·클릭은 Unity에서 확인합니다.
   같은 모형에서 실제 `SceneAudioListenerOwner`의 코어 대기·배틀/아이템 우선순위·카메라 켜기/끄기·씬 제거를 검사하며 리스너가 순간적으로 겹쳐도 실패합니다. 일곱 씬의 비활성 리스너와 소유권 컴포넌트 연결도 검사합니다.
