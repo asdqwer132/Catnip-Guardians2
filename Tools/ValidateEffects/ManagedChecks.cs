@@ -23,6 +23,7 @@ public static partial class Runner {
  RunPrefabVisualChecks();
  RunStatusReactionChecks();
  RunSummonGroupChecks();
+ RunSustainedSummonChecks();
  Check("special functions execute before use-count consumption including the last use",()=>{
   var manager=new BuffManager();var item=CompletionItem(new CompletionProbe());var previous=SpecialItemManager.Instance;int observed=0;
   try{SpecialItemManager.Instance=new SpecialItemManager{onCall=context=>{True(manager.endedUses==0);observed++;}};

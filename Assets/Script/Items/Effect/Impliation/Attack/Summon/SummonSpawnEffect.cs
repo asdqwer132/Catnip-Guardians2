@@ -52,6 +52,7 @@ public sealed class SummonSpawnEffect : ItemEffectData
             actor.Initialize(context, current.lifetime);
             if (!actor.gameObject.activeSelf) actor.gameObject.SetActive(true);
             results?.Add(actor);
+            context.onSummonSpawned?.Invoke(actor);
             spawned++;
         }
         return spawned;

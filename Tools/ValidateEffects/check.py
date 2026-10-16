@@ -212,6 +212,9 @@ def main():
                 'Impliation/Attack/Summon/SummonDefinition.cs', 'Impliation/Attack/Summon/SummonRegistry.cs',
                 'Impliation/Attack/Summon/SummonGroupDefinition.cs', 'Impliation/Attack/Summon/SummonGroupActivationGate.cs',
                 'Impliation/Attack/Summon/SummonGroupRuntime.cs',
+                'Impliation/Attack/Summon/SummonGroupReactionModule.cs',
+                'Impliation/Attack/Summon/SummonGroupSpawnPosition.cs',
+                'Impliation/Attack/Summon/SummonGroupSustainedSpawnModule.cs', 'Excuter/Data/EffectPositionAnchor.cs',
                 'Impliation/Attack/Summon/SummonContactActivationGate.cs',
                 'Impliation/Attack/Summon/SummonPeriodicSpawnSchedule.cs',
                 'Impliation/Cooldown/ItemCooldownStat.cs', 'Impliation/Cooldown/BagCooldownStat.cs',
@@ -242,7 +245,7 @@ def main():
     pure_dir.mkdir()
     managed_path = pure_dir / 'Managed.csproj'
     scene_logic = [ROOT / 'Assets/Script/Manager/Utility/Scene' / name for name in ('GameSceneRoutes.cs', 'GameViewportLayout.cs', 'SceneStartupPolicy.cs', 'ScenePlaySettings.cs')]
-    project(managed_path, [effect / name for name in selected] + scene_logic + [ROOT / 'Assets/Editor/BuffTargetGroupDiscovery.cs', HERE / 'ManagedApi.cs', HERE / 'ManagedChecks.cs', HERE / 'ManagedBuffGroupChecks.cs', HERE / 'ManagedAllTargetsChecks.cs', HERE / 'ManagedSummonChecks.cs', HERE / 'ManagedSummonModuleChecks.cs', HERE / 'ManagedPrefabVisualChecks.cs', HERE / 'ManagedStatusReactionChecks.cs', HERE / 'ManagedSummonGroupChecks.cs', HERE / 'ManagedSceneFlowChecks.cs'], refs, executable=True)
+    project(managed_path, [effect / name for name in selected] + scene_logic + [ROOT / 'Assets/Editor/BuffTargetGroupDiscovery.cs', HERE / 'ManagedApi.cs', HERE / 'ManagedChecks.cs', HERE / 'ManagedBuffGroupChecks.cs', HERE / 'ManagedAllTargetsChecks.cs', HERE / 'ManagedSummonChecks.cs', HERE / 'ManagedSummonModuleChecks.cs', HERE / 'ManagedPrefabVisualChecks.cs', HERE / 'ManagedStatusReactionChecks.cs', HERE / 'ManagedSummonGroupChecks.cs', HERE / 'ManagedSustainedSummonChecks.cs', HERE / 'ManagedSceneFlowChecks.cs'], refs, executable=True)
     run([dotnet, 'run', '--project', managed_path, '--nologo'], env=environment)
     # Exercise the real owner callbacks with duplicate-registration checks on every enabled write.
     input_dir = work / 'scene-input'
@@ -250,6 +253,7 @@ def main():
     input_path = input_dir / 'SceneInput.csproj'
     project(input_path, [ROOT / 'Assets/Script/Manager/Utility/Scene/SceneEventSystemOwner.cs',
                          ROOT / 'Assets/Script/Manager/Utility/Scene/GameSceneRoutes.cs',
+                         ROOT / 'Assets/Script/Manager/Utility/Scene/SceneAudioListenerOwner.cs',
                          HERE / 'ManagedEventSystemChecks.cs'], None, executable=True)
     run([dotnet, 'run', '--project', input_path, '--nologo'], env=environment)
     print('API compile and managed checks passed. Unity 6000.4 import/physics/play validation remains required.')

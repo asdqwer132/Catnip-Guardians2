@@ -50,6 +50,7 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
     private bool initialized, registered, finishing;
     private bool groupReady, groupPendingReady, groupPendingActivation;
     public bool IsGroupReady => groupReady;
+    public bool CountsForSummonGroups => executionContext == null || executionContext.countsForSummonGroupPopulation;
 
     public UnityEngine.Object BuffTargetObject => this;
     public string BuffTargetGroup => "Summon";
@@ -159,6 +160,7 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
     {
         // 재활성화 직후 같은 프레임의 Initialize가 새 소유자/정의를 설정할 시간을 줍니다.
         if (groupPendingActivation && initialized && isActiveAndEnabled) NotifyGroupReady();
+        if (CanAct) SummonGroupRuntime.TickForFrame(Time.frameCount, Time.deltaTime);
     }
     private void NotifyGroupReady()
     {

@@ -55,6 +55,7 @@ def check_scene_flow():
     event_script = '76c392e42b5098c458856cdf6ecaaaa1'
     module_script = '01614664b831546d2ae94a42149d80ac'
     owner_guid = guid('Script/Manager/Utility/Scene/SceneEventSystemOwner.cs')
+    audio_guid = guid('Script/Manager/Utility/Scene/SceneAudioListenerOwner.cs')
     loader_guid = guid('Script/Manager/Utility/Scene/SceneMoveManager.cs')
     for name, (text, blocks) in scenes.items():
         assert text.count('guid: ' + event_script) == 1, (name, 'one local EventSystem required')
@@ -70,6 +71,17 @@ def check_scene_flow():
         assert '  m_Enabled: 0\n' in module, (name, 'input module must start disabled')
         assert f'  inputModules:\n  - {{fileID: {module_id}}}\n' in owner, (name, 'explicit runtime input module required')
         if name != 'CoreScene': assert loader_guid in text, (name, 'standalone navigation required')
+        listeners = [(key, body) for key, (kind, body) in blocks.items() if kind == '81']
+        assert len(listeners) == 1, (name, 'one standalone/fallback audio listener required')
+        _, listener = listeners[0]
+        assert '  m_Enabled: 0\n' in listener, (name, 'listener must wait for ownership before enabling')
+        audio = next(body for _, body in blocks.values() if audio_guid in body)
+        listener_host = re.search(r'^  m_GameObject: \{fileID: (\d+)\}', listener, re.M)[1]
+        assert f'  m_GameObject: {{fileID: {listener_host}}}\n' in audio
+        assert '  m_Enabled: 1\n' in audio
+        expected_priority = 0 if name == 'CoreScene' else -50 if name == 'GameGeneralScene' else 50 if name == 'GameItemScene' else 100
+        assert f'  priority: {expected_priority}\n' in audio
+        assert f'  requireEnabledCamera: {0 if name in ("CoreScene", "GameGeneralScene") else 1}\n' in audio
     play_settings = (assets / 'Data/ScenePlaySettings.asset').read_text()
     assert guid('Script/Manager/Utility/Scene/ScenePlaySettings.cs') in play_settings
     assert int(re.search(r'^  playMode: (\d+)', play_settings, re.M)[1]) in range(3)
@@ -94,7 +106,9 @@ def check_scene_flow():
         camera = blocks[camera_id][1]
         go = re.search(r'^  m_GameObject: \{fileID: (\d+)\}', camera, re.M)[1]
         assert 'm_TagString: Untagged' in blocks[go][1], (name, 'must not replace the battle MainCamera')
-    assert '  m_Enabled: 0\n' in scenes['CoreScene'][1]['286779211'][1]
+    # Core's camera visibility is authored by the user; audio fallback works with either setting.
+    anchor_guid = guid('Script/Items/Effect/Excuter/Data/EffectPositionAnchor.cs')
+    assert anchor_guid in scenes['GameBattleScene'][0] and '  anchorKey: Player\n' in scenes['GameBattleScene'][0]
     assert 'm_TagString: MainCamera' in scenes['GameItemScene'][1]['1889333134'][1]
     print('PASS scene flow: seven registered scenes, standalone UI/input/navigation bindings, configurable Core entry, settings relay and local references.')
 

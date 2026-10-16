@@ -10,7 +10,9 @@ public enum ItemSeries { None, Weapon, Food, Mineral }
 public enum PlayerStatusList { arrow, star }
 public class InventoryItem { public ItemData itemData; public int amount; }
 public class EquipmentBag { public string name; public System.Collections.Generic.List<InventoryItem> equippedItems; }
-public class ItemEffectData : ScriptableObject { public virtual void Prepare(ItemEffectContext c){} public virtual void ExecuteEffect(ItemEffectContext c){} public void Execute(ItemEffectContext c)=>ExecuteEffect(c); public bool CanExecute(ItemEffectContext c)=>c!=null&&c.CanContinue; }
+public class ItemEffectData : ScriptableObject { public virtual void Prepare(ItemEffectContext c){} public virtual void ExecuteEffect(ItemEffectContext c){} public void Execute(ItemEffectContext c)=>ExecuteEffect(c); public bool CanExecute(ItemEffectContext c)=>c!=null&&c.CanContinue; public bool TryExecute(ItemEffectContext c){if(!CanExecute(c))return false;ExecuteEffect(c);return true;} }
+// Creation is an engine substitute; maintained-group tests execute the actual reaction runtime.
+public class SummonSpawnEffect : ItemEffectData { public System.Action<ItemEffectContext> onExecute; public override void ExecuteEffect(ItemEffectContext c)=>onExecute?.Invoke(c); }
 public class BuffManager {
  public static BuffManager instance;
  public int begunUses, endedUses;
@@ -49,6 +51,8 @@ public class SummonActor : MonoBehaviour {
  public bool active=true, IsGroupReady=true; public ItemEffectContext execution;
  public ItemThrowExecutor executor;
  public bool CanAct=>active&&(execution==null||execution.CanContinue);
+ public bool CountsForSummonGroups=>execution==null||execution.countsForSummonGroupPopulation;
+ public void Despawn(bool completed){active=false;LifeId++;SummonRegistry.Unregister(this);SummonGroupRuntime.NotifyFieldChanged();}
  public ItemEffectContext CreateContext(Vector3 target,Vector3 direction) {
   var origin=execution??new ItemEffectContext(Owner,null,transform.position,target,null);
   var result=origin.Copy(target,direction);result.usePosition=transform.position;result.sourceSummon=this;result.sourceSummonLifeId=LifeId;return result;
@@ -96,7 +100,7 @@ namespace UnityEngine {
   public T GetComponent<T>() where T:class=>null;
   public T GetComponentInParent<T>() where T:class=>null;
  }
- public class MonoBehaviour : Component { }
+ public class MonoBehaviour : Component { public bool isActiveAndEnabled=true; }
  public class Transform : Component { public Vector3 position; }
  public class GameObject : Object {
   public Transform transform=new Transform();

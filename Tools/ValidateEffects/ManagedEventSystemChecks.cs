@@ -9,6 +9,22 @@ using UnityEngine.EventSystems;
 
 public static class EventSystemChecks
 {
+    private sealed class SceneSound : IDisposable
+    {
+        public readonly AudioListener Listener = new AudioListener();
+        public readonly Camera Camera = new Camera();
+        public readonly SceneAudioListenerOwner Owner = new SceneAudioListenerOwner();
+        public SceneSound(int priority, bool requireCamera = true, bool cameraEnabled = true)
+        {
+            var host = new GameObject("Audio ownership test");
+            host.Add(Listener); host.Add(Camera); host.Add(Owner);
+            Camera.enabled = cameraEnabled; Owner.priority = priority; Owner.requireEnabledCamera = requireCamera;
+            Owner.enabled = true; Call("Awake"); Call("OnEnable");
+        }
+        public void Dispose() { Owner.enabled = false; Call("OnDisable"); }
+        private void Call(string method) => typeof(SceneAudioListenerOwner)
+            .GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic).Invoke(Owner, null);
+    }
     private sealed class SceneInput : IDisposable
     {
         public readonly EventSystem Events = new EventSystem();
@@ -68,6 +84,30 @@ public static class EventSystemChecks
             using (var input = new SceneInput(scene)) ExpectOwner(input);
         if (EventSystem.Active.Count != 0) throw new InvalidOperationException("Input registration leaked between runs.");
         Console.WriteLine("PASS input lifecycle simulation: all standalone scenes and complete input cleanup.");
+
+        using (var core = new SceneSound(0, false, false))
+        {
+            if (!core.Listener.enabled) throw new InvalidOperationException("Core needs audio even with its camera disabled.");
+            using (var battle = new SceneSound(100))
+            using (var item = new SceneSound(50))
+            {
+                if (!battle.Listener.enabled || core.Listener.enabled || item.Listener.enabled)
+                    throw new InvalidOperationException("Battle must own composed audio.");
+                battle.Camera.enabled = false; SceneAudioListenerOwner.Refresh();
+                if (!item.Listener.enabled) throw new InvalidOperationException("Item-only view must own audio.");
+                item.Camera.enabled = false; SceneAudioListenerOwner.Refresh();
+                if (!core.Listener.enabled) throw new InvalidOperationException("No visible child camera must fall back to Core.");
+                battle.Camera.enabled = true; SceneAudioListenerOwner.Refresh();
+                if (!battle.Listener.enabled) throw new InvalidOperationException("Battle view did not reclaim audio.");
+            }
+            if (!core.Listener.enabled) throw new InvalidOperationException("Child scene removal must restore Core audio.");
+        }
+        if (AudioListener.Active.Count != 0) throw new InvalidOperationException("Audio ownership leaked.");
+        Console.WriteLine("PASS audio lifecycle simulation: Core fallback, composed views, camera toggles and scene removal without overlapping listeners.");
+        using (var item = new SceneSound(50))
+        using (var core = new SceneSound(0, false))
+            if (!item.Listener.enabled || core.Listener.enabled) throw new InvalidOperationException("Late Core must preserve standalone scene audio.");
+        Console.WriteLine("PASS audio lifecycle simulation: independent scene and late Core loading.");
     }
 }
 
@@ -106,6 +146,16 @@ namespace UnityEngine
         public T[] GetComponents<T>() => gameObject.GetComponents<T>();
     }
     public class MonoBehaviour : Behaviour { }
+    public sealed class Camera : Behaviour { }
+    public sealed class AudioListener : Behaviour
+    {
+        public static readonly HashSet<AudioListener> Active = new HashSet<AudioListener>();
+        protected override void OnEnabledChanged()
+        {
+            if (enabled) Active.Add(this); else Active.Remove(this);
+            if (Active.Count > 1) throw new InvalidOperationException("Overlapping audio listeners.");
+        }
+    }
 }
 namespace UnityEngine.EventSystems
 {

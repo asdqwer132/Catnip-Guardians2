@@ -22,6 +22,8 @@ public class ItemEffectContext
     public bool consumeUseBuffs = true;
     public bool allowItemUseReactions = true;
     public bool allowSummonGroupReactions = true;
+    public bool countsForSummonGroupPopulation = true;
+    public System.Action<SummonActor> onSummonSpawned;
     private ExecutionBudget executionBudget = new ExecutionBudget();
 
     private sealed class ExecutionBudget { public int remaining = 4096; }
@@ -44,7 +46,9 @@ public class ItemEffectContext
             rangeMultiplier = rangeMultiplier, durationMultiplier = durationMultiplier,
             damageOverride = damageOverride, executionBudget = executionBudget,
             consumeUseBuffs = consumeUseBuffs, allowItemUseReactions = allowItemUseReactions,
-            allowSummonGroupReactions = allowSummonGroupReactions
+            allowSummonGroupReactions = allowSummonGroupReactions,
+            countsForSummonGroupPopulation = countsForSummonGroupPopulation,
+            onSummonSpawned = onSummonSpawned
         };
     }
 
@@ -68,6 +72,8 @@ public class ItemEffectContext
         consumeUseBuffs = parent.consumeUseBuffs;
         allowItemUseReactions = parent.allowItemUseReactions;
         allowSummonGroupReactions = parent.allowSummonGroupReactions;
+        countsForSummonGroupPopulation = parent.countsForSummonGroupPopulation;
+        onSummonSpawned = parent.onSummonSpawned;
     }
 
     public T GetSnapshotStat<T>(ItemEffectData effect, T stat) where T : class, IGameStat<T>

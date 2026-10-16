@@ -74,7 +74,6 @@ public sealed class GameGeneralSceneController : MonoBehaviour
             foreach (var root in item.GetRootGameObjects()) SetItemLayer(root.transform);
             BattleCamera.cullingMask &= ~(1 << itemLayer); ItemCamera.cullingMask = 1 << itemLayer;
             ItemCamera.tag = "Untagged";
-            foreach (var listener in ItemCamera.GetComponents<AudioListener>()) listener.enabled = false;
             if (fitSceneCanvases) { ConnectCanvases(battle, BattleCamera); ConnectCanvases(item, ItemCamera); }
             ready = true; ApplyLayout();
         }
@@ -127,6 +126,7 @@ public sealed class GameGeneralSceneController : MonoBehaviour
         if (!ready) return;
         GameViewportLayout.Calculate(layout, battleRatio, battleFirst, gap, out var battleRect, out var itemRect);
         ApplyCamera(BattleCamera, battleRect); ApplyCamera(ItemCamera, itemRect);
+        SceneAudioListenerOwner.Refresh();
     }
     private static void ApplyCamera(Camera camera, Rect rect)
     {

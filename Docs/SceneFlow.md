@@ -42,6 +42,10 @@ Current Scene Only에서도 코어 씬을 직접 실행하면 코어의 시작 �
 
 `SceneEventSystemOwner`는 OnEnable/OnDisable에서 직접 등록·해제하며, 전역 객체 검색 없이 코어 우선으로 하나만 활성화합니다. 이전 소유자를 먼저 끈 뒤 새 소유자를 켜므로 교체 중에도 두 EventSystem이 겹치지 않습니다. 코어가 없으면 해당 씬의 입력이 켜지고, 코어가 제거되면 남아 있는 씬이 입력을 이어받습니다. `EventSystem.current`는 Unity의 자체 등록 과정에 맡깁니다. 편집 중 코어 UI를 함께 확인하려면 **Catnip → Scenes → Open Core Additively**를 사용하세요.
 
+오디오도 같은 방식으로 **Audio Listener는 편집 모드에서 꺼 두고 Scene Audio Listener Owner만 켭니다.** 실행하면 Owner가 자동으로 하나를 켭니다. 코어는 Priority 0의 예비 리스너이며 코어 카메라가 꺼져 있어도 동작합니다. 배틀·메인·스토리·업그레이드 카메라는 100, 아이템 카메라는 50으로 화면을 담당하는 씬을 우선합니다. 제너럴에는 카메라가 없어도 코어 로딩 전/자동 로딩을 끈 단독 실행에서 사용할 예비 리스너(-50)가 컨트롤러에 있습니다.
+
+일반 씬의 **Require Enabled Camera**는 켜 둡니다. General에서 Battle Only / Item Only로 바꾸면 켜진 화면 카메라로 오디오를 넘기고, 화면 씬이 모두 내려가면 코어로 돌려줍니다. 넘길 때 이전 리스너를 먼저 끄므로 중복 활성화하지 않습니다. 새 씬에서는 기존 카메라의 Audio Listener에 SceneAudioListenerOwner를 붙이고 같은 초기 상태를 사용하세요. UI를 생성할 필요는 없습니다.
+
 기존 UI의 모양과 배치는 직접 편집합니다. UI를 생성하는 코드나 생성 메뉴는 추가하지 않았습니다. Main의 중복 설정·로딩 Canvas와 씬별 중복 EventSystem은 코어 쪽으로 통일했고, 기존 스토리 초기화 버튼은 코어 설정 Canvas로 옮겼습니다.
 
 ## 게임 화면 비율

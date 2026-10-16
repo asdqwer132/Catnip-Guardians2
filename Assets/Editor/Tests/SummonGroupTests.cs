@@ -120,4 +120,57 @@ public sealed class SummonGroupTests
         Assert.That(Kings().Count,Is.EqualTo(2));Assert.That(Kings()[1].Owner,Is.SameAs(other));
         actor.SendMessage("LateUpdate");Assert.That(Kings().Count,Is.EqualTo(2));
     }
+    private SummonGroupSustainedSpawnModule Maintained(int instances = 2)
+    {
+        group.itemRules = new SummonGroupItemRule[0];
+        var module = Asset<SummonGroupSustainedSpawnModule>();
+        module.condition.requirementMode = SummonGroupRequirementMode.TotalInstances;
+        module.condition.requiredInstances = instances;
+        module.spawnEffects = new[] { (SummonSpawnEffect)SpawnItem(king).effectDatas[0] };
+        group.reactionModules = new SummonGroupReactionModule[] { module };
+        return module;
+    }
+    [Test]
+    public void MaintainedKingDisappearsWhenItsGroupLosesARequiredMemberAndReturnsWhenRefilled()
+    {
+        Maintained(); var first = Actor(red); Assert.That(Kings().Count, Is.Zero);
+        Actor(blue); Assert.That(Kings().Count, Is.EqualTo(1));
+        first.Clear(); Assert.That(Kings().Count, Is.Zero);
+        Actor(red); Assert.That(Kings().Count, Is.EqualTo(1));
+    }
+    [Test]
+    public void MaintainedSpecialInItsOwnGroupDoesNotCountTowardItsCondition()
+    {
+        Maintained(1); king.summonGroup = group;
+        var member = Actor(red);
+        Assert.That(Kings().Count, Is.EqualTo(1));
+        Assert.That(SummonGroupRuntime.GetPopulation(group, owner).instanceCount, Is.EqualTo(1));
+        member.Clear(); Assert.That(Kings().Count, Is.Zero);
+    }
+    [Test]
+    public void FixedSpawnLocationUsesExistingCreationCountAndKeepsEverySpawnedActorInTheConditionScope()
+    {
+        var module = Maintained(1); module.position.mode = SummonGroupSpawnPositionMode.FixedWorldPosition;
+        module.position.fixedWorldPosition = origin + new Vector3(2f, 3f);
+        module.spawnEffects[0].spawnStat.count = 2;
+        var member = Actor(red); var kings = Kings();
+        Assert.That(kings.Count, Is.EqualTo(2));
+        foreach (var actor in kings) Assert.That(actor.transform.position, Is.EqualTo(module.position.fixedWorldPosition));
+        member.Clear(); Assert.That(Kings().Count, Is.Zero);
+    }
+    [Test]
+    public void KeepExistingSettingPreservesASpecialAfterTheLastNormalMemberLeaves()
+    {
+        var module = Maintained(1); module.despawnWhenConditionLost = false;
+        var member = Actor(red); member.Clear();
+        Assert.That(Kings().Count, Is.EqualTo(1)); Assert.That(Kings()[0].CanAct, Is.True);
+    }
+    [Test]
+    public void MaintainedCreationKeepsEffectConditionsInsteadOfBypassingThem()
+    {
+        var module = Maintained(1);
+        // All 모드의 비어 있는 조건 항목은 조건 불충족입니다. Spawn() 직행이면 이 검사를 놓칩니다.
+        module.spawnEffects[0].conditions = new ItemEffectConditionData[] { null };
+        Actor(red); Assert.That(Kings().Count, Is.Zero);
+    }
 }

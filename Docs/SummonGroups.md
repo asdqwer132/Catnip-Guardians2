@@ -4,7 +4,7 @@
 
 ## 1. 무리 만들기
 
-1. **Create → 04.Items → Effects → Direct Effects → Summons → Group**으로 `SlimeGroup`을 만든다.
+1. **Create → 04.Items → Effects → Direct Effects → Summon → Definition → Group**으로 `SlimeGroup`을 만든다.
 2. 붉은·푸른·녹색 슬라임의 `SummonDefinition`을 각각 만들고 세 정의의 **Summon Group**에 `SlimeGroup`을 연결한다.
 3. 각 소환 프리팹의 `SummonActor → Definition`에 해당 종류 정의를 연결한다.
 4. 각 프리팹을 소환하는 기존 `SummonSpawnEffect`를 아이템의 Effect Datas에 연결한다.
@@ -76,3 +76,36 @@ Debug.Log($"종류 {population.kindCount}, 개체 {population.instanceCount}");
 Unity Test Runner → EditMode의 `SummonGroupTests`는 실제 소환 경로의 종류/개체 수, 소유자 분리, 왕 추가 소환, 투척 후 소환, 재활성화와 수명 완료를 검사한다. 공용 전달 코드는 기존 `StatusReactionThrowTests`와 `StatusItemUseModuleTests`도 함께 검사한다.
 
 클라우드의 `python3 Tools/ValidateEffects/check.py`는 코드·Unity 테스트를 컴파일하고 실제 무리 집계/발동 코드의 로직 검사를 실행한다. 클라우드 로직 검사의 Scene·소환물/투척 참조는 대체 구현이며, 실제 Unity 렌더링·물리·비행 검증은 Editor에서 실행한다.
+
+## 7. 조건을 만족하는 동안 특수 소환 유지
+
+**Create → 04.Items → Effects → Direct Effects → Summon → Group Reactions → Sustained Spawn**으로 `SummonGroupSustainedSpawnModule`을 만들고, 무리 에셋의 **Reaction Modules**에 연결한다. 기존 **Item Rules**는 그대로 아이템 단발 사용을 담당한다. 두 기능을 함께 연결하면 각각 실행된다. 기존 보상 대신 유지형 소환만 원하면 해당 Item Rule을 비우고 Reaction Module만 연결한다.
+
+| 필드 | 설정 |
+| --- | --- |
+| Condition | 종류 수·개체 수·둘 다, 이상/정확히 조건. 기존 아이템 규칙과 같은 판정 사용 |
+| Spawn Effects | 특수 소환용 `SummonSpawnEffect`를 여러 개 연결. 각 효과의 소환 수·수명·산개 및 생성 스탯 버프를 적용 |
+| Despawn When Condition Lost | 기본 켜짐. 조건이 깨지면 이 모듈이 만든 소환물을 즉시 회수하고 하위 실행도 취소. 끄면 새 소환만 중단하고 기존 소환물은 자연 수명까지 유지 |
+| Respawn When All Gone | 기본 켜짐. 효과별로 생성한 묶음이 모두 사라지면 조건 유지 중 다시 생성. 일부만 사라졌을 때는 그 묶음이 모두 끝날 때까지 대기 |
+| Retry Interval | 재소환 또는 아직 찾을 수 없는 위치/미충족 이펙트 조건을 다시 확인하는 간격. 기본 0.25초 |
+
+조건을 유지하는 동안 매번 일반 소환이 추가되어도 같은 특수 소환을 중복 생성하지 않는다. 조건이 깨졌다가 다시 만족하면 새로 소환한다. Exactly 조건은 개체가 줄어서 정확한 수가 된 경우에도 반응한다. 여러 소유자가 같은 모듈 에셋을 사용해도 각자의 실행 상태를 가진다. All Owners는 필드 전체를 합산하며 가장 최근 일반 소환의 소유자 정보를 사용한다.
+
+**Position**은 소환 시점의 기준 위치이며 기존 소환물을 계속 이동시키지는 않는다.
+
+| Mode | 기준 위치 |
+| --- | --- |
+| Last Summon Position | 해당 무리에 가장 최근 추가된 일반 소환물의 생성 위치. 그 소환물이 나중에 움직이거나 사라져도 기록한 위치 사용 |
+| Player Position | `EffectPositionAnchor`의 Player 키가 등록된 플레이어의 현재 위치. 배틀 씬의 기존 Player에는 연결해 둠 |
+| Owner Position | 가장 최근 일반 소환의 소유자 현재 위치 |
+| Fixed World Position | 지정한 월드 좌표 |
+| Random Position | Random Center로 선택한 기준점의 Random Radius 원 내부에서 무작위 선택 |
+| Registered Anchor | Anchor Key 이름으로 등록한 위치. 제단·보스·별도 스폰 포인트 등에 재사용 |
+
+Offset은 월드 좌표 오프셋이다. 기준점을 구한 뒤 각 Spawn Effect의 기존 산개 배치를 적용하므로 여러 마리를 퍼뜨려 소환할 수 있다. 존재하지 않는 플레이어나 소유자 위치로 설정한 경우에는 소환을 보류하고 재확인한다. 임의의 오브젝트 위치를 쓰려면 그 오브젝트에 **EffectPositionAnchor**를 붙이고 Anchor Key를 맞춘다. 특정 소유자용 위치가 필요하면 Anchor의 Owner도 연결한다.
+
+유지형 특수 소환과 그 자식은 무리 집계 및 추가 무리 보상에서 제외한다. 특수 소환이 자기 조건을 채워 영구 유지되거나 Exactly 판정을 흔드는 것을 막는다. 일반 Item Rule의 보상 소환은 기존처럼 수에 포함된다. 유지형 소환의 수명은 무리 조건에 연결되므로 마지막으로 소환한 일반 소환물 하나가 사라져도 나머지가 조건을 만족하면 유지된다. 전투 초기화·모듈 제거 시에는 해당 모듈이 소유한 소환물만 정리하며 LifeId가 바뀐 재사용 개체는 건드리지 않는다.
+
+준비된 **SlimeKing_WhileGroupFilled.asset**은 종류 3·개체 3이 유지될 때 기존 왕 소환 효과를 사용하는 모듈이다. 원하는 무리의 Reaction Modules에 연결해서 테스트할 수 있다. 사용자가 만든 몬스터 무리/프리팹 설정은 자동으로 바꾸지 않는다.
+
+실행 확장은 `SummonGroupReactionModule.CreateRuntime()`을 구현한다. Runtime의 `Refresh()`는 무리 조건 변화와 갱신, `Tick()`은 프레임당 한 번의 타이머, `Dispose()`는 해당 무리 실행 정리를 담당한다. 위치 계산과 위치 등록은 별도 클래스로 분리되어 다른 반응 모듈에서도 사용할 수 있다.
