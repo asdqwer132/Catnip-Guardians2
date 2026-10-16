@@ -3,7 +3,8 @@ public enum PoolObjectGroup
 {
     Default,
     Enemy,
-    Effect
+    Effect,
+    MergeItem
 }
 public class PooledObject : MonoBehaviour
 {
