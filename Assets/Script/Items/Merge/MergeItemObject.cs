@@ -6,8 +6,9 @@ public class MergeItemObject : MonoBehaviour, IPoolable
     public ItemData item;
     public CircleCollider2D circleCollider;
     public SpriteRenderer spriteRenderer;
+    public GameObject visualSize;
     public Rigidbody2D body;
-    private PooledObject pooled;
+    [SerializeField]private PooledObject pooled;
     private bool reserved;
     private float unlockAt;
     public MergegameManager Owner { get; private set; }
@@ -58,11 +59,11 @@ public class MergeItemObject : MonoBehaviour, IPoolable
             spriteRenderer.sprite = item.icon;
             spriteRenderer.enabled = item.icon != null;
             // 물리 루트는 건드리지 않고 프리팹의 Visual 자식만 반지름에 맞춥니다.
-            if (spriteRenderer.transform != transform && item.icon != null)
+            if (visualSize.transform != transform && item.icon != null)
             {
                 Vector3 size = item.icon.bounds.size;
-                float scale = definition.Radius * 2f / Mathf.Max(0.0001f, size.x, size.y);
-                spriteRenderer.transform.localScale = new Vector3(scale, scale, 1f);
+                float scale = definition.Radius / Mathf.Max(0.0001f, size.x, size.y);
+                visualSize.transform.localScale = new Vector3(scale, scale, 1f);
             }
         }
     }
@@ -92,11 +93,6 @@ public class MergeItemObject : MonoBehaviour, IPoolable
     public void ReturnToPool()
     {
         if (pooled != null && pooled.OwnerPool != null) pooled.OwnerPool.Release(gameObject, pooled.SpawnId);
-    }
-    private void OnDisable()
-    {
-        // 외부에서 피스를 숨겨도 활성 목록/풀의 대여 상태가 남지 않게 합니다.
-        if (Owner != null) ReturnToPool();
     }
     private void OnDestroy() { if (Owner != null) Owner.NotifyReturned(this); }
 }

@@ -15,23 +15,28 @@ public class MergegameManager : MonoBehaviour
     [Header("기존 씬/풀 연결")]
     public ObjectPoolManager objectPool;
     public Transform spawnPoint;
+
     [Tooltip("재료뿐 아니라 레시피 결과도 포함합니다. 아이템별 반지름을 찾는 목록입니다.")]
     public List<MergeItem> mergeItems = new List<MergeItem>();
+
     [Header("생성 옵션")]
     [Min(0f)] public float dropInterval = 0.5f;
     [Min(1)] public int maximumActiveItems = 50;
     [Min(0)] public int prewarmCount = 4;
     [Min(0f)] public float resultMergeDelay = 0.1f;
+
     [Header("테스트 입력 · Input System")]
     public bool acceptKeyboardInput = true;
     public string dropBinding = "<Keyboard>/space";
     public string nextMaterialBinding = "<Keyboard>/q";
     public bool logActions = true;
+
     [Header("직접 만든 UI 연결용")]
     public UnityEvent onCurrentMaterialChanged = new UnityEvent();
     public UnityEvent onMaterialsChanged = new UnityEvent();
     public UnityEvent onBoardChanged = new UnityEvent();
     public UnityEvent onItemMerged = new UnityEvent();
+
     [SerializeField] private string lastMessage;
     private readonly List<MergeItemObject> active = new List<MergeItemObject>();
     private readonly List<Contact> contacts = new List<Contact>();
