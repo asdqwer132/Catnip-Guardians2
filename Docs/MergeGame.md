@@ -62,7 +62,8 @@ Play 중 `MergeManager (1)`의 **Current Material**은 실제 Merge Materials �
 
 | Inspector 옵션 | 의미 / 기본값 |
 | --- | --- |
-| Maximum Drag Range | 시작점에서 끝점까지 최대 월드 거리 **3**. 사각형 대각선 길이를 제한한다. |
+| Maximum Drag Width | 선택 사각형의 최대 가로 길이 **3**. 월드 단위. |
+| Maximum Drag Height | 선택 사각형의 최대 세로 길이 **3**. 가로와 독립적으로 제한. |
 | Drag Threshold | 클릭 대신 드래그로 판정하는 월드 이동 거리 **0.1** |
 | Drag Cooldown | 드래그로 아이템을 지운 뒤 다음 선택까지 **0.5초** |
 | Click Cooldown | 클릭으로 아이템을 지운 뒤 다음 선택까지 **0.2초** |

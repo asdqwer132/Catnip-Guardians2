@@ -214,13 +214,20 @@ public sealed class MergeGameTests
         Assert.That(selection.TryBeginSelection(start), Is.True);
     }
     [Test]
-    public void DragClampsItsWorldRangeAndDoesNotBecomeAClickAfterReturningToStart()
+    public void DragClampsWidthAndHeightIndependentlyAndDoesNotBecomeAClickAfterReturningToStart()
     {
-        var piece = Drop(0, -1f); var selection = Selection(); selection.maximumDragRange = .5f;
+        var piece = Drop(0, -1f); var selection = Selection();
+        selection.maximumDragWidth = .5f; selection.maximumDragHeight = .25f;
         Vector2 start = piece.Position - new Vector2(1f, .1f);
         Assert.That(selection.TryBeginSelection(start), Is.True);
         selection.UpdateSelection(start + Vector2.right * 10f);
         Assert.That(selection.SelectionBounds.width, Is.EqualTo(.5f).Within(.01f));
+        selection.UpdateSelection(start + new Vector2(10f, 10f));
+        Assert.That(selection.SelectionBounds.width, Is.EqualTo(.5f).Within(.01f));
+        Assert.That(selection.SelectionBounds.height, Is.EqualTo(.25f).Within(.01f));
+        Rect maximum = selection.SelectionBounds;
+        selection.UpdateSelection(start + new Vector2(100f, 11f));
+        Assert.That(selection.SelectionBounds, Is.EqualTo(maximum));
         selection.UpdateSelection(start);
         Assert.That(selection.IsDragging, Is.True); // 왕복 드래그는 클릭이 아닙니다.
         Assert.That(selection.CompleteSelection(start), Is.Zero); Assert.That(piece.IsLive, Is.True);

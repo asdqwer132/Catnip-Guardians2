@@ -21,12 +21,16 @@ public sealed class MergeItemSelectionGesture
         return true;
     }
 
-    public void Move(Vector2 position, float maximumRange, float dragThreshold)
+    public void Move(Vector2 position, float maximumWidth, float maximumHeight, float dragThreshold)
     {
         if (!IsActive || !IsFinite(position)) return;
-        float range = EffectStatUtility.Safe(maximumRange, .01f, 100000f, 3f);
-        float threshold = Mathf.Min(range, EffectStatUtility.Safe(dragThreshold, .001f, 100000f, .1f));
-        End = Start + Vector2.ClampMagnitude(position - Start, range);
+        float width = EffectStatUtility.Safe(maximumWidth, .01f, 100000f, 3f);
+        float height = EffectStatUtility.Safe(maximumHeight, .01f, 100000f, 3f);
+        float threshold = Mathf.Min(width, height, EffectStatUtility.Safe(dragThreshold, .001f, 100000f, .1f));
+        Vector2 delta = position - Start;
+        // 원형 거리 제한은 한계 밖에서 방향이 바뀔 때 가로·세로가 함께 흔들립니다.
+        // 각 축을 따로 제한하면 최대치에 닿은 변은 포인터 방향과 관계없이 고정됩니다.
+        End = Start + new Vector2(Mathf.Clamp(delta.x, -width, width), Mathf.Clamp(delta.y, -height, height));
         // 한 번 드래그했다가 시작점으로 돌아와도 클릭으로 바뀌지 않습니다.
         if ((End - Start).sqrMagnitude >= threshold * threshold) IsDrag = true;
     }

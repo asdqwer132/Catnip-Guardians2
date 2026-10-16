@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 [DisallowMultipleComponent]
@@ -14,8 +15,11 @@ public sealed class MergeItemSelection : MonoBehaviour
     public SpriteRenderer dragVisual;
 
     [Header("월드 좌표 선택 범위")]
-    [Tooltip("드래그 시작점부터 끝점까지의 최대 월드 거리입니다. 카메라 줌과 무관합니다.")]
-    [Min(.01f)] public float maximumDragRange = 3f;
+    [Tooltip("선택 사각형의 최대 가로 길이입니다. 월드 단위이며 카메라 줌과 무관합니다.")]
+    [FormerlySerializedAs("maximumDragRange")]
+    [Min(.01f)] public float maximumDragWidth = 3f;
+    [Tooltip("선택 사각형의 최대 세로 길이입니다. 가로 길이와 독립적으로 제한합니다.")]
+    [Min(.01f)] public float maximumDragHeight = 3f;
     [Tooltip("이 거리 이상 움직이면 드래그로 처리합니다. 단위는 월드 거리입니다.")]
     [Min(.001f)] public float dragThreshold = .1f;
 
@@ -30,6 +34,8 @@ public sealed class MergeItemSelection : MonoBehaviour
     private InputAction positionInput, selectInput, cancelInput;
     private bool committing;
     private float visualZ;
+    private Rect displayedBounds;
+    private bool hasDisplayedBounds;
     private struct Selection { public MergeItemObject piece; public int lifeId; }
 
     public bool IsSelecting => gesture.IsActive;
@@ -115,7 +121,7 @@ public sealed class MergeItemSelection : MonoBehaviour
     {
         if (!IsSelecting) return;
         if (!CanSelect) { CancelSelection(); return; }
-        gesture.Move(worldPosition, maximumDragRange, dragThreshold);
+        gesture.Move(worldPosition, maximumDragWidth, maximumDragHeight, dragThreshold);
         RefreshVisual();
     }
 
@@ -186,6 +192,8 @@ public sealed class MergeItemSelection : MonoBehaviour
         dragVisual.enabled = IsDragging;
         if (!IsDragging) return;
         Rect area = gesture.Bounds;
+        // 한계 밖에서 포인터가 움직여도 같은 영역의 Transform을 매 프레임 다시 쓰지 않습니다.
+        if (hasDisplayedBounds && displayedBounds.Equals(area)) return;
         Transform visual = dragVisual.transform;
         Vector3 parentScale = visual.parent != null ? visual.parent.lossyScale : Vector3.one;
         Vector3 spriteSize = dragVisual.sprite.bounds.size;
@@ -193,9 +201,15 @@ public sealed class MergeItemSelection : MonoBehaviour
         visual.localScale = new Vector3(area.width / Mathf.Max(.0001f, spriteSize.x * Mathf.Abs(parentScale.x)),
             area.height / Mathf.Max(.0001f, spriteSize.y * Mathf.Abs(parentScale.y)), visual.localScale.z);
         visual.position = new Vector3(area.center.x, area.center.y, visualZ) - visual.TransformVector(dragVisual.sprite.bounds.center);
+        displayedBounds = area;
+        hasDisplayedBounds = true;
     }
 
-    private void HideVisual() { if (dragVisual != null) dragVisual.enabled = false; }
+    private void HideVisual()
+    {
+        if (dragVisual != null) dragVisual.enabled = false;
+        hasDisplayedBounds = false;
+    }
     private void OnApplicationFocus(bool focused) { if (!focused) CancelSelection(); }
     private void OnDisable()
     {
