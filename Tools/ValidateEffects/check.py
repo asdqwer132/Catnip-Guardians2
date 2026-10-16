@@ -249,7 +249,7 @@ def main():
     pure_dir.mkdir()
     managed_path = pure_dir / 'Managed.csproj'
     scene_logic = [ROOT / 'Assets/Script/Manager/Utility/Scene' / name for name in ('GameSceneRoutes.cs', 'GameViewportLayout.cs', 'SceneStartupPolicy.cs', 'ScenePlaySettings.cs')]
-    scene_logic += [ROOT / 'Assets/Script/Items/Merge' / name for name in ('MergeItem.cs', 'MergeTree.cs')]
+    scene_logic += [ROOT / 'Assets/Script/Items/Merge' / name for name in ('MergeItem.cs', 'MergeTree.cs', 'MergeItemSelectionGesture.cs')]
     scene_logic += [HERE / 'ManagedMergeGameChecks.cs']
     project(managed_path, [effect / name for name in selected] + scene_logic + [ROOT / 'Assets/Editor/BuffTargetGroupDiscovery.cs', HERE / 'ManagedApi.cs', HERE / 'ManagedChecks.cs', HERE / 'ManagedBuffGroupChecks.cs', HERE / 'ManagedAllTargetsChecks.cs', HERE / 'ManagedSummonChecks.cs', HERE / 'ManagedSummonModuleChecks.cs', HERE / 'ManagedPrefabVisualChecks.cs', HERE / 'ManagedStatusReactionChecks.cs', HERE / 'ManagedSummonGroupChecks.cs', HERE / 'ManagedSustainedSummonChecks.cs', HERE / 'ManagedSceneFlowChecks.cs'], refs, executable=True)
     run([dotnet, 'run', '--project', managed_path, '--nologo'], env=environment)

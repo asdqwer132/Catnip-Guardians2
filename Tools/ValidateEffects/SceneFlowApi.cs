@@ -9,7 +9,9 @@ namespace UnityEngine.InputSystem
     {
         public struct CallbackContext { }
         public event System.Action<CallbackContext> performed;
+        public event System.Action<CallbackContext> canceled;
         public InputAction(string name, InputActionType type, string binding = null) { }
+        public T ReadValue<T>() where T : struct => default;
         public void Enable() { } public void Disable() { } public void Dispose() { }
     }
     public enum Key { None, R, Digit1, Digit2, Digit3, Digit4, Digit5, Digit6, Digit7, Digit8, Digit9 }

@@ -196,6 +196,14 @@ public class MergegameManager : MonoBehaviour
         }
     }
     internal void NotifyReturned(MergeItemObject piece) => active.Remove(piece);
+    public string GetItemDisplayName(ItemData item) => DisplayName(item);
+    public bool TryRemoveItem(MergeItemObject piece, int expectedLifeId)
+    {
+        if (!CanOperate || piece == null || piece.Owner != this || piece.LifeId != expectedLifeId || !piece.CanSelect) return false;
+        piece.ReturnToPool();
+        Notify(onBoardChanged);
+        return true;
+    }
     public void QueueContact(MergeItemObject a, MergeItemObject b)
     {
         if (!CanOperate || a == null || b == null || a == b || a.Owner != this || b.Owner != this || !a.CanMerge || !b.CanMerge) return;

@@ -13,16 +13,16 @@
 
 ## 유지한 사용자 설정과 추가 연결
 
-벽/바닥의 위치·크기·Rigidbody2D·Collider2D, 카메라, 재료 각 10개의 지급량, 기존 레시피 3개와 MergeItem 5개의 반지름 1은 유지했다. UI 오브젝트는 생성하지 않는다.
+벽/바닥의 위치·크기·Rigidbody2D·Collider2D, 카메라, 지급량·레시피·반지름은 사용자가 만든 씬/에셋 설정을 사용한다. UI 오브젝트는 생성하지 않는다.
 
 추가 연결/구현은 아래와 같다.
 
-- **Object Pool**: 기존 `MegerGeneralManager` 오브젝트에 `ObjectPoolManager` 컴포넌트를 추가하고 두 MergegameManager가 공유한다. `PooledObject`의 기존 MergeItem 그룹을 처리하도록 활성/비활성 부모 항목을 추가했다. 같은 공용 `MergeItemObject.prefab` 하나를 키로 재사용한다.
+- **Object Pool**: 현재 씬의 `Pool` 오브젝트를 사용한다. 실제 사용하는 `MergeManager (1)`이 연결되어 있고, 빈 `MergeManager (2)`는 입력을 끈 채 사용자가 연결할 수 있도록 남겨두었다. `PooledObject`의 기존 MergeItem 그룹으로 `Active` / `Inactive` 부모에 분류하고 같은 공용 `MergeItemObject.prefab` 하나를 키로 재사용한다.
 - **Register As Default Pool = false**: 아이템씬 전용 풀은 `ObjectPoolManager.instance`를 변경하지 않는다. 제너럴에서 전투씬의 적/이펙트 풀이 그대로 동작하며 아이템씬도 단독 실행할 수 있다.
 - **Spawn Point**: 기존 `ItemspawnPoints / ItemspawnPoint`를 명시적으로 연결했다. 카메라 위치/줌/뷰포트가 낙하 위치·반지름·충돌 판정을 바꾸지 않는다. 생성 위치는 이 Transform으로 조절한다.
 - **Merge Items**: 기존 정의 5개를 연결했다. 재료에 없는 합성 결과도 어떤 반지름/ItemData를 쓰는지 찾기 위한 목록이다. 새로운 레시피 결과를 만들 때 결과의 MergeItem도 이 목록에 넣는다.
 - **Drop Interval / Maximum Active Items / Prewarm Count / Result Merge Delay**: 기본값은 0.5초 / 동시 활성 50개 / 사전 준비 4개 / 합성 후 재합성 대기 0.1초다. 최대 개수는 누적 사용 횟수가 아니라 통 안의 활성 개수다. 합성은 2개가 1개로 줄기 때문에 상한에 도달해도 가능하다.
-- **Visual 자식**: 기존 머지 프리팹의 SpriteRenderer를 Visual 자식으로 옮기고 Collider / SpriteRenderer / Body 참조를 채웠다. 아이콘은 ItemData.icon, 콜라이더는 MergeItem.radius를 사용한다. 스프라이트의 긴 변이 지름이 되도록 Visual만 스케일한다. 물리 루트의 스케일·프리팹 중력·질량은 유지한다.
+- **Visual 자식**: 아이콘은 ItemData.icon, 콜라이더는 MergeItem.radius를 사용한다. 사용자가 구성한 `CircleVisual / Visual` 구조와 `visualSize` 참조를 사용하며 물리 루트의 스케일·프리팹 중력·질량은 유지한다.
 - **풀 초기화**: 반환/재대여마다 이전 ItemData, 매니저 참조, 속도·각속도, 합성 예약, 충돌 수명 번호를 초기화한다. 같은 충돌이 양쪽에서 보고되어도 한 쌍만 소비하고 이전 대여분의 충돌은 무시한다.
 - **제너럴 연결**: 생성한 루트/Visual은 해당 매니저의 레이어를 따른다. 아이템씬 안의 풀/부모와 `gameObject.scene.GetPhysicsScene2D()`를 사용하여 제너럴의 로컬 물리 공간에서도 동작한다.
 - **ItemRecipeData 안전 처리**: 빈 레시피를 만드는 순간 OnValidate에서 resultItem이 null이면 건너뛴다. 사용하지 않던 NUnit 참조도 제거했다.
@@ -49,8 +49,29 @@ Play 중 `MergeManager (1)`의 **Current Material**은 실제 Merge Materials �
 
 반환값이 필요한 코드에서는 `TryDropCurrent()`, `SelectNextMaterial()`, `SelectMaterial(index)`로 성공 여부를 받는다. 생성/합성은 ItemData의 공격·소환 이펙트나 실제 아이템 사용을 발동시키지 않는다.
 
+## 마우스 드래그 / 클릭 선택·제거
+
+`GameItemScene`의 **MergeManager (1) → Merge Item Selection**에서 설정한다. Board, 해당 씬의 Camera, 사용자가 만든 `CragtingBox / Box1 / Box1_1 / Drag`의 SpriteRenderer를 연결했다. 새 UI나 표시 오브젝트를 생성하지 않는다. `Drag`는 선택할 때만 보이고 아이템보다 위에 그려진다. 색·투명도·스프라이트는 기존 SpriteRenderer에서 직접 바꿀 수 있다.
+
+- **좌클릭**: 누르고 놓은 지점의 아이템 한 개를 선택한다. 겹쳐 있으면 중심이 가장 가까운 한 개를 고른다.
+- **좌클릭 드래그 → 놓기**: 시작점과 끝점의 사각형에 콜라이더가 조금이라도 걸친 아이템들을 선택한다. 드래그 도중에는 아이템을 제거하지 않는다.
+- **X**: 선택을 취소하고 영역 표시를 숨긴다. 이후 마우스 버튼을 놓아도 클릭/드래그 삭제가 실행되지 않는다. 새로 클릭해야 다시 선택할 수 있다.
+- 선택이 확정되면 아이템별 이름·월드 위치를 Console의 **`[MergeSelection]`** 로그에 남기고 기존 풀에 반환한다. 재료 재고를 돌려주거나 전투 아이템 사용 이펙트를 실행하지 않는다.
+- 클릭과 드래그는 한 번에 하나만 실행된다. 한 번 드래그 기준 거리를 넘으면 시작점으로 돌아와도 클릭으로 바뀌지 않는다.
+- 다른 카메라 영역이나 UI 위에서 선택을 시작하지 않는다. 진행 도중 아이템 카메라 영역을 벗어나거나 일시정지/입력 차단/포커스 상실/컴포넌트 비활성화가 발생하면 취소한다. UI 위에서 놓아도 취소한다.
+
+| Inspector 옵션 | 의미 / 기본값 |
+| --- | --- |
+| Maximum Drag Range | 시작점에서 끝점까지 최대 월드 거리 **3**. 사각형 대각선 길이를 제한한다. |
+| Drag Threshold | 클릭 대신 드래그로 판정하는 월드 이동 거리 **0.1** |
+| Drag Cooldown | 드래그로 아이템을 지운 뒤 다음 선택까지 **0.5초** |
+| Click Cooldown | 클릭으로 아이템을 지운 뒤 다음 선택까지 **0.2초** |
+| Log Selections | 아이템별 선택 로그와 취소 로그 출력 |
+
+클릭과 드래그는 다음 선택 가능 시각을 공유하므로 번갈아 써서 쿨타임을 우회할 수 없다. 빈 영역 선택이나 X 취소에는 쿨타임을 쓰지 않는다. 범위·판정은 월드 좌표이며 카메라는 포인터 위치만 변환한다. `IsSelecting`, `IsDragging`, `SelectionBounds`, `CooldownRemaining`, `LastRemovedCount`, `LastMessage`를 직접 만든 UI 표시에서 읽을 수 있다. 다른 통에도 같은 컴포넌트를 붙이고 해당 Board/Camera/Drag Visual을 연결하면 된다.
+
 ## 검사
 
 `python3 Tools/ValidateEffects/check.py --cache /workspace/.cache/catnip-validation`에서 머지 코드·풀 코드·Unity 테스트의 보조 API 컴파일, 실제 등록 조합 판정/재료 순환 관리 코드, 씬/프리팹 참조와 결과 정의 연결을 검사한다. 코드 검사와 Unity 실행은 다르다.
 
-Unity Test Runner의 **MergeGameTests**에는 Sprite/반지름·재고 소비·막힌 입구·최대 개수·쿨타임·중복 합성·결과 정의 누락·풀 재사용/이전 충돌 무시·재진입/취소 환불·재료 순환 검사가 있다. 접촉 알림을 직접 전달하므로 실제 물리 충돌 콜백과 낙하는 GameItemScene의 Play에서 확인한다. 이 클라우드에는 Unity Editor가 없어 해당 엔진 테스트와 Play 실행은 수행하지 않는다.
+Unity Test Runner의 **MergeGameTests**에는 Sprite/반지름·재고 소비·막힌 입구·최대 개수·쿨타임·중복 합성·결과 정의 누락·풀 재사용/이전 충돌 무시·재진입/취소 환불·재료 순환에 더해 드래그/클릭 제거·취소·범위 제한·재대여·다른 통 격리 검사가 있다. 관리 코드 검사에서는 실제 선택 상태 코드의 클릭/드래그 중복 방지, X 취소 후 해제, 공유 쿨타임, 범위·원형 콜라이더 경계 판정을 실행한다. 접촉/선택 메서드를 직접 호출하므로 실제 마우스·키보드 이벤트와 낙하는 GameItemScene의 Play에서 확인한다. 이 클라우드에는 Unity Editor가 없어 해당 엔진 테스트와 Play 실행은 수행하지 않는다.

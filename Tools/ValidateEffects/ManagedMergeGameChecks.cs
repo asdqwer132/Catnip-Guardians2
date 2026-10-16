@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public static partial class Runner
 {
@@ -9,6 +10,46 @@ public static partial class Runner
         => new RecipeMaterial { itemData = item, amount = amount };
     private static void RunMergeGameChecks()
     {
+        Check("selection clamps world distance in every drag direction and builds ordered rectangles", () => {
+            foreach (var direction in new[] { new Vector2(3f, 4f), new Vector2(-3f, 4f), new Vector2(3f, -4f), new Vector2(-3f, -4f) }) {
+                var selection = new MergeItemSelectionGesture(); var start = new Vector2(10f, 20f);
+                True(selection.TryBegin(start, 0f)); selection.Move(start + direction * 10f, 5f, .1f);
+                Eq((selection.End - start).magnitude, 5f); Eq(selection.Bounds.width, 3f); Eq(selection.Bounds.height, 4f);
+                True(selection.IsDrag && selection.Bounds.xMin <= selection.Bounds.xMax && selection.Bounds.yMin <= selection.Bounds.yMax);
+            }
+        });
+        Check("a drag never also becomes a click even after returning to its starting point", () => {
+            var selection = new MergeItemSelectionGesture(); True(selection.TryBegin(Vector2.zero, 0f));
+            selection.Move(new Vector2(.01f, 0f), 3f, .1f); True(!selection.IsDrag);
+            selection.Move(Vector2.one, 3f, .1f); selection.Move(Vector2.zero, 3f, .1f); True(selection.IsDrag);
+            selection.Complete(1f, 2f); True(!selection.IsActive && !selection.IsDrag);
+            selection.Complete(1f, 100f); Eq(selection.CooldownRemaining(1f), 2f);
+        });
+        Check("X cancellation ignores subsequent release and permits immediate fresh selection", () => {
+            var selection = new MergeItemSelectionGesture(); selection.TryBegin(Vector2.zero, 0f);
+            selection.Move(Vector2.one, 3f, .1f); selection.Cancel();
+            selection.Complete(1f, 100f); True(!selection.IsActive); Eq(selection.CooldownRemaining(1f), 0f);
+            True(selection.TryBegin(Vector2.zero, 1f) && !selection.IsDrag);
+        });
+        Check("click and drag share the next selection time and cancellation cannot reset cooldown", () => {
+            var selection = new MergeItemSelectionGesture(); selection.TryBegin(Vector2.zero, 0f); selection.Complete(0f, 5f);
+            True(!selection.TryBegin(Vector2.zero, 4f)); selection.Cancel(); Eq(selection.CooldownRemaining(4f), 1f);
+            True(selection.TryBegin(Vector2.zero, 5f)); selection.Move(Vector2.one, 3f, .1f); selection.Complete(5f, 2f);
+            True(!selection.TryBegin(Vector2.zero, 6f)); True(selection.TryBegin(Vector2.zero, 7f));
+        });
+        Check("selection includes circle edges but excludes outside corners", () => {
+            var rect = Rect.MinMaxRect(-1f, -1f, 1f, 1f);
+            True(MergeItemSelectionGesture.IntersectsCircle(rect, new Vector2(1.2f, 0f), .25f));
+            True(!MergeItemSelectionGesture.IntersectsCircle(rect, new Vector2(1.2f, 1.2f), .25f));
+            True(MergeItemSelectionGesture.IntersectsCircle(rect, Vector2.zero, .1f));
+        });
+        Check("selection rejects nonfinite points and sanitizes limits without blocking an empty release", () => {
+            var selection = new MergeItemSelectionGesture();
+            True(!selection.TryBegin(new Vector2(float.NaN, 0f), 0f)); True(selection.TryBegin(Vector2.zero, 0f));
+            selection.Move(Vector2.one * 10f, float.NaN, float.NaN); Eq(selection.End.magnitude, 3f);
+            selection.Move(new Vector2(float.PositiveInfinity, 0f), 3f, .1f); Eq(selection.End.magnitude, 3f);
+            selection.Complete(0f, 0f); True(selection.TryBegin(Vector2.zero, 0f));
+        });
         Check("merge recipes match registered mixed pairs in both contact orders", () => {
             var a = new ItemData(); var b = new ItemData(); var c = new ItemData();
             var recipe = MergeRecipe(c, MergeIngredient(a), MergeIngredient(b));

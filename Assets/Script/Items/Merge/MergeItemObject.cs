@@ -18,6 +18,7 @@ public class MergeItemObject : MonoBehaviour, IPoolable
     public int PoolSpawnId => pooled != null ? pooled.SpawnId : 0;
     public bool IsLive => Owner != null && Definition != null && pooled != null && pooled.IsSpawned && isActiveAndEnabled;
     public bool CanMerge => IsLive && !reserved && Time.time >= unlockAt;
+    public bool CanSelect => IsLive && !reserved;
     public Vector2 Position => body != null ? body.position : (Vector2)transform.position;
     public Vector2 Velocity
     {

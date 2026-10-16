@@ -41,7 +41,7 @@ public sealed class MergeGameTests
         piece.circleCollider = prefab.GetComponent<CircleCollider2D>(); piece.body = prefab.GetComponent<Rigidbody2D>();
         prefab.GetComponent<PooledObject>().SetPoolGroup(PoolObjectGroup.MergeItem);
         var visual = new GameObject("Visual"); visual.transform.SetParent(prefab.transform, false);
-        piece.spriteRenderer = visual.AddComponent<SpriteRenderer>(); manager.itemPrefab = prefab;
+        piece.spriteRenderer = visual.AddComponent<SpriteRenderer>(); piece.visualSize = visual; manager.itemPrefab = prefab;
         a = Definition("A", .2f); b = Definition("B", .25f); result = Definition("Result", .4f);
         manager.mergeItems = new List<MergeItem> { a, b, result };
         manager.mergeMaterials = new List<MergeItemMaterial> {
@@ -77,7 +77,7 @@ public sealed class MergeGameTests
         Assert.That(manager.mergeMaterials[0].count, Is.EqualTo(2));
         Assert.That(piece.item, Is.SameAs(a.item)); Assert.That(piece.circleCollider.radius, Is.EqualTo(.2f));
         Assert.That(piece.spriteRenderer.sprite, Is.SameAs(a.item.icon));
-        Assert.That(piece.spriteRenderer.transform.localScale.x, Is.EqualTo(.1f).Within(.0001f));
+        Assert.That(piece.spriteRenderer.transform.localScale.x, Is.EqualTo(.05f).Within(.0001f));
         Assert.That(piece.transform.localScale, Is.EqualTo(Vector3.one));
         Assert.That(piece.body.simulated, Is.True); Assert.That(piece.circleCollider.isTrigger, Is.False);
         Assert.That(piece.GetComponent<PooledObject>().OwnerPool, Is.SameAs(pool));
@@ -165,6 +165,94 @@ public sealed class MergeGameTests
         manager.SelectNextMaterial(); Assert.That(manager.currentMaterial, Is.SameAs(manager.mergeMaterials[1]));
         manager.mergeMaterials[1].count = 0;
         Assert.That(manager.SelectNextMaterial(), Is.False); Assert.That(manager.CurrentMaterialCount, Is.Zero);
+    }
+
+    private MergeItemSelection Selection()
+    {
+        var selection = manager.gameObject.AddComponent<MergeItemSelection>();
+        selection.board = manager; selection.logSelections = false;
+        selection.dragCooldown = selection.clickCooldown = 0f;
+        return selection;
+    }
+    [Test]
+    public void DragRemovesOnlyIntersectingLivePiecesAndReturnsThemWithoutRefundingStock()
+    {
+        var first = Drop(0, -1f); var edge = Drop(1, 0f); var outside = Drop(1, 1f);
+        var selection = Selection(); Physics2D.SyncTransforms();
+        // B의 중심은 바깥이지만 반지름 .25가 사각형 끝 -.1에 걸쳐 선택됩니다.
+        Assert.That(selection.TryBeginSelection((Vector2)host.transform.position + new Vector2(-1.5f, -.3f)), Is.True);
+        Assert.That(selection.CompleteSelection((Vector2)host.transform.position + new Vector2(-.1f, .3f)), Is.EqualTo(2));
+        Assert.That(first.IsLive || edge.IsLive, Is.False); Assert.That(outside.IsLive, Is.True);
+        Assert.That(manager.ActiveItems.Count, Is.EqualTo(1));
+        Assert.That(manager.mergeMaterials[0].count, Is.EqualTo(2)); Assert.That(manager.mergeMaterials[1].count, Is.EqualTo(1));
+        Assert.That(selection.LastMessage, Does.Contain("B"));
+        var reused = Drop(0, -1f);
+        Assert.That(reused == first || reused == edge, Is.True); // Destroy 대신 기존 풀 재사용
+    }
+    [Test]
+    public void ClickRemovesOnePieceAndItsCooldownAlsoBlocksStartingADrag()
+    {
+        var piece = Drop(0, -1f); var selection = Selection(); selection.clickCooldown = 100f;
+        Physics2D.SyncTransforms();
+        Assert.That(selection.TryBeginSelection(piece.Position), Is.True);
+        Assert.That(selection.CompleteSelection(piece.Position), Is.EqualTo(1));
+        Assert.That(selection.CompleteSelection(piece.Position), Is.Zero); // 같은 mouse-up 중복 처리 금지
+        Assert.That(selection.TryBeginSelection(piece.Position), Is.False);
+        Assert.That(selection.CooldownRemaining, Is.GreaterThan(0f));
+    }
+    [Test]
+    public void CancelDuringDragDoesNotDeleteOnReleaseOrSpendCooldown()
+    {
+        var piece = Drop(0, -1f); var selection = Selection(); selection.dragCooldown = 100f;
+        Vector2 start = piece.Position - Vector2.one;
+        Assert.That(selection.TryBeginSelection(start), Is.True);
+        selection.UpdateSelection(piece.Position + Vector2.one);
+        Assert.That(selection.IsDragging, Is.True);
+        selection.CancelSelection(); // X 키 콜백과 같은 경로
+        Assert.That(selection.CompleteSelection(piece.Position), Is.Zero);
+        Assert.That(piece.IsLive, Is.True); Assert.That(selection.CooldownRemaining, Is.Zero);
+        Assert.That(selection.TryBeginSelection(start), Is.True);
+    }
+    [Test]
+    public void DragClampsItsWorldRangeAndDoesNotBecomeAClickAfterReturningToStart()
+    {
+        var piece = Drop(0, -1f); var selection = Selection(); selection.maximumDragRange = .5f;
+        Vector2 start = piece.Position - new Vector2(1f, .1f);
+        Assert.That(selection.TryBeginSelection(start), Is.True);
+        selection.UpdateSelection(start + Vector2.right * 10f);
+        Assert.That(selection.SelectionBounds.width, Is.EqualTo(.5f).Within(.01f));
+        selection.UpdateSelection(start);
+        Assert.That(selection.IsDragging, Is.True); // 왕복 드래그는 클릭이 아닙니다.
+        Assert.That(selection.CompleteSelection(start), Is.Zero); Assert.That(piece.IsLive, Is.True);
+        Assert.That(selection.CooldownRemaining, Is.Zero);
+    }
+    [Test]
+    public void SelectedOldRentalCannotConsumeItsReplacementFromAQueuedMerge()
+    {
+        var first = Drop(0, -1f); var second = Drop(1, 1f); int life = first.LifeId;
+        manager.QueueContact(first, second);
+        var selection = Selection(); Physics2D.SyncTransforms();
+        selection.TryBeginSelection(first.Position);
+        Assert.That(selection.CompleteSelection(first.Position), Is.EqualTo(1));
+        var reused = Drop(0, -1f); Assert.That(reused, Is.SameAs(first));
+        Assert.That(manager.TryRemoveItem(reused, life), Is.False);
+        manager.ProcessContacts();
+        Assert.That(manager.ActiveItems.Count, Is.EqualTo(2)); Assert.That(reused.IsLive && second.IsLive, Is.True);
+    }
+    [Test]
+    public void SelectionOfOneBoardDoesNotIncludeOtherBoardsOrOperateWhilePaused()
+    {
+        var piece = Drop(0, -1f);
+        var selection = Selection();
+        var other = new GameObject("Other board"); other.transform.SetParent(host.transform, false);
+        selection.board = other.AddComponent<MergegameManager>(); selection.board.acceptKeyboardInput = false;
+        Physics2D.SyncTransforms();
+        selection.TryBeginSelection(piece.Position);
+        Assert.That(selection.CompleteSelection(piece.Position), Is.Zero); Assert.That(piece.IsLive, Is.True);
+        selection.board = manager; selection.TryBeginSelection(piece.Position);
+        Time.timeScale = 0f;
+        Assert.That(selection.CompleteSelection(piece.Position), Is.Zero); Assert.That(piece.IsLive, Is.True);
+        Assert.That(selection.IsSelecting, Is.False);
     }
 }
 
