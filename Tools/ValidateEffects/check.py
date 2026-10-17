@@ -189,6 +189,8 @@ def main():
                     'Assets/Editor/SummonModuleEditor.cs', 'Assets/Editor/SummonActorEditor.cs',
                     'Assets/Editor/PrefabRangeGizmoDrawer.cs', 'Assets/Editor/PrefabVisualAnimatorEditor.cs',
                     'Assets/Editor/UseItemStatusReactionModuleEditor.cs',
+                    'Assets/Editor/UIObjectPlacementLayout.cs', 'Assets/Editor/UIObjectPlacementUtility.cs',
+                    'Assets/Editor/UIObjectPlacementWindow.cs', 'Assets/Editor/Tests/UIObjectPlacementTests.cs',
                     'Assets/Editor/Tests/BuffTargetInspectorTests.cs',
                     'Assets/Editor/Tests/BuffDurationEditorTests.cs',
                     'Assets/Editor/Tests/SummonArchitectureEditorTests.cs',
@@ -251,6 +253,7 @@ def main():
     scene_logic = [ROOT / 'Assets/Script/Manager/Utility/Scene' / name for name in ('GameSceneRoutes.cs', 'GameViewportLayout.cs', 'SceneStartupPolicy.cs', 'ScenePlaySettings.cs')]
     scene_logic += [ROOT / 'Assets/Script/Items/Merge' / name for name in ('MergeItem.cs', 'MergeTree.cs', 'MergeItemSelectionGesture.cs')]
     scene_logic += [HERE / 'ManagedMergeGameChecks.cs']
+    scene_logic += [ROOT / 'Assets/Editor/UIObjectPlacementLayout.cs', HERE / 'ManagedUIPlacementChecks.cs']
     project(managed_path, [effect / name for name in selected] + scene_logic + [ROOT / 'Assets/Editor/BuffTargetGroupDiscovery.cs', HERE / 'ManagedApi.cs', HERE / 'ManagedChecks.cs', HERE / 'ManagedBuffGroupChecks.cs', HERE / 'ManagedAllTargetsChecks.cs', HERE / 'ManagedSummonChecks.cs', HERE / 'ManagedSummonModuleChecks.cs', HERE / 'ManagedPrefabVisualChecks.cs', HERE / 'ManagedStatusReactionChecks.cs', HERE / 'ManagedSummonGroupChecks.cs', HERE / 'ManagedSustainedSummonChecks.cs', HERE / 'ManagedSceneFlowChecks.cs'], refs, executable=True)
     run([dotnet, 'run', '--project', managed_path, '--nologo'], env=environment)
     # Exercise the real owner callbacks with duplicate-registration checks on every enabled write.

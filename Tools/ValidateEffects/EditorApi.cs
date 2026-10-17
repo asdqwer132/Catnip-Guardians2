@@ -14,7 +14,27 @@ namespace UnityEditor
     public sealed class CustomEditorAttribute : Attribute { public CustomEditorAttribute(Type type, bool children = false) { } }
     [Flags] public enum GizmoType { Selected = 1, NonSelected = 2 }
     public sealed class DrawGizmoAttribute : Attribute { public DrawGizmoAttribute(GizmoType type) { } }
-    public static class Handles { public static void Label(Vector3 position, string text) { } }
+    public static class Handles
+    {
+        public static Color color;
+        public static void Label(Vector3 position, string text) { }
+        public static void DrawLine(Vector3 from, Vector3 to) { }
+        public static void DrawDottedLine(Vector3 from, Vector3 to, float spacing) { }
+        public static void DrawWireDisc(Vector3 center, Vector3 normal, float radius) { }
+    }
+    public static class HandleUtility { public static float GetHandleSize(Vector3 position) => 1f; }
+    public class SceneView
+    {
+        public static event Action<SceneView> duringSceneGui;
+        public static void RepaintAll() { }
+    }
+    public class EditorWindow : ScriptableObject
+    {
+        public Vector2 minSize;
+        public static T GetWindow<T>(string title) where T : EditorWindow => null;
+        public void Show() { }
+        public void Repaint() { }
+    }
     public static class Selection { public static UnityEngine.Object activeObject; public static Transform[] transforms => Array.Empty<Transform>(); }
     public sealed class CustomPropertyDrawerAttribute : Attribute { public CustomPropertyDrawerAttribute(Type type) { } }
     public enum MessageType { None, Info, Warning, Error }
@@ -71,6 +91,11 @@ namespace UnityEditor
     {
         public static event Action undoRedoPerformed;
         public static void IncrementCurrentGroup() { }
+        public static int GetCurrentGroup() => 0;
+        public static void SetCurrentGroupName(string name) { }
+        public static void RecordObject(UnityEngine.Object target, string name) { }
+        public static void CollapseUndoOperations(int group) { }
+        public static void RevertAllDownToGroup(int group) { }
         public static void FlushUndoRecordObjects() { }
         public static void PerformUndo() { }
         public static void ClearUndo(UnityEngine.Object value) { }
@@ -87,6 +112,7 @@ namespace UnityEditor
     public static class PrefabUtility
     {
         public static bool IsPartOfPrefabAsset(UnityEngine.Object value) => false;
+        public static void RecordPrefabInstancePropertyModifications(UnityEngine.Object value) { }
         public static GameObject SaveAsPrefabAsset(GameObject value, string path) => null;
     }
     public static class EditorGUIUtility
@@ -108,6 +134,13 @@ namespace UnityEditor
     }
     public static class EditorGUILayout
     {
+        public static Vector2 BeginScrollView(Vector2 position) => position;
+        public static void EndScrollView() { }
+        public static Enum EnumPopup(string label, Enum value) => value;
+        public static int IntField(string label, int value) => value;
+        public static Vector2 Vector2Field(string label, Vector2 value) => value;
+        public static bool Toggle(string label, bool value) => value;
+        public static UnityEngine.Object ObjectField(string label, UnityEngine.Object value, Type type, bool scene) => value;
         public static bool PropertyField(SerializedProperty property, bool includeChildren) => false;
         public static bool PropertyField(SerializedProperty property, GUIContent label, bool includeChildren) => false;
         public static float FloatField(string label, float value) => value;

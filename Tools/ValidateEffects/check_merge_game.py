@@ -70,7 +70,16 @@ def check_merge_game():
         reference = re.search(r'^  ' + field + r': \{fileID: (\d+)\}', selector, re.M)[1]
         assert reference in scene and scene[reference][0] == kind, field
         if field == 'board': assert manager_guid in scene[reference][1]
-        if field == 'dragVisual': assert '  m_Enabled: 0\n' in scene[reference][1], 'preview starts hidden'
+        if field == 'dragVisual':
+            preview = scene[reference][1]
+            # 사용자가 Drag를 Box 프리팹으로 옮기면 씬에는 stripped 참조만 남습니다.
+            # 해당 프리팹의 원본 Renderer를 따라가서 실제 시작 상태를 검사합니다.
+            if '  m_Enabled:' not in preview:
+                source = re.search(r'm_CorrespondingSourceObject: \{fileID: (\d+), guid: (\w+)', preview)
+                assert source is not None, 'missing preview source'
+                source_prefab = next(path for path in (assets / 'Prefab').rglob('*.prefab') if guid(path) == source[2])
+                preview = blocks(source_prefab)[source[1]][1]
+            assert '  m_Enabled: 0\n' in preview, 'preview starts hidden'
     selection_source = (merge / 'MergeItemSelection.cs').read_text()
     assert '"<Keyboard>/x"' in selection_source and 'cancelInput.performed += _ => CancelSelection()' in selection_source
     assert not re.search(r'Find\w*Object\w*\s*\(|new GameObject|AddComponent<', selection_source), 'selection uses explicit existing objects'
