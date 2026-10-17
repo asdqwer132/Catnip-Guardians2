@@ -51,7 +51,9 @@ Play 중 `MergeManager (1)`의 **Current Material**은 실제 Merge Materials �
 
 ## 마우스 드래그 / 클릭 선택·제거
 
-`GameItemScene`의 **MergeManager (1) → Merge Item Selection**에서 설정한다. Board, 해당 씬의 Camera, 사용자가 만든 `CragtingBox / Box1 / Box1_1 / Drag`의 SpriteRenderer를 연결했다. 새 UI나 표시 오브젝트를 생성하지 않는다. `Drag`는 선택할 때만 보이고 아이템보다 위에 그려진다. 색·투명도·스프라이트는 기존 SpriteRenderer에서 직접 바꿀 수 있다.
+`GameItemScene`의 **MergeManager (1) → Merge Item Selection**에서 설정한다. Board, 해당 씬의 Camera, 사용자가 만든 `CragtingBox / Drag`의 SpriteRenderer를 연결했다. 새 UI나 표시 오브젝트를 생성하지 않는다. `Drag`는 실행 시 드래그할 때만 보인다. 색·투명도·스프라이트·Sorting Order는 기존 SpriteRenderer에서 직접 바꿀 수 있다.
+
+Drag의 Draw Mode가 **Tiled / Sliced**이면 Transform 스케일을 유지하고 **SpriteRenderer.size**를 선택 영역에 맞춘다. 부모와 Drag 자체의 스케일도 크기 계산에 반영한다. 타일 크기는 스프라이트의 Pixels Per Unit과 Transform 스케일로 정하고, Tile Mode / Adaptive Threshold / 테두리 설정은 직접 설정한 값을 사용한다. Simple은 기존처럼 스케일로 맞춘다. 중앙이 아닌 스프라이트 피벗과 Flip X/Y도 반영하며, 같은 크기로 드래그하는 도중 Draw Mode나 스프라이트를 바꿔도 갱신한다.
 
 - **좌클릭**: 누르고 놓은 지점의 아이템 한 개를 선택한다. 겹쳐 있으면 중심이 가장 가까운 한 개를 고른다.
 - **좌클릭 드래그 → 놓기**: 시작점과 끝점의 사각형에 콜라이더가 조금이라도 걸친 아이템들을 선택한다. 드래그 도중에는 아이템을 제거하지 않는다.
@@ -62,7 +64,7 @@ Play 중 `MergeManager (1)`의 **Current Material**은 실제 Merge Materials �
 
 | Inspector 옵션 | 의미 / 기본값 |
 | --- | --- |
-| Drag Allowed Area | 클릭·드래그를 허용하는 RectTransform. 현재 `UICanvas / BoxArea`에 연결했다. |
+| Drag Allowed Area | 클릭·드래그를 허용하는 RectTransform. 현재 `UICanvas / BoxArea / Frame / DragArea`에 연결했다. |
 | Maximum Drag Width | 선택 사각형의 최대 가로 길이 **3**. 월드 단위. |
 | Maximum Drag Height | 선택 사각형의 최대 세로 길이 **3**. 가로와 독립적으로 제한. |
 | Drag Threshold | 클릭 대신 드래그로 판정하는 월드 이동 거리 **0.1** |
@@ -74,7 +76,7 @@ Play 중 `MergeManager (1)`의 **Current Material**은 실제 Merge Materials �
 
 ### 드래그 허용 영역 변경
 
-`MergeManager (1) → Merge Item Selection → Drag Allowed Area`에 직접 만든 UI RectTransform을 연결한다. 현재 연결한 `UICanvas / BoxArea`의 RectTransform 크기와 앵커를 조절하면 허용 범위도 따라 바뀐다. 더 작은 영역을 쓰려면 그 안에 빈 UI RectTransform을 직접 만들고 대신 연결하면 된다. Image나 Collider를 붙일 필요는 없으며 영역 표시가 필요하면 직접 만든 Image의 Raycast Target을 끈다. 비워 두면 기존 카메라 viewport 제한만 적용한다.
+`MergeManager (1) → Merge Item Selection → Drag Allowed Area`에 직접 만든 UI RectTransform을 연결한다. 현재 연결한 `UICanvas / BoxArea / Frame / DragArea`의 RectTransform 크기와 앵커를 조절하면 허용 범위도 따라 바뀐다. 더 작은 영역을 쓰려면 그 안에 빈 UI RectTransform을 직접 만들고 대신 연결하면 된다. Image나 Collider를 붙일 필요는 없으며 영역 표시가 필요하면 직접 만든 Image의 Raycast Target을 끈다. 비워 두면 기존 카메라 viewport 제한만 적용한다.
 
 영역 안에서만 선택을 시작할 수 있다. 드래그 중 **실제 마우스 위치**가 밖으로 나가면 선택을 취소하고 표시를 숨긴다. 최대 드래그 가로·세로 제한으로 표시 사각형이 작게 고정되어 있어도 실제 마우스가 밖이면 취소한다. 정확한 경계선 위까지는 허용한다. 취소 후 안으로 돌아와 놓아도 아이템이 삭제되지 않으며, 새로 클릭해야 다시 선택할 수 있다. 영역을 벗어나면서 버튼을 바로 놓는 경우와 한 프레임 안에 밖으로 나갔다 돌아오는 입력도 검사한다. 영역 이탈 취소에는 쿨타임을 쓰지 않는다. 연결한 영역/Canvas가 비활성화되거나 크기가 0이면 진행 중 선택도 취소된다.
 

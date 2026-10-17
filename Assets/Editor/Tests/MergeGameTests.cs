@@ -175,6 +175,63 @@ public sealed class MergeGameTests
         return selection;
     }
 
+    private SpriteRenderer DragRenderer(MergeItemSelection selection, SpriteDrawMode mode)
+    {
+        var parent = new GameObject("Preview parent"); parent.transform.SetParent(manager.transform, false);
+        parent.transform.localScale = new Vector3(3f, 2f, 1f);
+        var visual = new GameObject("Drag visual"); visual.transform.SetParent(parent.transform, false);
+        visual.transform.localScale = new Vector3(.5f, .25f, 1f);
+        var renderer = visual.AddComponent<SpriteRenderer>();
+        var texture = new Texture2D(8, 8); assets.Add(texture);
+        renderer.sprite = Sprite.Create(texture, new Rect(0f, 0f, 8f, 8f), new Vector2(.25f, .75f),
+            1f, 0, SpriteMeshType.FullRect, new Vector4(.25f, .25f, .25f, .25f));
+        assets.Add(renderer.sprite);
+        renderer.drawMode = mode;
+        renderer.flipX = renderer.flipY = true; // 중앙이 아닌 피벗과 뒤집기를 함께 검사합니다.
+        selection.enabled = false; selection.dragVisual = renderer; selection.enabled = true;
+        Assert.That(renderer.enabled, Is.False); // 씬에서 켜 두어도 시작 시 숨겨집니다.
+        return renderer;
+    }
+    [TestCase(SpriteDrawMode.Tiled)]
+    [TestCase(SpriteDrawMode.Sliced)]
+    [TestCase(SpriteDrawMode.Simple)]
+    public void DragVisualFitsSelectionForEveryDrawModeAndNoncentralPivot(SpriteDrawMode mode)
+    {
+        var selection = Selection(); var renderer = DragRenderer(selection, mode);
+        Vector3 authoredScale = renderer.transform.localScale;
+        Vector2 start = (Vector2)host.transform.position - Vector2.one;
+        Assert.That(selection.TryBeginSelection(start), Is.True);
+        selection.UpdateSelection(start + new Vector2(2f, 1f));
+        Assert.That(renderer.enabled, Is.True);
+        if (mode != SpriteDrawMode.Simple)
+        {
+            Assert.That(renderer.transform.localScale, Is.EqualTo(authoredScale));
+            Assert.That(renderer.size.x, Is.EqualTo(2f / 1.5f).Within(.001f));
+            Assert.That(renderer.size.y, Is.EqualTo(2f).Within(.001f));
+        }
+        Assert.That(renderer.bounds.size.x, Is.EqualTo(2f).Within(.02f));
+        Assert.That(renderer.bounds.size.y, Is.EqualTo(1f).Within(.02f));
+        Assert.That(renderer.bounds.center.x, Is.EqualTo(start.x + 1f).Within(.02f));
+        Assert.That(renderer.bounds.center.y, Is.EqualTo(start.y + .5f).Within(.02f));
+        Vector3 before = renderer.transform.position;
+        selection.UpdateSelection(start + new Vector2(2f, 1f));
+        Assert.That(renderer.transform.position, Is.EqualTo(before));
+        selection.CancelSelection(); Assert.That(renderer.enabled, Is.False);
+    }
+    [Test]
+    public void SwitchingFromSimpleToTiledAtTheSameDragSizeRestoresAuthoredTileScale()
+    {
+        var selection = Selection(); var renderer = DragRenderer(selection, SpriteDrawMode.Simple);
+        Vector3 authoredScale = renderer.transform.localScale;
+        Vector2 start = (Vector2)host.transform.position;
+        selection.TryBeginSelection(start); selection.UpdateSelection(start + new Vector2(2f, 1f));
+        renderer.drawMode = SpriteDrawMode.Tiled;
+        selection.UpdateSelection(start + new Vector2(2f, 1f));
+        Assert.That(renderer.transform.localScale, Is.EqualTo(authoredScale));
+        Assert.That(renderer.size.x, Is.EqualTo(2f / 1.5f).Within(.001f));
+        Assert.That(renderer.size.y, Is.EqualTo(2f).Within(.001f));
+    }
+
     private RectTransform AllowedArea(MergeItemSelection selection, Vector2 center)
     {
         var camera = new GameObject("Selection camera").AddComponent<Camera>(); camera.transform.SetParent(host.transform, false);

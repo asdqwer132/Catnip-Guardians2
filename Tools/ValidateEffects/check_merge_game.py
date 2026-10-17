@@ -79,7 +79,10 @@ def check_merge_game():
                 assert source is not None, 'missing preview source'
                 source_prefab = next(path for path in (assets / 'Prefab').rglob('*.prefab') if guid(path) == source[2])
                 preview = blocks(source_prefab)[source[1]][1]
-            assert '  m_Enabled: 0\n' in preview, 'preview starts hidden'
+            assert re.search(r'^  m_Enabled: [01]$', preview, re.M), 'missing preview enabled state'
+            # 편집 중에는 표시할 수 있으며 런타임 시작 시 컨트롤러가 숨깁니다.
+            source = (merge / 'MergeItemSelection.cs').read_text()
+            assert re.search(r'private void OnEnable\(\)[\s\S]*?HideVisual\(\);', source), 'preview must hide on enable'
     selection_source = (merge / 'MergeItemSelection.cs').read_text()
     assert '"<Keyboard>/x"' in selection_source and 'cancelInput.performed += _ => CancelSelection()' in selection_source
     assert not re.search(r'Find\w*Object\w*\s*\(|new GameObject|AddComponent<', selection_source), 'selection uses explicit existing objects'

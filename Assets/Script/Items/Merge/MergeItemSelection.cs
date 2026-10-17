@@ -38,8 +38,9 @@ public sealed class MergeItemSelection : MonoBehaviour
     private InputAction positionInput, selectInput, cancelInput;
     private bool committing;
     private float visualZ;
-    private Rect displayedBounds;
-    private bool hasDisplayedBounds;
+    private SpriteRenderer boundVisual;
+    private Vector3 authoredVisualScale;
+    private SpriteDrawMode previousDrawMode;
     private struct Selection { public MergeItemObject piece; public int lifeId; }
 
     public bool IsSelecting => gesture.IsActive;
@@ -53,7 +54,7 @@ public sealed class MergeItemSelection : MonoBehaviour
 
     private void OnEnable()
     {
-        if (dragVisual != null) visualZ = dragVisual.transform.position.z;
+        BindVisual();
         HideVisual();
         if (positionInput == null)
         {
@@ -220,26 +221,58 @@ public sealed class MergeItemSelection : MonoBehaviour
     private void RefreshVisual()
     {
         if (dragVisual == null || dragVisual.sprite == null) return;
-        dragVisual.enabled = IsDragging;
+        BindVisual();
+        if (dragVisual.enabled != IsDragging) dragVisual.enabled = IsDragging;
         if (!IsDragging) return;
         Rect area = gesture.Bounds;
-        // 한계 밖에서 포인터가 움직여도 같은 영역의 Transform을 매 프레임 다시 쓰지 않습니다.
-        if (hasDisplayedBounds && displayedBounds.Equals(area)) return;
         Transform visual = dragVisual.transform;
-        Vector3 parentScale = visual.parent != null ? visual.parent.lossyScale : Vector3.one;
-        Vector3 spriteSize = dragVisual.sprite.bounds.size;
-        visual.rotation = Quaternion.identity;
-        visual.localScale = new Vector3(area.width / Mathf.Max(.0001f, spriteSize.x * Mathf.Abs(parentScale.x)),
-            area.height / Mathf.Max(.0001f, spriteSize.y * Mathf.Abs(parentScale.y)), visual.localScale.z);
-        visual.position = new Vector3(area.center.x, area.center.y, visualZ) - visual.TransformVector(dragVisual.sprite.bounds.center);
-        displayedBounds = area;
-        hasDisplayedBounds = true;
+        Sprite sprite = dragVisual.sprite;
+        if (visual.rotation != Quaternion.identity) visual.rotation = Quaternion.identity;
+        Vector3 localCenter;
+        if (dragVisual.drawMode == SpriteDrawMode.Simple)
+        {
+            Vector3 parentScale = visual.parent != null ? visual.parent.lossyScale : Vector3.one;
+            Vector3 spriteSize = sprite.bounds.size;
+            Vector3 scale = new Vector3(area.width / Mathf.Max(.0001f, spriteSize.x * Mathf.Abs(parentScale.x)),
+                area.height / Mathf.Max(.0001f, spriteSize.y * Mathf.Abs(parentScale.y)), visual.localScale.z);
+            if (visual.localScale != scale) visual.localScale = scale;
+            localCenter = sprite.bounds.center;
+        }
+        else
+        {
+            // Simple에서 Tiled/Sliced로 바꾸면 이전 드래그가 늘린 스케일부터 복구합니다.
+            if (previousDrawMode == SpriteDrawMode.Simple) visual.localScale = authoredVisualScale;
+            Vector3 scale = visual.lossyScale;
+            Vector2 size = new Vector2(area.width / Mathf.Max(.0001f, Mathf.Abs(scale.x)),
+                area.height / Mathf.Max(.0001f, Mathf.Abs(scale.y)));
+            // 타일/테두리는 늘리지 않고 Renderer의 그리는 영역만 변경합니다.
+            if (dragVisual.size != size) dragVisual.size = size;
+            Vector2 pivot = sprite.pivot;
+            Vector2 spritePixels = sprite.rect.size;
+            localCenter = new Vector3((.5f - pivot.x / spritePixels.x) * size.x,
+                (.5f - pivot.y / spritePixels.y) * size.y, 0f);
+        }
+        previousDrawMode = dragVisual.drawMode;
+        if (dragVisual.flipX) localCenter.x = -localCenter.x;
+        if (dragVisual.flipY) localCenter.y = -localCenter.y;
+        Vector3 position = new Vector3(area.center.x, area.center.y, visualZ) - visual.TransformVector(localCenter);
+        // 영역이 같으면 Transform/size 값을 다시 쓰지 않아 최대치에서도 표시가 안정됩니다.
+        if (visual.position != position) visual.position = position;
+    }
+
+    private void BindVisual()
+    {
+        if (boundVisual == dragVisual) return;
+        boundVisual = dragVisual;
+        if (boundVisual == null) return;
+        authoredVisualScale = boundVisual.transform.localScale;
+        visualZ = boundVisual.transform.position.z;
+        previousDrawMode = boundVisual.drawMode;
     }
 
     private void HideVisual()
     {
         if (dragVisual != null) dragVisual.enabled = false;
-        hasDisplayedBounds = false;
     }
     private void OnApplicationFocus(bool focused) { if (!focused) CancelSelection(); }
     private void OnDisable()
