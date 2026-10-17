@@ -174,6 +174,74 @@ public sealed class MergeGameTests
         selection.dragCooldown = selection.clickCooldown = 0f;
         return selection;
     }
+
+    private RectTransform AllowedArea(MergeItemSelection selection, Vector2 center)
+    {
+        var camera = new GameObject("Selection camera").AddComponent<Camera>(); camera.transform.SetParent(host.transform, false);
+        camera.transform.position = new Vector3(center.x, center.y, -10f);
+        camera.orthographic = true; camera.orthographicSize = 5f;
+        camera.pixelRect = new Rect(0f, 0f, 1000f, 1000f); camera.aspect = 1f;
+        selection.inputCamera = camera;
+        var area = new GameObject("Allowed area", typeof(RectTransform)).GetComponent<RectTransform>();
+        area.SetParent(host.transform, false); area.position = center; area.sizeDelta = new Vector2(2f, 2f);
+        selection.dragAllowedArea = area;
+        return area;
+    }
+    [Test]
+    public void LeavingAllowedAreaCancelsBeforeClampingAndReenteringDoesNotDelete()
+    {
+        var piece = Drop(0, -1f); var selection = Selection(); AllowedArea(selection, piece.Position);
+        selection.maximumDragWidth = selection.maximumDragHeight = .1f;
+        selection.dragCooldown = selection.clickCooldown = 100f;
+        Assert.That(selection.TryBeginSelection(piece.Position + Vector2.right * 3f), Is.False);
+        Assert.That(selection.TryBeginSelection(piece.Position), Is.True);
+        selection.UpdateSelection(piece.Position + Vector2.right * 3f); // 표시 사각형은 .1이지만 실제 포인터는 밖입니다.
+        Assert.That(selection.IsSelecting, Is.False);
+        selection.UpdateSelection(piece.Position);
+        Assert.That(selection.CompleteSelection(piece.Position), Is.Zero);
+        Assert.That(piece.IsLive, Is.True); Assert.That(selection.CooldownRemaining, Is.Zero);
+        Assert.That(selection.TryBeginSelection(piece.Position), Is.True); // 새 클릭은 즉시 가능합니다.
+    }
+    [Test]
+    public void ReleasingOutsideTheAreaWithoutAnUpdateCannotFallThroughToClickDeletion()
+    {
+        var piece = Drop(0, -1f); var selection = Selection(); AllowedArea(selection, piece.Position);
+        Physics2D.SyncTransforms();
+        Assert.That(selection.TryBeginSelection(piece.Position), Is.True);
+        Assert.That(selection.CompleteSelection(piece.Position + Vector2.right * 3f), Is.Zero);
+        Assert.That(piece.IsLive, Is.True); Assert.That(selection.IsSelecting, Is.False);
+        Assert.That(selection.CooldownRemaining, Is.Zero);
+    }
+    [Test]
+    public void DisablingAnAssignedAreaCancelsAnActiveSelection()
+    {
+        var piece = Drop(0, -1f); var selection = Selection();
+        var area = AllowedArea(selection, piece.Position);
+        Assert.That(selection.TryBeginSelection(piece.Position), Is.True);
+        area.gameObject.SetActive(false);
+        selection.UpdateSelection(piece.Position);
+        Assert.That(selection.IsSelecting, Is.False);
+        Assert.That(selection.CompleteSelection(piece.Position), Is.Zero); Assert.That(piece.IsLive, Is.True);
+    }
+    [Test]
+    public void AreaUsesItsCanvasCameraAndAnInsideDragStillReturnsTheItemToThePool()
+    {
+        var piece = Drop(0, -1f); var selection = Selection();
+        var area = AllowedArea(selection, piece.Position);
+        var canvas = area.gameObject.AddComponent<Canvas>(); canvas.renderMode = RenderMode.WorldSpace;
+        area.position = piece.Position; area.localScale = Vector3.one; area.sizeDelta = new Vector2(4f, 4f);
+        var uiCamera = new GameObject("Area UI camera").AddComponent<Camera>(); uiCamera.transform.SetParent(host.transform, false);
+        uiCamera.transform.position = selection.inputCamera.transform.position;
+        uiCamera.orthographic = true; uiCamera.orthographicSize = 10f;
+        uiCamera.pixelRect = selection.inputCamera.pixelRect; uiCamera.aspect = 1f;
+        canvas.worldCamera = uiCamera;
+        Assert.That(selection.IsInsideDragArea(piece.Position + Vector2.right * .5f), Is.True);
+        Assert.That(selection.IsInsideDragArea(piece.Position + Vector2.right * 1.5f), Is.False);
+        Physics2D.SyncTransforms();
+        Assert.That(selection.TryBeginSelection(piece.Position - Vector2.one * .5f), Is.True);
+        Assert.That(selection.CompleteSelection(piece.Position + Vector2.one * .5f), Is.EqualTo(1));
+        Assert.That(piece.IsLive, Is.False);
+    }
     [Test]
     public void DragRemovesOnlyIntersectingLivePiecesAndReturnsThemWithoutRefundingStock()
     {

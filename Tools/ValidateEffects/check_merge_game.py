@@ -66,7 +66,7 @@ def check_merge_game():
     assert '  m_GameObject: {fileID: 910000600001}' in renderer, 'only Visual may be resized'
     assert any('  poolGroup: 3' in body for _, body in prefab.values())
     selector = next(body for _, body in scene.values() if guid(merge / 'MergeItemSelection.cs') in body)
-    for field, kind in (('board', '114'), ('inputCamera', '20'), ('dragVisual', '212')):
+    for field, kind in (('board', '114'), ('inputCamera', '20'), ('dragVisual', '212'), ('dragAllowedArea', '224')):
         reference = re.search(r'^  ' + field + r': \{fileID: (\d+)\}', selector, re.M)[1]
         assert reference in scene and scene[reference][0] == kind, field
         if field == 'board': assert manager_guid in scene[reference][1]

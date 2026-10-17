@@ -10,6 +10,21 @@ public static partial class Runner
         => new RecipeMaterial { itemData = item, amount = amount };
     private static void RunMergeGameChecks()
     {
+        Check("drag allowed area includes its borders and rejects outside points for arbitrary UI pivots", () => {
+            foreach (var area in new[] { new Rect(-2f, -1f, 4f, 2f), new Rect(0f, -2f, 4f, 2f) }) {
+                True(MergeItemSelectionGesture.ContainsAreaPoint(area, area.min));
+                True(MergeItemSelectionGesture.ContainsAreaPoint(area, area.max));
+                True(MergeItemSelectionGesture.ContainsAreaPoint(area, area.center));
+                True(!MergeItemSelectionGesture.ContainsAreaPoint(area, area.min - new Vector2(.01f, 0f)));
+                True(!MergeItemSelectionGesture.ContainsAreaPoint(area, area.max + new Vector2(0f, .01f)));
+            }
+        });
+        Check("collapsed and nonfinite allowed areas never permit selection", () => {
+            True(!MergeItemSelectionGesture.ContainsAreaPoint(new Rect(0f, 0f, 0f, 2f), Vector2.zero));
+            True(!MergeItemSelectionGesture.ContainsAreaPoint(new Rect(0f, 0f, 2f, -1f), Vector2.zero));
+            True(!MergeItemSelectionGesture.ContainsAreaPoint(new Rect(0f, 0f, float.PositiveInfinity, 2f), Vector2.zero));
+            True(!MergeItemSelectionGesture.ContainsAreaPoint(new Rect(-1f, -1f, 2f, 2f), new Vector2(float.NaN, 0f)));
+        });
         Check("selection clamps world width and height independently in every drag direction", () => {
             foreach (var direction in new[] { new Vector2(3f, 4f), new Vector2(-3f, 4f), new Vector2(3f, -4f), new Vector2(-3f, -4f) }) {
                 var selection = new MergeItemSelectionGesture(); var start = new Vector2(10f, 20f);

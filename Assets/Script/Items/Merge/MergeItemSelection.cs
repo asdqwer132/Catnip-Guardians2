@@ -14,6 +14,10 @@ public sealed class MergeItemSelection : MonoBehaviour
     [Tooltip("직접 만든 Drag 스프라이트입니다. 없으면 영역 표시 없이 선택만 동작합니다.")]
     public SpriteRenderer dragVisual;
 
+    [Header("클릭·드래그 허용 영역")]
+    [Tooltip("직접 만든 UI 영역을 연결하세요. 영역 밖에서는 선택을 시작하지 않으며, 진행 중 마우스가 벗어나면 취소합니다. 비워두면 기존 카메라 영역만 사용합니다.")]
+    public RectTransform dragAllowedArea;
+
     [Header("월드 좌표 선택 범위")]
     [Tooltip("선택 사각형의 최대 가로 길이입니다. 월드 단위이며 카메라 줌과 무관합니다.")]
     [FormerlySerializedAs("maximumDragRange")]
@@ -59,11 +63,15 @@ public sealed class MergeItemSelection : MonoBehaviour
             selectInput.performed += _ => BeginPointer();
             selectInput.canceled += _ => ReleasePointer();
             cancelInput.performed += _ => CancelSelection();
+            // 한 프레임 안에 영역 밖으로 나갔다 돌아와도 취소를 놓치지 않습니다.
+            positionInput.performed += _ => UpdatePointerSelection();
         }
         positionInput.Enable(); selectInput.Enable(); cancelInput.Enable();
     }
 
-    private void Update()
+    private void Update() => UpdatePointerSelection();
+
+    private void UpdatePointerSelection()
     {
         if (!IsSelecting) return;
         if (!CanSelect || !TryPointerWorld(out var world)) { CancelSelection(); return; }
@@ -111,7 +119,7 @@ public sealed class MergeItemSelection : MonoBehaviour
     // 다른 입력/UI에서도 월드 좌표로 호출할 수 있습니다. 자동 생성 UI는 사용하지 않습니다.
     public bool TryBeginSelection(Vector2 worldPosition)
     {
-        if (!CanSelect || !gesture.TryBegin(worldPosition, Time.time)) return false;
+        if (!CanSelect || !IsInsideDragArea(worldPosition) || !gesture.TryBegin(worldPosition, Time.time)) return false;
         LastRemovedCount = 0;
         HideVisual();
         return true;
@@ -120,7 +128,8 @@ public sealed class MergeItemSelection : MonoBehaviour
     public void UpdateSelection(Vector2 worldPosition)
     {
         if (!IsSelecting) return;
-        if (!CanSelect) { CancelSelection(); return; }
+        // 표시용 사각형을 최대 크기로 줄이기 전에 실제 포인터 위치를 검사합니다.
+        if (!CanSelect || !IsInsideDragArea(worldPosition)) { CancelSelection(); return; }
         gesture.Move(worldPosition, maximumDragWidth, maximumDragHeight, dragThreshold);
         RefreshVisual();
     }
@@ -129,6 +138,7 @@ public sealed class MergeItemSelection : MonoBehaviour
     {
         if (!IsSelecting || !CanSelect) { CancelSelection(); return 0; }
         UpdateSelection(worldPosition);
+        if (!IsSelecting) return 0; // 영역 밖 mouse-up으로 취소됐으면 클릭 삭제로 이어지지 않습니다.
         bool dragged = gesture.IsDrag;
         CollectSelection(dragged);
         gesture.Complete(Time.time, selected.Count > 0 ? (dragged ? dragCooldown : clickCooldown) : 0f);
@@ -151,6 +161,27 @@ public sealed class MergeItemSelection : MonoBehaviour
             return LastRemovedCount;
         }
         finally { selected.Clear(); committing = false; }
+    }
+
+    public bool IsInsideDragArea(Vector2 worldPosition)
+    {
+        if (float.IsNaN(worldPosition.x) || float.IsInfinity(worldPosition.x) ||
+            float.IsNaN(worldPosition.y) || float.IsInfinity(worldPosition.y)) return false;
+        if (dragAllowedArea == null) return true;
+        if (!dragAllowedArea.gameObject.activeInHierarchy || inputCamera == null) return false;
+        var canvas = dragAllowedArea.GetComponentInParent<Canvas>();
+        Camera areaCamera = inputCamera;
+        if (canvas != null)
+        {
+            canvas = canvas.rootCanvas;
+            if (!canvas.isActiveAndEnabled) return false;
+            areaCamera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
+            if (canvas.renderMode != RenderMode.ScreenSpaceOverlay && areaCamera == null) return false;
+        }
+        float z = board != null ? board.transform.position.z : 0f;
+        Vector3 screen = inputCamera.WorldToScreenPoint(new Vector3(worldPosition.x, worldPosition.y, z));
+        if (screen.z < 0f || !RectTransformUtility.ScreenPointToLocalPointInRectangle(dragAllowedArea, screen, areaCamera, out var local)) return false;
+        return MergeItemSelectionGesture.ContainsAreaPoint(dragAllowedArea.rect, local);
     }
 
     private void CollectSelection(bool dragged)

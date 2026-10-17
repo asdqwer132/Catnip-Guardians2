@@ -45,6 +45,11 @@ public sealed class MergeItemSelectionGesture
 
     public void Cancel() { IsActive = false; IsDrag = false; }
 
+    // UI 실제 피벗 기준의 로컬 좌표를 받습니다. 정확히 경계에 닿은 점까지 허용합니다.
+    public static bool ContainsAreaPoint(Rect area, Vector2 point) => area.width > 0f && area.height > 0f &&
+        IsFinite(area.min) && IsFinite(area.max) && IsFinite(point) &&
+        point.x >= area.xMin && point.x <= area.xMax && point.y >= area.yMin && point.y <= area.yMax;
+
     public static bool IntersectsCircle(Rect rectangle, Vector2 center, float radius)
     {
         Vector2 nearest = new Vector2(Mathf.Clamp(center.x, rectangle.xMin, rectangle.xMax),

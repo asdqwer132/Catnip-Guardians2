@@ -58,10 +58,11 @@ Play 중 `MergeManager (1)`의 **Current Material**은 실제 Merge Materials �
 - **X**: 선택을 취소하고 영역 표시를 숨긴다. 이후 마우스 버튼을 놓아도 클릭/드래그 삭제가 실행되지 않는다. 새로 클릭해야 다시 선택할 수 있다.
 - 선택이 확정되면 아이템별 이름·월드 위치를 Console의 **`[MergeSelection]`** 로그에 남기고 기존 풀에 반환한다. 재료 재고를 돌려주거나 전투 아이템 사용 이펙트를 실행하지 않는다.
 - 클릭과 드래그는 한 번에 하나만 실행된다. 한 번 드래그 기준 거리를 넘으면 시작점으로 돌아와도 클릭으로 바뀌지 않는다.
-- 다른 카메라 영역이나 UI 위에서 선택을 시작하지 않는다. 진행 도중 아이템 카메라 영역을 벗어나거나 일시정지/입력 차단/포커스 상실/컴포넌트 비활성화가 발생하면 취소한다. UI 위에서 놓아도 취소한다.
+- 다른 카메라 영역이나 UI 위에서 선택을 시작하지 않는다. 진행 도중 허용 영역 또는 아이템 카메라 영역을 벗어나거나 일시정지/입력 차단/포커스 상실/컴포넌트 비활성화가 발생하면 취소한다. UI 위에서 놓아도 취소한다.
 
 | Inspector 옵션 | 의미 / 기본값 |
 | --- | --- |
+| Drag Allowed Area | 클릭·드래그를 허용하는 RectTransform. 현재 `UICanvas / BoxArea`에 연결했다. |
 | Maximum Drag Width | 선택 사각형의 최대 가로 길이 **3**. 월드 단위. |
 | Maximum Drag Height | 선택 사각형의 최대 세로 길이 **3**. 가로와 독립적으로 제한. |
 | Drag Threshold | 클릭 대신 드래그로 판정하는 월드 이동 거리 **0.1** |
@@ -69,7 +70,15 @@ Play 중 `MergeManager (1)`의 **Current Material**은 실제 Merge Materials �
 | Click Cooldown | 클릭으로 아이템을 지운 뒤 다음 선택까지 **0.2초** |
 | Log Selections | 아이템별 선택 로그와 취소 로그 출력 |
 
-클릭과 드래그는 다음 선택 가능 시각을 공유하므로 번갈아 써서 쿨타임을 우회할 수 없다. 빈 영역 선택이나 X 취소에는 쿨타임을 쓰지 않는다. 범위·판정은 월드 좌표이며 카메라는 포인터 위치만 변환한다. `IsSelecting`, `IsDragging`, `SelectionBounds`, `CooldownRemaining`, `LastRemovedCount`, `LastMessage`를 직접 만든 UI 표시에서 읽을 수 있다. 다른 통에도 같은 컴포넌트를 붙이고 해당 Board/Camera/Drag Visual을 연결하면 된다.
+클릭과 드래그는 다음 선택 가능 시각을 공유하므로 번갈아 써서 쿨타임을 우회할 수 없다. 빈 영역 선택이나 X 취소에는 쿨타임을 쓰지 않는다. 선택 사각형의 크기와 아이템 판정은 월드 좌표다. `Drag Allowed Area`는 Canvas의 화면 위치로 검사하여 UI 크기·앵커·피벗·회전과 카메라 viewport를 따른다. `IsSelecting`, `IsDragging`, `SelectionBounds`, `CooldownRemaining`, `LastRemovedCount`, `LastMessage`를 직접 만든 UI 표시에서 읽을 수 있다. 다른 통에도 같은 컴포넌트를 붙이고 해당 Board/Camera/Drag Visual을 연결하면 된다.
+
+### 드래그 허용 영역 변경
+
+`MergeManager (1) → Merge Item Selection → Drag Allowed Area`에 직접 만든 UI RectTransform을 연결한다. 현재 연결한 `UICanvas / BoxArea`의 RectTransform 크기와 앵커를 조절하면 허용 범위도 따라 바뀐다. 더 작은 영역을 쓰려면 그 안에 빈 UI RectTransform을 직접 만들고 대신 연결하면 된다. Image나 Collider를 붙일 필요는 없으며 영역 표시가 필요하면 직접 만든 Image의 Raycast Target을 끈다. 비워 두면 기존 카메라 viewport 제한만 적용한다.
+
+영역 안에서만 선택을 시작할 수 있다. 드래그 중 **실제 마우스 위치**가 밖으로 나가면 선택을 취소하고 표시를 숨긴다. 최대 드래그 가로·세로 제한으로 표시 사각형이 작게 고정되어 있어도 실제 마우스가 밖이면 취소한다. 정확한 경계선 위까지는 허용한다. 취소 후 안으로 돌아와 놓아도 아이템이 삭제되지 않으며, 새로 클릭해야 다시 선택할 수 있다. 영역을 벗어나면서 버튼을 바로 놓는 경우와 한 프레임 안에 밖으로 나갔다 돌아오는 입력도 검사한다. 영역 이탈 취소에는 쿨타임을 쓰지 않는다. 연결한 영역/Canvas가 비활성화되거나 크기가 0이면 진행 중 선택도 취소된다.
+
+Canvas 카메라가 필요한 Screen Space Camera / World Space 모드에서는 해당 Canvas의 Render Camera를 연결한다. Overlay Canvas는 카메라 없이 검사한다. 허용 영역은 입력 범위만 정하며 아이템 물리 이동·통 모양·선택 사각형의 최대 크기는 바꾸지 않는다.
 
 ## 검사
 
