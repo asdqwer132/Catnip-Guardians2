@@ -191,6 +191,7 @@ def main():
                     'Assets/Editor/UseItemStatusReactionModuleEditor.cs',
                     'Assets/Editor/UIObjectPlacementLayout.cs', 'Assets/Editor/UIObjectPlacementUtility.cs',
                     'Assets/Editor/UIObjectPlacementWindow.cs', 'Assets/Editor/Tests/UIObjectPlacementTests.cs',
+                    'Assets/Editor/Tests/MergeItemPrefabAssetTests.cs',
                     'Assets/Editor/Tests/BuffTargetInspectorTests.cs',
                     'Assets/Editor/Tests/BuffDurationEditorTests.cs',
                     'Assets/Editor/Tests/SummonArchitectureEditorTests.cs',

@@ -41,8 +41,9 @@ public sealed class MergeGameTests
         piece.circleCollider = prefab.GetComponent<CircleCollider2D>(); piece.body = prefab.GetComponent<Rigidbody2D>();
         prefab.GetComponent<PooledObject>().SetPoolGroup(PoolObjectGroup.MergeItem);
         var visual = new GameObject("Visual"); visual.transform.SetParent(prefab.transform, false);
-        piece.spriteRenderer = visual.AddComponent<SpriteRenderer>(); piece.visualSize = visual; manager.itemPrefab = prefab;
+        piece.spriteRenderer = visual.AddComponent<SpriteRenderer>(); piece.visualSize = visual;
         a = Definition("A", .2f); b = Definition("B", .25f); result = Definition("Result", .4f);
+        a.prefab = b.prefab = result.prefab = prefab;
         manager.mergeItems = new List<MergeItem> { a, b, result };
         manager.mergeMaterials = new List<MergeItemMaterial> {
             new MergeItemMaterial { MergeItem = a, count = 3 }, new MergeItemMaterial { MergeItem = b, count = 3 } };
@@ -68,6 +69,90 @@ public sealed class MergeGameTests
         manager.spawnPoint.localPosition = new Vector3(x, 0f, 0f);
         Assert.That(manager.TryDropCurrent(), Is.True);
         return manager.ActiveItems[manager.ActiveItems.Count - 1];
+    }
+    private GameObject PrefabVariant(string name, Color color)
+    {
+        var prefab = Object.Instantiate(a.prefab, host.transform);
+        prefab.name = name;
+        prefab.GetComponent<MergeItemObject>().spriteRenderer.color = color;
+        return prefab;
+    }
+    [Test]
+    public void EachDefinitionSpawnsAndReusesItsOwnPrefabPoolAndKeepsItsVisualStyle()
+    {
+        var firstPrefab = PrefabVariant("First item visual", Color.red);
+        var secondPrefab = PrefabVariant("Second item visual", Color.blue);
+        a.prefab = firstPrefab; b.prefab = secondPrefab;
+        var first = Drop(0, -1f); var second = Drop(1, 1f);
+        Assert.That(first.GetComponent<PooledObject>().OriginalPrefab, Is.SameAs(firstPrefab));
+        Assert.That(second.GetComponent<PooledObject>().OriginalPrefab, Is.SameAs(secondPrefab));
+        Assert.That(first.spriteRenderer.color, Is.EqualTo(Color.red));
+        Assert.That(second.spriteRenderer.color, Is.EqualTo(Color.blue));
+        first.ReturnToPool(); second.ReturnToPool();
+        var secondAgain = Drop(1, 1f); var firstAgain = Drop(0, -1f);
+        Assert.That(secondAgain, Is.SameAs(second)); Assert.That(firstAgain, Is.SameAs(first));
+        Assert.That(firstAgain.spriteRenderer.color, Is.EqualTo(Color.red));
+        Assert.That(secondAgain.spriteRenderer.color, Is.EqualTo(Color.blue));
+    }
+    [Test]
+    public void MergeUsesTheResultDefinitionsPrefabInsteadOfEitherIngredientPrefab()
+    {
+        var resultPrefab = PrefabVariant("Merged result visual", Color.green);
+        result.prefab = resultPrefab;
+        var first = Drop(0, -1f); var second = Drop(1, 1f);
+        manager.QueueContact(first, second); manager.ProcessContacts();
+        Assert.That(manager.ActiveItems.Count, Is.EqualTo(1));
+        var merged = manager.ActiveItems[0];
+        Assert.That(merged.Definition, Is.SameAs(result));
+        Assert.That(merged.GetComponent<PooledObject>().OriginalPrefab, Is.SameAs(resultPrefab));
+        Assert.That(merged.spriteRenderer.color, Is.EqualTo(Color.green));
+    }
+    [Test]
+    public void MissingOrInvalidMaterialPrefabDoesNotSpendStockAndMissingResultKeepsIngredients()
+    {
+        var configured = a.prefab;
+        a.prefab = null;
+        Assert.That(manager.TryDropCurrent(), Is.False); Assert.That(manager.mergeMaterials[0].count, Is.EqualTo(3));
+        var invalid = new GameObject("Missing merge component"); invalid.transform.SetParent(host.transform, false); a.prefab = invalid;
+        Assert.That(manager.TryDropCurrent(), Is.False); Assert.That(manager.mergeMaterials[0].count, Is.EqualTo(3));
+        a.prefab = configured;
+        var first = Drop(0, -1f); var second = Drop(1, 1f); result.prefab = null;
+        manager.QueueContact(first, second); manager.ProcessContacts();
+        Assert.That(manager.ActiveItems.Count, Is.EqualTo(2)); Assert.That(first.IsLive && second.IsLive, Is.True);
+        result.prefab = configured;
+        manager.QueueContact(first, second); manager.ProcessContacts();
+        Assert.That(manager.ActiveItems.Count, Is.EqualTo(1));
+    }
+    [Test]
+    public void PrewarmPreparesEachDistinctPrefabOnceIncludingRecipeResults()
+    {
+        var resultPrefab = PrefabVariant("Result-only pool", Color.green); result.prefab = resultPrefab;
+        manager.prewarmCount = 2;
+        manager.PrewarmItems(); manager.PrewarmItems();
+        int ingredients = 0, results = 0;
+        foreach (var pooled in host.GetComponentsInChildren<PooledObject>(true))
+        {
+            if (pooled.OwnerPool != pool) continue;
+            if (pooled.OriginalPrefab == a.prefab) ingredients++;
+            if (pooled.OriginalPrefab == resultPrefab) results++;
+        }
+        Assert.That(ingredients, Is.EqualTo(2)); Assert.That(results, Is.EqualTo(2));
+    }
+    [Test]
+    public void AuthoredSpriteAndScaleCanBeKeptByEachPrefabAcrossPoolReuse()
+    {
+        var source = a.prefab.GetComponent<MergeItemObject>();
+        source.useItemIcon = false; source.fitIconToRadius = false;
+        source.spriteRenderer.sprite = result.item.icon;
+        source.visualSize.transform.localScale = new Vector3(1.5f, .75f, 1f);
+        var first = Drop(0, -1f);
+        Assert.That(first.spriteRenderer.sprite, Is.SameAs(result.item.icon));
+        Assert.That(first.visualSize.transform.localScale, Is.EqualTo(new Vector3(1.5f, .75f, 1f)));
+        first.ReturnToPool();
+        var reused = Drop(0, -1f); Assert.That(reused, Is.SameAs(first));
+        Assert.That(reused.spriteRenderer.enabled, Is.True);
+        Assert.That(reused.spriteRenderer.sprite, Is.SameAs(result.item.icon));
+        Assert.That(reused.circleCollider.radius, Is.EqualTo(a.Radius));
     }
     [Test]
     public void DropConsumesOneMaterialAndSetsThePooledSpriteRadiusAndVisualSize()
@@ -103,7 +188,7 @@ public sealed class MergeGameTests
     [Test]
     public void DisabledMergeComponentDoesNotConsumeStockOrLeaveAnActiveRental()
     {
-        manager.itemPrefab.GetComponent<MergeItemObject>().enabled = false;
+        a.prefab.GetComponent<MergeItemObject>().enabled = false;
         manager.SelectMaterial(0);
         Assert.That(manager.TryDropCurrent(), Is.False);
         Assert.That(manager.mergeMaterials[0].count, Is.EqualTo(3));
@@ -145,7 +230,7 @@ public sealed class MergeGameTests
     public void SpawnCallbackCannotSpendTheSameLastMaterialAndCancellationRefundsTheReservation()
     {
         manager.mergeMaterials[0].count = 1;
-        manager.itemPrefab.AddComponent<MergeSpawnProbe>();
+        a.prefab.AddComponent<MergeSpawnProbe>();
         int attempts = 0;
         MergeSpawnProbe.callback = () => { attempts++; Assert.That(manager.TryDropCurrent(), Is.False); };
         Drop(0, -1f); Assert.That(attempts, Is.EqualTo(1)); Assert.That(manager.mergeMaterials[0].count, Is.Zero);

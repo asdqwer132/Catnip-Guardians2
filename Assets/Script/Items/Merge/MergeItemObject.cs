@@ -7,6 +7,11 @@ public class MergeItemObject : MonoBehaviour, IPoolable
     public CircleCollider2D circleCollider;
     public SpriteRenderer spriteRenderer;
     public GameObject visualSize;
+    [Header("프리팹별 비주얼 옵션")]
+    [Tooltip("켜면 ItemData의 아이콘을 적용합니다. 끄면 프리팹 SpriteRenderer에 지정한 스프라이트를 사용합니다.")]
+    public bool useItemIcon = true;
+    [Tooltip("켜면 Visual Size의 크기를 표시 스프라이트와 MergeItem 반지름에 맞춥니다. 끄면 프리팹에 설정한 비주얼 크기를 유지합니다.")]
+    public bool fitIconToRadius = true;
     public Rigidbody2D body;
     [SerializeField]private PooledObject pooled;
     private bool reserved;
@@ -57,12 +62,12 @@ public class MergeItemObject : MonoBehaviour, IPoolable
         circleCollider.radius = definition.Radius; circleCollider.enabled = true;
         if (spriteRenderer != null)
         {
-            spriteRenderer.sprite = item.icon;
-            spriteRenderer.enabled = item.icon != null;
+            if (useItemIcon) spriteRenderer.sprite = item.icon;
+            spriteRenderer.enabled = spriteRenderer.sprite != null;
             // 물리 루트는 건드리지 않고 프리팹의 Visual 자식만 반지름에 맞춥니다.
-            if (visualSize.transform != transform && item.icon != null)
+            if (fitIconToRadius && visualSize != null && visualSize.transform != transform && spriteRenderer.sprite != null)
             {
-                Vector3 size = item.icon.bounds.size;
+                Vector3 size = spriteRenderer.sprite.bounds.size;
                 float scale = definition.Radius / Mathf.Max(0.0001f, size.x, size.y);
                 visualSize.transform.localScale = new Vector3(scale, scale, 1f);
             }

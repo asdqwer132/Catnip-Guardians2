@@ -17,10 +17,10 @@
 
 추가 연결/구현은 아래와 같다.
 
-- **Object Pool**: 현재 씬의 `Pool` 오브젝트를 사용한다. 실제 사용하는 `MergeManager (1)`이 연결되어 있고, 빈 `MergeManager (2)`는 입력을 끈 채 사용자가 연결할 수 있도록 남겨두었다. `PooledObject`의 기존 MergeItem 그룹으로 `Active` / `Inactive` 부모에 분류하고 같은 공용 `MergeItemObject.prefab` 하나를 키로 재사용한다.
+- **Object Pool**: 현재 씬의 `Pool` 오브젝트를 사용한다. 실제 사용하는 `MergeManager (1)`이 연결되어 있고, 빈 `MergeManager (2)`는 입력을 끈 채 사용자가 연결할 수 있도록 남겨두었다. `PooledObject`의 기존 MergeItem 그룹으로 `Active` / `Inactive` 부모에 분류한다. **각 MergeItem의 Prefab을 풀 키로 사용**하여 아이템별 비주얼이 서로 섞이지 않게 재사용한다.
 - **Register As Default Pool = false**: 아이템씬 전용 풀은 `ObjectPoolManager.instance`를 변경하지 않는다. 제너럴에서 전투씬의 적/이펙트 풀이 그대로 동작하며 아이템씬도 단독 실행할 수 있다.
 - **Spawn Point**: 기존 `ItemspawnPoints / ItemspawnPoint`를 명시적으로 연결했다. 카메라 위치/줌/뷰포트가 낙하 위치·반지름·충돌 판정을 바꾸지 않는다. 생성 위치는 이 Transform으로 조절한다.
-- **Merge Items**: 기존 정의 5개를 연결했다. 재료에 없는 합성 결과도 어떤 반지름/ItemData를 쓰는지 찾기 위한 목록이다. 새로운 레시피 결과를 만들 때 결과의 MergeItem도 이 목록에 넣는다.
+- **Merge Items**: 기존 정의 5개를 연결했다. 재료에 없는 합성 결과도 어떤 프리팹/반지름/ItemData를 쓰는지 찾기 위한 목록이다. 새로운 레시피 결과를 만들 때 결과의 MergeItem도 이 목록에 넣고 Prefab을 지정한다.
 - **Drop Interval / Maximum Active Items / Prewarm Count / Result Merge Delay**: 기본값은 0.5초 / 동시 활성 50개 / 사전 준비 4개 / 합성 후 재합성 대기 0.1초다. 최대 개수는 누적 사용 횟수가 아니라 통 안의 활성 개수다. 합성은 2개가 1개로 줄기 때문에 상한에 도달해도 가능하다.
 - **Visual 자식**: 아이콘은 ItemData.icon, 콜라이더는 MergeItem.radius를 사용한다. 사용자가 구성한 `CircleVisual / Visual` 구조와 `visualSize` 참조를 사용하며 물리 루트의 스케일·프리팹 중력·질량은 유지한다.
 - **풀 초기화**: 반환/재대여마다 이전 ItemData, 매니저 참조, 속도·각속도, 합성 예약, 충돌 수명 번호를 초기화한다. 같은 충돌이 양쪽에서 보고되어도 한 쌍만 소비하고 이전 대여분의 충돌은 무시한다.
@@ -29,6 +29,26 @@
 - **단독 실행 이름 표시**: 코어의 LanguageManager나 번역 데이터가 없어도 재료 선택/낙하 로그가 중단되지 않도록 ItemData 에셋 이름을 대신 사용한다.
 
 생성 위치가 막힘, 쿨타임, 재고 부족, 최대 개수, 연결 누락으로 생성하지 못하면 재료는 줄지 않는다. 풀 생성 중 취소되어도 예약한 재료를 돌려준다. 합성 결과 정의가 없으면 원래 두 아이템을 유지한다.
+
+## 머지 아이템별 프리팹 / 비주얼 변경
+
+보드의 공용 Item Prefab 설정은 제거했다. 각 **MergeItem 에셋 → Prefab**에서 사용할 프리팹을 직접 고른다. 낙하할 때는 선택 재료의 Prefab, 합성할 때는 **결과 MergeItem의 Prefab**을 생성한다. 원래 두 재료의 프리팹에서 결과 비주얼을 추정하지 않는다.
+
+현재 `MergeItem 1.asset`부터 `MergeItem 5.asset`까지 각각 **Assets/Prefab/Merge/MergeItem1.prefab ~ MergeItem5.prefab**을 연결했다. 이 다섯 개는 기존 **MergeItemObject.prefab**의 Prefab Variant라서 스크립트·기본 컴포넌트·현재 마스크/테두리 구조를 공유하면서 개별 비주얼을 override할 수 있다.
+
+1. 변경할 아이템의 Variant 프리팹을 연다.
+2. `CircleVisual`, `Frame`, `Visual` 등에서 스프라이트·색·자식 배치·추가 연출을 원하는 대로 수정한다.
+3. 해당 아이템에만 적용하려면 Variant에 override로 저장한다. 공통 기반 프리팹에 Apply하면 다른 아이템에도 반영되므로 공통 변경에만 사용한다.
+4. 새 아이템은 기본 프리팹의 Variant 또는 복사본을 만들고 **루트의 MergeItemObject / Rigidbody2D / CircleCollider2D / PooledObject**를 유지한 뒤, 새 MergeItem의 Prefab에 연결한다.
+
+모든 아이템은 같은 `MergeItemObject` 스크립트를 사용한다. 스크립트를 복제할 필요는 없다. Variant에서 각 아이템의 비주얼을 직접 정하면 된다.
+
+| 프리팹의 MergeItemObject 옵션 | 동작 |
+| --- | --- |
+| Use Item Icon | 기본 켜짐. ItemData.icon을 Visual에 적용한다. 끄면 해당 프리팹에 직접 넣은 스프라이트를 사용한다. |
+| Fit Icon To Radius | 기본 켜짐. Visual Size를 스프라이트 크기와 MergeItem 반지름에 맞춘다. 끄면 프리팹에 저장한 비주얼 스케일을 유지한다. 실제 CircleCollider2D 반지름은 계속 MergeItem.radius를 사용한다. |
+
+Prefab이 없거나 루트 MergeItemObject가 없거나 꺼져 있으면 재료를 소비하지 않는다. 합성 결과 프리팹이 없으면 원래 두 아이템을 유지한다. 재료와 결과 프리팹을 포함해 **서로 다른 프리팹마다 Prewarm Count개씩** 준비하며, 같은 프리팹을 여러 정의가 명시적으로 공유한 경우에는 한 번만 준비한다. 생성한 오브젝트는 자기 원본 프리팹의 풀로 반환된다.
 
 ## 현재 선택과 잔량 확인 / 직접 만든 UI 연결
 
@@ -87,3 +107,5 @@ Canvas 카메라가 필요한 Screen Space Camera / World Space 모드에서는 
 `python3 Tools/ValidateEffects/check.py --cache /workspace/.cache/catnip-validation`에서 머지 코드·풀 코드·Unity 테스트의 보조 API 컴파일, 실제 등록 조합 판정/재료 순환 관리 코드, 씬/프리팹 참조와 결과 정의 연결을 검사한다. 코드 검사와 Unity 실행은 다르다.
 
 Unity Test Runner의 **MergeGameTests**에는 Sprite/반지름·재고 소비·막힌 입구·최대 개수·쿨타임·중복 합성·결과 정의 누락·풀 재사용/이전 충돌 무시·재진입/취소 환불·재료 순환에 더해 드래그/클릭 제거·취소·범위 제한·재대여·다른 통 격리 검사가 있다. 관리 코드 검사에서는 실제 선택 상태 코드의 클릭/드래그 중복 방지, X 취소 후 해제, 공유 쿨타임, 범위·원형 콜라이더 경계 판정을 실행한다. 접촉/선택 메서드를 직접 호출하므로 실제 마우스·키보드 이벤트와 낙하는 GameItemScene의 Play에서 확인한다. 이 클라우드에는 Unity Editor가 없어 해당 엔진 테스트와 Play 실행은 수행하지 않는다.
+
+아이템별 프리팹의 경우 **MergeGameTests**에서 서로 다른 프리팹 풀의 재사용·비주얼 유지, 결과 프리팹 선택, 프리팹 누락 시 재고/재료 보호, 프리팹별 Prewarm, 직접 지정한 스프라이트/크기 유지를 검사한다. **MergeItemPrefabAssetTests**는 Unity가 실제로 임포트한 5개 MergeItem의 프리팹과 공통 스크립트/물리/풀 컴포넌트 연결을 검사한다. 클라우드 참조 검사는 Variant 상속과 에셋 GUID 연결을 검사하며, Unity 임포트/Play 실행을 대신하지 않는다.

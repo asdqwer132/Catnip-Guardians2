@@ -6,7 +6,6 @@ using UnityEngine.InputSystem;
 
 public class MergegameManager : MonoBehaviour
 {
-    public GameObject itemPrefab;
     public ItemSeries itemSeries;
     public List<MergeSeries> mergeRecipe = new List<MergeSeries>();
     public List<MergeItemMaterial> mergeMaterials = new List<MergeItemMaterial>();
@@ -16,7 +15,7 @@ public class MergegameManager : MonoBehaviour
     public ObjectPoolManager objectPool;
     public Transform spawnPoint;
 
-    [Tooltip("재료뿐 아니라 레시피 결과도 포함합니다. 아이템별 반지름을 찾는 목록입니다.")]
+    [Tooltip("재료뿐 아니라 레시피 결과도 포함합니다. 아이템별 프리팹과 반지름을 찾는 목록입니다.")]
     public List<MergeItem> mergeItems = new List<MergeItem>();
 
     [Header("생성 옵션")]
@@ -70,9 +69,29 @@ public class MergegameManager : MonoBehaviour
     }
     private void Start()
     {
-        if (objectPool != null && itemPrefab != null && mergeMaterials != null && mergeMaterials.Count > 0)
-            objectPool.Prewarm(itemPrefab, Mathf.Max(0, prewarmCount));
+        PrewarmItems();
         Notify(onCurrentMaterialChanged);
+    }
+    public void PrewarmItems()
+    {
+        if (objectPool == null || prewarmCount <= 0) return;
+        var prefabs = new HashSet<GameObject>();
+        if (mergeItems != null) foreach (var definition in mergeItems)
+        {
+            if (TryGetPrefab(definition, out var prefab)) prefabs.Add(prefab);
+        }
+        if (mergeMaterials != null) foreach (var material in mergeMaterials)
+        {
+            if (TryGetPrefab(material?.MergeItem, out var prefab)) prefabs.Add(prefab);
+        }
+        foreach (var prefab in prefabs) objectPool.Prewarm(prefab, prewarmCount);
+    }
+    private static bool TryGetPrefab(MergeItem definition, out GameObject prefab)
+    {
+        prefab = definition != null ? definition.prefab : null;
+        if (prefab == null) return false;
+        var component = prefab.GetComponent<MergeItemObject>();
+        return component != null && component.enabled;
     }
     private void Update() => ApplyInputState();
     private void ApplyInputState()
@@ -129,14 +148,15 @@ public class MergegameManager : MonoBehaviour
     public bool TryDropCurrent()
     {
         if (!CanOperate || dropping) return Reject("현재 생성할 수 없는 상태입니다.");
-        if (objectPool == null || itemPrefab == null || spawnPoint == null) return Reject("Object Pool / Item Prefab / Spawn Point 연결을 확인하세요.");
-        if (itemPrefab.GetComponent<MergeItemObject>() == null) return Reject("Item Prefab에 MergeItemObject가 없습니다.");
+        if (objectPool == null || spawnPoint == null) return Reject("Object Pool / Spawn Point 연결을 확인하세요.");
         if (Time.time < nextDropAt) return Reject("다음 생성까지 대기 중입니다.");
         active.RemoveAll(piece => piece == null || !piece.IsLive);
         if (active.Count >= Mathf.Max(1, maximumActiveItems)) return Reject("최대 활성 아이템 개수에 도달했습니다.");
         EnsureSelection();
         if (!MergeTree.IsAvailable(currentMaterial)) return Reject("사용할 재료가 없습니다.");
         var material = currentMaterial;
+        if (!TryGetPrefab(material.MergeItem, out _))
+            return Reject("선택 재료의 MergeItem → Prefab에 활성 MergeItemObject가 있는 프리팹을 연결하세요.");
         float offset = UnityEngine.Random.Range(0, 2) == 1 ? -1f : 1f;
         Debug.Log(offset);
         Vector3 position = spawnPoint.position + new Vector3(offset * dropOffest, 0f, 0f);
@@ -175,7 +195,8 @@ public class MergegameManager : MonoBehaviour
     }
     private MergeItemObject SpawnPiece(MergeItem definition, Vector3 position)
     {
-        var root = objectPool.Spawn(itemPrefab, position, Quaternion.identity);
+        if (!TryGetPrefab(definition, out var prefab)) return null;
+        var root = objectPool.Spawn(prefab, position, Quaternion.identity);
         if (root == null) return null;
         var piece = root.GetComponent<MergeItemObject>();
         if (piece == null) { objectPool.Release(root); return null; }
@@ -232,7 +253,7 @@ public class MergegameManager : MonoBehaviour
     {
         if (!MergeTree.TryGetRecipe(mergeRecipe, a.item, b.item, out var recipe)) return;
         var definition = GetDefinition(recipe.resultItem);
-        if (definition == null || objectPool == null || itemPrefab == null) return;
+        if (objectPool == null || !TryGetPrefab(definition, out _)) return;
         if (!a.Reserve()) return;
         if (!b.Reserve()) { a.Unreserve(); return; }
         int before = revision, aLife = a.LifeId, bLife = b.LifeId;

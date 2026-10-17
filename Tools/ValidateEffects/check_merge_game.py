@@ -22,7 +22,8 @@ def check_merge_game():
                     assert ref == '0' or ref in result, (path, 'missing reference', line)
         return result
     scene = blocks(assets / 'Scenes/GameItemScene.unity')
-    prefab = blocks(merge / 'MergePrefab/MergeItemObject.prefab')
+    base_prefab = assets / 'Prefab/Merge/MergeItemObject.prefab'
+    prefab = blocks(base_prefab)
     pool_guid = guid(assets / 'Script/Entity/Pool/ObjectPoolManager.cs')
     manager_guid = guid(merge / 'MergegameManager.cs')
     pool_id, pool = next((fid, body) for fid, (_, body) in scene.items() if pool_guid in body)
@@ -32,16 +33,26 @@ def check_merge_game():
         parent_id = re.search(r'^  ' + field + r': \{fileID: (\d+)\}', pool, re.M)[1]
         assert parent_id != '0' and scene[parent_id][0] == '4', field
     definitions = {}
+    item_prefabs = {}
+    prefab_catalog = {guid(path): path for path in (assets / 'Prefab/Merge').glob('*.prefab')}
     for path in (merge / 'MergePrefab').glob('MergeItem *.asset'):
         text = path.read_text()
         item = re.search(r'^  item: \{fileID: 11400000, guid: (\w+)', text, re.M)[1]
         radius = float(re.search(r'^  radius: (.*)', text, re.M)[1])
         assert math.isfinite(radius) and radius > 0, path
+        reference = re.search(r'^  prefab: \{fileID: (\d+), guid: (\w+)', text, re.M)
+        assert reference is not None and reference[2] in prefab_catalog, (path, 'missing item prefab')
+        variant = blocks(prefab_catalog[reference[2]])
+        assert reference[1] in variant and variant[reference[1]][0] == '1', 'item prefab must reference its root GameObject'
+        assert any('m_SourcePrefab: {fileID: 100100000, guid: ' + guid(base_prefab) in body for _, body in variant.values()), 'item variant must inherit the authored merge prefab'
+        item_prefabs[guid(path)] = reference[2]
         definitions[guid(path)] = item
+    assert len(set(item_prefabs.values())) == len(item_prefabs), 'configured items need independent visual variants'
     recipes = {guid(path): path.read_text() for path in (merge / 'MergePrefab').glob('Recipe*.asset')}
     configured = 0
     for _, body in scene.values():
         if manager_guid not in body: continue
+        assert '  itemPrefab:' not in body, 'prefab is configured on MergeItem, not on the board'
         if '  mergeMaterials: []\n' in body and '  mergeRecipe: []\n' in body:
             assert '  acceptKeyboardInput: 0\n' in body, 'unconfigured board must not receive drop input'
             continue
@@ -92,4 +103,6 @@ def check_merge_game():
         assert not re.search(r'Camera|ScreenToWorld|ViewportToWorld|FindObjects', source), name
         assert not re.search(r'new GameObject|AddComponent<.*(?:Canvas|Text|Image|Button)', source), 'user creates UI'
     assert 'GetPhysicsScene2D' in (merge / 'MergegameManager.cs').read_text()
-    print('PASS merge shell: authored scene/prefab references, local pool, recipe definitions, camera-independent spawning, drag/click camera + authored preview + X cancellation bindings, and no generated UI.')
+    manager_source = (merge / 'MergegameManager.cs').read_text()
+    assert 'itemPrefab' not in manager_source and 'definition.prefab' in manager_source, 'spawning must use the item definition prefab'
+    print('PASS merge shell: independent item prefab variants + inherited scripts, local pools, recipe definitions, camera-independent spawning, drag/click bindings, and no generated UI.')
