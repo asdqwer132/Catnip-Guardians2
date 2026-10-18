@@ -73,6 +73,19 @@ public static class SceneCameraChecks
     {
         Expect(EntryOrder(true) == EntryOrder(false), "Core and General entry must produce identical camera states.");
         Console.WriteLine("PASS camera lifecycle simulation: Core-first and General-first give identical backgrounds, viewports, masks and settings target; Core fallback resumes.");
+        using(var background=new View("shared background",SceneCameraRole.Background,0,0,0))
+        {
+            foreach(var viewport in new[] {new Rect(),new Rect(0,0,float.NaN,1),new Rect(0,0,1,float.PositiveInfinity),new Rect(-1,0,1,1),new Rect(0,0,2,1)})
+            {
+                background.Binding.backgroundViewport=viewport; background.Call("LateUpdate");
+                Expect(background.Camera.enabled && background.Camera.rect.x==0 && background.Camera.rect.y==0 &&
+                    background.Camera.rect.width==1 && background.Camera.rect.height==1,"Invalid background viewports must recover a full-output background behind padding.");
+            }
+            background.Binding.backgroundViewport=new Rect(.05f,.1f,.9f,.8f); background.Call("LateUpdate");
+            Expect(background.Camera.rect.x==.05f && background.Camera.rect.y==.1f && background.Camera.rect.width==.9f && background.Camera.rect.height==.8f,
+                "Valid custom background viewports must remain configurable.");
+        }
+        Console.WriteLine("PASS background viewport simulation: empty/invalid values restore full output; valid custom rectangles stay unchanged.");
         using (var battle = new View("custom battle", SceneCameraRole.Content, 10, 255, 15, true))
         {
             battle.Binding.SetLayerVisible(2, false); Expect(battle.Camera.cullingMask == 251, "Settings must hide only their configured layer.");

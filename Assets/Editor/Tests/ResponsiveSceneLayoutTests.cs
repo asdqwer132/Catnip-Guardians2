@@ -3,9 +3,42 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Reflection;
+using UnityEngine.Rendering;
 
 public class ResponsiveSceneLayoutTests
 {
+    [Test] public void NonReadableDxt5MaskUsesAnUncompressedCopyAndPreservesTheActiveRenderTarget()
+    {
+        if(SystemInfo.graphicsDeviceType==GraphicsDeviceType.Null || !SystemInfo.SupportsTextureFormat(TextureFormat.DXT5))
+            Assert.Ignore("이 GPU 회귀 검사는 DXT5 텍스처를 지원하는 Unity 그래픽 장치에서 실행합니다.");
+        var host=new GameObject("Compressed mask camera",typeof(Camera),typeof(SceneCameraPresentation));
+        var mask=new Texture2D(16,16,TextureFormat.RGBA32,false);
+        RenderTexture previous=RenderTexture.active;
+        try
+        {
+            var pixels=new Color32[256];
+            for(int y=0;y<16;y++) for(int x=0;x<16;x++) pixels[y*16+x]=new Color32(255,255,255,(byte)(x<8?0:255));
+            mask.SetPixels32(pixels); mask.Apply(false,false); mask.Compress(true); mask.Apply(false,true);
+            Assert.That(mask.format,Is.EqualTo(TextureFormat.DXT5));
+            Assert.That(mask.isReadable,Is.False);
+            var camera=host.GetComponent<Camera>(); camera.enabled=false;
+            var presentation=host.GetComponent<SceneCameraPresentation>();
+            presentation.shape=SceneViewShape.ImageMask; presentation.maskImage=mask;
+            Vector2 hidden=camera.pixelRect.min+Vector2.Scale(camera.pixelRect.size,new Vector2(.25f,.5f));
+            Vector2 visible=camera.pixelRect.min+Vector2.Scale(camera.pixelRect.size,new Vector2(.75f,.5f));
+            presentation.ContainsScreenPoint(hidden);
+            Assert.That(RenderTexture.active,Is.EqualTo(previous));
+            if(SystemInfo.supportsAsyncGPUReadback) AsyncGPUReadback.WaitAllRequests();
+            Assert.That(presentation.ContainsScreenPoint(hidden),Is.False);
+            Assert.That(presentation.ContainsScreenPoint(visible),Is.True);
+            Assert.That(RenderTexture.active,Is.EqualTo(previous));
+        }
+        finally
+        {
+            if(SystemInfo.supportsAsyncGPUReadback) AsyncGPUReadback.WaitAllRequests();
+            RenderTexture.active=previous; Object.DestroyImmediate(host); Object.DestroyImmediate(mask);
+        }
+    }
     [Test] public void ImageMaskFiltersHiddenGameplayAndCanvasInputWithoutChangingCameraViewport()
     {
         var cameraHost=new GameObject("Masked camera",typeof(Camera),typeof(SceneCameraPresentation));

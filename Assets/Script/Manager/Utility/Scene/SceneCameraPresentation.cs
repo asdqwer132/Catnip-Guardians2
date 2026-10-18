@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Experimental.Rendering;
 
 // 카메라/Canvas를 추가하지 않고 기존 카메라의 렌더링 옵션만 등록합니다.
 [ExecuteAlways, DisallowMultipleComponent, RequireComponent(typeof(Camera))]
@@ -74,36 +75,71 @@ public sealed class SceneCameraPresentation : MonoBehaviour
         if(sampledMask==null) return;
         sampledUpdateCount=sampledMask.updateCount;
         maskWidth=sampledMask.width; maskHeight=sampledMask.height;
-        if(sampledMask.isReadable)
+        if(sampledMask.isReadable && !GraphicsFormatUtility.IsCompressedFormat(sampledMask.graphicsFormat))
         {
             try { CacheAlpha(sampledMask.GetPixels32()); return; }
             catch(UnityException) { /* CPU 디코딩을 지원하지 않는 압축 포맷은 GPU에서 복사합니다. */ }
         }
-        if(!SystemInfo.supportsAsyncGPUReadback) { ReadMaskSynchronously(); return; }
-        // 한 번만 CPU로 복사한 뒤 클릭은 배열로 판정합니다. 원본의 Read/Write 변경은 필요 없습니다.
-        AsyncGPUReadback.Request(sampledMask,0,TextureFormat.RGBA32,request =>
+        // DXT/ASTC 같은 압축 원본은 ReadPixels를 지원하지 않을 수 있습니다.
+        // 먼저 셰이더로 RGBA 버퍼에 풀어 쓴 뒤 그 버퍼만 읽습니다.
+        RenderTexture copy=RenderTexture.GetTemporary(maskWidth,maskHeight,0,RenderTextureFormat.ARGB32,RenderTextureReadWrite.Linear);
+        bool queued=false;
+        try
         {
-            if(this==null || !isActiveAndEnabled || version!=maskVersion || sampledMask!=maskImage) return;
-            if(request.hasError) { retryReadback=true; return; }
-            var pixels=request.GetData<Color32>();
-            maskPixels=new byte[pixels.Length];
-            for(int i=0;i<pixels.Length;i++) maskPixels[i]=pixels[i].a;
-        });
+            CopyMaskTo(copy);
+            if(!CanReadAsynchronously(copy)) { ReadMaskCopy(copy); return; }
+            AsyncGPUReadback.Request(copy,0,TextureFormat.RGBA32,request =>
+            {
+                try
+                {
+                    if(this==null || !isActiveAndEnabled || version!=maskVersion || sampledMask!=maskImage) return;
+                    if(request.hasError) { retryReadback=true; return; }
+                    var pixels=request.GetData<Color32>();
+                    maskPixels=new byte[pixels.Length];
+                    for(int i=0;i<pixels.Length;i++) maskPixels[i]=pixels[i].a;
+                }
+                finally { RenderTexture.ReleaseTemporary(copy); }
+            });
+            queued=true; // 비동기 복사가 끝날 때까지 버퍼를 유지합니다.
+        }
+        finally { if(!queued) RenderTexture.ReleaseTemporary(copy); }
+    }
+    private static bool CanReadAsynchronously(RenderTexture copy)
+    {
+        if(!SystemInfo.supportsAsyncGPUReadback) return false;
+#if UNITY_6000_0_OR_NEWER
+        return SystemInfo.IsFormatSupported(copy.graphicsFormat,GraphicsFormatUsage.ReadPixels);
+#else
+        return SystemInfo.IsFormatSupported(copy.graphicsFormat,FormatUsage.ReadPixels);
+#endif
     }
     private void CacheAlpha(Color32[] pixels)
     {
         maskPixels=new byte[pixels.Length];
         for(int i=0;i<pixels.Length;i++) maskPixels[i]=pixels[i].a;
     }
+    private void CopyMaskTo(RenderTexture copy)
+    {
+        RenderTexture previous=RenderTexture.active;
+        try { Graphics.Blit(sampledMask,copy); }
+        finally { RenderTexture.active=previous; }
+    }
     private void ReadMaskSynchronously()
     {
-        // 비동기 전송을 지원하지 않는 기기에서만 마스크 변경 시 한 번 복사합니다.
-        RenderTexture previous=RenderTexture.active;
         RenderTexture copy=RenderTexture.GetTemporary(maskWidth,maskHeight,0,RenderTextureFormat.ARGB32,RenderTextureReadWrite.Linear);
+        try
+        {
+            CopyMaskTo(copy);
+            ReadMaskCopy(copy);
+        }
+        finally { RenderTexture.ReleaseTemporary(copy); }
+    }
+    private void ReadMaskCopy(RenderTexture copy)
+    {
+        RenderTexture previous=RenderTexture.active;
         Texture2D readable=null;
         try
         {
-            Graphics.Blit(sampledMask,copy);
             RenderTexture.active=copy;
             readable=new Texture2D(maskWidth,maskHeight,TextureFormat.RGBA32,false,true);
             readable.ReadPixels(new Rect(0,0,maskWidth,maskHeight),0,0,false);
@@ -111,7 +147,7 @@ public sealed class SceneCameraPresentation : MonoBehaviour
         }
         finally
         {
-            RenderTexture.active=previous; RenderTexture.ReleaseTemporary(copy);
+            RenderTexture.active=previous;
             if(readable!=null) { if(Application.isPlaying) Destroy(readable); else DestroyImmediate(readable); }
         }
     }

@@ -146,6 +146,7 @@ def check_scene_flow():
         assert '  m_Enabled: 1\n' in profile
         if name == 'CoreScene':
             assert '  role: 0\n' in profile
+            assert re.search(r'backgroundViewport:\n    serializedVersion: 2\n    x: 0\n    y: 0\n    width: 1\n    height: 1\n',profile), 'Core background must cover padding and gaps across the full output'
             # Core may display its shared UI layer. World content must still be excluded.
             assert all(mask(body, field) & ~(1 << 5) == 0 for body, field in
                        ((profile, 'standaloneLayers'), (profile, 'composedLayers'), (camera, 'm_CullingMask')))
@@ -243,12 +244,12 @@ def check_scene_flow():
         host = re.search(r'^  m_GameObject: \{fileID: (\d+)\}',camera,re.M)[1]
         assert f'  m_GameObject: {{fileID: {host}}}\n' in view
         assert f'  background: {{fileID: 11400000, guid: {background_guid}, type: 2}}\n' in view
-        assert f'  shape: {1 if name=="GameBattleScene" else 0}\n' in view
+        assert int(re.search(r'^  shape: (\d+)',view,re.M)[1]) in range(4), (name,'camera shape must stay configurable')
     renderer = (assets/'Settings/Renderer2D.asset').read_text()
     assert guid('Script/Manager/Utility/Scene/SceneScreenPresentationFeature.cs') in renderer
     assert guid('Script/Manager/Utility/Scene/SceneScreenPresentation.shader') in renderer
     assert 'm_RendererFeatures:\n  - {fileID: 910000990001}' in renderer
-    print('PASS common background: four existing cameras share one profile; Battle alone has rounded corners; Renderer2D feature and shader are connected.')
+    print('PASS common background: four existing cameras share one profile; camera shapes remain configurable; Renderer2D feature and shader are connected.')
     audio_guid = guid('Script/Manager/Utility/Scene/SceneAudioChannel.cs')
     for name in ('GameGeneralScene', 'GameBattleScene', 'GameItemScene'):
         _, blocks = scenes[name]

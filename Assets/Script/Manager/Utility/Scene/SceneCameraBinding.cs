@@ -21,6 +21,7 @@ public sealed class SceneCameraBinding : MonoBehaviour
     public string standaloneTag = "Untagged";
     public string composedTag = "Untagged";
     [Header("Background 역할 전용")]
+    [Tooltip("배경을 그릴 정규화 영역입니다. 비어 있거나 잘못된 값이면 전체 출력 영역으로 복구합니다.")]
     public Rect backgroundViewport = new Rect(0, 0, 1, 1);
     public float backgroundDepth = -100f;
     [Header("게임 표시 설정")]
@@ -78,8 +79,12 @@ public sealed class SceneCameraBinding : MonoBehaviour
         string cameraTag = composed ? composedTag : standaloneTag;
         if (!string.IsNullOrEmpty(cameraTag) && !Camera.CompareTag(cameraTag)) Camera.tag = cameraTag;
         if (role == SceneCameraRole.Background)
-        { Camera.rect = backgroundViewport; Camera.depth = backgroundDepth; }
+        { Camera.rect = ValidBackgroundViewport(backgroundViewport) ? backgroundViewport : new Rect(0,0,1,1); Camera.depth = backgroundDepth; }
     }
+    private static bool ValidBackgroundViewport(Rect rect)
+        => !float.IsNaN(rect.x) && !float.IsNaN(rect.y) && !float.IsNaN(rect.width) && !float.IsNaN(rect.height) &&
+           !float.IsInfinity(rect.x) && !float.IsInfinity(rect.y) && !float.IsInfinity(rect.width) && !float.IsInfinity(rect.height) &&
+           rect.x>=0 && rect.y>=0 && rect.width>0 && rect.height>0 && rect.x+rect.width<=1 && rect.y+rect.height<=1;
     public void SetLayerVisible(int layer, bool visible)
     {
         if (!receiveVisibilitySettings || layer < 0 || layer > 31) return;
