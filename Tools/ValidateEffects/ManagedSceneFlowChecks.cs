@@ -125,6 +125,64 @@ public static partial class Runner
             }
             Eq(SceneScreenPresentationMath.CornerRadius(10000,1440,1440,new Vector2(100,300)),50);
         });
+        Check("each scene padding stays inside its original split at every aspect ratio", () => {
+            var padding=new SceneViewportPadding {left=24,right=40,top=16,bottom=32};
+            foreach(var screen in new[] {new Vector2(1920,1080),new Vector2(1080,1920),new Vector2(3440,1440)})
+            {
+                GameViewportLayout.Calculate(GameScreenLayout.SideBySide,.6f,true,0,.1f,out var battle,out var item);
+                foreach(var cell in new[] {battle,item,new Rect(0,.9f,1,.1f)})
+                {
+                    float scale=screen.y/1440;
+                    var actual=padding.Inset(cell,screen,scale);
+                    Eq(actual.xMin-cell.xMin,24*scale/screen.x);
+                    Eq(cell.xMax-actual.xMax,40*scale/screen.x);
+                    Eq(actual.yMin-cell.yMin,32*scale/screen.y);
+                    Eq(cell.yMax-actual.yMax,16*scale/screen.y);
+                    True(actual.xMin>=cell.xMin && actual.xMax<=cell.xMax && actual.yMin>=cell.yMin && actual.yMax<=cell.yMax);
+                }
+                Eq(battle.width/item.width,1.5f); Eq(battle.height,.9f);
+            }
+        });
+        Check("zero padding preserves cells and excessive padding leaves at least one pixel", () => {
+            var screen=new Vector2(1200,900); var cell=new Rect(.6f,0,.4f,.9f);
+            var same=new SceneViewportPadding().Inset(cell,screen,1);
+            Eq(same.x,cell.x); Eq(same.y,cell.y); Eq(same.width,cell.width); Eq(same.height,cell.height);
+            var huge=new SceneViewportPadding {left=10000,right=20000,top=20000,bottom=10000}.Inset(cell,screen,1);
+            True(huge.xMin>=cell.xMin && huge.xMax<=cell.xMax && huge.yMin>=cell.yMin && huge.yMax<=cell.yMax);
+            Eq(huge.width,1/screen.x); Eq(huge.height,1/screen.y);
+            var hidden=new Rect(0,0,0,0);
+            Eq(new SceneViewportPadding {left=20}.Inset(hidden,screen,1).width,0);
+        });
+        Check("invalid padding cannot create nonfinite or negative viewports", () => {
+            foreach(float value in new[] {float.NaN,float.PositiveInfinity,float.NegativeInfinity,-10f,10000f,float.MaxValue})
+            {
+                var pad=new SceneViewportPadding {left=value,right=value,top=value,bottom=value};
+                var view=pad.Inset(new Rect(0,0,.4f,.9f),new Vector2(1920,1080),2);
+                True(!float.IsNaN(view.width) && !float.IsInfinity(view.width) && view.width>0 && view.height>0);
+            }
+        });
+        Check("image mask fitting stretches covers or contains without wrapping outside pixels", () => {
+            var image=new Vector2(512,512); var view=new Vector2(1200,600);
+            var stretch=SceneScreenPresentationMath.MaskUvScale(image,view,SceneMaskFit.Stretch);
+            Eq(stretch.x,1); Eq(stretch.y,1);
+            var cover=SceneScreenPresentationMath.MaskUvScale(image,view,SceneMaskFit.Cover);
+            True(SceneScreenPresentationMath.TryMaskUv(Vector2.zero,cover,out var uv)); Eq(uv.x,0); Eq(uv.y,.25f);
+            var contain=SceneScreenPresentationMath.MaskUvScale(image,view,SceneMaskFit.Contain);
+            True(!SceneScreenPresentationMath.TryMaskUv(Vector2.zero,contain,out uv));
+            True(SceneScreenPresentationMath.TryMaskUv(new Vector2(.5f,.5f),contain,out uv)); Eq(uv.x,.5f); Eq(uv.y,.5f);
+        });
+        Check("image mask input uses linear clamped alpha and preserves transparent holes", () => {
+            byte zero=0,one=255;
+            var pixels=new[] {zero,one,zero,one};
+            Eq(SceneScreenPresentationMath.SampleMaskAlpha(pixels,2,2,new Vector2(.25f,.5f)),0);
+            Eq(SceneScreenPresentationMath.SampleMaskAlpha(pixels,2,2,new Vector2(.75f,.5f)),1);
+            Eq(SceneScreenPresentationMath.SampleMaskAlpha(pixels,2,2,new Vector2(.5f,.5f)),.5f);
+            Eq(SceneScreenPresentationMath.SampleMaskAlpha(pixels,2,2,Vector2.zero),0);
+            Eq(SceneScreenPresentationMath.SampleMaskAlpha(pixels,2,2,Vector2.one),1);
+            var hole=new[] {one,one,one,one,zero,one,one,one,one};
+            Eq(SceneScreenPresentationMath.SampleMaskAlpha(hole,3,3,new Vector2(.5f,.5f)),0);
+            Eq(SceneScreenPresentationMath.SampleMaskAlpha(hole,3,3,Vector2.one),1);
+        });
         Check("shared UI profile invalid dimensions cannot create NaN or infinite scale", () => {
             foreach(float value in new[] {float.NaN,float.PositiveInfinity,float.NegativeInfinity,0f,-1f})
             {

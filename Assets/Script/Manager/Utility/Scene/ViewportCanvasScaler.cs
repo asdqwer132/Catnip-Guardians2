@@ -5,7 +5,7 @@ using UnityEngine.UI;
 // 프로필이 없는 기존 사용처는 카메라 영역 기준 계산을 유지합니다.
 [ExecuteAlways]
 [AddComponentMenu("Layout/Viewport Canvas Scaler")]
-public sealed class ViewportCanvasScaler : CanvasScaler
+public sealed class ViewportCanvasScaler : CanvasScaler, ICanvasRaycastFilter
 {
     [Tooltip("같은 프로필을 연결하면 Overlay/Camera와 Viewport 비율에 관계없이 UI 픽셀 배율과 Reference PPU를 공유합니다.")]
     public SceneUIScaleProfile sharedScaleProfile;
@@ -15,6 +15,13 @@ public sealed class ViewportCanvasScaler : CanvasScaler
     private Camera previousCamera;
     private float previousScale;
     private bool layoutInitialized;
+    public bool IsRaycastLocationValid(Vector2 screenPoint,Camera eventCamera)
+    {
+        if(targetCanvas==null) targetCanvas=GetComponent<Canvas>();
+        if(targetCanvas==null || targetCanvas.renderMode!=RenderMode.ScreenSpaceCamera) return true;
+        var view=SceneCameraPresentation.ForCamera(targetCanvas.worldCamera);
+        return view==null || view.ContainsScreenPoint(screenPoint);
+    }
     protected override void OnEnable()
     {
         base.OnEnable();

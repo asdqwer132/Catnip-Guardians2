@@ -804,6 +804,21 @@ MonoBehaviour:
   battleFirst: 1
   gap: 0
   fitSceneCanvases: 1
+  navigationPadding:
+    left: 0
+    right: 0
+    top: 0
+    bottom: 0
+  battlePadding:
+    left: 0
+    right: 0
+    top: 0
+    bottom: 0
+  itemPadding:
+    left: 0
+    right: 0
+    top: 0
+    bottom: 0
   navigationCanvas: {fileID: 1882155591}
   navigationArea: {fileID: 1510854061}
   reserveNavigationSpace: 1
@@ -1195,3 +1210,8 @@ MonoBehaviour:
   background: {fileID: 11400000, guid: 99dc519e6e0a4e31af798e72441080c9, type: 2}
   shape: 0
   cornerRadius: 48
+  maskImage: {fileID: 0}
+  maskFit: 0
+  maskAlphaThreshold: 0.5
+  maskEdgeSoftness: 0.01
+  invertMask: 0

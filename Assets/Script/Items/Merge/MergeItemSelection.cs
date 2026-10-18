@@ -97,6 +97,8 @@ public sealed class MergeItemSelection : MonoBehaviour
         if (!Application.isFocused || inputCamera == null || !inputCamera.isActiveAndEnabled) return false;
         Vector2 screen = positionInput.ReadValue<Vector2>();
         if (!inputCamera.pixelRect.Contains(screen)) return false;
+        var presentation=SceneCameraPresentation.ForCamera(inputCamera);
+        if(presentation!=null && !presentation.ContainsScreenPoint(screen)) return false;
         // 카메라는 마우스 좌표 변환만 담당합니다. 판정과 범위는 아이템 평면의 월드 값입니다.
         var plane = new Plane(Vector3.forward, new Vector3(0f, 0f, board != null ? board.transform.position.z : 0f));
         Ray ray = inputCamera.ScreenPointToRay(screen);

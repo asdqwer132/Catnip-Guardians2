@@ -22,6 +22,11 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     [Range(0f, 0.1f)] public float gap;
     [Tooltip("기존 Screen Space Overlay Canvas를 해당 씬의 카메라에 연결합니다. 코어 UI는 전체 화면으로 유지합니다.")]
     public bool fitSceneCanvases = true;
+    [Header("화면별 패딩")]
+    [Tooltip("Shared Scale Profile 기준 UI 픽셀입니다. 각 분할 영역 안쪽의 상하좌우 여백이며, 원래 분할 비율은 유지됩니다.")]
+    public SceneViewportPadding navigationPadding;
+    public SceneViewportPadding battlePadding;
+    public SceneViewportPadding itemPadding;
     [Header("직접 만든 상단 내비게이션 UI")]
     [Tooltip("제너럴 씬의 루트 Canvas. 같은 씬의 Navigation 카메라와 연결합니다.")]
     public Canvas navigationCanvas;
@@ -52,6 +57,8 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     private readonly List<CanvasState> canvases = new List<CanvasState>();
     private CanvasState navigationState;
     private readonly Vector3[] navigationCorners = new Vector3[4];
+    private RectTransform paddedNavigationArea;
+    private Vector2 navigationPaddingMin, navigationPaddingMax;
     private sealed class CanvasState
     {
         public Canvas canvas; public RenderMode mode; public Camera camera; public float distance;
@@ -167,6 +174,7 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     public void SetNavigationHeightRatio(float value) { navigationHeightRatio = value; ApplyLayout(); }
     private void ConnectNavigation()
     {
+        ClearMeasuredNavigationPadding();
         if (navigationState != null && navigationState.canvas != navigationCanvas) RestoreNavigation();
         // 하위 씬/코어의 Canvas를 실수로 연결해도 해당 UI를 변경하지 않습니다.
         if (navigationCanvas == null || !navigationCanvas.isRootCanvas || navigationCanvas.gameObject.scene != gameObject.scene)
@@ -199,11 +207,10 @@ public sealed class GameGeneralSceneController : MonoBehaviour
             if (navigationCanvas.worldCamera != null) navigationCanvas.worldCamera = null;
         }
         if (navigationSizeMode == NavigationSizeMode.ScreenRatio && navigationArea != null &&
-            navigationArea.parent == navigationCanvas.transform)
+            navigationArea.parent == navigationCanvas.transform && navigationCanvas.renderMode != RenderMode.ScreenSpaceOverlay)
         {
-            // Overlay는 전체 화면의 위 15%, Camera Canvas는 이미 잘린 헤더 전체를 채웁니다.
-            float bottom = navigationCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? 1f - RatioHeight : 0f;
-            SceneUILayout.SetRect(navigationArea, Rect.MinMaxRect(0f, bottom, 1f, 1f));
+            // Camera Canvas는 카메라에서 패딩된 헤더 전체를 채웁니다. Overlay는 ApplyLayout에서 한 번만 설정합니다.
+            SceneUILayout.SetRect(navigationArea,new Rect(0,0,1,1));
         }
         if (navigationCanvas.sortingOrder != navigationSortingOrder) navigationCanvas.sortingOrder = navigationSortingOrder;
     }
@@ -223,10 +230,12 @@ public sealed class GameGeneralSceneController : MonoBehaviour
                 if (!navigationArea.gameObject.activeInHierarchy || !navigationArea.IsChildOf(navigationCanvas.transform)) return 0f;
                 if (Screen.height <= 0) return 0f;
                 navigationArea.GetWorldCorners(navigationCorners);
+                Vector3 paddingOffset=paddedNavigationArea==navigationArea && navigationArea.parent!=null
+                    ? navigationArea.parent.TransformVector(new Vector3(navigationPaddingMin.x,navigationPaddingMin.y,0)) : Vector3.zero;
                 float bottom = float.PositiveInfinity;
                 foreach (var corner in navigationCorners)
-                    bottom = Mathf.Min(bottom, RectTransformUtility.WorldToScreenPoint(navigationCanvas.worldCamera, corner).y);
-                ratio = 1f - Mathf.Floor(bottom) / Screen.height;
+                    bottom = Mathf.Min(bottom, RectTransformUtility.WorldToScreenPoint(navigationCanvas.worldCamera, corner-paddingOffset).y);
+                ratio = 1f - bottom / Screen.height;
             }
             return float.IsNaN(ratio) ? 0f : Mathf.Clamp(ratio, 0f, 0.8f);
         }
@@ -236,16 +245,55 @@ public sealed class GameGeneralSceneController : MonoBehaviour
         if (!isActiveAndEnabled) return;
         ConnectNavigation();
         float top = NavigationTopInset;
+        GetPaddingMetrics(out var output,out float scale);
+        Rect navigationAllocation=new Rect(0,1f-NavigationHeight,1,NavigationHeight);
+        Rect navigationRect=navigationPadding.Inset(navigationAllocation,output,scale);
         if (navigationView != null)
         {
-            float navigationHeight = NavigationHeight;
-            ApplyCamera(navigationView.Camera, new Rect(0, 1f - navigationHeight, 1, navigationHeight));
+            ApplyCamera(navigationView.Camera,navigationRect);
         }
+        ApplyNavigationPadding(navigationRect,output,scale);
         if (BattleCamera == null && ItemCamera == null) return;
         GameViewportLayout.Calculate(layout, battleRatio, battleFirst, gap, top, out var battleRect, out var itemRect);
-        ApplyCamera(BattleCamera, battleRect); ApplyCamera(ItemCamera, itemRect);
+        ApplyCamera(BattleCamera,battlePadding.Inset(battleRect,output,scale));
+        ApplyCamera(ItemCamera,itemPadding.Inset(itemRect,output,scale));
         SceneCameraBinding.Refresh();
         SceneAudioListenerOwner.Refresh();
+    }
+    private void GetPaddingMetrics(out Vector2 output,out float scale)
+    {
+        var view=SceneCameraPresentation.ForCamera(NavigationCamera);
+        output=view!=null?view.OutputSize:new Vector2(Screen.width,Screen.height);
+        var scaler=navigationCanvas!=null?navigationCanvas.GetComponent<ViewportCanvasScaler>():null;
+        scale=scaler!=null && scaler.sharedScaleProfile!=null?scaler.sharedScaleProfile.CalculateScale(output):
+            navigationCanvas!=null?navigationCanvas.scaleFactor:1;
+    }
+    private void ApplyNavigationPadding(Rect navigationRect,Vector2 output,float scale)
+    {
+        if(navigationCanvas==null || navigationArea==null || !navigationArea.IsChildOf(navigationCanvas.transform) ||
+            navigationCanvas.renderMode!=RenderMode.ScreenSpaceOverlay) return;
+        if(navigationSizeMode==NavigationSizeMode.ScreenRatio && navigationArea.parent==navigationCanvas.transform)
+        { SceneUILayout.SetRect(navigationArea,navigationRect); return; }
+        if(navigationSizeMode!=NavigationSizeMode.MeasuredPanel || !(navigationArea.parent is RectTransform parent) || output.x<=0 || output.y<=0) return;
+        navigationArea.GetWorldCorners(navigationCorners);
+        Vector2 a=RectTransformUtility.WorldToScreenPoint(null,navigationCorners[0]);
+        Vector2 b=RectTransformUtility.WorldToScreenPoint(null,navigationCorners[2]);
+        Rect original=Rect.MinMaxRect(a.x/output.x,a.y/output.y,b.x/output.x,b.y/output.y);
+        Rect padded=navigationPadding.Inset(original,output,scale);
+        if(padded==original) return;
+        if(!RectTransformUtility.ScreenPointToLocalPointInRectangle(parent,a,null,out var originalMin) ||
+            !RectTransformUtility.ScreenPointToLocalPointInRectangle(parent,b,null,out var originalMax) ||
+            !RectTransformUtility.ScreenPointToLocalPointInRectangle(parent,Vector2.Scale(padded.min,output),null,out var paddedMin) ||
+            !RectTransformUtility.ScreenPointToLocalPointInRectangle(parent,Vector2.Scale(padded.max,output),null,out var paddedMax)) return;
+        paddedNavigationArea=navigationArea;
+        navigationPaddingMin=paddedMin-originalMin; navigationPaddingMax=paddedMax-originalMax;
+        navigationArea.offsetMin+=navigationPaddingMin; navigationArea.offsetMax+=navigationPaddingMax;
+    }
+    private void ClearMeasuredNavigationPadding()
+    {
+        if(paddedNavigationArea!=null)
+        { paddedNavigationArea.offsetMin-=navigationPaddingMin; paddedNavigationArea.offsetMax-=navigationPaddingMax; }
+        paddedNavigationArea=null; navigationPaddingMin=navigationPaddingMax=Vector2.zero;
     }
     private static void ApplyCamera(Camera camera, Rect rect)
     {
@@ -267,7 +315,8 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     {
         if (camera == BattleCamera || camera == ItemCamera || camera == NavigationCamera) ApplyLayout();
     }
-    private void RestoreNavigation() { navigationState?.Restore(); navigationState = null; appliedNavigationLayer = -1; }
+    private void RestoreNavigation()
+    { ClearMeasuredNavigationPadding(); navigationState?.Restore(); navigationState = null; appliedNavigationLayer = -1; }
     private void OnDisable()
     {
         SceneManager.sceneLoaded -= OnContentSceneLoaded;

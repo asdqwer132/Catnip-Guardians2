@@ -6,6 +6,100 @@ using System.Reflection;
 
 public class ResponsiveSceneLayoutTests
 {
+    [Test] public void ImageMaskFiltersHiddenGameplayAndCanvasInputWithoutChangingCameraViewport()
+    {
+        var cameraHost=new GameObject("Masked camera",typeof(Camera),typeof(SceneCameraPresentation));
+        var canvasHost=new GameObject("Existing UI",typeof(RectTransform),typeof(Canvas),typeof(ViewportCanvasScaler));
+        var mask=new Texture2D(2,2,TextureFormat.RGBA32,false);
+        try
+        {
+            var clear=new Color32(255,255,255,0); var solid=new Color32(0,0,0,255);
+            mask.SetPixels32(new[] {clear,solid,clear,solid}); mask.Apply();
+            var camera=cameraHost.GetComponent<Camera>(); camera.rect=new Rect(.1f,.2f,.6f,.7f);
+            Rect viewport=camera.rect;
+            var presentation=cameraHost.GetComponent<SceneCameraPresentation>();
+            presentation.shape=SceneViewShape.ImageMask; presentation.maskImage=mask;
+            var canvas=canvasHost.GetComponent<Canvas>(); canvas.renderMode=RenderMode.ScreenSpaceCamera; canvas.worldCamera=camera;
+            var filter=canvasHost.GetComponent<ViewportCanvasScaler>();
+            Vector2 hidden=camera.pixelRect.min+Vector2.Scale(camera.pixelRect.size,new Vector2(.25f,.5f));
+            Vector2 visible=camera.pixelRect.min+Vector2.Scale(camera.pixelRect.size,new Vector2(.75f,.5f));
+            Assert.That(presentation.ContainsScreenPoint(hidden),Is.False);
+            Assert.That(filter.IsRaycastLocationValid(hidden,camera),Is.False);
+            Assert.That(presentation.ContainsScreenPoint(visible),Is.True);
+            Assert.That(filter.IsRaycastLocationValid(visible,camera),Is.True);
+            presentation.invertMask=true;
+            Assert.That(presentation.ContainsScreenPoint(hidden),Is.True);
+            Assert.That(presentation.ContainsScreenPoint(visible),Is.False);
+            presentation.invertMask=false; presentation.maskAlphaThreshold=0;
+            Assert.That(presentation.ContainsScreenPoint(hidden),Is.False);
+            presentation.maskAlphaThreshold=1;
+            Assert.That(presentation.ContainsScreenPoint(visible),Is.True);
+            presentation.maskImage=null;
+            Assert.That(presentation.ContainsScreenPoint(visible),Is.True,"마스크를 지우면 사각형으로 돌아갑니다.");
+            Assert.That(camera.rect,Is.EqualTo(viewport));
+        }
+        finally { Object.DestroyImmediate(canvasHost); Object.DestroyImmediate(cameraHost); Object.DestroyImmediate(mask); }
+    }
+    [Test] public void NavigationPaddingMatchesOverlayAndCameraWithoutChangingReservedHeight()
+    {
+        var host=new GameObject("General");
+        var cameraHost=new GameObject("Navigation",typeof(Camera),typeof(SceneCameraBinding));
+        var canvasHost=new GameObject("Existing UI",typeof(RectTransform),typeof(Canvas),typeof(ViewportCanvasScaler));
+        var panelHost=new GameObject("Existing header",typeof(RectTransform));
+        var profile=ScriptableObject.CreateInstance<SceneUIScaleProfile>();
+        try
+        {
+            cameraHost.GetComponent<SceneCameraBinding>().role=SceneCameraRole.Navigation;
+            var canvas=canvasHost.GetComponent<Canvas>(); canvas.renderMode=RenderMode.ScreenSpaceOverlay;
+            canvasHost.GetComponent<ViewportCanvasScaler>().sharedScaleProfile=profile;
+            var area=panelHost.GetComponent<RectTransform>(); area.SetParent(canvasHost.transform,false);
+            var general=host.AddComponent<GameGeneralSceneController>(); general.autoLoadChildren=general.loadCoreScene=false;
+            general.navigationCanvas=canvas; general.navigationArea=area; general.navigationHeightRatio=.15f;
+            general.navigationPadding=new SceneViewportPadding {left=20,right=40,top=12,bottom=24};
+            Rect expected=general.navigationPadding.Inset(new Rect(0,.85f,1,.15f),new Vector2(Screen.width,Screen.height),profile.CalculateScale(new Vector2(Screen.width,Screen.height)));
+            for(int i=0;i<3;i++)
+            {
+                general.ApplyLayout();
+                Assert.That(general.NavigationTopInset,Is.EqualTo(.15f));
+                Assert.That(area.anchorMin.x,Is.EqualTo(expected.xMin).Within(.00001f));
+                Assert.That(area.anchorMin.y,Is.EqualTo(expected.yMin).Within(.00001f));
+                Assert.That(area.anchorMax.x,Is.EqualTo(expected.xMax).Within(.00001f));
+                Assert.That(area.anchorMax.y,Is.EqualTo(expected.yMax).Within(.00001f));
+                Assert.That(cameraHost.GetComponent<Camera>().rect,Is.EqualTo(expected));
+            }
+        }
+        finally { Object.DestroyImmediate(host); Object.DestroyImmediate(panelHost); Object.DestroyImmediate(canvasHost); Object.DestroyImmediate(cameraHost); Object.DestroyImmediate(profile); }
+    }
+    [Test] public void MeasuredHeaderPaddingDoesNotAccumulateOrReduceReservedSpace()
+    {
+        var host=new GameObject("General");
+        var canvasHost=new GameObject("Existing UI",typeof(RectTransform),typeof(Canvas));
+        var panelHost=new GameObject("Existing header",typeof(RectTransform));
+        try
+        {
+            var canvas=canvasHost.GetComponent<Canvas>(); canvas.renderMode=RenderMode.ScreenSpaceOverlay;
+            var area=panelHost.GetComponent<RectTransform>(); area.SetParent(canvasHost.transform,false);
+            SceneUILayout.SetRect(area,new Rect(0,.8f,1,.2f));
+            var general=host.AddComponent<GameGeneralSceneController>(); general.autoLoadChildren=general.loadCoreScene=false;
+            general.navigationCanvas=canvas; general.navigationArea=area; general.navigationSizeMode=NavigationSizeMode.MeasuredPanel;
+            Canvas.ForceUpdateCanvases(); general.ApplyLayout();
+            float baseline=general.NavigationHeight;
+            general.navigationPadding=new SceneViewportPadding {left=12,right=24,top=8,bottom=16};
+            general.ApplyLayout(); Canvas.ForceUpdateCanvases();
+            Vector2 min=area.offsetMin,max=area.offsetMax;
+            for(int i=0;i<3;i++)
+            {
+                general.ApplyLayout(); Canvas.ForceUpdateCanvases();
+                Assert.That(general.NavigationHeight,Is.EqualTo(baseline).Within(.00001f));
+                Assert.That((area.offsetMin-min).magnitude,Is.LessThan(.01f));
+                Assert.That((area.offsetMax-max).magnitude,Is.LessThan(.01f));
+            }
+            general.enabled=false;
+            Assert.That(area.offsetMin.magnitude,Is.LessThan(.01f));
+            Assert.That(area.offsetMax.magnitude,Is.LessThan(.01f));
+        }
+        finally { Object.DestroyImmediate(host); Object.DestroyImmediate(panelHost); Object.DestroyImmediate(canvasHost); }
+    }
     [Test] public void CameraCanvasWidthTracksViewportResizeEvenWhenSharedScaleDoesNotChange()
     {
         var cameraHost = new GameObject("Item camera",typeof(Camera));

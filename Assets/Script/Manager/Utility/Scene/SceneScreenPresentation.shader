@@ -1,14 +1,21 @@
 Shader "Hidden/Catnip/Scene Screen Presentation"
 {
-    Properties { _BackgroundTex("Background", 2D) = "white" {} }
+    Properties
+    {
+        _BackgroundTex("Background", 2D) = "white" {}
+        _MaskTex("View Mask", 2D) = "white" {}
+    }
     SubShader
     {
         Tags { "RenderPipeline"="UniversalPipeline" }
         ZWrite Off ZTest Always Cull Off
         HLSLINCLUDE
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+        #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/GlobalSamplers.hlsl"
         TEXTURE2D(_BackgroundTex); SAMPLER(sampler_BackgroundTex);
+        TEXTURE2D(_MaskTex);
         float4 _BackgroundTint, _EmptyColor, _Viewport, _UvScale, _ViewShape;
+        float4 _MaskScale, _MaskSettings;
         struct Varyings { float4 positionCS : SV_POSITION; float2 uv : TEXCOORD0; };
         Varyings Vert(uint vertexID : SV_VertexID)
         {
@@ -40,9 +47,19 @@ Shader "Hidden/Catnip/Scene Screen Presentation"
             float radius = min(_ViewShape.z, min(halfSize.x, halfSize.y));
             float2 q = abs(p) - halfSize + radius;
             float distance = length(max(q,0)) + min(max(q.x,q.y),0) - radius;
-            if (_ViewShape.w > 1.5) distance = (length(p / halfSize) - 1) * min(halfSize.x,halfSize.y);
+            if (_ViewShape.w > 1.5 && _ViewShape.w < 2.5) distance = (length(p / halfSize) - 1) * min(halfSize.x,halfSize.y);
             float aa = max(fwidth(distance),.5);
             float outside = smoothstep(-aa,aa,distance);
+            if (_ViewShape.w > 2.5)
+            {
+                float2 uv=(BottomLeftUv(i.uv)-.5)*_MaskScale.xy+.5;
+                float alpha=SAMPLE_TEXTURE2D_LOD(_MaskTex,sampler_LinearClamp,uv,0).a;
+                if(_MaskSettings.z>.5) alpha=1-alpha;
+                float visible=smoothstep(max(0,_MaskSettings.x-_MaskSettings.y),min(1,_MaskSettings.x+_MaskSettings.y),alpha);
+                if(any(uv<0) || any(uv>1)) visible=0;
+                // 이미지를 지정하기 전에는 기존 사각형 화면을 유지합니다.
+                outside=_MaskSettings.w>.5?1-visible:0;
+            }
             clip(outside - .001);
             return half4(Background(i.uv),outside);
         }
@@ -59,7 +76,7 @@ Shader "Hidden/Catnip/Scene Screen Presentation"
         }
         Pass
         {
-            Name "Rounded View"
+            Name "Scene View Mask"
             Blend SrcAlpha OneMinusSrcAlpha
             HLSLPROGRAM
             #pragma target 3.5

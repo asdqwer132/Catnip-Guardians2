@@ -2,6 +2,25 @@ using UnityEngine;
 
 public enum GameScreenLayout { SideBySide, TopAndBottom, BattleOnly, ItemOnly }
 
+[System.Serializable]
+public struct SceneViewportPadding
+{
+    [Min(0)] public float left, right, top, bottom;
+    // 분할 비율은 바꾸지 않고 할당된 셀 안에서만 줄입니다. 과한 패딩도 화면을 뒤집지 않습니다.
+    public Rect Inset(Rect allocation, Vector2 outputPixels, float uiScale)
+    {
+        if(allocation.width<=0 || allocation.height<=0 || Safe(outputPixels.x)<=0 || Safe(outputPixels.y)<=0) return allocation;
+        uiScale=Safe(uiScale);
+        double l=(double)Safe(left)*uiScale/outputPixels.x, r=(double)Safe(right)*uiScale/outputPixels.x;
+        double b=(double)Safe(bottom)*uiScale/outputPixels.y, t=(double)Safe(top)*uiScale/outputPixels.y;
+        double x=l+r>0?System.Math.Min(1,System.Math.Max(0,allocation.width-1d/outputPixels.x)/(l+r)):1;
+        double y=b+t>0?System.Math.Min(1,System.Math.Max(0,allocation.height-1d/outputPixels.y)/(b+t)):1;
+        return new Rect((float)(allocation.x+l*x),(float)(allocation.y+b*y),
+            (float)(allocation.width-(l+r)*x),(float)(allocation.height-(b+t)*y));
+    }
+    private static float Safe(float value) => float.IsNaN(value)||float.IsInfinity(value)?0:Mathf.Max(0,value);
+}
+
 public static class GameViewportLayout
 {
     // 먼저 분할한 뒤 콘텐츠 영역에 맞춥니다. 단일 화면 모드에도 상단 공간을 유지합니다.
