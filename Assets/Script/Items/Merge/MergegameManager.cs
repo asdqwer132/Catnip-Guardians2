@@ -217,6 +217,20 @@ public class MergegameManager : MonoBehaviour
         }
     }
     internal void NotifyReturned(MergeItemObject piece) => active.Remove(piece);
+    // 화면 크기 변경으로 벽/투입구가 이동할 때, 풀의 활성 아이템도 같은 좌표 변환을 적용합니다.
+    // 아이템 데이터·반지름·개수는 유지하고 원형 콜라이더를 비균등하게 늘리지 않습니다.
+    public void RemapLayout(Matrix4x4 change)
+    {
+        contacts.Clear(); queued.Clear();
+        foreach (var piece in active)
+        {
+            if (piece == null || !piece.IsLive) continue;
+            Vector3 position = change.MultiplyPoint3x4(piece.transform.position);
+            piece.body.position = position;
+            piece.transform.position = position;
+            piece.Velocity = change.MultiplyVector(piece.Velocity);
+        }
+    }
     public string GetItemDisplayName(ItemData item) => DisplayName(item);
     public bool TryRemoveItem(MergeItemObject piece, int expectedLifeId)
     {

@@ -146,8 +146,9 @@ def check_scene_flow():
         assert '  m_Enabled: 1\n' in profile
         if name == 'CoreScene':
             assert '  role: 0\n' in profile
-            assert mask(profile, 'standaloneLayers') == mask(profile, 'composedLayers') == mask(camera, 'm_CullingMask') == 0
-            assert '  m_Enabled: 0\n' in camera, (name, 'background must wait for exclusive ownership')
+            # Core may display its shared UI layer. World content must still be excluded.
+            assert all(mask(body, field) & ~(1 << 5) == 0 for body, field in
+                       ((profile, 'standaloneLayers'), (profile, 'composedLayers'), (camera, 'm_CullingMask')))
             assert '  receiveVisibilitySettings: 0\n' in profile
             assert '  standaloneTag: Untagged\n' in profile and '  composedTag: Untagged\n' in profile
             assert 'm_TagString: Untagged' in blocks[go][1]
@@ -157,7 +158,7 @@ def check_scene_flow():
             assert mask(profile, 'standaloneLayers') == mask(profile, 'composedLayers') == mask(camera, 'm_CullingMask') == 1 << nav_layer
             assert '  receiveVisibilitySettings: 0\n' in profile
             assert 'm_TagString: Untagged' in blocks[go][1]
-            assert mask(profiles['CoreScene'], 'standaloneLayers') == 0
+            assert mask(profiles['CoreScene'], 'standaloneLayers') & ~(1 << 5) == 0
         else:
             assert '  role: 1\n' in profile
     assert int(re.search(r'^  priority: (-?\d+)', profiles['GameGeneralScene'], re.M)[1]) > int(re.search(r'^  priority: (-?\d+)', profiles['CoreScene'], re.M)[1])
@@ -188,6 +189,26 @@ def check_scene_flow():
     assert '  m_SortingLayerID: 1581199633\n' in settings_ui and '  m_SortingOrder: 200\n' in settings_ui
     assert 'propertyPath: m_SortingOrder\n      value: 300\n' in core
     assert '  navigationSortingOrder: 100\n' in general
+    assert '  navigationArea: {fileID: 1510854061}\n' in general
+    assert '  navigationSizeMode: 0\n' in general
+    assert float(re.search(r'^  navigationHeightRatio: (.*)', general, re.M)[1]) == .15
+    assert ratio == .6 and float(re.search(r'^  gap: (.*)', general, re.M)[1]) == 0
+    item_text, item_blocks = scenes['GameItemScene']
+    layout_guid = guid('Script/Manager/Utility/Scene/ItemSceneLayoutController.cs')
+    fitter_guid = guid('Script/Manager/Utility/Scene/UIWorldBoundsFitter.cs')
+    scaler_guid = guid('Script/Manager/Utility/Scene/ViewportCanvasScaler.cs')
+    item_layout = next(body for _, body in item_blocks.values() if layout_guid in body)
+    fitter = next(body for _, body in item_blocks.values() if fitter_guid in body)
+    assert '  gameAreaShare: {x: 0.8, y: 0.8}\n' in item_layout
+    assert all(f'  {field}: {{fileID: {value}}}\n' in item_layout for field, value in
+               [('gameArea',604680137),('seriesArea',962900167),('materialsArea',563686106),('recipeArea',766217317)])
+    assert '  frame: {fileID: 1599007221}\n' in fitter and '  worldRoot: {fileID: 269577203}\n' in fitter
+    assert '  worldCamera: {fileID: 1889333136}\n' in fitter and '  - {fileID: 985560683}\n' in fitter
+    assert item_text.count('guid: ' + scaler_guid) == 2
+    for name in ('GameBattleScene', 'GameItemScene'):
+        camera = next(body for kind, body in scenes[name][1].values() if kind == '20')
+        assert re.search(r'm_NormalizedViewPortRect:\n    serializedVersion: \d+\n    x: 0\n    y: 0\n    width: 1\n    height: 1\n', camera), (name, 'standalone view must fill its screen')
+    print('PASS responsive layout: 60/40 content, 15/85 navigation, 80/20 item panels and existing world-box binding.')
     audio_guid = guid('Script/Manager/Utility/Scene/SceneAudioChannel.cs')
     for name in ('GameGeneralScene', 'GameBattleScene', 'GameItemScene'):
         _, blocks = scenes[name]

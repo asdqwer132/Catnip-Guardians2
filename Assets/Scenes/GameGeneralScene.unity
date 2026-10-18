@@ -247,9 +247,9 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
-    y: 0.9
+    y: 0.85
     width: 1
-    height: 0.1
+    height: 0.15
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 34
@@ -437,10 +437,10 @@ RectTransform:
   - {fileID: 1342734747}
   m_Father: {fileID: 1882155592}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMin: {x: 0, y: 0.85}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 202.5}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1510854062
 MonoBehaviour:
@@ -642,8 +642,9 @@ MonoBehaviour:
   gap: 0
   fitSceneCanvases: 1
   navigationCanvas: {fileID: 1882155591}
-  navigationArea: {fileID: 0}
+  navigationArea: {fileID: 1510854061}
   reserveNavigationSpace: 1
+  navigationSizeMode: 0
   navigationHeightRatio: 0.15
   navigationSortingOrder: 100
   itemLayer: 31

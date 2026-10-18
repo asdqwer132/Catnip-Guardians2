@@ -253,7 +253,7 @@ def main():
     pure_dir = work / 'managed'
     pure_dir.mkdir()
     managed_path = pure_dir / 'Managed.csproj'
-    scene_logic = [ROOT / 'Assets/Script/Manager/Utility/Scene' / name for name in ('GameSceneRoutes.cs', 'GameViewportLayout.cs', 'SceneStartupPolicy.cs', 'ScenePlaySettings.cs')]
+    scene_logic = [ROOT / 'Assets/Script/Manager/Utility/Scene' / name for name in ('GameSceneRoutes.cs', 'GameViewportLayout.cs', 'SceneStartupPolicy.cs', 'ScenePlaySettings.cs', 'SceneUILayout.cs')]
     scene_logic += [ROOT / 'Assets/Script/Items/Merge' / name for name in ('MergeItem.cs', 'MergeTree.cs', 'MergeItemSelectionGesture.cs')]
     scene_logic += [HERE / 'ManagedMergeGameChecks.cs']
     scene_logic += [ROOT / 'Assets/Editor/UIObjectPlacementLayout.cs', HERE / 'ManagedUIPlacementChecks.cs']

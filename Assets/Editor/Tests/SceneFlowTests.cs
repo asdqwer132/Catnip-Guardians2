@@ -107,6 +107,7 @@ public sealed class SceneFlowTests
             var controller = host.AddComponent<GameGeneralSceneController>();
             controller.autoLoadChildren = controller.loadCoreScene = false;
             controller.navigationCanvas = canvasHost.GetComponent<Canvas>();
+            controller.navigationSizeMode = NavigationSizeMode.MeasuredPanel;
             var panel = panelHost.GetComponent<RectTransform>(); panel.SetParent(canvasHost.transform, false);
             panel.anchorMin = new Vector2(0, 1); panel.anchorMax = Vector2.one;
             panel.pivot = new Vector2(.5f, 1); panel.anchoredPosition = Vector2.zero;
@@ -206,6 +207,8 @@ public sealed class SceneFlowTests
             var controller = host.AddComponent<GameGeneralSceneController>();
             controller.autoLoadChildren = controller.loadCoreScene = false;
             var canvas = canvasHost.GetComponent<Canvas>(); canvas.sortingLayerName = "UI";
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            controller.navigationSizeMode = NavigationSizeMode.MeasuredPanel;
             controller.navigationCanvas = canvas;
             var panel = panelHost.GetComponent<RectTransform>(); panel.SetParent(canvasHost.transform, false);
             panel.anchorMin = new Vector2(0,1); panel.anchorMax = Vector2.one; panel.pivot = new Vector2(.5f,1);

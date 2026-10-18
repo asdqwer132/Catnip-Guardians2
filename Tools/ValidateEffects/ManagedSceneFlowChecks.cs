@@ -50,6 +50,35 @@ public static partial class Runner
             GameViewportLayout.Calculate(GameScreenLayout.SideBySide, .5f, true, 0, out var b, out var i);
             Eq(b.xMin,0); Eq(b.width,.5f); Eq(i.xMin,.5f); Eq(i.width,.5f); Eq(b.height,1); Eq(i.height,1);
         });
+        Check("requested scene ratios stay 60:40 and 15:85 at landscape portrait and ultrawide resolutions", () => {
+            foreach (var pixels in new[] { new Vector2(1920,1080), new Vector2(1024,768), new Vector2(1080,1920), new Vector2(2560,1080), new Vector2(800,600) })
+            {
+                GameViewportLayout.Calculate(GameScreenLayout.SideBySide,.6f,true,0,.15f,out var b,out var i);
+                Eq(b.width*pixels.x/pixels.x,.6f); Eq(i.width*pixels.x/pixels.x,.4f);
+                Eq(b.yMax*pixels.y/pixels.y,.85f); Eq(i.yMax,b.yMax); Eq(b.xMax,i.xMin); Eq(i.xMax,1);
+            }
+        });
+        Check("item scene uses an 80 by 80 percent game region and nonoverlapping outer panels", () => {
+            SceneUILayout.ItemRegions(new Vector2(.8f,.8f),.5f,out var game,out var series,out var materials,out var recipe);
+            Eq(game.width,.8f); Eq(game.height,.8f); Eq(series.yMin,game.yMax);
+            Eq(materials.xMin,game.xMax); Eq(recipe.xMin,game.xMax); Eq(recipe.yMax,materials.yMin);
+            Eq(materials.yMax,game.yMax); Eq(series.yMax,1); Eq(series.width,1);
+            Eq(game.width*game.height+series.width*series.height+materials.width*materials.height+recipe.width*recipe.height,1);
+        });
+        Check("item region configuration rejects invalid shares without holes or negative rectangles", () => {
+            foreach (float value in new[] {float.NaN,float.PositiveInfinity,float.NegativeInfinity,-5f,0f,.8f,10f})
+            {
+                SceneUILayout.ItemRegions(new Vector2(value,value),value,out var g,out var s,out var m,out var r);
+                True(g.width>0 && g.height>0 && s.height>0 && m.width>0 && m.height>0 && r.height>0);
+                Eq(g.width*g.height+s.width*s.height+m.width*m.height+r.width*r.height,1);
+            }
+        });
+        Check("camera canvas scale uses its local pixel size and supports different aspect ratios", () => {
+            Eq(SceneUILayout.CanvasScale(new Vector2(960,1147.5f),new Vector2(960,1147.5f),.5f),1);
+            Eq(SceneUILayout.CanvasScale(new Vector2(480,573.75f),new Vector2(960,1147.5f),.5f),.5f);
+            Eq(SceneUILayout.CanvasScale(new Vector2(960,573.75f),new Vector2(960,1147.5f),0),1);
+            Eq(SceneUILayout.CanvasScale(new Vector2(960,573.75f),new Vector2(960,1147.5f),1),.5f);
+        });
         Check("screen gap preserves requested usable battle share", () => {
             GameViewportLayout.Calculate(GameScreenLayout.SideBySide, .7f, true, .04f, out var b, out var i);
             Eq(b.width,.672f); Eq(i.width,.288f); Eq(i.xMin-b.xMax,.04f); Eq(i.xMax,1);

@@ -4,7 +4,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Rendering;
 
-// UI를 만들거나 옮기지 않습니다. 기존 씬 카메라와 Canvas의 표시 영역만 연결합니다.
+public enum NavigationSizeMode { ScreenRatio, MeasuredPanel }
+
+// 새 UI를 생성하지 않고 기존 씬 카메라와 Canvas/패널의 표시 영역을 연결합니다.
 public sealed class GameGeneralSceneController : MonoBehaviour
 {
     public string battleScene = GameSceneRoutes.Battle;
@@ -15,7 +17,7 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     public bool loadCoreScene = true;
     [Header("화면 분할")]
     public GameScreenLayout layout;
-    [Range(0.1f, 0.9f)] public float battleRatio = 0.5f;
+    [Range(0.1f, 0.9f)] public float battleRatio = 0.6f;
     public bool battleFirst = true;
     [Range(0f, 0.1f)] public float gap;
     [Tooltip("기존 Screen Space Overlay Canvas를 해당 씬의 카메라에 연결합니다. 코어 UI는 전체 화면으로 유지합니다.")]
@@ -23,10 +25,12 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     [Header("직접 만든 상단 내비게이션 UI")]
     [Tooltip("제너럴 씬의 루트 Canvas. 같은 씬의 Navigation 카메라와 연결합니다.")]
     public Canvas navigationCanvas;
-    [Tooltip("선택 사항: 상단 바 Panel. 연결하면 실제 화면상의 하단 경계까지 공간을 확보합니다. 비우면 Height Ratio를 사용합니다.")]
+    [Tooltip("기존 상단 바 Panel입니다. Screen Ratio에서는 화면 비율에 맞춰 크기를 정하고, Measured Panel에서는 이 패널의 하단을 측정합니다.")]
     public RectTransform navigationArea;
     public bool reserveNavigationSpace = true;
-    [Range(0f, 0.8f)] public float navigationHeightRatio = 0.12f;
+    [Tooltip("Screen Ratio는 UI와 카메라 경계를 같은 화면 비율로 맞춥니다. Measured Panel은 직접 정한 패널 높이를 측정합니다.")]
+    public NavigationSizeMode navigationSizeMode = NavigationSizeMode.ScreenRatio;
+    [Range(0f, 0.8f)] public float navigationHeightRatio = 0.15f;
     [Tooltip("같은 Sorting Layer 안의 Canvas 순서. 기본 내비게이션 100 / 코어 설정 200 / 로딩 300입니다.")]
     public int navigationSortingOrder = 100;
     [Header("서브 게임 격리")]
@@ -169,7 +173,7 @@ public sealed class GameGeneralSceneController : MonoBehaviour
         { RestoreNavigation(); return; }
         if (navigationState == null) navigationState = CanvasState.Capture(navigationCanvas);
         navigationView = SceneCameraBinding.NavigationIn(gameObject.scene);
-        if (navigationView != null)
+        if (navigationView != null && navigationCanvas.renderMode != RenderMode.ScreenSpaceOverlay)
         {
             // Navigation 프로필이 단일 레이어일 때, 편집 중 UI 기본 레이어로
             // 생성한 버튼/텍스트도 같은 카메라에서 보이도록 기존 계층만 연결합니다.
@@ -190,12 +194,20 @@ public sealed class GameGeneralSceneController : MonoBehaviour
         }
         else
         {
-            // 카메라를 연결하기 전에도 직접 만든 UI를 확인할 수 있게 합니다.
+            // 직접 설정한 Overlay는 유지합니다. 카메라가 없는 경우에도 기존 UI를 확인할 수 있습니다.
             if (navigationCanvas.renderMode != RenderMode.ScreenSpaceOverlay) navigationCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
             if (navigationCanvas.worldCamera != null) navigationCanvas.worldCamera = null;
         }
+        if (navigationSizeMode == NavigationSizeMode.ScreenRatio && navigationArea != null &&
+            navigationArea.parent == navigationCanvas.transform)
+        {
+            // Overlay는 전체 화면의 위 15%, Camera Canvas는 이미 잘린 헤더 전체를 채웁니다.
+            float bottom = navigationCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? 1f - RatioHeight : 0f;
+            SceneUILayout.SetRect(navigationArea, Rect.MinMaxRect(0f, bottom, 1f, 1f));
+        }
         if (navigationCanvas.sortingOrder != navigationSortingOrder) navigationCanvas.sortingOrder = navigationSortingOrder;
     }
+    private float RatioHeight => float.IsNaN(navigationHeightRatio) ? 0f : Mathf.Clamp(navigationHeightRatio, 0f, .8f);
     public float NavigationTopInset => reserveNavigationSpace ? NavigationHeight : 0f;
     public float NavigationHeight
     {
@@ -203,6 +215,8 @@ public sealed class GameGeneralSceneController : MonoBehaviour
         {
             if (navigationState == null || navigationCanvas == null || !navigationCanvas.isActiveAndEnabled)
                 return 0f;
+            if (navigationArea != null && !navigationArea.gameObject.activeInHierarchy) return 0f;
+            if (navigationSizeMode == NavigationSizeMode.ScreenRatio) return RatioHeight;
             float ratio = navigationHeightRatio;
             if (navigationArea != null)
             {

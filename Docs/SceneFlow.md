@@ -26,12 +26,12 @@ CoreScene (항상 유지)
 
 UI 오브젝트와 레이아웃은 직접 만듭니다. 제너럴의 `Game General Controller → GameGeneralSceneController`에 연결 필드가 있으며, 연결하지 않으면 기존 전체 높이 분할을 유지합니다.
 
-1. **GameGeneralScene 안에** 루트 Canvas를 만들고 Canvas Scaler·Graphic Raycaster를 붙입니다. Render Mode는 **Screen Space - Camera**로 설정하고 제너럴의 **Navigation Camera**를 지정합니다. 이 카메라의 SceneCameraBinding Role은 Navigation, 표시 레이어는 GeneralNavigation입니다. Light 2D·Audio Listener·EventSystem을 추가할 필요는 없습니다. 기존 제너럴/코어 입력 소유자가 UI 입력을 처리합니다.
-2. Canvas 아래 상단 바 Panel을 만듭니다. 위쪽 가로 Stretch, Pivot Y=1, Pos Y=0으로 두고 원하는 Height를 설정합니다. 이미지·재화 텍스트·버튼 등은 이 Panel 안에 배치합니다. 전체 화면 투명 Image의 Raycast Target이 게임 입력을 가로막지 않도록 배경 Image는 상단 Panel에만 둡니다.
-3. 컨트롤러의 **Navigation Canvas**에 루트 Canvas, **Navigation Area**에 상단 Panel을 연결합니다. **Reserve Navigation Space**를 켜면 Panel 하단까지 공간을 확보하고 배틀/아이템 카메라와 각 씬의 UI를 아래에 표시합니다. 가로/세로 분할, Battle Only, Item Only 모두 적용됩니다. Canvas나 Panel을 숨기면 공간도 반환합니다.
-4. Navigation Area를 비우면 **Navigation Height Ratio**로 상단 높이를 지정합니다. 예: `0.12`는 화면 높이의 12%입니다. 이 옵션은 UI Panel 자체를 리사이즈하지 않으므로 Panel도 같은 높이로 직접 맞춥니다. 실제 Panel을 연결하면 Canvas Scaler/해상도에 따라 변경된 높이를 자동으로 측정합니다. 확보 범위의 최대치는 화면 높이의 80%입니다.
+1. **GameGeneralScene 안의** 기존 루트 Canvas를 Navigation Canvas에 연결합니다. 현재 씬은 **Screen Space - Overlay**이며 이 설정을 유지합니다. Screen Space - Camera를 직접 선택하면 기존 Navigation Camera와 연결합니다. 새 UI·카메라·Light·Audio Listener·EventSystem은 생성하지 않습니다.
+2. 기존 상단 Panel을 **Navigation Area**에 연결합니다. Panel은 Canvas의 직접 자식이어야 합니다. 이미지·재화·버튼은 이 Panel 아래에 직접 배치합니다. 전체 화면 투명 Image가 게임 입력을 가로막지 않도록 배경 Image는 Panel에 둡니다.
+3. **Navigation Size Mode = Screen Ratio**, **Navigation Height Ratio = 0.15**, **Reserve Navigation Space = 켜짐**이 현재 기본 설정입니다. Panel과 카메라가 동일한 15% 경계를 사용합니다. Overlay에서는 Panel의 Anchor Y가 0.85~1이고, Camera Canvas에서는 이미 상단에 배정된 카메라 영역 전체를 채웁니다. 고정 Height와 화면 비율을 따로 맞출 필요가 없습니다.
+4. 직접 정한 Panel 높이를 기준으로 쓰려면 **Measured Panel**을 선택합니다. 이 모드에서는 Panel을 리사이즈하지 않고 실제 화면상 하단을 측정합니다. Canvas나 Panel을 숨기면 확보한 공간을 반환합니다.
 
-컨트롤러는 기존 Navigation Camera의 Viewport를 상단에만 배정하고 Canvas를 연결합니다. 카메라나 UI를 새로 만들지 않습니다. Navigation 프로필이 단일 레이어이면 기존 UI 계층의 GameObject Layer도 맞춥니다. 새 버튼은 직접 추가하고 같은 레이어를 사용하세요. UI Sorting Layer는 Canvas에서 지정하며, 현재 UI 레이어의 Order는 내비게이션 `100`, 코어 설정 `200`, 로딩 `300`입니다. 연결을 해제하거나 컨트롤러가 꺼지면 원래 Canvas 렌더 설정을 복구합니다. UI 모양·배치·버튼 이벤트는 변경하지 않습니다.
+컨트롤러는 기존 Navigation Camera의 Viewport도 상단에만 배정합니다. Camera Canvas를 사용할 때 Navigation 프로필이 단일 레이어이면 기존 UI 계층의 GameObject Layer도 맞춥니다. UI Sorting Layer는 Canvas에서 지정하며, 현재 UI 레이어의 Order는 내비게이션 `100`, 코어 설정 `200`, 로딩 `300`입니다. 연결을 해제하거나 컨트롤러가 꺼지면 원래 Canvas 렌더 설정을 복구합니다. 기존 스프라이트·버튼 이벤트는 유지합니다.
 
 | 표시/버튼 | 직접 연결할 대상 |
 | --- | --- |
@@ -51,7 +51,7 @@ Additive 씬은 같은 월드 좌표 공간에 함께 존재합니다. 카메라
 
 | 카메라 | Role | Priority | Standalone Layers | Composed Layers | Receive Visibility Settings |
 | --- | --- | --- | --- | --- | --- |
-| Core Background Camera | Background | 0 | Nothing | Nothing | 꺼짐 |
+| Core Background Camera | Background | 0 | UI만 | Nothing | 꺼짐 |
 | Navigation Camera | Navigation | 10 | GeneralNavigation만 | GeneralNavigation만 | 꺼짐 |
 | 배틀 카메라 | Content | 100 | GameItem·GeneralNavigation 제외 | GameItem·GeneralNavigation 제외 | 켜짐 |
 | 아이템 카메라 | Content | 50 | Everything | GameItem만 | 꺼짐 |
@@ -123,7 +123,7 @@ Current Scene Only에서도 코어 씬을 직접 실행하면 코어의 시작 �
 | 필드 | 의미 |
 | --- | --- |
 | Layout | Side By Side: 좌우 / Top And Bottom: 상하 / Battle Only / Item Only |
-| Battle Ratio | 전투 화면이 차지하는 비율. 기본 0.5, 0.7은 전투 70%·아이템 30% |
+| Battle Ratio | 전투 화면이 차지하는 비율. 기본 0.6 = 배틀 60%·아이템 40% |
 | Battle First | 켜면 전투가 왼쪽/위쪽. 끄면 오른쪽/아래쪽 |
 | Gap | 두 화면 사이 간격. 해당 축의 전체 화면 대비 비율이며 기본 0 |
 | Fit Scene Canvases | 기존 배틀·아이템 Canvas를 각 카메라에 연결해 해당 영역에 표시. 코어 Canvas는 전체 화면 유지 |
@@ -135,9 +135,28 @@ Current Scene Only에서도 코어 씬을 직접 실행하면 코어의 시작 �
 
 `Battle Ratio` 등은 Play 중에도 바꿀 수 있습니다. Play 중 바꾼 값은 종료 후 저장되지 않으므로 최종값은 편집 모드에서 지정하세요. 직접 만든 Slider의 **On Value Changed → Dynamic float → SetBattleRatio**로 연결해도 됩니다. 새 UI를 코드에서 만들지는 않습니다.
 
-기존 Overlay Canvas는 실행 중 각 씬의 카메라에 연결됩니다. Canvas 자식·앵커·글꼴·색상은 다시 만들거나 재배치하지 않습니다. 이 자동 연결을 끄려면 `Fit Scene Canvases`를 끄고 직접 만든 Canvas의 Render Mode를 Screen Space - Camera로 설정해 해당 씬의 카메라를 지정하세요. UI에 카메라를 연결할 때 캔버스 정렬 순서와 Plane Distance는 Unity Play에서 확인하세요.
+배틀·아이템의 기존 Overlay Canvas는 실행 중 각 씬의 카메라에 연결됩니다. 제너럴의 Overlay는 유지합니다. 자동 연결을 끄려면 `Fit Scene Canvases`를 끄고 Canvas의 Render Mode를 Screen Space - Camera로 설정해 해당 씬의 카메라를 직접 지정하세요. UI 정렬 순서와 Plane Distance는 Unity Play에서 확인하세요.
 
 `GameItemScene`의 직접 만든 서브 게임 오브젝트와 UI가 오른쪽에 표시됩니다. 카메라 Orthographic Size로 각 영역에 보이는 월드 범위를 조절할 수 있습니다.
+
+## 아이템씬의 20:80 UI와 실제 박스
+
+`GameItemScene → MegerGeneralManager`의 **ItemSceneLayoutController**가 기존 UI에 연결되어 있습니다. 전체 화면 중 아이템 카메라가 차지하는 영역을 다시 100%로 보고 계산하므로, 아이템씬 단독 실행과 제너럴 내 40% 표시 모두 같은 내부 비율을 사용합니다.
+
+| 영역 | 아이템 화면 내부 범위 |
+| --- | --- |
+| SeriesSelect: 상자/시리즈 선택 | 상단 20%, 가로 전체 |
+| BoxArea: 실제 게임 프레임 | 왼쪽 80% × 아래 80% |
+| MaterialSelect: 재료 UI | 오른쪽 20% 중 위쪽 |
+| SettingSelect: 레시피 등 보조 UI 연결 영역 | 오른쪽 20% 중 아래쪽 |
+
+**Game Area Share**의 X/Y는 각각 `0.8`이며 독립적으로 바꿀 수 있습니다. **Lower Sidebar Share**는 오른쪽 영역 안에서 아래 패널이 차지하는 비율이며 기본 `0.5`입니다. UI 이름·스프라이트·기존 자식·이벤트는 유지하고 네 영역의 Anchor/Offset만 연결합니다. 아이템의 두 Canvas에는 **ViewportCanvasScaler**를 연결했으며, 해당 카메라의 pixelRect를 기준으로 배율을 계산합니다. 기준 해상도는 아이템 영역 기준 `960×1147.5`, Match는 `0.5`이고 두 Canvas가 같은 설정을 사용합니다.
+
+같은 오브젝트의 **UIWorldBoundsFitter**는 기존 `UICanvas/BoxArea/Frame`과 월드의 `CragtingBox`를 연결합니다. **Frame Occupancy**는 프레임 안에서 박스가 차지하는 정규화 영역으로 기본 `X/Y=0.06`, `Width/Height=0.88`입니다. 벽·바닥·투입구를 포함한 원래 범위를 한 번 측정하고, UI 레이아웃 계산 후 화면 좌표를 아이템 월드 평면으로 투영해 위치와 X/Y 크기를 맞춥니다. 카메라 줌을 임의로 변경하지 않습니다.
+
+화면 비율이 바뀌면 실제 상자의 가로·세로도 프레임의 같은 비율을 채우도록 변합니다. **상자 원본의 고정 종횡비를 유지하며 여백을 남기는 방식은 아닙니다.** 투입구는 박스의 자식이어서 함께 이동합니다. 활성 머지 아이템은 위치·속도를 같은 변환으로 보정하며 아이템 데이터·개수·반지름은 유지합니다. 원형 아이템을 박스처럼 비균등하게 늘리지 않습니다. 드래그 중 화면이 바뀌면 이전 좌표의 선택을 취소합니다. 풀에서 대기 중인 아이템은 이동하지 않습니다.
+
+박스 프리팹을 교체하면 World Root와 Include Points(투입구)를 연결하고 **기존 박스의 로컬 범위 다시 측정**으로 범위를 갱신할 수 있습니다. 자동 측정을 끄고 Local Bounds를 직접 지정할 수도 있습니다. 이 배치는 XY 평면을 보는 직교 카메라와 회전하지 않은 박스 루트를 기준으로 합니다.
 
 ## 설정 버튼 연결
 
@@ -181,4 +200,4 @@ python3 Tools/ValidateEffects/check.py --cache /workspace/.cache/catnip-validati
 
 클라우드에서는 관련 C# 컴파일, 실제 씬/프리팹 참조, 순수 화면 비율·씬 이름 변환 계산을 검증합니다. Unity 렌더링·버튼 입력·Additive 비동기 로딩을 실행하는 검사는 아닙니다.
 
-Unity에서는 Test Runner → EditMode → `SceneFlowTests`를 실행하세요. 기본 모드에서 배틀·아이템·메인·스토리·업그레이드를 각각 Play해 해당 씬만 열리는지 확인합니다. 코어에서 Play했을 때는 기본 제너럴 진입을, With Core 모드에서는 코어 + 선택 씬만 열리는지 확인합니다. Auto Load Startup Scene을 끄거나 Startup Scene을 변경하는 경우도 확인 대상입니다. 제너럴 통합 실행에서는 설정·재화·분할 비율과 UI 입력을 확인하며 오른쪽 클릭이 배틀 입력을 발생시키지 않아야 합니다.
+Unity에서는 Test Runner → EditMode → `SceneFlowTests`, `ResponsiveSceneLayoutTests`를 실행하세요. 기본 모드에서 배틀·아이템·메인·스토리·업그레이드를 각각 Play해 해당 씬만 열리는지 확인합니다. 코어에서 Play했을 때는 기본 제너럴 진입을, With Core 모드에서는 코어 + 선택 씬만 열리는지 확인합니다. Auto Load Startup Scene을 끄거나 Startup Scene을 변경하는 경우도 확인 대상입니다. 제너럴 통합 실행에서는 설정·재화·분할 비율과 UI 입력을 확인하며 오른쪽 클릭이 배틀 입력을 발생시키지 않아야 합니다. Game View를 16:9, 4:3, 세로 및 Free Aspect로 변경해 상단 15% 경계와 아이템 프레임/벽/투입구의 정렬을 확인합니다.
