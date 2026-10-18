@@ -19,6 +19,15 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     [Range(0f, 0.1f)] public float gap;
     [Tooltip("기존 Screen Space Overlay Canvas를 해당 씬의 카메라에 연결합니다. 코어 UI는 전체 화면으로 유지합니다.")]
     public bool fitSceneCanvases = true;
+    [Header("직접 만든 상단 내비게이션 UI")]
+    [Tooltip("제너럴 씬의 루트 Canvas를 연결하세요. Overlay로 표시하므로 별도의 카메라/Light/AudioListener가 필요 없습니다.")]
+    public Canvas navigationCanvas;
+    [Tooltip("선택 사항: 상단 바 Panel. 연결하면 실제 화면상의 하단 경계까지 공간을 확보합니다. 비우면 Height Ratio를 사용합니다.")]
+    public RectTransform navigationArea;
+    public bool reserveNavigationSpace = true;
+    [Range(0f, 0.8f)] public float navigationHeightRatio = 0.12f;
+    [Tooltip("Overlay Canvas 표시 순서. 기본 5는 코어 설정 Canvas(10)보다 아래입니다.")]
+    public int navigationSortingOrder = 5;
     [Header("서브 게임 격리")]
     [Range(8, 31)] public int itemLayer = 31;
     [Tooltip("아이템 씬만 별도의 2D 물리 공간에서 실행합니다.")]
@@ -31,9 +40,23 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     private Scene battle, item;
     private PhysicsScene2D itemPhysics;
     private readonly List<CanvasState> canvases = new List<CanvasState>();
+    private CanvasState navigationState;
+    private readonly Vector3[] navigationCorners = new Vector3[4];
     private sealed class CanvasState
     {
         public Canvas canvas; public RenderMode mode; public Camera camera; public float distance;
+        public int sortingLayer, sortingOrder;
+        public static CanvasState Capture(Canvas value) => new CanvasState
+        {
+            canvas = value, mode = value.renderMode, camera = value.worldCamera, distance = value.planeDistance,
+            sortingLayer = value.sortingLayerID, sortingOrder = value.sortingOrder
+        };
+        public void Restore()
+        {
+            if (canvas == null) return;
+            canvas.renderMode = mode; canvas.worldCamera = camera; canvas.planeDistance = distance;
+            canvas.sortingLayerID = sortingLayer; canvas.sortingOrder = sortingOrder;
+        }
     }
     private IEnumerator Start()
     {
@@ -114,17 +137,52 @@ public sealed class GameGeneralSceneController : MonoBehaviour
             foreach (var canvas in root.GetComponentsInChildren<Canvas>(true))
             {
                 if (!canvas.isRootCanvas || canvas.renderMode == RenderMode.WorldSpace) continue;
-                canvases.Add(new CanvasState { canvas = canvas, mode = canvas.renderMode, camera = canvas.worldCamera, distance = canvas.planeDistance });
+                canvases.Add(CanvasState.Capture(canvas));
                 canvas.renderMode = RenderMode.ScreenSpaceCamera; canvas.worldCamera = camera;
                 canvas.planeDistance = Mathf.Clamp(canvas.planeDistance, camera.nearClipPlane + 0.1f, camera.farClipPlane - 0.1f);
             }
     }
     public void SetBattleRatio(float value) { battleRatio = value; ApplyLayout(); }
     public void SetLayout(int value) { if (value >= 0 && value <= 3) layout = (GameScreenLayout)value; ApplyLayout(); }
+    public void SetNavigationHeightRatio(float value) { navigationHeightRatio = value; ApplyLayout(); }
+    private void ConnectNavigation()
+    {
+        if (navigationState != null && navigationState.canvas != navigationCanvas) RestoreNavigation();
+        // 하위 씬/코어의 Canvas를 실수로 연결해도 해당 UI를 변경하지 않습니다.
+        if (navigationCanvas == null || !navigationCanvas.isRootCanvas || navigationCanvas.gameObject.scene != gameObject.scene)
+        { RestoreNavigation(); return; }
+        if (navigationState == null) navigationState = CanvasState.Capture(navigationCanvas);
+        navigationCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        navigationCanvas.worldCamera = null;
+        navigationCanvas.sortingLayerID = 0;
+        navigationCanvas.sortingOrder = navigationSortingOrder;
+    }
+    public float NavigationTopInset
+    {
+        get
+        {
+            if (!reserveNavigationSpace || navigationState == null || navigationCanvas == null || !navigationCanvas.isActiveAndEnabled)
+                return 0f;
+            float ratio = navigationHeightRatio;
+            if (navigationArea != null)
+            {
+                if (!navigationArea.gameObject.activeInHierarchy || !navigationArea.IsChildOf(navigationCanvas.transform)) return 0f;
+                if (Screen.height <= 0) return 0f;
+                navigationArea.GetWorldCorners(navigationCorners);
+                float bottom = float.PositiveInfinity;
+                foreach (var corner in navigationCorners)
+                    bottom = Mathf.Min(bottom, RectTransformUtility.WorldToScreenPoint(null, corner).y);
+                ratio = 1f - bottom / Screen.height;
+            }
+            return float.IsNaN(ratio) ? 0f : Mathf.Clamp(ratio, 0f, 0.8f);
+        }
+    }
     public void ApplyLayout()
     {
+        if (!isActiveAndEnabled) return;
+        ConnectNavigation();
         if (!ready) return;
-        GameViewportLayout.Calculate(layout, battleRatio, battleFirst, gap, out var battleRect, out var itemRect);
+        GameViewportLayout.Calculate(layout, battleRatio, battleFirst, gap, NavigationTopInset, out var battleRect, out var itemRect);
         ApplyCamera(BattleCamera, battleRect); ApplyCamera(ItemCamera, itemRect);
         SceneAudioListenerOwner.Refresh();
     }
@@ -135,6 +193,9 @@ public sealed class GameGeneralSceneController : MonoBehaviour
         if (camera.enabled) camera.rect = rect;
     }
     private void LateUpdate() => ApplyLayout();
+    private void OnEnable() => ApplyLayout();
+    private void RestoreNavigation() { navigationState?.Restore(); navigationState = null; }
+    private void OnDisable() => RestoreNavigation();
     private void FixedUpdate()
     {
         if (ready && isolateItemPhysics && itemPhysics.IsValid() && itemPhysics != Physics2D.defaultPhysicsScene && Time.timeScale > 0f)
@@ -142,8 +203,8 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     }
     private void OnDestroy()
     {
+        RestoreNavigation();
         foreach (var state in canvases)
-            if (state.canvas != null)
-            { state.canvas.renderMode = state.mode; state.canvas.worldCamera = state.camera; state.canvas.planeDistance = state.distance; }
+            state.Restore();
     }
 }

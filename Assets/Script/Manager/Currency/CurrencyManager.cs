@@ -23,6 +23,7 @@ public enum CurrencyType
 public class CurrencyManager : MonoBehaviour
 {
     public static CurrencyManager instance;
+    public static event Action InstanceChanged;
 
     [Header("UI Groups")]
     public CurrencyUIGroup[] uiGroups;
@@ -48,6 +49,7 @@ public class CurrencyManager : MonoBehaviour
 
         InitCurrencies();
         InitUIGroups();
+        InstanceChanged?.Invoke();
     }
 
     private void Start()
@@ -61,7 +63,12 @@ public class CurrencyManager : MonoBehaviour
         foreach (CurrencyType type in Enum.GetValues(typeof(CurrencyType))) group.UpdateUI(type, GetCurrency(type));
     }
     public void UnregisterUI(CurrencyUIGroup group) => registeredGroups.Remove(group);
-    private void OnDestroy() { if (instance == this) instance = null; }
+    private void OnDestroy()
+    {
+        if (instance != this) return;
+        instance = null;
+        InstanceChanged?.Invoke();
+    }
 
     private void InitCurrencies()
     {

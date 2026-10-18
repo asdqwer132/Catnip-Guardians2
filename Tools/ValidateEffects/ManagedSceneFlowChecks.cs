@@ -72,6 +72,35 @@ public static partial class Runner
             GameViewportLayout.Calculate(GameScreenLayout.ItemOnly, .5f, true, 0, out b, out i);
             Eq(i.width,1); Eq(i.height,1); Eq(b.width,0);
         });
+        Check("top navigation excludes both horizontal views without changing the battle share", () => {
+            GameViewportLayout.Calculate(GameScreenLayout.SideBySide, .7f, true, .04f, .12f, out var b, out var i);
+            Eq(b.width,.672f); Eq(i.width,.288f); Eq(b.yMax,.88f); Eq(i.yMax,.88f);
+            Eq(b.yMin,0); Eq(i.yMin,0);
+        });
+        Check("top navigation fits reversed vertical views and their gap inside the remaining height", () => {
+            GameViewportLayout.Calculate(GameScreenLayout.TopAndBottom, .6f, false, .1f, .2f, out var b, out var i);
+            Eq(b.height,.432f); Eq(i.height,.288f); Eq(i.yMin-b.yMax,.08f); Eq(i.yMax,.8f);
+        });
+        Check("single camera modes keep the navigation space and disable the other view", () => {
+            GameViewportLayout.Calculate(GameScreenLayout.BattleOnly, .5f, true, 0, .2f, out var b, out var i);
+            Eq(b.width,1); Eq(b.height,.8f); Eq(i.width,0); Eq(i.height,0);
+            GameViewportLayout.Calculate(GameScreenLayout.ItemOnly, .5f, true, 0, .2f, out b, out i);
+            Eq(i.width,1); Eq(i.height,.8f); Eq(b.width,0); Eq(b.height,0);
+        });
+        Check("navigation inset sanitization leaves usable finite views and zero restores the old layout", () => {
+            foreach (GameScreenLayout mode in Enum.GetValues(typeof(GameScreenLayout)))
+            foreach (float inset in new[] { float.NaN, float.PositiveInfinity, float.NegativeInfinity, -1f, 0f, .5f, 2f })
+            {
+                GameViewportLayout.Calculate(mode, .6f, false, .02f, inset, out var b, out var i);
+                True(!float.IsNaN(b.height) && !float.IsNaN(i.height));
+                True(b.height >= 0 && i.height >= 0 && b.yMax <= 1 && i.yMax <= 1);
+                True(b.height >= .01f || i.height >= .01f);
+            }
+            GameViewportLayout.Calculate(GameScreenLayout.TopAndBottom, .6f, true, .02f, out var originalBattle, out var originalItem);
+            GameViewportLayout.Calculate(GameScreenLayout.TopAndBottom, .6f, true, .02f, 0f, out var battle, out var item);
+            Eq(originalBattle.yMin,battle.yMin); Eq(originalBattle.height,battle.height);
+            Eq(originalItem.yMin,item.yMin); Eq(originalItem.height,item.height);
+        });
         Check("invalid serialized split values remain finite and visible", () => {
             foreach (float ratio in new[] { float.NaN, float.NegativeInfinity, float.PositiveInfinity, -10f, 10f })
             foreach (float gap in new[] { float.NaN, -1f, 1f })

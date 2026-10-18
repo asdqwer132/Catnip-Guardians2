@@ -22,6 +22,29 @@ CoreScene (항상 유지)
 
 `GameGeneralScene`은 통합 실행용입니다. **Load Core Scene**은 기본 켜짐이며 설정 창·재화·세션이 있는 코어를 먼저 불러옵니다. 이미 코어가 있으면 다시 불러오지 않습니다. **Auto Load Children**도 기본 켜짐이며 배틀과 아이템 씬을 함께 엽니다. 각 옵션을 끄면 해당 자동 로딩을 생략합니다. 배틀/아이템 씬을 직접 실행할 때는 이 옵션이 적용되지 않습니다.
 
+## 제너럴 씬 상단 내비게이션 연결
+
+UI 오브젝트와 레이아웃은 직접 만듭니다. 제너럴의 `Game General Controller → GameGeneralSceneController`에 연결 필드가 있으며, 연결하지 않으면 기존 전체 높이 분할을 유지합니다.
+
+1. **GameGeneralScene 안에** 루트 Canvas를 만들고 Canvas Scaler·Graphic Raycaster를 붙입니다. Render Mode는 **Screen Space - Overlay**로 설정합니다. 카메라·Light 2D·Audio Listener·EventSystem을 추가할 필요가 없습니다. 기존 제너럴/코어 입력 소유자가 UI 입력을 처리합니다.
+2. Canvas 아래 상단 바 Panel을 만듭니다. 위쪽 가로 Stretch, Pivot Y=1, Pos Y=0으로 두고 원하는 Height를 설정합니다. 이미지·재화 텍스트·버튼 등은 이 Panel 안에 배치합니다. 전체 화면 투명 Image의 Raycast Target이 게임 입력을 가로막지 않도록 배경 Image는 상단 Panel에만 둡니다.
+3. 컨트롤러의 **Navigation Canvas**에 루트 Canvas, **Navigation Area**에 상단 Panel을 연결합니다. **Reserve Navigation Space**를 켜면 Panel 하단까지 공간을 확보하고 배틀/아이템 카메라와 각 씬의 UI를 아래에 표시합니다. 가로/세로 분할, Battle Only, Item Only 모두 적용됩니다. Canvas나 Panel을 숨기면 공간도 반환합니다.
+4. Navigation Area를 비우면 **Navigation Height Ratio**로 상단 높이를 지정합니다. 예: `0.12`는 화면 높이의 12%입니다. 이 옵션은 UI Panel 자체를 리사이즈하지 않으므로 Panel도 같은 높이로 직접 맞춥니다. 실제 Panel을 연결하면 Canvas Scaler/해상도에 따라 변경된 높이를 자동으로 측정합니다. 확보 범위의 최대치는 화면 높이의 80%입니다.
+
+컨트롤러는 연결된 제너럴 루트 Canvas만 Overlay로 설정하며 전용 렌더 카메라를 만들지 않습니다. **Navigation Sorting Order** 기본값은 `5`이고, 코어 설정 Canvas는 `10`입니다. 코어 설정/로딩창이 위에 보여야 하므로 내비게이션 순서를 그보다 낮게 유지하세요. 연결을 해제하거나 컨트롤러가 꺼지면 원래 Canvas 렌더 설정을 복구합니다. UI 모양·배치·버튼 이벤트는 변경하지 않습니다.
+
+| 표시/버튼 | 직접 연결할 대상 |
+| --- | --- |
+| 재화 | 상단 UI에 기존 `CurrencyUIGroup` 추가 → Currency UIs에 재화 Type, Text UI(TMP), 필요하면 Text Obj 연결. 코어의 기존 CurrencyManager를 사용하며 새 매니저는 만들지 않음 |
+| 설정 | 버튼에 기존 `SettingUIButton` 추가 → On Click에 같은 컴포넌트의 `OpenSetting()` 연결. 기본값은 설정을 열 때 일시정지하며 코어 설정창을 사용 |
+| 설명 | 직접 만든 설명 Panel을 초기 비활성화 → 설명 버튼 On Click에 Panel의 `GameObject.SetActive(true)`, 닫기 버튼은 `false` 연결 |
+| 게임 종료 | 제너럴의 기존 EventSystem 오브젝트에 있는 `SceneMoveManager.QuitGame()` 연결. 빌드에서는 앱 종료, Editor에서는 Play 종료 |
+| 메인으로 나가기 | 앱 종료 대신 돌아갈 목적이면 같은 로더의 `GoMainScene()` 연결 |
+
+제너럴을 직접 실행해 코어가 나중에 열려도 CurrencyUIGroup은 매니저 준비 알림을 받고 등록합니다. 코어에서 시작하는 순서나 매니저 교체에도 다시 연결하며, 꺼진 UI는 등록 해제됩니다. 조명은 기존 Battle/Item Sorting Layer 분리를 유지하고, 오디오는 SceneAudioListenerOwner가 하나만 활성화합니다. 씬에 저장된 Audio Listener는 꺼 두고 Owner만 켜 두세요.
+
+Additive 씬은 같은 월드 좌표 공간에 함께 존재합니다. 카메라는 소속 씬으로 오브젝트를 걸러내지 않으므로, 서로 다른 씬의 오브젝트도 시야와 Culling Mask에 포함되면 그립니다. 따라서 카메라 분할만으로는 월드를 격리할 수 없으며 기존 GameItem 레이어/Culling Mask 분리가 필요합니다. 이 GameObject Layer와 조명/앞뒤 순서에 사용하는 Sorting Layer는 역할이 다릅니다.
+
 ## 각 씬을 독립 테스트하기
 
 아이템 씬의 조명은 **Sorting Layer `GameItemWorld`**로 분리되어 있습니다. 배틀의 Global Light 2D는 Default/Enemy, 아이템의 Global Light 2D는 GameItemWorld만 비춥니다. URP의 Global Light는 Additive 씬 사이에서도 같은 Sorting Layer를 공유하므로 카메라의 Culling Mask만 분리하면 중복 조명이 생길 수 있습니다.
