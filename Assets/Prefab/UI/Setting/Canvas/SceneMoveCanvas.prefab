@@ -61,8 +61,8 @@ Canvas:
   m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 1581199633
+  m_SortingOrder: 300
   m_TargetDisplay: 0
 --- !u!114 &5815188193683970860
 MonoBehaviour:
@@ -117,6 +117,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneMoveManager
   loadingPanel: {fileID: 6825642434648134142}
+  loadingCanvas: {fileID: 453714196291250765}
+  minimumLoadingSeconds: 0.2
 --- !u!1 &6825642434648134142
 GameObject:
   m_ObjectHideFlags: 0

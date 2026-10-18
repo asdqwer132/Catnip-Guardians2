@@ -8,6 +8,7 @@ public sealed class EffectVisualContext
     public readonly Quaternion rotation;
     public readonly Transform followTarget;
     public readonly bool hasFollowTarget;
+    public readonly GameObject audioOwner;
 
     private readonly Func<Vector3, bool, Vector3> scaleResolver;
     private readonly Func<bool> isPlaybackValid;
@@ -17,7 +18,8 @@ public sealed class EffectVisualContext
         Quaternion rotation,
         Func<Vector3, bool, Vector3> scaleResolver = null,
         Transform followTarget = null,
-        Func<bool> isPlaybackValid = null
+        Func<bool> isPlaybackValid = null,
+        GameObject audioOwner = null
     )
     {
         this.position = position;
@@ -25,6 +27,7 @@ public sealed class EffectVisualContext
         this.scaleResolver = scaleResolver;
         this.followTarget = followTarget;
         this.isPlaybackValid = isPlaybackValid;
+        this.audioOwner = audioOwner != null ? audioOwner : followTarget != null ? followTarget.gameObject : null;
         hasFollowTarget = followTarget != null;
     }
 

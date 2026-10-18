@@ -278,8 +278,7 @@ public class EnemyMovementControlEffect : ItemEffectData
         if (impactVfxPrefab == null)
             return;
 
-        if (AudioManager.instance != null)
-            AudioManager.instance.PlaySfx(audioSource);
+        SceneAudioChannel.PlaySfx(context.owner, audioSource);
 
         Vector3 scale = impactBaseScale;
         if (scaleImpactVfxByRadius)

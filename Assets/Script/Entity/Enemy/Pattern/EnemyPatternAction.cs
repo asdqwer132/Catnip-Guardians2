@@ -25,8 +25,8 @@ public abstract class EnemyPatternAction : ScriptableObject
         }
 
         PlayEffect(beforeEffectPrefab, context.Position);
-        if(AudioManager.instance != null && !string.IsNullOrEmpty(audioByName.categoryName) && !string.IsNullOrEmpty(audioByName.clipName))
-            AudioManager.instance.PlaySfx(audioByName.categoryName, audioByName.clipName);
+        if(audioByName != null && !string.IsNullOrEmpty(audioByName.categoryName) && !string.IsNullOrEmpty(audioByName.clipName))
+            SceneAudioChannel.PlaySfx(context?.Enemy != null ? context.Enemy.gameObject : null, audioByName.categoryName, audioByName.clipName);
     }
 
     public virtual void OnPatternEnd(EnemyPatternContext context, EnemyPatternEntry pattern)

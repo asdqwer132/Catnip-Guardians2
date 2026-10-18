@@ -84,8 +84,8 @@ public class EffectVisualData : ScriptableObject
         if (context == null || !context.CanContinuePlayback)
             return null;
 
-        if (!string.IsNullOrWhiteSpace(audioSource) && AudioManager.instance != null)
-            AudioManager.instance.PlaySfx(audioSource);
+        if (!string.IsNullOrWhiteSpace(audioSource))
+            SceneAudioChannel.PlaySfx(context.audioOwner, audioSource);
 
         if (prefab == null)
             return null;

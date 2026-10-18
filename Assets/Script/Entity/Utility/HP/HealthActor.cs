@@ -244,10 +244,7 @@ public abstract class HealthActor : MonoBehaviour, IDamageable
 
         health.TakeDamage(damage);
 
-        if (AudioManager.instance != null)
-        {
-            AudioManager.instance.PlaySfx(gameObject.tag);
-        }
+        SceneAudioChannel.PlaySfx(gameObject, gameObject.tag);
     }
 
     public virtual void Heal(float amount)

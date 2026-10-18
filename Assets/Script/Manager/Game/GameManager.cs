@@ -60,8 +60,7 @@ public class GameManager : MonoBehaviour
         if (tutorialEventManager != null)
             tutorialEventManager.TryHandleProgressChanged(TutorialProgress.FirstEnemyAttack);
 
-        if (AudioManager.instance != null)
-            AudioManager.instance.PlayBgm("Ambient 7 ");
+        SceneAudioChannel.PlayBgm(gameObject, "Ambient 7 ");
     }
 
     /// <summary>
@@ -80,8 +79,7 @@ public class GameManager : MonoBehaviour
             statisticsManager.Confirm();
 
 
-        if (AudioManager.instance != null)
-            AudioManager.instance.PlayBgm("Ambient 6 ");
+        SceneAudioChannel.PlayBgm(gameObject, "Ambient 6 ");
         endManager.OpenUpgradePanelFromEnd();
     }
 

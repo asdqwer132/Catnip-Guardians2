@@ -26,12 +26,12 @@ CoreScene (항상 유지)
 
 UI 오브젝트와 레이아웃은 직접 만듭니다. 제너럴의 `Game General Controller → GameGeneralSceneController`에 연결 필드가 있으며, 연결하지 않으면 기존 전체 높이 분할을 유지합니다.
 
-1. **GameGeneralScene 안에** 루트 Canvas를 만들고 Canvas Scaler·Graphic Raycaster를 붙입니다. Render Mode는 **Screen Space - Overlay**로 설정합니다. 카메라·Light 2D·Audio Listener·EventSystem을 추가할 필요가 없습니다. 기존 제너럴/코어 입력 소유자가 UI 입력을 처리합니다.
+1. **GameGeneralScene 안에** 루트 Canvas를 만들고 Canvas Scaler·Graphic Raycaster를 붙입니다. Render Mode는 **Screen Space - Camera**로 설정하고 제너럴의 **Navigation Camera**를 지정합니다. 이 카메라의 SceneCameraBinding Role은 Navigation, 표시 레이어는 GeneralNavigation입니다. Light 2D·Audio Listener·EventSystem을 추가할 필요는 없습니다. 기존 제너럴/코어 입력 소유자가 UI 입력을 처리합니다.
 2. Canvas 아래 상단 바 Panel을 만듭니다. 위쪽 가로 Stretch, Pivot Y=1, Pos Y=0으로 두고 원하는 Height를 설정합니다. 이미지·재화 텍스트·버튼 등은 이 Panel 안에 배치합니다. 전체 화면 투명 Image의 Raycast Target이 게임 입력을 가로막지 않도록 배경 Image는 상단 Panel에만 둡니다.
 3. 컨트롤러의 **Navigation Canvas**에 루트 Canvas, **Navigation Area**에 상단 Panel을 연결합니다. **Reserve Navigation Space**를 켜면 Panel 하단까지 공간을 확보하고 배틀/아이템 카메라와 각 씬의 UI를 아래에 표시합니다. 가로/세로 분할, Battle Only, Item Only 모두 적용됩니다. Canvas나 Panel을 숨기면 공간도 반환합니다.
 4. Navigation Area를 비우면 **Navigation Height Ratio**로 상단 높이를 지정합니다. 예: `0.12`는 화면 높이의 12%입니다. 이 옵션은 UI Panel 자체를 리사이즈하지 않으므로 Panel도 같은 높이로 직접 맞춥니다. 실제 Panel을 연결하면 Canvas Scaler/해상도에 따라 변경된 높이를 자동으로 측정합니다. 확보 범위의 최대치는 화면 높이의 80%입니다.
 
-컨트롤러는 연결된 제너럴 루트 Canvas만 Overlay로 설정하며 전용 렌더 카메라를 만들지 않습니다. **Navigation Sorting Order** 기본값은 `5`이고, 코어 설정 Canvas는 `10`입니다. 코어 설정/로딩창이 위에 보여야 하므로 내비게이션 순서를 그보다 낮게 유지하세요. 연결을 해제하거나 컨트롤러가 꺼지면 원래 Canvas 렌더 설정을 복구합니다. UI 모양·배치·버튼 이벤트는 변경하지 않습니다.
+컨트롤러는 기존 Navigation Camera의 Viewport를 상단에만 배정하고 Canvas를 연결합니다. 카메라나 UI를 새로 만들지 않습니다. Navigation 프로필이 단일 레이어이면 기존 UI 계층의 GameObject Layer도 맞춥니다. 새 버튼은 직접 추가하고 같은 레이어를 사용하세요. UI Sorting Layer는 Canvas에서 지정하며, 현재 UI 레이어의 Order는 내비게이션 `100`, 코어 설정 `200`, 로딩 `300`입니다. 연결을 해제하거나 컨트롤러가 꺼지면 원래 Canvas 렌더 설정을 복구합니다. UI 모양·배치·버튼 이벤트는 변경하지 않습니다.
 
 | 표시/버튼 | 직접 연결할 대상 |
 | --- | --- |
@@ -52,12 +52,14 @@ Additive 씬은 같은 월드 좌표 공간에 함께 존재합니다. 카메라
 | 카메라 | Role | Priority | Standalone Layers | Composed Layers | Receive Visibility Settings |
 | --- | --- | --- | --- | --- | --- |
 | Core Background Camera | Background | 0 | Nothing | Nothing | 꺼짐 |
-| General Background Camera | Background | 10 | Nothing | Nothing | 꺼짐 |
-| 배틀 카메라 | Content | 100 | GameItem 제외 | GameItem 제외 | 켜짐 |
+| Navigation Camera | Navigation | 10 | GeneralNavigation만 | GeneralNavigation만 | 꺼짐 |
+| 배틀 카메라 | Content | 100 | GameItem·GeneralNavigation 제외 | GameItem·GeneralNavigation 제외 | 켜짐 |
 | 아이템 카메라 | Content | 50 | Everything | GameItem만 | 꺼짐 |
 | 메인·업그레이드·스토리 카메라 | Content | 100 | 기존 씬 레이어 | 기존 씬 레이어 | 켜짐 |
 
-**Background** 카메라는 높은 Priority 하나만 활성화됩니다. 제너럴이 열리면 제너럴 배경을 사용하고, 닫히면 코어 배경으로 돌아갑니다. Background Viewport와 Background Depth도 해당 컴포넌트에서 지정하며, 현재 설정은 전체 화면·깊이 -100입니다. 배경 레이어는 Nothing으로 설정해 상단 내비게이션과 분할 사이에 전투 오브젝트가 다시 그려지지 않게 합니다. 배경 카메라의 원래 Camera 컴포넌트는 편집 중 꺼 두고 SceneCameraBinding만 켜 두세요. 코어 설정/로딩 UI는 Overlay로 계속 표시됩니다.
+**Background**는 코어의 공용 배경 역할입니다. 전체 화면을 지우되 월드 오브젝트는 그리지 않으며, 코어 설정/로딩 UI는 Overlay로 전체 화면에 표시합니다. Background Viewport/Depth는 Inspector에서 지정합니다. 원래 Camera 컴포넌트는 편집 중 꺼 두고 SceneCameraBinding만 켜 두세요. Background가 여러 개이면 Priority가 높은 하나를 활성화합니다.
+
+**Navigation** 카메라는 제너럴 상단에만 Viewport를 배정하며 GeneralNavigation 레이어만 그립니다. 코어 Background와 함께 활성화할 수 있습니다. 배틀/아이템 카메라는 각각 아래쪽 분할 영역을 사용합니다. 제너럴은 자식 씬이 열리는 즉시 분할을 적용하고, Canvas 레이아웃 계산 후와 카메라 렌더 직전에도 실제 상단 경계를 반영합니다. 두 자식 씬을 모두 기다리는 동안 한쪽이 전체 화면으로 노출되지 않게 합니다.
 
 **Content** 카메라는 같은 씬에 등록한 카메라 중 높은 Priority를 사용합니다. 제너럴 통합 실행에서는 Composed Layers/Tag를 적용하고, 단독 실행에서는 Standalone Layers/Tag를 적용합니다. 아이템은 단독 MainCamera, 통합 Untagged이며 배틀은 둘 다 MainCamera입니다. 제너럴의 역할은 콘텐츠 카메라의 Viewport를 분할하는 것입니다. 표시 레이어와 태그를 코드에서 직접 덮어쓰지 않습니다. 제너럴을 제거하고 콘텐츠 씬을 남기면 원래 Viewport와 활성 상태도 복구합니다.
 
@@ -65,11 +67,28 @@ Additive 씬은 같은 월드 좌표 공간에 함께 존재합니다. 카메라
 
 새 카메라를 추가하면 SceneCameraBinding을 붙이고 역할·레이어·태그를 지정하세요. Inspector에서 Camera의 Culling Mask만 바꾸면 실행 시 프로필 값이 다시 적용됩니다. **실제 표시 설정은 SceneCameraBinding에서 수정합니다.** GameItem 레이어 번호를 바꾸면 제너럴의 Item Layer와 배틀/아이템의 Composed Layers도 함께 맞춥니다. 씬 이름이나 레이어 번호를 새 스크립트에 하드코딩할 필요는 없습니다.
 
-오디오는 별도의 SceneAudioListenerOwner가 하나만 활성화합니다. 제너럴의 배경 카메라에는 중복 Listener를 두지 않고, 컨트롤러의 기존 예비 리스너를 사용합니다. 조명은 기존 Battle/Item Sorting Layer 분리를 그대로 사용하며 배경/UI용 Light를 추가하지 않습니다.
+오디오는 별도의 SceneAudioListenerOwner가 하나만 활성화합니다. 제너럴의 Navigation 카메라에는 중복 Listener를 두지 않고, 컨트롤러의 기존 예비 리스너를 사용합니다. 조명은 기존 Battle/Item Sorting Layer 분리를 그대로 사용하며 배경/UI용 Light를 추가하지 않습니다.
+
+## 로딩 Canvas 표시
+
+코어의 기존 `SceneMoveCanvas → SceneMoveManager`에서 **Loading Panel**, **Loading Canvas**, **Minimum Loading Seconds**를 설정합니다. 기본 최소 시간은 실시간 0.2초입니다. 로딩 패널을 켜고 한 프레임을 기다린 뒤 씬 작업을 시작하며, 제너럴 자식 씬 연결/Canvas 레이아웃 계산과 첫 화면 프레임까지 표시합니다. 이전 씬은 역순으로 내려 자식 화면이 먼저 정리되도록 합니다. UI Sorting Layer의 로딩 Canvas Order 300은 설정 200·내비게이션 100보다 높습니다. 기존 로딩 그림/배치는 유지합니다.
+
+## 씬별 오디오 설정
+
+`Game General Controller`, 배틀 카메라, 아이템 카메라에 **SceneAudioChannel**이 연결되어 있습니다. 각 오브젝트 아래의 `Navigation/Battle/Item SFX`, `Navigation/Battle/Item BGM` AudioSource가 해당 씬의 재생을 담당합니다.
+
+- SceneAudioChannel에서 Effects Volume / Music Volume / Muted를 따로 설정합니다. 각 AudioSource의 Output을 원하는 AudioMixerGroup으로 연결하면 씬별 믹서 경로도 분리됩니다.
+- Follow Shared Volume을 켜면 코어의 Master/SFX/BGM 볼륨을 로컬 볼륨에 곱합니다. Mixer에서 이미 전역 게인을 적용하면 이 옵션을 꺼 이중 적용을 피합니다.
+- 소스는 기본 2D이며 Play On Awake가 꺼져 있습니다. 3D 거리 감쇠가 필요하면 해당 AudioSource에서 설정하세요. **AudioSource는 여러 개가 동시에 재생할 수 있습니다.**
+- Unity는 동시에 활성화된 AudioListener를 하나만 지원합니다. SceneAudioListenerOwner가 선택할 리스너의 Priority는 씬별로 바꿀 수 있으며, 리스너를 여러 개 켜는 것은 씬별 믹서를 만드는 방법이 아닙니다.
+- 기존 체력 피해·적 패턴·아이템/명중/연쇄/상태 종료 연출은 소유 오브젝트의 씬 채널로 소리를 전달합니다. 배틀 BGM도 배틀 소스를 사용합니다. 라이브러리 데이터는 공유해도 실제 재생 소스는 별개입니다.
+- 직접 만든 버튼은 로컬 채널의 PlayClip(AudioClip), PlayCategory(string), PlayMusic(string) 등에 연결하세요. 새 코드에서는 SceneAudioChannel.PlaySfx(owner, category, clipName)로 소유 씬을 명시합니다. 채널을 아직 연결하지 않은 구형 씬/소유자 없는 기존 호출은 공용 AudioManager를 사용합니다.
 
 ## 각 씬을 독립 테스트하기
 
-아이템 씬의 조명은 **Sorting Layer `GameItemWorld`**로 분리되어 있습니다. 배틀의 Global Light 2D는 Default/Enemy, 아이템의 Global Light 2D는 GameItemWorld만 비춥니다. URP의 Global Light는 Additive 씬 사이에서도 같은 Sorting Layer를 공유하므로 카메라의 Culling Mask만 분리하면 중복 조명이 생길 수 있습니다.
+배틀과 아이템에는 **로컬 Freeform Light 2D**가 각각 있습니다. `Battle Local Light 2D`는 배틀 카메라 아래에서 Default/Enemy, `Item Local Light 2D`는 아이템 카메라 아래에서 GameItemWorld만 비춥니다. 두 조명은 카메라를 따라가지만 서로의 Sorting Layer를 비추지 않습니다. Global Light 2D는 사용하지 않습니다.
+
+각 조명의 Light 2D Inspector에서 Color/Intensity/Target Sorting Layers와 Edit Shape로 범위를 직접 조절하세요. 기본 모양은 카메라 주변 64×64 월드 단위이며, 크게 줌아웃할 경우 필요한 크기로 늘리면 됩니다. Navigation/코어 UI는 기본 UI 재질을 사용하므로 조명이 필요 없습니다.
 
 아이템 프리팹의 SpriteRenderer·SortingGroup·SpriteMask와 아이템 씬 Canvas도 GameItemWorld를 사용합니다. 기존 Order in Layer는 유지하며, GameItemWorld는 Default보다 아래에 두어 코어 설정/로딩 UI가 아이템 화면 위에 표시되도록 합니다. 새 머지 아이템은 기존 MergeItemObject의 Prefab Variant로 만들면 이 설정을 상속합니다. 독립 프리팹을 직접 만들 경우 해당 컴포넌트들의 Sorting Layer도 GameItemWorld로 설정하세요. 여기서 Sorting Layer는 제너럴의 카메라 분리용 GameObject Layer `GameItem`과 별개입니다.
 

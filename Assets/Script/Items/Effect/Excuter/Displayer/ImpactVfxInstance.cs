@@ -99,7 +99,8 @@ public class ImpactVfxInstance : MonoBehaviour, IPoolable
             scaleResolver: (scale, useRadius) =>
                 effectData != null && context != null
                     ? effectData.GetCurrentImpactScale(context, scale, useRadius)
-                    : scale
+                    : scale,
+            audioOwner: context != null ? context.owner : null
         );
         Init(compatibleContext, baseScale, useRadiusScale, lifeTime, useAnimatorClipLifeTime);
     }

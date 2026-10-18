@@ -51,7 +51,7 @@ public abstract class ItemEffectData : ScriptableObject
         ItemEffectLifetime scope = new ItemEffectLifetime(context.lifetime, endVisual != null ? (System.Action)(() =>
         {
             if (endVisual != null && execution.CanContinue)
-                endVisual.Play(new EffectVisualContext(execution.targetPosition, Quaternion.identity));
+                endVisual.Play(new EffectVisualContext(execution.targetPosition, Quaternion.identity, audioOwner: execution.owner));
         }) : null, trackCompletion: endVisual != null || (context.lifetime != null && context.lifetime.TracksCompletion));
         execution.lifetime = scope;
         bool succeeded = false;
@@ -146,7 +146,8 @@ public abstract class ItemEffectData : ScriptableObject
             position,
             rotation,
             scaleResolver: (baseScale, useRadiusScale) =>
-                GetCurrentImpactScale(snapshot, baseScale, useRadiusScale)
+                GetCurrentImpactScale(snapshot, baseScale, useRadiusScale),
+            audioOwner: context.owner
         );
 
         if (visualData != null)

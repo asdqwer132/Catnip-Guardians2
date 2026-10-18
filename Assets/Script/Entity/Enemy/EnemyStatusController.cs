@@ -125,7 +125,7 @@ public class EnemyStatusController : MonoBehaviour
         {
             if (completed && state.endVisual != null && enemy != null && enemy.CanReceiveHitEffects &&
                 enemy.HitEffectLifeId == state.targetLifeId && (state.context == null || state.context.CanContinue))
-                state.endVisual.Play(new EffectVisualContext(enemy.transform.position, Quaternion.identity));
+                state.endVisual.Play(new EffectVisualContext(enemy.transform.position, Quaternion.identity, audioOwner: enemy.gameObject));
         }
         finally { if (state.lease != null) state.lease.Finish(completed); }
     }

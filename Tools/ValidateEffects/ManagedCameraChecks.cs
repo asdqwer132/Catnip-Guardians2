@@ -18,7 +18,7 @@ public static class SceneCameraChecks
             Binding.receiveVisibilitySettings = settings;
             Binding.standaloneTag = settings ? "MainCamera" : "Untagged";
             Binding.composedTag = Binding.standaloneTag;
-            Binding.enabled = true; Camera.enabled = role == SceneCameraRole.Content;
+            Binding.enabled = true; Camera.enabled = role != SceneCameraRole.Background;
             Camera.cullingMask = -1; // Inspector에 남은 이전 Everything 값도 프로필이 교정해야 합니다.
             Camera.rect = new Rect(0, 0, 1, 1);
             Call("Awake"); Call("OnEnable");
@@ -34,26 +34,27 @@ public static class SceneCameraChecks
     {
         // Arbitrary scene names and layer index demonstrate that runtime policy
         // does not depend on the game's scene names or on item layer 31.
-        const int itemLayer = 1 << 25;
+        const int itemLayer = 1 << 25, navigationLayer = 1 << 24;
         View core = null, general = null;
         try
         {
             if (coreFirst) core = new View("shared", SceneCameraRole.Background, 0, 0, 0);
-            general = new View("shell", SceneCameraRole.Background, 40, 0, 0);
+            general = new View("shell", SceneCameraRole.Navigation, 40, navigationLayer, navigationLayer);
             if (!coreFirst) core = new View("shared", SceneCameraRole.Background, 0, 0, 0);
             using (var battle = new View("fight", SceneCameraRole.Content, 90, ~itemLayer, ~itemLayer, true))
             using (var item = new View("merge", SceneCameraRole.Content, 50, -1, itemLayer))
             {
                 battle.Binding.SetComposed(true); item.Binding.SetComposed(true);
-                Expect(!core.Camera.enabled && general.Camera.enabled, "General must own the background regardless of arrival order.");
-                Expect(core.Camera.cullingMask == 0 && general.Camera.cullingMask == 0, "Background must never draw enemies.");
+                Expect(core.Camera.enabled && general.Camera.enabled, "Core background and Navigation must coexist regardless of arrival order.");
+                Expect(core.Camera.cullingMask == 0 && general.Camera.cullingMask == navigationLayer, "Navigation must draw only its configured UI layer.");
                 core.Camera.cullingMask = general.Camera.cullingMask = -1;
                 core.Call("LateUpdate"); general.Call("LateUpdate");
-                Expect(core.Camera.cullingMask == 0 && general.Camera.cullingMask == 0, "Configured background profiles must correct stale native camera masks.");
+                Expect(core.Camera.cullingMask == 0 && general.Camera.cullingMask == navigationLayer, "Profiles must correct stale native camera masks.");
                 core.Binding.priority = 80; SceneCameraBinding.Refresh();
-                Expect(core.Camera.enabled && !general.Camera.enabled, "Edited priority must control ownership without scene-name special cases.");
+                Expect(core.Camera.enabled && general.Camera.enabled, "Navigation is independent of background priority.");
                 core.Binding.priority = 0; SceneCameraBinding.Refresh();
-                Expect(!core.Camera.enabled && general.Camera.enabled, "Restoring priority must return ownership to the configured winner.");
+                Expect(core.Camera.enabled && general.Camera.enabled, "Shared background must not disable Navigation.");
+                Expect(SceneCameraBinding.NavigationIn(general.Camera.gameObject.scene) == general.Binding, "Navigation lookup must use its scene role.");
                 Expect(SceneCameraBinding.SettingsCamera == battle.Camera, "UI background must not take gameplay visibility settings.");
                 Expect(SceneCameraBinding.ContentIn(item.Camera.gameObject.scene) == item.Binding, "Content lookup must use the configured scene binding.");
                 battle.Camera.rect = new Rect(0, 0, .6f, .75f); battle.Call("LateUpdate");

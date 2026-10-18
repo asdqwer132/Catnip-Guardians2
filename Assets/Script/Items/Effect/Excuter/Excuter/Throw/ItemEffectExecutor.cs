@@ -47,7 +47,7 @@ public class ItemEffectExecutor : MonoBehaviour
             if (completionVisual != null && context.CanContinue)
                 completionVisual.Play(new EffectVisualContext(
                     completionAtOwner && owner != null ? owner.transform.position : targetPosition,
-                    Quaternion.identity));
+                    Quaternion.identity, audioOwner: owner));
             if (!hasCompletionItems || !context.CanContinue)
                 return;
             Vector3 position = completionItemsAtOwner && owner != null ? owner.transform.position : targetPosition;

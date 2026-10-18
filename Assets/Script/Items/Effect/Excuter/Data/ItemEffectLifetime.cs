@@ -92,6 +92,7 @@ public sealed class ItemEffectCompletionGroup
     private List<ItemEffectLease> leases;
     private EffectVisualData visual;
     private Transform target;
+    private GameObject audioOwner;
     private Vector3 position;
     private int generation;
 
@@ -108,6 +109,7 @@ public sealed class ItemEffectCompletionGroup
         }
         visual = endVisual;
         target = followTarget;
+        audioOwner = context.owner;
         position = context.targetPosition;
         generation = ItemEffectRuntime.Generation;
     }
@@ -116,14 +118,16 @@ public sealed class ItemEffectCompletionGroup
     {
         EffectVisualData endVisual = visual;
         Vector3 endPosition = target != null ? target.position : position;
+        GameObject soundOwner = audioOwner;
         List<ItemEffectLease> finished = leases;
         visual = null;
         target = null;
+        audioOwner = null;
         leases = null;
         try
         {
             if (completed && generation == ItemEffectRuntime.Generation && endVisual != null)
-                endVisual.Play(new EffectVisualContext(endPosition, Quaternion.identity));
+                endVisual.Play(new EffectVisualContext(endPosition, Quaternion.identity, audioOwner: soundOwner));
         }
         finally
         {

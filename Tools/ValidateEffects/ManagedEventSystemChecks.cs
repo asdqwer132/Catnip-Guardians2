@@ -109,6 +109,7 @@ public static class EventSystemChecks
             if (!item.Listener.enabled || core.Listener.enabled) throw new InvalidOperationException("Late Core must preserve standalone scene audio.");
         Console.WriteLine("PASS audio lifecycle simulation: independent scene and late Core loading.");
         SceneCameraChecks.Run();
+        SceneAudioChecks.Run();
     }
 }
 

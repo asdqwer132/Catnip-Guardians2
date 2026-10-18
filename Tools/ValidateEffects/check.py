@@ -146,7 +146,9 @@ def compile_files():
     files += list((ROOT / 'Assets/Script/Manager/Story').glob('*.cs'))
     scene_extra = ('Manager/Utility/Input/GameInputManager.cs', 'Manager/Utility/Input/GameInputBlockType.cs',
                    'Manager/Game/GameSession.cs', 'Manager/Game/GameEndManager.cs', 'Manager/Game/UpgradeManager.cs',
+                   'Manager/Game/GameManager.cs',
                    'Manager/Setting/Audio/SceneBgmManager.cs',
+                   'Manager/Setting/Audio/AudioLibrary.cs',
                    'Manager/Setting/Setting/SettingManager.cs', 'Manager/Setting/Setting/GameSettingData.cs',
                    'Manager/Setting/Setting/SettingChangeType.cs', 'Manager/Setting/Setting/ISettingChangeListener.cs',
                    'Manager/Setting/Setting/SettingWindowController.cs', 'Manager/Setting/Setting/SettingUIButton.cs',
@@ -266,6 +268,8 @@ def main():
                          ROOT / 'Assets/Script/Manager/Utility/Scene/SceneAudioListenerOwner.cs',
                          ROOT / 'Assets/Script/Manager/Utility/Scene/SceneCameraBinding.cs',
                          HERE / 'ManagedCameraChecks.cs',
+                         ROOT / 'Assets/Script/Manager/Utility/Scene/SceneAudioChannel.cs',
+                         HERE / 'ManagedSceneAudioApi.cs', HERE / 'ManagedSceneAudioChecks.cs',
                          HERE / 'ManagedEventSystemChecks.cs'], None, executable=True)
     run([dotnet, 'run', '--project', input_path, '--nologo'], env=environment)
     print('API compile and managed checks passed. Unity 6000.4 import/physics/play validation remains required.')

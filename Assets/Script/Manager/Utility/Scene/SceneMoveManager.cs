@@ -8,6 +8,9 @@ public class SceneMoveManager : MonoBehaviour
     public static SceneMoveManager instance;
     [Header("직접 만든 로딩 패널")]
     public GameObject loadingPanel;
+    [Tooltip("직접 만든 로딩 Canvas. 비우면 Loading Panel의 상위 Canvas를 사용합니다.")]
+    public Canvas loadingCanvas;
+    [Min(0f)] public float minimumLoadingSeconds = 0.2f;
     public bool IsLoading { get; private set; }
     private string pendingScene;
     private void Awake()
@@ -53,9 +56,15 @@ public class SceneMoveManager : MonoBehaviour
     private IEnumerator LoadSceneRoutine(string sceneName)
     {
         IsLoading = true;
+        if (loadingCanvas == null && loadingPanel != null) loadingCanvas = loadingPanel.GetComponentInParent<Canvas>(true);
+        if (loadingCanvas != null) loadingCanvas.enabled = true;
         if (loadingPanel != null) loadingPanel.SetActive(true);
+        float shownAt = Time.realtimeSinceStartup;
         try
         {
+            // 패널이 그려질 프레임을 확보한 뒤 씬 활성화/해제를 시작합니다.
+            Canvas.ForceUpdateCanvases();
+            yield return null;
             if (SettingWindowController.instance != null) SettingWindowController.instance.CloseSetting();
             Time.timeScale = 1f;
             var core = SceneManager.GetSceneByName(GameSceneRoutes.Core);
@@ -67,8 +76,8 @@ public class SceneMoveManager : MonoBehaviour
                 if (scene.isLoaded && scene != core) previous.Add(scene);
             }
             // 기존 싱글턴 정리 후 다음 씬을 열어 중복 매니저 생성을 막습니다.
-            foreach (var scene in previous)
-                if (scene.IsValid() && scene.isLoaded) yield return SceneManager.UnloadSceneAsync(scene);
+            for (int i = previous.Count - 1; i >= 0; i--)
+                if (previous[i].IsValid() && previous[i].isLoaded) yield return SceneManager.UnloadSceneAsync(previous[i]);
             yield return SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
             var destination = SceneManager.GetSceneByName(sceneName);
             if (!destination.isLoaded) yield break;
@@ -76,8 +85,14 @@ public class SceneMoveManager : MonoBehaviour
             foreach (var root in destination.GetRootGameObjects())
             {
                 var general = root.GetComponentInChildren<GameGeneralSceneController>();
-                if (general != null && general.autoLoadChildren) yield return general.LoadChildren();
+                if (general != null && general.isActiveAndEnabled && general.autoLoadChildren) yield return general.LoadChildren();
             }
+            // Canvas Scaler/레이아웃 계산과 첫 화면 표시까지 로딩 UI를 유지합니다.
+            Canvas.ForceUpdateCanvases();
+            yield return null;
+            float minimum = float.IsNaN(minimumLoadingSeconds) || float.IsInfinity(minimumLoadingSeconds)
+                ? 0f : Mathf.Max(0f, minimumLoadingSeconds);
+            while (Time.realtimeSinceStartup - shownAt < minimum) yield return null;
         }
         finally
         {

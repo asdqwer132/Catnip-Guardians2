@@ -38,7 +38,7 @@ public abstract class HitEffectData : ScriptableObject
             if (applied && endVisual != null && context.IsHitEventValid &&
                 (!RequiresLivingTarget || context.IsTargetValid))
                 endVisual.Play(new EffectVisualContext(context.IsTargetValid ? context.target.transform.position :
-                    context.hitPosition, Quaternion.identity));
+                    context.hitPosition, Quaternion.identity, audioOwner: context.owner));
         }) : null, trackCompletion: endVisual != null || (context.lifetime != null && context.lifetime.TracksCompletion));
         HitEffectContext execution = context.WithLifetime(scope);
         try
@@ -65,7 +65,8 @@ public abstract class HitEffectData : ScriptableObject
             position,
             Quaternion.identity,
             followTarget: followTarget && context.IsTargetValid ? context.target.transform : null,
-            isPlaybackValid: () => context.IsHitEventValid && (!RequiresLivingTarget || context.IsTargetValid)
+            isPlaybackValid: () => context.IsHitEventValid && (!RequiresLivingTarget || context.IsTargetValid),
+            audioOwner: context.owner
         ));
     }
 

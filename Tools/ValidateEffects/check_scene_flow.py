@@ -33,23 +33,24 @@ def check_scene_flow():
                     assert ref == '0' or ref in blocks, (name, identifier, 'missing local reference', line)
         scenes[name] = (text, blocks)
 
-    # Additive scenes share URP's global-light registry even with separate camera masks.
-    def global_light_targets(blocks):
+    # Content scenes use local freeform lights with separate sorting-layer targets.
+    def local_light_targets(blocks):
         result = set()
         for _, body in blocks.values():
-            if not re.search(r'^  m_LightType: 4$', body, re.M):
+            if 'guid: 073797afb82c5a1438f328866b10b3f0' not in body:
                 continue
+            assert '  m_LightType: 1\n' in body, 'Content light must be local Freeform, not Global'
             blend = int(re.search(r'^  m_BlendStyleIndex: (\d+)', body, re.M)[1])
             raw = bytes.fromhex(re.search(r'^  m_ApplyToSortingLayers: (\w+)', body, re.M)[1])
             for index in range(0, len(raw), 4):
                 key = (int.from_bytes(raw[index:index + 4], 'little', signed=True), blend)
-                assert key not in result, ('duplicate global light in one scene', key)
+                assert key not in result, ('unexpected overlapping base light target', key)
                 result.add(key)
         return result
 
-    item_targets = global_light_targets(scenes['GameItemScene'][1])
-    battle_targets = global_light_targets(scenes['GameBattleScene'][1])
-    assert item_targets and battle_targets and item_targets.isdisjoint(battle_targets), 'Battle/Item global lights must target different sorting layers'
+    item_targets = local_light_targets(scenes['GameItemScene'][1])
+    battle_targets = local_light_targets(scenes['GameBattleScene'][1])
+    assert item_targets and battle_targets and item_targets.isdisjoint(battle_targets), 'Battle/Item local lights must target different sorting layers'
     tags = (root / 'ProjectSettings/TagManager.asset').read_text()
     item_sorting_id = int(re.search(r'- name: GameItemWorld\n    uniqueID: (\d+)', tags)[1])
     assert tags.index('- name: GameItemWorld') < tags.index('- name: Default'), 'Shared Core UI must draw above the item world'
@@ -60,7 +61,7 @@ def check_scene_flow():
     for path in paths:
         layer_ids = re.findall(r'^  m_(?:Front|Back)?SortingLayerID: (-?\d+)$', path.read_text(), re.M)
         assert layer_ids and all(int(value) == item_sorting_id for value in layer_ids), (path, 'Item visuals/masks must match the item global light')
-    print('PASS additive lighting: separate Battle/Item global-light targets, pooled visuals/masks and Canvas ordering.')
+    print('PASS local lighting: Freeform Battle/Item lights, separate targets, pooled visuals/masks and Canvas ordering.')
 
     def guid(path):
         return re.search(r'^guid: (\w+)', Path(str(assets / path) + '.meta').read_text(), re.M)[1]
@@ -143,26 +144,62 @@ def check_scene_flow():
         go = re.search(r'^  m_GameObject: \{fileID: (\d+)\}', camera, re.M)[1]
         assert f'  m_GameObject: {{fileID: {go}}}\n' in profile
         assert '  m_Enabled: 1\n' in profile
-        if name in ('CoreScene', 'GameGeneralScene'):
+        if name == 'CoreScene':
             assert '  role: 0\n' in profile
             assert mask(profile, 'standaloneLayers') == mask(profile, 'composedLayers') == mask(camera, 'm_CullingMask') == 0
             assert '  m_Enabled: 0\n' in camera, (name, 'background must wait for exclusive ownership')
             assert '  receiveVisibilitySettings: 0\n' in profile
             assert '  standaloneTag: Untagged\n' in profile and '  composedTag: Untagged\n' in profile
             assert 'm_TagString: Untagged' in blocks[go][1]
+        elif name == 'GameGeneralScene':
+            nav_layer = re.search(r'^  layers:\n([\s\S]*?)  m_SortingLayers:', tags, re.M)[1].splitlines().index('  - GeneralNavigation')
+            assert '  role: 2\n' in profile
+            assert mask(profile, 'standaloneLayers') == mask(profile, 'composedLayers') == mask(camera, 'm_CullingMask') == 1 << nav_layer
+            assert '  receiveVisibilitySettings: 0\n' in profile
+            assert 'm_TagString: Untagged' in blocks[go][1]
+            assert mask(profiles['CoreScene'], 'standaloneLayers') == 0
         else:
             assert '  role: 1\n' in profile
     assert int(re.search(r'^  priority: (-?\d+)', profiles['GameGeneralScene'], re.M)[1]) > int(re.search(r'^  priority: (-?\d+)', profiles['CoreScene'], re.M)[1])
     item_bit = 1 << int(re.search(r'^  itemLayer: (\d+)', general, re.M)[1])
     assert mask(profiles['GameItemScene'], 'composedLayers') == item_bit
     assert mask(profiles['GameBattleScene'], 'composedLayers') & item_bit == 0
+    assert mask(profiles['GameBattleScene'], 'composedLayers') & mask(profiles['GameGeneralScene'], 'composedLayers') == 0
     assert '  receiveVisibilitySettings: 1\n' in profiles['GameBattleScene']
     assert '  receiveVisibilitySettings: 0\n' in profiles['GameItemScene']
+    for name in ('GameBattleScene', 'GameItemScene'):
+        _, blocks = scenes[name]
+        camera = next(body for kind, body in blocks.values() if kind == '20')
+        camera_go = re.search(r'^  m_GameObject: \{fileID: (\d+)\}', camera, re.M)[1]
+        camera_transform_id = next(i for i, (kind, body) in blocks.items() if kind == '4' and f'  m_GameObject: {{fileID: {camera_go}}}\n' in body)
+        light = next(body for _, body in blocks.values() if 'guid: 073797afb82c5a1438f328866b10b3f0' in body)
+        light_go = re.search(r'^  m_GameObject: \{fileID: (\d+)\}', light, re.M)[1]
+        light_transform = next(body for kind, body in blocks.values() if kind == '4' and f'  m_GameObject: {{fileID: {light_go}}}\n' in body)
+        assert f'  m_Father: {{fileID: {camera_transform_id}}}\n' in light_transform, (name, 'local base light must follow its content camera')
     # Core's UI must remain visible without relying on world geometry culling.
     for prefab in ('Prefab/UI/Setting/Canvas/SettingCanvas.prefab', 'Prefab/UI/Setting/Canvas/SceneMoveCanvas.prefab'):
         path = assets / prefab
         assert '  m_RenderMode: 0\n' in path.read_text(), (path, 'shared Core UI must remain Screen Space Overlay')
-    print('PASS scene camera profiles: seven explicit registrations, configurable background priorities, disjoint composed masks, settings ownership and Overlay Core UI.')
+    loading = (assets / 'Prefab/UI/Setting/Canvas/SceneMoveCanvas.prefab').read_text()
+    settings_ui = (assets / 'Prefab/UI/Setting/Canvas/SettingCanvas.prefab').read_text()
+    assert '  loadingCanvas: {fileID: 453714196291250765}\n' in loading
+    assert float(re.search(r'^  minimumLoadingSeconds: (.*)', loading, re.M)[1]) > 0
+    assert '  m_SortingLayerID: 1581199633\n' in loading and '  m_SortingOrder: 300\n' in loading
+    assert '  m_SortingLayerID: 1581199633\n' in settings_ui and '  m_SortingOrder: 200\n' in settings_ui
+    assert 'propertyPath: m_SortingOrder\n      value: 300\n' in core
+    assert '  navigationSortingOrder: 100\n' in general
+    audio_guid = guid('Script/Manager/Utility/Scene/SceneAudioChannel.cs')
+    for name in ('GameGeneralScene', 'GameBattleScene', 'GameItemScene'):
+        _, blocks = scenes[name]
+        channel = next(body for _, body in blocks.values() if 'guid: ' + audio_guid in body)
+        sources = [re.search(r'^  ' + field + r': \{fileID: (\d+)\}', channel, re.M)[1] for field in ('effectsSource','musicSource')]
+        assert len(set(sources)) == 2
+        for source_id in sources:
+            kind, body = blocks[source_id]
+            assert kind == '82' and '  m_PlayOnAwake: 0\n' in body, (name, 'scene sources must be explicit and must not autoplay')
+        assert '  Loop: 0\n' in blocks[sources[0]][1] and '  Loop: 1\n' in blocks[sources[1]][1]
+    print('PASS scene presentation: loading/settings/navigation stack, connected loader Canvas, camera-following local lights and scene-owned SFX/music sources.')
+    print('PASS scene camera profiles: shared Core background/UI, isolated Navigation camera, disjoint content masks and settings ownership.')
     anchor_guid = guid('Script/Items/Effect/Excuter/Data/EffectPositionAnchor.cs')
     assert anchor_guid in scenes['GameBattleScene'][0] and '  anchorKey: Player\n' in scenes['GameBattleScene'][0]
     assert 'm_TagString: MainCamera' in scenes['GameItemScene'][1]['1889333134'][1]

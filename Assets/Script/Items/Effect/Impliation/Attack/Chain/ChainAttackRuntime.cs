@@ -76,7 +76,7 @@ public sealed class ChainAttackRuntime : AttackObject<ChainAttackStat>
         dispatcher.Hit(target, stat.DamageAt(hitCount), direction.normalized);
         hitCount++;
         if (data.jumpVisualData != null && context.CanContinue)
-            data.jumpVisualData.Play(new EffectVisualContext(destination, Quaternion.identity));
+            data.jumpVisualData.Play(new EffectVisualContext(destination, Quaternion.identity, audioOwner: context.owner));
         if (!context.CanContinue) { Finish(false); return; }
         if (hitCount >= EffectStatUtility.Count(stat.chainMaxHits)) { Finish(true); return; }
         SelectNext();

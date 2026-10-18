@@ -81,7 +81,7 @@ public sealed class SceneFlowTests
             controller.ApplyLayout();
             Assert.That(canvas.renderMode, Is.EqualTo(RenderMode.ScreenSpaceOverlay));
             Assert.That(canvas.worldCamera, Is.Null);
-            Assert.That(canvas.sortingOrder, Is.EqualTo(5));
+            Assert.That(canvas.sortingOrder, Is.EqualTo(100));
             Assert.That(controller.NavigationTopInset, Is.EqualTo(.2f).Within(.0001f));
             controller.reserveNavigationSpace = false;
             Assert.That(controller.NavigationTopInset, Is.Zero);
@@ -160,6 +160,71 @@ public sealed class SceneFlowTests
             Object.DestroyImmediate(uiHost); Object.DestroyImmediate(seedVisual);
             Object.DestroyImmediate(firstHost); Object.DestroyImmediate(secondHost);
             CurrencyManager.instance = previous; notify();
+        }
+    }
+    [Test] public void LoadingPanelIsShownBeforeAnySceneWorkAndIsHiddenOnCancellation()
+    {
+        var previous = SceneMoveManager.instance;
+        var host = new GameObject("Loading test"); host.SetActive(false);
+        var canvasHost = new GameObject("Authored loading canvas", typeof(RectTransform), typeof(Canvas));
+        var panel = new GameObject("Authored loading panel"); panel.transform.SetParent(canvasHost.transform);
+        System.Collections.IEnumerator routine = null;
+        try
+        {
+            var loader = host.AddComponent<SceneMoveManager>();
+            loader.loadingPanel = panel; loader.loadingCanvas = canvasHost.GetComponent<Canvas>();
+            panel.SetActive(false); loader.loadingCanvas.enabled = false;
+            routine = (System.Collections.IEnumerator)typeof(SceneMoveManager)
+                .GetMethod("LoadSceneRoutine", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(loader, new object[] { GameSceneRoutes.General });
+            Assert.That(routine.MoveNext(), Is.True);
+            Assert.That(routine.Current, Is.Null, "씬 작업 전에 최소 한 프레임 표시해야 합니다.");
+            Assert.That(loader.IsLoading && panel.activeInHierarchy && loader.loadingCanvas.enabled, Is.True);
+            ((System.IDisposable)routine).Dispose(); routine = null;
+            Assert.That(loader.IsLoading, Is.False);
+            Assert.That(panel.activeSelf, Is.False);
+        }
+        finally
+        {
+            (routine as System.IDisposable)?.Dispose();
+            Object.DestroyImmediate(host); Object.DestroyImmediate(canvasHost); SceneMoveManager.instance = previous;
+        }
+    }
+    [Test] public void NavigationCameraUsesOnlyTheHeaderWhileTheCanvasKeepsItsAuthoredLayer()
+    {
+        var host = new GameObject("General camera test");
+        var cameraHost = new GameObject("Navigation view", typeof(Camera));
+        var canvasHost = new GameObject("Authored navigation", typeof(RectTransform), typeof(Canvas));
+        var panelHost = new GameObject("Authored header", typeof(RectTransform));
+        SceneCameraBinding binding = null;
+        try
+        {
+            var camera = cameraHost.GetComponent<Camera>();
+            binding = cameraHost.AddComponent<SceneCameraBinding>(); binding.role = SceneCameraRole.Navigation; binding.priority = int.MaxValue;
+            binding.standaloneLayers = binding.composedLayers = 1 << 26;
+            typeof(SceneCameraBinding).GetMethod("OnEnable", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(binding, null);
+            var controller = host.AddComponent<GameGeneralSceneController>();
+            controller.autoLoadChildren = controller.loadCoreScene = false;
+            var canvas = canvasHost.GetComponent<Canvas>(); canvas.sortingLayerName = "UI";
+            controller.navigationCanvas = canvas;
+            var panel = panelHost.GetComponent<RectTransform>(); panel.SetParent(canvasHost.transform, false);
+            panel.anchorMin = new Vector2(0,1); panel.anchorMax = Vector2.one; panel.pivot = new Vector2(.5f,1);
+            panel.anchoredPosition = Vector2.zero; panel.sizeDelta = new Vector2(0,100);
+            controller.navigationArea = panel;
+            for (int i=0; i<3; i++) { controller.ApplyLayout(); Canvas.ForceUpdateCanvases(); }
+            controller.ApplyLayout();
+            Assert.That(canvas.renderMode, Is.EqualTo(RenderMode.ScreenSpaceCamera));
+            Assert.That(canvas.worldCamera, Is.EqualTo(camera));
+            Assert.That(canvas.sortingLayerName, Is.EqualTo("UI"));
+            Assert.That(camera.cullingMask, Is.EqualTo(1 << 26));
+            Assert.That(camera.rect.yMax, Is.EqualTo(1f).Within(.001f));
+            Assert.That(camera.rect.height, Is.EqualTo(Mathf.Min(.8f, 100f / Screen.height)).Within(.003f));
+        }
+        finally
+        {
+            Object.DestroyImmediate(host);
+            if (binding != null) typeof(SceneCameraBinding).GetMethod("OnDisable", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(binding, null);
+            Object.DestroyImmediate(panelHost); Object.DestroyImmediate(canvasHost); Object.DestroyImmediate(cameraHost);
         }
     }
     [Test] public void SettingsButtonOpensTheSharedPanelAndRestoresAnExistingPause()

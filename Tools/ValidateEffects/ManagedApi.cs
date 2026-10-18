@@ -42,7 +42,7 @@ public class BuffManager {
 public enum CooldownOperation { ReduceSeconds, ReduceFraction, Ready }
 public struct BuffItemUseToken { }
 public class EffectVisualData { public System.Action played; public void Play(EffectVisualContext c)=>played?.Invoke(); }
-public class EffectVisualContext { public EffectVisualContext(Vector3 p, Quaternion q){} }
+public class EffectVisualContext { public EffectVisualContext(Vector3 p, Quaternion q, GameObject audioOwner = null){} }
 public class Enemy { public int HitEffectLifeId; public bool CanReceiveHitEffects=true; public int damages; public SimpleTransform transform=new SimpleTransform(); public void TakeDamage(float d, ItemEffectContext source=null){damages++;} }
 public class SimpleTransform { public Vector3 position; }
 public class HitEffectData { public int hits; public void TryExecute(HitEffectContext h){hits++;} }

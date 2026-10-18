@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public enum SceneCameraRole { Background, Content }
+public enum SceneCameraRole { Background, Content, Navigation }
 
 // 씬 이름이나 로딩 순서 대신 각 카메라에 저장한 역할/설정을 사용합니다.
 [RequireComponent(typeof(Camera))]
@@ -89,10 +89,14 @@ public sealed class SceneCameraBinding : MonoBehaviour
         ApplyConfiguration();
     }
     public static SceneCameraBinding ContentIn(Scene scene)
+        => InScene(scene, SceneCameraRole.Content);
+    public static SceneCameraBinding NavigationIn(Scene scene)
+        => InScene(scene, SceneCameraRole.Navigation);
+    private static SceneCameraBinding InScene(Scene scene, SceneCameraRole role)
     {
         SceneCameraBinding result = null;
         foreach (var value in bindings)
-            if (value != null && value.isActiveAndEnabled && value.role == SceneCameraRole.Content && value.gameObject.scene == scene &&
+            if (value != null && value.isActiveAndEnabled && value.role == role && value.gameObject.scene == scene &&
                 (result == null || value.priority > result.priority)) result = value;
         return result;
     }
