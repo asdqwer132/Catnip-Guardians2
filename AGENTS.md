@@ -8,3 +8,4 @@
 - Keep scene EventSystems and their input modules serialized disabled, with SceneEventSystemOwner enabled and its Input Modules connected. Disable the previous input owner before enabling a replacement.
 - Keep scene AudioListeners serialized disabled and managed by SceneAudioListenerOwner. Core/General provide fallback audio; visible content cameras take priority, with only one listener enabled at a time.
 - Keep battle and item scenes independently testable. General may load Core and its child scenes only through explicit, configurable options.
+- Configure camera roles, standalone/composed layer masks and tags in SceneCameraBinding. Use its lifecycle registry for content/settings camera selection. Background cameras use configured priorities and must not render gameplay layers; do not infer their role from a scene/object name or Camera.main. Keep the user's authored UI intact.

@@ -7,7 +7,7 @@ public class SettingInjecter : MonoBehaviour, ISettingChangeListener
 
     [Header("Camera")]
     public Camera targetCamera;
-    private bool followMainCamera;
+    private bool followRegisteredCamera;
 
     [Header("Layer Names")]
     public string damagePopupLayerName = "DamagePopup";
@@ -16,16 +16,17 @@ public class SettingInjecter : MonoBehaviour, ISettingChangeListener
     private void Awake()
     {
         instance = this;
-        followMainCamera = targetCamera == null;
+        followRegisteredCamera = targetCamera == null;
 
         if (targetCamera == null)
-            targetCamera = Camera.main;
+            targetCamera = SceneCameraBinding.SettingsCamera;
     }
 
     private void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
         SceneManager.activeSceneChanged += OnActiveSceneChanged;
+        SceneCameraBinding.SettingsCameraChanged += RefreshCamera;
         if (SettingManager.instance != null)
             SettingManager.instance.AddListener(this);
     }
@@ -34,6 +35,7 @@ public class SettingInjecter : MonoBehaviour, ISettingChangeListener
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
         SceneManager.activeSceneChanged -= OnActiveSceneChanged;
+        SceneCameraBinding.SettingsCameraChanged -= RefreshCamera;
         if (SettingManager.instance != null)
             SettingManager.instance.RemoveListener(this);
     }
@@ -41,7 +43,7 @@ public class SettingInjecter : MonoBehaviour, ISettingChangeListener
     private void OnActiveSceneChanged(Scene previous, Scene next) => RefreshCamera();
     private void RefreshCamera()
     {
-        if (followMainCamera) targetCamera = Camera.main;
+        if (followRegisteredCamera) targetCamera = SceneCameraBinding.SettingsCamera;
         if (SettingManager.instance != null) ApplyAll(SettingManager.instance.GetSetting());
     }
 
@@ -78,7 +80,7 @@ public class SettingInjecter : MonoBehaviour, ISettingChangeListener
     private void SetLayerVisible(string layerName, bool visible)
     {
         if (targetCamera == null)
-            targetCamera = Camera.main;
+            targetCamera = SceneCameraBinding.SettingsCamera;
 
         if (targetCamera == null)
             return;
@@ -92,6 +94,9 @@ public class SettingInjecter : MonoBehaviour, ISettingChangeListener
         }
 
         int layerMask = 1 << layer;
+
+        var binding = targetCamera.GetComponent<SceneCameraBinding>();
+        if (binding != null) { binding.SetLayerVisible(layer, visible); return; }
 
         if (visible)
             targetCamera.cullingMask |= layerMask;

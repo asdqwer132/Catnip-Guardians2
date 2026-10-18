@@ -38,6 +38,7 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     public PhysicsScene2D ItemPhysics => itemPhysics;
     private bool loading, ready;
     private Scene battle, item;
+    private SceneCameraBinding battleView, itemView;
     private PhysicsScene2D itemPhysics;
     private readonly List<CanvasState> canvases = new List<CanvasState>();
     private CanvasState navigationState;
@@ -90,29 +91,18 @@ public sealed class GameGeneralSceneController : MonoBehaviour
             item = SceneManager.GetSceneByName(itemScene);
             if (!battle.isLoaded || !item.isLoaded) yield break;
             itemPhysics = item.GetPhysicsScene2D();
-            BattleCamera = FindCamera(battle); ItemCamera = FindCamera(item);
+            battleView = SceneCameraBinding.ContentIn(battle); itemView = SceneCameraBinding.ContentIn(item);
+            BattleCamera = battleView != null ? battleView.Camera : null;
+            ItemCamera = itemView != null ? itemView.Camera : null;
             if (BattleCamera == null || ItemCamera == null)
-            { Debug.LogError("배틀 씬과 아이템 씬에 Camera를 각각 연결하세요.", this); yield break; }
+            { Debug.LogError("배틀/아이템 카메라에 SceneCameraBinding을 붙이고 Role을 Content로 설정하세요.", this); yield break; }
             // 전투 레이어는 보존하고, 서브 게임의 월드 오브젝트만 전용 레이어로 분리합니다.
             foreach (var root in item.GetRootGameObjects()) SetItemLayer(root.transform);
-            BattleCamera.cullingMask &= ~(1 << itemLayer); ItemCamera.cullingMask = 1 << itemLayer;
-            ItemCamera.tag = "Untagged";
+            battleView.SetComposed(true); itemView.SetComposed(true);
             if (fitSceneCanvases) { ConnectCanvases(battle, BattleCamera); ConnectCanvases(item, ItemCamera); }
             ready = true; ApplyLayout();
         }
         finally { loading = false; }
-    }
-    private static Camera FindCamera(Scene scene)
-    {
-        Camera fallback = null;
-        foreach (var root in scene.GetRootGameObjects())
-            foreach (var camera in root.GetComponentsInChildren<Camera>(true))
-            {
-                if (!camera.enabled || !camera.gameObject.activeInHierarchy) continue;
-                if (camera.CompareTag("MainCamera")) return camera;
-                if (fallback == null) fallback = camera;
-            }
-        return fallback;
     }
     private void SetItemLayer(Transform node)
     {
@@ -184,6 +174,7 @@ public sealed class GameGeneralSceneController : MonoBehaviour
         if (!ready) return;
         GameViewportLayout.Calculate(layout, battleRatio, battleFirst, gap, NavigationTopInset, out var battleRect, out var itemRect);
         ApplyCamera(BattleCamera, battleRect); ApplyCamera(ItemCamera, itemRect);
+        SceneCameraBinding.Refresh();
         SceneAudioListenerOwner.Refresh();
     }
     private static void ApplyCamera(Camera camera, Rect rect)
@@ -203,6 +194,8 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     }
     private void OnDestroy()
     {
+        if (battleView != null) battleView.SetComposed(false);
+        if (itemView != null) itemView.SetComposed(false);
         RestoreNavigation();
         foreach (var state in canvases)
             state.Restore();

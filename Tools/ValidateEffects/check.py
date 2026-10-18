@@ -264,6 +264,8 @@ def main():
     project(input_path, [ROOT / 'Assets/Script/Manager/Utility/Scene/SceneEventSystemOwner.cs',
                          ROOT / 'Assets/Script/Manager/Utility/Scene/GameSceneRoutes.cs',
                          ROOT / 'Assets/Script/Manager/Utility/Scene/SceneAudioListenerOwner.cs',
+                         ROOT / 'Assets/Script/Manager/Utility/Scene/SceneCameraBinding.cs',
+                         HERE / 'ManagedCameraChecks.cs',
                          HERE / 'ManagedEventSystemChecks.cs'], None, executable=True)
     run([dotnet, 'run', '--project', input_path, '--nologo'], env=environment)
     print('API compile and managed checks passed. Unity 6000.4 import/physics/play validation remains required.')

@@ -108,6 +108,7 @@ public static class EventSystemChecks
         using (var core = new SceneSound(0, false))
             if (!item.Listener.enabled || core.Listener.enabled) throw new InvalidOperationException("Late Core must preserve standalone scene audio.");
         Console.WriteLine("PASS audio lifecycle simulation: independent scene and late Core loading.");
+        SceneCameraChecks.Run();
     }
 }
 
@@ -118,6 +119,7 @@ namespace UnityEngine
     public sealed class DisallowMultipleComponent : Attribute { }
     public sealed class DefaultExecutionOrder : Attribute { public DefaultExecutionOrder(int order) { } }
     public sealed class TooltipAttribute : Attribute { public TooltipAttribute(string text) { } }
+    public sealed class HeaderAttribute : Attribute { public HeaderAttribute(string text) { } }
     public sealed class SerializeField : Attribute { }
     public enum RuntimeInitializeLoadType { SubsystemRegistration }
     public sealed class RuntimeInitializeOnLoadMethodAttribute : Attribute
@@ -125,12 +127,22 @@ namespace UnityEngine
     public sealed class GameObject
     {
         private readonly List<Behaviour> components = new List<Behaviour>();
-        public Scene scene;
-        public GameObject(string sceneName) { scene.name = sceneName; }
+        public UnityEngine.SceneManagement.Scene scene;
+        public string tag = "Untagged";
+        public GameObject(string sceneName) { scene = new UnityEngine.SceneManagement.Scene(sceneName); }
         public void Add(Behaviour component) { component.gameObject = this; components.Add(component); }
         public T[] GetComponents<T>() => components.OfType<T>().ToArray();
     }
-    public struct Scene { public string name; }
+    public struct LayerMask
+    {
+        public int value;
+        public static implicit operator LayerMask(int value) => new LayerMask { value = value };
+    }
+    public struct Rect
+    {
+        public float x, y, width, height;
+        public Rect(float x, float y, float width, float height) { this.x=x; this.y=y; this.width=width; this.height=height; }
+    }
     public class Behaviour
     {
         private bool active;
@@ -146,7 +158,21 @@ namespace UnityEngine
         public T[] GetComponents<T>() => gameObject.GetComponents<T>();
     }
     public class MonoBehaviour : Behaviour { }
-    public sealed class Camera : Behaviour { }
+    public sealed class Camera : Behaviour
+    {
+        public int cullingMask;
+        public Rect rect;
+        public float depth;
+        public string tag { get => gameObject.tag; set => gameObject.tag = value; }
+        public bool CompareTag(string value) => tag == value;
+        private static readonly HashSet<Camera> backgrounds = new HashSet<Camera>();
+        protected override void OnEnabledChanged()
+        {
+            if (GetComponent<SceneCameraBinding>()?.role != SceneCameraRole.Background) return;
+            if (enabled) backgrounds.Add(this); else backgrounds.Remove(this);
+            if (backgrounds.Count > 1) throw new InvalidOperationException("Background cameras overlapped during ownership transfer.");
+        }
+    }
     public sealed class AudioListener : Behaviour
     {
         public static readonly HashSet<AudioListener> Active = new HashSet<AudioListener>();
@@ -156,6 +182,10 @@ namespace UnityEngine
             if (Active.Count > 1) throw new InvalidOperationException("Overlapping audio listeners.");
         }
     }
+}
+namespace UnityEngine.SceneManagement
+{
+    public record struct Scene(string name);
 }
 namespace UnityEngine.EventSystems
 {

@@ -45,7 +45,27 @@ UI 오브젝트와 레이아웃은 직접 만듭니다. 제너럴의 `Game Gener
 
 Additive 씬은 같은 월드 좌표 공간에 함께 존재합니다. 카메라는 소속 씬으로 오브젝트를 걸러내지 않으므로, 서로 다른 씬의 오브젝트도 시야와 Culling Mask에 포함되면 그립니다. 따라서 카메라 분할만으로는 월드를 격리할 수 없으며 기존 GameItem 레이어/Culling Mask 분리가 필요합니다. 이 GameObject Layer와 조명/앞뒤 순서에 사용하는 Sorting Layer는 역할이 다릅니다.
 
-코어 카메라는 전체 화면의 배경을 담당하며 **Culling Mask = Nothing**을 유지합니다. Everything으로 바꾸면 Additive로 열린 배틀의 적까지 전체 화면에 다시 그려서, 상단 내비게이션이나 분할 사이 빈 공간에 적이 나타납니다. 코어의 설정/로딩 UI는 Screen Space - Overlay이므로 이 마스크와 관계없이 표시됩니다. 오디오 리스너는 기존 Owner가 계속 관리합니다.
+## 카메라 역할과 표시 설정
+
+모든 씬 카메라에는 **SceneCameraBinding**이 연결되어 있습니다. 카메라를 이름이나 Hierarchy 순서로 고르지 않고, 활성화될 때 등록한 역할과 Inspector 설정을 사용합니다. 코어에서 시작하거나 제너럴에서 시작해도 같은 규칙으로 처리합니다.
+
+| 카메라 | Role | Priority | Standalone Layers | Composed Layers | Receive Visibility Settings |
+| --- | --- | --- | --- | --- | --- |
+| Core Background Camera | Background | 0 | Nothing | Nothing | 꺼짐 |
+| General Background Camera | Background | 10 | Nothing | Nothing | 꺼짐 |
+| 배틀 카메라 | Content | 100 | GameItem 제외 | GameItem 제외 | 켜짐 |
+| 아이템 카메라 | Content | 50 | Everything | GameItem만 | 꺼짐 |
+| 메인·업그레이드·스토리 카메라 | Content | 100 | 기존 씬 레이어 | 기존 씬 레이어 | 켜짐 |
+
+**Background** 카메라는 높은 Priority 하나만 활성화됩니다. 제너럴이 열리면 제너럴 배경을 사용하고, 닫히면 코어 배경으로 돌아갑니다. Background Viewport와 Background Depth도 해당 컴포넌트에서 지정하며, 현재 설정은 전체 화면·깊이 -100입니다. 배경 레이어는 Nothing으로 설정해 상단 내비게이션과 분할 사이에 전투 오브젝트가 다시 그려지지 않게 합니다. 배경 카메라의 원래 Camera 컴포넌트는 편집 중 꺼 두고 SceneCameraBinding만 켜 두세요. 코어 설정/로딩 UI는 Overlay로 계속 표시됩니다.
+
+**Content** 카메라는 같은 씬에 등록한 카메라 중 높은 Priority를 사용합니다. 제너럴 통합 실행에서는 Composed Layers/Tag를 적용하고, 단독 실행에서는 Standalone Layers/Tag를 적용합니다. 아이템은 단독 MainCamera, 통합 Untagged이며 배틀은 둘 다 MainCamera입니다. 제너럴의 역할은 콘텐츠 카메라의 Viewport를 분할하는 것입니다. 표시 레이어와 태그를 코드에서 직접 덮어쓰지 않습니다. 제너럴을 제거하고 콘텐츠 씬을 남기면 원래 Viewport와 활성 상태도 복구합니다.
+
+**Receive Visibility Settings**는 피해 숫자·체력바 표시 설정을 받을 콘텐츠 카메라에만 켭니다. SettingInjecter의 Target Camera를 비우면 이 설정과 Priority로 대상을 선택합니다. Camera.main을 다시 검색하지 않으므로 배경 카메라가 설정 대상이 되는 로딩 순서 문제가 없습니다. 표시 설정은 해당 프로필에서 허용한 레이어 안에서만 숨기거나 복구합니다.
+
+새 카메라를 추가하면 SceneCameraBinding을 붙이고 역할·레이어·태그를 지정하세요. Inspector에서 Camera의 Culling Mask만 바꾸면 실행 시 프로필 값이 다시 적용됩니다. **실제 표시 설정은 SceneCameraBinding에서 수정합니다.** GameItem 레이어 번호를 바꾸면 제너럴의 Item Layer와 배틀/아이템의 Composed Layers도 함께 맞춥니다. 씬 이름이나 레이어 번호를 새 스크립트에 하드코딩할 필요는 없습니다.
+
+오디오는 별도의 SceneAudioListenerOwner가 하나만 활성화합니다. 제너럴의 배경 카메라에는 중복 Listener를 두지 않고, 컨트롤러의 기존 예비 리스너를 사용합니다. 조명은 기존 Battle/Item Sorting Layer 분리를 그대로 사용하며 배경/UI용 Light를 추가하지 않습니다.
 
 ## 각 씬을 독립 테스트하기
 
@@ -98,7 +118,7 @@ Current Scene Only에서도 코어 씬을 직접 실행하면 코어의 시작 �
 
 기존 Overlay Canvas는 실행 중 각 씬의 카메라에 연결됩니다. Canvas 자식·앵커·글꼴·색상은 다시 만들거나 재배치하지 않습니다. 이 자동 연결을 끄려면 `Fit Scene Canvases`를 끄고 직접 만든 Canvas의 Render Mode를 Screen Space - Camera로 설정해 해당 씬의 카메라를 지정하세요. UI에 카메라를 연결할 때 캔버스 정렬 순서와 Plane Distance는 Unity Play에서 확인하세요.
 
-현재 `GameItemScene`에는 카메라만 있으므로 오른쪽에는 배경만 표시됩니다. 서브 게임 오브젝트와 UI는 이 씬에 직접 만드세요. 카메라 Orthographic Size로 각 영역에 보이는 월드 범위를 조절할 수 있습니다.
+`GameItemScene`의 직접 만든 서브 게임 오브젝트와 UI가 오른쪽에 표시됩니다. 카메라 Orthographic Size로 각 영역에 보이는 월드 범위를 조절할 수 있습니다.
 
 ## 설정 버튼 연결
 

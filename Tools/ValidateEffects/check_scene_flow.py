@@ -129,22 +129,40 @@ def check_scene_flow():
     assert 'm_OnClick.m_PersistentCalls' not in instance
     assert all('m_StringArgument: GameScene\n' not in text and 'gameSceneName: GameScene\n' not in text and
                'returnSceneName: GameScene\n' not in text for text, _ in scenes.values())
-    for name, camera_id in [('CoreScene', '286779211'), ('GameGeneralScene', '208387200')]:
-        _, blocks = scenes[name]
-        if name == 'GameGeneralScene' and camera_id not in blocks: continue
-        camera = blocks[camera_id][1]
+    # Every authored camera is registered; test roles rather than fixed camera IDs.
+    camera_guid = guid('Script/Manager/Utility/Scene/SceneCameraBinding.cs')
+    profiles = {}
+    def mask(body, field):
+        return int(re.search(r'^  ' + field + r':\n    serializedVersion: \d+\n    m_Bits: (\d+)', body, re.M)[1])
+    for name, (_, blocks) in scenes.items():
+        cameras = [(identifier, body) for identifier, (kind, body) in blocks.items() if kind == '20']
+        bindings = [body for _, body in blocks.values() if 'guid: ' + camera_guid in body]
+        assert len(cameras) == len(bindings) == 1, (name, 'each camera needs one explicit SceneCameraBinding')
+        profile = bindings[0]; profiles[name] = profile
+        camera_id, camera = cameras[0]
         go = re.search(r'^  m_GameObject: \{fileID: (\d+)\}', camera, re.M)[1]
-        assert 'm_TagString: Untagged' in blocks[go][1], (name, 'must not replace the battle MainCamera')
-    # Core clears the full-screen background behind content viewports, but must
-    # never redraw their world into the navigation strip or the split-screen gap.
-    core_camera = scenes['CoreScene'][1]['286779211'][1]
-    core_mask = int(re.search(r'^  m_CullingMask:\n    serializedVersion: \d+\n    m_Bits: (\d+)', core_camera, re.M)[1])
-    assert core_mask == 0, 'Core background camera must use Culling Mask Nothing to keep enemies out of navigation/gaps'
+        assert f'  m_GameObject: {{fileID: {go}}}\n' in profile
+        assert '  m_Enabled: 1\n' in profile
+        if name in ('CoreScene', 'GameGeneralScene'):
+            assert '  role: 0\n' in profile
+            assert mask(profile, 'standaloneLayers') == mask(profile, 'composedLayers') == mask(camera, 'm_CullingMask') == 0
+            assert '  m_Enabled: 0\n' in camera, (name, 'background must wait for exclusive ownership')
+            assert '  receiveVisibilitySettings: 0\n' in profile
+            assert '  standaloneTag: Untagged\n' in profile and '  composedTag: Untagged\n' in profile
+            assert 'm_TagString: Untagged' in blocks[go][1]
+        else:
+            assert '  role: 1\n' in profile
+    assert int(re.search(r'^  priority: (-?\d+)', profiles['GameGeneralScene'], re.M)[1]) > int(re.search(r'^  priority: (-?\d+)', profiles['CoreScene'], re.M)[1])
+    item_bit = 1 << int(re.search(r'^  itemLayer: (\d+)', general, re.M)[1])
+    assert mask(profiles['GameItemScene'], 'composedLayers') == item_bit
+    assert mask(profiles['GameBattleScene'], 'composedLayers') & item_bit == 0
+    assert '  receiveVisibilitySettings: 1\n' in profiles['GameBattleScene']
+    assert '  receiveVisibilitySettings: 0\n' in profiles['GameItemScene']
     # Core's UI must remain visible without relying on world geometry culling.
     for prefab in ('Prefab/UI/Setting/Canvas/SettingCanvas.prefab', 'Prefab/UI/Setting/Canvas/SceneMoveCanvas.prefab'):
         path = assets / prefab
         assert '  m_RenderMode: 0\n' in path.read_text(), (path, 'shared Core UI must remain Screen Space Overlay')
-    print('PASS Core camera: background only, no world rendering behind navigation or viewport gaps.')
+    print('PASS scene camera profiles: seven explicit registrations, configurable background priorities, disjoint composed masks, settings ownership and Overlay Core UI.')
     anchor_guid = guid('Script/Items/Effect/Excuter/Data/EffectPositionAnchor.cs')
     assert anchor_guid in scenes['GameBattleScene'][0] and '  anchorKey: Player\n' in scenes['GameBattleScene'][0]
     assert 'm_TagString: MainCamera' in scenes['GameItemScene'][1]['1889333134'][1]

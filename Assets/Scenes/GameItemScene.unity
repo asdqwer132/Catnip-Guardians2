@@ -2257,6 +2257,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+  - component: {fileID: 910000500001}
   - component: {fileID: 1889333137}
   - component: {fileID: 1889333136}
   - component: {fileID: 1889333135}
@@ -2660,6 +2661,31 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1b1269cc250d8494fa3374f1cc7f241d, type: 3}
+--- !u!114 &910000500001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1889333134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb392ca383f94a70be45a47ee0a8670d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  role: 1
+  priority: 50
+  standaloneLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  composedLayers:
+    serializedVersion: 2
+    m_Bits: 2147483648
+  standaloneTag: MainCamera
+  composedTag: Untagged
+  backgroundViewport: {x: 0, y: 0, width: 1, height: 1}
+  backgroundDepth: -100
+  receiveVisibilitySettings: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
