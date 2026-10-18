@@ -6,6 +6,33 @@ using System.Reflection;
 
 public class ResponsiveSceneLayoutTests
 {
+    [Test] public void CameraCanvasWidthTracksViewportResizeEvenWhenSharedScaleDoesNotChange()
+    {
+        var cameraHost = new GameObject("Item camera",typeof(Camera));
+        var canvasHost = new GameObject("Existing item UI",typeof(RectTransform),typeof(Canvas),typeof(ViewportCanvasScaler));
+        var target = new RenderTexture(1600,900,0);
+        var profile = ScriptableObject.CreateInstance<SceneUIScaleProfile>();
+        try
+        {
+            var camera = cameraHost.GetComponent<Camera>(); camera.targetTexture = target;
+            var canvas = canvasHost.GetComponent<Canvas>(); canvas.renderMode = RenderMode.ScreenSpaceCamera; canvas.worldCamera = camera;
+            var scaler = canvasHost.GetComponent<ViewportCanvasScaler>(); scaler.sharedScaleProfile = profile;
+            profile.matchWidthOrHeight = 1;
+            var handle = typeof(ViewportCanvasScaler).GetMethod("Handle",BindingFlags.NonPublic|BindingFlags.Instance);
+            float previousScale = 0;
+            foreach(float width in new[] {.4f,.7f,.25f,.4f})
+            {
+                camera.rect = new Rect(0,0,width,.85f);
+                handle.Invoke(scaler,null); Canvas.ForceUpdateCanvases();
+                if(previousScale>0) Assert.That(canvas.scaleFactor,Is.EqualTo(previousScale).Within(.00001f));
+                previousScale = canvas.scaleFactor;
+                var size = canvasHost.GetComponent<RectTransform>().rect.size;
+                Assert.That(size.x*canvas.scaleFactor,Is.EqualTo(camera.pixelRect.width).Within(.05f));
+                Assert.That(size.y*canvas.scaleFactor,Is.EqualTo(camera.pixelRect.height).Within(.05f));
+            }
+        }
+        finally { Object.DestroyImmediate(canvasHost); Object.DestroyImmediate(cameraHost); Object.DestroyImmediate(target); Object.DestroyImmediate(profile); }
+    }
     [Test] public void EqualFrameMultipliersProduceEqualScreenBordersInOverlayAndCameraCanvases()
     {
         var cameraHost = new GameObject("Item camera", typeof(Camera));
@@ -118,7 +145,8 @@ public class ResponsiveSceneLayoutTests
             foreach (var viewport in new[] { new Rect(.6f, 0, .4f, .85f), new Rect(0, 0, 1, 1), new Rect(.2f, 0, .3f, 1) })
             {
                 camera.rect = viewport;
-                Canvas.ForceUpdateCanvases(); fitter.FitNow();
+                // 레거시 레이아웃 컨트롤러 없이 Canvas 갱신만으로 박스도 따라가야 합니다.
+                Canvas.ForceUpdateCanvases();
                 var corners = new Vector3[4]; frame.GetWorldCorners(corners);
                 Vector2 frameMin = RectTransformUtility.WorldToScreenPoint(camera, corners[0]);
                 Vector2 frameMax = RectTransformUtility.WorldToScreenPoint(camera, corners[2]);

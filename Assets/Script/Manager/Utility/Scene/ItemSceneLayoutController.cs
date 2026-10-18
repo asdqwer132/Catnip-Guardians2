@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 // 아이템씬 단독 실행과 General 내 40% 표시에서 같은 UI 내부 비율을 사용합니다.
@@ -18,21 +17,17 @@ public sealed class ItemSceneLayoutController : MonoBehaviour
     [Range(.05f, .95f)] public float lowerSidebarShare = .5f;
     [Header("기존 월드 박스 연결")]
     public UIWorldBoundsFitter worldBox;
-    public MergegameManager[] boards = Array.Empty<MergegameManager>();
-    public MergeItemSelection[] selections = Array.Empty<MergeItemSelection>();
 
     private void OnEnable()
     {
         Canvas.preWillRenderCanvases += ApplyRegions;
         Canvas.willRenderCanvases += FitWorld;
-        if (worldBox != null) worldBox.LayoutChanged += OnWorldLayoutChanged;
         ApplyRegions();
     }
     private void OnDisable()
     {
         Canvas.preWillRenderCanvases -= ApplyRegions;
         Canvas.willRenderCanvases -= FitWorld;
-        if (worldBox != null) worldBox.LayoutChanged -= OnWorldLayoutChanged;
     }
     private void LateUpdate() => ApplyRegions();
     public void ApplyRegions()
@@ -43,11 +38,5 @@ public sealed class ItemSceneLayoutController : MonoBehaviour
         SceneUILayout.SetRect(recipeArea, recipe);
     }
     // Canvas Scaler/레이아웃 확정 후 프레임을 월드 평면으로 투영합니다.
-    private void FitWorld() { if (worldBox != null) worldBox.FitNow(); }
-    private void OnWorldLayoutChanged(Matrix4x4 change)
-    {
-        // 선택 중이던 이전 좌표는 취소합니다. 풀에서 대기 중인 아이템은 이동하지 않습니다.
-        foreach (var selection in selections) if (selection != null && selection.IsSelecting) selection.CancelSelection();
-        foreach (var board in boards) if (board != null) board.RemapLayout(change);
-    }
+    private void FitWorld() { if (worldBox != null && !worldBox.autoFit) worldBox.FitNow(); }
 }

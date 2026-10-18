@@ -2278,6 +2278,7 @@ GameObject:
   - component: {fileID: 1889333135}
   - component: {fileID: 1889333138}
   - component: {fileID: 910000400001}
+  - component: {fileID: 910000990001}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -2857,11 +2858,6 @@ MonoBehaviour:
   gameAreaShare: {x: 0.8, y: 0.8}
   lowerSidebarShare: 0.2
   worldBox: {fileID: 910000770002}
-  boards:
-  - {fileID: 1595348419}
-  - {fileID: 86893377}
-  selections:
-  - {fileID: 1595348420}
 --- !u!114 &910000770002
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2874,21 +2870,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c64427b90f66477e82dfd9b7342295fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIWorldBoundsFitter
+  autoFit: 1
   frame: {fileID: 1599007221}
   worldCamera: {fileID: 1889333136}
   worldRoot: {fileID: 269577203}
   frameOccupancy:
     serializedVersion: 2
-    x: 0
-    y: 0
-    width: 0
-    height: 0
+    x: 0.04
+    y: 0.04
+    width: 0.92
+    height: 0.92
   captureBoundsFromChildren: 1
   localBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 1, y: 1, z: 0}
   includePoints:
   - {fileID: 985560683}
+  boards:
+  - {fileID: 1595348419}
+  - {fileID: 86893377}
+  selections:
+  - {fileID: 1595348420}
 --- !u!1001 &2812401293532457823
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2988,3 +2990,18 @@ SceneRoots:
   - {fileID: 269577203}
   - {fileID: 1122774686}
   - {fileID: 1670134829}
+--- !u!114 &910000990001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1889333134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55bf8439d71346bba1b84c5f2bd5143f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::SceneCameraPresentation
+  background: {fileID: 11400000, guid: 99dc519e6e0a4e31af798e72441080c9, type: 2}
+  shape: 0
+  cornerRadius: 48

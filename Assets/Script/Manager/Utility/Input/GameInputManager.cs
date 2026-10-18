@@ -92,7 +92,8 @@ public class GameInputManager : MonoBehaviour
         if (Mouse.current != null)
         {
             bool inside = !restrictPointerToGameplayCamera ||
-                (mainCamera != null && mainCamera.enabled && mainCamera.pixelRect.Contains(MouseScreenPosition));
+                (mainCamera != null && mainCamera.enabled && mainCamera.pixelRect.Contains(MouseScreenPosition) &&
+                 (SceneCameraPresentation.ForCamera(mainCamera) == null || SceneCameraPresentation.ForCamera(mainCamera).ContainsScreenPoint(MouseScreenPosition)));
             if (inside && Mouse.current.leftButton.wasPressedThisFrame)
             {
                 usePressed = true;

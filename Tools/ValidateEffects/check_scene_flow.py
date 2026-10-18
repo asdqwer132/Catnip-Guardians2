@@ -191,7 +191,7 @@ def check_scene_flow():
     assert '  navigationSortingOrder: 100\n' in general
     assert '  navigationArea: {fileID: 1510854061}\n' in general
     assert '  navigationSizeMode: 0\n' in general
-    assert float(re.search(r'^  navigationHeightRatio: (.*)', general, re.M)[1]) == .15
+    assert float(re.search(r'^  navigationHeightRatio: (.*)', general, re.M)[1]) == .1
     assert ratio == .6 and float(re.search(r'^  gap: (.*)', general, re.M)[1]) == 0
     item_text, item_blocks = scenes['GameItemScene']
     layout_guid = guid('Script/Manager/Utility/Scene/ItemSceneLayoutController.cs')
@@ -204,12 +204,20 @@ def check_scene_flow():
                [('gameArea',604680137),('seriesArea',962900167),('materialsArea',563686106),('recipeArea',766217317)])
     assert '  frame: {fileID: 1599007221}\n' in fitter and '  worldRoot: {fileID: 269577203}\n' in fitter
     assert '  worldCamera: {fileID: 1889333136}\n' in fitter and '  - {fileID: 985560683}\n' in fitter
-    assert item_text.count('guid: ' + scaler_guid) == 2
+    assert '  autoFit: 1\n' in fitter
+    assert '  frameOccupancy:\n    serializedVersion: 2\n' in fitter
+    occupancy = re.search(r'frameOccupancy:\n    serializedVersion: 2\n    x: (.*)\n    y: (.*)\n    width: (.*)\n    height: (.*)',fitter)
+    ox,oy,ow,oh = map(float,occupancy.groups())
+    assert ow>0 and oh>0 and ox>=0 and oy>=0 and ox+ow<=1 and oy+oh<=1
+    assert '  boards:\n  - {fileID: 1595348419}\n  - {fileID: 86893377}\n' in fitter
+    assert '  selections:\n  - {fileID: 1595348420}\n' in fitter
+    assert '  boards:' not in item_layout and '  selections:' not in item_layout
+    assert item_text.count('guid: ' + scaler_guid) == 1
     scale_asset_guid = guid('Data/SceneUIScaleProfile.asset')
     profile_asset = (assets / 'Data/SceneUIScaleProfile.asset').read_text()
     assert guid('Script/Manager/Utility/Scene/SceneUIScaleProfile.cs') in profile_asset
     assert '  referencePixelsPerUnit: 100\n' in profile_asset
-    for scene_name, expected in [('GameGeneralScene',1),('GameBattleScene',3),('GameItemScene',2)]:
+    for scene_name, expected in [('GameGeneralScene',2),('GameBattleScene',3),('GameItemScene',1)]:
         scalers = [body for _,body in scenes[scene_name][1].values() if 'guid: '+scaler_guid in body]
         assert len(scalers) == expected
         assert all(f'  sharedScaleProfile: {{fileID: 11400000, guid: {scale_asset_guid}, type: 2}}\n' in body for body in scalers)
@@ -225,7 +233,22 @@ def check_scene_flow():
         assert rect, (name, 'camera viewport must be serialized')
         x,y,w,h = map(float,rect.groups())
         assert x>=0 and y>=0 and w>0 and h>0 and x+w<=1.0001 and y+h<=1.0001, (name, 'viewport must remain inside its output')
-    print('PASS responsive layout: 60/40 content, 15/85 navigation, authored item panels and existing world-box references.')
+    print('PASS responsive layout: 60/40 content, authored 10/90 navigation and item panels, existing world-box references.')
+    presentation_guid = guid('Script/Manager/Utility/Scene/SceneCameraPresentation.cs')
+    background_guid = guid('Data/GameScreenBackground.asset')
+    for name in ('CoreScene','GameGeneralScene','GameBattleScene','GameItemScene'):
+        _,blocks = scenes[name]
+        view = next(body for _,body in blocks.values() if 'guid: '+presentation_guid in body)
+        camera = next(body for kind,body in blocks.values() if kind=='20')
+        host = re.search(r'^  m_GameObject: \{fileID: (\d+)\}',camera,re.M)[1]
+        assert f'  m_GameObject: {{fileID: {host}}}\n' in view
+        assert f'  background: {{fileID: 11400000, guid: {background_guid}, type: 2}}\n' in view
+        assert f'  shape: {1 if name=="GameBattleScene" else 0}\n' in view
+    renderer = (assets/'Settings/Renderer2D.asset').read_text()
+    assert guid('Script/Manager/Utility/Scene/SceneScreenPresentationFeature.cs') in renderer
+    assert guid('Script/Manager/Utility/Scene/SceneScreenPresentation.shader') in renderer
+    assert 'm_RendererFeatures:\n  - {fileID: 910000990001}' in renderer
+    print('PASS common background: four existing cameras share one profile; Battle alone has rounded corners; Renderer2D feature and shader are connected.')
     audio_guid = guid('Script/Manager/Utility/Scene/SceneAudioChannel.cs')
     for name in ('GameGeneralScene', 'GameBattleScene', 'GameItemScene'):
         _, blocks = scenes[name]

@@ -10,6 +10,22 @@ public sealed class ViewportCanvasScaler : CanvasScaler
     [Tooltip("같은 프로필을 연결하면 Overlay/Camera와 Viewport 비율에 관계없이 UI 픽셀 배율과 Reference PPU를 공유합니다.")]
     public SceneUIScaleProfile sharedScaleProfile;
     private Canvas targetCanvas;
+    private Vector2 previousPixels;
+    private Rect previousViewport;
+    private Camera previousCamera;
+    private float previousScale;
+    private bool layoutInitialized;
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+        Canvas.preWillRenderCanvases += Handle;
+    }
+    protected override void OnDisable()
+    {
+        Canvas.preWillRenderCanvases -= Handle;
+        layoutInitialized = false;
+        base.OnDisable();
+    }
     protected override void Handle()
     {
         if (targetCanvas == null) targetCanvas = GetComponent<Canvas>();
@@ -27,8 +43,27 @@ public sealed class ViewportCanvasScaler : CanvasScaler
             pixels = new Vector2(display.renderingWidth, display.renderingHeight);
         }
         if (pixels.x <= 0 || pixels.y <= 0) return;
-        SetScaleFactor(sharedScaleProfile.CalculateScale(pixels));
+        float scale = sharedScaleProfile.CalculateScale(pixels);
+        SetScaleFactor(scale);
         SetReferencePixelsPerUnit(sharedScaleProfile.ReferencePixelsPerUnit);
+        Rect viewport = camera != null ? camera.pixelRect : new Rect(Vector2.zero, pixels);
+        if (!layoutInitialized || pixels != previousPixels || viewport != previousViewport || camera != previousCamera || !Mathf.Approximately(scale, previousScale))
+        {
+            layoutInitialized = true; previousPixels = pixels; previousViewport = viewport; previousCamera = camera; previousScale = scale;
+            // 높이가 같은 채로 가로만 바뀌면 배율은 같아도 카메라 Canvas의 가로 크기는 달라집니다.
+            if (camera != null) { camera.ResetAspect(); targetCanvas.worldCamera = camera; }
+            var root = targetCanvas.transform as RectTransform;
+            if (root != null)
+            {
+                if (camera != null)
+                {
+                    root.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, viewport.width / scale);
+                    root.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, viewport.height / scale);
+                }
+                root.ForceUpdateRectTransforms();
+                LayoutRebuilder.MarkLayoutForRebuild(root);
+            }
+        }
     }
     protected override void HandleScaleWithScreenSize()
     {

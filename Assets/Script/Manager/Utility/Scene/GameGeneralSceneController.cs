@@ -258,6 +258,7 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     private void OnEnable()
     {
         SceneManager.sceneLoaded += OnContentSceneLoaded;
+        Canvas.preWillRenderCanvases += ApplyLayout;
         Canvas.willRenderCanvases += ApplyLayout;
         RenderPipelineManager.beginCameraRendering += BeforeCameraRendering;
         ApplyLayout();
@@ -270,6 +271,7 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     private void OnDisable()
     {
         SceneManager.sceneLoaded -= OnContentSceneLoaded;
+        Canvas.preWillRenderCanvases -= ApplyLayout;
         Canvas.willRenderCanvases -= ApplyLayout;
         RenderPipelineManager.beginCameraRendering -= BeforeCameraRendering;
         RestoreNavigation();

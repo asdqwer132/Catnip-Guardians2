@@ -3,8 +3,10 @@ using UnityEngine;
 
 // 기존 UI 프레임에 기존 2D 월드 오브젝트를 맞춥니다. UI/카메라/프리팹을 생성하지 않습니다.
 [DisallowMultipleComponent]
+[DefaultExecutionOrder(200)]
 public sealed class UIWorldBoundsFitter : MonoBehaviour
 {
+    public bool autoFit = true;
     public RectTransform frame;
     public Camera worldCamera;
     public Transform worldRoot;
@@ -15,9 +17,15 @@ public sealed class UIWorldBoundsFitter : MonoBehaviour
     public Bounds localBounds = new Bounds(Vector3.zero, Vector3.one);
     [Tooltip("시각 오브젝트/콜라이더 외에 투입구처럼 프레임 안에 포함할 기준점입니다.")]
     public Transform[] includePoints = Array.Empty<Transform>();
+    public MergegameManager[] boards = Array.Empty<MergegameManager>();
+    public MergeItemSelection[] selections = Array.Empty<MergeItemSelection>();
     public event Action<Matrix4x4> LayoutChanged;
     private bool captured;
+    private Transform capturedRoot;
     private readonly Vector3[] corners = new Vector3[4];
+    private void OnEnable() => Canvas.willRenderCanvases += FitAfterLayout;
+    private void OnDisable() => Canvas.willRenderCanvases -= FitAfterLayout;
+    private void FitAfterLayout() { if (autoFit) FitNow(); }
 
     [ContextMenu("기존 박스의 로컬 범위 다시 측정")]
     public void CaptureBounds()
@@ -34,6 +42,7 @@ public sealed class UIWorldBoundsFitter : MonoBehaviour
             if (point != null) measured.Encapsulate(worldRoot.InverseTransformPoint(point.position));
         localBounds = measured;
         captured = true;
+        capturedRoot = worldRoot;
     }
     private void Include(Bounds bounds, ref Bounds measured, ref bool initialized)
     {
@@ -53,7 +62,7 @@ public sealed class UIWorldBoundsFitter : MonoBehaviour
         // XY 평면용 컴포넌트입니다. 기울어진 3D 투영을 박스 스케일로 보정하지 않습니다.
         if (!worldCamera.orthographic || Mathf.Abs(Vector3.Dot(worldCamera.transform.forward, Vector3.forward)) < .9999f ||
             Quaternion.Angle(worldRoot.rotation, Quaternion.identity) > .01f) return false;
-        if (captureBoundsFromChildren && !captured) CaptureBounds();
+        if (captureBoundsFromChildren && (!captured || capturedRoot != worldRoot)) CaptureBounds();
         if (localBounds.size.x <= .0001f || localBounds.size.y <= .0001f) return false;
         var canvas = frame.GetComponentInParent<Canvas>();
         if (canvas == null || !canvas.rootCanvas.isActiveAndEnabled) return false;
@@ -86,7 +95,11 @@ public sealed class UIWorldBoundsFitter : MonoBehaviour
         Vector3 offset = desired.center - worldRoot.TransformPoint(localBounds.center); offset.z = 0;
         if (offset.sqrMagnitude > .0000000001f) worldRoot.position += offset;
         if (worldRoot.position == oldPosition && worldRoot.localScale == oldScale) return false;
-        LayoutChanged?.Invoke(worldRoot.localToWorldMatrix * previous.inverse);
+        Matrix4x4 change = worldRoot.localToWorldMatrix * previous.inverse;
+        if (selections != null) foreach (var selection in selections)
+            if (selection != null && selection.IsSelecting) selection.CancelSelection();
+        if (boards != null) foreach (var board in boards) if (board != null) board.RemapLayout(change);
+        LayoutChanged?.Invoke(change);
         Physics2D.SyncTransforms();
         return true;
     }

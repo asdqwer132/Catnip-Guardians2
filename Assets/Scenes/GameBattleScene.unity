@@ -2835,6 +2835,7 @@ GameObject:
   - component: {fileID: 519420029}
   - component: {fileID: 519420030}
   - component: {fileID: 910000400001}
+  - component: {fileID: 910000990001}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -51567,3 +51568,18 @@ SceneRoots:
   - {fileID: 1749361164}
   - {fileID: 2058885512}
   - {fileID: 1015326520}
+--- !u!114 &910000990001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55bf8439d71346bba1b84c5f2bd5143f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::SceneCameraPresentation
+  background: {fileID: 11400000, guid: 99dc519e6e0a4e31af798e72441080c9, type: 2}
+  shape: 1
+  cornerRadius: 48

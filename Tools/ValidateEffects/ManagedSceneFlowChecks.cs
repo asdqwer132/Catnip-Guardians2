@@ -95,6 +95,36 @@ public static partial class Runner
             foreach(float width in new[] {800f,1200f,1920f,2560f,3440f})
                 Eq(SceneUIScaleProfile.CalculateScale(new Vector2(width,1080),reference,UnityEngine.UI.CanvasScaler.ScreenMatchMode.MatchWidthOrHeight,1),.75f);
         });
+        Check("shared screen background cover and contain preserve image aspect", () => {
+            var image = new Vector2(1600,900);
+            foreach (var screen in new[] {new Vector2(1920,1080),new Vector2(1080,1920),new Vector2(3440,1440)})
+            {
+                var cover = SceneScreenPresentationMath.BackgroundUvScale(image,screen,ScreenBackgroundFit.Cover);
+                var contain = SceneScreenPresentationMath.BackgroundUvScale(image,screen,ScreenBackgroundFit.Contain);
+                True(cover.x<=1 && cover.y<=1 && (cover.x==1 || cover.y==1));
+                True(contain.x>=1 && contain.y>=1 && (contain.x==1 || contain.y==1));
+                Eq(cover.x*image.x/(cover.y*image.y),screen.x/screen.y);
+                Eq(contain.x*image.x/(contain.y*image.y),screen.x/screen.y);
+            }
+            var stretch = SceneScreenPresentationMath.BackgroundUvScale(image,new Vector2(800,1200),ScreenBackgroundFit.Stretch);
+            Eq(stretch.x,1); Eq(stretch.y,1);
+        });
+        Check("rounded battle input excludes clipped corners and follows output resize", () => {
+            foreach (float screenHeight in new[] {720f,1440f,2160f})
+            {
+                var view = new Rect(0,0,screenHeight*.6f,screenHeight*.85f);
+                float radius = SceneScreenPresentationMath.CornerRadius(48,screenHeight,1440,view.size);
+                Eq(radius,48*screenHeight/1440);
+                True(SceneScreenPresentationMath.Contains(view,view.center,SceneViewShape.RoundedRectangle,radius));
+                True(!SceneScreenPresentationMath.Contains(view,new Vector2(1,1),SceneViewShape.RoundedRectangle,radius));
+                True(SceneScreenPresentationMath.Contains(view,new Vector2(radius,radius),SceneViewShape.RoundedRectangle,radius));
+                True(SceneScreenPresentationMath.Contains(view,new Vector2(1,1),SceneViewShape.Rectangle,radius));
+                True(!SceneScreenPresentationMath.Contains(view,new Vector2(-1,1),SceneViewShape.Rectangle,radius));
+                True(!SceneScreenPresentationMath.Contains(view,new Vector2(1,1),SceneViewShape.Ellipse,radius));
+                True(SceneScreenPresentationMath.Contains(view,view.center,SceneViewShape.Ellipse,radius));
+            }
+            Eq(SceneScreenPresentationMath.CornerRadius(10000,1440,1440,new Vector2(100,300)),50);
+        });
         Check("shared UI profile invalid dimensions cannot create NaN or infinite scale", () => {
             foreach(float value in new[] {float.NaN,float.PositiveInfinity,float.NegativeInfinity,0f,-1f})
             {
