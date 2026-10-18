@@ -33,6 +33,35 @@ def check_scene_flow():
                     assert ref == '0' or ref in blocks, (name, identifier, 'missing local reference', line)
         scenes[name] = (text, blocks)
 
+    # Additive scenes share URP's global-light registry even with separate camera masks.
+    def global_light_targets(blocks):
+        result = set()
+        for _, body in blocks.values():
+            if not re.search(r'^  m_LightType: 4$', body, re.M):
+                continue
+            blend = int(re.search(r'^  m_BlendStyleIndex: (\d+)', body, re.M)[1])
+            raw = bytes.fromhex(re.search(r'^  m_ApplyToSortingLayers: (\w+)', body, re.M)[1])
+            for index in range(0, len(raw), 4):
+                key = (int.from_bytes(raw[index:index + 4], 'little', signed=True), blend)
+                assert key not in result, ('duplicate global light in one scene', key)
+                result.add(key)
+        return result
+
+    item_targets = global_light_targets(scenes['GameItemScene'][1])
+    battle_targets = global_light_targets(scenes['GameBattleScene'][1])
+    assert item_targets and battle_targets and item_targets.isdisjoint(battle_targets), 'Battle/Item global lights must target different sorting layers'
+    tags = (root / 'ProjectSettings/TagManager.asset').read_text()
+    item_sorting_id = int(re.search(r'- name: GameItemWorld\n    uniqueID: (\d+)', tags)[1])
+    assert tags.index('- name: GameItemWorld') < tags.index('- name: Default'), 'Shared Core UI must draw above the item world'
+    assert item_targets == {(item_sorting_id, 0)}
+    # Match Canvases, SortingGroups and SpriteMask ranges as well as sprite renderers.
+    paths = [assets / 'Scenes/GameItemScene.unity'] + [assets / 'Prefab/Merge' / name for name in
+             ('MergeItemObject.prefab', 'BottomWall.prefab', 'LeftWall.prefab', 'RightWall.prefab')]
+    for path in paths:
+        layer_ids = re.findall(r'^  m_(?:Front|Back)?SortingLayerID: (-?\d+)$', path.read_text(), re.M)
+        assert layer_ids and all(int(value) == item_sorting_id for value in layer_ids), (path, 'Item visuals/masks must match the item global light')
+    print('PASS additive lighting: separate Battle/Item global-light targets, pooled visuals/masks and Canvas ordering.')
+
     def guid(path):
         return re.search(r'^guid: (\w+)', Path(str(assets / path) + '.meta').read_text(), re.M)[1]
 

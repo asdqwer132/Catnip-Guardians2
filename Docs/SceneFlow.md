@@ -24,6 +24,10 @@ CoreScene (항상 유지)
 
 ## 각 씬을 독립 테스트하기
 
+아이템 씬의 조명은 **Sorting Layer `GameItemWorld`**로 분리되어 있습니다. 배틀의 Global Light 2D는 Default/Enemy, 아이템의 Global Light 2D는 GameItemWorld만 비춥니다. URP의 Global Light는 Additive 씬 사이에서도 같은 Sorting Layer를 공유하므로 카메라의 Culling Mask만 분리하면 중복 조명이 생길 수 있습니다.
+
+아이템 프리팹의 SpriteRenderer·SortingGroup·SpriteMask와 아이템 씬 Canvas도 GameItemWorld를 사용합니다. 기존 Order in Layer는 유지하며, GameItemWorld는 Default보다 아래에 두어 코어 설정/로딩 UI가 아이템 화면 위에 표시되도록 합니다. 새 머지 아이템은 기존 MergeItemObject의 Prefab Variant로 만들면 이 설정을 상속합니다. 독립 프리팹을 직접 만들 경우 해당 컴포넌트들의 Sorting Layer도 GameItemWorld로 설정하세요. 여기서 Sorting Layer는 제너럴의 카메라 분리용 GameObject Layer `GameItem`과 별개입니다.
+
 기본 Editor 설정은 **Current Scene Only**입니다. 배틀 씬을 열고 Play하면 배틀만, 아이템 씬을 열고 Play하면 아이템만 실행합니다. 다른 씬을 편집 중 함께 열어 뒀어도 현재 활성 씬 에셋만 실행합니다. 제너럴을 선택한 경우에는 제너럴의 Load Core Scene / Auto Load Children 설정을 따릅니다. 종료하면 원래 편집 상태로 돌아갑니다.
 
 **Catnip → Scenes → Select Play Settings**를 누르거나 `Assets/Data/ScenePlaySettings.asset`을 선택하고 **Play Mode**를 바꾸세요.
