@@ -135,7 +135,16 @@ def check_scene_flow():
         camera = blocks[camera_id][1]
         go = re.search(r'^  m_GameObject: \{fileID: (\d+)\}', camera, re.M)[1]
         assert 'm_TagString: Untagged' in blocks[go][1], (name, 'must not replace the battle MainCamera')
-    # Core's camera visibility is authored by the user; audio fallback works with either setting.
+    # Core clears the full-screen background behind content viewports, but must
+    # never redraw their world into the navigation strip or the split-screen gap.
+    core_camera = scenes['CoreScene'][1]['286779211'][1]
+    core_mask = int(re.search(r'^  m_CullingMask:\n    serializedVersion: \d+\n    m_Bits: (\d+)', core_camera, re.M)[1])
+    assert core_mask == 0, 'Core background camera must use Culling Mask Nothing to keep enemies out of navigation/gaps'
+    # Core's UI must remain visible without relying on world geometry culling.
+    for prefab in ('Prefab/UI/Setting/Canvas/SettingCanvas.prefab', 'Prefab/UI/Setting/Canvas/SceneMoveCanvas.prefab'):
+        path = assets / prefab
+        assert '  m_RenderMode: 0\n' in path.read_text(), (path, 'shared Core UI must remain Screen Space Overlay')
+    print('PASS Core camera: background only, no world rendering behind navigation or viewport gaps.')
     anchor_guid = guid('Script/Items/Effect/Excuter/Data/EffectPositionAnchor.cs')
     assert anchor_guid in scenes['GameBattleScene'][0] and '  anchorKey: Player\n' in scenes['GameBattleScene'][0]
     assert 'm_TagString: MainCamera' in scenes['GameItemScene'][1]['1889333134'][1]

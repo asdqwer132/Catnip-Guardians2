@@ -45,6 +45,8 @@ UI 오브젝트와 레이아웃은 직접 만듭니다. 제너럴의 `Game Gener
 
 Additive 씬은 같은 월드 좌표 공간에 함께 존재합니다. 카메라는 소속 씬으로 오브젝트를 걸러내지 않으므로, 서로 다른 씬의 오브젝트도 시야와 Culling Mask에 포함되면 그립니다. 따라서 카메라 분할만으로는 월드를 격리할 수 없으며 기존 GameItem 레이어/Culling Mask 분리가 필요합니다. 이 GameObject Layer와 조명/앞뒤 순서에 사용하는 Sorting Layer는 역할이 다릅니다.
 
+코어 카메라는 전체 화면의 배경을 담당하며 **Culling Mask = Nothing**을 유지합니다. Everything으로 바꾸면 Additive로 열린 배틀의 적까지 전체 화면에 다시 그려서, 상단 내비게이션이나 분할 사이 빈 공간에 적이 나타납니다. 코어의 설정/로딩 UI는 Screen Space - Overlay이므로 이 마스크와 관계없이 표시됩니다. 오디오 리스너는 기존 Owner가 계속 관리합니다.
+
 ## 각 씬을 독립 테스트하기
 
 아이템 씬의 조명은 **Sorting Layer `GameItemWorld`**로 분리되어 있습니다. 배틀의 Global Light 2D는 Default/Enemy, 아이템의 Global Light 2D는 GameItemWorld만 비춥니다. URP의 Global Light는 Additive 씬 사이에서도 같은 Sorting Layer를 공유하므로 카메라의 Culling Mask만 분리하면 중복 조명이 생길 수 있습니다.
