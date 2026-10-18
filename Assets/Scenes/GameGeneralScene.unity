@@ -810,10 +810,10 @@ MonoBehaviour:
     top: 0
     bottom: 0
   battlePadding:
-    left: 0
+    left: 50
     right: 0
     top: 0
-    bottom: 0
+    bottom: 50
   itemPadding:
     left: 0
     right: 0
@@ -1186,15 +1186,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 910000200001}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1660057539 &9223372036854775807
-SceneRoots:
-  m_ObjectHideFlags: 0
-  m_Roots:
-  - {fileID: 362473855}
-  - {fileID: 910000200001}
-  - {fileID: 88323786}
-  - {fileID: 2117953901}
-  - {fileID: 1882155592}
 --- !u!114 &910000990001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1205,7 +1196,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 55bf8439d71346bba1b84c5f2bd5143f, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneCameraPresentation
   background: {fileID: 11400000, guid: 99dc519e6e0a4e31af798e72441080c9, type: 2}
   shape: 0
@@ -1215,3 +1206,12 @@ MonoBehaviour:
   maskAlphaThreshold: 0.5
   maskEdgeSoftness: 0.01
   invertMask: 0
+--- !u!1660057539 &9223372036854775807
+SceneRoots:
+  m_ObjectHideFlags: 0
+  m_Roots:
+  - {fileID: 362473855}
+  - {fileID: 910000200001}
+  - {fileID: 88323786}
+  - {fileID: 2117953901}
+  - {fileID: 1882155592}
