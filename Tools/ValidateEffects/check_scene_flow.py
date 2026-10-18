@@ -205,10 +205,27 @@ def check_scene_flow():
     assert '  frame: {fileID: 1599007221}\n' in fitter and '  worldRoot: {fileID: 269577203}\n' in fitter
     assert '  worldCamera: {fileID: 1889333136}\n' in fitter and '  - {fileID: 985560683}\n' in fitter
     assert item_text.count('guid: ' + scaler_guid) == 2
+    scale_asset_guid = guid('Data/SceneUIScaleProfile.asset')
+    profile_asset = (assets / 'Data/SceneUIScaleProfile.asset').read_text()
+    assert guid('Script/Manager/Utility/Scene/SceneUIScaleProfile.cs') in profile_asset
+    assert '  referencePixelsPerUnit: 100\n' in profile_asset
+    for scene_name, expected in [('GameGeneralScene',1),('GameBattleScene',3),('GameItemScene',2)]:
+        scalers = [body for _,body in scenes[scene_name][1].values() if 'guid: '+scaler_guid in body]
+        assert len(scalers) == expected
+        assert all(f'  sharedScaleProfile: {{fileID: 11400000, guid: {scale_asset_guid}, type: 2}}\n' in body for body in scalers)
+    # Preserve the user's Unity layout groups. The old ratio controller must stay disabled.
+    assert '  m_Enabled: 0\n' in item_layout
+    layout_group = next(body for _,body in item_blocks.values() if 'UnityEngine.UI::UnityEngine.UI.VerticalLayoutGroup' in body and 'm_GameObject: {fileID: 1230442318}' in body)
+    assert '  m_Enabled: 1\n' in layout_group
+    print('PASS shared UI scale: General, Battle and Item use one profile without replacing authored Layout Groups.')
     for name in ('GameBattleScene', 'GameItemScene'):
         camera = next(body for kind, body in scenes[name][1].values() if kind == '20')
-        assert re.search(r'm_NormalizedViewPortRect:\n    serializedVersion: \d+\n    x: 0\n    y: 0\n    width: 1\n    height: 1\n', camera), (name, 'standalone view must fill its screen')
-    print('PASS responsive layout: 60/40 content, 15/85 navigation, 80/20 item panels and existing world-box binding.')
+        # Standalone viewport is authored by the user; General supplies the composed split.
+        rect = re.search(r'm_NormalizedViewPortRect:\n    serializedVersion: \d+\n    x: (.*)\n    y: (.*)\n    width: (.*)\n    height: (.*)\n', camera)
+        assert rect, (name, 'camera viewport must be serialized')
+        x,y,w,h = map(float,rect.groups())
+        assert x>=0 and y>=0 and w>0 and h>0 and x+w<=1.0001 and y+h<=1.0001, (name, 'viewport must remain inside its output')
+    print('PASS responsive layout: 60/40 content, 15/85 navigation, authored item panels and existing world-box references.')
     audio_guid = guid('Script/Manager/Utility/Scene/SceneAudioChannel.cs')
     for name in ('GameGeneralScene', 'GameBattleScene', 'GameItemScene'):
         _, blocks = scenes[name]

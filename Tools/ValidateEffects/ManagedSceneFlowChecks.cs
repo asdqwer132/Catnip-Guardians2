@@ -79,6 +79,29 @@ public static partial class Runner
             Eq(SceneUILayout.CanvasScale(new Vector2(960,573.75f),new Vector2(960,1147.5f),0),1);
             Eq(SceneUILayout.CanvasScale(new Vector2(960,573.75f),new Vector2(960,1147.5f),1),.5f);
         });
+        Check("shared UI profile keeps the authored full-display width scale at different aspect ratios", () => {
+            var reference = new Vector2(2400,600);
+            foreach (var pixels in new[] {new Vector2(2400,1350), new Vector2(1920,1080), new Vector2(1024,768), new Vector2(1080,1920)})
+                Eq(SceneUIScaleProfile.CalculateScale(pixels,reference,UnityEngine.UI.CanvasScaler.ScreenMatchMode.MatchWidthOrHeight,0),pixels.x/2400f);
+        });
+        Check("shared UI profile supports balanced expand and shrink policies", () => {
+            var pixels = new Vector2(1200,1200); var reference = new Vector2(2400,600);
+            Eq(SceneUIScaleProfile.CalculateScale(pixels,reference,UnityEngine.UI.CanvasScaler.ScreenMatchMode.MatchWidthOrHeight,.5f),1);
+            Eq(SceneUIScaleProfile.CalculateScale(pixels,reference,UnityEngine.UI.CanvasScaler.ScreenMatchMode.Expand,0),.5f);
+            Eq(SceneUIScaleProfile.CalculateScale(pixels,reference,UnityEngine.UI.CanvasScaler.ScreenMatchMode.Shrink,0),2);
+        });
+        Check("shared UI height policy keeps frame size when only display width changes", () => {
+            var reference = new Vector2(2400,1440);
+            foreach(float width in new[] {800f,1200f,1920f,2560f,3440f})
+                Eq(SceneUIScaleProfile.CalculateScale(new Vector2(width,1080),reference,UnityEngine.UI.CanvasScaler.ScreenMatchMode.MatchWidthOrHeight,1),.75f);
+        });
+        Check("shared UI profile invalid dimensions cannot create NaN or infinite scale", () => {
+            foreach(float value in new[] {float.NaN,float.PositiveInfinity,float.NegativeInfinity,0f,-1f})
+            {
+                float scale = SceneUIScaleProfile.CalculateScale(new Vector2(value,value),new Vector2(value,value),UnityEngine.UI.CanvasScaler.ScreenMatchMode.MatchWidthOrHeight,value);
+                True(!float.IsNaN(scale) && !float.IsInfinity(scale) && scale>0);
+            }
+        });
         Check("screen gap preserves requested usable battle share", () => {
             GameViewportLayout.Calculate(GameScreenLayout.SideBySide, .7f, true, .04f, out var b, out var i);
             Eq(b.width,.672f); Eq(i.width,.288f); Eq(i.xMin-b.xMax,.04f); Eq(i.xMax,1);

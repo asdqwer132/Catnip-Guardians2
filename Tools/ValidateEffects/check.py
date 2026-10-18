@@ -190,7 +190,7 @@ def main():
                     'Assets/Editor/BuffEditor/FloatFieldBuffModifierEditor.cs',
                     'Assets/Editor/SummonModuleEditor.cs', 'Assets/Editor/SummonActorEditor.cs',
                     'Assets/Editor/PrefabRangeGizmoDrawer.cs', 'Assets/Editor/PrefabVisualAnimatorEditor.cs',
-                    'Assets/Editor/UseItemStatusReactionModuleEditor.cs',
+                    'Assets/Editor/UseItemStatusReactionModuleEditor.cs', 'Assets/Editor/ViewportCanvasScalerEditor.cs',
                     'Assets/Editor/UIObjectPlacementLayout.cs', 'Assets/Editor/UIObjectPlacementUtility.cs',
                     'Assets/Editor/UIObjectPlacementWindow.cs', 'Assets/Editor/Tests/UIObjectPlacementTests.cs',
                     'Assets/Editor/Tests/MergeItemPrefabAssetTests.cs',
@@ -253,7 +253,7 @@ def main():
     pure_dir = work / 'managed'
     pure_dir.mkdir()
     managed_path = pure_dir / 'Managed.csproj'
-    scene_logic = [ROOT / 'Assets/Script/Manager/Utility/Scene' / name for name in ('GameSceneRoutes.cs', 'GameViewportLayout.cs', 'SceneStartupPolicy.cs', 'ScenePlaySettings.cs', 'SceneUILayout.cs')]
+    scene_logic = [ROOT / 'Assets/Script/Manager/Utility/Scene' / name for name in ('GameSceneRoutes.cs', 'GameViewportLayout.cs', 'SceneStartupPolicy.cs', 'ScenePlaySettings.cs', 'SceneUILayout.cs', 'SceneUIScaleProfile.cs')]
     scene_logic += [ROOT / 'Assets/Script/Items/Merge' / name for name in ('MergeItem.cs', 'MergeTree.cs', 'MergeItemSelectionGesture.cs')]
     scene_logic += [HERE / 'ManagedMergeGameChecks.cs']
     scene_logic += [ROOT / 'Assets/Editor/UIObjectPlacementLayout.cs', HERE / 'ManagedUIPlacementChecks.cs']

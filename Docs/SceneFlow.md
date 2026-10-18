@@ -139,22 +139,31 @@ Current Scene Only에서도 코어 씬을 직접 실행하면 코어의 시작 �
 
 `GameItemScene`의 직접 만든 서브 게임 오브젝트와 UI가 오른쪽에 표시됩니다. 카메라 Orthographic Size로 각 영역에 보이는 월드 범위를 조절할 수 있습니다.
 
-## 아이템씬의 20:80 UI와 실제 박스
+## 공통 UI 배율과 프레임 두께
 
-`GameItemScene → MegerGeneralManager`의 **ItemSceneLayoutController**가 기존 UI에 연결되어 있습니다. 전체 화면 중 아이템 카메라가 차지하는 영역을 다시 100%로 보고 계산하므로, 아이템씬 단독 실행과 제너럴 내 40% 표시 모두 같은 내부 비율을 사용합니다.
+제너럴의 Canvas, 배틀의 Main/Result/Tutorial Canvas, 아이템의 UICanvas/BackgroundCanvas는 **ViewportCanvasScaler → Shared Scale Profile**에 동일한 `Assets/Data/SceneUIScaleProfile.asset`을 사용합니다. 프로필에서 기준 해상도·Match·Reference Pixels Per Unit을 한 번에 수정합니다. 초기값은 최신 업로드의 설정을 반영한 `2400×1440`, Height 기준(`Match=1`), Reference PPU `100`입니다. 배틀의 별도 Constant Pixel Size Indicator Canvas는 기존 설정을 유지합니다.
+
+프로필이 연결되어 있으면 Overlay/Camera 모두 **출력 화면 전체 해상도**로 배율을 계산합니다. 카메라 pixelRect나 씬별로 남아 있는 과거 Canvas Scaler 값은 공통 배율을 바꾸지 않습니다. 따라서 카메라 Viewport가 60:40으로 달라도 같은 Sprite의 Sliced Image가 동일한 **Pixels Per Unit Multiplier**를 사용하면 테두리·모서리의 화면 크기가 같습니다. 최신 내비게이션·아이템 프레임의 값 `1`은 유지합니다. 값이 커질수록 테두리는 얇아집니다.
+
+프레임의 전체 가로·세로 크기와 위치는 Anchor/Layout Group이 계속 담당합니다. 공통 프로필은 카메라 Viewport, Layout Element의 가중치, 부모·자식 구조를 수정하지 않습니다. 프레임/중간 부모의 Local Scale은 1을 사용하세요. 서로 다른 Sprite는 Sprite Editor의 Border와 원본 Pixels Per Unit이 다르면 Multiplier가 같아도 모서리 모양·두께가 다를 수 있습니다. 원본 아트/Border는 자동으로 변경하지 않습니다.
+
+프로필을 연결하지 않은 ViewportCanvasScaler는 기존 카메라 영역 기준 계산으로 돌아갑니다. 새로운 씬 UI에도 같은 배율이 필요하면 기존 Canvas의 ViewportCanvasScaler에 같은 Shared Scale Profile을 연결하세요. Canvas/UI 오브젝트를 생성하는 코드나 메뉴는 추가하지 않습니다.
+
+## 아이템씬의 UI 비율과 실제 박스
+
+최신 아이템씬은 직접 만든 **Unity Layout Group** 구조를 사용합니다. 이 구성을 유지하며 `MegerGeneralManager → ItemSceneLayoutController`는 저장된 비활성 상태를 유지합니다. 현재 배치는 다음과 같습니다.
 
 | 영역 | 아이템 화면 내부 범위 |
 | --- | --- |
-| SeriesSelect: 상자/시리즈 선택 | 상단 20%, 가로 전체 |
-| BoxArea: 실제 게임 프레임 | 왼쪽 80% × 아래 80% |
-| MaterialSelect: 재료 UI | 오른쪽 20% 중 위쪽 |
-| SettingSelect: 레시피 등 보조 UI 연결 영역 | 오른쪽 20% 중 아래쪽 |
+| UICanvas → Naviagtion / ItemMerge | Vertical Layout Group, Flexible Height 1.5:8.5 |
+| ItemMerge → Box / Matrieal | Horizontal Layout Group, Flexible Width 8:2 |
+| Matrieal → MaterialSelect / SettingSelect | Vertical Layout Group, Flexible Height 8:2 |
 
-**Game Area Share**의 X/Y는 각각 `0.8`이며 독립적으로 바꿀 수 있습니다. **Lower Sidebar Share**는 오른쪽 영역 안에서 아래 패널이 차지하는 비율이며 기본 `0.5`입니다. UI 이름·스프라이트·기존 자식·이벤트는 유지하고 네 영역의 Anchor/Offset만 연결합니다. 아이템의 두 Canvas에는 **ViewportCanvasScaler**를 연결했으며, 해당 카메라의 pixelRect를 기준으로 배율을 계산합니다. 기준 해상도는 아이템 영역 기준 `960×1147.5`, Match는 `0.5`이고 두 Canvas가 같은 설정을 사용합니다.
+비율을 바꾸려면 해당 **Layout Element의 Flexible Width/Height**를 수정합니다. 공통 UI 배율을 바꿔도 이 가중치는 유지됩니다. 기존 `ItemSceneLayoutController`는 Layout Group을 사용하지 않는 이전 구성에 대한 선택 사항입니다. 다시 켜면 연결된 패널의 Anchor/Offset을 직접 제어하므로 현재 Layout Group 구조에서는 꺼 두세요.
 
-같은 오브젝트의 **UIWorldBoundsFitter**는 기존 `UICanvas/BoxArea/Frame`과 월드의 `CragtingBox`를 연결합니다. **Frame Occupancy**는 프레임 안에서 박스가 차지하는 정규화 영역으로 기본 `X/Y=0.06`, `Width/Height=0.88`입니다. 벽·바닥·투입구를 포함한 원래 범위를 한 번 측정하고, UI 레이아웃 계산 후 화면 좌표를 아이템 월드 평면으로 투영해 위치와 X/Y 크기를 맞춥니다. 카메라 줌을 임의로 변경하지 않습니다.
+이전 구성의 **UIWorldBoundsFitter**는 기존 게임 프레임과 월드의 `CragtingBox`를 연결하는 도구입니다. **Frame Occupancy**는 프레임 안에서 박스가 차지하는 정규화 영역입니다. 벽·바닥·투입구를 포함한 원래 범위를 한 번 측정하고, UI 레이아웃 계산 후 `FitNow()`를 호출하면 화면 좌표를 아이템 월드 평면으로 투영해 위치와 X/Y 크기를 맞춥니다. 현재 씬은 호출하던 ItemSceneLayoutController가 꺼져 있으며 이 상태와 저장된 Frame Occupancy 값은 그대로 유지합니다.
 
-화면 비율이 바뀌면 실제 상자의 가로·세로도 프레임의 같은 비율을 채우도록 변합니다. **상자 원본의 고정 종횡비를 유지하며 여백을 남기는 방식은 아닙니다.** 투입구는 박스의 자식이어서 함께 이동합니다. 활성 머지 아이템은 위치·속도를 같은 변환으로 보정하며 아이템 데이터·개수·반지름은 유지합니다. 원형 아이템을 박스처럼 비균등하게 늘리지 않습니다. 드래그 중 화면이 바뀌면 이전 좌표의 선택을 취소합니다. 풀에서 대기 중인 아이템은 이동하지 않습니다.
+이전 컨트롤러와 Fitter를 함께 사용하는 구성에서는 실제 상자의 가로·세로가 프레임의 같은 비율을 채우도록 변하고, 활성 아이템의 위치·속도도 함께 보정합니다. 원형 아이템의 반지름은 유지하며 선택 중에는 이전 좌표의 드래그를 취소합니다. 현재 Layout Group 구성에 이 동작을 다시 연결할 때는 패널 Anchor를 제어하는 이전 컨트롤러와 분리해 사용하세요.
 
 박스 프리팹을 교체하면 World Root와 Include Points(투입구)를 연결하고 **기존 박스의 로컬 범위 다시 측정**으로 범위를 갱신할 수 있습니다. 자동 측정을 끄고 Local Bounds를 직접 지정할 수도 있습니다. 이 배치는 XY 평면을 보는 직교 카메라와 회전하지 않은 박스 루트를 기준으로 합니다.
 

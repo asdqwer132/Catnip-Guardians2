@@ -1,8 +1,73 @@
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+using System.Reflection;
 
 public class ResponsiveSceneLayoutTests
 {
+    [Test] public void EqualFrameMultipliersProduceEqualScreenBordersInOverlayAndCameraCanvases()
+    {
+        var cameraHost = new GameObject("Item camera", typeof(Camera));
+        var overlayHost = new GameObject("Existing overlay", typeof(RectTransform), typeof(Canvas), typeof(ViewportCanvasScaler));
+        var itemHost = new GameObject("Existing item UI", typeof(RectTransform), typeof(Canvas), typeof(ViewportCanvasScaler));
+        var overlayFrame = new GameObject("Overlay frame", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        var itemFrame = new GameObject("Item frame", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        var profile = ScriptableObject.CreateInstance<SceneUIScaleProfile>();
+        var texture = new Texture2D(64,64);
+        var sprite = Sprite.Create(texture,new Rect(0,0,64,64),new Vector2(.5f,.5f),32,0,SpriteMeshType.FullRect,new Vector4(18,18,18,18));
+        try
+        {
+            var camera = cameraHost.GetComponent<Camera>(); camera.orthographic = true; camera.transform.position = new Vector3(0,0,-10);
+            var overlay = overlayHost.GetComponent<Canvas>(); overlay.renderMode = RenderMode.ScreenSpaceOverlay;
+            var item = itemHost.GetComponent<Canvas>(); item.renderMode = RenderMode.ScreenSpaceCamera; item.worldCamera = camera; item.planeDistance = 10;
+            var overlayScaler = overlayHost.GetComponent<ViewportCanvasScaler>(); var itemScaler = itemHost.GetComponent<ViewportCanvasScaler>();
+            overlayScaler.sharedScaleProfile = itemScaler.sharedScaleProfile = profile;
+            // 서로 다른 과거 Inspector 값이 남아 있어도 공통 프로필이 우선되어야 합니다.
+            overlayScaler.referenceResolution = new Vector2(2400,600); itemScaler.referenceResolution = new Vector2(960,1147.5f);
+            overlayScaler.referencePixelsPerUnit = 100; itemScaler.referencePixelsPerUnit = 32;
+            overlayFrame.transform.SetParent(overlay.transform,false); itemFrame.transform.SetParent(item.transform,false);
+            var a = overlayFrame.GetComponent<Image>(); var b = itemFrame.GetComponent<Image>();
+            a.sprite = b.sprite = sprite; a.type = b.type = Image.Type.Sliced;
+            SceneUILayout.SetRect(a.rectTransform,new Rect(0,0,1,1)); SceneUILayout.SetRect(b.rectTransform,new Rect(0,0,1,1));
+            var handle = typeof(ViewportCanvasScaler).GetMethod("Handle",BindingFlags.Instance|BindingFlags.NonPublic);
+            foreach (var viewport in new[] {new Rect(.6f,0,.4f,.85f),new Rect(.75f,0,.25f,1),new Rect(0,0,1,1)})
+            foreach (float multiplier in new[] {.5f,1f,2f})
+            {
+                camera.rect = viewport;
+                a.pixelsPerUnitMultiplier = b.pixelsPerUnitMultiplier = multiplier;
+                handle.Invoke(overlayScaler,null); handle.Invoke(itemScaler,null); Canvas.ForceUpdateCanvases();
+                Assert.That(item.scaleFactor,Is.EqualTo(overlay.scaleFactor).Within(.00001f));
+                Assert.That(item.referencePixelsPerUnit,Is.EqualTo(overlay.referencePixelsPerUnit));
+                Assert.That(ScreenBorder(b,camera),Is.EqualTo(ScreenBorder(a,null)).Within(.05f));
+                Assert.That(camera.rect,Is.EqualTo(viewport),"공통 배율 때문에 카메라 영역 비율을 변경하면 안 됩니다.");
+            }
+        }
+        finally
+        {
+            Object.DestroyImmediate(overlayFrame); Object.DestroyImmediate(itemFrame); Object.DestroyImmediate(overlayHost);
+            Object.DestroyImmediate(itemHost); Object.DestroyImmediate(cameraHost); Object.DestroyImmediate(sprite);
+            Object.DestroyImmediate(texture); Object.DestroyImmediate(profile);
+        }
+    }
+    private static float ScreenBorder(Image image, Camera camera)
+    {
+        // 실제 Sliced 메시의 첫 두 X 경계를 화면으로 투영해 테두리 두께를 비교합니다.
+        using (var vertices = new VertexHelper())
+        {
+            typeof(Image).GetMethod("OnPopulateMesh",BindingFlags.NonPublic|BindingFlags.Instance,null,new[] {typeof(VertexHelper)},null)
+                .Invoke(image,new object[] {vertices});
+            var xs = new List<float>();
+            for (int i=0;i<vertices.currentVertCount;i++)
+            {
+                var vertex = new UIVertex(); vertices.PopulateUIVertex(ref vertex,i);
+                float x = RectTransformUtility.WorldToScreenPoint(camera,image.rectTransform.TransformPoint(vertex.position)).x;
+                if (!xs.Exists(value => Mathf.Abs(value-x)<.001f)) xs.Add(x);
+            }
+            xs.Sort(); Assert.That(xs.Count,Is.GreaterThanOrEqualTo(4));
+            return xs[1]-xs[0];
+        }
+    }
     [Test] public void OverlayHeaderAndContentUseTheSameFifteenPercentBoundary()
     {
         var host = new GameObject("General ratio test");

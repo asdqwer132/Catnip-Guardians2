@@ -51,6 +51,7 @@ namespace UnityEditor
         public float floatValue;
         public int intValue;
         public bool hasMultipleDifferentValues;
+        public UnityEngine.Object objectReferenceValue;
         public SerializedPropertyType propertyType;
     }
     public class SerializedObject
@@ -179,4 +180,9 @@ namespace UnityEditor.Compilation
     {
         public static Assembly[] GetAssemblies(AssembliesType type) => Array.Empty<Assembly>();
     }
+}
+namespace UnityEditor.UI
+{
+    // API compilation only; the native CanvasScaler Inspector is not executed in the cloud.
+    public class CanvasScalerEditor : UnityEditor.Editor { }
 }
