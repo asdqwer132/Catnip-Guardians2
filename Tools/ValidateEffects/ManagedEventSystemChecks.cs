@@ -110,6 +110,7 @@ public static class EventSystemChecks
         Console.WriteLine("PASS audio lifecycle simulation: independent scene and late Core loading.");
         SceneCameraChecks.Run();
         SceneAudioChecks.Run();
+        BattleSceneContextChecks.Run();
     }
 }
 
@@ -186,7 +187,11 @@ namespace UnityEngine
 }
 namespace UnityEngine.SceneManagement
 {
-    public record struct Scene(string name);
+    public record struct Scene(string name)
+    {
+        public bool IsValid() => !string.IsNullOrEmpty(name);
+        public bool isLoaded => IsValid() && SceneManager.IsLoaded(this);
+    }
 }
 namespace UnityEngine.EventSystems
 {

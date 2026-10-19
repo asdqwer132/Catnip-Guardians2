@@ -4,6 +4,41 @@ using UnityEngine;
 
 public sealed class SceneFlowTests
 {
+    [Test] public void BattleContextUsesTheExistingDefeatFlowAndShowsItsLocalResultPanelOnce()
+    {
+        float previousTimeScale = Time.timeScale;
+        var previousGrowth = GrowManager.instance;
+        var previousCursor = CursorChanger.instance;
+        var host = new GameObject("Battle Context result flow test"); host.SetActive(false);
+        var panel = new GameObject("Local result panel"); panel.SetActive(false);
+        try
+        {
+            GrowManager.instance = null; CursorChanger.instance = null;
+            var manager = host.AddComponent<GameManager>();
+            var round = host.AddComponent<RoundManager>();
+            var end = host.AddComponent<GameEndManager>();
+            var context = host.AddComponent<BattleSceneContext>();
+            manager.roundManager = round; manager.endManager = end; round.endManager = end;
+            typeof(BattleSceneContext).GetField("gameManager", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(context, manager);
+            typeof(GameEndManager).GetField("resultPanel", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(end, panel);
+            int results = 0; end.OnGameEnded += _ => results++;
+            host.SetActive(true);
+
+            Assert.That(context.TryRequestDefeat(), Is.True);
+            Assert.That(end.CurrentEndType, Is.EqualTo(GameEndType.Lose));
+            Assert.That(panel.activeSelf, Is.True);
+            Assert.That(Time.timeScale, Is.Zero);
+            Assert.That(context.TryRequestDefeat(), Is.True);
+            Assert.That(results, Is.EqualTo(1));
+        }
+        finally
+        {
+            Object.DestroyImmediate(host); Object.DestroyImmediate(panel);
+            Time.timeScale = previousTimeScale;
+            GrowManager.instance = previousGrowth; CursorChanger.instance = previousCursor;
+        }
+    }
+
     [TestCase("GameScene", GameSceneRoutes.General)]
     [TestCase("GameBattleScene", GameSceneRoutes.Battle)]
     [TestCase("Assets/Scenes/GameItemScene.unity", GameSceneRoutes.Item)]

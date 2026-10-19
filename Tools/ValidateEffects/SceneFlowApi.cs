@@ -34,7 +34,6 @@ public class BuffSkillManager : MonoBehaviour
 }
 public class ItemInitManager : MonoBehaviour { public void ApplyDefaultInventoryItems() { } }
 public class InitManager { public bool isInited; public void InitAll() { } public void ResetEntity() { } }
-public class RoundManager { public void Victory() { } public void GameOver() { } }
 public class UnlockManager : MonoBehaviour { public void Init() { } }
 public class ShopManager : MonoBehaviour { public void InitShop() { } }
 public class SkillTreeUI : MonoBehaviour { public void Init() { } }

@@ -67,6 +67,26 @@ def check_scene_flow():
         return re.search(r'^guid: (\w+)', Path(str(assets / path) + '.meta').read_text(), re.M)[1]
 
     core, general = scenes['CoreScene'][0], scenes['GameGeneralScene'][0]
+    # Cross-scene buttons serialize local relays; the Battle keeps all result/manager references local.
+    battle_blocks = scenes['GameBattleScene'][1]
+    general_blocks = scenes['GameGeneralScene'][1]
+    context_id, context = next((key, body) for key, (_, body) in battle_blocks.items()
+                              if guid('Script/Manager/Utility/Scene/BattleSceneContext.cs') in body)
+    relay_id, relay = next((key, body) for key, (_, body) in general_blocks.items()
+                          if guid('Script/Manager/Utility/Scene/BattleSceneButtonRelay.cs') in body)
+    manager_id = re.search(r'^  gameManager: \{fileID: (\d+)\}', context, re.M)[1]
+    manager = battle_blocks[manager_id][1]
+    assert 'Assembly-CSharp::GameManager\n' in manager
+    end_id = re.search(r'^  endManager: \{fileID: (\d+)\}', manager, re.M)[1]
+    result_id = re.search(r'^  resultPanel: \{fileID: (\d+)\}', battle_blocks[end_id][1], re.M)[1]
+    assert result_id != '0' and result_id in battle_blocks
+    controller_id = re.search(r'^  sceneController: \{fileID: (\d+)\}', relay, re.M)[1]
+    assert guid('Script/Manager/Utility/Scene/GameGeneralSceneController.cs') in general_blocks[controller_id][1]
+    assert '  m_Enabled: 1\n' in context and '  m_Enabled: 1\n' in relay
+    assert any(f'm_Target: {{fileID: {relay_id}}}\n' in body and
+               'm_TargetAssemblyTypeName: BattleSceneButtonRelay, Assembly-CSharp\n' in body and
+               'm_MethodName: RequestDefeat\n' in body for _, body in general_blocks.values())
+    print('PASS cross-scene defeat wiring: General button -> local relay/controller -> Battle Context/GameManager/result panel.')
     for script in ('CoreSceneBootstrap', 'GameSceneRoutes'):
         assert (assets / f'Script/Manager/Utility/Scene/{script}.cs').exists()
     assert guid('Script/Manager/Utility/Scene/CoreSceneBootstrap.cs') in core
