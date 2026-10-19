@@ -5,6 +5,56 @@ public static partial class Runner
 {
     private static void RunSceneFlowChecks()
     {
+        Check("scene carrier resolves independently declared keys by name and type", () => {
+            SceneDataCarrier.Clear();
+            var sender=new SceneDataKey<int>(" shared-count ");
+            var receiver=new SceneDataKey<int>("shared-count");
+            SceneDataCarrier.Put(sender,7);
+            True(SceneDataCarrier.TryGet(receiver,out int value) && value==7);
+            True(SceneDataCarrier.TryGet(receiver,out value) && value==7);
+            True(SceneDataCarrier.Count==1); SceneDataCarrier.Clear();
+        });
+        Check("scene carrier isolates keys with equal names but different data types", () => {
+            SceneDataCarrier.Clear();
+            var number=new SceneDataKey<int>("payload"); var text=new SceneDataKey<string>("payload");
+            SceneDataCarrier.Put(number,3); SceneDataCarrier.Put(text,"hello");
+            True(SceneDataCarrier.TryGet(number,out int a) && a==3);
+            True(SceneDataCarrier.TryGet(text,out string b) && b=="hello");
+            True(!SceneDataCarrier.TryGet(new SceneDataKey<float>("payload"),out float missing) && missing==0);
+            True(SceneDataCarrier.Count==2); SceneDataCarrier.Clear();
+        });
+        Check("scene carrier overwrites one key and take consumes it exactly once", () => {
+            SceneDataCarrier.Clear(); var key=new SceneDataKey<int>("once");
+            SceneDataCarrier.Put(key,1); SceneDataCarrier.Put(key,9);
+            True(SceneDataCarrier.Count==1);
+            True(SceneDataCarrier.TryTake(key,out int value) && value==9);
+            True(!SceneDataCarrier.TryTake(key,out value) && value==0);
+            True(!SceneDataCarrier.TryGet(key,out value));
+        });
+        Check("scene carrier preserves explicit null and reference payloads without cloning", () => {
+            SceneDataCarrier.Clear(); var key=new SceneDataKey<System.Collections.Generic.List<int>>("items");
+            var items=new System.Collections.Generic.List<int> {1}; SceneDataCarrier.Put(key,items);
+            True(SceneDataCarrier.TryGet(key,out var received) && ReferenceEquals(received,items));
+            received.Add(2); True(items.Count==2);
+            SceneDataCarrier.Put(key,null);
+            True(SceneDataCarrier.TryGet(key,out received) && received==null);
+            True(SceneDataCarrier.TryTake(key,out received) && received==null);
+            True(!SceneDataCarrier.TryGet(key,out received));
+        });
+        Check("scene carrier remove is scoped and clear removes all remaining payloads", () => {
+            SceneDataCarrier.Clear(); var first=new SceneDataKey<int>("first"); var second=new SceneDataKey<int>("second");
+            SceneDataCarrier.Put(first,1); SceneDataCarrier.Put(second,2);
+            True(SceneDataCarrier.Remove(first) && !SceneDataCarrier.Remove(first));
+            True(SceneDataCarrier.TryGet(second,out int value) && value==2);
+            SceneDataCarrier.Clear(); True(SceneDataCarrier.Count==0 && !SceneDataCarrier.TryGet(second,out value));
+        });
+        Check("scene carrier rejects invalid key names and null key objects", () => {
+            bool rejected=false;
+            try { new SceneDataKey<int>(" "); } catch(ArgumentException) { rejected=true; }
+            True(rejected); rejected=false;
+            try { SceneDataCarrier.Put<int>(null,1); } catch(ArgumentNullException) { rejected=true; }
+            True(rejected); True(SceneDataCarrier.Count==0);
+        });
         Check("legacy aliases preserve independent battle and item destinations", () => {
             True(GameSceneRoutes.Resolve("GameScene") == GameSceneRoutes.General);
             True(GameSceneRoutes.Resolve("GameBattleScene") == GameSceneRoutes.Battle);
