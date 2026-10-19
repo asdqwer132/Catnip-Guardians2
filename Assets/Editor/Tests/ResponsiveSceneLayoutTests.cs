@@ -7,6 +7,70 @@ using UnityEngine.Rendering;
 
 public class ResponsiveSceneLayoutTests
 {
+    [Test] public void MaskCacheReadsOnlyTheSelectedSpriteRegionAndCanBeReusedAfterClear()
+    {
+        var texture=new Texture2D(4,2,TextureFormat.RGBA32,false);
+        var cache=new SceneMaskTextureCache();
+        try
+        {
+            var colors=new Color32[8];
+            for(int i=0;i<8;i++) colors[i]=new Color32(255,255,255,(byte)(i*30));
+            texture.SetPixels32(colors); texture.Apply();
+            Assert.That(cache.Prepare(texture,new Rect(.5f,0,.5f,1)),Is.True);
+            Assert.That(cache.Width,Is.EqualTo(2)); Assert.That(cache.Height,Is.EqualTo(2));
+            CollectionAssert.AreEqual(new byte[] {60,90,180,210},cache.Pixels);
+            cache.Clear(); Assert.That(cache.Pixels,Is.Null);
+            Assert.That(cache.Prepare(texture,new Rect(0,0,1,1)),Is.True);
+            Assert.That(cache.Pixels.Length,Is.EqualTo(8));
+        }
+        finally { cache.Dispose(); Object.DestroyImmediate(texture); }
+    }
+    [Test] public void UIFrameMatchesActualImageBordersAndOnlyItsTransparentWindowReceivesGameplayInput()
+    {
+        var cameraHost=new GameObject("Frame camera",typeof(Camera),typeof(SceneCameraPresentation));
+        var canvasHost=new GameObject("Authored overlay",typeof(RectTransform),typeof(Canvas));
+        var frameHost=new GameObject("Authored frame",typeof(RectTransform),typeof(CanvasRenderer),typeof(Image));
+        var texture=new Texture2D(32,32,TextureFormat.RGBA32,false);
+        Sprite sprite=null;
+        try
+        {
+            var colors=new Color32[1024];
+            for(int y=0;y<32;y++) for(int x=0;x<32;x++) colors[y*32+x]=new Color32(255,255,255,(byte)(x<8 || x>=24 || y<8 || y>=24?255:0));
+            texture.SetPixels32(colors); texture.Apply();
+            sprite=Sprite.Create(texture,new Rect(0,0,32,32),new Vector2(.5f,.5f),100,0,SpriteMeshType.FullRect,new Vector4(8,8,8,8));
+            var canvas=canvasHost.GetComponent<Canvas>(); canvas.renderMode=RenderMode.ScreenSpaceOverlay;
+            frameHost.transform.SetParent(canvasHost.transform,false);
+            var image=frameHost.GetComponent<Image>(); image.sprite=sprite; image.type=Image.Type.Sliced;
+            image.rectTransform.sizeDelta=new Vector2(400,200);
+            var frame=frameHost.AddComponent<SceneViewFrame>(); frame.targetCamera=cameraHost.GetComponent<Camera>();
+            var view=cameraHost.GetComponent<SceneCameraPresentation>();
+            Texture2D cachedWindow=null;
+            foreach(float multiplier in new[] {.5f,1f,2f})
+            {
+                image.rectTransform.sizeDelta=new Vector2(400+multiplier*100,200+multiplier*50);
+                image.pixelsPerUnitMultiplier=multiplier; Canvas.ForceUpdateCanvases();
+                Assert.That(view.EffectiveShape,Is.EqualTo(SceneViewShape.UIFrame));
+                if(cachedWindow==null) cachedWindow=frame.WindowMask;
+                Assert.That(frame.WindowMask,Is.SameAs(cachedWindow),"크기/PPU 변경은 스프라이트 알파를 다시 분석하지 않습니다.");
+                Assert.That(frame.TryGeometry(view,out var geometry),Is.True);
+                var corners=new Vector3[4]; image.rectTransform.GetWorldCorners(corners);
+                Vector2 left=RectTransformUtility.WorldToScreenPoint(null,corners[0]);
+                Vector2 right=RectTransformUtility.WorldToScreenPoint(null,corners[3]);
+                Assert.That(geometry.destBorder.x*(right.x-left.x),Is.EqualTo(ScreenBorder(image,null)).Within(.05f));
+                Vector2 center=RectTransformUtility.WorldToScreenPoint(null,image.rectTransform.TransformPoint(Vector3.zero));
+                Assert.That(view.ContainsScreenPoint(center),Is.True);
+                Assert.That(view.ContainsScreenPoint(new Vector2(left.x+1,center.y)),Is.False,"프레임의 불투명 테두리는 게임 입력을 받지 않습니다.");
+            }
+            image.rectTransform.sizeDelta=new Vector2(400,200);
+            image.type=Image.Type.Simple; image.preserveAspect=true; Canvas.ForceUpdateCanvases();
+            Vector2 outside=RectTransformUtility.WorldToScreenPoint(null,image.rectTransform.TransformPoint(new Vector3(-150,0,0)));
+            Assert.That(view.ContainsScreenPoint(outside),Is.False,"400x200 UI 안의 정사각형 프레임은 200x200으로 유지됩니다.");
+            frame.enabled=false;
+            Assert.That(view.EffectiveShape,Is.EqualTo(SceneViewShape.Rectangle));
+        }
+        finally
+        { Object.DestroyImmediate(frameHost); Object.DestroyImmediate(canvasHost); Object.DestroyImmediate(cameraHost); if(sprite!=null) Object.DestroyImmediate(sprite); Object.DestroyImmediate(texture); }
+    }
     [Test] public void NonReadableDxt5MaskUsesAnUncompressedCopyAndPreservesTheActiveRenderTarget()
     {
         if(SystemInfo.graphicsDeviceType==GraphicsDeviceType.Null || !SystemInfo.SupportsTextureFormat(TextureFormat.DXT5))

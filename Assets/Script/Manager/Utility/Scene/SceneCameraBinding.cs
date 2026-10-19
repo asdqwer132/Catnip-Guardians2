@@ -97,7 +97,7 @@ public sealed class SceneCameraBinding : MonoBehaviour
         => InScene(scene, SceneCameraRole.Content);
     public static SceneCameraBinding NavigationIn(Scene scene)
         => InScene(scene, SceneCameraRole.Navigation);
-    private static SceneCameraBinding InScene(Scene scene, SceneCameraRole role)
+    public static SceneCameraBinding InScene(Scene scene, SceneCameraRole role)
     {
         SceneCameraBinding result = null;
         foreach (var value in bindings)

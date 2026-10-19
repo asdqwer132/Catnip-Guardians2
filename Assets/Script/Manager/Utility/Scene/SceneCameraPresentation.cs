@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.Experimental.Rendering;
 
 // 카메라/Canvas를 추가하지 않고 기존 카메라의 렌더링 옵션만 등록합니다.
 [ExecuteAlways, DisallowMultipleComponent, RequireComponent(typeof(Camera))]
@@ -19,11 +17,12 @@ public sealed class SceneCameraPresentation : MonoBehaviour
     [Range(0,.5f)] public float maskEdgeSoftness = .01f;
     public bool invertMask;
     private Camera boundCamera;
-    private Texture2D sampledMask;
-    private byte[] maskPixels;
-    private int maskWidth, maskHeight, maskVersion;
-    private uint sampledUpdateCount;
-    private bool retryReadback;
+    private readonly SceneMaskTextureCache maskCache=new SceneMaskTextureCache();
+    public SceneViewFrame UIFrame { get; private set; }
+    public SceneViewShape EffectiveShape => UIFrame!=null && UIFrame.CanMask ? SceneViewShape.UIFrame :
+        shape==SceneViewShape.UIFrame?SceneViewShape.Rectangle:shape;
+    public void BindFrame(SceneViewFrame frame) => UIFrame=frame;
+    public void UnbindFrame(SceneViewFrame frame) { if(UIFrame==frame) UIFrame=null; }
     private static readonly Dictionary<Camera, SceneCameraPresentation> entries = new Dictionary<Camera, SceneCameraPresentation>();
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetRegistry() => entries.Clear();
@@ -31,9 +30,9 @@ public sealed class SceneCameraPresentation : MonoBehaviour
     private void OnDisable()
     {
         if (boundCamera != null && entries.TryGetValue(boundCamera, out var current) && current == this) entries.Remove(boundCamera);
-        maskVersion++; sampledMask=null; maskPixels=null; retryReadback=false;
+        maskCache.Clear();
     }
-    private void Update() { if(shape==SceneViewShape.ImageMask) PrepareMask(); }
+    private void Update() { if(EffectiveShape==SceneViewShape.ImageMask) PrepareMask(); }
     public static SceneCameraPresentation ForCamera(Camera camera)
         => camera != null && entries.TryGetValue(camera, out var value) && value != null && value.isActiveAndEnabled ? value : null;
     public Vector2 OutputSize
@@ -52,103 +51,17 @@ public sealed class SceneCameraPresentation : MonoBehaviour
     public bool ContainsScreenPoint(Vector2 point)
     {
         Rect rect=(boundCamera != null ? boundCamera : GetComponent<Camera>()).pixelRect;
-        if(!SceneScreenPresentationMath.Contains(rect,point,shape,RadiusInPixels)) return false;
+        if(!SceneScreenPresentationMath.Contains(rect,point,EffectiveShape,RadiusInPixels)) return false;
+        if(EffectiveShape==SceneViewShape.UIFrame) return UIFrame.ContainsWindowPoint(point,this);
         if(shape!=SceneViewShape.ImageMask || maskImage==null) return true;
         PrepareMask();
         Vector2 scale=SceneScreenPresentationMath.MaskUvScale(new Vector2(maskImage.width,maskImage.height),rect.size,maskFit);
         if(!SceneScreenPresentationMath.TryMaskUv(new Vector2((point.x-rect.x)/rect.width,(point.y-rect.y)/rect.height),scale,out var uv)) return false;
         // 비동기 복사가 끝나기 전에는 아직 확인되지 않은 영역으로 입력을 보내지 않습니다.
-        if(maskPixels==null) return false;
-        float alpha=SceneScreenPresentationMath.SampleMaskAlpha(maskPixels,maskWidth,maskHeight,uv);
+        if(maskCache.Pixels==null) return false;
+        float alpha=SceneScreenPresentationMath.SampleMaskAlpha(maskCache.Pixels,maskCache.Width,maskCache.Height,uv);
         if(invertMask) alpha=1-alpha;
         return alpha>0 && alpha>=Mathf.Clamp01(maskAlphaThreshold);
     }
-    private void PrepareMask()
-    {
-        if(sampledMask==maskImage && (maskImage==null || sampledUpdateCount==maskImage.updateCount))
-        {
-            if(retryReadback) { retryReadback=false; ReadMaskSynchronously(); }
-            return;
-        }
-        sampledMask=maskImage; maskPixels=null; retryReadback=false;
-        int version=++maskVersion;
-        if(sampledMask==null) return;
-        sampledUpdateCount=sampledMask.updateCount;
-        maskWidth=sampledMask.width; maskHeight=sampledMask.height;
-        if(sampledMask.isReadable && !GraphicsFormatUtility.IsCompressedFormat(sampledMask.graphicsFormat))
-        {
-            try { CacheAlpha(sampledMask.GetPixels32()); return; }
-            catch(UnityException) { /* CPU 디코딩을 지원하지 않는 압축 포맷은 GPU에서 복사합니다. */ }
-        }
-        // DXT/ASTC 같은 압축 원본은 ReadPixels를 지원하지 않을 수 있습니다.
-        // 먼저 셰이더로 RGBA 버퍼에 풀어 쓴 뒤 그 버퍼만 읽습니다.
-        RenderTexture copy=RenderTexture.GetTemporary(maskWidth,maskHeight,0,RenderTextureFormat.ARGB32,RenderTextureReadWrite.Linear);
-        bool queued=false;
-        try
-        {
-            CopyMaskTo(copy);
-            if(!CanReadAsynchronously(copy)) { ReadMaskCopy(copy); return; }
-            AsyncGPUReadback.Request(copy,0,TextureFormat.RGBA32,request =>
-            {
-                try
-                {
-                    if(this==null || !isActiveAndEnabled || version!=maskVersion || sampledMask!=maskImage) return;
-                    if(request.hasError) { retryReadback=true; return; }
-                    var pixels=request.GetData<Color32>();
-                    maskPixels=new byte[pixels.Length];
-                    for(int i=0;i<pixels.Length;i++) maskPixels[i]=pixels[i].a;
-                }
-                finally { RenderTexture.ReleaseTemporary(copy); }
-            });
-            queued=true; // 비동기 복사가 끝날 때까지 버퍼를 유지합니다.
-        }
-        finally { if(!queued) RenderTexture.ReleaseTemporary(copy); }
-    }
-    private static bool CanReadAsynchronously(RenderTexture copy)
-    {
-        if(!SystemInfo.supportsAsyncGPUReadback) return false;
-#if UNITY_6000_0_OR_NEWER
-        return SystemInfo.IsFormatSupported(copy.graphicsFormat,GraphicsFormatUsage.ReadPixels);
-#else
-        return SystemInfo.IsFormatSupported(copy.graphicsFormat,FormatUsage.ReadPixels);
-#endif
-    }
-    private void CacheAlpha(Color32[] pixels)
-    {
-        maskPixels=new byte[pixels.Length];
-        for(int i=0;i<pixels.Length;i++) maskPixels[i]=pixels[i].a;
-    }
-    private void CopyMaskTo(RenderTexture copy)
-    {
-        RenderTexture previous=RenderTexture.active;
-        try { Graphics.Blit(sampledMask,copy); }
-        finally { RenderTexture.active=previous; }
-    }
-    private void ReadMaskSynchronously()
-    {
-        RenderTexture copy=RenderTexture.GetTemporary(maskWidth,maskHeight,0,RenderTextureFormat.ARGB32,RenderTextureReadWrite.Linear);
-        try
-        {
-            CopyMaskTo(copy);
-            ReadMaskCopy(copy);
-        }
-        finally { RenderTexture.ReleaseTemporary(copy); }
-    }
-    private void ReadMaskCopy(RenderTexture copy)
-    {
-        RenderTexture previous=RenderTexture.active;
-        Texture2D readable=null;
-        try
-        {
-            RenderTexture.active=copy;
-            readable=new Texture2D(maskWidth,maskHeight,TextureFormat.RGBA32,false,true);
-            readable.ReadPixels(new Rect(0,0,maskWidth,maskHeight),0,0,false);
-            CacheAlpha(readable.GetPixels32());
-        }
-        finally
-        {
-            RenderTexture.active=previous;
-            if(readable!=null) { if(Application.isPlaying) Destroy(readable); else DestroyImmediate(readable); }
-        }
-    }
+    private void PrepareMask() => maskCache.Prepare(maskImage,new Rect(0,0,1,1));
 }

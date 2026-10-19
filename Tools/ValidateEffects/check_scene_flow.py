@@ -244,7 +244,7 @@ def check_scene_flow():
         host = re.search(r'^  m_GameObject: \{fileID: (\d+)\}',camera,re.M)[1]
         assert f'  m_GameObject: {{fileID: {host}}}\n' in view
         assert f'  background: {{fileID: 11400000, guid: {background_guid}, type: 2}}\n' in view
-        assert int(re.search(r'^  shape: (\d+)',view,re.M)[1]) in range(4), (name,'camera shape must stay configurable')
+        assert int(re.search(r'^  shape: (\d+)',view,re.M)[1]) in range(5), (name,'camera shape must stay configurable')
     renderer = (assets/'Settings/Renderer2D.asset').read_text()
     assert guid('Script/Manager/Utility/Scene/SceneScreenPresentationFeature.cs') in renderer
     assert guid('Script/Manager/Utility/Scene/SceneScreenPresentation.shader') in renderer

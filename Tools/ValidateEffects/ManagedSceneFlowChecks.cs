@@ -183,6 +183,52 @@ public static partial class Runner
             Eq(SceneScreenPresentationMath.SampleMaskAlpha(hole,3,3,new Vector2(.5f,.5f)),0);
             Eq(SceneScreenPresentationMath.SampleMaskAlpha(hole,3,3,Vector2.one),1);
         });
+        Check("closed frame fills transparent lenses but keeps the exterior hidden", () => {
+            var alpha=new byte[81];
+            for(int y=2;y<=6;y++) for(int x=2;x<=6;x++)
+                if(x==2 || x==6 || y==2 || y==6) alpha[y*9+x]=255;
+            var mask=SceneScreenPresentationMath.FillFrameWindows(alpha,9,9,.5f);
+            True(mask[4*9+4]==255 && alpha[4*9+4]==0);
+            True(mask[0]==0 && mask[8*9+8]==0 && mask[4*9+2]==255);
+            alpha[2*9+4]=0; // 열린 테두리는 창으로 오인하면 안 됩니다.
+            mask=SceneScreenPresentationMath.FillFrameWindows(alpha,9,9,.5f);
+            True(mask[4*9+4]==0);
+        });
+        Check("one glasses frame supports two separate lenses without exposing the space between them", () => {
+            var alpha=new byte[11*7];
+            for(int y=1;y<=5;y++) for(int x=1;x<=9;x++)
+                if((x<=4 && (x==1 || x==4 || y==1 || y==5)) || (x>=6 && (x==6 || x==9 || y==1 || y==5))) alpha[y*11+x]=255;
+            var mask=SceneScreenPresentationMath.FillFrameWindows(alpha,11,7,.5f);
+            True(mask[3*11+2]==255 && mask[3*11+7]==255 && mask[3*11+5]==0);
+        });
+        Check("frame aspect and pivot follow UI Image instead of stretching circles", () => {
+            var rect=SceneScreenPresentationMath.PreserveFrameAspect(new Rect(-200,-100,400,200),new Vector2(64,64),new Vector2(.5f,.5f));
+            Eq(rect.width,200); Eq(rect.height,200); Eq(rect.x,-100); Eq(rect.y,-100);
+            rect=SceneScreenPresentationMath.PreserveFrameAspect(new Rect(0,0,400,200),new Vector2(64,64),Vector2.zero);
+            Eq(rect.x,0); Eq(rect.width,200);
+        });
+        Check("frame screen map follows resize and rotation while keeping the same lens UVs", () => {
+            foreach(var corners in new[] {
+                new[] {new Vector2(.1f,.2f),new Vector2(.4f,.2f),new Vector2(.1f,.7f)},
+                new[] {new Vector2(.6f,.1f),new Vector2(.6f,.5f),new Vector2(.2f,.1f)}})
+            {
+                True(SceneScreenPresentationMath.FrameScreenMap(corners[0],corners[1],corners[2],out var x,out var y));
+                var uv=SceneScreenPresentationMath.FrameUv(corners[0]+(corners[1]-corners[0])*.3f+(corners[2]-corners[0])*.8f,x,y);
+                Eq(uv.x,.3f); Eq(uv.y,.8f);
+            }
+            True(!SceneScreenPresentationMath.FrameScreenMap(Vector2.zero,Vector2.zero,Vector2.zero,out var a,out var b));
+        });
+        Check("nine sliced frame mapping keeps source borders fixed while its center grows", () => {
+            foreach(float width in new[] {200f,400f,800f})
+            {
+                var source=new Vector4(.25f,.25f,.25f,.25f);
+                var dest=new Vector4(8/width,.04f,8/width,.04f);
+                var uv=SceneScreenPresentationMath.SlicedFrameUv(new Vector2(4/width,.5f),dest,source);
+                Eq(uv.x,.125f); Eq(uv.y,.5f);
+                uv=SceneScreenPresentationMath.SlicedFrameUv(new Vector2(1-4/width,.5f),dest,source);
+                Eq(uv.x,.875f);
+            }
+        });
         Check("shared UI profile invalid dimensions cannot create NaN or infinite scale", () => {
             foreach(float value in new[] {float.NaN,float.PositiveInfinity,float.NegativeInfinity,0f,-1f})
             {

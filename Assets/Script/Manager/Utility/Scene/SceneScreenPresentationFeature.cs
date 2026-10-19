@@ -28,7 +28,7 @@ public sealed class SceneScreenPresentationFeature : ScriptableRendererFeature
         if (layers.Length == 0) return;
         backgroundPass.renderPassSortingLayerID = layers[0].id;
         backgroundPass.Setup(material); renderer.EnqueuePass(backgroundPass);
-        if (view.shape != SceneViewShape.Rectangle) { shapePass.Setup(material); renderer.EnqueuePass(shapePass); }
+        if (view.EffectiveShape != SceneViewShape.Rectangle) { shapePass.Setup(material); renderer.EnqueuePass(shapePass); }
     }
     protected override void Dispose(bool disposing) => CoreUtils.Destroy(material);
 
@@ -43,6 +43,7 @@ public sealed class SceneScreenPresentationFeature : ScriptableRendererFeature
             public Material material; public int pass;
             public Texture texture, mask; public Color tint, empty;
             public Vector4 viewport, uvScale, shape, maskScale, maskSettings;
+            public Vector4 frameX,frameY,frameDest,frameSource;
         }
         public PresentationPass(string label, int shaderPass, RenderPassEvent injection, RenderPassEvent2D injection2D)
         {
@@ -71,12 +72,20 @@ public sealed class SceneScreenPresentationFeature : ScriptableRendererFeature
                 if (profile.fit == ScreenBackgroundFit.Tile) scale = profile.tileCount;
                 data.uvScale = new Vector4(scale.x, scale.y, (int)profile.fit, 0);
                 Rect pixels = cameraData.camera.pixelRect;
-                data.shape = new Vector4(pixels.width, pixels.height, view.RadiusInPixels, (int)view.shape);
+                data.shape = new Vector4(pixels.width, pixels.height, view.RadiusInPixels, (int)view.EffectiveShape);
                 data.mask=view.maskImage!=null?view.maskImage:Texture2D.whiteTexture;
                 Vector2 maskScale=SceneScreenPresentationMath.MaskUvScale(new Vector2(data.mask.width,data.mask.height),pixels.size,view.maskFit);
                 data.maskScale=new Vector4(maskScale.x,maskScale.y,0,0);
                 data.maskSettings=new Vector4(Mathf.Clamp01(view.maskAlphaThreshold),Mathf.Max(.0001f,view.maskEdgeSoftness),
                     view.invertMask?1:0,view.maskImage!=null?1:0);
+                if(view.EffectiveShape==SceneViewShape.UIFrame)
+                {
+                    bool ready=view.UIFrame.TryGeometry(view,out var geometry) && view.UIFrame.WindowMask!=null;
+                    data.mask=view.UIFrame.WindowMask!=null?view.UIFrame.WindowMask:Texture2D.whiteTexture;
+                    data.frameX=geometry.rowX; data.frameY=geometry.rowY;
+                    data.frameDest=geometry.destBorder; data.frameSource=geometry.sourceBorder;
+                    data.maskSettings=new Vector4(.5f,Mathf.Max(.0001f,view.maskEdgeSoftness),0,ready?1:0);
+                }
                 builder.SetRenderAttachment(resources.activeColorTexture, 0, AccessFlags.ReadWrite);
                 builder.AllowPassCulling(false);
                 builder.SetRenderFunc(static (PassData d, RasterGraphContext context) =>
@@ -86,6 +95,8 @@ public sealed class SceneScreenPresentationFeature : ScriptableRendererFeature
                     properties.SetColor("_BackgroundTint", d.tint); properties.SetColor("_EmptyColor", d.empty);
                     properties.SetVector("_Viewport", d.viewport); properties.SetVector("_UvScale", d.uvScale); properties.SetVector("_ViewShape", d.shape);
                     properties.SetTexture("_MaskTex",d.mask); properties.SetVector("_MaskScale",d.maskScale); properties.SetVector("_MaskSettings",d.maskSettings);
+                    properties.SetVector("_FrameMapX",d.frameX); properties.SetVector("_FrameMapY",d.frameY);
+                    properties.SetVector("_FrameDestBorder",d.frameDest); properties.SetVector("_FrameSourceBorder",d.frameSource);
                     context.cmd.DrawProcedural(Matrix4x4.identity, d.material, d.pass, MeshTopology.Triangles, 3, 1, properties);
                 });
             }

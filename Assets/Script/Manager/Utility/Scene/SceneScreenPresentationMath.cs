@@ -1,11 +1,58 @@
 using UnityEngine;
 
 public enum ScreenBackgroundFit { Cover, Contain, Stretch, Tile }
-public enum SceneViewShape { Rectangle, RoundedRectangle, Ellipse, ImageMask }
+public enum SceneViewShape { Rectangle, RoundedRectangle, Ellipse, ImageMask, UIFrame }
 public enum SceneMaskFit { Stretch, Cover, Contain }
 
 public static class SceneScreenPresentationMath
 {
+    // 바깥과 이어진 투명 영역만 제외하므로 원/별/여러 렌즈의 닫힌 내부를 모두 찾습니다.
+    public static byte[] FillFrameWindows(byte[] alpha,int width,int height,float threshold)
+    {
+        if(alpha==null || width<=0 || height<=0 || alpha.Length!=(long)width*height) return null;
+        byte cutoff=(byte)Mathf.Clamp(Mathf.CeilToInt(threshold*255),1,255);
+        var outside=new bool[alpha.Length]; var queue=new int[alpha.Length]; int head=0,tail=0;
+        void Visit(int p) { if(!outside[p] && alpha[p]<cutoff) { outside[p]=true; queue[tail++]=p; } }
+        for(int x=0;x<width;x++) { Visit(x); Visit((height-1)*width+x); }
+        for(int y=0;y<height;y++) { Visit(y*width); Visit(y*width+width-1); }
+        while(head<tail)
+        {
+            int p=queue[head++],x=p%width;
+            if(x>0) Visit(p-1); if(x+1<width) Visit(p+1);
+            if(p>=width) Visit(p-width); if(p+width<alpha.Length) Visit(p+width);
+        }
+        var filled=new byte[alpha.Length];
+        for(int i=0;i<filled.Length;i++) filled[i]=outside[i]?(byte)0:(byte)255;
+        return filled;
+    }
+    public static Rect PreserveFrameAspect(Rect rect,Vector2 spriteSize,Vector2 pivot)
+    {
+        if(rect.width<=0 || rect.height<=0 || spriteSize.x<=0 || spriteSize.y<=0) return rect;
+        float aspect=spriteSize.x/spriteSize.y;
+        if(aspect>rect.width/rect.height) { float h=rect.width/aspect; rect.y+=(rect.height-h)*pivot.y; rect.height=h; }
+        else { float w=rect.height*aspect; rect.x+=(rect.width-w)*pivot.x; rect.width=w; }
+        return rect;
+    }
+    public static bool FrameScreenMap(Vector2 origin,Vector2 right,Vector2 top,out Vector4 rowX,out Vector4 rowY)
+    {
+        Vector2 a=right-origin,b=top-origin;
+        float det=a.x*b.y-a.y*b.x;
+        rowX=rowY=Vector4.zero;
+        if(Mathf.Abs(det)<.00000001f) return false;
+        rowX=new Vector4(b.y/det,-b.x/det,(-b.y*origin.x+b.x*origin.y)/det,0);
+        rowY=new Vector4(-a.y/det,a.x/det,(a.y*origin.x-a.x*origin.y)/det,0);
+        return true;
+    }
+    public static Vector2 FrameUv(Vector2 screen,Vector4 rowX,Vector4 rowY)
+        => new Vector2(rowX.x*screen.x+rowX.y*screen.y+rowX.z,rowY.x*screen.x+rowY.y*screen.y+rowY.z);
+    public static float SliceCoordinate(float value,float destMin,float destMax,float sourceMin,float sourceMax)
+    {
+        if(value<destMin && destMin>0) return value/destMin*sourceMin;
+        if(value>1-destMax && destMax>0) return 1-(1-value)/destMax*sourceMax;
+        return sourceMin+(value-destMin)/Mathf.Max(.000001f,1-destMin-destMax)*(1-sourceMin-sourceMax);
+    }
+    public static Vector2 SlicedFrameUv(Vector2 uv,Vector4 dest,Vector4 source)
+        => new Vector2(SliceCoordinate(uv.x,dest.x,dest.z,source.x,source.z),SliceCoordinate(uv.y,dest.y,dest.w,source.y,source.w));
     public static Vector2 MaskUvScale(Vector2 texture, Vector2 viewport, SceneMaskFit fit)
         => BackgroundUvScale(texture, viewport, fit == SceneMaskFit.Cover ? ScreenBackgroundFit.Cover :
             fit == SceneMaskFit.Contain ? ScreenBackgroundFit.Contain : ScreenBackgroundFit.Stretch);

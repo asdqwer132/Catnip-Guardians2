@@ -16,6 +16,7 @@ Shader "Hidden/Catnip/Scene Screen Presentation"
         TEXTURE2D(_MaskTex);
         float4 _BackgroundTint, _EmptyColor, _Viewport, _UvScale, _ViewShape;
         float4 _MaskScale, _MaskSettings;
+        float4 _FrameMapX,_FrameMapY,_FrameDestBorder,_FrameSourceBorder;
         struct Varyings { float4 positionCS : SV_POSITION; float2 uv : TEXCOORD0; };
         Varyings Vert(uint vertexID : SV_VertexID)
         {
@@ -40,6 +41,12 @@ Shader "Hidden/Catnip/Scene Screen Presentation"
             return SAMPLE_TEXTURE2D(_BackgroundTex, sampler_BackgroundTex, uv).rgb * _BackgroundTint.rgb;
         }
         half4 FragBackground(Varyings i) : SV_Target { return half4(Background(i.uv),1); }
+        float SliceUv(float value,float destMin,float destMax,float sourceMin,float sourceMax)
+        {
+            if(value<destMin && destMin>0) return value/destMin*sourceMin;
+            if(value>1-destMax && destMax>0) return 1-(1-value)/destMax*sourceMax;
+            return sourceMin+(value-destMin)/max(.000001,1-destMin-destMax)*(1-sourceMin-sourceMax);
+        }
         half4 FragShape(Varyings i) : SV_Target
         {
             float2 halfSize = max(_ViewShape.xy * .5, 1);
@@ -53,12 +60,20 @@ Shader "Hidden/Catnip/Scene Screen Presentation"
             if (_ViewShape.w > 2.5)
             {
                 float2 uv=(BottomLeftUv(i.uv)-.5)*_MaskScale.xy+.5;
+                float2 frameUv=uv;
+                if(_ViewShape.w>3.5)
+                {
+                    float2 screenUv=_Viewport.xy+BottomLeftUv(i.uv)*_Viewport.zw;
+                    frameUv=float2(dot(float3(screenUv,1),_FrameMapX.xyz),dot(float3(screenUv,1),_FrameMapY.xyz));
+                    uv=float2(SliceUv(frameUv.x,_FrameDestBorder.x,_FrameDestBorder.z,_FrameSourceBorder.x,_FrameSourceBorder.z),
+                        SliceUv(frameUv.y,_FrameDestBorder.y,_FrameDestBorder.w,_FrameSourceBorder.y,_FrameSourceBorder.w));
+                }
                 float alpha=SAMPLE_TEXTURE2D_LOD(_MaskTex,sampler_LinearClamp,uv,0).a;
                 if(_MaskSettings.z>.5) alpha=1-alpha;
                 float visible=smoothstep(max(0,_MaskSettings.x-_MaskSettings.y),min(1,_MaskSettings.x+_MaskSettings.y),alpha);
-                if(any(uv<0) || any(uv>1)) visible=0;
+                if(any(uv<0) || any(uv>1) || any(frameUv<0) || any(frameUv>1)) visible=0;
                 // 이미지를 지정하기 전에는 기존 사각형 화면을 유지합니다.
-                outside=_MaskSettings.w>.5?1-visible:0;
+                outside=_MaskSettings.w>.5?1-visible:(_ViewShape.w>3.5?1:0);
             }
             clip(outside - .001);
             return half4(Background(i.uv),outside);
