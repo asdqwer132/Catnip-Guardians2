@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -331,6 +330,13 @@ public class ItemRecipeManager : MonoBehaviour
 
         resultItem = recipe.resultItem;
 
+    }
+
+    // Preview only: selecting materials must not craft or use the resulting item.
+    public ItemData GetPreviewResult()
+    {
+        ItemRecipeData recipe = FindRecipe();
+        return recipe != null ? recipe.resultItem : returnFailedItem ? failedItem : null;
     }
 
     protected ItemRecipeData FindRecipe()

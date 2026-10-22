@@ -8,6 +8,10 @@ public class ItemTooltipUI : MonoBehaviour
     public bool useTooltip = true;
     public Vector2 offset = new Vector2(0f, 20f);
     public bool clampToParent = true;
+    [Tooltip("Disable for an information panel already positioned by the scene layout.")]
+    public bool positionAtAnchor = true;
+    [Tooltip("Existing panels to hide while this information panel is visible.")]
+    public GameObject[] alternatePanels;
 
     [Header("Tooltip Objects")]
     public GameObject tooltipPanel;
@@ -78,6 +82,8 @@ public class ItemTooltipUI : MonoBehaviour
         if (tooltipPanel != null)
             tooltipPanel.SetActive(true);
 
+        SetAlternatePanelsActive(false);
+
         UpdatePosition();
     }
 
@@ -88,6 +94,17 @@ public class ItemTooltipUI : MonoBehaviour
 
         if (tooltipPanel != null)
             tooltipPanel.SetActive(false);
+
+        SetAlternatePanelsActive(true);
+    }
+
+    private void SetAlternatePanelsActive(bool active)
+    {
+        if (alternatePanels == null)
+            return;
+        foreach (GameObject panel in alternatePanels)
+            if (panel != null && panel != tooltipPanel)
+                panel.SetActive(active);
     }
 
     public void Hide(object owner)
@@ -129,6 +146,9 @@ public class ItemTooltipUI : MonoBehaviour
 
     private void UpdatePosition()
     {
+        if (!positionAtAnchor)
+            return;
+
         if (currentAnchorRect == null || tooltipRect == null || parentRect == null)
             return;
 

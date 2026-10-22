@@ -20,17 +20,20 @@ public class ClickableItemSlotUI : BaseItemSlotUI
     public override void ClearSlot()
     {
         base.ClearSlot();
-        slotButton.interactable = false;
+        if (slotButton != null)
+            slotButton.interactable = false;
     }
     public override void LockSlot()
     {
         base.LockSlot();
-        slotButton.interactable = false;
+        if (slotButton != null)
+            slotButton.interactable = false;
     }
     public override void SetSlot(InventoryItem item)
     {
         base.SetSlot(item);
-        slotButton.interactable = true;
+        if (slotButton != null)
+            slotButton.interactable = item != null && item.itemData != null;
 
     }
 

@@ -6,6 +6,8 @@ public class SkillMapTooltipProvider : TooltipProvider
     [SerializeField] private SkillMapData mapData;
     [SerializeField] private SkillTreeManager treeManager;
 
+    public SkillMapData MapData => mapData;
+
     public override bool TryGetTooltipData(out TooltipData data)
     {
         data = null;

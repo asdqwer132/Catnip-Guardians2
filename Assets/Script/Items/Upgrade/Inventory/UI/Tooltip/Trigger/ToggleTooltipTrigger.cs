@@ -10,12 +10,15 @@ public class ToggleTooltipTrigger : ItemTooltipTrigger
     public override void OnPointerEnter(PointerEventData eventData)
     {
         base.OnPointerEnter(eventData);
-        infoToggle.isOn = true;
+        if (infoToggle != null)
+            infoToggle.isOn = true;
     }
     public override void OnPointerExit(PointerEventData eventData)
     {
-        if(!isExitUse)
+        if (!isExitUse && invenToggle != null)
             invenToggle.isOn = true;
+        else if (infoToggle == null && invenToggle == null)
+            base.OnPointerExit(eventData);
 
     }
 }

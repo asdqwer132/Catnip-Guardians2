@@ -1,10 +1,13 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class UIPanelSwitcher : MonoBehaviour
 {
     [Header("Panels")]
     public RectTransform[] panels;
+    public Toggle[] panelToggles;
 
     [Header("Animation")]
     public float duration = 0.12f;
@@ -16,6 +19,7 @@ public class UIPanelSwitcher : MonoBehaviour
 
     private Vector2[] originPositions;
     private CanvasGroup[] canvasGroups;
+    private UnityAction<bool>[] toggleListeners;
 
     private void Awake()
     {
@@ -37,6 +41,24 @@ public class UIPanelSwitcher : MonoBehaviour
             panels[i].gameObject.SetActive(false);
             canvasGroups[i].alpha = 0f;
         }
+
+        if (panelToggles == null)
+            return;
+        toggleListeners = new UnityAction<bool>[panelToggles.Length];
+        for (int i = 0; i < panelToggles.Length; i++)
+        {
+            int index = i;
+            toggleListeners[i] = selected => { if (selected) ShowPanel(index); };
+            if (panelToggles[i] != null)
+                panelToggles[i].onValueChanged.AddListener(toggleListeners[i]);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        for (int i = 0; toggleListeners != null && i < toggleListeners.Length; i++)
+            if (panelToggles[i] != null)
+                panelToggles[i].onValueChanged.RemoveListener(toggleListeners[i]);
     }
 
     private void Start()
@@ -62,6 +84,7 @@ public class UIPanelSwitcher : MonoBehaviour
     private IEnumerator SwitchRoutine(int nextIndex)
     {
         int prevIndex = currentIndex;
+        currentIndex = nextIndex;
 
         RectTransform prevPanel = prevIndex >= 0 ? panels[prevIndex] : null;
         RectTransform nextPanel = panels[nextIndex];

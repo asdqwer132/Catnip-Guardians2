@@ -16,13 +16,23 @@ public class CostTooltipUI : ItemTooltipUI
         {
             foreach (var item in extraBoxCosts)
             {
-                item.costPanel.SetActive(false);
+                if (item != null && item.costPanel != null)
+                    item.costPanel.SetActive(false);
             }
+            if (costData.costs == null)
+                return;
+
             foreach (var cost in costData.costs)
             {
+                if (cost == null)
+                    continue;
                 BoxCost boxCost = GetBoxCost(cost.currencyType);
-                boxCost.costText.text = cost.amount.ToString();
-                boxCost.costPanel.SetActive(true);
+                if (boxCost == null)
+                    continue;
+                if (boxCost.costText != null)
+                    boxCost.costText.text = cost.amount.ToString();
+                if (boxCost.costPanel != null)
+                    boxCost.costPanel.SetActive(true);
             }
         }
 

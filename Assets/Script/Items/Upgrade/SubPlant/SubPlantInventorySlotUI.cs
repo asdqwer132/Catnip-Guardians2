@@ -6,17 +6,14 @@ public class SubPlantInventorySlotUI : ClickableItemSlotUI
     public override void OnClickSlot()
     {
         if (currentItem == null || currentItem.itemData == null)
-        {
-            Debug.LogWarning("반환할 조합 재료가 없습니다.");
             return;
-        }
 
-        if (ItemCombinationManager.instance == null)
-        {
-            Debug.LogWarning("ItemCombinationManager가 없습니다.");
+        // A potion panel supplies its own recipe manager; legacy plant screens keep theirs.
+        ItemCombinationPanelUI panel = GetComponentInParent<ItemCombinationPanelUI>(true);
+        ItemRecipeManager manager = panel != null ? panel.Manager : SubPlantManager.instance;
+        if (manager == null)
             return;
-        }
 
-        SubPlantManager.instance.AddMaterial(currentItem.itemData);
+        manager.AddMaterial(currentItem.itemData);
     }
 }

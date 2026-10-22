@@ -1,40 +1,36 @@
-using NUnit.Framework.Interfaces;
 using UnityEngine;
 
 public class ItemCombinationManager : ItemRecipeManager
 {
     public static ItemCombinationManager instance;
     public CraftSuccessEffectUI craftSuccessEffectUI;
-    private void Awake()
+
+    private void Awake() => instance = this;
+
+    private void OnDestroy()
     {
-        instance = this;
+        if (instance == this)
+            instance = null;
     }
 
-    public override void Combine()
+    public override void Combine() => TryCombine(out _);
+
+    public bool TryCombine(out ItemData craftedItem)
     {
-        if (GetCurrentMaterialCount() < 2)
-        {
-            Debug.Log("개수 부족 " + GetCurrentMaterialCount());
-            return;
-        }
+        craftedItem = null;
+        if (GetCurrentMaterialCount() < 2 || InventoryManager.instance == null)
+            return false;
 
         base.Combine();
-
         if (resultItem == null)
-        {
-            Debug.LogWarning("[ItemCombinationManager] 조합 결과 아이템이 없습니다.");
-            return;
-        }
+            return false;
 
-        if (InventoryManager.instance == null)
-        {
-            Debug.LogWarning("[ItemCombinationManager] InventoryManager.instance가 없습니다.");
-            return;
-        }
-
-        InventoryManager.instance.AddItem(resultItem, 1);
-
+        craftedItem = resultItem;
+        // Grant the result without executing its item effects or throwing it.
+        InventoryManager.instance.AddItem(craftedItem, 1);
         ClearMaterials();
-        craftSuccessEffectUI.Play(resultItem.icon);
+        if (craftSuccessEffectUI != null)
+            craftSuccessEffectUI.Play(craftedItem.icon);
+        return true;
     }
 }
