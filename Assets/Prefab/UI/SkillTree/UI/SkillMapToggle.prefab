@@ -217,7 +217,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -584939155040883417, guid: b2a4d9d0111a442458ebea5c35917ea0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6ee9bb1210013b64da2e82c3a34a8139, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -386,10 +386,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ToggleCheckmarkAnimation
   toggle: {fileID: 3232640910192738381}
   checkmark: {fileID: 270959737702815370}
-  checkmarkCanvasGroup: {fileID: 6462670772467954552}
+  startScale: 0.7
+  maxScale: 1.2
   duration: 0.15
-  offScale: 0.6
-  overshootScale: 1.15
   useUnscaledTime: 1
 --- !u!225 &6462670772467954552
 CanvasGroup:
