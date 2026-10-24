@@ -10,6 +10,7 @@ public class ItemTooltipUI : MonoBehaviour
     public bool clampToParent = true;
     [Tooltip("Disable for an information panel already positioned by the scene layout.")]
     public bool positionAtAnchor = true;
+    public bool removePannel = true;
     [Tooltip("Existing panels to hide while this information panel is visible.")]
     public GameObject[] alternatePanels;
 
@@ -89,6 +90,8 @@ public class ItemTooltipUI : MonoBehaviour
 
     public void Hide()
     {
+        if (!removePannel) return;
+
         currentOwner = null;
         currentAnchorRect = null;
 
