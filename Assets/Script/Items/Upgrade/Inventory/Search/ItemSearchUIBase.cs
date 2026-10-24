@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.UI;
 
 public abstract class ItemSearchUIBase : MonoBehaviour
 {
@@ -8,7 +7,6 @@ public abstract class ItemSearchUIBase : MonoBehaviour
     [SerializeField] protected ItemSearchFilterTargetUI targetUI;
 
     [Header("Reset")]
-    [SerializeField] protected Button resetButton;
     public bool resetCategory = true;
     public bool resetSeries = true;
     public bool resetGrade = true;
@@ -301,9 +299,6 @@ public abstract class ItemSearchUIBase : MonoBehaviour
         if (isEventBound)
             return;
 
-        if (resetButton != null)
-            resetButton.onClick.AddListener(ResetFilter);
-
         BindControlEvents();
         isEventBound = true;
     }
@@ -312,9 +307,6 @@ public abstract class ItemSearchUIBase : MonoBehaviour
     {
         if (!isEventBound)
             return;
-
-        if (resetButton != null)
-            resetButton.onClick.RemoveListener(ResetFilter);
 
         UnbindControlEvents();
         isEventBound = false;

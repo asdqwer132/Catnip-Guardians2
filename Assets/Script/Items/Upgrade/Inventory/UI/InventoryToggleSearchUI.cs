@@ -26,20 +26,23 @@ public class InventoryToggleSearchUI : ItemSearchUIBase
         public ItemGrade value;
     }
 
+    [Header("Reset Button")]
+    [SerializeField] private Button resetButton;
+
     [Header("Category Toggle")]
     [SerializeField] private ToggleGroup categoryToggleGroup;
-    [SerializeField] protected Toggle categoryAllToggle;
-    [SerializeField] protected CategoryToggleOption[] categoryOptions;
+    [SerializeField] private Toggle categoryAllToggle;
+    [SerializeField] private CategoryToggleOption[] categoryOptions;
 
     [Header("Series Toggle")]
     [SerializeField] private ToggleGroup seriesToggleGroup;
-    [SerializeField] protected Toggle seriesAllToggle;
-    [SerializeField] protected SeriesToggleOption[] seriesOptions;
+    [SerializeField] private Toggle seriesAllToggle;
+    [SerializeField] private SeriesToggleOption[] seriesOptions;
 
     [Header("Grade Toggle")]
     [SerializeField] private ToggleGroup gradeToggleGroup;
-    [SerializeField] protected Toggle gradeAllToggle;
-    [SerializeField] protected GradeToggleOption[] gradeOptions;
+    [SerializeField] private Toggle gradeAllToggle;
+    [SerializeField] private GradeToggleOption[] gradeOptions;
 
     [Header("Masked Toggle")]
     [Tooltip("체크하면 마스크된 값의 토글 GameObject를 끕니다. 체크하지 않으면 비활성화만 합니다.")]
@@ -79,6 +82,9 @@ public class InventoryToggleSearchUI : ItemSearchUIBase
 
     protected override void BindControlEvents()
     {
+        if (resetButton != null)
+            resetButton.onClick.AddListener(ResetFilter);
+
         BindCategoryEvents();
         BindSeriesEvents();
         BindGradeEvents();
@@ -86,6 +92,9 @@ public class InventoryToggleSearchUI : ItemSearchUIBase
 
     protected override void UnbindControlEvents()
     {
+        if (resetButton != null)
+            resetButton.onClick.RemoveListener(ResetFilter);
+
         UnbindCategoryEvents();
         UnbindSeriesEvents();
         UnbindGradeEvents();
