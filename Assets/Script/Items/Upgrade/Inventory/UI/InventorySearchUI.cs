@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventorySearchUI : ItemSearchUIBase
+public class InventorySearchUI : InventoryToggleSearchUI
 {
     [Header("Dropdown")]
     [SerializeField] private TMP_Dropdown categoryDropdown;
@@ -14,31 +15,23 @@ public class InventorySearchUI : ItemSearchUIBase
     [Header("Dropdown Option")]
     [SerializeField] private string allOptionText = "ALL";
 
+    [Header("Authored Dropdown Items")]
+    [Tooltip("Use the existing Category/Series/Grade Toggle Options instead of generating TMP_Dropdown entries. Assign each authored Toggle and its filter value above.")]
+    [SerializeField] private bool useAssignedItems;
+
     [Serializable]
-    public class DropdownUITemplate
+    public class AssignedDropdownPanel
     {
-        [Tooltip("The authored dropdown list root in the scene, usually under this dropdown. Leave empty to use the TMP_Dropdown's existing template.")]
-        public RectTransform template;
-        [Tooltip("The label on the template's item Toggle or one of its children.")]
-        public TMP_Text itemText;
-        public Image itemImage;
-
-        public void ApplyTo(TMP_Dropdown dropdown)
-        {
-            if (dropdown == null || template == null || template == dropdown.transform)
-                return;
-
-            dropdown.template = template;
-            dropdown.itemText = itemText;
-            dropdown.itemImage = itemImage;
-            template.gameObject.SetActive(false);
-        }
+        public Button openButton;
+        public GameObject optionsPanel;
+        public TMP_Text selectedText;
     }
 
-    [Header("Optional Dropdown UI Templates")]
-    [SerializeField] private DropdownUITemplate categoryTemplate = new DropdownUITemplate();
-    [SerializeField] private DropdownUITemplate seriesTemplate = new DropdownUITemplate();
-    [SerializeField] private DropdownUITemplate gradeTemplate = new DropdownUITemplate();
+    [SerializeField] private AssignedDropdownPanel categoryPanel = new AssignedDropdownPanel();
+    [SerializeField] private AssignedDropdownPanel seriesPanel = new AssignedDropdownPanel();
+    [SerializeField] private AssignedDropdownPanel gradePanel = new AssignedDropdownPanel();
+
+    private readonly Dictionary<TMP_Dropdown, bool> originalDropdownStates = new Dictionary<TMP_Dropdown, bool>();
 
     private const int AllIndex = 0;
 
@@ -48,9 +41,15 @@ public class InventorySearchUI : ItemSearchUIBase
 
     protected override void RebuildControls()
     {
-        categoryTemplate?.ApplyTo(categoryDropdown);
-        seriesTemplate?.ApplyTo(seriesDropdown);
-        gradeTemplate?.ApplyTo(gradeDropdown);
+        SetAutomaticDropdownEnabled(categoryDropdown);
+        SetAutomaticDropdownEnabled(seriesDropdown);
+        SetAutomaticDropdownEnabled(gradeDropdown);
+        CloseAssignedPanels();
+        if (useAssignedItems)
+        {
+            base.RebuildControls();
+            return;
+        }
 
         RebuildCategoryDropdown();
         RebuildSeriesDropdown();
@@ -59,6 +58,16 @@ public class InventorySearchUI : ItemSearchUIBase
 
     protected override void BindControlEvents()
     {
+        if (useAssignedItems)
+        {
+            base.BindControlEvents();
+            categoryPanel?.openButton?.onClick.AddListener(ToggleCategoryPanel);
+            seriesPanel?.openButton?.onClick.AddListener(ToggleSeriesPanel);
+            gradePanel?.openButton?.onClick.AddListener(ToggleGradePanel);
+            OnFilterChanged += CloseAssignedPanels;
+            return;
+        }
+
         if (categoryDropdown != null)
             categoryDropdown.onValueChanged.AddListener(OnCategoryChanged);
 
@@ -71,6 +80,12 @@ public class InventorySearchUI : ItemSearchUIBase
 
     protected override void UnbindControlEvents()
     {
+        base.UnbindControlEvents();
+        categoryPanel?.openButton?.onClick.RemoveListener(ToggleCategoryPanel);
+        seriesPanel?.openButton?.onClick.RemoveListener(ToggleSeriesPanel);
+        gradePanel?.openButton?.onClick.RemoveListener(ToggleGradePanel);
+        OnFilterChanged -= CloseAssignedPanels;
+
         if (categoryDropdown != null)
             categoryDropdown.onValueChanged.RemoveListener(OnCategoryChanged);
 
@@ -83,9 +98,78 @@ public class InventorySearchUI : ItemSearchUIBase
 
     protected override void ApplyFilterToControlsWithoutNotify()
     {
+        if (useAssignedItems)
+        {
+            base.ApplyFilterToControlsWithoutNotify();
+            UpdateAssignedCaption(categoryPanel, categoryAllToggle, categoryOptions?.Select(option => option?.toggle));
+            UpdateAssignedCaption(seriesPanel, seriesAllToggle, seriesOptions?.Select(option => option?.toggle));
+            UpdateAssignedCaption(gradePanel, gradeAllToggle, gradeOptions?.Select(option => option?.toggle));
+            return;
+        }
+
         ApplyCategoryDropdownValue();
         ApplySeriesDropdownValue();
         ApplyGradeDropdownValue();
+    }
+
+    protected override void NormalizeControlSpecificFilter()
+    {
+        if (useAssignedItems)
+            base.NormalizeControlSpecificFilter();
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+        CloseAssignedPanels();
+    }
+
+    private void SetAutomaticDropdownEnabled(TMP_Dropdown dropdown)
+    {
+        if (dropdown == null)
+            return;
+        if (useAssignedItems)
+        {
+            if (!originalDropdownStates.ContainsKey(dropdown))
+                originalDropdownStates.Add(dropdown, dropdown.enabled);
+            dropdown.enabled = false;
+        }
+        else if (originalDropdownStates.TryGetValue(dropdown, out bool wasEnabled))
+        {
+            dropdown.enabled = wasEnabled;
+            originalDropdownStates.Remove(dropdown);
+        }
+    }
+
+    private static void UpdateAssignedCaption(AssignedDropdownPanel panel, Toggle allToggle, IEnumerable<Toggle> options)
+    {
+        if (panel?.selectedText == null)
+            return;
+        Toggle selected = allToggle != null && allToggle.isOn ? allToggle :
+            options?.FirstOrDefault(toggle => toggle != null && toggle.isOn);
+        TMP_Text text = selected != null ? selected.GetComponentInChildren<TMP_Text>(true) : null;
+        if (text != null)
+            panel.selectedText.text = text.text;
+    }
+
+    private void ToggleCategoryPanel() => ToggleAssignedPanel(categoryPanel);
+    private void ToggleSeriesPanel() => ToggleAssignedPanel(seriesPanel);
+    private void ToggleGradePanel() => ToggleAssignedPanel(gradePanel);
+
+    private void ToggleAssignedPanel(AssignedDropdownPanel panel)
+    {
+        if (panel?.optionsPanel == null)
+            return;
+        bool open = !panel.optionsPanel.activeSelf;
+        CloseAssignedPanels();
+        panel.optionsPanel.SetActive(open);
+    }
+
+    private void CloseAssignedPanels()
+    {
+        if (categoryPanel?.optionsPanel != null) categoryPanel.optionsPanel.SetActive(false);
+        if (seriesPanel?.optionsPanel != null) seriesPanel.optionsPanel.SetActive(false);
+        if (gradePanel?.optionsPanel != null) gradePanel.optionsPanel.SetActive(false);
     }
 
     private void RebuildCategoryDropdown()

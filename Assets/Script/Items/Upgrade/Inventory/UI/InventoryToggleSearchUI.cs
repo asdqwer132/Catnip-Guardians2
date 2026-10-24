@@ -28,18 +28,18 @@ public class InventoryToggleSearchUI : ItemSearchUIBase
 
     [Header("Category Toggle")]
     [SerializeField] private ToggleGroup categoryToggleGroup;
-    [SerializeField] private Toggle categoryAllToggle;
-    [SerializeField] private CategoryToggleOption[] categoryOptions;
+    [SerializeField] protected Toggle categoryAllToggle;
+    [SerializeField] protected CategoryToggleOption[] categoryOptions;
 
     [Header("Series Toggle")]
     [SerializeField] private ToggleGroup seriesToggleGroup;
-    [SerializeField] private Toggle seriesAllToggle;
-    [SerializeField] private SeriesToggleOption[] seriesOptions;
+    [SerializeField] protected Toggle seriesAllToggle;
+    [SerializeField] protected SeriesToggleOption[] seriesOptions;
 
     [Header("Grade Toggle")]
     [SerializeField] private ToggleGroup gradeToggleGroup;
-    [SerializeField] private Toggle gradeAllToggle;
-    [SerializeField] private GradeToggleOption[] gradeOptions;
+    [SerializeField] protected Toggle gradeAllToggle;
+    [SerializeField] protected GradeToggleOption[] gradeOptions;
 
     [Header("Masked Toggle")]
     [Tooltip("체크하면 마스크된 값의 토글 GameObject를 끕니다. 체크하지 않으면 비활성화만 합니다.")]
