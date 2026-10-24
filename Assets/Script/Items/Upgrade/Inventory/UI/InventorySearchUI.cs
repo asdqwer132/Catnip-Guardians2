@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InventorySearchUI : ItemSearchUIBase
 {
@@ -13,6 +14,32 @@ public class InventorySearchUI : ItemSearchUIBase
     [Header("Dropdown Option")]
     [SerializeField] private string allOptionText = "ALL";
 
+    [Serializable]
+    public class DropdownUITemplate
+    {
+        [Tooltip("The authored dropdown list root in the scene, usually under this dropdown. Leave empty to use the TMP_Dropdown's existing template.")]
+        public RectTransform template;
+        [Tooltip("The label on the template's item Toggle or one of its children.")]
+        public TMP_Text itemText;
+        public Image itemImage;
+
+        public void ApplyTo(TMP_Dropdown dropdown)
+        {
+            if (dropdown == null || template == null || template == dropdown.transform)
+                return;
+
+            dropdown.template = template;
+            dropdown.itemText = itemText;
+            dropdown.itemImage = itemImage;
+            template.gameObject.SetActive(false);
+        }
+    }
+
+    [Header("Optional Dropdown UI Templates")]
+    [SerializeField] private DropdownUITemplate categoryTemplate = new DropdownUITemplate();
+    [SerializeField] private DropdownUITemplate seriesTemplate = new DropdownUITemplate();
+    [SerializeField] private DropdownUITemplate gradeTemplate = new DropdownUITemplate();
+
     private const int AllIndex = 0;
 
     private readonly List<ItemCategory> categoryValues = new List<ItemCategory>();
@@ -21,6 +48,10 @@ public class InventorySearchUI : ItemSearchUIBase
 
     protected override void RebuildControls()
     {
+        categoryTemplate?.ApplyTo(categoryDropdown);
+        seriesTemplate?.ApplyTo(seriesDropdown);
+        gradeTemplate?.ApplyTo(gradeDropdown);
+
         RebuildCategoryDropdown();
         RebuildSeriesDropdown();
         RebuildGradeDropdown();
