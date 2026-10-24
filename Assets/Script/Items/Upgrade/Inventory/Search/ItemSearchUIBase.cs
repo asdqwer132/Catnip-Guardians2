@@ -53,7 +53,7 @@ public abstract class ItemSearchUIBase : MonoBehaviour
 
     public void Init()
     {
-        RefreshSearchUI();
+        //RefreshSearchUI();
     }
 
     public void ResetSearch()
@@ -194,6 +194,7 @@ public abstract class ItemSearchUIBase : MonoBehaviour
         if (useSeries)
             filter.series = series;
 
+        Debug.Log("Asd");
         ApplyFilter(true);
     }
 
