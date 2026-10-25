@@ -1626,6 +1626,7 @@ GameObject:
   - component: {fileID: 378844629}
   - component: {fileID: 378844630}
   - component: {fileID: 378844631}
+  - component: {fileID: 990200000003}
   m_Layer: 0
   m_Name: ItemUseManager
   m_TagString: Untagged
@@ -1752,6 +1753,9 @@ MonoBehaviour:
   mainCamera: {fileID: 519420031}
   useStartPoint: {fileID: 1836332726}
   clampMousePositionByPlayerRange: 1
+  selectPositionOnly: 1
+  hasSelectedPosition: 0
+  selectedPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &378844629
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -46957,6 +46961,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BattleItemSessionReceiver
   receivedItems: []
+  pendingThrowBatches: []
 --- !u!1001 &8842469353729927645
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -47190,6 +47195,41 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ae7f2f81a08b5724bbc7676eb5ad561c, type: 3}
+--- !u!114 &990200000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 378844622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64427d9682ae499c99d3fb75b180a17c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BattleSessionItemThrower
+  receiver: {fileID: 990200000002}
+  positionProvider: {fileID: 378844628}
+  throwExecutor: {fileID: 378844626}
+  owner: {fileID: 1836332725}
+  gameEndManager: {fileID: 0}
+  mode: 0
+  sequentialInterval: 0.1
+  startOffset: {x: 0, y: 0, z: 0}
+  targetOffset: {x: 0, y: 0, z: 0}
+  clampScatteredTargetsToPlayerRange: 0
+  spread:
+    distribution: 0
+    baseRadius: 0.3
+    spreadAngle: 360
+    directionAngle: 0
+    scaleByItemCount: 1
+    radiusPerAdditionalItem: 0.15
+    maximumRadius: 3
+  throwOptions:
+    projectilePrefab: {fileID: 0}
+    projectileSprite: {fileID: 0}
+    allowStationaryThrow: 1
+    overrideMotion: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

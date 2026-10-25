@@ -126,6 +126,12 @@ public class ItemUseManager : MonoBehaviour
 
     private void HandleUseInput()
     {
+        if (positionProvider != null && positionProvider.selectPositionOnly)
+        {
+            positionProvider.SelectPointerPosition();
+            return;
+        }
+
         if (IsPointerOverUI())
             return;
 
@@ -142,7 +148,16 @@ public class ItemUseManager : MonoBehaviour
 
     public void UseCurrentBagItem()
     {
-        if (bagSelectManager == null || positionProvider == null)
+        if (positionProvider == null)
+            return;
+
+        if (positionProvider.selectPositionOnly)
+        {
+            positionProvider.SelectPointerPosition();
+            return;
+        }
+
+        if (bagSelectManager == null)
             return;
 
         BagItemUseManager bagManager = bagSelectManager.CurrentBagUseManager;
