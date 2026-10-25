@@ -71,7 +71,7 @@ public sealed class SceneFlowTests
         {
             CurrencyManager.instance = null;
             var statistics = host.AddComponent<GameStatisticsManager>();
-            statistics.AddCurrency(CurrencyType.Gold, 5);
+            statistics.AddCurrency(CurrencyType.CurrencyMain, 5);
             Assert.DoesNotThrow(statistics.Confirm);
             Assert.That(statistics.RoundGold, Is.EqualTo(5));
         }
@@ -173,21 +173,21 @@ public sealed class SceneFlowTests
         try
         {
             CurrencyManager.instance = null;
-            group.currencyUIs = new[] { new CurrencyUIGroup.CurrencyUI { type = CurrencyType.Seed, textObj = seedVisual } };
+            group.currencyUIs = new[] { new CurrencyUIGroup.CurrencyUI { type = CurrencyType.CurrencySub1, textObj = seedVisual } };
             onEnable.Invoke(group, null);
-            var first = firstHost.AddComponent<CurrencyManager>(); first.AddCurrency(CurrencyType.Seed, 1);
+            var first = firstHost.AddComponent<CurrencyManager>(); first.AddCurrency(CurrencyType.CurrencySub1, 1);
             CurrencyManager.instance = first; notify();
             Assert.That(seedVisual.activeSelf, Is.True);
-            first.SpendCurrency(CurrencyType.Seed, 1);
+            first.SpendCurrency(CurrencyType.CurrencySub1, 1);
             Assert.That(seedVisual.activeSelf, Is.False);
-            var second = secondHost.AddComponent<CurrencyManager>(); second.AddCurrency(CurrencyType.Seed, 2);
+            var second = secondHost.AddComponent<CurrencyManager>(); second.AddCurrency(CurrencyType.CurrencySub1, 2);
             CurrencyManager.instance = second; notify();
             Assert.That(seedVisual.activeSelf, Is.True);
-            second.SpendCurrency(CurrencyType.Seed, 2);
+            second.SpendCurrency(CurrencyType.CurrencySub1, 2);
             Assert.That(seedVisual.activeSelf, Is.False);
-            first.AddCurrency(CurrencyType.Seed, 3);
+            first.AddCurrency(CurrencyType.CurrencySub1, 3);
             Assert.That(seedVisual.activeSelf, Is.False, "이전 매니저에서는 등록 해제되어야 합니다.");
-            onDisable.Invoke(group, null); second.AddCurrency(CurrencyType.Seed, 4); notify();
+            onDisable.Invoke(group, null); second.AddCurrency(CurrencyType.CurrencySub1, 4); notify();
             Assert.That(seedVisual.activeSelf, Is.False, "꺼진 UI는 다시 등록되지 않아야 합니다.");
         }
         finally

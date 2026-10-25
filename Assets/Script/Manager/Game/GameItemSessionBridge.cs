@@ -51,7 +51,11 @@ public sealed class GameItemSessionBridge : MonoBehaviour
         foreach (MergegameManager board in boards)
         {
             if (board != null)
+            {
+                Debug.Log("바인딩");
                 board.SetSessionMaterials(data.materialItems);
+                board.RefreshUI();
+            }
         }
     }
 

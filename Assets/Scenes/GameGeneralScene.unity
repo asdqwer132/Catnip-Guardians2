@@ -1500,14 +1500,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 466438814}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -9.4923, y: -2.42622, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2117953901}
-  - {fileID: 1882155592}
   - {fileID: 2052560683}
+  - {fileID: 1882155592}
+  - {fileID: 2117953901}
   - {fileID: 830786400}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3930,7 +3930,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameEndManager
   resultPanel: {fileID: 1437348424}
-  moveManager: {fileID: 0}
+  moveManager: {fileID: 910000300001}
   titleText: {fileID: 0}
   killCountText: {fileID: 0}
   goldText: {fileID: 0}
@@ -4419,6 +4419,7 @@ GameObject:
   - component: {fileID: 1198481898}
   - component: {fileID: 1198481897}
   - component: {fileID: 1198481899}
+  - component: {fileID: 1198481900}
   m_Layer: 26
   m_Name: Currency
   m_TagString: Untagged
@@ -4514,6 +4515,34 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1198481900
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1198481895}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9858b26f0a2393d4f84ddeaf707353ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CurrencyUIGroup
+  currencyUIs:
+  - type: 0
+    textObj: {fileID: 241050961}
+    textUI: {fileID: 1082452155}
+  - type: 1
+    textObj: {fileID: 733854955}
+    textUI: {fileID: 910926648}
+  - type: 2
+    textObj: {fileID: 280630229}
+    textUI: {fileID: 2042359187}
+  - type: 3
+    textObj: {fileID: 1591736872}
+    textUI: {fileID: 1987716911}
+  - type: 4
+    textObj: {fileID: 16755102}
+    textUI: {fileID: 1037661523}
 --- !u!1 &1207082690
 GameObject:
   m_ObjectHideFlags: 0
@@ -4904,7 +4933,7 @@ GameObject:
   - component: {fileID: 1362245241}
   - component: {fileID: 1362245240}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Result
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6428,7 +6457,7 @@ GameObject:
   - component: {fileID: 1813908617}
   - component: {fileID: 1813908616}
   m_Layer: 5
-  m_Name: Image
+  m_Name: Help
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8022,7 +8051,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2117953896}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
@@ -8032,7 +8061,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 9.4923, y: 2.42622}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!1 &910000200000
@@ -8516,5 +8545,5 @@ SceneRoots:
   m_Roots:
   - {fileID: 362473855}
   - {fileID: 88323786}
-  - {fileID: 851919016}
   - {fileID: 466438815}
+  - {fileID: 851919016}

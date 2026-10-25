@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
 
 [Serializable]
 public class MergeSeries
@@ -8,12 +10,7 @@ public class MergeSeries
     public List<ItemRecipeData> itemRecipeDatas = new List<ItemRecipeData>();
 }
 
-[Serializable]
-public class MergeItemMaterial
-{
-    public MergeItem MergeItem;
-    public int count;
-}
+
 
 // 사용자가 등록한 조합과 재고만 판정합니다. 같은 종류라는 이유로 자동 합성하지 않습니다.
 public static class MergeTree
@@ -44,7 +41,7 @@ public static class MergeTree
         return false;
     }
     public static bool IsAvailable(MergeItemMaterial material)
-        => material != null && material.MergeItem != null && material.MergeItem.item != null && material.count > 0;
+        => material != null && material.mergeItem != null && material.mergeItem.item != null && material.IsAvailable();
     public static MergeItemMaterial NextMaterial(IList<MergeItemMaterial> materials, MergeItemMaterial current)
     {
         if (materials == null || materials.Count == 0) return null;

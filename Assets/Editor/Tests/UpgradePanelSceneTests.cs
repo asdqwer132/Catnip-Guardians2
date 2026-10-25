@@ -12,7 +12,7 @@ using UnityEngine.UI;
 
 public class UpgradePanelSceneTests
 {
-    private const string ScenePath = "Assets/Scenes/UpgradeScene 1.unity";
+    private const string ScenePath = "Assets/Scenes/UpgradeScene.unity";
 
     private static T InScene<T>() where T : Component
     {

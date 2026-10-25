@@ -15,7 +15,7 @@ public class GameStatisticsManager : MonoBehaviour
     [SerializeField] private List<RoundCurrencyInfo> roundCurrencies = new List<RoundCurrencyInfo>();
 
     public int RoundKillCount => roundKillCount;
-    public int RoundGold => GetCurrency(CurrencyType.Gold);
+    public int RoundGold => GetCurrency(CurrencyType.CurrencyMain);
     public IReadOnlyList<RoundCurrencyInfo> RoundCurrencies => roundCurrencies;
 
     public event Action OnChanged;
@@ -85,7 +85,7 @@ public class GameStatisticsManager : MonoBehaviour
 
     public void AddGold(int amount)
     {
-        AddCurrency(CurrencyType.Gold, amount);
+        AddCurrency(CurrencyType.CurrencyMain, amount);
     }
 
     public void AddCurrency(CurrencyType currencyType, int amount)

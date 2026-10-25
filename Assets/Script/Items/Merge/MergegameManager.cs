@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
-
 public class MergegameManager : MonoBehaviour
 {
     public ItemSeries itemSeries;
     public List<MergeSeries> mergeRecipe = new List<MergeSeries>();
+    public List<MergeItem> mergeItems = new List<MergeItem>();
     public List<MergeItemMaterial> mergeMaterials = new List<MergeItemMaterial>();
     public MergeItemMaterial currentMaterial;
 
@@ -15,15 +15,13 @@ public class MergegameManager : MonoBehaviour
     public ObjectPoolManager objectPool;
     public Transform spawnPoint;
 
-    [Tooltip("재료뿐 아니라 레시피 결과도 포함합니다. 아이템별 프리팹과 반지름을 찾는 목록입니다.")]
-    public List<MergeItem> mergeItems = new List<MergeItem>();
 
     [Header("생성 옵션")]
     [Min(0f)] public float dropInterval = 0.5f;
     [Min(1)] public int maximumActiveItems = 50;
     [Min(0)] public int prewarmCount = 4;
     [Min(0f)] public float resultMergeDelay = 0.1f;
-    [Min(0f)] public float dropOffest = 0.02f;
+    [Min(0f)] public float dropOffset = 0.02f;
 
     [Header("테스트 입력 · Input System")]
     public bool acceptKeyboardInput = true;
@@ -48,8 +46,8 @@ public class MergegameManager : MonoBehaviour
     private int revision;
     private bool dropping, processing, clearing;
     public IReadOnlyList<MergeItemObject> ActiveItems => active;
-    public Sprite CurrentMaterialIcon => currentMaterial?.MergeItem != null && currentMaterial.MergeItem.item != null ? currentMaterial.MergeItem.item.icon : null;
-    public string CurrentMaterialName => DisplayName(currentMaterial?.MergeItem != null ? currentMaterial.MergeItem.item : null);
+    public Sprite CurrentMaterialIcon => currentMaterial?.mergeItem != null && currentMaterial.mergeItem.item != null ? currentMaterial.mergeItem.item.icon : null;
+    public string CurrentMaterialName => DisplayName(currentMaterial?.mergeItem != null ? currentMaterial.mergeItem.item : null);
     public int CurrentMaterialCount => currentMaterial != null ? Math.Max(0, currentMaterial.count) : 0;
     public string LastMessage => lastMessage;
     public bool CanOperate => isActiveAndEnabled && !clearing && Time.timeScale > 0f;
@@ -71,18 +69,23 @@ public class MergegameManager : MonoBehaviour
     {
         PrewarmItems();
         Notify(onCurrentMaterialChanged);
+        if(GameSession.Instance == null)
+            RefreshUI();
+    }
+    public void RefreshUI()
+    {
+        foreach(var UI in mergeMaterials)
+        {
+            UI.SetCountText();
+        }
     }
     public void PrewarmItems()
     {
         if (objectPool == null || prewarmCount <= 0) return;
         var prefabs = new HashSet<GameObject>();
-        if (mergeItems != null) foreach (var definition in mergeItems)
-        {
-            if (TryGetPrefab(definition, out var prefab)) prefabs.Add(prefab);
-        }
         if (mergeMaterials != null) foreach (var material in mergeMaterials)
         {
-            if (TryGetPrefab(material?.MergeItem, out var prefab)) prefabs.Add(prefab);
+            if (TryGetPrefab(material?.mergeItem, out var prefab)) prefabs.Add(prefab);
         }
         foreach (var prefab in prefabs) objectPool.Prewarm(prefab, prewarmCount);
     }
@@ -112,7 +115,7 @@ public class MergegameManager : MonoBehaviour
         {
             if (mergeMaterials.Contains(currentMaterial) && MergeTree.IsAvailable(currentMaterial)) return;
             foreach (var material in mergeMaterials)
-                if (MergeTree.IsAvailable(material) && material.MergeItem == currentMaterial.MergeItem) { currentMaterial = material; return; }
+                if (MergeTree.IsAvailable(material) && material.mergeItem == currentMaterial.mergeItem) { currentMaterial = material; return; }
         }
         currentMaterial = MergeTree.NextMaterial(mergeMaterials, null);
     }
@@ -134,16 +137,29 @@ public class MergegameManager : MonoBehaviour
     private void SelectionChanged()
     {
         Notify(onCurrentMaterialChanged);
+
+
         Report($"선택 재료: {CurrentMaterialName}, 남은 개수: {CurrentMaterialCount}");
     }
-    public MergeItem GetDefinition(ItemData item)
+    public MergeItemMaterial GetDefinition(ItemData item)
+    {
+        if (item == null) return null;
+        if (mergeMaterials != null) foreach (var definition in mergeMaterials)
+            if (definition != null && definition.mergeItem.item == item)
+                    return new MergeItemMaterial(
+                        definition.mergeItem,
+                        definition.countText, definition.defaultCountText,
+                        0, definition.defaultCount);
+        return null;
+    }
+    public MergeItem GetDefinitionAtMergeItem(ItemData item)
     {
         if (item == null) return null;
         if (mergeItems != null) foreach (var definition in mergeItems)
-            if (definition != null && definition.item == item) return definition;
-        if (mergeMaterials != null) foreach (var material in mergeMaterials)
-            if (material?.MergeItem != null && material.MergeItem.item == item) return material.MergeItem;
+                if (definition != null && definition.item == item)
+                    return definition;
         return null;
+
     }
     // 시작 재고를 복사합니다. 전달 데이터와 현재 재료의 수량 객체를 공유하지 않습니다.
     public void SetSessionMaterials(IReadOnlyList<InventoryItem> items)
@@ -155,8 +171,12 @@ public class MergegameManager : MonoBehaviour
                 if (item == null || item.itemData == null || item.amount <= 0 || item.itemData.series != itemSeries) continue;
                 var definition = GetDefinition(item.itemData);
                 if (definition == null) continue;
-                var existing = materials.Find(entry => entry.MergeItem == definition);
-                if (existing == null) materials.Add(new MergeItemMaterial { MergeItem = definition, count = item.amount });
+                var existing = materials.Find(entry => entry.mergeItem == definition.mergeItem);
+                if (existing == null) materials.Add(
+                    new MergeItemMaterial(
+                        definition.mergeItem, 
+                        definition.countText, definition.defaultCountText,
+                        item.amount, definition.defaultCount));
                 else existing.count = (int)Math.Min(int.MaxValue, (long)existing.count + item.amount);
             }
         mergeMaterials = materials;
@@ -175,20 +195,19 @@ public class MergegameManager : MonoBehaviour
         EnsureSelection();
         if (!MergeTree.IsAvailable(currentMaterial)) return Reject("사용할 재료가 없습니다.");
         var material = currentMaterial;
-        if (!TryGetPrefab(material.MergeItem, out _))
+        if (!TryGetPrefab(material.mergeItem, out _))
             return Reject("선택 재료의 MergeItem → Prefab에 활성 MergeItemObject가 있는 프리팹을 연결하세요.");
-        float offset = UnityEngine.Random.Range(0, 2) == 1 ? -1f : 1f;
-        Debug.Log(offset);
-        Vector3 position = spawnPoint.position + new Vector3(offset * dropOffest, 0f, 0f);
-        if (IsBlocked(position, material.MergeItem.Radius)) return Reject("투입 위치가 막혀 있습니다.");
+        float offset = UnityEngine.Random.Range(-dropOffset, dropOffset);
+        Vector3 position = spawnPoint.position + new Vector3(offset * dropOffset, 0f, 0f);
+        if (IsBlocked(position, material.mergeItem.Radius)) return Reject("투입 위치가 막혀 있습니다.");
         dropping = true;
         int before = revision;
         bool committed = false;
         MergeItemObject piece = null;
-        material.count--; // 풀 콜백이 재진입해도 같은 마지막 재료를 중복 소비하지 않습니다.
+        material.UseCount(); // 풀 콜백이 재진입해도 같은 마지막 재료를 중복 소비하지 않습니다.
         try
         {
-            piece = SpawnPiece(material.MergeItem, position);
+            piece = SpawnPiece(material.mergeItem, position);
             if (piece == null || !piece.IsLive || before != revision || !CanOperate)
                 return Reject("풀 생성이 취소되었거나 아이템이 비활성 상태입니다.");
             piece.SetSimulated(true);
@@ -196,7 +215,7 @@ public class MergegameManager : MonoBehaviour
             committed = true;
             Notify(onBoardChanged); Notify(onMaterialsChanged);
             EnsureSelection(); Notify(onCurrentMaterialChanged);
-            Report($"낙하: {DisplayName(material.MergeItem.item)}, 해당 재료 잔량: {material.count}");
+            Report($"낙하: {DisplayName(material.mergeItem.item)}, 해당 재료 잔량: {material.count}");
             return true;
         }
         finally
@@ -286,7 +305,7 @@ public class MergegameManager : MonoBehaviour
     private void TryMerge(MergeItemObject a, MergeItemObject b)
     {
         if (!MergeTree.TryGetRecipe(mergeRecipe, a.item, b.item, out var recipe)) return;
-        var definition = GetDefinition(recipe.resultItem);
+        var definition = GetDefinitionAtMergeItem(recipe.resultItem);
         if (objectPool == null || !TryGetPrefab(definition, out _)) return;
         if (!a.Reserve()) return;
         if (!b.Reserve()) { a.Unreserve(); return; }

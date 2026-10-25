@@ -15,7 +15,6 @@ public class UpgradeManager : MonoBehaviour
     public InventoryUI[] inventoryUIs;
 
     [Header("DataCarrier")]
-    public EquipmentBagManager equipmentBagManager;
     public SceneMoveManager sceneMoveManager;
     [Tooltip("제너럴/아이템 씬에 전달할 재료 인벤토리. 비워두면 현재 InventoryManager를 사용합니다.")]
     public InventoryManager materialInventory;
@@ -36,8 +35,6 @@ public class UpgradeManager : MonoBehaviour
         if (shopManager != null)
             shopManager.InitShop();
 
-        if (equipmentBagManager != null)
-            equipmentBagManager.Init();
 
         if (itemInitManager != null)
             itemInitManager.ApplyDefaultInventoryItems();

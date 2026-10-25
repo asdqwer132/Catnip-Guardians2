@@ -21,6 +21,7 @@ public class ItemUsePositionProvider : MonoBehaviour
     public bool selectPositionOnly;
     [SerializeField] private bool hasSelectedPosition;
     [SerializeField] private Vector3 selectedPosition;
+    [SerializeField] private TargetRangeIndicator targetRangeIndicatorPrefab;
     public bool HasSelectedPosition => hasSelectedPosition;
     public Vector3 SelectedPosition => selectedPosition;
     public event Action<Vector3> PositionSelected;
@@ -30,6 +31,7 @@ public class ItemUsePositionProvider : MonoBehaviour
     {
         if (mainCamera == null)
             mainCamera = Camera.main;
+        targetRangeIndicatorPrefab.gameObject.SetActive(false);
     }
 
     public Vector3 GetUseStartPosition(GameObject owner)
@@ -136,6 +138,10 @@ public class ItemUsePositionProvider : MonoBehaviour
         selectedPosition = clampMousePositionByPlayerRange ? ClampPositionByPlayerRange(position) : position;
         hasSelectedPosition = true;
         PositionSelected?.Invoke(selectedPosition);
+
+        targetRangeIndicatorPrefab.gameObject.SetActive(true);
+        targetRangeIndicatorPrefab.transform.position = selectedPosition;
+
         return true;
     }
 

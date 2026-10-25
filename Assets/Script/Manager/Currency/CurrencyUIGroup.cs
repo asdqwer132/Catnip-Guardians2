@@ -53,7 +53,7 @@ public class CurrencyUIGroup : MonoBehaviour
                 ui.textUI.text = amount.ToString();
 
             if (ui.textObj != null)
-                ui.textObj.SetActive(amount > 0 || type == CurrencyType.Gold);
+                ui.textObj.SetActive(amount > 0 || type == CurrencyType.CurrencyMain);
         }
     }
 }

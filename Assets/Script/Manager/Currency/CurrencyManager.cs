@@ -11,13 +11,13 @@ public class Cost
 
 public enum CurrencyType
 {
-    Gold,
-    Seed,
-    Crystal,
-    Core,
-    Leaf,
-    Scrap,
-    EndPearl
+    CurrencyMain = 0,
+    CurrencySub1 = 1,
+    CurrencySub2 = 2,
+    CurrencySub3 = 3,
+    CurrencySub4 = 4,
+    ExtraCurrency1 = 5,
+    ExtraCurrency2 = 6
 }
 
 public class CurrencyManager : MonoBehaviour
