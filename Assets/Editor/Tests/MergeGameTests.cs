@@ -260,6 +260,35 @@ public sealed class MergeGameTests
         return selection;
     }
 
+    [Test]
+    public void RemovedPooledItemIsCopiedToBattleMailboxBeforeItsPayloadIsCleared()
+    {
+        var previous = GameSession.Instance;
+        var sessionHost = new GameObject("Selection session"); sessionHost.SetActive(false);
+        var session = sessionHost.AddComponent<GameSession>();
+        GameSession.Instance = session;
+        try
+        {
+            var piece = Drop(0, -1f);
+            var item = piece.item;
+            var selection = Selection();
+            Physics2D.SyncTransforms();
+            Vector2 position = piece.Position;
+            Assert.That(selection.TryBeginSelection(position), Is.True);
+            Assert.That(selection.CompleteSelection(position), Is.EqualTo(1));
+            Assert.That(piece.item, Is.Null, "Returning to the pool clears its scene payload.");
+            Assert.That(session.TryTakeBattleItems(out var data), Is.True);
+            Assert.That(data.items[0].itemData, Is.SameAs(item));
+            Assert.That(data.items[0].amount, Is.EqualTo(1));
+            Assert.That(session.TryTakeBattleItems(out _), Is.False);
+        }
+        finally
+        {
+            GameSession.Instance = previous;
+            Object.DestroyImmediate(sessionHost);
+        }
+    }
+
     private SpriteRenderer DragRenderer(MergeItemSelection selection, SpriteDrawMode mode)
     {
         var parent = new GameObject("Preview parent"); parent.transform.SetParent(manager.transform, false);

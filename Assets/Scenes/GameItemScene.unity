@@ -2028,6 +2028,7 @@ GameObject:
   - component: {fileID: 1122774686}
   - component: {fileID: 910000770001}
   - component: {fileID: 910000770002}
+  - component: {fileID: 990200000001}
   m_Layer: 0
   m_Name: MegerGeneralManager
   m_TagString: Untagged
@@ -5831,6 +5832,21 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2325438877951011863, guid: cd888cd0a5f64854dab86e688a063e55, type: 3}
   m_PrefabInstance: {fileID: 5269178313192337302}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &990200000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1122774685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b00c24e4dfe48aa950f82cfc0c2f73b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameItemSessionBridge
+  boards:
+  - {fileID: 1595348419}
+  - {fileID: 86893377}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

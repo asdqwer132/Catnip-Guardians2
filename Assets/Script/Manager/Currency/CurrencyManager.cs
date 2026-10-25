@@ -45,7 +45,8 @@ public class CurrencyManager : MonoBehaviour
         }
 
         instance = this;
-        if (gameObject.scene.name != GameSceneRoutes.Core) DontDestroyOnLoad(gameObject);
+        if (transform.parent != null) transform.SetParent(null);
+        DontDestroyOnLoad(gameObject);
 
         InitCurrencies();
         InitUIGroups();

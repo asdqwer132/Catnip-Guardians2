@@ -145,6 +145,26 @@ public class MergegameManager : MonoBehaviour
             if (material?.MergeItem != null && material.MergeItem.item == item) return material.MergeItem;
         return null;
     }
+    // 시작 재고를 복사합니다. 전달 데이터와 현재 재료의 수량 객체를 공유하지 않습니다.
+    public void SetSessionMaterials(IReadOnlyList<InventoryItem> items)
+    {
+        var materials = new List<MergeItemMaterial>();
+        if (items != null)
+            foreach (var item in items)
+            {
+                if (item == null || item.itemData == null || item.amount <= 0 || item.itemData.series != itemSeries) continue;
+                var definition = GetDefinition(item.itemData);
+                if (definition == null) continue;
+                var existing = materials.Find(entry => entry.MergeItem == definition);
+                if (existing == null) materials.Add(new MergeItemMaterial { MergeItem = definition, count = item.amount });
+                else existing.count = (int)Math.Min(int.MaxValue, (long)existing.count + item.amount);
+            }
+        mergeMaterials = materials;
+        currentMaterial = null;
+        EnsureSelection();
+        Notify(onMaterialsChanged);
+        Notify(onCurrentMaterialChanged);
+    }
     public bool TryDropCurrent()
     {
         if (!CanOperate || dropping) return Reject("현재 생성할 수 없는 상태입니다.");

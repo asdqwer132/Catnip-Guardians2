@@ -148,6 +148,7 @@ public sealed class MergeItemSelection : MonoBehaviour
         HideVisual();
         committing = true;
         LastRemovedCount = 0;
+        var transfer = new GameItemToBattleData();
         try
         {
             foreach (var entry in selected)
@@ -156,11 +157,14 @@ public sealed class MergeItemSelection : MonoBehaviour
                 if (piece == null || piece.LifeId != entry.lifeId || piece.Owner != board || !piece.CanSelect) continue;
                 string name = board.GetItemDisplayName(piece.item);
                 Vector2 position = piece.Position;
+                ItemData item = piece.item;
                 if (!board.TryRemoveItem(piece, entry.lifeId)) continue;
+                transfer.items.Add(new InventoryItem(item, 1));
                 LastRemovedCount++;
                 LastMessage = $"{(dragged ? "드래그" : "클릭")} 선택: {name}, 위치: {position}";
                 if (logSelections) Debug.Log("[MergeSelection] " + LastMessage, this);
             }
+            if (GameSession.Instance != null) GameSession.Instance.SendItemsToBattle(transfer);
             return LastRemovedCount;
         }
         finally { selected.Clear(); committing = false; }

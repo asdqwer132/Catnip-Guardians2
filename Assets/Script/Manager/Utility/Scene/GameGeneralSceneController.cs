@@ -53,6 +53,9 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     private int appliedNavigationLayer = -1;
     public Camera NavigationCamera => navigationView != null ? navigationView.Camera : null;
     public bool IsReady => ready;
+    // 두 자식 씬이 읽는 것과 같은 시작 데이터의 복사본입니다.
+    public UpgradeToGeneralData SessionData => GameSession.Instance != null &&
+        GameSession.Instance.TryReadGeneralData(out var data) ? data : null;
     private PhysicsScene2D itemPhysics;
     private readonly List<CanvasState> canvases = new List<CanvasState>();
     private CanvasState navigationState;
