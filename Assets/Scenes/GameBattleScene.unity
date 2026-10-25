@@ -10651,7 +10651,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
     targetBagData: {fileID: 332667247}
   - name: "\uBAAC\uC2A4\uD130 \uC18C\uD658"
-    isUse: 1
+    isUse: 0
     item:
     - {fileID: 11400000, guid: 9b53c0445e2e6b24a988332167206f50, type: 2}
     - {fileID: 11400000, guid: 3c7ce1913a61cae418c832fe08e96f67, type: 2}
@@ -46944,6 +46944,19 @@ MonoBehaviour:
   maskAlphaThreshold: 0
   maskEdgeSoftness: 0
   invertMask: 0
+--- !u!114 &990200000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1473317462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8692e367b2fc46a1bcd9a4c33a8243d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BattleItemSessionReceiver
+  receivedItems: []
 --- !u!1001 &8842469353729927645
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -47177,19 +47190,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ae7f2f81a08b5724bbc7676eb5ad561c, type: 3}
---- !u!114 &990200000002
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1473317462}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8692e367b2fc46a1bcd9a4c33a8243d7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BattleItemSessionReceiver
-  receivedItems: []
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
