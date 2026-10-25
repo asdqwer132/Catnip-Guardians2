@@ -295,41 +295,6 @@ public class EquipmentBag : RefreshListener
     }
 
 
-    public EquipmentBagSnapshot CreateSnapshot()
-    {
-        return new EquipmentBagSnapshot(this);
-    }
-
-    public void ApplySnapshot(EquipmentBagSnapshot snapshot)
-    {
-        if (snapshot == null)
-            return;
-
-        if (snapshot.bagData != null)
-            bagData = snapshot.bagData;
-
-        equippedItems.Clear();
-
-        for (int i = 0; i < maxSlotCount; i++)
-        {
-            if (snapshot.equippedItems != null &&
-                i < snapshot.equippedItems.Count &&
-                snapshot.equippedItems[i] != null)
-            {
-                InventoryItem savedItem = snapshot.equippedItems[i];
-                equippedItems.Add(new InventoryItem(savedItem.itemData, savedItem.amount));
-            }
-            else
-            {
-                equippedItems.Add(CreateEmptyItem());
-            }
-        }
-
-        RefreshLocks();
-        UpdateCurrentSlotCount();
-        RefreshUI();
-    }
-
     private InventoryItem CreateEmptyItem()
     {
         return new InventoryItem(null, 0);

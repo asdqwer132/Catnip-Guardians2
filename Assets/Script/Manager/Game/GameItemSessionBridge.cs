@@ -22,27 +22,45 @@ public sealed class GameItemSessionBridge : MonoBehaviour
 
     private void BindSession()
     {
-        if (session != null) session.GameDataChanged -= ApplyMaterials;
+        if (session != null)
+            session.GameDataChanged -= ApplyMaterials;
+
         session = GameSession.Instance;
-        if (session != null) session.GameDataChanged += ApplyMaterials;
+        if (session != null)
+            session.GameDataChanged += ApplyMaterials;
+
         ApplyMaterials();
     }
 
     public void ApplyMaterials()
     {
-        if (session == null || (appliedSession == session && appliedRevision == session.GameDataRevision) ||
-            !session.TryReadGeneralData(out var data)) return;
+        if (session == null)
+            return;
+
+        if (appliedSession == session && appliedRevision == session.GameDataRevision)
+            return;
+
+        if (!session.TryReadGeneralData(out var data))
+            return;
+
         appliedSession = session;
         appliedRevision = session.GameDataRevision;
-        if (boards != null)
-            foreach (var board in boards)
-                if (board != null) board.SetSessionMaterials(data.materialItems);
+        if (boards == null)
+            return;
+
+        foreach (MergegameManager board in boards)
+        {
+            if (board != null)
+                board.SetSessionMaterials(data.materialItems);
+        }
     }
 
     private void OnDisable()
     {
         GameSession.InstanceChanged -= BindSession;
-        if (session != null) session.GameDataChanged -= ApplyMaterials;
+        if (session != null)
+            session.GameDataChanged -= ApplyMaterials;
+
         session = null;
     }
 }

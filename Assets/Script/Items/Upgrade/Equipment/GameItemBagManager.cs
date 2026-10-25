@@ -26,15 +26,7 @@ public class GameItemBagManager : MonoBehaviour
                 bag.Init();
         }
 
-        // 2. GameSession에 저장된 데이터를
-        //    GameScene의 EquipmentBag 객체에 복원
-        if (GameSession.Instance != null &&
-            GameSession.Instance.HasEquipmentBagData)
-        {
-            GameSession.Instance.LoadEquipmentBags(bags);
-        }
-
-        // 3. 실제 아이템 사용 매니저에
+        // 2. 실제 아이템 사용 매니저에
         //    GameScene의 EquipmentBag 연결
         ConnectBagItemUseManagers();
     }

@@ -253,8 +253,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f90e328bc1cc6f42b783723480dcc8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameSession
-  equipmentBags: []
-  skillBuffs: []
+  generalData:
+    materialItems: []
+    skillItems: []
+  hasGeneralData: 0
+  pendingBattleItems: []
+  lastSentToBattle:
+    items: []
+  lastReceivedByBattle:
+    items: []
 --- !u!4 &20734898
 Transform:
   m_ObjectHideFlags: 0

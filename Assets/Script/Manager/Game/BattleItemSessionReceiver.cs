@@ -22,25 +22,30 @@ public sealed class BattleItemSessionReceiver : MonoBehaviour
     {
         UnbindSession();
         session = GameSession.Instance;
-        if (session != null)
-        {
-            if (receivedSession != session || receivedRevision != session.GameDataRevision) ResetForGame();
-            session.BattleItemsAvailable += ReceivePendingItems;
-            session.GameDataChanged += ResetForGame;
-            ReceivePendingItems();
-        }
+        if (session == null)
+            return;
+
+        if (receivedSession != session || receivedRevision != session.GameDataRevision)
+            ResetForGame();
+
+        session.BattleItemsAvailable += ReceivePendingItems;
+        session.GameDataChanged += ResetForGame;
+        ReceivePendingItems();
     }
 
     public void ReceivePendingItems()
     {
         while (session != null && session.TryTakeBattleItems(out var data))
         {
-            foreach (var item in data.items)
+            foreach (InventoryItem item in data.items)
             {
                 var existing = receivedItems.Find(entry => entry.itemData == item.itemData);
-                if (existing == null) receivedItems.Add(new InventoryItem(item.itemData, item.amount));
-                else existing.amount = (int)Math.Min(int.MaxValue, (long)existing.amount + item.amount);
+                if (existing == null)
+                    receivedItems.Add(new InventoryItem(item.itemData, item.amount));
+                else
+                    existing.amount = (int)Math.Min(int.MaxValue, (long)existing.amount + item.amount);
             }
+
             ItemsReceived?.Invoke(data);
         }
     }
@@ -56,7 +61,9 @@ public sealed class BattleItemSessionReceiver : MonoBehaviour
 
     private void UnbindSession()
     {
-        if (session == null) return;
+        if (session == null)
+            return;
+
         session.BattleItemsAvailable -= ReceivePendingItems;
         session.GameDataChanged -= ResetForGame;
     }

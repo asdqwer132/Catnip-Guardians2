@@ -45,22 +45,12 @@ public class UpgradeManager : MonoBehaviour
         if (unlockManager != null)
             unlockManager.Init();
 
-        // 가방 복원
+        // 스킬트리에서 등록한 아이템 복원
         if (GameSession.Instance != null &&
-            GameSession.Instance.HasEquipmentBagData &&
-            equipmentBagManager != null)
-        {
-            GameSession.Instance.LoadEquipmentBags(
-                equipmentBagManager.bags
-            );
-        }
-
-        // 스킬 버프 복원
-        if (GameSession.Instance != null &&
-            GameSession.Instance.HasSkillBuffData &&
+            GameSession.Instance.HasSkillItems &&
             buffSkillManager != null)
         {
-            GameSession.Instance.LoadSkillBuff(
+            GameSession.Instance.LoadSkillItems(
                 buffSkillManager
             );
         }
@@ -84,35 +74,23 @@ public class UpgradeManager : MonoBehaviour
     public void GoGame()
     {
         var session = GameSession.GetOrCreate();
-        if (GameSession.Instance != null)
-        {
-            // 가방 저장
-            if (equipmentBagManager != null)
-            {
-                GameSession.Instance.SaveEquipmentBags(
-                    equipmentBagManager.bags
-                );
-            }
-
-            // 버프 스킬 저장
-            if (buffSkillManager != null)
-            {
-                GameSession.Instance.SaveSkillBuff(
-                    buffSkillManager.RegisteredBuffItems
-                );
-            }
-        }
-
         var data = new UpgradeToGeneralData();
         var inventory = materialInventory != null ? materialInventory : InventoryManager.instance;
-        if (inventory != null) data.materialItems = GameSessionItemCopy.Copy(inventory.items);
+        if (inventory != null)
+            data.materialItems = GameSessionItemCopy.Copy(inventory.items);
+
         if (buffSkillManager != null)
-            foreach (var item in buffSkillManager.RegisteredBuffItems)
+        {
+            foreach (RegisteredBuffSkillItem item in buffSkillManager.RegisteredBuffItems)
+            {
                 if (item != null && item.itemData != null)
-                    data.skillItems.Add(new SkillBuffSnapshot(item));
+                    data.skillItems.Add(new SkillItemSnapshot(item));
+            }
+        }
         session.SaveUpgradeToGeneral(data);
 
         var loader = sceneMoveManager != null ? sceneMoveManager : SceneMoveManager.instance;
-        if (loader != null) loader.GoGameScene();
+        if (loader != null)
+            loader.GoGameScene();
     }
 }

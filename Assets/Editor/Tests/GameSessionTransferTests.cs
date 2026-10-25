@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
+using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,6 +9,42 @@ using UnityEngine.TestTools;
 
 public class GameSessionTransferTests
 {
+    [Test]
+    public void InspectorShowsPendingAndRecentTransfersAfterBattleTakesTheItems()
+    {
+        var host = new GameObject("Session inspector test");
+        host.SetActive(false);
+        var item = ScriptableObject.CreateInstance<ItemData>();
+        try
+        {
+            var session = host.AddComponent<GameSession>();
+            var packet = new GameItemToBattleData();
+            packet.items.Add(new InventoryItem(item, 2));
+            session.SendItemsToBattle(packet);
+
+            var inspector = new SerializedObject(session);
+            Assert.That(inspector.FindProperty("pendingBattleItems").arraySize, Is.EqualTo(1));
+            Assert.That(inspector.FindProperty("lastSentToBattle")
+                .FindPropertyRelative("items").GetArrayElementAtIndex(0)
+                .FindPropertyRelative("amount").intValue, Is.EqualTo(2));
+
+            Assert.That(session.TryTakeBattleItems(out var received), Is.True);
+            received.items[0].amount = 99;
+            inspector.Update();
+            Assert.That(inspector.FindProperty("pendingBattleItems").arraySize, Is.Zero);
+            Assert.That(inspector.FindProperty("lastReceivedByBattle")
+                .FindPropertyRelative("items").GetArrayElementAtIndex(0)
+                .FindPropertyRelative("amount").intValue, Is.EqualTo(2));
+            Assert.That(session.LastSentToBattle.items[0].amount, Is.EqualTo(2));
+            Assert.That(session.LastReceivedByBattle.items[0].amount, Is.EqualTo(2));
+        }
+        finally
+        {
+            Object.DestroyImmediate(host);
+            Object.DestroyImmediate(item);
+        }
+    }
+
     [Test]
     public void UpgradeGoGameCapturesInventoryAndSkillItemsBeforeSceneTransition()
     {
@@ -35,7 +72,7 @@ public class GameSessionTransferTests
             Assert.That(session.TryReadGeneralData(out var data), Is.True);
             Assert.That(data.materialItems[0].amount, Is.EqualTo(12));
             Assert.That(data.skillItems[0].bagId, Is.EqualTo("skill-bag"));
-            Assert.That(session.HasSkillBuffData, Is.True);
+            Assert.That(session.HasSkillItems, Is.True);
         }
         finally
         {
@@ -78,7 +115,7 @@ public class GameSessionTransferTests
             int gold = currency.GetCurrency(CurrencyType.Gold);
             var original = new UpgradeToGeneralData();
             original.materialItems.Add(new InventoryItem(item, 5));
-            original.skillItems.Add(new SkillBuffSnapshot { itemData = item, bagId = "test-bag" });
+            original.skillItems.Add(new SkillItemSnapshot { itemData = item, bagId = "test-bag" });
             session.SaveUpgradeToGeneral(original);
             original.materialItems[0].amount = 99;
             Assert.That(session.TryReadGeneralData(out var copy), Is.True);
@@ -134,7 +171,7 @@ public class GameSessionTransferTests
             receiverHost.SetActive(true);
             Assert.That(receiver.ReceivedItems, Is.Empty);
             Assert.That(board.mergeMaterials, Is.Empty);
-            Assert.That(session.HasSkillBuffData, Is.False);
+            Assert.That(session.HasSkillItems, Is.False);
         }
         finally
         {

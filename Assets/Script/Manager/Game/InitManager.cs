@@ -31,7 +31,7 @@ public class InitManager : MonoBehaviour
 
         if (GameSession.Instance != null)
         {
-            GameSession.Instance.LoadSkillBuff(
+            GameSession.Instance.LoadSkillItems(
                 buffSkillManager
             );
         }
