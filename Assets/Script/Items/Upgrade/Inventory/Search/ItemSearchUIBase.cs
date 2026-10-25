@@ -94,6 +94,10 @@ public abstract class ItemSearchUIBase : MonoBehaviour
         NormalizeFilter();
         ApplyFilterToControlsWithoutNotify();
 
+        ResetCategoryFilter();
+        ResetGradeFilter();
+        ResetSeriesFilter();
+
         BindEvents();
         ApplyFilter(false);
     }

@@ -10,6 +10,7 @@ public sealed class BattleSceneButtonRelay : MonoBehaviour
 {
     [Tooltip("같은 제너럴씬의 Controller입니다. 여기에 설정된 Battle Scene을 호출 대상으로 사용합니다.")]
     [SerializeField] private GameGeneralSceneController sceneController;
+    [SerializeField] private GameEndManager endManager;
 
     // Unity Button의 OnClick에 연결하는 진입점입니다.
     public void RequestDefeat()
@@ -20,10 +21,16 @@ public sealed class BattleSceneButtonRelay : MonoBehaviour
             Debug.LogWarning("배틀 호출 대상을 확인할 수 없습니다. 같은 씬의 Scene Controller와 대상 배틀씬의 활성 Context 하나를 연결하세요.", this);
             return;
         }
+        else
+        {
+            endManager.EndGame(GameEndType.Lose);
+            GameManager.instance.GameOver();
+        }
         if (!battle.TryRequestDefeat())
             Debug.LogWarning("배틀 Context에 같은 씬의 활성 GameManager를 연결하세요.", this);
     }
-
+    public void RequestConfirm() => GameManager.instance.ConfirmEnd();
+    public void RequestRetryGamge() => GameManager.instance.RetryGame();
     public bool TryGetBattle(out BattleSceneContext context)
     {
         context = null;

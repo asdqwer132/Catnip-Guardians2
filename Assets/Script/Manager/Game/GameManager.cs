@@ -2,13 +2,18 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager instance;
     [Header("Manager")]
     public InitManager initManager;
-    public GameEndManager endManager;
     public RoundManager roundManager;
     public GameStatisticsManager statisticsManager;
     public TutorialEventManager tutorialEventManager;
 
+    private void Awake()
+    {
+        instance = this;
+       
+    }
     private void Start()
     {
         RetryGame();
@@ -16,7 +21,7 @@ public class GameManager : MonoBehaviour
 
     public void Victory()
     {
-        if (endManager != null && endManager.IsGameEnded)
+        if (GameEndManager.instance != null && GameEndManager.instance.IsGameEnded)
             return;
 
         if (initManager != null)
@@ -28,7 +33,7 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
-        if (endManager != null && endManager.IsGameEnded)
+        if (GameEndManager.instance != null && GameEndManager.instance.IsGameEnded)
             return;
 
         if (initManager != null)
@@ -48,8 +53,8 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f;
 
-        if (endManager != null)
-            endManager.ResetGameEnd();
+        if (GameEndManager.instance != null)
+            GameEndManager.instance.ResetGameEnd();
 
         if (initManager != null)
         {
@@ -68,10 +73,10 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void ConfirmEnd()
     {
-        if (endManager == null)
+        if (GameEndManager.instance == null)
             return;
 
-        if (!endManager.IsGameEnded)
+        if (!GameEndManager.instance.IsGameEnded)
             return;
 
 
@@ -80,7 +85,7 @@ public class GameManager : MonoBehaviour
 
 
         SceneAudioChannel.PlayBgm(gameObject, "Ambient 6 ");
-        endManager.OpenUpgradePanelFromEnd();
+        GameEndManager.instance.OpenUpgradePanelFromEnd();
     }
 
     /// <summary>

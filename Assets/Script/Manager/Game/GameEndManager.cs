@@ -12,7 +12,7 @@ public enum GameEndType
 
 public class GameEndManager : MonoBehaviour
 {
-
+    public static GameEndManager instance;
     [Header("Result Panel")]
     [SerializeField] private GameObject resultPanel;
     [SerializeField] private SceneMoveManager moveManager;
@@ -40,7 +40,7 @@ public class GameEndManager : MonoBehaviour
 
     private void Awake()
     {
-
+        instance = this;
         if (hidePanelOnAwake)
         {
             HideResultPanel();

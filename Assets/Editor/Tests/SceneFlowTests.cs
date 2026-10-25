@@ -18,7 +18,7 @@ public sealed class SceneFlowTests
             var round = host.AddComponent<RoundManager>();
             var end = host.AddComponent<GameEndManager>();
             var context = host.AddComponent<BattleSceneContext>();
-            manager.roundManager = round; manager.endManager = end; round.endManager = end;
+            manager.roundManager = round; GameEndManager.instance = end; round.endManager = end;
             typeof(BattleSceneContext).GetField("gameManager", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(context, manager);
             typeof(GameEndManager).GetField("resultPanel", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(end, panel);
             int results = 0; end.OnGameEnded += _ => results++;

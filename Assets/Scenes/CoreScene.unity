@@ -125,7 +125,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1498437405}
     m_Modifications:
     - target: {fileID: 261577642391720775, guid: f70ab7ad2617d714589c0689604b29e9, type: 3}
       propertyPath: m_Name
@@ -650,6 +650,16 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 463084693}
   m_CullTransparentMesh: 1
+--- !u!224 &530401368 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 6615160258947761196, guid: fb6e60c2d7f64b646a144e0209c60614, type: 3}
+  m_PrefabInstance: {fileID: 1440084323}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &713983974 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1761583576905199294, guid: f70ab7ad2617d714589c0689604b29e9, type: 3}
+  m_PrefabInstance: {fileID: 19086761}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1076441961
 GameObject:
   m_ObjectHideFlags: 0
@@ -754,8 +764,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d622e7a6f8ff4914ba3c84ab8d737457, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CurrencyManager
-  uiGroups:
-  - {fileID: 0}
+  uiGroups: []
   autoFindUIGroupsInChildren: 1
   defaultStartAmount: 11110
 --- !u!4 &1207828510
@@ -854,7 +863,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1498437405}
     m_Modifications:
     - target: {fileID: 903654464323226, guid: fb6e60c2d7f64b646a144e0209c60614, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1389,6 +1398,39 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 918374868920965842, guid: fb6e60c2d7f64b646a144e0209c60614, type: 3}
   m_PrefabInstance: {fileID: 1440084323}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1498437404
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1498437405}
+  m_Layer: 0
+  m_Name: -- Canvas --
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1498437405
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1498437404}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1280, y: 720, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 530401368}
+  - {fileID: 713983974}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &910000100000
 GameObject:
   m_ObjectHideFlags: 0
@@ -1494,6 +1536,26 @@ MonoBehaviour:
     height: 1
   backgroundDepth: -100
   receiveVisibilitySettings: 0
+--- !u!114 &910000990001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 286779209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55bf8439d71346bba1b84c5f2bd5143f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SceneCameraPresentation
+  background: {fileID: 11400000, guid: 99dc519e6e0a4e31af798e72441080c9, type: 2}
+  shape: 0
+  cornerRadius: 48
+  maskImage: {fileID: 0}
+  maskFit: 0
+  maskAlphaThreshold: 0.5
+  maskEdgeSoftness: 0.01
+  invertMask: 0
 --- !u!114 &1793242350054701142
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1660,28 +1722,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 286779212}
   - {fileID: 88323786}
-  - {fileID: 1440084323}
-  - {fileID: 19086761}
+  - {fileID: 1498437405}
+  - {fileID: 910000100001}
   - {fileID: 20734898}
   - {fileID: 1207828510}
-  - {fileID: 910000100001}
---- !u!114 &910000990001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 286779209}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55bf8439d71346bba1b84c5f2bd5143f, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::SceneCameraPresentation
-  background: {fileID: 11400000, guid: 99dc519e6e0a4e31af798e72441080c9, type: 2}
-  shape: 0
-  cornerRadius: 48
-  maskImage: {fileID: 0}
-  maskFit: 0
-  maskAlphaThreshold: 0.5
-  maskEdgeSoftness: 0.01
-  invertMask: 0
