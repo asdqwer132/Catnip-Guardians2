@@ -259,12 +259,18 @@ MonoBehaviour:
   baseStat:
     spawnInterval: 1.5
     spawnDistance: 20
+    spawnWidth: 40
+    spawnHeight: 2
   spawnImmediatelyOnStart: 0
   overSpawn: 1
+  spawnShape: 1
+  spawnCenter: {x: 0, y: 21}
   isBoss: 1
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
+    spawnWidth: 40
+    spawnHeight: 2
   drawSpawnGizmo: 1
   drawSpawnGizmoOnlySelected: 1
   spawnGizmoColor: {r: 1, g: 0.35, b: 0.1, a: 0.9}
@@ -378,12 +384,18 @@ MonoBehaviour:
   baseStat:
     spawnInterval: 1.5
     spawnDistance: 8
+    spawnWidth: 16
+    spawnHeight: 2
   spawnImmediatelyOnStart: 1
   overSpawn: 0
+  spawnShape: 1
+  spawnCenter: {x: 0, y: 9}
   isBoss: 0
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
+    spawnWidth: 16
+    spawnHeight: 2
   drawSpawnGizmo: 1
   drawSpawnGizmoOnlySelected: 1
   spawnGizmoColor: {r: 1, g: 0.35, b: 0.1, a: 0.9}
@@ -945,6 +957,7 @@ GameObject:
   - component: {fileID: 197801882}
   - component: {fileID: 197801884}
   - component: {fileID: 197801883}
+  - component: {fileID: 990200000004}
   m_Layer: 0
   m_Name: -- EnemySpawners --
   m_TagString: Untagged
@@ -996,6 +1009,10 @@ MonoBehaviour:
   middleBossSpawner: {fileID: 1193780219}
   bossSpawner: {fileID: 81909752}
   maxAliveEnemyCount: 300
+  loseWhenFieldFull: 1
+  attackSlotManager: {fileID: 990200000004}
+  gameManager: {fileID: 1318438114}
+  fieldLimitReached: 0
   specialSpawnerIgnoresMaxAliveCount: 1
   logSpawnTime: 0
   currentAliveEnemyCount: 0
@@ -2551,12 +2568,18 @@ MonoBehaviour:
   baseStat:
     spawnInterval: 1.5
     spawnDistance: 8
+    spawnWidth: 16
+    spawnHeight: 2
   spawnImmediatelyOnStart: 1
   overSpawn: 0
+  spawnShape: 1
+  spawnCenter: {x: 0, y: 9}
   isBoss: 0
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
+    spawnWidth: 16
+    spawnHeight: 2
   drawSpawnGizmo: 1
   drawSpawnGizmoOnlySelected: 1
   spawnGizmoColor: {r: 1, g: 0.35, b: 0.1, a: 0.9}
@@ -2831,12 +2854,18 @@ MonoBehaviour:
   baseStat:
     spawnInterval: 1.5
     spawnDistance: 8
+    spawnWidth: 16
+    spawnHeight: 2
   spawnImmediatelyOnStart: 1
   overSpawn: 0
+  spawnShape: 1
+  spawnCenter: {x: 0, y: 9}
   isBoss: 0
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
+    spawnWidth: 16
+    spawnHeight: 2
   drawSpawnGizmo: 1
   drawSpawnGizmoOnlySelected: 1
   spawnGizmoColor: {r: 1, g: 0.35, b: 0.1, a: 0.9}
@@ -3015,12 +3044,18 @@ MonoBehaviour:
   baseStat:
     spawnInterval: 1.5
     spawnDistance: 8
+    spawnWidth: 16
+    spawnHeight: 2
   spawnImmediatelyOnStart: 1
   overSpawn: 0
+  spawnShape: 1
+  spawnCenter: {x: 0, y: 9}
   isBoss: 0
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
+    spawnWidth: 16
+    spawnHeight: 2
   drawSpawnGizmo: 1
   drawSpawnGizmoOnlySelected: 1
   spawnGizmoColor: {r: 1, g: 0.35, b: 0.1, a: 0.9}
@@ -10258,12 +10293,18 @@ MonoBehaviour:
   baseStat:
     spawnInterval: 1.5
     spawnDistance: 8
+    spawnWidth: 16
+    spawnHeight: 2
   spawnImmediatelyOnStart: 1
   overSpawn: 0
+  spawnShape: 1
+  spawnCenter: {x: 0, y: 9}
   isBoss: 0
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
+    spawnWidth: 16
+    spawnHeight: 2
   drawSpawnGizmo: 1
   drawSpawnGizmoOnlySelected: 1
   spawnGizmoColor: {r: 1, g: 0.35, b: 0.1, a: 0.9}
@@ -18583,12 +18624,18 @@ MonoBehaviour:
   baseStat:
     spawnInterval: 1.5
     spawnDistance: 20
+    spawnWidth: 40
+    spawnHeight: 2
   spawnImmediatelyOnStart: 0
   overSpawn: 1
+  spawnShape: 1
+  spawnCenter: {x: 0, y: 21}
   isBoss: 1
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
+    spawnWidth: 40
+    spawnHeight: 2
   drawSpawnGizmo: 1
   drawSpawnGizmoOnlySelected: 1
   spawnGizmoColor: {r: 1, g: 0.35, b: 0.1, a: 0.9}
@@ -18834,6 +18881,7 @@ MonoBehaviour:
   growManager: {fileID: 1571861292}
   timerManager: {fileID: 1952276986}
   buffManager: {fileID: 511510869}
+  useHealthDefeat: 0
 --- !u!61 &1230235211
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -47085,6 +47133,69 @@ MonoBehaviour:
       faceMoveDirection: 0
       directionAngleOffset: -90
   pending: []
+--- !u!114 &990200000004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 197801881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5f929549ea447b3b4cf4eccfc2df658, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAttackSlotManager
+  slots:
+  - label: Slot 1
+    area:
+      serializedVersion: 2
+      x: -20
+      y: 0.75
+      width: 40
+      height: 0.5
+    capacity: 60
+    reservedCount: 0
+  - label: Slot 2
+    area:
+      serializedVersion: 2
+      x: -20
+      y: 1.75
+      width: 40
+      height: 0.5
+    capacity: 60
+    reservedCount: 0
+  - label: Slot 3
+    area:
+      serializedVersion: 2
+      x: -20
+      y: 2.75
+      width: 40
+      height: 0.5
+    capacity: 60
+    reservedCount: 0
+  - label: Slot 4
+    area:
+      serializedVersion: 2
+      x: -20
+      y: 3.75
+      width: 40
+      height: 0.5
+    capacity: 60
+    reservedCount: 0
+  - label: Slot 5
+    area:
+      serializedVersion: 2
+      x: -20
+      y: 4.75
+      width: 40
+      height: 0.5
+    capacity: 60
+    reservedCount: 0
+  arrivalTolerance: 0.03
+  onSlotAttack:
+    m_PersistentCalls:
+      m_Calls: []
+  gizmoColor: {r: 1, g: 0.7, b: 0.1, a: 0.8}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

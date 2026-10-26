@@ -43,6 +43,9 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     private Animator cachedAnimator;
     private float previousAnimatorSpeed = 1f;
     private bool isInitialized = false;
+    private EnemyAttackSlotManager attackSlots;
+    public bool UsesAttackSlots => attackSlots != null;
+    public bool IsAtAttackSlot => attackSlots != null && attackSlots.IsAtSlot(this);
     private bool isActionDisabled = false;
 
     [SerializeField] private bool isFullyStopped = false;
@@ -119,6 +122,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     protected override void OnDisable()
     {
+        ReleaseAttackSlot();
         ClearHitReaction();
         if (patternRunner != null) patternRunner.StopPattern();
         if (attack != null) attack.CancelAttack();
@@ -131,6 +135,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     private void OnDestroy()
     {
+        ReleaseAttackSlot();
         if (buffManager != null)
             buffManager.UnregisterBuffTarget(this);
     }
@@ -180,6 +185,12 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
             return;
         }
 
+        if (UsesAttackSlots)
+        {
+            TickSlotAI();
+            return;
+        }
+
         if (patternRunner != null && patternRunner.TickPattern())
         {
             behaviorState = EnemyBehaviorState.Pattern;
@@ -201,6 +212,47 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     #endregion
 
     #region AI
+
+    public void ConfigureAttackSlots(EnemyAttackSlotManager slots)
+    {
+        ReleaseAttackSlot();
+        attackSlots = slots;
+        if (attackSlots == null) return;
+        if (patternRunner != null) patternRunner.StopPattern();
+        CancelAttack();
+        attackSlots.TryGetDestination(this, out _);
+    }
+
+    private void ReleaseAttackSlot()
+    {
+        if (attackSlots != null) attackSlots.Release(this);
+        attackSlots = null;
+    }
+
+    private void TickSlotAI()
+    {
+        if (!attackSlots.TryGetDestination(this, out var destination))
+        {
+            behaviorState = EnemyBehaviorState.Idle;
+            StopMove();
+            CancelAttack();
+            return;
+        }
+        if (!attackSlots.IsAtSlot(this))
+        {
+            behaviorState = EnemyBehaviorState.Moving;
+            CancelAttack();
+            if (mover != null) mover.MoveToPosition(new Vector3(transform.position.x, destination.y, transform.position.z), 0f);
+            return;
+        }
+        StopMove();
+        if (attack == null) { behaviorState = EnemyBehaviorState.Idle; return; }
+        attack.TickAttack();
+        behaviorState = attack.IsPreparing ? EnemyBehaviorState.PreparingAttack :
+            attack.IsAttacking ? EnemyBehaviorState.Attacking : EnemyBehaviorState.Idle;
+    }
+
+    public void NotifySlotAttack() => attackSlots?.NotifyAttack(this);
 
     private void TickDefaultAI(Transform targetTransform)
     {
@@ -443,6 +495,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     public void OnSpawnedFromPool()
     {
+        ReleaseAttackSlot();
         isInitialized = false;
         ClearHitReaction();
         behaviorState = EnemyBehaviorState.Idle;
@@ -766,6 +819,8 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     protected override void OnDeathStarted()
     {
+        ReleaseAttackSlot();
+        if (EnemyManager.instance != null) EnemyManager.instance.RemoveEnemy(this);
         GameStatisticsManager.Instance?.AddKill();
         ClearHitReaction();
         behaviorState = EnemyBehaviorState.Dead;

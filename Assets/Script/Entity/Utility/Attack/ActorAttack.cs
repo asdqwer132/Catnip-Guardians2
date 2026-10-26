@@ -60,7 +60,7 @@ public class ActorAttack : MonoBehaviour
             (enemyOwner == null || (!enemyOwner.IsFullyStopped && !enemyOwner.IsHitReacting && !enemyOwner.IsDead));
         if (visual != null) visual.SetDefaultAttackAnimationPaused(pauseForMovementControl);
         if (pauseForMovementControl) return;
-        if (!CanUseDefaultAttack() || !IsTargetAtAttackDistance())
+        if (!CanUseDefaultAttack() || !IsDefaultAttackPositionValid())
         {
             CancelAttack();
             return;
@@ -132,6 +132,9 @@ public class ActorAttack : MonoBehaviour
     #endregion
 
     #region Default Attack
+    private bool IsDefaultAttackPositionValid()
+        => enemyOwner != null && enemyOwner.UsesAttackSlots ? enemyOwner.IsAtAttackSlot : IsTargetAtAttackDistance();
+
     private bool CanUseDefaultAttack()
     {
         if (isAttackStopped || !isActiveAndEnabled) return false;
@@ -144,7 +147,7 @@ public class ActorAttack : MonoBehaviour
     public void TickAttack()
     {
         if (Time.deltaTime <= 0f || IsAttacking || !CanUseDefaultAttack() || attackClock < nextAttackTime ||
-            !IsTargetAtAttackDistance()) return;
+            !IsDefaultAttackPositionValid()) return;
         if (mover != null) mover.Stop();
         IsAttacking = true;
         isActionAttackPlaying = false;
@@ -246,6 +249,12 @@ public class ActorAttack : MonoBehaviour
     #region Direction / Animation Event
     public void FaceTarget()
     {
+        if (enemyOwner != null && enemyOwner.UsesAttackSlots)
+        {
+            if (!isAttackStopped && !enemyOwner.IsHitReacting && !enemyOwner.IsDead && visual != null)
+                visual.LookDirection(Vector2.down);
+            return;
+        }
         if (isAttackStopped || target == null || !target.HasTarget || target.TargetTransform == null) return;
         if (enemyOwner != null && (enemyOwner.IsHitReacting || enemyOwner.IsDead)) return;
         if (mover != null && (mover.IsMovingOrTryingToMove || mover.HasExternalMovement)) return;
@@ -257,8 +266,13 @@ public class ActorAttack : MonoBehaviour
     {
         // 애니메이션 이벤트와 종료 시점 대체 처리가 함께 있어도 한 공격당 한 번이다.
         if (defaultPhase != DefaultAttackPhase.Animating || isActionAttackPlaying ||
-            defaultDamageApplied || !CanUseDefaultAttack() || !IsTargetAtAttackDistance()) return;
+            defaultDamageApplied || !CanUseDefaultAttack() || !IsDefaultAttackPositionValid()) return;
         defaultDamageApplied = true;
+        if (enemyOwner != null && enemyOwner.UsesAttackSlots)
+        {
+            enemyOwner.NotifySlotAttack();
+            return;
+        }
         target.DamageTarget(Mathf.Max(0f, damage));
     }
 

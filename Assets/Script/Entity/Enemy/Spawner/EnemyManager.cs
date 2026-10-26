@@ -22,6 +22,14 @@ public class EnemyManager : MonoBehaviour
     [Header("Spawn Limit")]
     public int maxAliveEnemyCount = 50;
 
+    [Header("Field Rules")]
+    public bool loseWhenFieldFull;
+    public EnemyAttackSlotManager attackSlotManager;
+    public GameManager gameManager;
+    [SerializeField] private bool fieldLimitReached;
+    public bool FieldLimitReached => fieldLimitReached;
+    public int CurrentAliveEnemyCount => currentAliveEnemyCount;
+
     [Tooltip("켜두면 미들보스/보스는 일반 적 최대 생존 수 제한을 무시하고 스폰됩니다.")]
     public bool specialSpawnerIgnoresMaxAliveCount = true;
 
@@ -45,8 +53,10 @@ public class EnemyManager : MonoBehaviour
 
     public void Init(PlantData plantData)
     {
+        fieldLimitReached = false;
         StopAllSpawners();
         KillAllEnemies();
+        if (attackSlotManager != null) attackSlotManager.ClearReservations();
 
         allEnemiesActionDisabled = false;
         spawnStartTime = Time.time;
@@ -151,7 +161,7 @@ public class EnemyManager : MonoBehaviour
     {
         RefreshEnemyCount();
 
-        if (maxAliveEnemyCount <= 0)
+        if (fieldLimitReached || maxAliveEnemyCount <= 0)
             return false;
 
         return currentAliveEnemyCount < maxAliveEnemyCount;
@@ -163,11 +173,12 @@ public class EnemyManager : MonoBehaviour
         {
             Enemy enemy = currentEnemies[i];
 
-            if (enemy == null || !enemy.gameObject.activeInHierarchy)
+            if (enemy == null || enemy.IsDead || !enemy.gameObject.activeInHierarchy)
                 currentEnemies.RemoveAt(i);
         }
 
         currentAliveEnemyCount = currentEnemies.Count;
+        CheckFieldLimit();
     }
 
     public void RegisterEnemy(Enemy enemy)
@@ -176,12 +187,32 @@ public class EnemyManager : MonoBehaviour
             return;
 
         if (!currentEnemies.Contains(enemy))
+        {
             currentEnemies.Add(enemy);
+            enemy.ConfigureAttackSlots(attackSlotManager);
+        }
 
         if (allEnemiesActionDisabled)
             enemy.DisableAction();
 
         RefreshEnemyCount();
+    }
+
+    private void Update()
+    {
+        if (loseWhenFieldFull && !fieldLimitReached && maxAliveEnemyCount > 0 &&
+            currentAliveEnemyCount >= maxAliveEnemyCount) RefreshEnemyCount();
+    }
+
+    private void CheckFieldLimit()
+    {
+        if (!loseWhenFieldFull || fieldLimitReached || maxAliveEnemyCount <= 0 ||
+            currentAliveEnemyCount < maxAliveEnemyCount) return;
+        fieldLimitReached = true;
+        AllStop();
+        var game = gameManager != null ? gameManager : GameManager.instance;
+        if (game != null) game.GameOver();
+        else if (GameEndManager.instance != null) GameEndManager.instance.LoseGame();
     }
 
     public void RemoveEnemy(Enemy enemy)

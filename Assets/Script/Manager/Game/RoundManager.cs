@@ -48,11 +48,14 @@ public class RoundManager : MonoBehaviour
         }
         else
         {
-            GameOver();
+            CompleteGame();
         }
     }
 
-    public void GameOver()
+    public void GameOver() => FinishGame(GameEndType.Lose);
+    public void CompleteGame() => FinishGame(GameEndType.Win);
+
+    private void FinishGame(GameEndType endType)
     {
         if (GrowManager.instance != null)
             GrowManager.instance.StopGrowth();
@@ -61,6 +64,6 @@ public class RoundManager : MonoBehaviour
             enemyManager.AllStop();
 
         var result = endManager != null ? endManager : GameEndManager.instance;
-        if (result != null) result.LoseGame();
+        if (result != null) result.EndGame(endType);
     }
 }

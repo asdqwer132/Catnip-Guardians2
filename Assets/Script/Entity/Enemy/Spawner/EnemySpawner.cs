@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using UnityEngine;
 
+public enum EnemySpawnShape { Circle, Rectangle }
+
 [BuffTargetGroups("EnemySpawner")]
 public class EnemySpawner : MonoBehaviour, IBuffTarget
 {
@@ -12,6 +14,12 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
     public bool spawnImmediatelyOnStart = false;
     public bool overSpawn = false;
     public bool isBoss = false;
+
+    [Header("Spawn Area")]
+    [Tooltip("Circle: 원의 둘레 / Rectangle: 지정한 사각형 영역 안에서 소환합니다.")]
+    public EnemySpawnShape spawnShape;
+    [Tooltip("월드 좌표 기준 영역 중심입니다. 사각형 크기는 Base Stat의 Spawn Width / Height로 설정합니다.")]
+    public Vector2 spawnCenter;
 
     [Header("Runtime Stat")]
     [SerializeField] private EnemySpawnerStat currentStat = new EnemySpawnerStat();
@@ -271,6 +279,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
 
     private void SpawnEnemy(EnemySpawnInfo info, float usedInterval)
     {
+        if (EnemyManager.instance != null && EnemyManager.instance.FieldLimitReached) return;
         if (TimeStopRuntime.IsStopped(TimeStopTargets.EnemySpawning) || info == null)
             return;
 
@@ -283,10 +292,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         if (EnemyManager.instance != null && !EnemyManager.instance.CanSpawnMoreEnemies() && !overSpawn)
             return;
 
-        float distance = currentStat != null ? currentStat.spawnDistance : 8f;
-
-        Vector2 dir = Random.insideUnitCircle.normalized;
-        Vector2 spawnPos = dir * distance;
+        Vector2 spawnPos = GetRandomSpawnPosition();
 
         GameObject spawnedEnemy = CreateEnemyObject(enemyPrefab, spawnPos);
 
@@ -305,6 +311,28 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
             OffscreenTargetIndicatorManager.Instance.ShowIndicator(spawnedEnemy);
         LogSpawnTime(info, usedInterval);
     }
+
+    private EnemySpawnerStat SpawnAreaStat => Application.isPlaying && currentStat != null ? currentStat : baseStat;
+    public Vector2 SpawnRectangleSize => new Vector2(
+        EffectStatUtility.Safe(SpawnAreaStat?.spawnWidth ?? 16f, 0.01f, 100000f, 16f),
+        EffectStatUtility.Safe(SpawnAreaStat?.spawnHeight ?? 2f, 0.01f, 100000f, 2f));
+
+    public Vector2 GetRandomSpawnPosition()
+    {
+        if (spawnShape == EnemySpawnShape.Circle)
+        {
+            float angle = Random.Range(0f, Mathf.PI * 2f);
+            return spawnCenter + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * GetSpawnDistance();
+        }
+
+        Vector2 size = SpawnRectangleSize;
+        Vector2 min = spawnCenter - size * .5f;
+        Vector2 max = spawnCenter + size * .5f;
+        return new Vector2(Random.Range(min.x, max.x), Random.Range(min.y, max.y));
+    }
+
+    private float GetSpawnDistance()
+        => EffectStatUtility.Safe(SpawnAreaStat?.spawnDistance ?? 8f, 0.01f, 100000f, 8f);
 
     private void LogSpawnTime(EnemySpawnInfo info, float usedInterval)
     {
@@ -423,22 +451,26 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         if (!drawSpawnGizmo)
             return;
 
-        float distance = GetGizmoSpawnDistance();
-
-        if (distance <= 0f)
-            return;
-
-        // 현재 실제 스폰 코드가 spawnPos = dir * distance 이므로
-        // 월드 원점 기준으로 기즈모를 그림
-        Vector3 center = Vector3.zero;
+        Vector3 center = spawnCenter;
+        float extent;
 
         Gizmos.color = spawnGizmoColor;
 
-        DrawWireCircle(center, distance, spawnGizmoSegments);
+        if (spawnShape == EnemySpawnShape.Rectangle)
+        {
+            Vector2 size = SpawnRectangleSize;
+            Gizmos.DrawWireCube(center, new Vector3(size.x, size.y, 0f));
+            extent = Mathf.Max(size.x, size.y) * .5f;
+        }
+        else
+        {
+            extent = GetSpawnDistance();
+            DrawWireCircle(center, extent, spawnGizmoSegments);
+        }
 
         if (drawSpawnCenterPoint)
         {
-            float centerSize = Mathf.Max(0.1f, distance * 0.03f);
+            float centerSize = Mathf.Max(0.1f, extent * 0.03f);
             Gizmos.DrawSphere(center, centerSize);
         }
 
@@ -446,17 +478,6 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         {
             Gizmos.DrawLine(transform.position, center);
         }
-    }
-
-    private float GetGizmoSpawnDistance()
-    {
-        if (Application.isPlaying && currentStat != null)
-            return currentStat.spawnDistance;
-
-        if (baseStat != null)
-            return baseStat.spawnDistance;
-
-        return 8f;
     }
 
     private void DrawWireCircle(Vector3 center, float radius, int segments)
