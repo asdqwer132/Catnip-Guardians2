@@ -10,5 +10,6 @@ public enum SettingChangeType
     IndicatorSpriteSize,
 
     ShowDamagePopup,
-    ShowHealthBar
+    ShowHealthBar,
+    ShowBuff
 }

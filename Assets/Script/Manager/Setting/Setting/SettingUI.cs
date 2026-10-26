@@ -18,6 +18,7 @@ public class SettingUI : MonoBehaviour, ISettingChangeListener
     [Header("Display")]
     public Toggle showDamagePopupToggle;
     public Toggle showHealthBarToggle;
+    public Toggle showBuffToggle;
 
     private bool isInitialized;
 
@@ -47,6 +48,9 @@ public class SettingUI : MonoBehaviour, ISettingChangeListener
 
         if (showHealthBarToggle != null)
             showHealthBarToggle.onValueChanged.AddListener(OnShowHealthBarChanged);
+
+        if (showBuffToggle != null)
+            showBuffToggle.onValueChanged.AddListener(OnShowBuffChanged);
 
         isInitialized = true;
     }
@@ -80,6 +84,7 @@ public class SettingUI : MonoBehaviour, ISettingChangeListener
             case SettingChangeType.IndicatorSpriteSize:
             case SettingChangeType.ShowDamagePopup:
             case SettingChangeType.ShowHealthBar:
+            case SettingChangeType.ShowBuff:
                 RefreshFromSetting(setting);
                 break;
         }
@@ -95,6 +100,7 @@ public class SettingUI : MonoBehaviour, ISettingChangeListener
 
         SetToggleWithoutNotify(showDamagePopupToggle, setting.showDamagePopup);
         SetToggleWithoutNotify(showHealthBarToggle, setting.showHealthBar);
+        SetToggleWithoutNotify(showBuffToggle, setting.showBuff);
 
         if (cursorScaleText != null)
             cursorScaleText.text = $"{setting.cursorScale:0.0}";
@@ -133,6 +139,11 @@ public class SettingUI : MonoBehaviour, ISettingChangeListener
             return;
 
         SettingManager.instance.SetShowHealthBar(value);
+    }
+
+    private void OnShowBuffChanged(bool value)
+    {
+        if (SettingManager.instance != null) SettingManager.instance.SetShowBuff(value);
     }
 
     private void SetSliderWithoutNotify(Slider slider, float value)

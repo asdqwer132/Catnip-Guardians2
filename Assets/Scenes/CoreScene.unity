@@ -1120,34 +1120,6 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2183109139501251046, guid: fb6e60c2d7f64b646a144e0209c60614, type: 3}
-      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2183109139501251046, guid: fb6e60c2d7f64b646a144e0209c60614, type: 3}
-      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2183109139501251046, guid: fb6e60c2d7f64b646a144e0209c60614, type: 3}
-      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1386373159}
-    - target: {fileID: 2183109139501251046, guid: fb6e60c2d7f64b646a144e0209c60614, type: 3}
-      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2183109139501251046, guid: fb6e60c2d7f64b646a144e0209c60614, type: 3}
-      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: TryUIDataToggleButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 2183109139501251046, guid: fb6e60c2d7f64b646a144e0209c60614, type: 3}
-      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: GeneralUIDataReciever, Assembly-CSharp
-      objectReference: {fileID: 0}
-    - target: {fileID: 2183109139501251046, guid: fb6e60c2d7f64b646a144e0209c60614, type: 3}
-      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     - target: {fileID: 2313629636588106864, guid: fb6e60c2d7f64b646a144e0209c60614, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
       value: 1
@@ -1551,6 +1523,10 @@ PrefabInstance:
     - target: {fileID: 9066666551594270719, guid: fb6e60c2d7f64b646a144e0209c60614, type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2183109139501251046, guid: fb6e60c2d7f64b646a144e0209c60614, type: 3}
+      propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:

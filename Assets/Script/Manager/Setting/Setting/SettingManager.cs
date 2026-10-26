@@ -4,6 +4,7 @@ using UnityEngine;
 public class SettingManager : MonoBehaviour
 {
     public static SettingManager instance;
+    public static event System.Action InstanceChanged;
 
     [Header("Current Setting")]
     public GameSettingData setting = new GameSettingData();
@@ -21,6 +22,7 @@ public class SettingManager : MonoBehaviour
     private const string CURSOR_SCALE = "Setting_CursorScale";
     private const string INDICATOR_SPRITE_SIZE = "Setting_IndicatorSpriteSize";
     private const string SHOW_DAMAGE_POPUP = "Setting_ShowDamagePopup";
+    private const string SHOW_BUFF = "Setting_ShowBuff";
     private const string SHOW_HEALTH_BAR = "Setting_ShowHealthBar";
 
     private void Awake()
@@ -35,6 +37,7 @@ public class SettingManager : MonoBehaviour
         if (gameObject.scene.name != GameSceneRoutes.Core) DontDestroyOnLoad(gameObject);
 
         Load();
+        InstanceChanged?.Invoke();
     }
 
     private void Start()
@@ -100,6 +103,7 @@ public class SettingManager : MonoBehaviour
 
         setting.showDamagePopup = PlayerPrefs.GetInt(SHOW_DAMAGE_POPUP, 1) == 1;
         setting.showHealthBar = PlayerPrefs.GetInt(SHOW_HEALTH_BAR, 1) == 1;
+        setting.showBuff = PlayerPrefs.GetInt(SHOW_BUFF, 1) == 1;
     }
 
     public void Save()
@@ -114,6 +118,7 @@ public class SettingManager : MonoBehaviour
         PlayerPrefs.SetInt(SHOW_DAMAGE_POPUP, setting.showDamagePopup ? 1 : 0);
         PlayerPrefs.SetInt(SHOW_HEALTH_BAR, setting.showHealthBar ? 1 : 0);
 
+        PlayerPrefs.SetInt(SHOW_BUFF, setting.showBuff ? 1 : 0);
         PlayerPrefs.Save();
     }
 
@@ -212,6 +217,21 @@ public class SettingManager : MonoBehaviour
         setting.showHealthBar = value;
         Save();
         BroadcastSettingChanged(SettingChangeType.ShowHealthBar);
+    }
+
+    public void SetShowBuff(bool value)
+    {
+        if (setting.showBuff == value) return;
+        setting.showBuff = value;
+        Save();
+        BroadcastSettingChanged(SettingChangeType.ShowBuff);
+    }
+
+    private void OnDestroy()
+    {
+        if (instance != this) return;
+        instance = null;
+        InstanceChanged?.Invoke();
     }
 
     private void ApplyAudio()

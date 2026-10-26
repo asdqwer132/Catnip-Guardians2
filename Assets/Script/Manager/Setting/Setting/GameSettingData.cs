@@ -23,4 +23,5 @@ public class GameSettingData
     public bool showDamagePopup = true;
     public bool screenShake = true;
     public bool showHealthBar = true;
+    public bool showBuff = true;
 }

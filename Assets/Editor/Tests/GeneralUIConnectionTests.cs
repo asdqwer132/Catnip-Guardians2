@@ -100,4 +100,49 @@ public class GeneralUIConnectionTests
         receiver.TryUIDataToggleButton(false);
         Assert.That(panel.activeSelf, Is.False);
     }
+
+    [UnityTest]
+    public IEnumerator SavedBuffSettingSynchronizesLateSendersAndReloadedSettings()
+    {
+        const string key = "Setting_ShowBuff";
+        bool existed = PlayerPrefs.HasKey(key);
+        int saved = PlayerPrefs.GetInt(key, 1);
+        try
+        {
+            PlayerPrefs.SetInt(key, 0);
+            var receiverHost = Host("Settings receiver");
+            receiverHost.AddComponent<GeneralUIDataReciever>();
+            receiverHost.SetActive(true);
+            var managerHost = Host("Late settings manager");
+            var manager = managerHost.AddComponent<SettingManager>();
+            managerHost.SetActive(true);
+            Assert.That(manager.setting.showBuff, Is.False);
+            var sender = Sender(out var panel);
+            yield return null;
+            yield return null;
+            Assert.That(panel.activeSelf, Is.False);
+            manager.SetShowBuff(true);
+            Assert.That(PlayerPrefs.GetInt(key), Is.EqualTo(1));
+            Assert.That(panel.activeSelf, Is.True);
+            sender.gameObject.SetActive(false);
+            manager.SetShowBuff(false);
+            sender.gameObject.SetActive(true);
+            yield return null;
+            yield return null;
+            Assert.That(panel.activeSelf, Is.False);
+            Object.DestroyImmediate(managerHost);
+            var replacementHost = Host("Reloaded settings manager");
+            var replacement = replacementHost.AddComponent<SettingManager>();
+            replacementHost.SetActive(true);
+            Assert.That(replacement.setting.showBuff, Is.False);
+            replacement.SetShowBuff(true);
+            Assert.That(panel.activeSelf, Is.True);
+        }
+        finally
+        {
+            if (existed) PlayerPrefs.SetInt(key, saved);
+            else PlayerPrefs.DeleteKey(key);
+            PlayerPrefs.Save();
+        }
+    }
 }
