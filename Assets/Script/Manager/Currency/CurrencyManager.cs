@@ -60,7 +60,7 @@ public class CurrencyManager : MonoBehaviour
 
     public void RegisterUI(CurrencyUIGroup group)
     {
-        if (group == null || !registeredGroups.Add(group)) return;
+        if (group == null || !group.DisplaysWallet || !registeredGroups.Add(group)) return;
         foreach (CurrencyType type in Enum.GetValues(typeof(CurrencyType))) group.UpdateUI(type, GetCurrency(type));
     }
     public void UnregisterUI(CurrencyUIGroup group) => registeredGroups.Remove(group);
@@ -252,10 +252,10 @@ public class CurrencyManager : MonoBehaviour
         int amount = currencies[type];
 
         foreach (var group in registeredGroups)
-            if (group != null) group.UpdateUI(type, amount);
+            if (group != null && group.DisplaysWallet) group.UpdateUI(type, amount);
         for (int i = 0; uiGroups != null && i < uiGroups.Length; i++)
         {
-            if (uiGroups[i] == null || registeredGroups.Contains(uiGroups[i]))
+            if (uiGroups[i] == null || !uiGroups[i].DisplaysWallet || registeredGroups.Contains(uiGroups[i]))
                 continue;
 
             uiGroups[i].UpdateUI(type, amount);

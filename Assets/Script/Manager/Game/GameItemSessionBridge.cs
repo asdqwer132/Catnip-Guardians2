@@ -7,6 +7,7 @@ public sealed class GameItemSessionBridge : MonoBehaviour
     private GameSession session;
     private GameSession appliedSession;
     private int appliedRevision = -1;
+    private int appliedRound = -1;
 
     private void OnEnable()
     {
@@ -22,14 +23,18 @@ public sealed class GameItemSessionBridge : MonoBehaviour
 
     private void BindSession()
     {
-        if (session != null)
-            session.GameDataChanged -= ApplyMaterials;
+        UnbindSession();
 
         session = GameSession.Instance;
         if (session != null)
+        {
             session.GameDataChanged += ApplyMaterials;
+            session.MaterialsChanged += RefreshMaterials;
+            session.RoundStarted += ApplyMaterials;
+        }
 
         ApplyMaterials();
+        RefreshMaterials();
     }
 
     public void ApplyMaterials()
@@ -37,7 +42,8 @@ public sealed class GameItemSessionBridge : MonoBehaviour
         if (session == null)
             return;
 
-        if (appliedSession == session && appliedRevision == session.GameDataRevision)
+        bool newGame = appliedSession != session || appliedRevision != session.GameDataRevision;
+        if (!newGame && appliedRound == session.RoundRevision)
             return;
 
         if (!session.TryReadGeneralData(out var data))
@@ -45,6 +51,7 @@ public sealed class GameItemSessionBridge : MonoBehaviour
 
         appliedSession = session;
         appliedRevision = session.GameDataRevision;
+        appliedRound = session.RoundRevision;
         if (boards == null)
             return;
 
@@ -52,9 +59,12 @@ public sealed class GameItemSessionBridge : MonoBehaviour
         {
             if (board != null)
             {
-                Debug.Log("바인딩");
-                board.SetSessionMaterials(data.materialItems);
-                board.RefreshUI();
+                if (newGame) board.SetSessionMaterials(data.materialItems, session);
+                else
+                {
+                    board.ResetRoundMaterials();
+                    board.RefreshSessionMaterials(data.materialItems);
+                }
             }
         }
     }
@@ -62,9 +72,22 @@ public sealed class GameItemSessionBridge : MonoBehaviour
     private void OnDisable()
     {
         GameSession.InstanceChanged -= BindSession;
-        if (session != null)
-            session.GameDataChanged -= ApplyMaterials;
-
+        UnbindSession();
         session = null;
+    }
+
+    private void RefreshMaterials()
+    {
+        if (session == null || boards == null || !session.TryReadGeneralData(out var data)) return;
+        foreach (var board in boards)
+            if (board != null) board.RefreshSessionMaterials(data.materialItems);
+    }
+
+    private void UnbindSession()
+    {
+        if (session == null) return;
+        session.GameDataChanged -= ApplyMaterials;
+        session.MaterialsChanged -= RefreshMaterials;
+        session.RoundStarted -= ApplyMaterials;
     }
 }

@@ -766,6 +766,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     protected override void OnDeathStarted()
     {
+        GameStatisticsManager.Instance?.AddKill();
         ClearHitReaction();
         behaviorState = EnemyBehaviorState.Dead;
         InvalidateHitEffectLife();

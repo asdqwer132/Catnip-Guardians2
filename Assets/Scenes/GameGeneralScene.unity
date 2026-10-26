@@ -3931,10 +3931,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameEndManager
   resultPanel: {fileID: 1437348424}
   moveManager: {fileID: 910000300001}
-  titleText: {fileID: 0}
+  titleText: {fileID: 1458234221}
   killCountText: {fileID: 0}
   goldText: {fileID: 0}
   currencyText: {fileID: 0}
+  includeKillCountInTitle: 1
   upgradePanel: {fileID: 0}
   hidePanelOnAwake: 1
   pauseGameOnEnd: 1
@@ -4543,6 +4544,7 @@ MonoBehaviour:
   - type: 4
     textObj: {fileID: 16755102}
     textUI: {fileID: 1037661523}
+  source: 1
 --- !u!1 &1207082690
 GameObject:
   m_ObjectHideFlags: 0
@@ -4769,6 +4771,7 @@ MonoBehaviour:
   - type: 6
     textObj: {fileID: 769152089}
     textUI: {fileID: 1130552346}
+  source: 1
 --- !u!1 &1230844125
 GameObject:
   m_ObjectHideFlags: 0

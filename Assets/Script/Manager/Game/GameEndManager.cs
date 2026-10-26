@@ -22,6 +22,8 @@ public class GameEndManager : MonoBehaviour
     [SerializeField] private TMP_Text killCountText;
     [SerializeField] private TMP_Text goldText;
     [SerializeField] private TMP_Text currencyText;
+    [Tooltip("별도 처치 수 텍스트가 없을 때 기존 제목에 처치 수도 표시합니다.")]
+    [SerializeField] private bool includeKillCountInTitle;
 
     [Header("Upgrade Panel")]
     [SerializeField] private GameObject upgradePanel;
@@ -56,6 +58,7 @@ public class GameEndManager : MonoBehaviour
 
         isGameEnded = true;
         currentEndType = endType;
+        GameStatisticsManager.Instance?.FinishRound();
 
         RefreshResultUI();
         ShowResultPanel();
@@ -102,14 +105,10 @@ public class GameEndManager : MonoBehaviour
         if (!isGameEnded)
             return;
 
+        GameStatisticsManager.Instance?.Confirm();
         SetCursorDefault();
         var loader = moveManager != null ? moveManager : SceneMoveManager.instance;
         if (loader != null) loader.GoUpgradeScene();
-        //Time.timeScale = 1f;
-
-        //HideResultPanel();
-        //ShowUpgradePanel();
-
     }
 
     public void CloseUpgradePanel()
@@ -167,6 +166,9 @@ public class GameEndManager : MonoBehaviour
                 titleText.text = "결과";
                 break;
         }
+
+        if (includeKillCountInTitle && killCountText == null && GameStatisticsManager.Instance != null)
+            titleText.text += $"\n처치한 적 : {GameStatisticsManager.Instance.RoundKillCount}";
     }
 
     private void RefreshStatistics()
@@ -225,5 +227,10 @@ public class GameEndManager : MonoBehaviour
     {
         if (CursorChanger.instance != null)
             CursorChanger.instance.SetCursor(CursorType.Attack);
+    }
+
+    private void OnDestroy()
+    {
+        if (instance == this) instance = null;
     }
 }

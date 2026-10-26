@@ -45,10 +45,15 @@ public class MergegameManager : MonoBehaviour
     private uint serial;
     private int revision;
     private bool dropping, processing, clearing;
+    private GameSession materialSession;
+    private bool usesSessionMaterials;
+    private int bonusRevision;
+    private readonly Dictionary<MergeItemMaterial, int> roundBonuses = new Dictionary<MergeItemMaterial, int>();
     public IReadOnlyList<MergeItemObject> ActiveItems => active;
     public Sprite CurrentMaterialIcon => currentMaterial?.mergeItem != null && currentMaterial.mergeItem.item != null ? currentMaterial.mergeItem.item.icon : null;
     public string CurrentMaterialName => DisplayName(currentMaterial?.mergeItem != null ? currentMaterial.mergeItem.item : null);
     public int CurrentMaterialCount => currentMaterial != null ? Math.Max(0, currentMaterial.count) : 0;
+    public int CurrentDefaultMaterialCount => currentMaterial != null ? Math.Max(0, currentMaterial.defaultCount) : 0;
     public string LastMessage => lastMessage;
     public bool CanOperate => isActiveAndEnabled && !clearing && Time.timeScale > 0f;
     private struct Contact { public MergeItemObject a, b; public int aLife, bLife; }
@@ -74,11 +79,11 @@ public class MergegameManager : MonoBehaviour
     }
     public void RefreshUI()
     {
-        foreach(var UI in mergeMaterials)
+        if (mergeMaterials == null) return;
+        foreach(var material in mergeMaterials)
         {
-            UI.SetCountText();
-            Debug.Log(UI.mergeUI + "/" + UI.IsAvailable());
-            UI.SetActive();
+            material?.SetCountText();
+            material?.SetActive();
         }
     }
     public void PrewarmItems()
@@ -147,7 +152,7 @@ public class MergegameManager : MonoBehaviour
     {
         if (item == null) return null;
         if (mergeMaterials != null) foreach (var definition in mergeMaterials)
-            if (definition != null && definition.mergeItem.item == item)
+            if (definition?.mergeItem != null && definition.mergeItem.item == item)
                     return new MergeItemMaterial(
                         definition.mergeItem,
                         definition.mergeUI,
@@ -164,27 +169,45 @@ public class MergegameManager : MonoBehaviour
 
     }
     // 시작 재고를 복사합니다. 전달 데이터와 현재 재료의 수량 객체를 공유하지 않습니다.
-    public void SetSessionMaterials(IReadOnlyList<InventoryItem> items)
+    public void SetSessionMaterials(IReadOnlyList<InventoryItem> items, GameSession source = null)
     {
-        var materials = new List<MergeItemMaterial>();
-        if (items != null)
-            foreach (var item in items)
-            {
-                if (item == null || item.itemData == null || item.itemData.series != itemSeries) continue;
-                var definition = GetDefinition(item.itemData);
-                if (definition == null) continue;
-                var existing = materials.Find(entry => entry.mergeItem == definition.mergeItem);
-                if (existing == null) materials.Add(
-                    new MergeItemMaterial(
-                        definition.mergeItem, 
-                        definition.mergeUI,
-                        item.amount, definition.defaultCount));
-                else existing.count = (int)Math.Min(int.MaxValue, (long)existing.count + item.amount);
-            }
+        materialSession = source;
+        usesSessionMaterials = source != null;
+        ResetRoundMaterials();
+        RefreshSessionMaterials(items);
+    }
 
-        mergeMaterials = materials;
-        currentMaterial = null;
+    public void ResetRoundMaterials()
+    {
+        bonusRevision++;
+        ClearItems();
+        if (mergeMaterials == null) return;
+        foreach (var material in mergeMaterials)
+        {
+            if (material == null) continue;
+            // 기본 수량의 설정값을 따로 기억해 재시도 때만 보너스를 다시 지급합니다.
+            if (!roundBonuses.TryGetValue(material, out int bonus))
+                roundBonuses.Add(material, bonus = Math.Max(0, material.defaultCount));
+            material.defaultCount = bonus;
+        }
         EnsureSelection();
+        RefreshUI();
+    }
+
+    public void RefreshSessionMaterials(IReadOnlyList<InventoryItem> items)
+    {
+        if (mergeMaterials == null) return;
+        foreach (var material in mergeMaterials)
+        {
+            if (material?.mergeItem == null) continue;
+            long count = 0;
+            if (items != null && material.mergeItem.item != null && material.mergeItem.item.series == itemSeries)
+                foreach (var item in items)
+                    if (item?.itemData == material.mergeItem.item) count += Math.Max(0, item.amount);
+            material.count = (int)Math.Min(int.MaxValue, count);
+        }
+        EnsureSelection();
+        RefreshUI();
         Notify(onMaterialsChanged);
         Notify(onCurrentMaterialChanged);
     }
@@ -206,16 +229,33 @@ public class MergegameManager : MonoBehaviour
         dropping = true;
         int before = revision;
         bool committed = false;
+        bool reserved = false;
+        bool usedBonus = material.defaultCount > 0;
+        bool useSessionStock = usesSessionMaterials;
+        int reservedBonusRevision = bonusRevision;
+        var source = materialSession;
+        int sourceRevision = source != null ? source.GameDataRevision : -1;
         MergeItemObject piece = null;
-        material.UseCount(); // 풀 콜백이 재진입해도 같은 마지막 재료를 중복 소비하지 않습니다.
         try
         {
+            // 풀 콜백 전에 예약해 마지막 재료가 중복 투입되는 것을 막습니다.
+            if (usedBonus) material.defaultCount--;
+            else if (useSessionStock)
+            {
+                if (source == null || !source.TryConsumeMaterial(material.mergeItem.item))
+                    return Reject("남은 본재고가 없습니다.");
+                material.count = source.GetMaterialCount(material.mergeItem.item);
+            }
+            else material.count--;
+            reserved = true;
+            if (before != revision || !CanOperate) return false;
             piece = SpawnPiece(material.mergeItem, position);
             if (piece == null || !piece.IsLive || before != revision || !CanOperate)
                 return Reject("풀 생성이 취소되었거나 아이템이 비활성 상태입니다.");
             piece.SetSimulated(true);
             nextDropAt = Time.time + EffectStatUtility.Safe(dropInterval, 0f, 600f, 0.5f);
             committed = true;
+            RefreshUI();
             Notify(onBoardChanged); Notify(onMaterialsChanged);
             EnsureSelection(); Notify(onCurrentMaterialChanged);
             Report($"낙하: {DisplayName(material.mergeItem.item)}, 해당 재료 잔량: {material.count}");
@@ -223,7 +263,25 @@ public class MergegameManager : MonoBehaviour
         }
         finally
         {
-            if (!committed) { if (piece != null) piece.ReturnToPool(); material.count++; }
+            if (!committed)
+            {
+                if (piece != null) piece.ReturnToPool();
+                if (reserved)
+                {
+                    if (usedBonus)
+                    {
+                        if (reservedBonusRevision == bonusRevision) material.defaultCount++;
+                    }
+                    else if (useSessionStock)
+                    {
+                        source?.RefundMaterial(material.mergeItem.item, sourceRevision);
+                        if (source != null && source.GameDataRevision == sourceRevision)
+                            material.count = source.GetMaterialCount(material.mergeItem.item);
+                    }
+                    else material.count++;
+                    RefreshUI();
+                }
+            }
             dropping = false;
         }
     }

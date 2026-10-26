@@ -9,12 +9,6 @@ public class RoundManager : MonoBehaviour
 
     public void Victory()
     {
-        if (CurrencyManager.instance == null)
-        {
-            Debug.LogWarning("CurrencyManager is null");
-            return;
-        }
-
         if (plantManager == null || plantManager.CurrentPlant == null)
         {
             Debug.LogWarning("CurrentPlant is null");
@@ -22,7 +16,10 @@ public class RoundManager : MonoBehaviour
             return;
         }
 
-        CurrencyManager.instance.AddCurrency(plantManager.CurrentPlant.reward);
+        if (plantManager.CurrentPlant.reward != null && GameStatisticsManager.Instance != null)
+            foreach (var reward in plantManager.CurrentPlant.reward)
+                if (reward != null)
+                    GameStatisticsManager.Instance.AddCurrency(reward.currencyType, reward.amount);
 
         if (enemyManager != null)
             enemyManager.AllStop();
@@ -63,7 +60,7 @@ public class RoundManager : MonoBehaviour
         if (enemyManager != null)
             enemyManager.AllStop();
 
-        if (endManager != null)
-            endManager.LoseGame();
+        var result = endManager != null ? endManager : GameEndManager.instance;
+        if (result != null) result.LoseGame();
     }
 }

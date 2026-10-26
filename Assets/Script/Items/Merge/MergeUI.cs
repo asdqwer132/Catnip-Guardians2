@@ -7,7 +7,10 @@ public class MergeUI : MonoBehaviour
     public TextMeshProUGUI defaultCountText;
     public GameObject slotObj;
 
-    public void SetSlot(bool isActive) => slotObj.SetActive(isActive);
+    public void SetSlot(bool isActive)
+    {
+        if (slotObj != null) slotObj.SetActive(isActive);
+    }
     public void SetCount(int c, int dc)
     {
 

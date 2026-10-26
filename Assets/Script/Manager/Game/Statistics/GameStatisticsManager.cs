@@ -5,11 +5,14 @@ using UnityEngine;
 public class GameStatisticsManager : MonoBehaviour
 {
     public static GameStatisticsManager Instance { get; private set; }
+    public static event Action InstanceChanged;
 
     public StatisticsUI ui;
 
     [Header("Round Statistics")]
     [SerializeField] private int roundKillCount;
+    [SerializeField] private bool roundFinished;
+    [SerializeField] private bool rewardsConfirmed;
 
     [Header("Round Currency")]
     [SerializeField] private List<RoundCurrencyInfo> roundCurrencies = new List<RoundCurrencyInfo>();
@@ -30,6 +33,7 @@ public class GameStatisticsManager : MonoBehaviour
         Instance = this;
 
         InitCurrencies();
+        InstanceChanged?.Invoke();
     }
     private void OnEnable()
     {
@@ -41,6 +45,13 @@ public class GameStatisticsManager : MonoBehaviour
         OnChanged -= RefreshUI;
     }
 
+    private void OnDestroy()
+    {
+        if (Instance != this) return;
+        Instance = null;
+        InstanceChanged?.Invoke();
+    }
+
 #if UNITY_EDITOR
     private void OnValidate()
     {
@@ -49,11 +60,12 @@ public class GameStatisticsManager : MonoBehaviour
 #endif
     private void Start()
     {
-        ui.RefreshUI();
+        RefreshUI();
     }
     public void Confirm()
     {
-        if (CurrencyManager.instance == null) return;
+        if (CurrencyManager.instance == null || rewardsConfirmed) return;
+        rewardsConfirmed = true;
         foreach (var currency in roundCurrencies)
         {
             CurrencyManager.instance.AddCurrency(currency.currencyType, currency.amount);
@@ -61,6 +73,8 @@ public class GameStatisticsManager : MonoBehaviour
     }
     public void ResetRound()
     {
+        roundFinished = false;
+        rewardsConfirmed = false;
         roundKillCount = 0;
 
         InitCurrencies();
@@ -72,13 +86,14 @@ public class GameStatisticsManager : MonoBehaviour
 
         OnChanged?.Invoke();
     }
-    private void RefreshUI() => ui.RefreshUI(); 
+    public void FinishRound() => roundFinished = true;
+    private void RefreshUI() => ui?.RefreshUI();
     public void AddKill(int amount = 1)
     {
-        if (amount <= 0)
+        if (amount <= 0 || roundFinished)
             return;
 
-        roundKillCount += amount;
+        roundKillCount = (int)Math.Min(int.MaxValue, (long)roundKillCount + amount);
 
         OnChanged?.Invoke();
     }
@@ -90,7 +105,7 @@ public class GameStatisticsManager : MonoBehaviour
 
     public void AddCurrency(CurrencyType currencyType, int amount)
     {
-        if (amount <= 0)
+        if (amount <= 0 || roundFinished)
             return;
 
         RoundCurrencyInfo currency = GetCurrencyInfo(currencyType);
@@ -101,7 +116,7 @@ public class GameStatisticsManager : MonoBehaviour
             roundCurrencies.Add(currency);
         }
 
-        currency.amount += amount;
+        currency.amount = (int)Math.Min(int.MaxValue, (long)currency.amount + amount);
 
         OnChanged?.Invoke();
     }

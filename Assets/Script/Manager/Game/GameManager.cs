@@ -53,6 +53,8 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f;
 
+        GameSession.GetOrCreate().BeginRound();
+
         if (GameEndManager.instance != null)
             GameEndManager.instance.ResetGameEnd();
 

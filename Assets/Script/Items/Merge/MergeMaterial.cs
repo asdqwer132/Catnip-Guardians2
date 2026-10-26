@@ -17,8 +17,8 @@ public class MergeItemMaterial
         this.defaultCount = defaultCount;
     }
 
-    public void SetCountText() => mergeUI.SetCount(count, defaultCount);
-    public void SetActive() => mergeUI.SetSlot(IsAvailable());
+    public void SetCountText() => mergeUI?.SetCount(count, defaultCount);
+    public void SetActive() => mergeUI?.SetSlot(IsAvailable());
     public void UseCount()
     {
         if(defaultCount > 0)
