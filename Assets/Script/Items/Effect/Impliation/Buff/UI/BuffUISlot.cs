@@ -12,6 +12,7 @@ public class BuffUISlot : MonoBehaviour
 
     [Header("Image")]
     public Image iconImage;
+    public Image iconFrame;
     public Image timeFillImage;
 
     [Header("Runtime")]
@@ -101,12 +102,15 @@ public class BuffUISlot : MonoBehaviour
 
     private void RefreshIcon()
     {
-        if (iconImage == null)
+        if (iconImage == null || iconFrame == null)
             return;
 
         Sprite icon = activeBuff != null ? activeBuff.GetUIIcon() : null;
 
         iconImage.sprite = icon;
+        iconImage.enabled = icon != null;
+
+        iconFrame.sprite = icon;
         iconImage.enabled = icon != null;
     }
 }

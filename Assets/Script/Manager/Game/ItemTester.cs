@@ -2,10 +2,7 @@ using UnityEngine;
 using static UnityEditor.Progress;
 
 [System.Serializable]
-public class TestItemList
-{
-
-}
+public class TestItemList { }
 [System.Serializable]
 public class TestItem
 {
@@ -20,6 +17,9 @@ public class TestItem
 public class ItemTester : MonoBehaviour
 {
     public TestItem[] itemss;
+    public ItemUsePositionProvider positionProvider;
+    public RectTransform testerDisplayer;
+    private bool isTest = false;
     public void Init()
     {
         foreach (var items in itemss)
@@ -28,6 +28,7 @@ public class ItemTester : MonoBehaviour
             {
                 if (items.isUse)
                 {
+                    isTest = true;
                     foreach (var equip in items.targetBagData.equippedItems)
                     {
                         if (equip.amount == 0)
@@ -40,5 +41,14 @@ public class ItemTester : MonoBehaviour
                 }
             }
         }
+        if(isTest)
+            SetTestMode();
+    }
+    private void SetTestMode()
+    {
+        positionProvider.selectPositionOnly = false;
+        Vector2 pos = testerDisplayer.anchoredPosition;
+        pos.x = 25f;
+        testerDisplayer.anchoredPosition = pos;
     }
 }
