@@ -77,6 +77,8 @@ public class MergegameManager : MonoBehaviour
         foreach(var UI in mergeMaterials)
         {
             UI.SetCountText();
+            Debug.Log(UI.mergeUI + "/" + UI.IsAvailable());
+            UI.SetActive();
         }
     }
     public void PrewarmItems()
@@ -148,7 +150,7 @@ public class MergegameManager : MonoBehaviour
             if (definition != null && definition.mergeItem.item == item)
                     return new MergeItemMaterial(
                         definition.mergeItem,
-                        definition.countText, definition.defaultCountText,
+                        definition.mergeUI,
                         0, definition.defaultCount);
         return null;
     }
@@ -168,17 +170,18 @@ public class MergegameManager : MonoBehaviour
         if (items != null)
             foreach (var item in items)
             {
-                if (item == null || item.itemData == null || item.amount <= 0 || item.itemData.series != itemSeries) continue;
+                if (item == null || item.itemData == null || item.itemData.series != itemSeries) continue;
                 var definition = GetDefinition(item.itemData);
                 if (definition == null) continue;
                 var existing = materials.Find(entry => entry.mergeItem == definition.mergeItem);
                 if (existing == null) materials.Add(
                     new MergeItemMaterial(
                         definition.mergeItem, 
-                        definition.countText, definition.defaultCountText,
+                        definition.mergeUI,
                         item.amount, definition.defaultCount));
                 else existing.count = (int)Math.Min(int.MaxValue, (long)existing.count + item.amount);
             }
+
         mergeMaterials = materials;
         currentMaterial = null;
         EnsureSelection();

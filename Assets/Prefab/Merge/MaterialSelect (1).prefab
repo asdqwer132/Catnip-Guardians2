@@ -748,6 +748,7 @@ GameObject:
   - component: {fileID: 7929405827089891378}
   - component: {fileID: 7025966326269292934}
   - component: {fileID: 3482450658967497412}
+  - component: {fileID: 5425629469234714695}
   m_Layer: 5
   m_Name: MaterialSelect (1)
   m_TagString: Untagged
@@ -815,3 +816,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1.5
+--- !u!114 &5425629469234714695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5207664958229710936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f51d937758f24e478eb5355c1ba8e2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MergeUI
+  countText: {fileID: 1506237876503247886}
+  defaultCountText: {fileID: 5441460483088718874}
+  slotObj: {fileID: 5207664958229710936}
