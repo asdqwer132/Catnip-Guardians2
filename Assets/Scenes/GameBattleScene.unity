@@ -263,9 +263,9 @@ MonoBehaviour:
     spawnHeight: 2
   spawnImmediatelyOnStart: 0
   overSpawn: 1
+  isBoss: 1
   spawnShape: 1
   spawnCenter: {x: 0, y: 21}
-  isBoss: 1
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -384,13 +384,13 @@ MonoBehaviour:
   baseStat:
     spawnInterval: 1.5
     spawnDistance: 8
-    spawnWidth: 16
+    spawnWidth: 10
     spawnHeight: 2
   spawnImmediatelyOnStart: 1
   overSpawn: 0
+  isBoss: 0
   spawnShape: 1
   spawnCenter: {x: 0, y: 9}
-  isBoss: 0
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -1008,7 +1008,7 @@ MonoBehaviour:
   - {fileID: 726708666}
   middleBossSpawner: {fileID: 1193780219}
   bossSpawner: {fileID: 81909752}
-  maxAliveEnemyCount: 300
+  maxAliveEnemyCount: 100
   loseWhenFieldFull: 1
   attackSlotManager: {fileID: 990200000004}
   gameManager: {fileID: 1318438114}
@@ -1505,7 +1505,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 25, y: 25.000122}
+  m_AnchoredPosition: {x: 25, y: 25}
   m_SizeDelta: {x: 300, y: 125}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &358841940
@@ -2510,7 +2510,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 0, y: 3.25, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2568,13 +2568,13 @@ MonoBehaviour:
   baseStat:
     spawnInterval: 1.5
     spawnDistance: 8
-    spawnWidth: 16
+    spawnWidth: 10
     spawnHeight: 2
   spawnImmediatelyOnStart: 1
   overSpawn: 0
+  isBoss: 0
   spawnShape: 1
   spawnCenter: {x: 0, y: 9}
-  isBoss: 0
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -2802,8 +2802,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -17.5, y: -0.5}
-  m_SizeDelta: {x: -35, y: 20}
+  m_AnchoredPosition: {x: 5, y: -0.5}
+  m_SizeDelta: {x: -80, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &596179850
 GameObject:
@@ -2854,13 +2854,13 @@ MonoBehaviour:
   baseStat:
     spawnInterval: 1.5
     spawnDistance: 8
-    spawnWidth: 16
+    spawnWidth: 10
     spawnHeight: 2
   spawnImmediatelyOnStart: 1
   overSpawn: 0
+  isBoss: 0
   spawnShape: 1
   spawnCenter: {x: 0, y: 9}
-  isBoss: 0
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -3044,13 +3044,13 @@ MonoBehaviour:
   baseStat:
     spawnInterval: 1.5
     spawnDistance: 8
-    spawnWidth: 16
+    spawnWidth: 10
     spawnHeight: 2
   spawnImmediatelyOnStart: 1
   overSpawn: 0
+  isBoss: 0
   spawnShape: 1
   spawnCenter: {x: 0, y: 9}
-  isBoss: 0
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -10293,13 +10293,13 @@ MonoBehaviour:
   baseStat:
     spawnInterval: 1.5
     spawnDistance: 8
-    spawnWidth: 16
+    spawnWidth: 10
     spawnHeight: 2
   spawnImmediatelyOnStart: 1
   overSpawn: 0
+  isBoss: 0
   spawnShape: 1
   spawnCenter: {x: 0, y: 9}
-  isBoss: 0
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -18560,6 +18560,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameStatisticsManager
   ui: {fileID: 1143083050}
   roundKillCount: 0
+  roundFinished: 0
+  rewardsConfirmed: 0
   roundCurrencies:
   - currencyType: 0
     amount: 0
@@ -18628,9 +18630,9 @@ MonoBehaviour:
     spawnHeight: 2
   spawnImmediatelyOnStart: 0
   overSpawn: 1
+  isBoss: 1
   spawnShape: 1
   spawnCenter: {x: 0, y: 21}
-  isBoss: 1
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -19805,6 +19807,66 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1499569408}
   m_CullTransparentMesh: 1
+--- !u!1 &1510431292
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1510431294}
+  - component: {fileID: 1510431293}
+  - component: {fileID: 1510431295}
+  m_Layer: 0
+  m_Name: GeneralUIDataSender
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1510431293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1510431292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6876cda57706cc7409c5a2b8c363feb3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GeneralUIDataSender
+  uIData:
+    toggleButton: {fileID: 1679001091}
+--- !u!4 &1510431294
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1510431292}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.3013, y: 5.04717, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1510431295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1510431292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84aa995168c3a1e47a822231f888816b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UILoader
+  sender: {fileID: 1510431293}
 --- !u!1 &1541019569
 GameObject:
   m_ObjectHideFlags: 0
@@ -20119,7 +20181,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 25, y: -25.000008}
+  m_AnchoredPosition: {x: 25, y: -25}
   m_SizeDelta: {x: -50, y: -50}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1586585006
@@ -20601,8 +20663,8 @@ GameObject:
   - component: {fileID: 1679001090}
   - component: {fileID: 1679001094}
   - component: {fileID: 1679001093}
-  - component: {fileID: 1679001092}
   - component: {fileID: 1679001091}
+  - component: {fileID: 1679001095}
   m_Layer: 5
   m_Name: Buff
   m_TagString: Untagged
@@ -20648,53 +20710,9 @@ MonoBehaviour:
   closeTargetsWhenOpen: []
   buttonImage: {fileID: 1871901261}
   button: {fileID: 0}
-  toggle: {fileID: 0}
+  toggle: {fileID: 1679001095}
   onSprite: {fileID: 1404950666, guid: 89d6b9627a3a13b48948eca9d1c6f9f5, type: 3}
   offSprite: {fileID: 1404950666, guid: 89d6b9627a3a13b48948eca9d1c6f9f5, type: 3}
---- !u!114 &1679001092
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1679001089}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
-  m_Navigation:
-    m_Mode: 3
-    m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
-  m_Transition: 0
-  m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0.1
-  m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 7475515339080702889, guid: b9499dcac1bd5f34b8aeb0266a752306, type: 3}
-    m_SelectedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
-  m_AnimationTriggers:
-    m_NormalTrigger: Normal
-    m_HighlightedTrigger: Highlighted
-    m_PressedTrigger: Pressed
-    m_SelectedTrigger: Selected
-    m_DisabledTrigger: Disabled
-  m_Interactable: 1
-  m_TargetGraphic: {fileID: 1871901261}
-  m_OnClick:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &1679001093
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20733,6 +20751,54 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1679001089}
   m_CullTransparentMesh: 1
+--- !u!114 &1679001095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1679001089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Toggle
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 0
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 1679001093}
+  toggleTransition: 1
+  graphic: {fileID: 0}
+  m_Group: {fileID: 0}
+  onValueChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_IsOn: 0
 --- !u!1 &1710318816
 GameObject:
   m_ObjectHideFlags: 0
@@ -20833,8 +20899,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthBarUI
   valueSource: 1
-  enemyManager: {fileID: 197801883}
   health: {fileID: 430141811}
+  enemyManager: {fileID: 197801883}
   pannel: {fileID: 0}
   hpFill: {fileID: 1719132428}
   hideWhenFullHp: 0
@@ -21411,8 +21477,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -30, y: 1.5}
-  m_SizeDelta: {x: -60, y: 22.5}
+  m_AnchoredPosition: {x: -7.5, y: 1.5}
+  m_SizeDelta: {x: -105, y: 22.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1867758353
 MonoBehaviour:
@@ -47210,3 +47276,4 @@ SceneRoots:
   - {fileID: 129445879}
   - {fileID: 1749361164}
   - {fileID: 2058885512}
+  - {fileID: 1510431294}

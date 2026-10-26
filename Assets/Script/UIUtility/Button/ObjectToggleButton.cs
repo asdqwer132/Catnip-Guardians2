@@ -50,8 +50,9 @@ public class ObjectToggleButton : MonoBehaviour
 
     private void Start()
     {
-        SetObjectActive(!initClose);
+        InitClose();
     }
+    public void InitClose() => SetObjectActive(!initClose);
 
     private void OnDestroy()
     {
