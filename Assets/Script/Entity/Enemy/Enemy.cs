@@ -122,6 +122,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     protected override void OnDisable()
     {
+        if (EnemyManager.instance != null) EnemyManager.instance.RemoveEnemy(this);
         ReleaseAttackSlot();
         ClearHitReaction();
         if (patternRunner != null) patternRunner.StopPattern();

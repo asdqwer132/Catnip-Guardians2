@@ -1,9 +1,14 @@
 using UnityEngine;
 
+public enum HealthBarValueSource { Health, EnemyPopulation }
+
 public class HealthBarUI : MonoBehaviour
 {
     [Header("Target")]
+    public HealthBarValueSource valueSource;
     public Health health;
+    [Tooltip("Enemy Population일 때 사용할 같은 배틀 씬의 EnemyManager입니다.")]
+    public EnemyManager enemyManager;
     public GameObject pannel;
 
     [Header("UI")]
@@ -14,6 +19,8 @@ public class HealthBarUI : MonoBehaviour
     public bool hideWhenDead = true;
 
     private bool panelVisibleBySetting = true;
+    private Health subscribedHealth;
+    private EnemyManager subscribedEnemyManager;
 
     private void Awake()
     {
@@ -66,27 +73,41 @@ public class HealthBarUI : MonoBehaviour
 
     private void Subscribe()
     {
-        if (health == null)
-            return;
-
-        health.OnHpChanged -= Refresh;
-        health.OnHpChanged += Refresh;
-
-        health.OnDead -= HandleDead;
-        health.OnDead += HandleDead;
+        Unsubscribe();
+        if (!isActiveAndEnabled) return;
+        if (valueSource == HealthBarValueSource.EnemyPopulation)
+        {
+            subscribedEnemyManager = enemyManager;
+            if (subscribedEnemyManager != null) subscribedEnemyManager.OnEnemyCountChanged += RefreshEnemyCount;
+        }
+        else if (health != null)
+        {
+            subscribedHealth = health;
+            subscribedHealth.OnHpChanged += Refresh;
+            subscribedHealth.OnDead += HandleDead;
+        }
     }
 
     private void Unsubscribe()
     {
-        if (health == null)
-            return;
-
-        health.OnHpChanged -= Refresh;
-        health.OnDead -= HandleDead;
+        if (subscribedHealth != null)
+        {
+            subscribedHealth.OnHpChanged -= Refresh;
+            subscribedHealth.OnDead -= HandleDead;
+        }
+        if (subscribedEnemyManager != null) subscribedEnemyManager.OnEnemyCountChanged -= RefreshEnemyCount;
+        subscribedHealth = null;
+        subscribedEnemyManager = null;
     }
 
     private void Refresh()
     {
+        if (valueSource == HealthBarValueSource.EnemyPopulation)
+        {
+            RefreshEnemyCount(enemyManager != null ? enemyManager.CurrentAliveEnemyCount : 0,
+                enemyManager != null ? enemyManager.maxAliveEnemyCount : 0);
+            return;
+        }
         if (health == null)
             return;
 
@@ -100,7 +121,7 @@ public class HealthBarUI : MonoBehaviour
 
         hpFill.SetFill(hp, maxHp);
 
-        if (hideWhenFullHp)
+        if (valueSource == HealthBarValueSource.Health && hideWhenFullHp)
         {
             bool isFull = hp >= maxHp;
             hpFill.SetVisible(!isFull && panelVisibleBySetting);
@@ -113,10 +134,22 @@ public class HealthBarUI : MonoBehaviour
 
     private void HandleDead()
     {
-        if (!hideWhenDead)
+        if (valueSource != HealthBarValueSource.Health || !hideWhenDead)
             return;
 
         if (hpFill != null)
             hpFill.SetVisible(false);
     }
+
+    private void RefreshEnemyCount(int count, int maximum) => Refresh(count, maximum);
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (!Application.isPlaying || !isActiveAndEnabled) return;
+        Unsubscribe();
+        Subscribe();
+        Refresh();
+    }
+#endif
 }

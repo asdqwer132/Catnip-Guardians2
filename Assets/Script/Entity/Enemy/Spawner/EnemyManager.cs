@@ -29,6 +29,9 @@ public class EnemyManager : MonoBehaviour
     [SerializeField] private bool fieldLimitReached;
     public bool FieldLimitReached => fieldLimitReached;
     public int CurrentAliveEnemyCount => currentAliveEnemyCount;
+    public event System.Action<int, int> OnEnemyCountChanged;
+    private int lastNotifiedEnemyCount = -1;
+    private int lastNotifiedEnemyLimit = -1;
 
     [Tooltip("켜두면 미들보스/보스는 일반 적 최대 생존 수 제한을 무시하고 스폰됩니다.")]
     public bool specialSpawnerIgnoresMaxAliveCount = true;
@@ -178,6 +181,12 @@ public class EnemyManager : MonoBehaviour
         }
 
         currentAliveEnemyCount = currentEnemies.Count;
+        if (lastNotifiedEnemyCount != currentAliveEnemyCount || lastNotifiedEnemyLimit != maxAliveEnemyCount)
+        {
+            lastNotifiedEnemyCount = currentAliveEnemyCount;
+            lastNotifiedEnemyLimit = maxAliveEnemyCount;
+            OnEnemyCountChanged?.Invoke(currentAliveEnemyCount, maxAliveEnemyCount);
+        }
         CheckFieldLimit();
     }
 
@@ -200,8 +209,9 @@ public class EnemyManager : MonoBehaviour
 
     private void Update()
     {
-        if (loseWhenFieldFull && !fieldLimitReached && maxAliveEnemyCount > 0 &&
-            currentAliveEnemyCount >= maxAliveEnemyCount) RefreshEnemyCount();
+        if (lastNotifiedEnemyLimit != maxAliveEnemyCount ||
+            (loseWhenFieldFull && !fieldLimitReached && maxAliveEnemyCount > 0 &&
+             currentAliveEnemyCount >= maxAliveEnemyCount)) RefreshEnemyCount();
     }
 
     private void CheckFieldLimit()
