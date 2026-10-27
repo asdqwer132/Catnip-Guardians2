@@ -19,6 +19,7 @@ public class ItemTester : MonoBehaviour
     public TestItem[] itemss;
     public ItemUsePositionProvider positionProvider;
     public RectTransform testerDisplayer;
+    public RectTransform testerDisplayerHp;
     private bool isTest = false;
     public void Init()
     {
@@ -50,5 +51,8 @@ public class ItemTester : MonoBehaviour
         Vector2 pos = testerDisplayer.anchoredPosition;
         pos.x = 25f;
         testerDisplayer.anchoredPosition = pos;
+        Vector2 poshp = testerDisplayerHp.anchoredPosition;
+        pos.y = 150+25f;
+        testerDisplayerHp.anchoredPosition = pos;
     }
 }
