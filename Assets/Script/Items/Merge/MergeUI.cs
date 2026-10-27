@@ -1,12 +1,13 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MergeUI : MonoBehaviour
 {
     public TextMeshProUGUI countText;
     public TextMeshProUGUI defaultCountText;
     public GameObject slotObj;
-
+    public Toggle toggle;
     public void SetSlot(bool isActive)
     {
         if (slotObj != null) slotObj.SetActive(isActive);
