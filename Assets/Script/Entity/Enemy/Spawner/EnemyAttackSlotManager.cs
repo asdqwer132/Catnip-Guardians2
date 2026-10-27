@@ -32,6 +32,32 @@ public sealed class EnemyAttackSlotManager : MonoBehaviour
     private readonly Dictionary<Enemy, Reservation> reservations = new Dictionary<Enemy, Reservation>();
     private readonly List<Enemy> stale = new List<Enemy>();
     private int lastCleanupFrame = -1;
+    private readonly Dictionary<Enemy, Vector2> sortPositions = new Dictionary<Enemy, Vector2>();
+    private readonly List<Enemy> sortOrder = new List<Enemy>();
+    private readonly Dictionary<Enemy, long> sortSequence = new Dictionary<Enemy, long>();
+    private long nextSortSequence;
+
+    public void SetSpawnSortPosition(Enemy enemy, Vector2 position)
+    {
+        if (sortPositions.ContainsKey(enemy)) return;
+        sortOrder.Add(enemy);
+        sortSequence.Add(enemy, nextSortSequence++);
+        sortPositions.Add(enemy, position);
+        RefreshSortOrder();
+    }
+
+    private void RefreshSortOrder()
+    {
+        sortOrder.Sort((a, b) =>
+        {
+            Vector2 first = sortPositions[a], second = sortPositions[b];
+            int result = second.y.CompareTo(first.y);
+            if (result == 0) result = second.x.CompareTo(first.x);
+            return result != 0 ? result : sortSequence[a].CompareTo(sortSequence[b]);
+        });
+        for (int i = 0; i < sortOrder.Count; i++)
+            if (sortOrder[i] != null) sortOrder[i].SetSpawnSortingOrder(this, i);
+    }
 
     public bool TryGetDestination(Enemy enemy, out Vector2 destination)
     {
@@ -64,6 +90,7 @@ public sealed class EnemyAttackSlotManager : MonoBehaviour
             reservations.Add(enemy, reservation);
             slot.SetReservedCount(slot.ReservedCount + 1);
             destination = new Vector2(x, reservation.y);
+            SetSpawnSortPosition(enemy, destination);
             return true;
         }
         return false;
@@ -78,14 +105,26 @@ public sealed class EnemyAttackSlotManager : MonoBehaviour
 
     public void Release(Enemy enemy)
     {
-        if (ReferenceEquals(enemy, null) || !reservations.TryGetValue(enemy, out var reservation)) return;
+        if (ReferenceEquals(enemy, null)) return;
+        if (!reservations.TryGetValue(enemy, out var reservation)) return;
         reservations.Remove(enemy);
         reservation.slot.SetReservedCount(Mathf.Max(0, reservation.slot.ReservedCount - 1));
+    }
+
+    public void RemovePresentation(Enemy enemy)
+    {
+        if (!sortPositions.Remove(enemy)) return;
+        sortOrder.Remove(enemy);
+        sortSequence.Remove(enemy);
+        RefreshSortOrder();
     }
 
     public void ClearReservations()
     {
         reservations.Clear();
+        sortPositions.Clear();
+        sortOrder.Clear();
+        sortSequence.Clear();
         foreach (var slot in slots) slot?.SetReservedCount(0);
     }
 

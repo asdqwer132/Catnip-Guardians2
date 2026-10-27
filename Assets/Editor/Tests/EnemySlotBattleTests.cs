@@ -208,6 +208,35 @@ public class EnemySlotBattleTests
         Assert.That(end.CurrentEndType, Is.EqualTo(GameEndType.Win));
     }
 
+    [UnityTest]
+    public IEnumerator DestinationSortIsStableAndPlantSideControlsFlip()
+    {
+        var renderer = prefab.AddComponent<SpriteRenderer>();
+        prefab.AddComponent<ActorVisual>().spriteRenderer = renderer;
+        slots.slots[0].capacity = 2;
+        slots.slots[0].area = new Rect(-10f, 1f, 20f, 0f);
+        plant.transform.position = Vector3.zero;
+        var left = Spawn(-3f);
+        var right = Spawn(3f);
+        var upper = Spawn(0f);
+        var leftGroup = left.GetComponent<UnityEngine.Rendering.SortingGroup>();
+        var rightGroup = right.GetComponent<UnityEngine.Rendering.SortingGroup>();
+        var upperGroup = upper.GetComponent<UnityEngine.Rendering.SortingGroup>();
+        Assert.That(leftGroup.sortingOrder, Is.GreaterThan(rightGroup.sortingOrder));
+        Assert.That(rightGroup.sortingOrder, Is.GreaterThan(upperGroup.sortingOrder));
+        int leftOrder = leftGroup.sortingOrder, rightOrder = rightGroup.sortingOrder;
+        slots.SetSpawnSortPosition(left, new Vector2(9f, 99f));
+        left.transform.position = new Vector3(-3f, 20f, 0f);
+        right.transform.position = new Vector3(3f, 10f, 0f);
+        yield return null;
+        Assert.That(leftGroup.sortingOrder, Is.EqualTo(leftOrder));
+        Assert.That(rightGroup.sortingOrder, Is.EqualTo(rightOrder));
+        Assert.That(left.visual.spriteRenderer.flipX, Is.False);
+        Assert.That(right.visual.spriteRenderer.flipX, Is.True);
+        right.visual.LookDirection(Vector2.right);
+        Assert.That(right.visual.spriteRenderer.flipX, Is.True);
+    }
+
     private static IEnumerator WaitForGameSeconds(float duration)
     {
         float until = Time.time + duration;

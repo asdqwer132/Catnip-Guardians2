@@ -8,6 +8,8 @@ public class ActorAttack : MonoBehaviour
     public float attackRange = 1.5f;
     public float attackCooldown = 1f;
     public float attackDistanceTolerance = 0.15f;
+    [Tooltip("슬롯 공격음 카테고리. 비우면 기존 피격음과 같은 타깃 태그를 사용합니다.")]
+    public string slotAttackSoundCategory;
 
     [Header("Attack Preparation")]
     [Tooltip("멈춰서 타깃을 바라본 뒤 공격하기까지의 시간입니다. 0이면 즉시 공격합니다.")]
@@ -270,6 +272,10 @@ public class ActorAttack : MonoBehaviour
         defaultDamageApplied = true;
         if (enemyOwner != null && enemyOwner.UsesAttackSlots)
         {
+            string category = slotAttackSoundCategory;
+            if (string.IsNullOrEmpty(category))
+                category = target != null && target.TargetTransform != null ? target.TargetTransform.gameObject.tag : gameObject.tag;
+            SceneAudioChannel.PlaySfx(gameObject, category);
             enemyOwner.NotifySlotAttack();
             return;
         }
