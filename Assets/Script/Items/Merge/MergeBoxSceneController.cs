@@ -14,7 +14,6 @@ public sealed class MergeBoxEntry
 public sealed class MergeBoxSceneController : MonoBehaviour
 {
     public TMP_Dropdown seriesDropdown;
-    public UIWorldBoundsFitter fitter;
     public MergeItemSelection selection;
     public MergeBoxEntry[] boxes = Array.Empty<MergeBoxEntry>();
     [SerializeField] private int selectedIndex;
@@ -56,12 +55,6 @@ public sealed class MergeBoxSceneController : MonoBehaviour
         entry.board.SetMaterialUIEnabled(true);
         if (selection != null) selection.board = entry.board;
         if (seriesDropdown != null) seriesDropdown.SetValueWithoutNotify(index);
-        if (fitter == null) return;
-        fitter.positionCamera = true;
-        fitter.worldRoot = entry.boxRoot;
-        fitter.includePoints = new[] { entry.board.spawnPoint };
-        fitter.boards = new[] { entry.board };
-        fitter.FitNow();
     }
 
     public void SetFeeding(bool value)

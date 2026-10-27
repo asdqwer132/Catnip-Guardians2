@@ -324,7 +324,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bd5d76e7f078984486ffa0126928ee9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergegameManager
-  itemSeries: 1
+  itemSeries: 3
   mergeRecipe:
   - tier: 0
     itemRecipeDatas:
@@ -419,7 +419,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bd5d76e7f078984486ffa0126928ee9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergegameManager
-  itemSeries: 1
+  itemSeries: 2
   mergeRecipe:
   - tier: 0
     itemRecipeDatas:
@@ -595,7 +595,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bd5d76e7f078984486ffa0126928ee9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergegameManager
-  itemSeries: 1
+  itemSeries: 5
   mergeRecipe:
   - tier: 0
     itemRecipeDatas:
@@ -2008,7 +2008,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bd5d76e7f078984486ffa0126928ee9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergegameManager
-  itemSeries: 1
+  itemSeries: 7
   mergeRecipe:
   - tier: 0
     itemRecipeDatas:
@@ -2069,8 +2069,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1122774686}
   - component: {fileID: 990400000003}
-  - component: {fileID: 910000770001}
-  - component: {fileID: 910000770002}
   - component: {fileID: 990200000001}
   m_Layer: 0
   m_Name: MegerGeneralManager
@@ -3131,7 +3129,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bd5d76e7f078984486ffa0126928ee9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergegameManager
-  itemSeries: 1
+  itemSeries: 6
   mergeRecipe:
   - tier: 0
     itemRecipeDatas:
@@ -3226,7 +3224,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bd5d76e7f078984486ffa0126928ee9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergegameManager
-  itemSeries: 1
+  itemSeries: 4
   mergeRecipe:
   - tier: 0
     itemRecipeDatas:
@@ -4412,7 +4410,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bd5d76e7f078984486ffa0126928ee9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergegameManager
-  itemSeries: 1
+  itemSeries: 8
   mergeRecipe:
   - tier: 0
     itemRecipeDatas:
@@ -5089,59 +5087,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1889333137}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &910000770001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1122774685}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3126e0ddaf8744228a3c340444938a4e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ItemSceneLayoutController
-  gameArea: {fileID: 604680137}
-  backgroundGameArea: {fileID: 0}
-  seriesArea: {fileID: 962900167}
-  materialsArea: {fileID: 0}
-  recipeArea: {fileID: 0}
-  gameAreaShare: {x: 0.8, y: 0.8}
-  lowerSidebarShare: 0.2
-  worldBox: {fileID: 910000770002}
---- !u!114 &910000770002
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1122774685}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c64427b90f66477e82dfd9b7342295fb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UIWorldBoundsFitter
-  autoFit: 1
-  frame: {fileID: 1599007221}
-  worldCamera: {fileID: 1889333136}
-  worldRoot: {fileID: 1267363655}
-  positionCamera: 1
-  frameOccupancy:
-    serializedVersion: 2
-    x: 0.04
-    y: 0.04
-    width: 0.92
-    height: 0.92
-  captureBoundsFromChildren: 1
-  localBounds:
-    m_Center: {x: 0, y: -0.8624997, z: 0}
-    m_Extent: {x: 3.1, y: 3.8624997, z: 0}
-  includePoints: []
-  boards:
-  - {fileID: 1595348419}
-  - {fileID: 86893377}
-  selections:
-  - {fileID: 1595348420}
 --- !u!114 &910000990001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5196,7 +5141,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxSceneController
   seriesDropdown: {fileID: 1597127874}
-  fitter: {fileID: 910000770002}
   selection: {fileID: 1595348420}
   boxes:
   - boxRoot: {fileID: 1267363655}
@@ -5480,6 +5424,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3011159270801295753, guid: 9b67f355d2bfa6e44845e99f7e709006, type: 3}
+      propertyPath: m_IsOn
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3064527923323496238, guid: 9b67f355d2bfa6e44845e99f7e709006, type: 3}
       propertyPath: m_Transition
       value: 2
@@ -5624,6 +5572,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3655206555223089688, guid: 9b67f355d2bfa6e44845e99f7e709006, type: 3}
+      propertyPath: m_IsOn
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3716337715018846982, guid: 9b67f355d2bfa6e44845e99f7e709006, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -5732,6 +5684,10 @@ PrefabInstance:
       propertyPath: m_fontSize
       value: 18
       objectReference: {fileID: 0}
+    - target: {fileID: 5287452003316354835, guid: 9b67f355d2bfa6e44845e99f7e709006, type: 3}
+      propertyPath: m_IsOn
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5436522964482361496, guid: 9b67f355d2bfa6e44845e99f7e709006, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -5802,6 +5758,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5613178687473891406, guid: 9b67f355d2bfa6e44845e99f7e709006, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5733682367016370748, guid: 9b67f355d2bfa6e44845e99f7e709006, type: 3}
+      propertyPath: m_IsOn
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5761406872738103237, guid: 9b67f355d2bfa6e44845e99f7e709006, type: 3}
+      propertyPath: m_IsOn
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5911428439642614513, guid: 9b67f355d2bfa6e44845e99f7e709006, type: 3}
@@ -5956,6 +5920,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8263313410143289282, guid: 9b67f355d2bfa6e44845e99f7e709006, type: 3}
+      propertyPath: m_IsOn
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8324864651814391516, guid: 9b67f355d2bfa6e44845e99f7e709006, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -6104,6 +6072,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8802111809306366754, guid: 9b67f355d2bfa6e44845e99f7e709006, type: 3}
+      propertyPath: m_IsOn
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8849043595422465059, guid: 9b67f355d2bfa6e44845e99f7e709006, type: 3}
+      propertyPath: m_IsOn
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9040192298949862040, guid: 9b67f355d2bfa6e44845e99f7e709006, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -6150,6 +6126,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9109177767843339627, guid: 9b67f355d2bfa6e44845e99f7e709006, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9180468816373622035, guid: 9b67f355d2bfa6e44845e99f7e709006, type: 3}
+      propertyPath: m_IsOn
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
