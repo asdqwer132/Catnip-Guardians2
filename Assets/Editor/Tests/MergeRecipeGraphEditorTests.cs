@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -26,8 +27,6 @@ public class MergeRecipeGraphEditorTests
         string name = "__MergeBookTests_" + Guid.NewGuid().ToString("N");
         AssetDatabase.CreateFolder("Assets", name); folder = "Assets/" + name;
         graph = Asset<MergeRecipeGraphAsset>("Graph");
-        var prefab = Host("Merge template"); prefab.AddComponent<MergeItemObject>();
-        graph.defaultPrefab = PrefabUtility.SaveAsPrefabAsset(prefab, folder + "/Template.prefab");
     }
     [TearDown]
     public void TearDown()
@@ -40,166 +39,216 @@ public class MergeRecipeGraphEditorTests
         }
         AssetDatabase.DeleteAsset(folder);
     }
-    private MergeItem Item() => MergeRecipeGraphEditing.CreateItem(graph, new Vector2(graph.items.Count * 380, 50));
-    private MergeGraphInputPair Connect(MergeItem a, MergeItem b, MergeItem result)
+    private MergeItem Item()
+    {
+        var item = MergeRecipeGraphEditing.CreateItem(graph, new Vector2(graph.items.Count * 380, 50));
+        item.item = Asset<ItemData>(item.name + " Existing Data");
+        return item;
+    }
+    private MergeGraphItemNode Connect(MergeItem result, params MergeItem[] sources)
     {
         var node = graph.items.Find(value => value.item == result);
-        var pair = node.inputs.Find(value => value.IsEmpty) ?? MergeRecipeGraphEditing.AddCombination(graph, node);
-        MergeRecipeGraphEditing.SetInput(graph, pair, 0, a); MergeRecipeGraphEditing.SetInput(graph, pair, 1, b); return pair;
+        foreach (var source in sources)
+        {
+            MergeRecipeGraphEditing.AddInput(graph, node);
+            MergeRecipeGraphEditing.SetInput(graph, node, node.ingredients.Count - 1, source);
+        }
+        return node;
     }
     [Test]
-    public void PlusCreatesIndependentMergeItemsDataAndPrefabVariants()
+    public void PlusCreatesOnlyEmptyMergeItemAssetsAndGraphCanSaveBeforeDataAssignment()
     {
-        var a = Item(); var b = Item();
-        Assert.That(a.item, Is.Not.SameAs(b.item)); Assert.That(a.prefab, Is.Not.SameAs(b.prefab));
-        Assert.That(PrefabUtility.GetPrefabAssetType(a.prefab), Is.EqualTo(PrefabAssetType.Variant));
-        Assert.That(AssetDatabase.Contains(a) && AssetDatabase.Contains(a.item), Is.True);
-        MergeRecipeGraphEditing.AddItem(graph, a, Vector2.zero); Assert.That(graph.items.Count, Is.EqualTo(2));
+        var a = MergeRecipeGraphEditing.CreateItem(graph, Vector2.zero);
+        var b = MergeRecipeGraphEditing.CreateItem(graph, Vector2.right * 400);
+        Assert.That(a.item, Is.Null); Assert.That(a.prefab, Is.Null); Assert.That(a, Is.Not.SameAs(b));
+        Assert.That(AssetDatabase.FindAssets("t:ItemData", new[] { folder }), Is.Empty);
+        Assert.That(AssetDatabase.FindAssets("t:Prefab", new[] { folder }), Is.Empty);
+        Assert.That(AssetDatabase.FindAssets("t:MergeItem", new[] { folder }).Length, Is.EqualTo(2));
+        MergeRecipeGraphEditing.Save(graph);
+        Assert.That(AssetDatabase.Contains(a) && AssetDatabase.Contains(b), Is.True);
+        Assert.Throws<InvalidOperationException>(() => MergeRecipeGraphEditing.ExportRecipes(graph));
+        Assert.That(graph.recipeBook, Is.Null);
     }
     [Test]
-    public void DirectItemConnectionsExportRecipesAndBookAndReuseTheirGuids()
+    public void ArbitraryInputsExtractRecipesFirstThenGroupByResultNodeTierAndKeepGuids()
     {
-        var a = Item(); var b = Item(); var c = Item(); var pair = Connect(a, b, c); pair.tier = 42;
+        var a = Item(); var b = Item(); var c = Item(); var result = Item(); var next = Item();
+        var node = Connect(result, a, b, a, c); node.tier = 42;
+        var nextNode = Connect(next, result, c, c); nextNode.tier = 55;
+        var recipes = MergeRecipeGraphEditing.ExportRecipes(graph);
+        Assert.That(recipes.Count, Is.EqualTo(2)); Assert.That(graph.recipeBook, Is.Null);
+        Assert.That(node.generatedRecipe.tier, Is.EqualTo(42));
+        Assert.That(MergeTree.MatchesIngredients(node.generatedRecipe, new[] { c.item, a.item, b.item, a.item }), Is.True);
+        Assert.That(node.generatedRecipe.materials.Length, Is.EqualTo(3));
+        string guid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(node.generatedRecipe));
         var book = MergeRecipeGraphEditing.Export(graph);
-        Assert.That(book.TryGetRecipe(b.item, a.item, out var recipe), Is.True);
-        Assert.That(recipe.resultItem, Is.SameAs(c.item)); Assert.That(book.GetDefinition(recipe.resultItem), Is.SameAs(c));
-        Assert.That(book.tiers[0].tier, Is.EqualTo(42));
-        string guid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(recipe));
+        Assert.That(book.tiers.Count, Is.EqualTo(2)); Assert.That(book.tiers[0].tier, Is.EqualTo(42));
+        Assert.That(book.tiers[1].tier, Is.EqualTo(55));
+        Assert.That(book.TryGetRecipe(new[] { a.item, a.item, b.item, c.item }, out var recipe), Is.True);
+        Assert.That(recipe.resultItem, Is.SameAs(result.item)); Assert.That(book.GetDefinition(recipe.resultItem), Is.SameAs(result));
         string bookGuid = AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(book));
-        Assert.That(MergeRecipeGraphEditing.Export(graph), Is.SameAs(book));
-        Assert.That(AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(pair.generatedRecipe)), Is.EqualTo(guid));
+        MergeRecipeGraphEditing.Export(graph);
+        Assert.That(AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(node.generatedRecipe)), Is.EqualTo(guid));
         Assert.That(AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(book)), Is.EqualTo(bookGuid));
-        Assert.That(AssetDatabase.FindAssets("t:ItemRecipeData", new[] { folder }).Length, Is.EqualTo(1));
+        Assert.That(AssetDatabase.FindAssets("t:ItemRecipeData", new[] { folder }).Length, Is.EqualTo(2));
     }
     [Test]
-    public void SameIngredientExportsQuantityTwoAndIncompletePairDoesNotChangePreviousBook()
+    public void UnboundedInputControlsAllowMoreThanTwoPortsAndRepeatedIngredients()
     {
-        var a = Item(); var result = Item(); var pair = Connect(a, a, result);
-        var book = MergeRecipeGraphEditing.Export(graph); var recipe = pair.generatedRecipe;
-        Assert.That(recipe.materials.Length, Is.EqualTo(1)); Assert.That(recipe.materials[0].amount, Is.EqualTo(2));
-        MergeRecipeGraphEditing.SetInput(graph, pair, 1, null);
+        var a = Item(); var result = Item(); var node = Connect(result);
+        for (int i = 0; i < 32; i++) { MergeRecipeGraphEditing.AddInput(graph, node); MergeRecipeGraphEditing.SetInput(graph, node, i, a); }
+        var canvas = new MergeRecipeGraphCanvas(_ => { }, _ => { }, _ => { }, _ => { }); canvas.SetGraph(graph, null);
+        var card = canvas.Query<VisualElement>("merge-item-node").ToList()[1];
+        Assert.That(card.Q("Ingredient_31"), Is.Not.Null); Assert.That(card.Query<VisualElement>("ItemOutput").ToList().Count, Is.EqualTo(1));
+        MergeRecipeGraphEditing.ExportRecipes(graph);
+        Assert.That(node.generatedRecipe.materials.Length, Is.EqualTo(1)); Assert.That(node.generatedRecipe.materials[0].amount, Is.EqualTo(32));
+        MergeRecipeGraphEditing.RemoveInput(graph, node, 10); Assert.That(node.ingredients.Count, Is.EqualTo(31));
+    }
+    [Test]
+    public void EmptyOrDuplicateIngredientsAreRejectedBeforeExportMutatesAnyAssets()
+    {
+        var a = Item(); var b = Item(); var result = Item(); var node = Connect(result, a, a, b);
+        var book = MergeRecipeGraphEditing.Export(graph); string before = EditorJsonUtility.ToJson(node.generatedRecipe);
+        MergeRecipeGraphEditing.SetInput(graph, node, 1, null);
         Assert.Throws<InvalidOperationException>(() => MergeRecipeGraphEditing.Export(graph));
-        Assert.That(book.TryGetRecipe(a.item, a.item, out _), Is.True);
-        MergeRecipeGraphEditing.SetInput(graph, pair, 0, null);
+        Assert.That(EditorJsonUtility.ToJson(node.generatedRecipe), Is.EqualTo(before));
+        MergeRecipeGraphEditing.SetInput(graph, node, 1, a);
+        Connect(Item(), b, a, a);
+        Assert.Throws<InvalidOperationException>(() => MergeRecipeGraphEditing.Export(graph));
+        Assert.That(book.tiers[0].itemRecipeDatas.Count, Is.EqualTo(1));
+        Assert.That(EditorJsonUtility.ToJson(node.generatedRecipe), Is.EqualTo(before));
+    }
+    [Test]
+    public void RemovingAllInputsExcludesRecipeWithoutDeletingItsAsset()
+    {
+        var a = Item(); var result = Item(); var node = Connect(result, a, a);
+        var book = MergeRecipeGraphEditing.Export(graph); var recipe = node.generatedRecipe;
+        MergeRecipeGraphEditing.RemoveInput(graph, node, 1); MergeRecipeGraphEditing.RemoveInput(graph, node, 0);
         MergeRecipeGraphEditing.Export(graph);
         Assert.That(book.tiers, Is.Empty); Assert.That(AssetDatabase.Contains(recipe), Is.True);
     }
     [Test]
-    public void MultipleCombinationsOnOneResultExportAllAndDuplicatePairsAreRejected()
+    public void ApplyConnectsScriptableBookAndPreservesManagerStockAndUi()
     {
-        var a = Item(); var b = Item(); var c = Item(); var result = Item();
-        Connect(a, b, result); Connect(a, c, result);
-        var book = MergeRecipeGraphEditing.Export(graph);
-        Assert.That(book.tiers[0].itemRecipeDatas.Count, Is.EqualTo(2));
-        Assert.That(book.TryGetRecipe(a.item, c.item, out _), Is.True);
-        Connect(b, a, c);
-        Assert.Throws<InvalidOperationException>(() => MergeRecipeGraphEditing.Export(graph));
-        Assert.That(book.tiers[0].itemRecipeDatas.Count, Is.EqualTo(2));
-    }
-    [Test]
-    public void ApplyConnectsTheScriptableBookAndPreservesManagerStockAndOverrides()
-    {
-        var a = Item(); var b = Item(); var c = Item(); Connect(a, b, c);
-        var manager = Host("Manager").AddComponent<MergegameManager>();
-        manager.mergeItems.Add(a); var stock = new MergeItemMaterial(a, null, 9, 4); manager.mergeMaterials.Add(stock);
+        var a = Item(); var b = Item(); var c = Item(); Connect(c, a, b, a);
+        var manager = Host("Manager").AddComponent<MergegameManager>(); manager.mergeItems.Add(a);
+        var stock = new MergeItemMaterial(a, null, 9, 4); manager.mergeMaterials.Add(stock);
         MergeRecipeGraphEditing.Apply(graph, manager);
-        Assert.That(manager.recipeBook, Is.SameAs(graph.recipeBook));
-        Assert.That(manager.mergeItems, Is.EqualTo(new[] { a })); Assert.That(manager.mergeMaterials[0], Is.SameAs(stock));
-        Assert.That(stock.count, Is.EqualTo(9)); Assert.That(stock.defaultCount, Is.EqualTo(4));
-        Assert.That(manager.GetDefinitionAtMergeItem(c.item), Is.SameAs(c));
+        Assert.That(manager.recipeBook, Is.SameAs(graph.recipeBook)); Assert.That(manager.mergeItems, Is.EqualTo(new[] { a }));
+        Assert.That(manager.mergeMaterials[0], Is.SameAs(stock)); Assert.That(stock.count, Is.EqualTo(9));
+        Assert.That(stock.defaultCount, Is.EqualTo(4)); Assert.That(manager.GetDefinitionAtMergeItem(c.item), Is.SameAs(c));
     }
     [Test]
-    public void ReverseBookImportRestoresDirectItemLinksWithoutChangingRecipes()
+    public void ReverseBookAndFolderImportPreserveNIngredientsAndNodeTiers()
     {
-        var a = Item(); var b = Item(); var c = Item(); var pair = Connect(a, b, c);
-        var book = MergeRecipeGraphEditing.Export(graph); string before = EditorJsonUtility.ToJson(pair.generatedRecipe);
+        var a = Item(); var b = Item(); var c = Item(); var node = Connect(c, a, a, b); node.tier = 7;
+        var book = MergeRecipeGraphEditing.Export(graph); string before = EditorJsonUtility.ToJson(node.generatedRecipe);
         var restored = Asset<MergeRecipeGraphAsset>("Restored"); MergeRecipeGraphEditing.ImportBook(restored, book);
-        Assert.That(restored.items.Count, Is.EqualTo(3));
-        var inputs = restored.items.Find(node => node.item == c).inputs[0];
-        Assert.That(inputs.first, Is.SameAs(a)); Assert.That(inputs.second, Is.SameAs(b));
-        Assert.That(inputs.generatedRecipe, Is.SameAs(pair.generatedRecipe));
-        Assert.That(EditorJsonUtility.ToJson(pair.generatedRecipe), Is.EqualTo(before));
+        var result = restored.items.Find(value => value.item == c);
+        Assert.That(result.ingredients, Is.EquivalentTo(new[] { a, a, b })); Assert.That(result.tier, Is.EqualTo(7));
+        Assert.That(EditorJsonUtility.ToJson(node.generatedRecipe), Is.EqualTo(before));
         MergeRecipeGraphEditing.ImportBook(restored, book); Assert.That(restored.items.Count, Is.EqualTo(3));
+        var manager = Host("Manager").AddComponent<MergegameManager>(); manager.mergeItems.AddRange(book.items);
+        MergeManagerFolderImport.ApplyRecipes(manager, folder + "/Graph Recipes", true, false);
+        Assert.That(manager.recipeBook.TryGetRecipe(new[] { b.item, a.item, a.item }, out _), Is.True);
+        Assert.That(manager.recipeBook.tiers[0].tier, Is.EqualTo(7));
     }
     [Test]
-    public void ConnectionUndoRedoAndSavedPositionsRemainOnTheGraph()
-    {
-        var a = Item(); var b = Item(); var c = Item(); var pair = Connect(a, a, c);
-        Undo.FlushUndoRecordObjects(); Undo.IncrementCurrentGroup();
-        MergeRecipeGraphEditing.SetInput(graph, pair, 1, b); Undo.FlushUndoRecordObjects();
-        Undo.PerformUndo(); Assert.That(graph.items.Find(node => node.item == c).inputs[0].second, Is.SameAs(a));
-        Undo.PerformRedo(); Assert.That(graph.items.Find(node => node.item == c).inputs[0].second, Is.SameAs(b));
-        graph.items[0].position = new Vector2(123, 456); EditorUtility.SetDirty(graph); MergeRecipeGraphEditing.Save(graph);
-        string path = AssetDatabase.GetAssetPath(graph); AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
-        Assert.That(AssetDatabase.LoadAssetAtPath<MergeRecipeGraphAsset>(path).items[0].position, Is.EqualTo(new Vector2(123, 456)));
-    }
-    [Test]
-    public void CanvasContainsOnlyMergeItemCardsAndPortsConnectItemsDirectly()
-    {
-        var a = Item(); var b = Item(); var c = Item();
-        string status = null;
-        var canvas = new MergeRecipeGraphCanvas(_ => { }, _ => { }, _ => { }, text => status = text);
-        canvas.SetGraph(graph, null);
-        var cards = canvas.Query<VisualElement>("merge-item-node").ToList(); Assert.That(cards.Count, Is.EqualTo(3));
-        Assert.That(canvas.Query<VisualElement>("merge-recipe-node").ToList(), Is.Empty);
-        canvas.ConnectPorts(cards[0].Q("ItemOutput"), cards[2].Q("IngredientA_0"));
-        canvas.ConnectPorts(cards[2].Q("IngredientB_0"), cards[1].Q("ItemOutput"));
-        var pair = graph.items[2].inputs[0]; Assert.That(pair.first, Is.SameAs(a)); Assert.That(pair.second, Is.SameAs(b));
-        canvas.ConnectPorts(cards[0].Q("ItemOutput"), cards[1].Q("ItemOutput")); Assert.That(status, Does.Contain("A / B"));
-        Assert.That(MergeRecipeGraphEditing.Export(graph).TryGetRecipe(a.item, b.item, out _), Is.True);
-    }
-    [Test]
-    public void ChainedConnectionsExportEveryStepAndArrangeByDependencies()
+    public void NodeTierChangesRegroupBookAndUseEditableGradientAndRange()
     {
         var a = Item(); var b = Item(); var c = Item(); var d = Item();
-        Connect(a, b, c); Connect(c, c, d);
-        var book = MergeRecipeGraphEditing.Export(graph);
-        Assert.That(book.TryGetRecipe(a.item, b.item, out var first), Is.True);
-        Assert.That(book.TryGetRecipe(first.resultItem, first.resultItem, out var second), Is.True);
-        Assert.That(second.resultItem, Is.SameAs(d.item));
-        MergeRecipeGraphEditing.Arrange(graph);
-        Assert.That(graph.items[0].position.x, Is.LessThan(graph.items[2].position.x));
-        Assert.That(graph.items[2].position.x, Is.LessThan(graph.items[3].position.x));
+        var cNode = Connect(c, a, a); var dNode = Connect(d, a, b); cNode.tier = 2; dNode.tier = 5;
+        var book = MergeRecipeGraphEditing.Export(graph); Assert.That(book.tiers.Count, Is.EqualTo(2));
+        graph.colorMinTier = 2; graph.colorMaxTier = 6;
+        graph.tierColors.SetKeys(new[] { new GradientColorKey(Color.blue, 0), new GradientColorKey(Color.red, 1) },
+            new[] { new GradientAlphaKey(1, 0), new GradientAlphaKey(1, 1) });
+        var canvas = new MergeRecipeGraphCanvas(_ => { }, _ => { }, _ => { }, _ => { }); canvas.SetGraph(graph, cNode);
+        var cards = canvas.Query<VisualElement>("merge-item-node").ToList();
+        Assert.That(cards[2].style.backgroundColor.value, Is.EqualTo(Color.blue));
+        MergeRecipeGraphEditing.SetTier(graph, cNode, 4); canvas.RefreshPreviews();
+        Assert.That(cards[2].Q<IntegerField>("NodeTier").value, Is.EqualTo(4));
+        Assert.That(cNode.tier, Is.EqualTo(4)); Assert.That(graph.GetTierColor(4).r, Is.EqualTo(.5f).Within(.01f));
+        Assert.That(cards[2].style.backgroundColor.value, Is.EqualTo(graph.GetTierColor(4)));
+        Assert.That(graph.GetTierColor(-10), Is.EqualTo(Color.blue)); Assert.That(graph.GetTierColor(999), Is.EqualTo(Color.red));
+        MergeRecipeGraphEditing.SetTier(graph, dNode, 4); MergeRecipeGraphEditing.Export(graph);
+        Assert.That(book.tiers.Count, Is.EqualTo(1)); Assert.That(book.tiers[0].tier, Is.EqualTo(4));
+        Assert.That(book.tiers[0].itemRecipeDatas.Count, Is.EqualTo(2));
     }
     [Test]
-    public void PreviousRecipeCardsUpgradeToDirectConnectionsWithoutChangingRecipeAssets()
+    public void ConnectionUndoRedoAndSavedInputsTiersColorsAndPositionsPersist()
     {
-        var a = Item(); var b = Item(); var c = Item();
-        var recipe = Asset<ItemRecipeData>("Previous recipe");
-        recipe.resultItem = c.item;
-        recipe.materials = new[] { new RecipeMaterial { itemData = a.item, amount = 1 }, new RecipeMaterial { itemData = b.item, amount = 1 } };
-        string before = EditorJsonUtility.ToJson(recipe);
-        var serialized = new SerializedObject(graph);
-        var previous = serialized.FindProperty("legacyRecipes"); previous.arraySize = 1;
-        previous.GetArrayElementAtIndex(0).FindPropertyRelative("recipe").objectReferenceValue = recipe;
-        serialized.ApplyModifiedPropertiesWithoutUndo();
+        var a = Item(); var b = Item(); var c = Item(); var node = Connect(c, a, a, a);
+        Undo.FlushUndoRecordObjects(); Undo.IncrementCurrentGroup();
+        MergeRecipeGraphEditing.SetInput(graph, node, 2, b); Undo.FlushUndoRecordObjects();
+        Undo.PerformUndo(); Assert.That(graph.items[2].ingredients[2], Is.SameAs(a));
+        Undo.PerformRedo(); Assert.That(graph.items[2].ingredients[2], Is.SameAs(b));
+        graph.items[2].position = new Vector2(123, 456); graph.items[2].tier = 17; graph.colorMaxTier = 30;
+        EditorUtility.SetDirty(graph); MergeRecipeGraphEditing.Save(graph);
+        string path = AssetDatabase.GetAssetPath(graph); AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
+        var restored = AssetDatabase.LoadAssetAtPath<MergeRecipeGraphAsset>(path);
+        Assert.That(restored.items[2].position, Is.EqualTo(new Vector2(123, 456)));
+        Assert.That(restored.items[2].tier, Is.EqualTo(17)); Assert.That(restored.items[2].ingredients[2], Is.SameAs(b));
+        Assert.That(restored.colorMaxTier, Is.EqualTo(30));
+    }
+    [Test]
+    public void CanvasConnectsAnyInputInEitherDirectionAndKeepsOneOutputPerNode()
+    {
+        var a = Item(); var b = Item(); var c = Item(); var node = Connect(c);
+        for (int i = 0; i < 3; i++) MergeRecipeGraphEditing.AddInput(graph, node);
+        string status = null; var canvas = new MergeRecipeGraphCanvas(_ => { }, _ => { }, _ => { }, text => status = text);
+        canvas.SetGraph(graph, null); var cards = canvas.Query<VisualElement>("merge-item-node").ToList();
+        canvas.ConnectPorts(cards[0].Q("ItemOutput"), cards[2].Q("Ingredient_0"));
+        canvas.ConnectPorts(cards[2].Q("Ingredient_1"), cards[1].Q("ItemOutput"));
+        canvas.ConnectPorts(cards[0].Q("ItemOutput"), cards[2].Q("Ingredient_2"));
+        Assert.That(node.ingredients, Is.EqualTo(new[] { a, b, a }));
+        canvas.ConnectPorts(cards[0].Q("ItemOutput"), cards[1].Q("ItemOutput")); Assert.That(status, Does.Contain("재료 입력"));
+        Assert.That(MergeRecipeGraphEditing.Export(graph).TryGetRecipe(new[] { a.item, b.item, a.item }, out _), Is.True);
+    }
+    [Test]
+    public void PreviousFixedInputGraphsMigrateAllCombinationsAndTiersWithoutCreatingData()
+    {
+        var a = Item(); var b = Item(); var c = Item(); var node = graph.items[2];
+        node.LegacyInputs.Add(new MergeGraphInputPair { first = a, second = b, tier = 4 });
+        node.LegacyInputs.Add(new MergeGraphInputPair { first = a, second = a, tier = 7 });
+        EditorUtility.SetDirty(graph); AssetDatabase.SaveAssetIfDirty(graph);
+        string path = AssetDatabase.GetAssetPath(graph);
+        File.WriteAllText(path, File.ReadAllText(path).Replace("legacyInputs:", "inputs:"));
+        AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
         MergeRecipeGraphEditing.Upgrade(graph);
-        var pair = graph.items.Find(node => node.item == c).inputs[0];
-        Assert.That(pair.first, Is.SameAs(a)); Assert.That(pair.second, Is.SameAs(b));
-        Assert.That(pair.generatedRecipe, Is.SameAs(recipe));
+        Assert.That(graph.items.Count, Is.EqualTo(4)); Assert.That(graph.items[2].tier, Is.EqualTo(4));
+        Assert.That(graph.items[2].ingredients, Is.EqualTo(new[] { a, b }));
+        Assert.That(graph.items[3].tier, Is.EqualTo(7)); Assert.That(graph.items[3].item, Is.SameAs(c));
+        MergeRecipeGraphEditing.Upgrade(graph); Assert.That(graph.items.Count, Is.EqualTo(4));
+        var book = MergeRecipeGraphEditing.Export(graph); Assert.That(book.items.Count, Is.EqualTo(3));
+        Assert.That(book.tiers.Count, Is.EqualTo(2));
+    }
+    [Test]
+    public void PreviousRecipeCardsUpgradeWithoutChangingRecipeAssets()
+    {
+        var a = Item(); var b = Item(); var c = Item(); var recipe = Asset<ItemRecipeData>("Previous recipe");
+        recipe.resultItem = c.item; recipe.tier = 6;
+        recipe.materials = new[] { new RecipeMaterial { itemData = a.item, amount = 3 }, new RecipeMaterial { itemData = b.item, amount = 1 } };
+        string before = EditorJsonUtility.ToJson(recipe);
+        var serialized = new SerializedObject(graph); var previous = serialized.FindProperty("legacyRecipes"); previous.arraySize = 1;
+        previous.GetArrayElementAtIndex(0).FindPropertyRelative("recipe").objectReferenceValue = recipe;
+        serialized.ApplyModifiedPropertiesWithoutUndo(); MergeRecipeGraphEditing.Upgrade(graph);
+        Assert.That(graph.items[2].ingredients, Is.EquivalentTo(new[] { a, a, a, b })); Assert.That(graph.items[2].tier, Is.EqualTo(6));
         Assert.That(EditorJsonUtility.ToJson(recipe), Is.EqualTo(before));
     }
     [Test]
-    public void AuthoredItemSceneManagersLoadTheirMigratedRecipeBooks()
+    public void ArrangeUsesExplicitNodeTierAndVariableCardHeights()
     {
-        var scene = EditorSceneManager.OpenScene("Assets/Scenes/GameItemScene.unity", OpenSceneMode.Single);
-        var books = new HashSet<MergeRecipeBook>(); int count = 0;
-        foreach (var root in scene.GetRootGameObjects()) foreach (var manager in root.GetComponentsInChildren<MergegameManager>(true))
-        {
-            Assert.That(manager.recipeBook, Is.Not.Null);
-            Assert.That(manager.recipeBook.tiers, Is.Not.Empty);
-            Assert.That(manager.recipeBook.items, Is.Not.Empty);
-            Assert.That(manager.LegacyRecipes, Is.Empty);
-            Assert.That(books.Add(manager.recipeBook), Is.True, "Preserve each board's independent configuration.");
-            count++;
-        }
-        Assert.That(count, Is.EqualTo(8));
+        var a = Item(); var b = Item(); var c = Item();
+        Connect(c, a, b); graph.items[0].tier = 0; graph.items[1].tier = 42; graph.items[2].tier = 7;
+        MergeRecipeGraphEditing.Arrange(graph);
+        Assert.That(graph.items[0].position.x, Is.LessThan(graph.items[2].position.x));
+        Assert.That(graph.items[2].position.x, Is.LessThan(graph.items[1].position.x));
     }
     [UnityTest]
-    public IEnumerator ActualEditorDraggingConnectsMergeItemPorts()
+    public IEnumerator ActualEditorDraggingConnectsDynamicInput()
     {
         if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null) Assert.Ignore("실제 Editor 드래그 검사는 그래픽 장치가 필요합니다.");
-        var a = Item(); Item(); Item();
+        var a = Item(); Item(); var c = Item(); Connect(c, a, a); MergeRecipeGraphEditing.AddInput(graph, graph.items[2]);
         var window = ScriptableObject.CreateInstance<MergeRecipeGraphWindow>();
         try
         {
@@ -207,8 +256,8 @@ public class MergeRecipeGraphEditorTests
             var canvas = window.rootVisualElement.Q<MergeRecipeGraphCanvas>(); canvas.SetGraph(graph, null); yield return null;
             var cards = canvas.Query<VisualElement>("merge-item-node").ToList();
             using (var down = PointerDownEvent.GetPooled(new Event { type = EventType.MouseDown, button = 0, mousePosition = cards[0].Q("ItemOutput").worldBound.center })) cards[0].Q("ItemOutput").SendEvent(down);
-            using (var up = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, button = 0, mousePosition = cards[2].Q("IngredientA_0").worldBound.center })) canvas.SendEvent(up);
-            Assert.That(graph.items[2].inputs[0].first, Is.SameAs(a));
+            using (var up = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, button = 0, mousePosition = cards[2].Q("Ingredient_2").worldBound.center })) canvas.SendEvent(up);
+            Assert.That(graph.items[2].ingredients[2], Is.SameAs(a));
         }
         finally { window.Close(); Object.DestroyImmediate(window); }
     }

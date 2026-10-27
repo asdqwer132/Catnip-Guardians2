@@ -123,6 +123,60 @@ public class MergeGamePipelineTests
         Assert.That(board.ActiveItems[0].Definition, Is.SameAs(result));
     }
 
+    private void RequireThreeIngredients()
+    {
+        board.recipeBook.tiers[0].itemRecipeDatas[0].materials = new[] {
+            new RecipeMaterial { itemData = first.item, amount = 2 },
+            new RecipeMaterial { itemData = second.item, amount = 1 }
+        };
+    }
+    [Test]
+    public void ThreeConnectedIngredientsConsumeExactQuantitiesAndPreserveMomentum()
+    {
+        RequireThreeIngredients();
+        var a = Drop(0, 40000); var b = Drop(1, 40010); var c = Drop(0, 40020); var extra = Drop(0, 40030);
+        a.Velocity = Vector2.right * 3; b.Velocity = Vector2.up * 3; c.Velocity = Vector2.zero;
+        float expectedX = (a.transform.position.x + b.transform.position.x + c.transform.position.x) / 3;
+        board.QueueContact(a, b); board.QueueContact(b, c); board.QueueContact(c, extra); board.ProcessContacts();
+        Assert.That(board.ActiveItems.Count, Is.EqualTo(2));
+        Assert.That(extra.IsLive && extra.CanMerge, Is.True);
+        MergeItemObject merged = null;
+        foreach (var item in board.ActiveItems) if (item.Definition == result) merged = item;
+        Assert.That(merged, Is.Not.Null); Assert.That(merged.Velocity, Is.EqualTo(Vector2.one));
+        Assert.That(merged.transform.position.x, Is.EqualTo(expectedX).Within(.01f));
+    }
+    [Test]
+    public void NIngredientRecipeCannotConsumeMissingOrDisconnectedPieces()
+    {
+        RequireThreeIngredients();
+        var a = Drop(0, 40000); var b = Drop(1, 40010); var c = Drop(0, 40020);
+        board.QueueContact(a, b); board.ProcessContacts();
+        Assert.That(board.ActiveItems.Count, Is.EqualTo(3)); Assert.That(c.IsLive, Is.True);
+        board.QueueContact(a, b); board.QueueContact(b, c); board.ProcessContacts();
+        Assert.That(board.ActiveItems.Count, Is.EqualTo(1)); Assert.That(board.ActiveItems[0].Definition, Is.SameAs(result));
+    }
+    [Test]
+    public void FailedNIngredientResultSpawnReturnsEveryIngredientReservation()
+    {
+        RequireThreeIngredients();
+        var a = Drop(0, 40000); var b = Drop(1, 40010); var c = Drop(0, 40020);
+        var inactive = Host("Inactive N result parent", false); board.objectPool.mergeItemActiveParent = inactive.transform;
+        board.QueueContact(a, b); board.QueueContact(b, c); board.ProcessContacts();
+        Assert.That(board.ActiveItems.Count, Is.EqualTo(3)); Assert.That(a.CanMerge && b.CanMerge && c.CanMerge, Is.True);
+        board.objectPool.mergeItemActiveParent = board.transform;
+        board.QueueContact(a, b); board.QueueContact(b, c); board.ProcessContacts();
+        Assert.That(board.ActiveItems.Count, Is.EqualTo(1));
+    }
+    [Test]
+    public void SingleIngredientRecipeUsesOnlyItsOneRequiredPiece()
+    {
+        board.recipeBook.tiers[0].itemRecipeDatas[0].materials = new[] { new RecipeMaterial { itemData = first.item, amount = 1 } };
+        var a = Drop(0, 40000); var b = Drop(1, 40010);
+        board.QueueContact(a, b); board.ProcessContacts();
+        Assert.That(board.ActiveItems.Count, Is.EqualTo(2)); Assert.That(b.IsLive, Is.True);
+        Assert.That(board.ActiveItems[1].Definition, Is.SameAs(result));
+    }
+
     [UnityTest]
     public IEnumerator AutomaticDropSkipsUncheckedMaterialsAndStopsWithoutConsumingStock()
     {

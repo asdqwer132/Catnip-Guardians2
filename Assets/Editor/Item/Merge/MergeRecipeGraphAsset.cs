@@ -6,11 +6,24 @@ using UnityEngine.Serialization;
 [CreateAssetMenu(fileName = "MergeRecipeGraph", menuName = "04.Items/Merge/Recipe Graph")]
 public sealed class MergeRecipeGraphAsset : ScriptableObject
 {
-    public ItemSeries defaultSeries = ItemSeries.Weapon;
-    [Tooltip("새 머지 아이템마다 이 프리팹을 상속한 별도 Variant를 만듭니다.")]
-    public GameObject defaultPrefab;
     public MergeRecipeBook recipeBook;
     public List<MergeGraphItemNode> items = new List<MergeGraphItemNode>();
+    [Header("노드 티어 색상")]
+    public Gradient tierColors = DefaultTierColors();
+    [Min(0)] public int colorMinTier;
+    [Min(1)] public int colorMaxTier = 10;
+    public Color GetTierColor(int tier)
+        => tierColors.Evaluate(Mathf.InverseLerp(colorMinTier, Mathf.Max(colorMinTier + 1, colorMaxTier), tier));
+    private static Gradient DefaultTierColors()
+    {
+        var gradient = new Gradient();
+        gradient.SetKeys(new[] {
+            new GradientColorKey(new Color(.16f, .3f, .43f), 0),
+            new GradientColorKey(new Color(.2f, .4f, .26f), .5f),
+            new GradientColorKey(new Color(.5f, .24f, .13f), 1)
+        }, new[] { new GradientAlphaKey(1, 0), new GradientAlphaKey(1, 1) });
+        return gradient;
+    }
     [SerializeField, HideInInspector, FormerlySerializedAs("recipes")]
     private List<MergeGraphRecipeNode> legacyRecipes = new List<MergeGraphRecipeNode>();
     internal List<MergeGraphRecipeNode> LegacyRecipes => legacyRecipes;
@@ -19,9 +32,16 @@ public sealed class MergeRecipeGraphAsset : ScriptableObject
 [Serializable]
 public sealed class MergeGraphItemNode
 {
+    [HideInInspector] public string id = Guid.NewGuid().ToString("N");
     public MergeItem item;
     public Vector2 position;
-    public List<MergeGraphInputPair> inputs = new List<MergeGraphInputPair> { new MergeGraphInputPair() };
+    [Min(0)] public int tier;
+    // 입력 하나가 재료 한 개입니다. 같은 아이템을 여러 입력에 연결하면 수량으로 합산합니다.
+    public List<MergeItem> ingredients = new List<MergeItem>();
+    [HideInInspector] public ItemRecipeData generatedRecipe;
+    [SerializeField, HideInInspector, FormerlySerializedAs("inputs")]
+    private List<MergeGraphInputPair> legacyInputs = new List<MergeGraphInputPair>();
+    internal List<MergeGraphInputPair> LegacyInputs => legacyInputs;
     [SerializeField, HideInInspector] private ItemData itemData;
     [SerializeField, HideInInspector] private MergeItem legacyDefinition;
     internal ItemData LegacyData => itemData != null ? itemData : legacyDefinition != null ? legacyDefinition.item : null;
@@ -29,17 +49,15 @@ public sealed class MergeGraphItemNode
     internal void ClearLegacy() { itemData = null; legacyDefinition = null; }
 }
 
+// 이전 A/B 고정 입력을 열 때 N개 입력 노드로 변환하기 위한 직렬화 형식입니다.
 [Serializable]
 public sealed class MergeGraphInputPair
 {
     public MergeItem first;
     public MergeItem second;
-    [Min(0)] public int tier;
-    [HideInInspector] public ItemRecipeData generatedRecipe;
-    public bool IsEmpty => first == null && second == null;
+    public int tier;
+    public ItemRecipeData generatedRecipe;
 }
-
-// 이전 그래프의 레시피 카드 데이터는 열 때 직접 연결로 변환합니다.
 [Serializable]
 public sealed class MergeGraphRecipeNode
 {

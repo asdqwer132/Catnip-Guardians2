@@ -12,19 +12,19 @@ internal sealed class MergeRecipeGraphCanvas : VisualElement
         public MergeGraphItemNode node;
         public Label title, detail;
         public Image icon;
-        public readonly List<Label> combinations = new List<Label>();
-        public float Height => 115 + node.inputs.Count * 60;
+        public IntegerField tier;
+        public readonly List<Label> ingredients = new List<Label>();
+        public float Height => 140 + node.ingredients.Count * 30;
     }
     private sealed class Port : VisualElement
     {
         public Card card;
-        public MergeGraphInputPair pair;
-        public int slot; // -1은 출력, 0 / 1은 해당 결과 조합의 A / B입니다.
+        public int slot; // -1은 출력, 0 이상은 N개 재료 입력의 인덱스입니다.
     }
     private readonly VisualElement content = new VisualElement();
     private readonly List<Card> cards = new List<Card>();
     private readonly List<Port> ports = new List<Port>();
-    private readonly Action<Object> select;
+    private readonly Action<MergeGraphItemNode> select;
     private readonly Action<Vector2> createItem;
     private readonly Action<Object[]> import;
     private readonly Action<string> status;
@@ -37,7 +37,7 @@ internal sealed class MergeRecipeGraphCanvas : VisualElement
     private int capturedPointer, dragUndoGroup = -1;
     public Vector2 Center => (contentRect.size * .5f - pan) / zoom;
 
-    public MergeRecipeGraphCanvas(Action<Object> select, Action<Vector2> createItem, Action<Object[]> import, Action<string> status)
+    public MergeRecipeGraphCanvas(Action<MergeGraphItemNode> select, Action<Vector2> createItem, Action<Object[]> import, Action<string> status)
     {
         this.select = select; this.createItem = createItem; this.import = import; this.status = status;
         style.flexGrow = 1; style.minWidth = 300; style.overflow = Overflow.Hidden;
@@ -69,7 +69,7 @@ internal sealed class MergeRecipeGraphCanvas : VisualElement
         RegisterCallback<DragPerformEvent>(evt => { DragAndDrop.AcceptDrag(); import(DragAndDrop.objectReferences); evt.StopPropagation(); });
         TransformContent();
     }
-    public void SetGraph(MergeRecipeGraphAsset value, Object selection)
+    public void SetGraph(MergeRecipeGraphAsset value, MergeGraphItemNode selection)
     {
         graph = value;
         if (graph != null) MergeRecipeGraphEditing.Upgrade(graph);
@@ -77,7 +77,7 @@ internal sealed class MergeRecipeGraphCanvas : VisualElement
         if (graph != null) foreach (var node in graph.items)
         {
             var card = AddCard(node);
-            if (node.item != null && node.item == selection) selected = card;
+            if (node == selection) selected = card;
         }
         UpdateSelection(); RefreshPreviews(); MarkDirtyRepaint();
     }
@@ -101,35 +101,40 @@ internal sealed class MergeRecipeGraphCanvas : VisualElement
         card.detail = new Label { pickingMode = PickingMode.Ignore };
         card.detail.style.fontSize = 11; card.detail.style.whiteSpace = WhiteSpace.Normal;
         Place(card.detail, 66, 35, 160, 47); card.Add(card.detail);
-        AddPort(card, null, -1, 233, 52, "ItemOutput");
-        for (int i = 0; i < node.inputs.Count; i++)
+        AddPort(card, -1, 233, 52, "ItemOutput");
+        card.tier = new IntegerField("티어") { value = node.tier, name = "NodeTier" };
+        Place(card.tier, 12, 85, 215, 22); card.Add(card.tier);
+        card.tier.RegisterValueChangedCallback(evt =>
         {
-            var pair = node.inputs[i]; int index = i;
-            float y = 90 + i * 60;
-            AddPort(card, pair, 0, -7, y, "IngredientA_" + i);
-            AddPort(card, pair, 1, -7, y + 24, "IngredientB_" + i);
+            if (EditorApplication.isPlayingOrWillChangePlaymode) { card.tier.SetValueWithoutNotify(node.tier); return; }
+            MergeRecipeGraphEditing.SetTier(graph, node, evt.newValue);
+            card.tier.SetValueWithoutNotify(node.tier); selected = card; UpdateSelection(); RefreshPreviews(); select(node);
+        });
+        for (int i = 0; i < node.ingredients.Count; i++)
+        {
+            int index = i; float y = 115 + i * 30;
+            AddPort(card, i, -7, y, "Ingredient_" + i);
             var label = new Label { pickingMode = PickingMode.Ignore };
-            label.style.fontSize = 11; label.style.whiteSpace = WhiteSpace.Normal;
-            Place(label, 15, y - 2, 180, 46); card.Add(label); card.combinations.Add(label);
+            label.style.fontSize = 11;
+            Place(label, 15, y - 2, 180, 22); card.Add(label); card.ingredients.Add(label);
             var remove = new Button(() =>
             {
                 if (EditorApplication.isPlaying) return;
-                MergeRecipeGraphEditing.RemoveCombination(graph, node, node.inputs[index]);
-                Rebuild(node.item);
-            }) { text = "×", tooltip = "이 조합 제거" };
-            Place(remove, 205, y, 22, 22); card.Add(remove);
+                MergeRecipeGraphEditing.RemoveInput(graph, node, index); Rebuild(node);
+            }) { text = "×", tooltip = "이 재료 입력 제거" };
+            Place(remove, 205, y - 3, 22, 22); card.Add(remove);
         }
         var add = new Button(() =>
         {
             if (EditorApplication.isPlaying) return;
-            MergeRecipeGraphEditing.AddCombination(graph, node); Rebuild(node.item);
-        }) { text = "+ 조합 추가" };
-        Place(add, 12, card.Height - 28, 215, 22); card.Add(add);
+            MergeRecipeGraphEditing.AddInput(graph, node); Rebuild(node);
+        }) { text = "+ 재료 입력" };
+        Place(add, 12, card.Height - 25, 215, 22); card.Add(add);
         card.RegisterCallback<PointerDownEvent>(evt =>
         {
             var element = evt.target as VisualElement;
-            if (evt.button != 0 || evt.altKey || graph == null || EditorApplication.isPlaying || element is Button || element?.GetFirstAncestorOfType<Button>() != null) return;
-            Focus(); selected = card; select(node.item); UpdateSelection();
+            if (evt.button != 0 || evt.altKey || graph == null || EditorApplication.isPlaying || element is BaseField<int> || element?.GetFirstAncestorOfType<BaseField<int>>() != null || element is Button || element?.GetFirstAncestorOfType<Button>() != null) return;
+            Focus(); selected = card; select(node); UpdateSelection();
             Undo.IncrementCurrentGroup(); dragUndoGroup = Undo.GetCurrentGroup();
             dragged = card; Capture(evt.pointerId); evt.StopPropagation();
         });
@@ -142,10 +147,10 @@ internal sealed class MergeRecipeGraphCanvas : VisualElement
         card.RegisterCallback<GeometryChangedEvent>(_ => MarkDirtyRepaint());
         cards.Add(card); content.Add(card); return card;
     }
-    private void AddPort(Card card, MergeGraphInputPair pair, int slot, float x, float y, string name)
+    private void AddPort(Card card, int slot, float x, float y, string name)
     {
-        var port = new Port { name = name, card = card, pair = pair, slot = slot,
-            tooltip = slot < 0 ? "재료 출력 · A / B로 드래그" : (slot == 0 ? "재료 A" : "재료 B") + " · 우클릭으로 해제" };
+        var port = new Port { name = name, card = card, slot = slot,
+            tooltip = slot < 0 ? "재료 출력 · 원하는 입력으로 드래그" : "재료 " + (slot + 1) + " · 우클릭으로 해제" };
         Place(port, x, y, 14, 14);
         port.style.backgroundColor = slot < 0 ? new Color(.35f, .75f, 1) : new Color(.5f, .85f, .45f);
         port.style.borderTopLeftRadius = port.style.borderTopRightRadius = port.style.borderBottomLeftRadius = port.style.borderBottomRightRadius = 7;
@@ -166,16 +171,14 @@ internal sealed class MergeRecipeGraphCanvas : VisualElement
             var item = card.node.item; var data = item != null ? item.item : null;
             card.title.text = Name(item); card.icon.sprite = data != null ? data.icon : null;
             card.detail.text = data != null ? $"{data.name}\n{data.series} · R {item.Radius:0.##}" : "ItemData를 연결하세요";
-            for (int i = 0; i < card.combinations.Count; i++)
-            {
-                var pair = card.node.inputs[i];
-                card.combinations[i].text = $"A: {Name(pair.first)}\nB: {Name(pair.second)}" +
-                    (pair.first != null && pair.first == pair.second ? "  ×2" : "") + $"   T{pair.tier}";
-            }
+            card.tier.SetValueWithoutNotify(card.node.tier);
+            card.style.backgroundColor = graph.GetTierColor(card.node.tier);
+            for (int i = 0; i < card.ingredients.Count; i++)
+                card.ingredients[i].text = (i + 1) + ": " + Name(card.node.ingredients[i]);
         }
         MarkDirtyRepaint();
     }
-    private void Rebuild(Object asset) { SetGraph(graph, asset); select(asset); }
+    private void Rebuild(MergeGraphItemNode asset) { SetGraph(graph, asset); select(asset); }
     private Vector2 Point(Port port) => this.WorldToLocal(port.worldBound.center);
     private void TransformContent()
     {
@@ -190,6 +193,8 @@ internal sealed class MergeRecipeGraphCanvas : VisualElement
     private void Release() { FinishGesture(); if (this.HasPointerCapture(capturedPointer)) this.ReleasePointer(capturedPointer); }
     private void Down(PointerDownEvent evt)
     {
+        var element = evt.target as VisualElement;
+        if (!evt.altKey && (element is BaseField<int> || element?.GetFirstAncestorOfType<BaseField<int>>() != null)) return;
         Focus();
         if (evt.button == 2 || (evt.button == 0 && evt.altKey)) { panning = true; Capture(evt.pointerId); evt.StopPropagation(); }
         else if (evt.button == 0) { selected = null; UpdateSelection(); select(null); }
@@ -220,6 +225,8 @@ internal sealed class MergeRecipeGraphCanvas : VisualElement
     }
     private void Key(KeyDownEvent evt)
     {
+        var element = evt.target as VisualElement;
+        if (element is BaseField<int> || element?.GetFirstAncestorOfType<BaseField<int>>() != null) return;
         if (evt.keyCode == KeyCode.Escape) Release();
         else if (evt.keyCode == KeyCode.Delete || evt.keyCode == KeyCode.Backspace) { if (selected != null) Remove(selected); evt.StopPropagation(); }
         else if (evt.keyCode == KeyCode.F) { FrameAll(); evt.StopPropagation(); }
@@ -242,20 +249,17 @@ internal sealed class MergeRecipeGraphCanvas : VisualElement
         if (graph == null || EditorApplication.isPlaying || !(source is Port a) || !(target is Port b)) return;
         var output = a.slot < 0 ? a : b.slot < 0 ? b : null;
         var input = a.slot >= 0 ? a : b.slot >= 0 ? b : null;
-        if (output == null || input == null) { status("머지 아이템 출력 → 결과 아이템의 A / B를 연결하세요."); return; }
-        MergeRecipeGraphEditing.SetInput(graph, input.pair, input.slot, output.card.node.item);
-        RefreshPreviews(); status("연결했습니다. 레시피북 생성 / 갱신으로 레시피를 뽑으세요.");
+        if (output == null || input == null) { status("머지 아이템 출력 → 결과 아이템의 재료 입력을 연결하세요."); return; }
+        MergeRecipeGraphEditing.SetInput(graph, input.card.node, input.slot, output.card.node.item);
+        RefreshPreviews(); status("연결했습니다. 레시피 추출 → 티어별 레시피북 생성으로 반영하세요.");
     }
     private void Disconnect(Port port)
     {
         if (graph == null || EditorApplication.isPlaying) return;
         Undo.IncrementCurrentGroup(); int group = Undo.GetCurrentGroup();
-        if (port.slot >= 0) MergeRecipeGraphEditing.SetInput(graph, port.pair, port.slot, null);
-        else foreach (var node in graph.items) foreach (var pair in node.inputs)
-        {
-            if (pair.first == port.card.node.item) MergeRecipeGraphEditing.SetInput(graph, pair, 0, null);
-            if (pair.second == port.card.node.item) MergeRecipeGraphEditing.SetInput(graph, pair, 1, null);
-        }
+        if (port.slot >= 0) MergeRecipeGraphEditing.SetInput(graph, port.card.node, port.slot, null);
+        else foreach (var node in graph.items) for (int i = 0; i < node.ingredients.Count; i++)
+            if (node.ingredients[i] == port.card.node.item) MergeRecipeGraphEditing.SetInput(graph, node, i, null);
         Undo.CollapseUndoOperations(group); RefreshPreviews();
     }
     public void FrameAll()
@@ -269,7 +273,7 @@ internal sealed class MergeRecipeGraphCanvas : VisualElement
         pan = contentRect.size * .5f - (min + max) * .5f * zoom; TransformContent();
     }
     private Port Output(MergeItem item) => ports.Find(port => port.slot < 0 && port.card.node.item == item);
-    private Port Input(MergeGraphInputPair pair, int slot) => ports.Find(port => port.pair == pair && port.slot == slot);
+    private Port Input(MergeGraphItemNode node, int slot) => ports.Find(port => port.card.node == node && port.slot == slot);
     private static void Curve(Painter2D painter, Vector2 start, Vector2 end)
     {
         float tangent = Mathf.Max(45, Mathf.Abs(end.x - start.x) * .45f);
@@ -283,11 +287,10 @@ internal sealed class MergeRecipeGraphCanvas : VisualElement
         for (float x = pan.x % spacing; x < contentRect.width; x += spacing) { painter.MoveTo(new Vector2(x, 0)); painter.LineTo(new Vector2(x, contentRect.height)); }
         for (float y = pan.y % spacing; y < contentRect.height; y += spacing) { painter.MoveTo(new Vector2(0, y)); painter.LineTo(new Vector2(contentRect.width, y)); }
         painter.Stroke();
-        if (graph != null) foreach (var node in graph.items) foreach (var pair in node.inputs)
+        if (graph != null) foreach (var node in graph.items) for (int i = 0; i < node.ingredients.Count; i++)
         {
-            var a = Output(pair.first); var b = Output(pair.second);
-            if (pair.first != null && a != null && Input(pair, 0) != null) Curve(painter, Point(a), Point(Input(pair, 0)));
-            if (pair.second != null && b != null && Input(pair, 1) != null) Curve(painter, Point(b), Point(Input(pair, 1)));
+            var source = node.ingredients[i]; var output = Output(source); var input = Input(node, i);
+            if (source != null && output != null && input != null) Curve(painter, Point(output), Point(input));
         }
         if (linking != null) Curve(painter, linking.slot < 0 ? Point(linking) : pointer, linking.slot < 0 ? pointer : Point(linking));
     }

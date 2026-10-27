@@ -10,6 +10,9 @@ public sealed class MergeRecipeBook : ScriptableObject
     public bool TryGetRecipe(ItemData first, ItemData second, out ItemRecipeData recipe)
         => MergeTree.TryGetRecipe(tiers, first, second, out recipe);
 
+    public bool TryGetRecipe(IReadOnlyList<ItemData> ingredients, out ItemRecipeData recipe)
+        => MergeTree.TryGetRecipe(tiers, ingredients, out recipe);
+
     public MergeItem GetDefinition(ItemData item)
     {
         if (item == null || items == null) return null;

@@ -54,12 +54,11 @@ public static class MergeManagerFolderImport
         {
             var series = recipe.resultItem != null ? recipe.resultItem.series : recipe.itemSeries;
             if (filterSeries && manager.itemSeries != ItemSeries.None && series != manager.itemSeries) continue;
-            if (!MergeRecipeGraphEditing.TryInputs(recipe, out var a, out var b) || a == null || b == null ||
-                recipe.resultItem == null || recipe.tier < 0)
-                throw new InvalidOperationException(recipe.name + ": 두 재료와 결과 / 티어를 확인하세요.");
+            if (!MergeTree.TryGetIngredients(recipe, out var required) || recipe.tier < 0)
+                throw new InvalidOperationException(recipe.name + ": 재료 / 수량과 결과 / 티어를 확인하세요.");
             foreach (var previous in tiers.Values)
                 foreach (var other in previous.itemRecipeDatas)
-                    if (MergeTree.MatchesPair(other, a, b)) throw new InvalidOperationException("재료 조합이 중복됩니다: " + recipe.name);
+                    if (MergeTree.TryGetIngredients(other, out var previousRequired) && MergeTree.SameIngredients(previousRequired, required)) throw new InvalidOperationException("재료 조합이 중복됩니다: " + recipe.name);
             if (!tiers.TryGetValue(recipe.tier, out var tier)) tiers.Add(recipe.tier, tier = new MergeSeries { tier = recipe.tier });
             tier.itemRecipeDatas.Add(recipe);
         }
