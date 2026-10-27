@@ -1,23 +1,38 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-// 편집기 전용 배치 데이터입니다. 게임에서는 기존 MergeItem / ItemRecipeData만 사용합니다.
+// 레시피 편집과 배치만 저장합니다. 프리팹 / 반지름은 MergeItem 에디터가 관리합니다.
 [CreateAssetMenu(fileName = "MergeRecipeGraph", menuName = "04.Items/Merge/Recipe Graph")]
 public sealed class MergeRecipeGraphAsset : ScriptableObject
 {
     public ItemSeries defaultSeries = ItemSeries.Weapon;
-    [Tooltip("새 아이템마다 이 프리팹을 상속한 별도 Variant를 생성합니다.")]
-    public GameObject defaultPrefab;
     public List<MergeGraphItemNode> items = new List<MergeGraphItemNode>();
     public List<MergeGraphRecipeNode> recipes = new List<MergeGraphRecipeNode>();
+
+    public bool UpgradeLegacyNodes()
+    {
+        bool changed = false;
+        foreach (var node in items) changed |= node.UpgradeLegacy();
+        return changed;
+    }
 }
 
 [Serializable]
 public sealed class MergeGraphItemNode
 {
-    public MergeItem item;
+    public ItemData itemData;
     public Vector2 position;
+    [SerializeField, HideInInspector, FormerlySerializedAs("item")] private MergeItem legacyDefinition;
+
+    internal bool UpgradeLegacy()
+    {
+        if (legacyDefinition == null) return false;
+        if (itemData == null) itemData = legacyDefinition.item;
+        legacyDefinition = null;
+        return true;
+    }
 }
 
 [Serializable]

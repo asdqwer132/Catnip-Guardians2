@@ -19,7 +19,7 @@ internal sealed class MergeRecipeGraphCanvas : VisualElement
         public MergeGraphRecipeNode recipe;
         public Label title, detail;
         public Image icon;
-        public Object Asset => item != null ? (Object)item.item : recipe.recipe;
+        public Object Asset => item != null ? (Object)item.itemData : recipe.recipe;
         public Vector2 Position
         {
             get => item != null ? item.position : recipe.position;
@@ -71,13 +71,13 @@ internal sealed class MergeRecipeGraphCanvas : VisualElement
             var element = evt.target as VisualElement;
             if (element is Card || element?.GetFirstAncestorOfType<Card>() != null) return;
             Vector2 at = ToGraph(evt.mousePosition);
-            evt.menu.AppendAction("+ 머지 아이템", _ => createItem(at));
+            evt.menu.AppendAction("+ 아이템 데이터", _ => createItem(at));
             evt.menu.AppendAction("+ 레시피", _ => createRecipe(at));
         }));
         RegisterCallback<DragUpdatedEvent>(evt =>
         {
             foreach (var asset in DragAndDrop.objectReferences)
-                if (asset is MergeItem || asset is ItemRecipeData)
+                if (asset is ItemData || asset is ItemRecipeData)
                 { DragAndDrop.visualMode = DragAndDropVisualMode.Link; evt.StopPropagation(); break; }
         });
         RegisterCallback<DragPerformEvent>(evt =>
@@ -90,6 +90,7 @@ internal sealed class MergeRecipeGraphCanvas : VisualElement
     public void SetGraph(MergeRecipeGraphAsset value, Object selection)
     {
         graph = value;
+        if (graph != null) MergeRecipeGraphEditing.Upgrade(graph);
         content.Clear(); cards.Clear(); ports.Clear();
         selected = dragged = null; linking = null;
         if (graph != null)
@@ -195,11 +196,10 @@ internal sealed class MergeRecipeGraphCanvas : VisualElement
         {
             if (card.item != null)
             {
-                var definition = card.item.item;
-                var data = definition != null ? definition.item : null;
-                card.title.text = definition != null ? definition.name : "MergeItem 없음";
+                var data = card.item.itemData;
+                card.title.text = data != null ? data.name : "ItemData 없음";
                 card.icon.sprite = data != null ? data.icon : null;
-                card.detail.text = data != null ? $"{data.name}\n{data.series} · {data.grade}\n반지름 {definition.Radius:0.##}" : "ItemData를 연결하세요";
+                card.detail.text = data != null ? $"ItemData\n{data.series} · {data.grade}" : "ItemData를 연결하세요";
             }
             else
             {
@@ -308,13 +308,13 @@ internal sealed class MergeRecipeGraphCanvas : VisualElement
         {
             if (itemOutput != null && ingredient != null)
             {
-                var data = itemOutput.card.item.item != null ? itemOutput.card.item.item.item : null;
+                var data = itemOutput.card.item.itemData;
                 if (data == null) throw new InvalidOperationException("아이템 노드에 ItemData를 먼저 연결하세요.");
                 MergeRecipeGraphEditing.SetInput(ingredient.card.recipe.recipe, ingredient.kind == PortKind.IngredientA ? 0 : 1, data);
             }
             else if (result != null && itemInput != null)
             {
-                var data = itemInput.card.item.item != null ? itemInput.card.item.item.item : null;
+                var data = itemInput.card.item.itemData;
                 if (data == null) throw new InvalidOperationException("결과 아이템에 ItemData를 먼저 연결하세요.");
                 MergeRecipeGraphEditing.SetResult(result.card.recipe.recipe, data);
             }
@@ -336,9 +336,9 @@ internal sealed class MergeRecipeGraphCanvas : VisualElement
             if (port.kind == PortKind.Result) MergeRecipeGraphEditing.SetResult(recipe, null);
             else MergeRecipeGraphEditing.SetInput(recipe, port.kind == PortKind.IngredientA ? 0 : 1, null);
         }
-        else if (port.card.item.item != null && port.card.item.item.item != null)
+        else if (port.card.item.itemData != null)
         {
-            var data = port.card.item.item.item;
+            var data = port.card.item.itemData;
             foreach (var node in graph.recipes)
             {
                 if (node.recipe == null) continue;
@@ -371,7 +371,7 @@ internal sealed class MergeRecipeGraphCanvas : VisualElement
     {
         if (data == null) return null;
         foreach (var port in ports)
-            if (port.kind == kind && port.card.item?.item != null && port.card.item.item.item == data) return port;
+            if (port.kind == kind && port.card.item?.itemData != null && port.card.item.itemData == data) return port;
         return null;
     }
     private Port FindPort(MergeGraphRecipeNode node, PortKind kind)

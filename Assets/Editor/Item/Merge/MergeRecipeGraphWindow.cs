@@ -14,7 +14,6 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
     private ScrollView inspector;
     private Label status;
     private Object selected;
-    private ItemData inspectedData;
     private ObjectField graphField;
 
     [MenuItem("Tools/Item/Merge Recipe Graph")]
@@ -43,7 +42,7 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
         toolbar.Add(graphField);
         toolbar.Add(new ToolbarButton(NewGraph) { text = "새 그래프" });
         var add = new ToolbarMenu { text = "+" };
-        add.menu.AppendAction("머지 아이템 생성", _ => CreateItem(canvas.Center));
+        add.menu.AppendAction("아이템 데이터 생성", _ => CreateItem(canvas.Center));
         add.menu.AppendAction("레시피 생성", _ => CreateRecipe(canvas.Center));
         add.menu.AppendAction("Project 선택 에셋 가져오기", _ => ImportAssets(Selection.objects));
         toolbar.Add(add);
@@ -59,7 +58,7 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
         managerField.RegisterValueChangedCallback(evt => manager = evt.newValue as MergegameManager);
         targets.Add(managerField);
         targets.Add(new ToolbarButton(() => Run(() => { MergeRecipeGraphEditing.Import(graph, manager); Rebuild(); canvas.FrameAll(); })) { text = "매니저에서 불러오기" });
-        targets.Add(new ToolbarButton(() => Run(() => { MergeRecipeGraphEditing.Apply(graph, manager); SetStatus("매니저의 레시피 / 아이템 설정에 적용했습니다. 재고와 UI는 유지됩니다."); })) { text = "매니저에 적용" });
+        targets.Add(new ToolbarButton(() => Run(() => { MergeRecipeGraphEditing.Apply(graph, manager); SetStatus("매니저의 레시피 설정에 적용했습니다. MergeItem과 재고 / UI는 유지됩니다."); })) { text = "매니저에 적용" });
         targets.Add(new ToolbarButton(() => Run(() =>
         {
             var errors = MergeRecipeGraphEditing.Validate(graph);
@@ -130,14 +129,14 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
         int count = 0;
         foreach (var asset in assets)
         {
-            if (asset is MergeItem item) { MergeRecipeGraphEditing.AddItem(graph, item, canvas.Center + new Vector2(0, count++ * 40)); }
+            if (asset is ItemData item) { MergeRecipeGraphEditing.AddItem(graph, item, canvas.Center + new Vector2(0, count++ * 40)); }
             else if (asset is ItemRecipeData recipe) { recipes.Add(recipe); count++; }
         }
         if (recipes.Count > 0) MergeRecipeGraphEditing.ImportRecipes(graph, recipes);
         if (wasEmpty && recipes.Count > 0) MergeRecipeGraphEditing.Arrange(graph);
         Rebuild();
         if (count > 0) canvas.FrameAll();
-        SetStatus(count > 0 ? "기존 에셋과 레시피 연결을 불러왔습니다." : "Project에서 MergeItem / ItemRecipeData를 선택하거나 그래프에 드래그하세요.");
+        SetStatus(count > 0 ? "기존 에셋과 레시피 연결을 불러왔습니다." : "Project에서 ItemData / ItemRecipeData를 선택하거나 그래프에 드래그하세요.");
     });
 
     private Vector2 FreePosition(Vector2 position)
@@ -169,7 +168,6 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
     {
         if (inspector == null) return;
         inspector.Clear();
-        inspectedData = null;
         Object target = selected != null ? selected : graph;
         if (target == null) return;
         inspector.Add(new Label(target.name) { style = { unityFontStyleAndWeight = FontStyle.Bold, marginTop = 10, marginBottom = 10 } });
@@ -177,19 +175,11 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
         {
             var serialized = new SerializedObject(graph);
             inspector.Add(new PropertyField(serialized.FindProperty("defaultSeries"), "새 아이템 시리즈"));
-            inspector.Add(new PropertyField(serialized.FindProperty("defaultPrefab"), "새 아이템 프리팹 템플릿"));
             inspector.Bind(serialized);
         }
         else
         {
             inspector.Add(new InspectorElement(target));
-            if (target is MergeItem item && item.item != null)
-            {
-                inspectedData = item.item;
-                var data = new Foldout { text = "ItemData · 아이콘 / 시리즈 / 효과", value = false };
-                data.Add(new InspectorElement(item.item));
-                inspector.Add(data);
-            }
         }
         if (selected != null)
             inspector.Add(new Button(() => EditorGUIUtility.PingObject(selected)) { text = "Project에서 보기" });
@@ -199,7 +189,6 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
     {
         if (canvas == null) return;
         canvas.RefreshPreviews();
-        if (selected is MergeItem item && item.item != inspectedData) DrawInspector();
     }
 
     private void SetStatus(string message)
@@ -216,7 +205,6 @@ public sealed class MergeRecipeGraphAssetEditor : Editor
         if (GUILayout.Button("노드 에디터 열기", GUILayout.Height(30))) MergeRecipeGraphWindow.Open((MergeRecipeGraphAsset)target);
         serializedObject.Update();
         EditorGUILayout.PropertyField(serializedObject.FindProperty("defaultSeries"));
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("defaultPrefab"));
         serializedObject.ApplyModifiedProperties();
         var graph = (MergeRecipeGraphAsset)target;
         EditorGUILayout.LabelField($"아이템 {graph.items.Count} · 레시피 {graph.recipes.Count}");

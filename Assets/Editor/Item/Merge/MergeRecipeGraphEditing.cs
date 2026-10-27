@@ -15,49 +15,28 @@ public static class MergeRecipeGraphEditing
         return Path.GetDirectoryName(path).Replace('\\', '/');
     }
 
-    private static string FileName(string name)
+    public static ItemData CreateItem(MergeRecipeGraphAsset graph, Vector2 position)
     {
-        foreach (char value in "/\\:*?\"<>|") name = name.Replace(value, '_');
-        return string.IsNullOrWhiteSpace(name) ? "Merge Item" : name;
-    }
-
-    private static GameObject CreatePrefab(MergeRecipeGraphAsset graph, string name)
-    {
-        if (graph.defaultPrefab == null) return null;
-        if (!PrefabUtility.IsPartOfPrefabAsset(graph.defaultPrefab))
-            throw new InvalidOperationException("기본 프리팹에는 Project의 프리팹 에셋을 연결하세요.");
-        var preview = EditorSceneManager.NewPreviewScene();
-        try
-        {
-            var instance = (GameObject)PrefabUtility.InstantiatePrefab(graph.defaultPrefab, preview);
-            string path = AssetDatabase.GenerateUniqueAssetPath(Folder(graph) + "/" + FileName(name) + ".prefab");
-            return PrefabUtility.SaveAsPrefabAsset(instance, path);
-        }
-        finally { EditorSceneManager.ClosePreviewScene(preview); }
-    }
-
-    public static MergeItem CreateItem(MergeRecipeGraphAsset graph, Vector2 position)
-    {
-        string folder = Folder(graph);
         var item = ScriptableObject.CreateInstance<ItemData>();
-        item.name = "Merge Item " + (graph.items.Count + 1);
+        item.name = "Recipe Item " + (graph.items.Count + 1);
         item.series = graph.defaultSeries;
-        AssetDatabase.CreateAsset(item, AssetDatabase.GenerateUniqueAssetPath(folder + "/" + item.name + " Data.asset"));
-        var definition = ScriptableObject.CreateInstance<MergeItem>();
-        definition.name = item.name;
-        definition.item = item;
-        definition.prefab = CreatePrefab(graph, item.name);
-        AssetDatabase.CreateAsset(definition, AssetDatabase.GenerateUniqueAssetPath(folder + "/" + item.name + ".asset"));
-        AddItem(graph, definition, position);
-        return definition;
+        AssetDatabase.CreateAsset(item, AssetDatabase.GenerateUniqueAssetPath(Folder(graph) + "/" + item.name + ".asset"));
+        AddItem(graph, item, position);
+        return item;
     }
 
-    public static void AddItem(MergeRecipeGraphAsset graph, MergeItem item, Vector2 position)
+    public static void AddItem(MergeRecipeGraphAsset graph, ItemData item, Vector2 position)
     {
-        if (item == null || graph.items.Exists(node => node.item == item)) return;
-        Undo.RecordObject(graph, "Add merge item node");
-        graph.items.Add(new MergeGraphItemNode { item = item, position = position });
+        Upgrade(graph);
+        if (item == null || graph.items.Exists(node => node.itemData == item)) return;
+        Undo.RecordObject(graph, "Add recipe item node");
+        graph.items.Add(new MergeGraphItemNode { itemData = item, position = position });
         EditorUtility.SetDirty(graph);
+    }
+
+    public static void Upgrade(MergeRecipeGraphAsset graph)
+    {
+        if (graph.UpgradeLegacyNodes()) EditorUtility.SetDirty(graph);
     }
 
     public static ItemRecipeData CreateRecipe(MergeRecipeGraphAsset graph, Vector2 position)
@@ -120,59 +99,31 @@ public static class MergeRecipeGraphEditing
         EditorUtility.SetDirty(recipe);
     }
 
-    public static MergeItem Definition(MergeRecipeGraphAsset graph, ItemData item)
-    {
-        if (item == null) return null;
-        foreach (var node in graph.items) if (node.item != null && node.item.item == item) return node.item;
-        return null;
-    }
-
-    // 레시피를 역으로 읽어 재료 / 결과 노드까지 복원합니다. 원본 레시피는 변경하지 않습니다.
+    // ItemData 참조만 복원합니다. 역불러오기는 MergeItem / 프리팹을 생성하지 않습니다.
     public static void ImportRecipes(MergeRecipeGraphAsset graph, IEnumerable<ItemRecipeData> recipes)
     {
         var incoming = new List<ItemRecipeData>(recipes);
         foreach (var recipe in incoming)
             if (!TryInputs(recipe, out _, out _))
-                throw new InvalidOperationException((recipe != null ? recipe.name : "레시피 없음") + ": 머지는 재료 두 개를 사용하는 레시피만 지원합니다.");
-        var available = new List<MergeItem>();
-        foreach (string guid in AssetDatabase.FindAssets("t:MergeItem"))
-        {
-            var definition = AssetDatabase.LoadAssetAtPath<MergeItem>(AssetDatabase.GUIDToAssetPath(guid));
-            if (definition != null) available.Add(definition);
-        }
+                throw new InvalidOperationException((recipe != null ? recipe.name : "레시피 없음") + ": 두 재료를 사용하는 레시피만 지원합니다.");
         foreach (var recipe in incoming)
         {
             TryInputs(recipe, out var first, out var second);
-            foreach (var data in new[] { first, second, recipe.resultItem })
-            {
-                if (data == null || Definition(graph, data) != null) continue;
-                var definition = available.Find(item => item.item == data);
-                if (definition == null)
-                {
-                    definition = ScriptableObject.CreateInstance<MergeItem>();
-                    definition.name = data.name + " Merge";
-                    definition.item = data;
-                    definition.prefab = CreatePrefab(graph, definition.name);
-                    AssetDatabase.CreateAsset(definition, AssetDatabase.GenerateUniqueAssetPath(Folder(graph) + "/" + FileName(definition.name) + ".asset"));
-                    available.Add(definition);
-                }
-                AddItem(graph, definition, new Vector2(data == recipe.resultItem ? 580 : 40, 50 + graph.items.Count * 160));
-            }
+            foreach (var item in new[] { first, second, recipe.resultItem })
+                AddItem(graph, item, new Vector2(item == recipe.resultItem ? 580 : 40, 50 + graph.items.Count * 160));
             AddRecipe(graph, recipe, new Vector2(310, 50 + graph.recipes.Count * 180));
         }
     }
 
     public static List<string> Validate(MergeRecipeGraphAsset graph)
     {
+        Upgrade(graph);
         var errors = new List<string>();
         var definitions = new HashSet<ItemData>();
         foreach (var node in graph.items)
         {
-            if (node.item == null || node.item.item == null) { errors.Add("아이템 노드에 MergeItem / ItemData가 필요합니다."); continue; }
-            if (!definitions.Add(node.item.item)) errors.Add(node.item.name + ": 같은 ItemData를 사용하는 노드가 중복됩니다.");
-            if (node.item.prefab == null || node.item.prefab.GetComponent<MergeItemObject>() == null ||
-                !node.item.prefab.GetComponent<MergeItemObject>().enabled)
-                errors.Add(node.item.name + ": 활성 MergeItemObject가 있는 프리팹을 연결하세요.");
+            if (node.itemData == null) { errors.Add("아이템 노드에 ItemData가 필요합니다."); continue; }
+            if (!definitions.Add(node.itemData)) errors.Add(node.itemData.name + ": 같은 ItemData 노드가 중복됩니다.");
         }
         var complete = new List<ItemRecipeData>();
         foreach (var node in graph.recipes)
@@ -197,8 +148,6 @@ public static class MergeRecipeGraphEditing
         var errors = Validate(graph);
         if (errors.Count > 0) throw new InvalidOperationException(string.Join("\n", errors));
         Undo.RecordObject(manager, "Apply merge recipe graph");
-        var items = new List<MergeItem>();
-        foreach (var node in graph.items) items.Add(node.item);
         var tiers = new SortedDictionary<int, MergeSeries>();
         foreach (var node in graph.recipes)
         {
@@ -206,8 +155,7 @@ public static class MergeRecipeGraphEditing
             if (!tiers.TryGetValue(tier, out var series)) tiers.Add(tier, series = new MergeSeries { tier = tier });
             series.itemRecipeDatas.Add(node.recipe);
         }
-        // 참조 소스나 런타임 복사 없이 각 매니저의 설정 자체를 저장합니다. 투입 재고 / UI는 유지합니다.
-        manager.mergeItems = items;
+        // 레시피만 적용합니다. MergeItem / 투입 재고 / UI 설정은 각자의 에디터가 관리합니다.
         manager.mergeRecipe = new List<MergeSeries>(tiers.Values);
         EditorUtility.SetDirty(manager);
         PrefabUtility.RecordPrefabInstancePropertyModifications(manager);
@@ -223,6 +171,7 @@ public static class MergeRecipeGraphEditing
                     throw new InvalidOperationException(recipe.name + ": 머지는 재료 두 개를 사용하는 레시피만 지원합니다.");
         Undo.RecordObject(graph, "Import merge manager graph");
         graph.defaultSeries = manager.itemSeries;
+        Upgrade(graph);
         var oldItems = graph.items;
         var oldRecipes = graph.recipes;
         graph.items = new List<MergeGraphItemNode>();
@@ -232,9 +181,9 @@ public static class MergeRecipeGraphEditing
             if (material?.mergeItem != null && !definitions.Contains(material.mergeItem)) definitions.Add(material.mergeItem);
         foreach (var item in definitions)
         {
-            if (item == null || graph.items.Exists(node => node.item == item)) continue;
-            var old = oldItems.Find(node => node.item == item);
-            graph.items.Add(new MergeGraphItemNode { item = item, position = old != null ? old.position : new Vector2(40, graph.items.Count * 160) });
+            if (item == null || item.item == null || graph.items.Exists(node => node.itemData == item.item)) continue;
+            var old = oldItems.Find(node => node.itemData == item.item);
+            graph.items.Add(new MergeGraphItemNode { itemData = item.item, position = old != null ? old.position : new Vector2(40, graph.items.Count * 160) });
         }
         foreach (var tier in manager.mergeRecipe)
         {
@@ -266,7 +215,7 @@ public static class MergeRecipeGraphEditing
         {
             int tier = 0;
             foreach (var recipe in graph.recipes)
-                if (recipe.recipe != null && node.item != null && recipe.recipe.resultItem == node.item.item)
+                if (recipe.recipe != null && node.itemData != null && recipe.recipe.resultItem == node.itemData)
                     tier = Math.Max(tier, ranks[Math.Max(0, recipe.recipe.tier)] + 1);
             columns.TryGetValue(tier * 2, out int row);
             node.position = new Vector2(40 + tier * 540, 50 + row * 180);
@@ -284,13 +233,9 @@ public static class MergeRecipeGraphEditing
 
     public static void Save(MergeRecipeGraphAsset graph)
     {
+        Upgrade(graph);
         AssetDatabase.SaveAssetIfDirty(graph);
-        foreach (var node in graph.items)
-            if (node.item != null)
-            {
-                AssetDatabase.SaveAssetIfDirty(node.item);
-                if (node.item.item != null) AssetDatabase.SaveAssetIfDirty(node.item.item);
-            }
+        foreach (var node in graph.items) if (node.itemData != null) AssetDatabase.SaveAssetIfDirty(node.itemData);
         foreach (var node in graph.recipes) if (node.recipe != null) AssetDatabase.SaveAssetIfDirty(node.recipe);
     }
 }
