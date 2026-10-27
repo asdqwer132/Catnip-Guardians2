@@ -1,0 +1,135 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3521399810690874270
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5753382963874761464}
+  - component: {fileID: 7972414329389823318}
+  - component: {fileID: 5093010132288736860}
+  - component: {fileID: 5763765669095024634}
+  m_Layer: 0
+  m_Name: MergeManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5753382963874761464
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3521399810690874270}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7972414329389823318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3521399810690874270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bd5d76e7f078984486ffa0126928ee9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MergegameManager
+  itemSeries: 1
+  recipeBook: {fileID: 11400000, guid: af010fe994ab4cf49286c47dc23d393d, type: 2}
+  legacyMergeRecipes: []
+  mergeItems:
+  - {fileID: 11400000, guid: 09bac1e0f87a1364688029d864d7328d, type: 2}
+  - {fileID: 11400000, guid: e3b4fcb4bd4337447b1cd33353fed100, type: 2}
+  - {fileID: 11400000, guid: 2f8f254750f20a74fb3cdfb7f493658b, type: 2}
+  - {fileID: 11400000, guid: f552058213e46ee4ca0b0ef2e3a578ae, type: 2}
+  - {fileID: 11400000, guid: 732db44c43735b14f9e2162a159ab9bb, type: 2}
+  mergeMaterials:
+  - mergeItem: {fileID: 11400000, guid: 732db44c43735b14f9e2162a159ab9bb, type: 2}
+    mergeUI: {fileID: 0}
+    count: 10
+    defaultCount: 5
+  - mergeItem: {fileID: 11400000, guid: 09bac1e0f87a1364688029d864d7328d, type: 2}
+    mergeUI: {fileID: 0}
+    count: 10
+    defaultCount: 7
+  - mergeItem: {fileID: 11400000, guid: e3b4fcb4bd4337447b1cd33353fed100, type: 2}
+    mergeUI: {fileID: 0}
+    count: 0
+    defaultCount: 0
+  - mergeItem: {fileID: 11400000, guid: 2f8f254750f20a74fb3cdfb7f493658b, type: 2}
+    mergeUI: {fileID: 0}
+    count: 0
+    defaultCount: 0
+  - mergeItem: {fileID: 11400000, guid: f552058213e46ee4ca0b0ef2e3a578ae, type: 2}
+    mergeUI: {fileID: 0}
+    count: 0
+    defaultCount: 0
+  currentMaterial:
+    mergeItem: {fileID: 0}
+    mergeUI: {fileID: 0}
+    count: 0
+    defaultCount: 0
+  objectPool: {fileID: 0}
+  spawnPoint: {fileID: 0}
+  dropInterval: 2
+  maximumActiveItems: 50
+  prewarmCount: 4
+  resultMergeDelay: 0.1
+  dropOffset: 0.02
+  automaticDrop: 1
+  isFeeding: 1
+  cycleAutomaticMaterials: 1
+  logActions: 1
+  lastMessage: 
+--- !u!114 &5093010132288736860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3521399810690874270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed94fe9950e84f369adb45642a84c852, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MergeItemSelection
+  board: {fileID: 7972414329389823318}
+  inputCamera: {fileID: 0}
+  dragVisual: {fileID: 0}
+  dragAllowedArea: {fileID: 0}
+  maximumDragWidth: 3
+  maximumDragHeight: 3
+  dragThreshold: 0.1
+  dragCooldown: 0.5
+  clickCooldown: 0.2
+  logSelections: 1
+--- !u!114 &5763765669095024634
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3521399810690874270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9c5256f264fb9840b7de49063b4d032, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MergeItemInjecter
+  mergegameManager: {fileID: 7972414329389823318}
+  mergeItems: []
+  mergeUIRoot: {fileID: 0}
+  mergeUIs: []
+  count: 10
+  defaultCount: 10
