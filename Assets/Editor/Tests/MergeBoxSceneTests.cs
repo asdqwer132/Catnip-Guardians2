@@ -50,6 +50,7 @@ public class MergeBoxSceneTests
     {
         var controller = Controller();
         controller.SetFeeding(false);
+        controller.fitter.enabled = true; // 프레임 맞춤 옵션을 켠 상태의 동작을 검사합니다.
         Assert.That(controller.boxes.Length, Is.EqualTo(8));
         Assert.That(controller.seriesDropdown.options.Count, Is.EqualTo(8));
         Vector3 first = controller.boxes[0].boxRoot.position;
@@ -111,18 +112,19 @@ public class MergeBoxSceneTests
         board.logActions = false;
         board.automaticDrop = true;
         var order = new List<MergeItem>();
-        board.onBoardChanged.AddListener(() =>
-        {
-            if (board.ActiveItems.Count > 0) order.Add(board.ActiveItems[board.ActiveItems.Count - 1].Definition);
-        });
+        var seen = new HashSet<uint>();
         var a = board.mergeMaterials[0];
         var b = board.mergeMaterials[1];
         Assert.That(a.defaultCount, Is.GreaterThan(1));
         Assert.That(b.defaultCount, Is.GreaterThan(0));
-        board.SelectMaterial(0);
+        board.currentMaterial = board.mergeMaterials[0];
         board.SetFeeding(true);
         float timeout = Time.realtimeSinceStartup + 10;
-        while (order.Count < 3 && Time.realtimeSinceStartup < timeout) yield return null;
+        while (order.Count < 3 && Time.realtimeSinceStartup < timeout)
+        {
+            RecordDrops(board, seen, order);
+            if (order.Count < 3) yield return null;
+        }
         board.SetFeeding(false);
         CollectionAssert.AreEqual(new[] { a.mergeItem, b.mergeItem, a.mergeItem }, order);
         int countA = a.defaultCount, countB = b.defaultCount;
@@ -130,13 +132,78 @@ public class MergeBoxSceneTests
         Assert.That(a.defaultCount, Is.EqualTo(countA));
         Assert.That(b.defaultCount, Is.EqualTo(countB));
         board.SetFeeding(true);
-        yield return WaitGameTime(.13f);
+        timeout = Time.realtimeSinceStartup + 10;
+        while (order.Count < 4 && Time.realtimeSinceStartup < timeout)
+        {
+            RecordDrops(board, seen, order);
+            if (order.Count < 4) yield return null;
+        }
         board.SetFeeding(false);
         Assert.That(order.Count, Is.EqualTo(4));
         Assert.That(order[3], Is.SameAs(b.mergeItem));
         foreach (var piece in board.ActiveItems)
             foreach (var sprite in piece.GetComponentsInChildren<SpriteRenderer>(true))
                 Assert.That(sprite.sharedMaterial.shader.name, Is.Not.EqualTo("Universal Render Pipeline/2D/Sprite-Lit-Default"));
+    }
+
+    private static void RecordDrops(MergegameManager board, HashSet<uint> seen, List<MergeItem> order)
+    {
+        foreach (var piece in board.ActiveItems)
+            if (seen.Add(piece.Serial)) order.Add(piece.Definition);
+    }
+
+    [UnityTest]
+    public IEnumerator FeedingUsesOnlyEnabledMaterialTogglesAndResumesAfterAllWereOff()
+    {
+        var controller = Controller();
+        controller.SetFeeding(false);
+        var board = controller.boxes[0].board;
+        board.ClearItems();
+        var point = new GameObject("Toggle feed point");
+        owned.Add(point);
+        point.transform.position = new Vector3(50000, 50000, 0);
+        board.spawnPoint = point.transform;
+        board.dropInterval = .05f;
+        board.logActions = false;
+        board.automaticDrop = true;
+        foreach (var material in board.mergeMaterials)
+        {
+            Assert.That(material.mergeUI.toggle, Is.Not.Null);
+            material.mergeUI.toggle.isOn = false;
+        }
+        var a = board.mergeMaterials[0];
+        var b = board.mergeMaterials[1];
+        int countA = a.defaultCount, countB = b.defaultCount;
+        board.currentMaterial = a;
+        board.SetFeeding(true);
+        yield return WaitGameTime(.13f);
+        Assert.That(board.ActiveItems.Count, Is.Zero);
+        Assert.That(a.defaultCount, Is.EqualTo(countA));
+        Assert.That(b.defaultCount, Is.EqualTo(countB));
+
+        b.mergeUI.toggle.isOn = true;
+        float timeout = Time.realtimeSinceStartup + 5;
+        while (board.ActiveItems.Count == 0 && Time.realtimeSinceStartup < timeout) yield return null;
+        board.SetFeeding(false);
+        Assert.That(board.ActiveItems.Count, Is.EqualTo(1));
+        Assert.That(board.ActiveItems[0].Definition, Is.SameAs(b.mergeItem));
+        Assert.That(a.defaultCount, Is.EqualTo(countA));
+        Assert.That(b.defaultCount, Is.EqualTo(countB - 1));
+
+        board.ClearItems();
+        board.automaticDrop = false;
+        b.mergeUI.toggle.isOn = false;
+        a.mergeUI.toggle.isOn = true;
+        board.currentMaterial = b; // 직전 재료가 꺼져 있으면 즉시 다른 켜진 재료를 고릅니다.
+        board.SetFeeding(true);
+        Assert.That(board.TryDropCurrent(), Is.True);
+        Assert.That(board.ActiveItems[0].Definition, Is.SameAs(a.mergeItem));
+        board.ClearItems();
+        a.mergeUI.toggle.isOn = false;
+        Assert.That(board.TryDropCurrent(), Is.False);
+        Assert.That(a.defaultCount, Is.EqualTo(countA - 1));
+        a.mergeUI.toggle = null;
+        Assert.That(board.TryDropCurrent(), Is.False, "A missing toggle must not bypass the filter.");
     }
 
     [UnityTest]
@@ -147,7 +214,7 @@ public class MergeBoxSceneTests
         var board = controller.boxes[0].board;
         board.logActions = false;
         board.dropInterval = .05f;
-        board.SelectMaterial(0);
+        board.currentMaterial = board.mergeMaterials[0];
         board.spawnPoint = null;
         var material = board.currentMaterial;
         int bonus = material.defaultCount;
@@ -203,6 +270,7 @@ public class GeneralComposedGaugeAndBoxTests
         Assert.That(general.IsReady, Is.True);
         var boxes = InScene<MergeBoxSceneController>(GameSceneRoutes.Item);
         boxes.SetFeeding(false);
+        boxes.fitter.enabled = true;
         var receiver = InScene<GeneralBattleGaugeUI>(GameSceneRoutes.General);
         var data = GeneralUIDataSender.instance.GetData();
         Assert.That(receiver.hp.enemyManager, Is.SameAs(data.enemyManager));
@@ -225,5 +293,38 @@ public class GeneralComposedGaugeAndBoxTests
         foreach (var entry in boxes.boxes)
             foreach (var sprite in entry.boxRoot.GetComponentsInChildren<SpriteRenderer>(true))
                 Assert.That(sprite.sharedMaterial.shader.name, Is.Not.EqualTo("Universal Render Pipeline/2D/Sprite-Lit-Default"));
+    }
+}
+
+public class MergeBoardPresetTests
+{
+    [Test]
+    public void EachBoardAlreadyHasItsOwnRecipeAndStockBeforePlayStarts()
+    {
+        var scene = EditorSceneManager.OpenScene("Assets/Scenes/GameItemScene.unity", OpenSceneMode.Single);
+        MergeBoxSceneController controller = null;
+        foreach (var root in scene.GetRootGameObjects())
+        {
+            controller = root.GetComponentInChildren<MergeBoxSceneController>(true);
+            if (controller != null) break;
+        }
+        Assert.That(controller, Is.Not.Null);
+        var first = controller.boxes[0].board;
+        Assert.That(first.mergeMaterials.Count, Is.GreaterThan(0));
+        foreach (var entry in controller.boxes)
+        {
+            Assert.That(entry.board.mergeMaterials.Count, Is.EqualTo(first.mergeMaterials.Count));
+            Assert.That(entry.board.mergeRecipe.Count, Is.EqualTo(first.mergeRecipe.Count));
+            Assert.That(entry.board.mergeItems, Is.EqualTo(first.mergeItems));
+            Assert.That(entry.board.dropInterval, Is.EqualTo(first.dropInterval));
+            Assert.That(entry.board.objectPool, Is.SameAs(first.objectPool));
+        }
+        var second = controller.boxes[1].board;
+        int original = second.mergeMaterials[0].count;
+        float interval = second.dropInterval;
+        first.mergeMaterials[0].count++;
+        first.dropInterval++;
+        Assert.That(second.mergeMaterials[0].count, Is.EqualTo(original));
+        Assert.That(second.dropInterval, Is.EqualTo(interval));
     }
 }

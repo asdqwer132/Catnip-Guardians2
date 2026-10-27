@@ -17,7 +17,6 @@ public sealed class MergeBoxSceneController : MonoBehaviour
     public UIWorldBoundsFitter fitter;
     public MergeItemSelection selection;
     public MergeBoxEntry[] boxes = Array.Empty<MergeBoxEntry>();
-    public bool allowKeyboardInput = true;
     [SerializeField] private int selectedIndex;
     public int SelectedIndex => selectedIndex;
     public MergegameManager SelectedBoard => selectedIndex >= 0 && selectedIndex < boxes.Length ? boxes[selectedIndex]?.board : null;
@@ -30,7 +29,6 @@ public sealed class MergeBoxSceneController : MonoBehaviour
             var bindings = entry.boxRoot.GetComponentInChildren<MergeBoxBindings>(true);
             if (bindings != null) entry.board.spawnPoint = bindings.spawnPoint;
             entry.board.SetMaterialUIEnabled(false);
-            entry.board.SetKeyboardInputEnabled(false);
         }
     }
 
@@ -46,22 +44,16 @@ public sealed class MergeBoxSceneController : MonoBehaviour
     {
         if (seriesDropdown != null) seriesDropdown.onValueChanged.RemoveListener(SelectBox);
         selection?.CancelSelection();
-        if (SelectedBoard != null) SelectedBoard.SetKeyboardInputEnabled(false);
     }
 
     public void SelectBox(int index)
     {
         if (index < 0 || index >= boxes.Length || boxes[index]?.board == null || boxes[index].boxRoot == null) return;
-        if (SelectedBoard != null)
-        {
-            SelectedBoard.SetKeyboardInputEnabled(false);
-            SelectedBoard.SetMaterialUIEnabled(false);
-        }
+        if (SelectedBoard != null) SelectedBoard.SetMaterialUIEnabled(false);
         selection?.CancelSelection();
         selectedIndex = index;
         var entry = boxes[index];
         entry.board.SetMaterialUIEnabled(true);
-        entry.board.SetKeyboardInputEnabled(allowKeyboardInput && isActiveAndEnabled);
         if (selection != null) selection.board = entry.board;
         if (seriesDropdown != null) seriesDropdown.SetValueWithoutNotify(index);
         if (fitter == null) return;
@@ -78,6 +70,4 @@ public sealed class MergeBoxSceneController : MonoBehaviour
     }
 
     public void SetCurrentFeeding(bool value) => SelectedBoard?.SetFeeding(value);
-    public void SetMaterial(int index) => SelectedBoard?.SetMaterial(index);
-    public void DropCurrent() => SelectedBoard?.DropCurrent();
 }

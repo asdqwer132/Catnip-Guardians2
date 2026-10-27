@@ -324,17 +324,46 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bd5d76e7f078984486ffa0126928ee9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergegameManager
-  settingsSource: {fileID: 1595348419}
-  itemSeries: 0
-  mergeRecipe: []
-  mergeItems: []
-  mergeMaterials: []
+  itemSeries: 1
+  mergeRecipe:
+  - tier: 0
+    itemRecipeDatas:
+    - {fileID: 11400000, guid: 5fca79d463dd09140b375f057b374ebc, type: 2}
+    - {fileID: 11400000, guid: 2731e0dd6c325574581f398053af74fa, type: 2}
+    - {fileID: 11400000, guid: a625c320150e64b45bf81a5af0c24a97, type: 2}
+  mergeItems:
+  - {fileID: 11400000, guid: 09bac1e0f87a1364688029d864d7328d, type: 2}
+  - {fileID: 11400000, guid: e3b4fcb4bd4337447b1cd33353fed100, type: 2}
+  - {fileID: 11400000, guid: 2f8f254750f20a74fb3cdfb7f493658b, type: 2}
+  - {fileID: 11400000, guid: f552058213e46ee4ca0b0ef2e3a578ae, type: 2}
+  - {fileID: 11400000, guid: 732db44c43735b14f9e2162a159ab9bb, type: 2}
+  mergeMaterials:
+  - mergeItem: {fileID: 11400000, guid: 732db44c43735b14f9e2162a159ab9bb, type: 2}
+    mergeUI: {fileID: 7572629845145551943}
+    count: 10
+    defaultCount: 5
+  - mergeItem: {fileID: 11400000, guid: 09bac1e0f87a1364688029d864d7328d, type: 2}
+    mergeUI: {fileID: 7572629845145551942}
+    count: 10
+    defaultCount: 7
+  - mergeItem: {fileID: 11400000, guid: e3b4fcb4bd4337447b1cd33353fed100, type: 2}
+    mergeUI: {fileID: 7572629845145551946}
+    count: 0
+    defaultCount: 0
+  - mergeItem: {fileID: 11400000, guid: 2f8f254750f20a74fb3cdfb7f493658b, type: 2}
+    mergeUI: {fileID: 7572629845145551945}
+    count: 0
+    defaultCount: 0
+  - mergeItem: {fileID: 11400000, guid: f552058213e46ee4ca0b0ef2e3a578ae, type: 2}
+    mergeUI: {fileID: 7572629845145551944}
+    count: 0
+    defaultCount: 0
   currentMaterial:
     mergeItem: {fileID: 0}
     mergeUI: {fileID: 0}
     count: 0
     defaultCount: 0
-  objectPool: {fileID: 0}
+  objectPool: {fileID: 1670134828}
   spawnPoint: {fileID: 0}
   dropInterval: 2
   maximumActiveItems: 50
@@ -344,22 +373,7 @@ MonoBehaviour:
   automaticDrop: 1
   isFeeding: 1
   cycleAutomaticMaterials: 1
-  acceptKeyboardInput: 0
-  dropBinding: <Keyboard>/space
-  nextMaterialBinding: <Keyboard>/q
   logActions: 1
-  onCurrentMaterialChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onMaterialsChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onBoardChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onItemMerged:
-    m_PersistentCalls:
-      m_Calls: []
   lastMessage: 
 --- !u!1 &86893375
 GameObject:
@@ -405,17 +419,46 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bd5d76e7f078984486ffa0126928ee9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergegameManager
-  settingsSource: {fileID: 1595348419}
-  itemSeries: 0
-  mergeRecipe: []
-  mergeItems: []
-  mergeMaterials: []
+  itemSeries: 1
+  mergeRecipe:
+  - tier: 0
+    itemRecipeDatas:
+    - {fileID: 11400000, guid: 5fca79d463dd09140b375f057b374ebc, type: 2}
+    - {fileID: 11400000, guid: 2731e0dd6c325574581f398053af74fa, type: 2}
+    - {fileID: 11400000, guid: a625c320150e64b45bf81a5af0c24a97, type: 2}
+  mergeItems:
+  - {fileID: 11400000, guid: 09bac1e0f87a1364688029d864d7328d, type: 2}
+  - {fileID: 11400000, guid: e3b4fcb4bd4337447b1cd33353fed100, type: 2}
+  - {fileID: 11400000, guid: 2f8f254750f20a74fb3cdfb7f493658b, type: 2}
+  - {fileID: 11400000, guid: f552058213e46ee4ca0b0ef2e3a578ae, type: 2}
+  - {fileID: 11400000, guid: 732db44c43735b14f9e2162a159ab9bb, type: 2}
+  mergeMaterials:
+  - mergeItem: {fileID: 11400000, guid: 732db44c43735b14f9e2162a159ab9bb, type: 2}
+    mergeUI: {fileID: 7572629845145551943}
+    count: 10
+    defaultCount: 5
+  - mergeItem: {fileID: 11400000, guid: 09bac1e0f87a1364688029d864d7328d, type: 2}
+    mergeUI: {fileID: 7572629845145551942}
+    count: 10
+    defaultCount: 7
+  - mergeItem: {fileID: 11400000, guid: e3b4fcb4bd4337447b1cd33353fed100, type: 2}
+    mergeUI: {fileID: 7572629845145551946}
+    count: 0
+    defaultCount: 0
+  - mergeItem: {fileID: 11400000, guid: 2f8f254750f20a74fb3cdfb7f493658b, type: 2}
+    mergeUI: {fileID: 7572629845145551945}
+    count: 0
+    defaultCount: 0
+  - mergeItem: {fileID: 11400000, guid: f552058213e46ee4ca0b0ef2e3a578ae, type: 2}
+    mergeUI: {fileID: 7572629845145551944}
+    count: 0
+    defaultCount: 0
   currentMaterial:
     mergeItem: {fileID: 0}
     mergeUI: {fileID: 0}
     count: 0
     defaultCount: 0
-  objectPool: {fileID: 0}
+  objectPool: {fileID: 1670134828}
   spawnPoint: {fileID: 0}
   dropInterval: 2
   maximumActiveItems: 50
@@ -425,22 +468,7 @@ MonoBehaviour:
   automaticDrop: 1
   isFeeding: 1
   cycleAutomaticMaterials: 1
-  acceptKeyboardInput: 0
-  dropBinding: <Keyboard>/space
-  nextMaterialBinding: <Keyboard>/q
   logActions: 1
-  onCurrentMaterialChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onMaterialsChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onBoardChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onItemMerged:
-    m_PersistentCalls:
-      m_Calls: []
   lastMessage: 
 --- !u!1 &88323783
 GameObject:
@@ -567,17 +595,46 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bd5d76e7f078984486ffa0126928ee9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergegameManager
-  settingsSource: {fileID: 1595348419}
-  itemSeries: 0
-  mergeRecipe: []
-  mergeItems: []
-  mergeMaterials: []
+  itemSeries: 1
+  mergeRecipe:
+  - tier: 0
+    itemRecipeDatas:
+    - {fileID: 11400000, guid: 5fca79d463dd09140b375f057b374ebc, type: 2}
+    - {fileID: 11400000, guid: 2731e0dd6c325574581f398053af74fa, type: 2}
+    - {fileID: 11400000, guid: a625c320150e64b45bf81a5af0c24a97, type: 2}
+  mergeItems:
+  - {fileID: 11400000, guid: 09bac1e0f87a1364688029d864d7328d, type: 2}
+  - {fileID: 11400000, guid: e3b4fcb4bd4337447b1cd33353fed100, type: 2}
+  - {fileID: 11400000, guid: 2f8f254750f20a74fb3cdfb7f493658b, type: 2}
+  - {fileID: 11400000, guid: f552058213e46ee4ca0b0ef2e3a578ae, type: 2}
+  - {fileID: 11400000, guid: 732db44c43735b14f9e2162a159ab9bb, type: 2}
+  mergeMaterials:
+  - mergeItem: {fileID: 11400000, guid: 732db44c43735b14f9e2162a159ab9bb, type: 2}
+    mergeUI: {fileID: 7572629845145551943}
+    count: 10
+    defaultCount: 5
+  - mergeItem: {fileID: 11400000, guid: 09bac1e0f87a1364688029d864d7328d, type: 2}
+    mergeUI: {fileID: 7572629845145551942}
+    count: 10
+    defaultCount: 7
+  - mergeItem: {fileID: 11400000, guid: e3b4fcb4bd4337447b1cd33353fed100, type: 2}
+    mergeUI: {fileID: 7572629845145551946}
+    count: 0
+    defaultCount: 0
+  - mergeItem: {fileID: 11400000, guid: 2f8f254750f20a74fb3cdfb7f493658b, type: 2}
+    mergeUI: {fileID: 7572629845145551945}
+    count: 0
+    defaultCount: 0
+  - mergeItem: {fileID: 11400000, guid: f552058213e46ee4ca0b0ef2e3a578ae, type: 2}
+    mergeUI: {fileID: 7572629845145551944}
+    count: 0
+    defaultCount: 0
   currentMaterial:
     mergeItem: {fileID: 0}
     mergeUI: {fileID: 0}
     count: 0
     defaultCount: 0
-  objectPool: {fileID: 0}
+  objectPool: {fileID: 1670134828}
   spawnPoint: {fileID: 0}
   dropInterval: 2
   maximumActiveItems: 50
@@ -587,22 +644,7 @@ MonoBehaviour:
   automaticDrop: 1
   isFeeding: 1
   cycleAutomaticMaterials: 1
-  acceptKeyboardInput: 0
-  dropBinding: <Keyboard>/space
-  nextMaterialBinding: <Keyboard>/q
   logActions: 1
-  onCurrentMaterialChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onMaterialsChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onBoardChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onItemMerged:
-    m_PersistentCalls:
-      m_Calls: []
   lastMessage: 
 --- !u!1 &183392307
 GameObject:
@@ -1966,17 +2008,46 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bd5d76e7f078984486ffa0126928ee9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergegameManager
-  settingsSource: {fileID: 1595348419}
-  itemSeries: 0
-  mergeRecipe: []
-  mergeItems: []
-  mergeMaterials: []
+  itemSeries: 1
+  mergeRecipe:
+  - tier: 0
+    itemRecipeDatas:
+    - {fileID: 11400000, guid: 5fca79d463dd09140b375f057b374ebc, type: 2}
+    - {fileID: 11400000, guid: 2731e0dd6c325574581f398053af74fa, type: 2}
+    - {fileID: 11400000, guid: a625c320150e64b45bf81a5af0c24a97, type: 2}
+  mergeItems:
+  - {fileID: 11400000, guid: 09bac1e0f87a1364688029d864d7328d, type: 2}
+  - {fileID: 11400000, guid: e3b4fcb4bd4337447b1cd33353fed100, type: 2}
+  - {fileID: 11400000, guid: 2f8f254750f20a74fb3cdfb7f493658b, type: 2}
+  - {fileID: 11400000, guid: f552058213e46ee4ca0b0ef2e3a578ae, type: 2}
+  - {fileID: 11400000, guid: 732db44c43735b14f9e2162a159ab9bb, type: 2}
+  mergeMaterials:
+  - mergeItem: {fileID: 11400000, guid: 732db44c43735b14f9e2162a159ab9bb, type: 2}
+    mergeUI: {fileID: 7572629845145551943}
+    count: 10
+    defaultCount: 5
+  - mergeItem: {fileID: 11400000, guid: 09bac1e0f87a1364688029d864d7328d, type: 2}
+    mergeUI: {fileID: 7572629845145551942}
+    count: 10
+    defaultCount: 7
+  - mergeItem: {fileID: 11400000, guid: e3b4fcb4bd4337447b1cd33353fed100, type: 2}
+    mergeUI: {fileID: 7572629845145551946}
+    count: 0
+    defaultCount: 0
+  - mergeItem: {fileID: 11400000, guid: 2f8f254750f20a74fb3cdfb7f493658b, type: 2}
+    mergeUI: {fileID: 7572629845145551945}
+    count: 0
+    defaultCount: 0
+  - mergeItem: {fileID: 11400000, guid: f552058213e46ee4ca0b0ef2e3a578ae, type: 2}
+    mergeUI: {fileID: 7572629845145551944}
+    count: 0
+    defaultCount: 0
   currentMaterial:
     mergeItem: {fileID: 0}
     mergeUI: {fileID: 0}
     count: 0
     defaultCount: 0
-  objectPool: {fileID: 0}
+  objectPool: {fileID: 1670134828}
   spawnPoint: {fileID: 0}
   dropInterval: 2
   maximumActiveItems: 50
@@ -1986,22 +2057,7 @@ MonoBehaviour:
   automaticDrop: 1
   isFeeding: 1
   cycleAutomaticMaterials: 1
-  acceptKeyboardInput: 0
-  dropBinding: <Keyboard>/space
-  nextMaterialBinding: <Keyboard>/q
   logActions: 1
-  onCurrentMaterialChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onMaterialsChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onBoardChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onItemMerged:
-    m_PersistentCalls:
-      m_Calls: []
   lastMessage: 
 --- !u!1 &1122774685
 GameObject:
@@ -3075,17 +3131,46 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bd5d76e7f078984486ffa0126928ee9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergegameManager
-  settingsSource: {fileID: 1595348419}
-  itemSeries: 0
-  mergeRecipe: []
-  mergeItems: []
-  mergeMaterials: []
+  itemSeries: 1
+  mergeRecipe:
+  - tier: 0
+    itemRecipeDatas:
+    - {fileID: 11400000, guid: 5fca79d463dd09140b375f057b374ebc, type: 2}
+    - {fileID: 11400000, guid: 2731e0dd6c325574581f398053af74fa, type: 2}
+    - {fileID: 11400000, guid: a625c320150e64b45bf81a5af0c24a97, type: 2}
+  mergeItems:
+  - {fileID: 11400000, guid: 09bac1e0f87a1364688029d864d7328d, type: 2}
+  - {fileID: 11400000, guid: e3b4fcb4bd4337447b1cd33353fed100, type: 2}
+  - {fileID: 11400000, guid: 2f8f254750f20a74fb3cdfb7f493658b, type: 2}
+  - {fileID: 11400000, guid: f552058213e46ee4ca0b0ef2e3a578ae, type: 2}
+  - {fileID: 11400000, guid: 732db44c43735b14f9e2162a159ab9bb, type: 2}
+  mergeMaterials:
+  - mergeItem: {fileID: 11400000, guid: 732db44c43735b14f9e2162a159ab9bb, type: 2}
+    mergeUI: {fileID: 7572629845145551943}
+    count: 10
+    defaultCount: 5
+  - mergeItem: {fileID: 11400000, guid: 09bac1e0f87a1364688029d864d7328d, type: 2}
+    mergeUI: {fileID: 7572629845145551942}
+    count: 10
+    defaultCount: 7
+  - mergeItem: {fileID: 11400000, guid: e3b4fcb4bd4337447b1cd33353fed100, type: 2}
+    mergeUI: {fileID: 7572629845145551946}
+    count: 0
+    defaultCount: 0
+  - mergeItem: {fileID: 11400000, guid: 2f8f254750f20a74fb3cdfb7f493658b, type: 2}
+    mergeUI: {fileID: 7572629845145551945}
+    count: 0
+    defaultCount: 0
+  - mergeItem: {fileID: 11400000, guid: f552058213e46ee4ca0b0ef2e3a578ae, type: 2}
+    mergeUI: {fileID: 7572629845145551944}
+    count: 0
+    defaultCount: 0
   currentMaterial:
     mergeItem: {fileID: 0}
     mergeUI: {fileID: 0}
     count: 0
     defaultCount: 0
-  objectPool: {fileID: 0}
+  objectPool: {fileID: 1670134828}
   spawnPoint: {fileID: 0}
   dropInterval: 2
   maximumActiveItems: 50
@@ -3095,22 +3180,7 @@ MonoBehaviour:
   automaticDrop: 1
   isFeeding: 1
   cycleAutomaticMaterials: 1
-  acceptKeyboardInput: 0
-  dropBinding: <Keyboard>/space
-  nextMaterialBinding: <Keyboard>/q
   logActions: 1
-  onCurrentMaterialChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onMaterialsChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onBoardChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onItemMerged:
-    m_PersistentCalls:
-      m_Calls: []
   lastMessage: 
 --- !u!1 &1526648817
 GameObject:
@@ -3156,17 +3226,46 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bd5d76e7f078984486ffa0126928ee9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergegameManager
-  settingsSource: {fileID: 1595348419}
-  itemSeries: 0
-  mergeRecipe: []
-  mergeItems: []
-  mergeMaterials: []
+  itemSeries: 1
+  mergeRecipe:
+  - tier: 0
+    itemRecipeDatas:
+    - {fileID: 11400000, guid: 5fca79d463dd09140b375f057b374ebc, type: 2}
+    - {fileID: 11400000, guid: 2731e0dd6c325574581f398053af74fa, type: 2}
+    - {fileID: 11400000, guid: a625c320150e64b45bf81a5af0c24a97, type: 2}
+  mergeItems:
+  - {fileID: 11400000, guid: 09bac1e0f87a1364688029d864d7328d, type: 2}
+  - {fileID: 11400000, guid: e3b4fcb4bd4337447b1cd33353fed100, type: 2}
+  - {fileID: 11400000, guid: 2f8f254750f20a74fb3cdfb7f493658b, type: 2}
+  - {fileID: 11400000, guid: f552058213e46ee4ca0b0ef2e3a578ae, type: 2}
+  - {fileID: 11400000, guid: 732db44c43735b14f9e2162a159ab9bb, type: 2}
+  mergeMaterials:
+  - mergeItem: {fileID: 11400000, guid: 732db44c43735b14f9e2162a159ab9bb, type: 2}
+    mergeUI: {fileID: 7572629845145551943}
+    count: 10
+    defaultCount: 5
+  - mergeItem: {fileID: 11400000, guid: 09bac1e0f87a1364688029d864d7328d, type: 2}
+    mergeUI: {fileID: 7572629845145551942}
+    count: 10
+    defaultCount: 7
+  - mergeItem: {fileID: 11400000, guid: e3b4fcb4bd4337447b1cd33353fed100, type: 2}
+    mergeUI: {fileID: 7572629845145551946}
+    count: 0
+    defaultCount: 0
+  - mergeItem: {fileID: 11400000, guid: 2f8f254750f20a74fb3cdfb7f493658b, type: 2}
+    mergeUI: {fileID: 7572629845145551945}
+    count: 0
+    defaultCount: 0
+  - mergeItem: {fileID: 11400000, guid: f552058213e46ee4ca0b0ef2e3a578ae, type: 2}
+    mergeUI: {fileID: 7572629845145551944}
+    count: 0
+    defaultCount: 0
   currentMaterial:
     mergeItem: {fileID: 0}
     mergeUI: {fileID: 0}
     count: 0
     defaultCount: 0
-  objectPool: {fileID: 0}
+  objectPool: {fileID: 1670134828}
   spawnPoint: {fileID: 0}
   dropInterval: 2
   maximumActiveItems: 50
@@ -3176,22 +3275,7 @@ MonoBehaviour:
   automaticDrop: 1
   isFeeding: 1
   cycleAutomaticMaterials: 1
-  acceptKeyboardInput: 0
-  dropBinding: <Keyboard>/space
-  nextMaterialBinding: <Keyboard>/q
   logActions: 1
-  onCurrentMaterialChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onMaterialsChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onBoardChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onItemMerged:
-    m_PersistentCalls:
-      m_Calls: []
   lastMessage: 
 --- !u!1 &1573464456
 GameObject:
@@ -3439,7 +3523,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bd5d76e7f078984486ffa0126928ee9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergegameManager
-  settingsSource: {fileID: 0}
   itemSeries: 1
   mergeRecipe:
   - tier: 0
@@ -3489,22 +3572,7 @@ MonoBehaviour:
   automaticDrop: 1
   isFeeding: 1
   cycleAutomaticMaterials: 1
-  acceptKeyboardInput: 1
-  dropBinding: <Keyboard>/space
-  nextMaterialBinding: <Keyboard>/q
   logActions: 1
-  onCurrentMaterialChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onMaterialsChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onBoardChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onItemMerged:
-    m_PersistentCalls:
-      m_Calls: []
   lastMessage: 
 --- !u!114 &1595348420
 MonoBehaviour:
@@ -4344,17 +4412,46 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bd5d76e7f078984486ffa0126928ee9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergegameManager
-  settingsSource: {fileID: 1595348419}
-  itemSeries: 0
-  mergeRecipe: []
-  mergeItems: []
-  mergeMaterials: []
+  itemSeries: 1
+  mergeRecipe:
+  - tier: 0
+    itemRecipeDatas:
+    - {fileID: 11400000, guid: 5fca79d463dd09140b375f057b374ebc, type: 2}
+    - {fileID: 11400000, guid: 2731e0dd6c325574581f398053af74fa, type: 2}
+    - {fileID: 11400000, guid: a625c320150e64b45bf81a5af0c24a97, type: 2}
+  mergeItems:
+  - {fileID: 11400000, guid: 09bac1e0f87a1364688029d864d7328d, type: 2}
+  - {fileID: 11400000, guid: e3b4fcb4bd4337447b1cd33353fed100, type: 2}
+  - {fileID: 11400000, guid: 2f8f254750f20a74fb3cdfb7f493658b, type: 2}
+  - {fileID: 11400000, guid: f552058213e46ee4ca0b0ef2e3a578ae, type: 2}
+  - {fileID: 11400000, guid: 732db44c43735b14f9e2162a159ab9bb, type: 2}
+  mergeMaterials:
+  - mergeItem: {fileID: 11400000, guid: 732db44c43735b14f9e2162a159ab9bb, type: 2}
+    mergeUI: {fileID: 7572629845145551943}
+    count: 10
+    defaultCount: 5
+  - mergeItem: {fileID: 11400000, guid: 09bac1e0f87a1364688029d864d7328d, type: 2}
+    mergeUI: {fileID: 7572629845145551942}
+    count: 10
+    defaultCount: 7
+  - mergeItem: {fileID: 11400000, guid: e3b4fcb4bd4337447b1cd33353fed100, type: 2}
+    mergeUI: {fileID: 7572629845145551946}
+    count: 0
+    defaultCount: 0
+  - mergeItem: {fileID: 11400000, guid: 2f8f254750f20a74fb3cdfb7f493658b, type: 2}
+    mergeUI: {fileID: 7572629845145551945}
+    count: 0
+    defaultCount: 0
+  - mergeItem: {fileID: 11400000, guid: f552058213e46ee4ca0b0ef2e3a578ae, type: 2}
+    mergeUI: {fileID: 7572629845145551944}
+    count: 0
+    defaultCount: 0
   currentMaterial:
     mergeItem: {fileID: 0}
     mergeUI: {fileID: 0}
     count: 0
     defaultCount: 0
-  objectPool: {fileID: 0}
+  objectPool: {fileID: 1670134828}
   spawnPoint: {fileID: 0}
   dropInterval: 2
   maximumActiveItems: 50
@@ -4364,22 +4461,7 @@ MonoBehaviour:
   automaticDrop: 1
   isFeeding: 1
   cycleAutomaticMaterials: 1
-  acceptKeyboardInput: 0
-  dropBinding: <Keyboard>/space
-  nextMaterialBinding: <Keyboard>/q
   logActions: 1
-  onCurrentMaterialChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onMaterialsChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onBoardChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  onItemMerged:
-    m_PersistentCalls:
-      m_Calls: []
   lastMessage: 
 --- !u!1001 &2054533296
 PrefabInstance:
@@ -5133,7 +5215,6 @@ MonoBehaviour:
     board: {fileID: 979139788}
   - boxRoot: {fileID: 557492988}
     board: {fileID: 1963246590}
-  allowKeyboardInput: 1
   selectedIndex: 0
 --- !u!1001 &7572629845145551941
 PrefabInstance:

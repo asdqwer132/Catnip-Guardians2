@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.InputSystem;
 [DefaultExecutionOrder(-200)]
 public class MergegameManager : MonoBehaviour
 {
-    [Tooltip("연결하면 시작할 때 이 매니저의 레시피·재료·투입 설정을 복사합니다. 재고 객체는 공유하지 않습니다.")]
-    public MergegameManager settingsSource;
     public ItemSeries itemSeries;
     public List<MergeSeries> mergeRecipe = new List<MergeSeries>();
     public List<MergeItem> mergeItems = new List<MergeItem>();
@@ -17,7 +13,6 @@ public class MergegameManager : MonoBehaviour
     [Header("기존 씬/풀 연결")]
     public ObjectPoolManager objectPool;
     public Transform spawnPoint;
-
 
     [Header("생성 옵션")]
     [Min(0f)] public float dropInterval = 0.5f;
@@ -32,24 +27,13 @@ public class MergegameManager : MonoBehaviour
     [Tooltip("자동 투입이 성공하면 다음 종류를 선택합니다. 소진된 종류는 건너뜁니다.")]
     public bool cycleAutomaticMaterials = true;
 
-    [Header("테스트 입력 · Input System")]
-    public bool acceptKeyboardInput = true;
-    public string dropBinding = "<Keyboard>/space";
-    public string nextMaterialBinding = "<Keyboard>/q";
     public bool logActions = true;
-
-    [Header("직접 만든 UI 연결용")]
-    public UnityEvent onCurrentMaterialChanged = new UnityEvent();
-    public UnityEvent onMaterialsChanged = new UnityEvent();
-    public UnityEvent onBoardChanged = new UnityEvent();
-    public UnityEvent onItemMerged = new UnityEvent();
 
     [SerializeField] private string lastMessage;
     private readonly List<MergeItemObject> active = new List<MergeItemObject>();
     private readonly List<Contact> contacts = new List<Contact>();
     private readonly HashSet<ulong> queued = new HashSet<ulong>();
     private readonly Collider2D[] overlap = new Collider2D[32];
-    private InputAction dropInput, nextMaterialInput;
     private float nextDropAt;
     private float nextAutomaticDropAt;
     private bool displayMaterialUI = true;
@@ -61,60 +45,18 @@ public class MergegameManager : MonoBehaviour
     private int bonusRevision;
     private readonly Dictionary<MergeItemMaterial, int> roundBonuses = new Dictionary<MergeItemMaterial, int>();
     public IReadOnlyList<MergeItemObject> ActiveItems => active;
-    public Sprite CurrentMaterialIcon => currentMaterial?.mergeItem != null && currentMaterial.mergeItem.item != null ? currentMaterial.mergeItem.item.icon : null;
-    public string CurrentMaterialName => DisplayName(currentMaterial?.mergeItem != null ? currentMaterial.mergeItem.item : null);
-    public int CurrentMaterialCount => currentMaterial != null ? Math.Max(0, currentMaterial.count) : 0;
-    public int CurrentDefaultMaterialCount => currentMaterial != null ? Math.Max(0, currentMaterial.defaultCount) : 0;
     public string LastMessage => lastMessage;
     public bool CanOperate => isActiveAndEnabled && !clearing && Time.timeScale > 0f;
     private struct Contact { public MergeItemObject a, b; public int aLife, bLife; }
-
-    private void Awake()
-    {
-        if (settingsSource == null || settingsSource == this) return;
-        var source = settingsSource;
-        itemSeries = source.itemSeries;
-        mergeRecipe = new List<MergeSeries>();
-        foreach (var series in source.mergeRecipe)
-            if (series != null) mergeRecipe.Add(new MergeSeries { tier = series.tier,
-                itemRecipeDatas = new List<ItemRecipeData>(series.itemRecipeDatas) });
-        mergeItems = new List<MergeItem>(source.mergeItems);
-        mergeMaterials = new List<MergeItemMaterial>();
-        foreach (var material in source.mergeMaterials)
-            if (material != null) mergeMaterials.Add(new MergeItemMaterial(material.mergeItem,
-                material.mergeUI, material.count, material.defaultCount));
-        currentMaterial = null;
-        objectPool = source.objectPool;
-        dropInterval = source.dropInterval;
-        maximumActiveItems = source.maximumActiveItems;
-        prewarmCount = source.prewarmCount;
-        resultMergeDelay = source.resultMergeDelay;
-        dropOffset = source.dropOffset;
-        automaticDrop = source.automaticDrop;
-        isFeeding = source.isFeeding;
-        cycleAutomaticMaterials = source.cycleAutomaticMaterials;
-        dropBinding = source.dropBinding;
-        nextMaterialBinding = source.nextMaterialBinding;
-        logActions = source.logActions;
-    }
 
     private void OnEnable()
     {
         nextAutomaticDropAt = Time.time + AutomaticInterval;
         EnsureSelection();
-        if (dropInput == null)
-        {
-            dropInput = new InputAction("Drop merge item", InputActionType.Button, dropBinding);
-            nextMaterialInput = new InputAction("Next merge material", InputActionType.Button, nextMaterialBinding);
-            dropInput.performed += _ => TryDropCurrent();
-            nextMaterialInput.performed += _ => SelectNextMaterial();
-        }
-        ApplyInputState();
     }
     private void Start()
     {
         PrewarmItems();
-        Notify(onCurrentMaterialChanged);
         if(GameSession.Instance == null)
             RefreshUI();
     }
@@ -147,7 +89,6 @@ public class MergegameManager : MonoBehaviour
     private float AutomaticInterval => Mathf.Max(.01f, EffectStatUtility.Safe(dropInterval, 0f, 600f, .5f));
     private void Update()
     {
-        ApplyInputState();
         if (!automaticDrop || !isFeeding || !CanOperate ||
             (GameInputManager.instance != null && GameInputManager.instance.IsBlocked(GameInputBlockType.Gameplay)))
         {
@@ -160,10 +101,7 @@ public class MergegameManager : MonoBehaviour
         EnsureSelection();
         var usedMaterial = currentMaterial;
         if (TryDropCurrent() && cycleAutomaticMaterials)
-        {
-            currentMaterial = MergeTree.NextMaterial(mergeMaterials, usedMaterial);
-            Notify(onCurrentMaterialChanged);
-        }
+            currentMaterial = NextFeedingMaterial(usedMaterial);
     }
     public void SetFeeding(bool value)
     {
@@ -180,49 +118,34 @@ public class MergegameManager : MonoBehaviour
         displayMaterialUI = value;
         if (value) RefreshUI();
     }
-    private void ApplyInputState()
+    private void OnDisable() => ClearItems();
+
+    // 재고와 토글을 함께 검사합니다. 토글이 꺼졌거나 연결되지 않은 재료는 투입하지 않습니다.
+    private static bool CanFeedMaterial(MergeItemMaterial material)
+        => MergeTree.IsAvailable(material) && material.mergeUI != null &&
+            material.mergeUI.toggle != null && material.mergeUI.toggle.isOn;
+
+    private MergeItemMaterial NextFeedingMaterial(MergeItemMaterial current)
     {
-        if (dropInput == null) return;
-        if (acceptKeyboardInput && isActiveAndEnabled) { dropInput.Enable(); nextMaterialInput.Enable(); }
-        else { dropInput.Disable(); nextMaterialInput.Disable(); }
+        if (mergeMaterials == null || mergeMaterials.Count == 0) return null;
+        int start = mergeMaterials.IndexOf(current);
+        for (int offset = 1; offset <= mergeMaterials.Count; offset++)
+        {
+            var candidate = mergeMaterials[(start + offset) % mergeMaterials.Count];
+            if (CanFeedMaterial(candidate)) return candidate;
+        }
+        return null;
     }
-    public void SetKeyboardInputEnabled(bool value) { acceptKeyboardInput = value; ApplyInputState(); }
-    private void OnDisable()
-    {
-        dropInput?.Disable(); nextMaterialInput?.Disable(); ClearItems();
-    }
-    private void OnDestroy() { dropInput?.Dispose(); nextMaterialInput?.Dispose(); }
+
     private void EnsureSelection()
     {
         if (mergeMaterials != null && currentMaterial != null)
         {
-            if (mergeMaterials.Contains(currentMaterial) && MergeTree.IsAvailable(currentMaterial)) return;
+            if (mergeMaterials.Contains(currentMaterial) && CanFeedMaterial(currentMaterial)) return;
             foreach (var material in mergeMaterials)
-                if (MergeTree.IsAvailable(material) && material.mergeItem == currentMaterial.mergeItem) { currentMaterial = material; return; }
+                if (CanFeedMaterial(material) && material.mergeItem == currentMaterial.mergeItem) { currentMaterial = material; return; }
         }
-        currentMaterial = MergeTree.NextMaterial(mergeMaterials, null);
-    }
-    public bool SelectMaterial(int index)
-    {
-        if (mergeMaterials == null || index < 0 || index >= mergeMaterials.Count || !MergeTree.IsAvailable(mergeMaterials[index])) return false;
-        currentMaterial = mergeMaterials[index]; SelectionChanged(); return true;
-    }
-    // Unity Button/Dropdown에는 반환값이 없는 메서드를 연결합니다.
-    public void DropCurrent() => TryDropCurrent();
-    public void NextMaterial() => SelectNextMaterial();
-    public void SetMaterial(int index) => SelectMaterial(index);
-
-    public bool SelectNextMaterial()
-    {
-        currentMaterial = MergeTree.NextMaterial(mergeMaterials, currentMaterial);
-        SelectionChanged(); return currentMaterial != null;
-    }
-    private void SelectionChanged()
-    {
-        Notify(onCurrentMaterialChanged);
-
-
-        Report($"선택 재료: {CurrentMaterialName}, 남은 개수: {CurrentMaterialCount}");
+        currentMaterial = NextFeedingMaterial(currentMaterial);
     }
     public MergeItemMaterial GetDefinition(ItemData item)
     {
@@ -284,8 +207,6 @@ public class MergegameManager : MonoBehaviour
         }
         EnsureSelection();
         RefreshUI();
-        Notify(onMaterialsChanged);
-        Notify(onCurrentMaterialChanged);
     }
     public bool TryDropCurrent()
     {
@@ -296,7 +217,7 @@ public class MergegameManager : MonoBehaviour
         active.RemoveAll(piece => piece == null || !piece.IsLive);
         if (active.Count >= Mathf.Max(1, maximumActiveItems)) return Reject("최대 활성 아이템 개수에 도달했습니다.");
         EnsureSelection();
-        if (!MergeTree.IsAvailable(currentMaterial)) return Reject("사용할 재료가 없습니다.");
+        if (!CanFeedMaterial(currentMaterial)) return Reject("토글이 켜진 사용 가능한 재료가 없습니다.");
         var material = currentMaterial;
         if (!TryGetPrefab(material.mergeItem, out _))
             return Reject("선택 재료의 MergeItem → Prefab에 활성 MergeItemObject가 있는 프리팹을 연결하세요.");
@@ -333,8 +254,7 @@ public class MergegameManager : MonoBehaviour
             nextDropAt = Time.time + EffectStatUtility.Safe(dropInterval, 0f, 600f, 0.5f);
             committed = true;
             RefreshUI();
-            Notify(onBoardChanged); Notify(onMaterialsChanged);
-            EnsureSelection(); Notify(onCurrentMaterialChanged);
+            EnsureSelection();
             Report($"낙하: {DisplayName(material.mergeItem.item)}, 해당 재료 잔량: {material.count}");
             return true;
         }
@@ -413,7 +333,6 @@ public class MergegameManager : MonoBehaviour
     {
         if (!CanOperate || piece == null || piece.Owner != this || piece.LifeId != expectedLifeId || !piece.CanSelect) return false;
         piece.ReturnToPool();
-        Notify(onBoardChanged);
         return true;
     }
     public void QueueContact(MergeItemObject a, MergeItemObject b)
@@ -457,7 +376,7 @@ public class MergegameManager : MonoBehaviour
             if (result == null || !result.IsLive || before != revision || !CanOperate || a.LifeId != aLife || b.LifeId != bLife || !a.IsLive || !b.IsLive) return;
             a.ReturnToPool(); b.ReturnToPool();
             result.Velocity = velocity; result.SetSimulated(true); committed = true;
-            Notify(onBoardChanged); Notify(onItemMerged);
+
             Report($"합성: {DisplayName(recipe.resultItem)}");
         }
         finally
@@ -475,7 +394,7 @@ public class MergegameManager : MonoBehaviour
         {
             revision++; contacts.Clear(); queued.Clear();
             foreach (var piece in active.ToArray()) if (piece != null) piece.ReturnToPool();
-            active.Clear(); nextDropAt = 0f; Notify(onBoardChanged);
+            active.Clear(); nextDropAt = 0f;
         }
         finally { clearing = false; }
     }
@@ -491,10 +410,5 @@ public class MergegameManager : MonoBehaviour
     {
         lastMessage = message;
         if (logActions) Debug.Log("[MergeGame] " + message, this);
-    }
-    private void Notify(UnityEvent callback)
-    {
-        try { callback?.Invoke(); }
-        catch (Exception exception) { Debug.LogException(exception, this); }
     }
 }

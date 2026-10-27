@@ -7,6 +7,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
+using UnityEngine.UI;
 
 public class GameRunAccountingTests
 {
@@ -73,14 +74,18 @@ public class GameRunAccountingTests
         var board = host.AddComponent<MergegameManager>();
         board.objectPool = pool;
         board.spawnPoint = host.transform;
-        board.acceptKeyboardInput = false;
         board.dropInterval = 0f;
         board.prewarmCount = 0;
         board.dropOffset = 0f;
         board.logActions = false;
         board.itemSeries = item.series;
         board.mergeItems.Add(definition);
-        board.mergeMaterials.Add(new MergeItemMaterial(definition, null, 0, bonus));
+        var materialHost = Host("Material toggle");
+        materialHost.AddComponent<RectTransform>();
+        var materialUI = materialHost.AddComponent<MergeUI>();
+        materialUI.toggle = materialHost.AddComponent<Toggle>();
+        materialUI.toggle.isOn = true;
+        board.mergeMaterials.Add(new MergeItemMaterial(definition, materialUI, 0, bonus));
         var bridge = host.AddComponent<GameItemSessionBridge>();
         bridge.boards = new[] { board };
         host.SetActive(true);
