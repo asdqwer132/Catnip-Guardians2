@@ -37,6 +37,56 @@ public static class MergeRecipeGraphEditing
         graph.items.Add(node); EditorUtility.SetDirty(graph);
         return node;
     }
+    public static int ImportItemData(MergeRecipeGraphAsset graph, IEnumerable<ItemData> items, Vector2 position)
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("플레이를 종료한 뒤 가져오세요.");
+        string folder = Folder(graph);
+        var incoming = new List<ItemData>();
+        var unique = new HashSet<ItemData>();
+        foreach (var data in items)
+        {
+            if (data == null || !unique.Add(data)) continue;
+            if (!AssetDatabase.Contains(data)) throw new InvalidOperationException("Project에 저장된 ItemData 에셋을 넣으세요.");
+            incoming.Add(data);
+        }
+        if (incoming.Count == 0) return 0;
+        Upgrade(graph);
+        var existing = new Dictionary<ItemData, MergeItem>();
+        var present = new HashSet<ItemData>();
+        foreach (var node in graph.items)
+        {
+            if (node.item != null && node.item.item != null)
+            { present.Add(node.item.item); existing[node.item.item] = node.item; }
+            // 기존 노드와 연결을 움직이지 않고, 새 묶음을 그 아래에 배치합니다.
+            position.y = Mathf.Max(position.y, node.position.y + 180 + node.ingredients.Count * 30);
+        }
+        // 대량 입력에서도 프로젝트 에셋 검색은 한 번만 합니다.
+        foreach (string guid in AssetDatabase.FindAssets("t:MergeItem"))
+        {
+            var definition = AssetDatabase.LoadAssetAtPath<MergeItem>(AssetDatabase.GUIDToAssetPath(guid));
+            if (definition != null && definition.item != null && !existing.ContainsKey(definition.item))
+                existing.Add(definition.item, definition);
+        }
+        Undo.IncrementCurrentGroup(); int group = Undo.GetCurrentGroup();
+        Undo.SetCurrentGroupName("Import ItemData as merge nodes");
+        int added = 0;
+        try
+        {
+            foreach (var data in incoming)
+            {
+                if (present.Contains(data)) continue;
+                if (!existing.TryGetValue(data, out var definition))
+                {
+                    definition = CreateDefinition(folder, data);
+                    existing.Add(data, definition);
+                }
+                AddItem(graph, definition, position + new Vector2(added % 5 * 300, added / 5 * 190));
+                present.Add(data); added++;
+            }
+        }
+        finally { Undo.CollapseUndoOperations(group); }
+        return added;
+    }
     public static void AddInput(MergeRecipeGraphAsset graph, MergeGraphItemNode node)
     {
         Undo.RecordObject(graph, "Add merge ingredient input");
@@ -77,8 +127,12 @@ public static class MergeRecipeGraphEditing
             var definition = AssetDatabase.LoadAssetAtPath<MergeItem>(AssetDatabase.GUIDToAssetPath(guid));
             if (definition != null && definition.item == data) return definition;
         }
+        return CreateDefinition(Folder(graph), data);
+    }
+    private static MergeItem CreateDefinition(string folder, ItemData data)
+    {
         var item = ScriptableObject.CreateInstance<MergeItem>(); item.name = data.name + " Merge"; item.item = data;
-        AssetDatabase.CreateAsset(item, AssetDatabase.GenerateUniqueAssetPath(Folder(graph) + "/" + SafeName(item.name) + ".asset"));
+        AssetDatabase.CreateAsset(item, AssetDatabase.GenerateUniqueAssetPath(folder + "/" + SafeName(item.name) + ".asset"));
         return item;
     }
     public static void ImportRecipes(MergeRecipeGraphAsset graph, IEnumerable<ItemRecipeData> recipes)

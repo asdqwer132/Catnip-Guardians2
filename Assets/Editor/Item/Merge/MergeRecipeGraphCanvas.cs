@@ -63,7 +63,7 @@ internal sealed class MergeRecipeGraphCanvas : VisualElement
         RegisterCallback<DragUpdatedEvent>(evt =>
         {
             foreach (var asset in DragAndDrop.objectReferences)
-                if (asset is MergeItem || asset is ItemRecipeData || asset is MergeRecipeBook)
+                if (asset is ItemData || asset is MergeItem || asset is ItemRecipeData || asset is MergeRecipeBook)
                 { DragAndDrop.visualMode = DragAndDropVisualMode.Link; evt.StopPropagation(); break; }
         });
         RegisterCallback<DragPerformEvent>(evt => { DragAndDrop.AcceptDrag(); import(DragAndDrop.objectReferences); evt.StopPropagation(); });

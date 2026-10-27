@@ -51,7 +51,7 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
         graphField.RegisterValueChangedCallback(evt => { graph = evt.newValue as MergeRecipeGraphAsset; selected = null; Rebuild(); });
         toolbar.Add(graphField); toolbar.Add(new ToolbarButton(NewGraph) { text = "새 그래프" });
         toolbar.Add(new ToolbarButton(() => CreateItem(canvas.Center)) { text = "+ 머지 아이템" });
-        toolbar.Add(new ToolbarButton(() => ImportAssets(Selection.objects)) { text = "선택 에셋 가져오기" });
+        toolbar.Add(new ToolbarButton(() => ImportAssets(Selection.objects)) { text = "선택 에셋 가져오기", tooltip = "ItemData 여러 개를 선택하면 각각 MergeItem으로 만들어 추가합니다." });
         toolbar.Add(new ToolbarButton(() => Run(() => MergeRecipeGraphEditing.Save(graph))) { text = "그래프 저장" });
         toolbar.Add(new ToolbarButton(() => Run(() => { MergeRecipeGraphEditing.Arrange(graph); Rebuild(); canvas.FrameAll(); })) { text = "자동 정렬" });
         toolbar.Add(new ToolbarButton(() => canvas.FrameAll()) { text = "전체 보기" });
@@ -114,17 +114,22 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
     private void ImportAssets(Object[] assets) => Run(() =>
     {
         bool empty = graph.items.Count == 0;
-        var recipes = new List<ItemRecipeData>(); int count = 0;
+        var recipes = new List<ItemRecipeData>();
+        var data = new List<ItemData>(); int count = 0;
         foreach (var asset in assets)
         {
-            if (asset is MergeItem item) { MergeRecipeGraphEditing.AddItem(graph, item, canvas.Center + new Vector2(0, count++ * 40)); }
+            if (asset is ItemData itemData) data.Add(itemData);
+            else if (asset is MergeItem item) { MergeRecipeGraphEditing.AddItem(graph, item, canvas.Center + new Vector2(0, count++ * 40)); }
             else if (asset is ItemRecipeData recipe) { recipes.Add(recipe); count++; }
             else if (asset is MergeRecipeBook book) { MergeRecipeGraphEditing.ImportBook(graph, book); count++; }
         }
         if (recipes.Count > 0) MergeRecipeGraphEditing.ImportRecipes(graph, recipes);
-        if (empty) MergeRecipeGraphEditing.Arrange(graph);
+        int added = data.Count > 0 ? MergeRecipeGraphEditing.ImportItemData(graph, data, canvas.Center) : 0;
+        count += added;
+        if (empty && data.Count == 0) MergeRecipeGraphEditing.Arrange(graph);
         Rebuild(); if (count > 0) canvas.FrameAll();
-        SetStatus(count > 0 ? "연결을 불러왔습니다." : "MergeItem / 레시피 / 레시피북을 선택하거나 드래그하세요.");
+        SetStatus(data.Count > 0 ? $"ItemData에서 {added}개 노드를 추가했습니다. 이미 있는 항목은 유지합니다." :
+            count > 0 ? "연결을 불러왔습니다." : "ItemData / MergeItem / 레시피 / 레시피북을 선택하거나 드래그하세요.");
     });
     private void Rebuild()
     {

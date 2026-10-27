@@ -70,6 +70,75 @@ public class MergeRecipeGraphEditorTests
         Assert.That(graph.recipeBook, Is.Null);
     }
     [Test]
+    public void ThirtyItemDataAssetsBecomeThirtyReadyGraphNodesWithoutChangingSourceAssets()
+    {
+        var data = new List<ItemData>(); var before = new List<string>();
+        for (int i = 0; i < 30; i++)
+        {
+            var item = Asset<ItemData>("Input " + i.ToString("D2")); data.Add(item);
+            before.Add(EditorJsonUtility.ToJson(item));
+        }
+        Assert.That(MergeRecipeGraphEditing.ImportItemData(graph, data, Vector2.zero), Is.EqualTo(30));
+        Assert.That(graph.items.Count, Is.EqualTo(30));
+        Assert.That(AssetDatabase.FindAssets("t:MergeItem", new[] { folder }).Length, Is.EqualTo(30));
+        Assert.That(AssetDatabase.FindAssets("t:ItemData", new[] { folder }).Length, Is.EqualTo(30));
+        var positions = new HashSet<Vector2>();
+        for (int i = 0; i < 30; i++)
+        {
+            Assert.That(graph.items[i].item.item, Is.SameAs(data[i]));
+            Assert.That(graph.items[i].item.prefab, Is.Null);
+            Assert.That(positions.Add(graph.items[i].position), Is.True);
+            Assert.That(EditorJsonUtility.ToJson(data[i]), Is.EqualTo(before[i]));
+        }
+        var result = Connect(graph.items[2].item, graph.items[0].item, graph.items[1].item);
+        result.tier = 3;
+        var book = MergeRecipeGraphEditing.Export(graph);
+        Assert.That(book.TryGetRecipe(data[0], data[1], out var recipe), Is.True);
+        Assert.That(recipe.resultItem, Is.SameAs(data[2])); Assert.That(book.tiers[0].tier, Is.EqualTo(3));
+        string path = AssetDatabase.GetAssetPath(graph); AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
+        Assert.That(AssetDatabase.LoadAssetAtPath<MergeRecipeGraphAsset>(path).items.Count, Is.EqualTo(30));
+    }
+    [Test]
+    public void BatchReimportReusesDefinitionsAndKeepsExistingConnectionsVisualsAndLayout()
+    {
+        var a = Item(); var b = Item(); var result = Item(); var node = Connect(result, a, b);
+        node.tier = 7; node.position = new Vector2(999, 456);
+        var data = Asset<ItemData>("Existing external data");
+        var definition = Asset<MergeItem>("Existing external definition"); definition.item = data; definition.radius = 1.7f;
+        var prefab = Host("Authored visual"); prefab.AddComponent<MergeItemObject>();
+        definition.prefab = PrefabUtility.SaveAsPrefabAsset(prefab, folder + "/Authored.prefab");
+        string before = EditorJsonUtility.ToJson(definition);
+        var fresh = Asset<ItemData>("New material");
+        var incoming = new[] { a.item, data, fresh, data, null, fresh };
+        Assert.That(MergeRecipeGraphEditing.ImportItemData(graph, incoming, Vector2.zero), Is.EqualTo(2));
+        Assert.That(graph.items[3].item, Is.SameAs(definition)); Assert.That(graph.items[4].item.item, Is.SameAs(fresh));
+        Assert.That(EditorJsonUtility.ToJson(definition), Is.EqualTo(before));
+        Assert.That(node.ingredients, Is.EqualTo(new[] { a, b })); Assert.That(node.tier, Is.EqualTo(7));
+        Assert.That(node.position, Is.EqualTo(new Vector2(999, 456)));
+        Assert.That(graph.items[3].position.y, Is.GreaterThan(node.position.y + 200));
+        Assert.That(MergeRecipeGraphEditing.ImportItemData(graph, incoming, Vector2.zero), Is.Zero);
+        Assert.That(graph.items.Count, Is.EqualTo(5));
+        Assert.That(AssetDatabase.FindAssets("t:MergeItem", new[] { folder }).Length, Is.EqualTo(5));
+    }
+    [Test]
+    public void BatchImportChecksAllInputsBeforeCreatingAssetsAndHandlesIdenticalDisplayNames()
+    {
+        var first = Asset<ItemData>("First"); var second = Asset<ItemData>("Second");
+        first.name = second.name = "Ore / A:B";
+        var transient = ScriptableObject.CreateInstance<ItemData>();
+        try
+        {
+            Assert.Throws<InvalidOperationException>(() => MergeRecipeGraphEditing.ImportItemData(graph, new[] { first, transient }, Vector2.zero));
+            Assert.That(graph.items, Is.Empty);
+            Assert.That(AssetDatabase.FindAssets("t:MergeItem", new[] { folder }), Is.Empty);
+        }
+        finally { Object.DestroyImmediate(transient); }
+        Assert.That(MergeRecipeGraphEditing.ImportItemData(graph, new[] { first, second }, Vector2.zero), Is.EqualTo(2));
+        Assert.That(graph.items[0].item, Is.Not.SameAs(graph.items[1].item));
+        Assert.That(graph.items[0].item.item, Is.SameAs(first)); Assert.That(graph.items[1].item.item, Is.SameAs(second));
+        Assert.That(AssetDatabase.GetAssetPath(graph.items[0].item), Is.Not.EqualTo(AssetDatabase.GetAssetPath(graph.items[1].item)));
+    }
+    [Test]
     public void ArbitraryInputsExtractRecipesFirstThenGroupByResultNodeTierAndKeepGuids()
     {
         var a = Item(); var b = Item(); var c = Item(); var result = Item(); var next = Item();
