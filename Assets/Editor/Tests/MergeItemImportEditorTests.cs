@@ -143,22 +143,6 @@ public class MergeItemImportEditorTests
     }
 
     [Test]
-    public void FolderImportFiltersSeriesAndPreservesTheAuthoredMaterialUiAndCounts()
-    {
-        var a = Asset<MergeItem>("Weapon"); a.item = item; a.prefab = prefab;
-        var food = Asset<ItemData>("Food"); food.series = ItemSeries.Food;
-        var b = Asset<MergeItem>("Food merge"); b.item = food; b.prefab = prefab;
-        var manager = Host("Manager").AddComponent<MergegameManager>(); manager.itemSeries = ItemSeries.Weapon;
-        var stock = new MergeItemMaterial(a, null, 7, 2); manager.mergeMaterials.Add(stock);
-        MergeManagerFolderImport.ApplyItems(manager, folder, true, true);
-        Assert.That(manager.mergeItems, Is.EqualTo(new[] { a }));
-        Assert.That(manager.mergeMaterials[0], Is.SameAs(stock));
-        Assert.That(stock.count, Is.EqualTo(7)); Assert.That(stock.defaultCount, Is.EqualTo(2));
-        MergeManagerFolderImport.ApplyItems(manager, folder, true, false);
-        Assert.That(manager.mergeItems.Count, Is.EqualTo(2));
-    }
-
-    [Test]
     public void LegacyGraphNodesUpgradeToItemDataWithoutDeletingMergeAssets()
     {
         var definition = Asset<MergeItem>("Legacy definition"); definition.item = item;

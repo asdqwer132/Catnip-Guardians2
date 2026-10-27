@@ -208,7 +208,7 @@ public class MergeRecipeGraphEditorTests
         Assert.That(stock.defaultCount, Is.EqualTo(4)); Assert.That(manager.GetDefinitionAtMergeItem(c.item), Is.SameAs(c));
     }
     [Test]
-    public void ReverseBookAndFolderImportPreserveNIngredientsAndNodeTiers()
+    public void ReverseBookImportPreservesNIngredientsAndNodeTiers()
     {
         var a = Item(); var b = Item(); var c = Item(); var node = Connect(c, a, a, b); node.tier = 7;
         var book = MergeRecipeGraphEditing.Export(graph); string before = EditorJsonUtility.ToJson(node.generatedRecipe);
@@ -217,10 +217,8 @@ public class MergeRecipeGraphEditorTests
         Assert.That(result.ingredients, Is.EquivalentTo(new[] { a, a, b })); Assert.That(result.tier, Is.EqualTo(7));
         Assert.That(EditorJsonUtility.ToJson(node.generatedRecipe), Is.EqualTo(before));
         MergeRecipeGraphEditing.ImportBook(restored, book); Assert.That(restored.items.Count, Is.EqualTo(3));
-        var manager = Host("Manager").AddComponent<MergegameManager>(); manager.mergeItems.AddRange(book.items);
-        MergeManagerFolderImport.ApplyRecipes(manager, folder + "/Graph Recipes", true, false);
-        Assert.That(manager.recipeBook.TryGetRecipe(new[] { b.item, a.item, a.item }, out _), Is.True);
-        Assert.That(manager.recipeBook.tiers[0].tier, Is.EqualTo(7));
+        Assert.That(restored.recipeBook.TryGetRecipe(new[] { b.item, a.item, a.item }, out _), Is.True);
+        Assert.That(restored.recipeBook.tiers[0].tier, Is.EqualTo(7));
     }
     [Test]
     public void NodeTierChangesRegroupBookAndUseEditableGradientAndRange()

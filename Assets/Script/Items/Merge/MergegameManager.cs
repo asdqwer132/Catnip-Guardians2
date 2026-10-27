@@ -72,7 +72,6 @@ public class MergegameManager : MonoBehaviour
     public void RefreshUI()
     {
         if (!displayMaterialUI || mergeMaterials == null) return;
-        Debug.Log("re");
         foreach(var material in mergeMaterials)
         {
             material?.SetCountText();
