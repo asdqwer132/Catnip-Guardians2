@@ -8,6 +8,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+  - component: {fileID: 990400000002}
   - component: {fileID: 7399232087317575506}
   - component: {fileID: 3904717262373032437}
   m_Layer: 0
@@ -54,6 +55,7 @@ MonoBehaviour:
   - {fileID: 7152976627827781681}
   bottomWall: {fileID: 2613701511448968909}
   backFrame: {fileID: 4482963995737655858}
+  applyOnAwake: 0
   spritePath: MergeBox
   series: 01-weapon
 --- !u!1 &3268827651523116639
@@ -114,7 +116,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -269,7 +271,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -515,3 +517,16 @@ SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 1329625327005052698, guid: fa262bdd77bd77842872b539f03ffe8d, type: 3}
   m_PrefabInstance: {fileID: 8158197508542504747}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &990400000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1661963024455000052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2ad2411312047828f3731d8f6f25d34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MergeBoxBindings
+  spawnPoint: {fileID: 6512285261805217502}

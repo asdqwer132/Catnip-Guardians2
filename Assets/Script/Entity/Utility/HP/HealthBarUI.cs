@@ -71,6 +71,14 @@ public class HealthBarUI : MonoBehaviour
         ApplyPanelVisible();
     }
 
+    public void SetEnemyManager(EnemyManager target)
+    {
+        valueSource = HealthBarValueSource.EnemyPopulation;
+        enemyManager = target;
+        Subscribe();
+        Refresh();
+    }
+
     private void Subscribe()
     {
         Unsubscribe();

@@ -6,6 +6,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
+using UnityEngine.UI;
 
 public class GeneralUIConnectionTests
 {
@@ -47,6 +48,62 @@ public class GeneralUIConnectionTests
         serialized.ApplyModifiedPropertiesWithoutUndo();
         host.SetActive(true);
         return sender;
+    }
+
+    private ImageFillUI Fill(string name)
+    {
+        var host = Host(name);
+        host.AddComponent<RectTransform>();
+        var image = host.AddComponent<Image>();
+        image.type = Image.Type.Filled;
+        var fill = host.AddComponent<ImageFillUI>();
+        fill.fillImage = image;
+        host.SetActive(true);
+        return fill;
+    }
+
+    [UnityTest]
+    public IEnumerator GeneralGaugesBindLateBattleAndRefreshAfterBattleReplacement()
+    {
+        var hp = Fill("General HP").gameObject.AddComponent<HealthBarUI>();
+        hp.hpFill = hp.GetComponent<ImageFillUI>();
+        var grow = Fill("General Grow");
+        var host = Host("General gauge receiver");
+        var receiver = host.AddComponent<GeneralBattleGaugeUI>();
+        receiver.hp = hp;
+        receiver.grow = grow;
+        host.SetActive(true);
+
+        var sender = Sender(out _);
+        sender.gameObject.SetActive(false);
+        var enemies = sender.gameObject.AddComponent<EnemyManager>();
+        enemies.maxAliveEnemyCount = 4;
+        var growth = sender.gameObject.AddComponent<GrowManager>();
+        sender.GetData().enemyManager = enemies;
+        sender.GetData().growManager = growth;
+        growth.SetGrowth(30f);
+        sender.gameObject.SetActive(true);
+        yield return null;
+        yield return null;
+        Assert.That(grow.fillImage.fillAmount, Is.EqualTo(.3f).Within(.001f));
+        growth.SetGrowth(65f);
+        Assert.That(grow.fillImage.fillAmount, Is.EqualTo(.65f).Within(.001f));
+        Assert.That(hp.enemyManager, Is.SameAs(enemies));
+        sender.gameObject.SetActive(false);
+        Assert.That(grow.fillImage.fillAmount, Is.Zero);
+        Assert.That(hp.enemyManager, Is.Null);
+        growth.SetGrowth(90f);
+        Assert.That(grow.fillImage.fillAmount, Is.Zero, "Unloaded sources must be unsubscribed.");
+
+        var replacement = Sender(out _);
+        replacement.gameObject.SetActive(false);
+        var nextGrowth = replacement.gameObject.AddComponent<GrowManager>();
+        nextGrowth.SetGrowth(20f);
+        replacement.GetData().growManager = nextGrowth;
+        replacement.gameObject.SetActive(true);
+        yield return null;
+        yield return null;
+        Assert.That(grow.fillImage.fillAmount, Is.EqualTo(.2f).Within(.001f));
     }
 
     [UnityTest]

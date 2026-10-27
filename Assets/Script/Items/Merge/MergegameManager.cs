@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+[DefaultExecutionOrder(-200)]
 public class MergegameManager : MonoBehaviour
 {
+    [Tooltip("연결하면 시작할 때 이 매니저의 레시피·재료·투입 설정을 복사합니다. 재고 객체는 공유하지 않습니다.")]
+    public MergegameManager settingsSource;
     public ItemSeries itemSeries;
     public List<MergeSeries> mergeRecipe = new List<MergeSeries>();
     public List<MergeItem> mergeItems = new List<MergeItem>();
@@ -22,6 +25,12 @@ public class MergegameManager : MonoBehaviour
     [Min(0)] public int prewarmCount = 4;
     [Min(0f)] public float resultMergeDelay = 0.1f;
     [Min(0f)] public float dropOffset = 0.02f;
+
+    [Header("자동 투입")]
+    public bool automaticDrop;
+    public bool isFeeding = true;
+    [Tooltip("자동 투입이 성공하면 다음 종류를 선택합니다. 소진된 종류는 건너뜁니다.")]
+    public bool cycleAutomaticMaterials = true;
 
     [Header("테스트 입력 · Input System")]
     public bool acceptKeyboardInput = true;
@@ -42,6 +51,8 @@ public class MergegameManager : MonoBehaviour
     private readonly Collider2D[] overlap = new Collider2D[32];
     private InputAction dropInput, nextMaterialInput;
     private float nextDropAt;
+    private float nextAutomaticDropAt;
+    private bool displayMaterialUI = true;
     private uint serial;
     private int revision;
     private bool dropping, processing, clearing;
@@ -58,8 +69,38 @@ public class MergegameManager : MonoBehaviour
     public bool CanOperate => isActiveAndEnabled && !clearing && Time.timeScale > 0f;
     private struct Contact { public MergeItemObject a, b; public int aLife, bLife; }
 
+    private void Awake()
+    {
+        if (settingsSource == null || settingsSource == this) return;
+        var source = settingsSource;
+        itemSeries = source.itemSeries;
+        mergeRecipe = new List<MergeSeries>();
+        foreach (var series in source.mergeRecipe)
+            if (series != null) mergeRecipe.Add(new MergeSeries { tier = series.tier,
+                itemRecipeDatas = new List<ItemRecipeData>(series.itemRecipeDatas) });
+        mergeItems = new List<MergeItem>(source.mergeItems);
+        mergeMaterials = new List<MergeItemMaterial>();
+        foreach (var material in source.mergeMaterials)
+            if (material != null) mergeMaterials.Add(new MergeItemMaterial(material.mergeItem,
+                material.mergeUI, material.count, material.defaultCount));
+        currentMaterial = null;
+        objectPool = source.objectPool;
+        dropInterval = source.dropInterval;
+        maximumActiveItems = source.maximumActiveItems;
+        prewarmCount = source.prewarmCount;
+        resultMergeDelay = source.resultMergeDelay;
+        dropOffset = source.dropOffset;
+        automaticDrop = source.automaticDrop;
+        isFeeding = source.isFeeding;
+        cycleAutomaticMaterials = source.cycleAutomaticMaterials;
+        dropBinding = source.dropBinding;
+        nextMaterialBinding = source.nextMaterialBinding;
+        logActions = source.logActions;
+    }
+
     private void OnEnable()
     {
+        nextAutomaticDropAt = Time.time + AutomaticInterval;
         EnsureSelection();
         if (dropInput == null)
         {
@@ -79,7 +120,7 @@ public class MergegameManager : MonoBehaviour
     }
     public void RefreshUI()
     {
-        if (mergeMaterials == null) return;
+        if (!displayMaterialUI || mergeMaterials == null) return;
         foreach(var material in mergeMaterials)
         {
             material?.SetCountText();
@@ -103,7 +144,42 @@ public class MergegameManager : MonoBehaviour
         var component = prefab.GetComponent<MergeItemObject>();
         return component != null && component.enabled;
     }
-    private void Update() => ApplyInputState();
+    private float AutomaticInterval => Mathf.Max(.01f, EffectStatUtility.Safe(dropInterval, 0f, 600f, .5f));
+    private void Update()
+    {
+        ApplyInputState();
+        if (!automaticDrop || !isFeeding || !CanOperate ||
+            (GameInputManager.instance != null && GameInputManager.instance.IsBlocked(GameInputBlockType.Gameplay)))
+        {
+            nextAutomaticDropAt = Time.time + AutomaticInterval;
+            return;
+        }
+        if (Time.time < nextAutomaticDropAt) return;
+        // 막힌 투입구도 매 프레임 재시도하지 않고 다음 주기까지 기다립니다.
+        nextAutomaticDropAt = Time.time + AutomaticInterval;
+        EnsureSelection();
+        var usedMaterial = currentMaterial;
+        if (TryDropCurrent() && cycleAutomaticMaterials)
+        {
+            currentMaterial = MergeTree.NextMaterial(mergeMaterials, usedMaterial);
+            Notify(onCurrentMaterialChanged);
+        }
+    }
+    public void SetFeeding(bool value)
+    {
+        isFeeding = value;
+        nextAutomaticDropAt = Time.time + AutomaticInterval;
+    }
+    public void SetAutomaticDrop(bool value)
+    {
+        automaticDrop = value;
+        nextAutomaticDropAt = Time.time + AutomaticInterval;
+    }
+    public void SetMaterialUIEnabled(bool value)
+    {
+        displayMaterialUI = value;
+        if (value) RefreshUI();
+    }
     private void ApplyInputState()
     {
         if (dropInput == null) return;
@@ -213,6 +289,7 @@ public class MergegameManager : MonoBehaviour
     }
     public bool TryDropCurrent()
     {
+        if (!isFeeding) return Reject("투입이 중지되어 있습니다.");
         if (!CanOperate || dropping) return Reject("현재 생성할 수 없는 상태입니다.");
         if (objectPool == null || spawnPoint == null) return Reject("Object Pool / Spawn Point 연결을 확인하세요.");
         if (Time.time < nextDropAt) return Reject("다음 생성까지 대기 중입니다.");

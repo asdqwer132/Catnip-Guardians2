@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class GrowManager : MonoBehaviour
@@ -25,6 +26,7 @@ public class GrowManager : MonoBehaviour
     public float GrowProgress01 => maxGrowValue > 0f ? growValue / maxGrowValue : 0f;
     public float GrowProgressPercent => GrowProgress01 * 100f;
     public bool IsGrowing => isGrowing;
+    public event Action<float, float> GrowthChanged;
 
     private void Awake()
     {
@@ -133,6 +135,7 @@ public class GrowManager : MonoBehaviour
 
     private void UpdateUI()
     {
+        GrowthChanged?.Invoke(growValue, maxGrowValue);
         if (growthFill == null)
             return;
 

@@ -9373,6 +9373,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+  - component: {fileID: 990400000001}
   - component: {fileID: 910000200001}
   - component: {fileID: 910000660003}
   - component: {fileID: 910000200002}
@@ -9840,6 +9841,20 @@ MonoBehaviour:
   maskAlphaThreshold: 0.5
   maskEdgeSoftness: 0.01
   invertMask: 0
+--- !u!114 &990400000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 910000200000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b955b3fbab19488dbd321a94be285d34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GeneralBattleGaugeUI
+  hp: {fileID: 469317012}
+  grow: {fileID: 651321575}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

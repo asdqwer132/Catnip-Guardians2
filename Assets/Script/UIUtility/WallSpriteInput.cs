@@ -9,9 +9,11 @@ public class WallSpriteInput : MonoBehaviour
     [SerializeField] private string spritePath = "MergeBox";
     [SerializeField] private string series = "01-weapon";
 
+    [SerializeField] private bool applyOnAwake = true;
+
     private void Awake()
     {
-        ApplySprites();
+        if (applyOnAwake) ApplySprites();
     }
 
     [ContextMenu("Apply Sprites")]

@@ -1,4 +1,7 @@
 using NUnit.Framework;
+using System.Collections;
+using UnityEditor.SceneManagement;
+using UnityEngine.TestTools;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
@@ -311,6 +314,26 @@ public class ResponsiveSceneLayoutTests
             Assert.That(item.yMax, Is.EqualTo(area.anchorMin.y).Within(.00001f));
         }
         finally { Object.DestroyImmediate(host); Object.DestroyImmediate(areaHost); Object.DestroyImmediate(canvasHost); }
+    }
+
+}
+
+// 자동 맞춤은 런타임 Canvas 콜백으로 동작하므로 실제 플레이 수명주기에서 검사합니다.
+public class WorldBoxRuntimeLayoutTests
+{
+    [UnitySetUp]
+    public IEnumerator SetUp()
+    {
+        EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        yield return new EnterPlayMode();
+    }
+
+    [UnityTearDown]
+    public IEnumerator TearDown() => Exit();
+
+    private IEnumerator Exit()
+    {
+        yield return new ExitPlayMode();
     }
 
     [Test] public void WorldBoxKeepsItsFrameOccupancyWhenCameraAspectAndFrameSizeChange()

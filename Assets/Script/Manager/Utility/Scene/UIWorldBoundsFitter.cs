@@ -10,6 +10,8 @@ public sealed class UIWorldBoundsFitter : MonoBehaviour
     public RectTransform frame;
     public Camera worldCamera;
     public Transform worldRoot;
+    [Tooltip("상자를 제자리에 두고 카메라를 이동합니다. 나란히 놓인 상자 중 하나를 프레임에 표시할 때 사용합니다.")]
+    public bool positionCamera;
     [Tooltip("프레임 내부에서 월드 박스가 차지하는 정규화 영역입니다. X/Y 크기는 프레임 대비 비율로 유지됩니다.")]
     public Rect frameOccupancy = new Rect(.05f, .05f, .9f, .9f);
     public bool captureBoundsFromChildren = true;
@@ -91,15 +93,29 @@ public sealed class UIWorldBoundsFitter : MonoBehaviour
         scale.x *= desired.size.x / size.x; scale.y *= desired.size.y / size.y;
         Vector3 oldPosition = worldRoot.position, oldScale = worldRoot.localScale;
         Matrix4x4 previous = worldRoot.localToWorldMatrix;
-        if (worldRoot.localScale != scale) worldRoot.localScale = scale;
+        if ((worldRoot.localScale - scale).sqrMagnitude > .0000000001f) worldRoot.localScale = scale;
         Vector3 offset = desired.center - worldRoot.TransformPoint(localBounds.center); offset.z = 0;
-        if (offset.sqrMagnitude > .0000000001f) worldRoot.position += offset;
-        if (worldRoot.position == oldPosition && worldRoot.localScale == oldScale) return false;
+        bool cameraMoved = positionCamera && offset.sqrMagnitude > .0000000001f;
+        if (cameraMoved)
+        {
+            Vector3 canvasPosition = canvas.transform.position;
+            worldCamera.transform.position -= offset;
+            // 카메라를 옮기는 같은 프레임에 Camera Canvas도 따라가게 합니다.
+            // 다음 렌더까지 이전 월드 위치가 남으면 UI가 화면에서 밀리고 다시 카메라를 움직이는 순환이 생깁니다.
+            if (canvas.renderMode == RenderMode.ScreenSpaceCamera && uiCamera == worldCamera)
+                canvas.transform.position = canvasPosition - offset;
+        }
+        else if (!positionCamera && offset.sqrMagnitude > .0000000001f) worldRoot.position += offset;
+        bool rootChanged = worldRoot.position != oldPosition || worldRoot.localScale != oldScale;
+        if (!rootChanged && !cameraMoved) return false;
         Matrix4x4 change = worldRoot.localToWorldMatrix * previous.inverse;
         if (selections != null) foreach (var selection in selections)
             if (selection != null && selection.IsSelecting) selection.CancelSelection();
-        if (boards != null) foreach (var board in boards) if (board != null) board.RemapLayout(change);
-        LayoutChanged?.Invoke(change);
+        if (rootChanged)
+        {
+            if (boards != null) foreach (var board in boards) if (board != null) board.RemapLayout(change);
+            LayoutChanged?.Invoke(change);
+        }
         Physics2D.SyncTransforms();
         return true;
     }

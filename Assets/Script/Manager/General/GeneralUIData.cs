@@ -5,5 +5,6 @@ using UnityEngine;
 public class GeneralUIData
 {
     public ObjectToggleButton toggleButton;
-
+    public EnemyManager enemyManager;
+    public GrowManager growManager;
 }
