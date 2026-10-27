@@ -57,7 +57,9 @@ public class MergeGamePipelineTests
         var recipe = Asset<ItemRecipeData>();
         recipe.materials = new[] { new RecipeMaterial { itemData = first.item, amount = 1 }, new RecipeMaterial { itemData = second.item, amount = 1 } };
         recipe.resultItem = result.item;
-        board.mergeRecipe.Add(new MergeSeries { tier = 0, itemRecipeDatas = new List<ItemRecipeData> { recipe } });
+        board.recipeBook = Asset<MergeRecipeBook>();
+        board.recipeBook.items = new List<MergeItem>(board.mergeItems);
+        board.recipeBook.tiers.Add(new MergeSeries { tier = 0, itemRecipeDatas = new List<ItemRecipeData> { recipe } });
         host.SetActive(true);
     }
     [UnityTearDown]
@@ -101,7 +103,7 @@ public class MergeGamePipelineTests
         board.QueueContact(a, b); board.ProcessContacts();
         Assert.That(board.ActiveItems.Count, Is.EqualTo(2));
         Assert.That(a.CanMerge && b.CanMerge, Is.True);
-        board.mergeRecipe.Clear();
+        board.recipeBook.tiers.Clear();
         board.QueueContact(a, b); board.ProcessContacts();
         Assert.That(board.ActiveItems.Count, Is.EqualTo(2));
     }

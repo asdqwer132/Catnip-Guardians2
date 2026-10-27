@@ -1,10 +1,17 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 [DefaultExecutionOrder(-200)]
 public class MergegameManager : MonoBehaviour
 {
     public ItemSeries itemSeries;
-    public List<MergeSeries> mergeRecipe = new List<MergeSeries>();
+    public MergeRecipeBook recipeBook;
+    [SerializeField, HideInInspector, FormerlySerializedAs("mergeRecipe")]
+    private List<MergeSeries> legacyMergeRecipes = new List<MergeSeries>();
+#if UNITY_EDITOR
+    public IReadOnlyList<MergeSeries> LegacyRecipes => legacyMergeRecipes;
+    public void ClearLegacyRecipes() => legacyMergeRecipes.Clear();
+#endif
     public List<MergeItem> mergeItems = new List<MergeItem>();
     public List<MergeItemMaterial> mergeMaterials = new List<MergeItemMaterial>();
     public MergeItemMaterial currentMaterial;
@@ -112,9 +119,10 @@ public class MergegameManager : MonoBehaviour
     public MergeItem GetDefinitionAtMergeItem(ItemData item)
     {
         if (item == null) return null;
+        var fromBook = recipeBook != null ? recipeBook.GetDefinition(item) : null;
+        if (fromBook != null) return fromBook;
         if (mergeItems != null) foreach (var definition in mergeItems)
-                if (definition != null && definition.item == item)
-                    return definition;
+            if (definition != null && definition.item == item) return definition;
         return null;
     }
 

@@ -65,7 +65,17 @@ public static class MergeManagerFolderImport
         }
         if (tiers.Count == 0) throw new InvalidOperationException("조건에 맞는 레시피가 없습니다.");
         Undo.RecordObject(manager, "Import merge recipes folder");
-        manager.mergeRecipe = new List<MergeSeries>(tiers.Values);
+        var book = manager.recipeBook;
+        if (book == null)
+        {
+            book = ScriptableObject.CreateInstance<MergeRecipeBook>();
+            AssetDatabase.CreateAsset(book, AssetDatabase.GenerateUniqueAssetPath(folder + "/Merge Recipe Book.asset"));
+            book.items = new List<MergeItem>(manager.mergeItems);
+        }
+        Undo.RecordObject(book, "Import recipes to book");
+        book.tiers = new List<MergeSeries>(tiers.Values);
+        manager.recipeBook = book;
+        EditorUtility.SetDirty(book); AssetDatabase.SaveAssetIfDirty(book);
         Dirty(manager);
     }
 
@@ -91,6 +101,25 @@ public sealed class MergegameManagerEditor : Editor
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
+        var manager = (MergegameManager)target;
+        if (manager.recipeBook != null && GUILayout.Button("레시피북 그래프 열기")) MergeRecipeGraphWindow.Open(manager.recipeBook);
+        if (manager.LegacyRecipes.Count > 0 && GUILayout.Button("이전 레시피 목록을 레시피북으로 옮기기"))
+        {
+            string path = EditorUtility.SaveFilePanelInProject("레시피북 저장", "Merge Recipe Book", "asset", "저장 위치");
+            if (!string.IsNullOrEmpty(path))
+            {
+                var book = ScriptableObject.CreateInstance<MergeRecipeBook>();
+                book.items = new List<MergeItem>(manager.mergeItems);
+                foreach (var tier in manager.LegacyRecipes)
+                    if (tier != null) book.tiers.Add(new MergeSeries { tier = tier.tier, itemRecipeDatas = new List<ItemRecipeData>(tier.itemRecipeDatas) });
+                AssetDatabase.CreateAsset(book, path);
+                Undo.RecordObject(manager, "Migrate merge recipe book");
+                manager.recipeBook = book; manager.ClearLegacyRecipes();
+                EditorUtility.SetDirty(manager);
+                PrefabUtility.RecordPrefabInstancePropertyModifications(manager);
+                if (manager.gameObject.scene.IsValid()) EditorSceneManager.MarkSceneDirty(manager.gameObject.scene);
+            }
+        }
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("폴더에서 데이터 주입", EditorStyles.boldLabel);
         itemsFolder = (DefaultAsset)EditorGUILayout.ObjectField("MergeItem 폴더", itemsFolder, typeof(DefaultAsset), false);
@@ -101,7 +130,7 @@ public sealed class MergegameManagerEditor : Editor
         {
             if (GUILayout.Button("Merge Items 채우기"))
                 Run(() => MergeManagerFolderImport.ApplyItems((MergegameManager)target, AssetDatabase.GetAssetPath(itemsFolder), recursive, filterSeries));
-            if (GUILayout.Button("Merge Recipes 채우기"))
+            if (GUILayout.Button("레시피 폴더 → 레시피북 채우기"))
                 Run(() => MergeManagerFolderImport.ApplyRecipes((MergegameManager)target, AssetDatabase.GetAssetPath(recipesFolder), recursive, filterSeries));
         }
         if (!string.IsNullOrEmpty(status)) EditorGUILayout.LabelField(status, EditorStyles.wordWrappedLabel);

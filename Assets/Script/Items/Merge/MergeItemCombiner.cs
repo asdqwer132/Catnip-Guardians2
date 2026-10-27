@@ -39,7 +39,7 @@ internal sealed class MergeItemCombiner
 
     private void TryMerge(MergeItemObject a, MergeItemObject b)
     {
-        if (!MergeTree.TryGetRecipe(owner.mergeRecipe, a.item, b.item, out var recipe)) return;
+        if (owner.recipeBook == null || !owner.recipeBook.TryGetRecipe(a.item, b.item, out var recipe)) return;
         var definition = owner.GetDefinitionAtMergeItem(recipe.resultItem);
         if (owner.objectPool == null || !MergegameManager.TryGetPrefab(definition, out _)) return;
         if (!a.Reserve()) return;

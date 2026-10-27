@@ -168,7 +168,7 @@ public class MergeItemImportEditorTests
         serialized.FindProperty("items").GetArrayElementAtIndex(0).FindPropertyRelative("legacyDefinition").objectReferenceValue = definition;
         serialized.ApplyModifiedPropertiesWithoutUndo();
         MergeRecipeGraphEditing.Upgrade(graph);
-        Assert.That(graph.items[0].itemData, Is.SameAs(item));
+        Assert.That(graph.items[0].item, Is.SameAs(definition));
         Assert.That(AssetDatabase.Contains(definition), Is.True);
         Assert.That(MergeRecipeGraphEditing.Validate(graph), Is.Empty);
     }
