@@ -18,13 +18,20 @@ public class SkillMapTooltipProvider : TooltipProvider
         if (treeManager == null)
             treeManager = SkillTreeManager.Instance;
 
-        data = new TooltipData
+        if (treeManager == null)
+            return false;
+
+        string unlockedCount = treeManager.GetUnlockedSkillCount(mapData).ToString();
+
+        data = new SkillMapTooltipData
         {
             icon = mapData.icon,
-            title = GetSkillName(mapData),
-            subTitle = "" + mapData.totalNodeCount,
-            amountText = "" + treeManager.GetUnlockedSkillCount(mapData),
+            dataName = GetSkillName(mapData),
+            totalNodesCount = "" + mapData.totalNodeCount,
+            completedNodesCount = unlockedCount,
+            amountText = unlockedCount,
             description = mapData.GetDescription(),
+            detailDescription = mapData.GetDetailDescription(),
         };
 
         return true;

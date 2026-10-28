@@ -1,4 +1,3 @@
-using System.Text;
 using UnityEngine;
 
 public class SkillNodeTooltipProvider : CostTooltipProvider
@@ -29,9 +28,10 @@ public class SkillNodeTooltipProvider : CostTooltipProvider
         data = new CostTooltipData
         {
             icon = nodeData.icon,
-            title = GetSkillName(nodeData),
+            dataName = GetSkillName(nodeData),
             amountText = "",
             description = nodeData.GetDescription(),
+            detailDescription = nodeData.GetDetailDescription(),
             costs = nodeData.costs
 
         };

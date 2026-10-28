@@ -1,4 +1,3 @@
-using System.Text;
 using UnityEngine;
 
 public class BagTooltipProvider : TooltipProvider
@@ -35,10 +34,11 @@ public class BagTooltipProvider : TooltipProvider
         data = new BagTooltipData
         {
             icon = targetBagData.icon,
-            title = GetBagName(targetBagData),
-            subTitle = bagTypeText,
+            dataName = GetBagName(targetBagData),
+            bagType = bagTypeText,
             amountText = "",
             description = GetBagDescription(targetBagData),
+            detailDescription = targetBagData.GetDetailDescription(),
             weight = GetWeight(targetBagData),
             slots = GetSlots(targetBagData)
         };

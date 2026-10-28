@@ -133,7 +133,7 @@ public sealed class ItemCraftPredictionManager : MonoBehaviour
                 continue;
 
             bool hasPrediction = i < predictions.Count;
-            // SetItemData does not clear currentItem, so clear it before reuse.
+            // Clear the previous prediction before reusing this slot.
             slot.ClearSlot();
             if (hasPrediction)
             {

@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Serialization;
 
 public class ItemTooltipUI : MonoBehaviour
 {
@@ -19,10 +20,15 @@ public class ItemTooltipUI : MonoBehaviour
 
     [Header("UI")]
     public Image icon;
-    public TextMeshProUGUI titleText;
-    public TextMeshProUGUI subTitleText;
-    public TextMeshProUGUI amountText;
+    [FormerlySerializedAs("titleText")] public TextMeshProUGUI dataNameText;
     public TextMeshProUGUI descriptionText;
+    public TextMeshProUGUI detailDescriptionText;
+    public TextMeshProUGUI amountText;
+    [FormerlySerializedAs("subTitleText")] public TextMeshProUGUI gradeText;
+    public TextMeshProUGUI categoryText;
+    public TextMeshProUGUI seriesText;
+    public TextMeshProUGUI weightText;
+    public TextMeshProUGUI cooldownText;
 
     private object currentOwner;
     private RectTransform currentAnchorRect;
@@ -126,25 +132,28 @@ public class ItemTooltipUI : MonoBehaviour
             icon.enabled = data.icon != null;
         }
 
-        if (titleText != null)
-            titleText.text = data.title ?? "";
+        if (dataNameText != null) dataNameText.text = data.dataName ?? "";
+        if (descriptionText != null) descriptionText.text = data.description ?? "";
+        SetOptionalText(detailDescriptionText, data.detailDescription);
+        SetOptionalText(amountText, data.amountText);
 
-        if (subTitleText != null)
-        {
-            bool hasSubTitle = !string.IsNullOrEmpty(data.subTitle);
-            subTitleText.gameObject.SetActive(hasSubTitle);
-            subTitleText.text = hasSubTitle ? data.subTitle : "";
-        }
+        var item = data as ItemTooltipData;
+        string grade = item?.GradeText;
+        // 기존 가방/스킬 맵 화면의 보조 텍스트 연결도 유지합니다.
+        if (data is BagTooltipData bag) grade = bag.bagType;
+        else if (data is SkillMapTooltipData map) grade = map.totalNodesCount;
+        SetOptionalText(gradeText, grade);
+        SetOptionalText(categoryText, item?.CategoryText);
+        SetOptionalText(seriesText, item?.SeriesText);
+        SetOptionalText(weightText, item?.WeightText);
+        SetOptionalText(cooldownText, item?.CooldownText);
+    }
 
-        if (amountText != null)
-        {
-            bool hasAmount = !string.IsNullOrEmpty(data.amountText);
-            amountText.gameObject.SetActive(hasAmount);
-            amountText.text = hasAmount ? data.amountText : "";
-        }
-
-        if (descriptionText != null)
-            descriptionText.text = data.description ?? "";
+    private static void SetOptionalText(TextMeshProUGUI target, string value)
+    {
+        if (target == null) return;
+        target.text = value ?? "";
+        target.gameObject.SetActive(!string.IsNullOrEmpty(value));
     }
 
     private void UpdatePosition()

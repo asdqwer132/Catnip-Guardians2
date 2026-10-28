@@ -88,7 +88,7 @@ public class UpgradePanelSceneTests
         Vector3 fixedPosition = maps.nodeInformation.tooltipPanel.transform.localPosition;
         ExecuteEvents.Execute(hover.gameObject, pointer, ExecuteEvents.pointerEnterHandler);
         Assert.That(maps.nodeInformation.tooltipPanel.activeInHierarchy, Is.True);
-        Assert.That(maps.nodeInformation.titleText.text, Is.EqualTo(node.SkillNodeData.GetDataName()));
+        Assert.That(maps.nodeInformation.dataNameText.text, Is.EqualTo(node.SkillNodeData.GetDataName()));
         Assert.That(maps.nodeInformation.tooltipPanel.transform.localPosition, Is.EqualTo(fixedPosition));
         node.GetComponentInChildren<Button>(true).onClick.Invoke();
         Assert.That(SkillTreeManager.Instance.IsUnlocked(node.SkillNodeData.dataId), Is.True);
