@@ -383,6 +383,7 @@ GameObject:
   - component: {fileID: 564928841665396015}
   - component: {fileID: 1175426548525589591}
   - component: {fileID: 7149703397684293585}
+  - component: {fileID: 910010300001}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -6747,3 +6748,20 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 633814142999375512, guid: 57d5c1db185ea8f4183b9d3b50c712b8, type: 3}
   m_PrefabInstance: {fileID: 7773649629454930129}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &910010300001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 619623500244963094}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6e08452a43a4f16979a3dbb92718533, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: "Setting"
+  tmpText: {fileID: 7149703397684293585}
+  legacyText: {fileID: 0}
+  source: 0
+  dataSource: {fileID: 0}

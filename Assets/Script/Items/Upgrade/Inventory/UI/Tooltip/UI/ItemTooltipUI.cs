@@ -147,6 +147,9 @@ public class ItemTooltipUI : MonoBehaviour
         SetOptionalText(seriesText, item?.SeriesText);
         SetOptionalText(weightText, item?.WeightText);
         SetOptionalText(cooldownText, item?.CooldownText);
+        LocalizedText.BindData(dataNameText, data.sourceData, LocalizedTextSource.DataName);
+        LocalizedText.BindData(descriptionText, data.sourceData, LocalizedTextSource.Description);
+        LocalizedText.BindData(detailDescriptionText, data.sourceData, LocalizedTextSource.DetailDescription);
     }
 
     private static void SetOptionalText(TextMeshProUGUI target, string value)
@@ -154,6 +157,7 @@ public class ItemTooltipUI : MonoBehaviour
         if (target == null) return;
         target.text = value ?? "";
         target.gameObject.SetActive(!string.IsNullOrEmpty(value));
+        LocalizedText.RefreshTranslation(target);
     }
 
     private void UpdatePosition()

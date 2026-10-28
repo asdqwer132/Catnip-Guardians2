@@ -20,11 +20,42 @@ public class SettingUI : MonoBehaviour, ISettingChangeListener
     public Toggle showHealthBarToggle;
     public Toggle showBuffToggle;
 
+    [Header("Language")]
+    [Tooltip("직접 만든 English(0), Korean(1) 드롭다운을 연결합니다. 항목은 코드로 생성하지 않습니다.")]
+    public TMP_Dropdown languageDropdown;
+    private LanguageManager languageManager;
     private bool isInitialized;
 
     private void Awake()
     {
         BindEvents();
+    }
+
+    private void OnEnable()
+    {
+        LanguageManager.InstanceChanged += BindLanguageManager;
+        BindLanguageManager();
+    }
+    private void OnDisable()
+    {
+        LanguageManager.InstanceChanged -= BindLanguageManager;
+        if (languageManager != null) languageManager.LanguageChanged -= RefreshLanguage;
+        languageManager = null;
+    }
+    private void BindLanguageManager()
+    {
+        if (languageManager != null) languageManager.LanguageChanged -= RefreshLanguage;
+        languageManager = LanguageManager.instance;
+        if (languageManager != null) languageManager.LanguageChanged += RefreshLanguage;
+        RefreshLanguage(LanguageManager.CurrentLanguage);
+    }
+    private void RefreshLanguage(language selected)
+    {
+        if (languageDropdown != null) languageDropdown.SetValueWithoutNotify((int)selected);
+    }
+    public void OnLanguageChanged(int value)
+    {
+        if (LanguageManager.instance != null) LanguageManager.instance.SetLanguage(value);
     }
 
     private void Start()
@@ -52,6 +83,7 @@ public class SettingUI : MonoBehaviour, ISettingChangeListener
         if (showBuffToggle != null)
             showBuffToggle.onValueChanged.AddListener(OnShowBuffChanged);
 
+        if (languageDropdown != null) languageDropdown.onValueChanged.AddListener(OnLanguageChanged);
         isInitialized = true;
     }
 
@@ -95,6 +127,7 @@ public class SettingUI : MonoBehaviour, ISettingChangeListener
         if (setting == null)
             return;
 
+        RefreshLanguage(LanguageManager.CurrentLanguage);
         SetSliderWithoutNotify(cursorScaleSlider, setting.cursorScale);
         SetSliderWithoutNotify(indicatorSpriteSizeSlider, setting.indicatorSpriteSize);
 

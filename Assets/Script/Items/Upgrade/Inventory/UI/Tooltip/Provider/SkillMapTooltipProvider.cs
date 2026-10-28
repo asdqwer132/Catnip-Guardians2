@@ -25,6 +25,7 @@ public class SkillMapTooltipProvider : TooltipProvider
 
         data = new SkillMapTooltipData
         {
+            sourceData = mapData,
             icon = mapData.icon,
             dataName = GetSkillName(mapData),
             totalNodesCount = "" + mapData.totalNodeCount,

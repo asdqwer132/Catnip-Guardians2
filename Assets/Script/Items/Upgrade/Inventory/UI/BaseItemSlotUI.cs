@@ -51,6 +51,8 @@ public class BaseItemSlotUI : MonoBehaviour
         SetOptionalText(seriesText, data.SeriesText);
         SetOptionalText(weightText, data.WeightText);
         SetOptionalText(cooldownText, data.CooldownText);
+        LocalizedText.RefreshTranslation(gradeText);
+        BindLanguageData(itemData);
         if (locked != null) locked.SetActive(false);
         IsLocked = false;
     }
@@ -74,15 +76,23 @@ public class BaseItemSlotUI : MonoBehaviour
         SetOptionalText(seriesText, null);
         SetOptionalText(weightText, null);
         SetOptionalText(cooldownText, null);
+        BindLanguageData(null);
         if (locked != null) locked.SetActive(false);
         IsLocked = false;
     }
 
+    private void BindLanguageData(DefaultData data)
+    {
+        LocalizedText.BindData(dataNameText, data, LocalizedTextSource.DataName);
+        LocalizedText.BindData(descriptionText, data, LocalizedTextSource.Description);
+        LocalizedText.BindData(detailDescriptionText, data, LocalizedTextSource.DetailDescription);
+    }
     private static void SetOptionalText(TextMeshProUGUI target, string value)
     {
         if (target == null) return;
         target.text = value ?? "";
         target.gameObject.SetActive(!string.IsNullOrEmpty(value));
+        LocalizedText.RefreshTranslation(target);
     }
     public InventoryItem GetCurrentItem() => currentItem;
 }

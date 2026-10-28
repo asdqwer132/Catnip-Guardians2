@@ -106,6 +106,7 @@ GameObject:
   - component: {fileID: 8340207262789380615}
   - component: {fileID: 8123245885717445405}
   - component: {fileID: 8580365208336608250}
+  - component: {fileID: 910010300002}
   m_Layer: 5
   m_Name: description
   m_TagString: Untagged
@@ -243,6 +244,7 @@ GameObject:
   - component: {fileID: 7336188721190337800}
   - component: {fileID: 7559232672921322326}
   - component: {fileID: 323103887096993095}
+  - component: {fileID: 910010300001}
   m_Layer: 5
   m_Name: Title
   m_TagString: Untagged
@@ -936,3 +938,37 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 390, y: 150}
   m_Pivot: {x: 0.5, y: 1}
+--- !u!114 &910010300001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3307270400692561749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6e08452a43a4f16979a3dbb92718533, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: ""
+  tmpText: {fileID: 323103887096993095}
+  legacyText: {fileID: 0}
+  source: 1
+  dataSource: {fileID: 0}
+--- !u!114 &910010300002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3111174379454796251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6e08452a43a4f16979a3dbb92718533, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: ""
+  tmpText: {fileID: 8580365208336608250}
+  legacyText: {fileID: 0}
+  source: 2
+  dataSource: {fileID: 0}

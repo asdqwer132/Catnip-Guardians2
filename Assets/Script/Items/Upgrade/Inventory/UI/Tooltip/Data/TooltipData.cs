@@ -6,6 +6,7 @@ using UnityEngine.Serialization;
 [Serializable]
 public class TooltipData
 {
+    public DefaultData sourceData;
     public Sprite icon;
     [FormerlySerializedAs("title")] public string dataName;
     public string amountText;
@@ -35,12 +36,18 @@ public class ItemTooltipData : TooltipData
         if (item == null) return null;
         language selected = LanguageManager.instance != null ? LanguageManager.instance.selectedLan : language.english;
         string dataName = item.GetDataName(selected);
+        string description = item.GetDescription(selected);
+        string detail = item.GetDetailDescription(selected);
+        if (string.IsNullOrEmpty(dataName)) dataName = item.GetDataName(language.english);
+        if (string.IsNullOrEmpty(description)) description = item.GetDescription(language.english);
+        if (string.IsNullOrEmpty(detail)) detail = item.GetDetailDescription(language.english);
         return new ItemTooltipData
         {
+            sourceData = item,
             icon = item.icon,
             dataName = string.IsNullOrEmpty(dataName) ? item.name : dataName,
-            description = item.GetDescription(selected) ?? "",
-            detailDescription = item.GetDetailDescription(selected) ?? "",
+            description = description ?? "",
+            detailDescription = detail ?? "",
             amount = amount,
             amountText = $"x{amount}",
             grade = item.grade,

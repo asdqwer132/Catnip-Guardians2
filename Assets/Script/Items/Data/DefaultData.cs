@@ -39,7 +39,7 @@ public class DefaultData : ScriptableObject, IUnlockable
 
     private Dictionary<language, Description> languageDataMap;
 
-    public string GetDataName() => GetDataName(LanguageManager.instance.selectedLan);
+    public string GetDataName() => GetDataName(LanguageManager.CurrentLanguage);
 
     public string GetDataName(language targetLanguage)
     {
@@ -51,7 +51,7 @@ public class DefaultData : ScriptableObject, IUnlockable
         return languageData.dataName;
     }
 
-    public string GetDescription() => GetDescription(LanguageManager.instance.selectedLan);
+    public string GetDescription() => GetDescription(LanguageManager.CurrentLanguage);
 
     public string GetDescription(language targetLanguage)
     {
@@ -63,7 +63,7 @@ public class DefaultData : ScriptableObject, IUnlockable
         return languageData.description;
     }
 
-    public string GetDetailDescription() => GetDetailDescription(LanguageManager.instance.selectedLan);
+    public string GetDetailDescription() => GetDetailDescription(LanguageManager.CurrentLanguage);
 
     public string GetDetailDescription(language targetLanguage)
     {

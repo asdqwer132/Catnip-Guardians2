@@ -33,6 +33,7 @@ public class BagTooltipProvider : TooltipProvider
 
         data = new BagTooltipData
         {
+            sourceData = targetBagData,
             icon = targetBagData.icon,
             dataName = GetBagName(targetBagData),
             bagType = bagTypeText,
