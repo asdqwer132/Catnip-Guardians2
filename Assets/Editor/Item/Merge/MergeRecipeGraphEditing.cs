@@ -30,6 +30,7 @@ public static class MergeRecipeGraphEditing
     public static MergeGraphItemNode AddItem(MergeRecipeGraphAsset graph, MergeItem item, Vector2 position)
     {
         if (item == null) return null;
+        EnsureDefaultInputs(graph);
         var existing = graph.items.Find(node => node.item == item);
         if (existing != null) return existing;
         Undo.RecordObject(graph, "Add merge item node");
@@ -80,7 +81,8 @@ public static class MergeRecipeGraphEditing
                     definition = CreateDefinition(folder, data);
                     existing.Add(data, definition);
                 }
-                AddItem(graph, definition, position + new Vector2(added % 5 * 300, added / 5 * 190));
+                int rowHeight = 190 + MergeGraphItemNode.DefaultInputCount * 30;
+                AddItem(graph, definition, position + new Vector2(added % 5 * 300, added / 5 * rowHeight));
                 present.Add(data); added++;
             }
         }
@@ -154,11 +156,12 @@ public static class MergeRecipeGraphEditing
             var result = Resolve(graph, recipe.resultItem);
             var node = AddItem(graph, result, new Vector2(430, 50 + graph.items.Count * 180));
             Undo.RecordObject(graph, "Import merge recipe node");
-            if (node.ingredients.Count > 0 || node.generatedRecipe != null)
+            if (node.HasIngredients || node.generatedRecipe != null)
             {
                 node = new MergeGraphItemNode { item = result, position = node.position + new Vector2(0, 220) };
                 graph.items.Add(node);
             }
+            while (sources.Count < MergeGraphItemNode.DefaultInputCount) sources.Add(null);
             node.ingredients = sources; node.tier = recipe.tier; node.generatedRecipe = recipe;
             EditorUtility.SetDirty(graph);
         }
@@ -194,6 +197,18 @@ public static class MergeRecipeGraphEditing
             ImportRecipes(graph, recipes); graph.LegacyRecipes.Clear(); changed = true;
         }
         if (changed) EditorUtility.SetDirty(graph);
+        EnsureDefaultInputs(graph);
+    }
+    private static void EnsureDefaultInputs(MergeRecipeGraphAsset graph)
+    {
+        if (graph.InputLayoutVersion >= 1) return;
+        Undo.RecordObject(graph, "Initialize merge input layout");
+        // 이전 빈 노드만 한 번 보완합니다. 이후 사용자가 0개까지 줄여도 다시 늘리지 않습니다.
+        foreach (var node in graph.items)
+            if (node.ingredients.Count == 0)
+                node.ingredients = new List<MergeItem>(new MergeItem[MergeGraphItemNode.DefaultInputCount]);
+        graph.InputLayoutVersion = 1;
+        EditorUtility.SetDirty(graph);
     }
     public static List<string> Validate(MergeRecipeGraphAsset graph)
     {
@@ -214,12 +229,13 @@ public static class MergeRecipeGraphEditing
         var generated = new HashSet<ItemRecipeData>();
         foreach (var node in graph.items)
         {
-            if (node.ingredients.Count == 0) continue;
+            if (!node.HasIngredients) continue;
             var counts = new Dictionary<ItemData, int>();
             foreach (var source in node.ingredients)
             {
-                if (source == null || source.item == null || !definitions.Contains(source))
-                { errors.Add("빈 재료 입력을 연결하거나 제거하세요. 연결한 재료는 그래프에 있어야 합니다."); continue; }
+                if (source == null) continue;
+                if (source.item == null || !definitions.Contains(source))
+                { errors.Add("연결한 재료는 ItemData가 할당된 그래프 노드여야 합니다."); continue; }
                 counts.TryGetValue(source.item, out int amount); counts[source.item] = amount + 1;
             }
             foreach (var previous in used)
@@ -241,7 +257,7 @@ public static class MergeRecipeGraphEditing
         var output = new List<ItemRecipeData>();
         foreach (var node in graph.items)
         {
-            if (node.ingredients.Count == 0) continue;
+            if (!node.HasIngredients) continue;
             var recipe = node.generatedRecipe;
             if (recipe == null)
             {
@@ -255,7 +271,10 @@ public static class MergeRecipeGraphEditing
             recipe.itemGrade = recipe.resultItem.grade; recipe.itemSeries = recipe.resultItem.series;
             var counts = new Dictionary<ItemData, int>();
             foreach (var source in node.ingredients)
-            { counts.TryGetValue(source.item, out int amount); counts[source.item] = amount + 1; }
+            {
+                if (source == null) continue;
+                counts.TryGetValue(source.item, out int amount); counts[source.item] = amount + 1;
+            }
             var materials = new List<RecipeMaterial>();
             foreach (var entry in counts) materials.Add(new RecipeMaterial { itemData = entry.Key, amount = entry.Value });
             recipe.materials = materials.ToArray();

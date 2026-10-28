@@ -8,6 +8,8 @@ public sealed class MergeRecipeGraphAsset : ScriptableObject
 {
     public MergeRecipeBook recipeBook;
     public List<MergeGraphItemNode> items = new List<MergeGraphItemNode>();
+    [SerializeField, HideInInspector] private int inputLayoutVersion;
+    internal int InputLayoutVersion { get => inputLayoutVersion; set => inputLayoutVersion = value; }
     [Header("노드 티어 색상")]
     public Gradient tierColors = DefaultTierColors();
     [Min(0)] public int colorMinTier;
@@ -32,12 +34,14 @@ public sealed class MergeRecipeGraphAsset : ScriptableObject
 [Serializable]
 public sealed class MergeGraphItemNode
 {
+    public const int DefaultInputCount = 4;
     [HideInInspector] public string id = Guid.NewGuid().ToString("N");
     public MergeItem item;
     public Vector2 position;
     [Min(0)] public int tier;
     // 입력 하나가 재료 한 개입니다. 같은 아이템을 여러 입력에 연결하면 수량으로 합산합니다.
-    public List<MergeItem> ingredients = new List<MergeItem>();
+    public List<MergeItem> ingredients = new List<MergeItem>(new MergeItem[DefaultInputCount]);
+    public bool HasIngredients => ingredients.Exists(source => source != null);
     [HideInInspector] public ItemRecipeData generatedRecipe;
     [SerializeField, HideInInspector, FormerlySerializedAs("inputs")]
     private List<MergeGraphInputPair> legacyInputs = new List<MergeGraphInputPair>();
