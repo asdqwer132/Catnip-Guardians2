@@ -15,6 +15,9 @@ public class Description
 
     [TextArea]
     public string description;
+
+    [TextArea]
+    public string detailDescription;
 }
 
 public class DefaultData : ScriptableObject, IUnlockable
@@ -58,6 +61,14 @@ public class DefaultData : ScriptableObject, IUnlockable
             return null;
 
         return languageData.description;
+    }
+
+    public string GetDetailDescription() => GetDetailDescription(LanguageManager.instance.selectedLan);
+
+    public string GetDetailDescription(language targetLanguage)
+    {
+        Description languageData = GetLanguageData(targetLanguage);
+        return languageData?.detailDescription;
     }
 
     public Description GetLanguageData(language targetLanguage)

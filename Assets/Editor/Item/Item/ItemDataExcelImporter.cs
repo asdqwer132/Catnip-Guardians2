@@ -271,7 +271,10 @@ namespace ItemDataExcelTools
                     {
                         language = lan,
                         dataName = descriptions.Value(row, "dataName"),
-                        description = descriptions.Value(row, "description")
+                        description = descriptions.Value(row, "description"),
+                        detailDescription = descriptions.Columns.ContainsKey("detailDescription")
+                            ? descriptions.Value(row, "detailDescription")
+                            : item.Existing?.data?.LastOrDefault(data => data != null && data.language == lan)?.detailDescription
                     });
                 }
                 catch (Exception exception) { result.Errors.Add("Descriptions " + row.Number + "행: " + exception.Message); }
@@ -346,7 +349,13 @@ namespace ItemDataExcelTools
 
         private static Description CopyDescription(Description description)
         {
-            return new Description { language = description.language, dataName = description.dataName, description = description.description };
+            return new Description
+            {
+                language = description.language,
+                dataName = description.dataName,
+                description = description.description,
+                detailDescription = description.detailDescription
+            };
         }
 
         private static void Apply(Plan plan)
