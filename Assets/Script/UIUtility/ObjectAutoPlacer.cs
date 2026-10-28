@@ -5,7 +5,7 @@ public class ObjectAutoPlacer : MonoBehaviour
     [SerializeField] private Transform[] objects = new Transform[8];
 
     [SerializeField] private Vector3 startPosition;
-    [SerializeField] private Vector3 offset = new Vector3(1f, 0f, 0f);
+    public Vector3 offset = new Vector3(1f, 0f, 0f);
 
     private void Awake()
     {

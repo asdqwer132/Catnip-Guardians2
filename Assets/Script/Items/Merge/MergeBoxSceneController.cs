@@ -13,6 +13,8 @@ public sealed class MergeBoxEntry
 [DefaultExecutionOrder(-100)]
 public sealed class MergeBoxSceneController : MonoBehaviour
 {
+    public Transform mianCamera;
+    public ObjectAutoPlacer autoPlacer;
     public TMP_Dropdown seriesDropdown;
     public MergeItemSelection selection;
     public MergeBoxEntry[] boxes = Array.Empty<MergeBoxEntry>();
@@ -53,6 +55,10 @@ public sealed class MergeBoxSceneController : MonoBehaviour
         selectedIndex = index;
         var entry = boxes[index];
         entry.board.SetMaterialUIEnabled(true);
+        Vector3 pos = mianCamera.transform.position;
+        pos = autoPlacer.offset * index;
+        pos.z = -10f;
+        mianCamera.transform.position = pos;
         if (selection != null) selection.board = entry.board;
         if (seriesDropdown != null) seriesDropdown.SetValueWithoutNotify(index);
     }
