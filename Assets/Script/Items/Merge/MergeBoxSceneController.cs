@@ -28,7 +28,11 @@ public sealed class MergeBoxSceneController : MonoBehaviour
         {
             if (entry?.board == null || entry.boxRoot == null) continue;
             var bindings = entry.boxRoot.GetComponentInChildren<MergeBoxBindings>(true);
-            if (bindings != null) entry.board.spawnPoint = bindings.spawnPoint;
+            if (bindings != null)
+            {
+                entry.board.spawnPoint = bindings.spawnPoint;
+                entry.board.dropZone = bindings.dropZone;
+            }
             entry.board.SetMaterialUIEnabled(false);
         }
     }

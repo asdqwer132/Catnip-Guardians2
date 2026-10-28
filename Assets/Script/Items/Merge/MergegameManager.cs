@@ -19,6 +19,7 @@ public class MergegameManager : MonoBehaviour
     [Header("기존 씬/풀 연결")]
     public ObjectPoolManager objectPool;
     public Transform spawnPoint;
+    public MergeDropZone dropZone;
 
     [Header("생성 옵션")]
     [Min(0f)] public float dropInterval = 0.5f;
@@ -47,6 +48,9 @@ public class MergegameManager : MonoBehaviour
     private int revision;
     public IReadOnlyList<MergeItemObject> ActiveItems => active;
     public string LastMessage => lastMessage;
+    public ItemData NextDropItem => Dropper.NextItem;
+    public float DropCountdown => Dropper.Countdown;
+    public float DropInterval => Dropper.Interval;
     public bool CanOperate => isActiveAndEnabled && !clearing && Time.timeScale > 0f;
     internal int Revision => revision;
     internal int ActiveItemCount

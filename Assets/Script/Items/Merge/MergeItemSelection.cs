@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -13,6 +14,7 @@ public sealed class MergeItemSelection : MonoBehaviour
     public Camera inputCamera;
     [Tooltip("직접 만든 Drag 스프라이트입니다. 없으면 영역 표시 없이 선택만 동작합니다.")]
     public SpriteRenderer dragVisual;
+    public MergeSpawnPointDragger spawnPointDragger;
 
     [Header("클릭·드래그 허용 영역")]
     [Tooltip("직접 만든 UI 영역을 연결하세요. 영역 밖에서는 선택을 시작하지 않으며, 진행 중 마우스가 벗어나면 취소합니다. 비워두면 기존 카메라 영역만 사용합니다.")]
@@ -34,6 +36,7 @@ public sealed class MergeItemSelection : MonoBehaviour
 
     private readonly MergeItemSelectionGesture gesture = new MergeItemSelectionGesture();
     private readonly List<Selection> selected = new List<Selection>();
+    private readonly List<InventoryItem> displayedItems = new List<InventoryItem>();
     private readonly List<RaycastResult> uiHits = new List<RaycastResult>();
     private InputAction positionInput, selectInput, cancelInput;
     private bool committing;
@@ -49,7 +52,10 @@ public sealed class MergeItemSelection : MonoBehaviour
     public float CooldownRemaining => gesture.CooldownRemaining(Time.time);
     public int LastRemovedCount { get; private set; }
     public string LastMessage { get; private set; }
+    public IReadOnlyList<InventoryItem> SelectedItems => displayedItems;
+    public event Action SelectionChanged;
     private bool CanSelect => isActiveAndEnabled && !committing && board != null && board.CanOperate &&
+        (spawnPointDragger == null || !spawnPointDragger.IsDragging) &&
         (GameInputManager.instance == null || !GameInputManager.instance.IsBlocked(GameInputBlockType.Gameplay));
 
     private void OnEnable()
@@ -81,6 +87,8 @@ public sealed class MergeItemSelection : MonoBehaviour
 
     private void BeginPointer()
     {
+        // 두 InputAction 콜백의 실행 순서와 관계없이 투입구 잡기와 아이템 선택을 분리합니다.
+        if (spawnPointDragger != null && spawnPointDragger.IsHandleAtScreen(positionInput.ReadValue<Vector2>())) return;
         if (TryPointerWorld(out var world) && !IsOverUI()) TryBeginSelection(world);
     }
 
@@ -125,6 +133,8 @@ public sealed class MergeItemSelection : MonoBehaviour
         if (!CanSelect || !IsInsideDragArea(worldPosition) || !gesture.TryBegin(worldPosition, Time.time)) return false;
         LastRemovedCount = 0;
         HideVisual();
+        CollectSelection(false);
+        PublishPreview();
         return true;
     }
 
@@ -135,6 +145,8 @@ public sealed class MergeItemSelection : MonoBehaviour
         if (!CanSelect || !IsInsideDragArea(worldPosition)) { CancelSelection(); return; }
         gesture.Move(worldPosition, maximumDragWidth, maximumDragHeight, dragThreshold);
         RefreshVisual();
+        CollectSelection(gesture.IsDrag);
+        PublishPreview();
     }
 
     public int CompleteSelection(Vector2 worldPosition)
@@ -167,7 +179,14 @@ public sealed class MergeItemSelection : MonoBehaviour
             if (GameSession.Instance != null) GameSession.Instance.SendItemsToBattle(transfer);
             return LastRemovedCount;
         }
-        finally { selected.Clear(); committing = false; }
+        finally
+        {
+            selected.Clear(); committing = false;
+            // 확정된 목록은 다음 선택/취소까지 유지합니다. 실제 아이템은 기존 경로로 한 번만 전달합니다.
+            displayedItems.Clear();
+            foreach (var item in transfer.items) displayedItems.Add(new InventoryItem(item.itemData, item.amount));
+            SelectionChanged?.Invoke();
+        }
     }
 
     public bool IsInsideDragArea(Vector2 worldPosition)
@@ -219,9 +238,23 @@ public sealed class MergeItemSelection : MonoBehaviour
     {
         bool wasSelecting = IsSelecting;
         gesture.Cancel(); HideVisual();
+        if (!committing) selected.Clear();
+        if (displayedItems.Count > 0) { displayedItems.Clear(); SelectionChanged?.Invoke(); }
         if (!wasSelecting) return;
         LastMessage = "선택 취소";
         if (logSelections) Debug.Log("[MergeSelection] " + LastMessage, this);
+    }
+
+    private void PublishPreview()
+    {
+        bool changed = displayedItems.Count != selected.Count;
+        if (!changed)
+            for (int i = 0; i < selected.Count; i++)
+                if (displayedItems[i].itemData != selected[i].piece.item) { changed = true; break; }
+        if (!changed) return;
+        displayedItems.Clear();
+        foreach (var entry in selected) displayedItems.Add(new InventoryItem(entry.piece.item, 1));
+        SelectionChanged?.Invoke();
     }
 
     private void RefreshVisual()

@@ -13,7 +13,11 @@ internal sealed class MergeItemDropper
     private float nextDropAt, nextAutomaticDropAt;
     private int bonusRevision;
     public MergeItemDropper(MergegameManager owner) => this.owner = owner;
-    public void ResetCooldown() => nextDropAt = 0f;
+    public void ResetCooldown() { nextDropAt = 0f; nextAutomaticDropAt = Time.time + AutomaticInterval; }
+    public float Interval => AutomaticInterval;
+    public float Countdown => !owner.isFeeding ? AutomaticInterval :
+        Mathf.Max(0f, (owner.automaticDrop ? Mathf.Max(nextDropAt, nextAutomaticDropAt) : nextDropAt) - Time.time);
+    public ItemData NextItem { get { EnsureSelection(); return owner.currentMaterial?.mergeItem?.item; } }
 
     public void Begin()
     {
@@ -127,6 +131,7 @@ internal sealed class MergeItemDropper
         if (owner.objectPool == null || owner.spawnPoint == null) return owner.Reject("Object Pool / Spawn Point 연결을 확인하세요.");
         if (Time.time < nextDropAt) return owner.Reject("다음 생성까지 대기 중입니다.");
         if (owner.ActiveItemCount >= Mathf.Max(1, owner.maximumActiveItems)) return owner.Reject("최대 활성 아이템 개수에 도달했습니다.");
+        if (owner.dropZone != null && owner.dropZone.IsBlocked(owner)) return owner.Reject("아이템이 투입 제한선을 넘었습니다.");
         EnsureSelection();
         if (!CanFeedMaterial(owner.currentMaterial)) return owner.Reject("토글이 켜진 사용 가능한 재료가 없습니다.");
         var material = owner.currentMaterial;
@@ -163,6 +168,7 @@ internal sealed class MergeItemDropper
                 return owner.Reject("풀 생성이 취소되었거나 아이템이 비활성 상태입니다.");
             piece.SetSimulated(true);
             nextDropAt = Time.time + EffectStatUtility.Safe(owner.dropInterval, 0f, 600f, 0.5f);
+            nextAutomaticDropAt = Time.time + AutomaticInterval;
             committed = true;
             owner.RefreshUI();
             EnsureSelection();

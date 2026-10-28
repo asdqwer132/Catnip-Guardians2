@@ -4,4 +4,5 @@ using UnityEngine;
 public sealed class MergeBoxBindings : MonoBehaviour
 {
     public Transform spawnPoint;
+    public MergeDropZone dropZone;
 }
