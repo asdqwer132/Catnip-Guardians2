@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 // 투입 주기 · 재료 선택 · 재고 예약/환불만 담당합니다. 설정과 풀은 매니저가 주입합니다.
 internal sealed class MergeItemDropper
@@ -8,27 +9,75 @@ internal sealed class MergeItemDropper
     private readonly MergegameManager owner;
     private readonly Collider2D[] overlap = new Collider2D[32];
     private readonly Dictionary<MergeItemMaterial, int> roundBonuses = new Dictionary<MergeItemMaterial, int>();
+    private readonly List<Toggle> observedToggles = new List<Toggle>();
     private GameSession materialSession;
     private bool usesSessionMaterials, dropping;
     private float nextDropAt, nextAutomaticDropAt;
     private int bonusRevision;
+    private bool hadSelectedMaterial;
     public MergeItemDropper(MergegameManager owner) => this.owner = owner;
     public void ResetCooldown() { nextDropAt = 0f; nextAutomaticDropAt = Time.time + AutomaticInterval; }
     public float Interval => AutomaticInterval;
-    public float Countdown => !owner.isFeeding ? AutomaticInterval :
-        Mathf.Max(0f, (owner.automaticDrop ? Mathf.Max(nextDropAt, nextAutomaticDropAt) : nextDropAt) - Time.time);
-    public ItemData NextItem { get { EnsureSelection(); return owner.currentMaterial?.mergeItem?.item; } }
+    public float Countdown
+    {
+        get
+        {
+            if (!RefreshSelectionState() || !owner.isFeeding) return AutomaticInterval;
+            return Mathf.Max(0f, (owner.automaticDrop ? Mathf.Max(nextDropAt, nextAutomaticDropAt) : nextDropAt) - Time.time);
+        }
+    }
+    public ItemData NextItem { get { RefreshSelectionState(); return owner.currentMaterial?.mergeItem?.item; } }
 
     public void Begin()
     {
+        hadSelectedMaterial = false;
         nextAutomaticDropAt = Time.time + AutomaticInterval;
+        RefreshMaterialSelection();
+    }
+
+    public void End()
+    {
+        foreach (var toggle in observedToggles)
+            if (toggle != null) toggle.onValueChanged.RemoveListener(OnMaterialSelectionChanged);
+        observedToggles.Clear();
+    }
+
+    // 주입/세션 갱신으로 슬롯 연결이 바뀌어도 현재 토글들만 관찰합니다.
+    public void RefreshMaterialSelection()
+    {
+        End();
+        if (owner.isActiveAndEnabled && owner.mergeMaterials != null)
+            foreach (var material in owner.mergeMaterials)
+            {
+                var toggle = material?.mergeUI != null ? material.mergeUI.toggle : null;
+                if (toggle == null || observedToggles.Contains(toggle)) continue;
+                observedToggles.Add(toggle);
+                toggle.onValueChanged.AddListener(OnMaterialSelectionChanged);
+            }
+        RefreshSelectionState();
+    }
+
+    private void OnMaterialSelectionChanged(bool _) => RefreshSelectionState();
+
+    private bool RefreshSelectionState()
+    {
         EnsureSelection();
+        bool selected = false;
+        if (owner.mergeMaterials != null)
+            foreach (var material in owner.mergeMaterials)
+                if (material?.mergeItem != null && material.mergeUI != null && material.mergeUI.toggle != null && material.mergeUI.toggle.isOn)
+                { selected = true; break; }
+        // 0개일 때는 초기값으로 정지, 0→1개일 때만 다시 시작합니다. 추가 선택은 시각을 바꾸지 않습니다.
+        if (!selected || !hadSelectedMaterial) nextAutomaticDropAt = Time.time + AutomaticInterval;
+        hadSelectedMaterial = selected;
+        return selected;
     }
 
     private float AutomaticInterval => Mathf.Max(.01f, EffectStatUtility.Safe(owner.dropInterval, 0f, 600f, .5f));
 
     public void Tick()
     {
+        if (!RefreshSelectionState()) return;
         if (!owner.automaticDrop || !owner.isFeeding || !owner.CanOperate ||
             (GameInputManager.instance != null && GameInputManager.instance.IsBlocked(GameInputBlockType.Gameplay)))
         {

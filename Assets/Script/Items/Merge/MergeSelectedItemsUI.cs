@@ -7,22 +7,44 @@ public sealed class MergeSelectedItemsUI : MonoBehaviour
     public MergeItemSelection selection;
     public Transform content;
     public MergeSelectedItemIcon iconPrefab;
+    [Tooltip("확정 목록을 표시할 실제 시간(초)입니다. 0이면 자동으로 숨기지 않습니다.")]
+    [Min(0f)] public float displayDuration = 2f;
+    public MergeSelectedItemsEffect selectionEffect;
     private readonly List<MergeSelectedItemIcon> icons = new List<MergeSelectedItemIcon>();
+    private bool showing;
+    private float hideAt;
 
     private void OnEnable()
     {
-        if (selection != null) selection.SelectionChanged += Refresh;
+        if (selection != null) selection.SelectionChanged += ShowConfirmedSelection;
         Refresh();
     }
 
     private void OnDisable()
     {
-        if (selection != null) selection.SelectionChanged -= Refresh;
+        if (selection != null) selection.SelectionChanged -= ShowConfirmedSelection;
     }
+
+    private void Update()
+    {
+        if (showing && Time.unscaledTime >= hideAt) Hide();
+    }
+
+    private void ShowConfirmedSelection()
+    {
+        if (selection == null || selection.SelectedItems.Count == 0) return;
+        showing = true;
+        hideAt = displayDuration > 0f ? Time.unscaledTime + displayDuration : float.PositiveInfinity;
+        Refresh();
+        selectionEffect?.Play(selection.SelectedItems);
+    }
+
+    public void Hide() { showing = false; Refresh(); }
 
     public void Refresh()
     {
-        var items = selection != null ? selection.SelectedItems : null;
+        if (showing && Time.unscaledTime >= hideAt) showing = false;
+        var items = showing && selection != null ? selection.SelectedItems : null;
         int count = items != null && content != null && iconPrefab != null ? items.Count : 0;
         for (int i = 0; i < count; i++)
         {

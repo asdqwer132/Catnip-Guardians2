@@ -133,8 +133,6 @@ public sealed class MergeItemSelection : MonoBehaviour
         if (!CanSelect || !IsInsideDragArea(worldPosition) || !gesture.TryBegin(worldPosition, Time.time)) return false;
         LastRemovedCount = 0;
         HideVisual();
-        CollectSelection(false);
-        PublishPreview();
         return true;
     }
 
@@ -145,8 +143,6 @@ public sealed class MergeItemSelection : MonoBehaviour
         if (!CanSelect || !IsInsideDragArea(worldPosition)) { CancelSelection(); return; }
         gesture.Move(worldPosition, maximumDragWidth, maximumDragHeight, dragThreshold);
         RefreshVisual();
-        CollectSelection(gesture.IsDrag);
-        PublishPreview();
     }
 
     public int CompleteSelection(Vector2 worldPosition)
@@ -182,10 +178,13 @@ public sealed class MergeItemSelection : MonoBehaviour
         finally
         {
             selected.Clear(); committing = false;
-            // 확정된 목록은 다음 선택/취소까지 유지합니다. 실제 아이템은 기존 경로로 한 번만 전달합니다.
-            displayedItems.Clear();
-            foreach (var item in transfer.items) displayedItems.Add(new InventoryItem(item.itemData, item.amount));
-            SelectionChanged?.Invoke();
+            // 성공적으로 선택한 묶음만 알립니다. 드래그/빈 선택/취소로 기존 확정 목록을 바꾸지 않습니다.
+            if (transfer.items.Count > 0)
+            {
+                displayedItems.Clear();
+                foreach (var item in transfer.items) displayedItems.Add(new InventoryItem(item.itemData, item.amount));
+                SelectionChanged?.Invoke();
+            }
         }
     }
 
@@ -239,22 +238,9 @@ public sealed class MergeItemSelection : MonoBehaviour
         bool wasSelecting = IsSelecting;
         gesture.Cancel(); HideVisual();
         if (!committing) selected.Clear();
-        if (displayedItems.Count > 0) { displayedItems.Clear(); SelectionChanged?.Invoke(); }
         if (!wasSelecting) return;
         LastMessage = "선택 취소";
         if (logSelections) Debug.Log("[MergeSelection] " + LastMessage, this);
-    }
-
-    private void PublishPreview()
-    {
-        bool changed = displayedItems.Count != selected.Count;
-        if (!changed)
-            for (int i = 0; i < selected.Count; i++)
-                if (displayedItems[i].itemData != selected[i].piece.item) { changed = true; break; }
-        if (!changed) return;
-        displayedItems.Clear();
-        foreach (var entry in selected) displayedItems.Add(new InventoryItem(entry.piece.item, 1));
-        SelectionChanged?.Invoke();
     }
 
     private void RefreshVisual()

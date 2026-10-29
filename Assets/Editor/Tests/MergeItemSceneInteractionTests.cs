@@ -73,6 +73,14 @@ public class MergeItemSceneInteractionTests
         var zone = host.AddComponent<MergeDropZone>(); board.dropZone = zone; return zone;
     }
 
+    private static IEnumerator WaitForGameTime(float seconds)
+    {
+        // EditMode에서 Play로 진입한 검사는 요청한 대기 시간 대신 실제 투입 시계의 경과를 확인합니다.
+        float until = Time.time + seconds, timeout = Time.realtimeSinceStartup + 3f;
+        while (Time.time < until && Time.realtimeSinceStartup < timeout) yield return null;
+        Assert.That(Time.time, Is.GreaterThanOrEqualTo(until), "The game clock did not advance.");
+    }
+
     [UnityTest]
     public IEnumerator CountdownReadsTheRealFeederAndPauseDoesNotConsumeMaterials()
     {
@@ -92,24 +100,65 @@ public class MergeItemSceneInteractionTests
         Assert.That(board.mergeMaterials[0].count, Is.EqualTo(20));
     }
 
+    [UnityTest]
+    public IEnumerator MaterialToggleTransitionsStopStartAndPreserveTheTimerAsRequested()
+    {
+        board.dropInterval = 10; board.SetAutomaticDrop(true);
+        var firstToggle = board.mergeMaterials[0].mergeUI.toggle;
+        firstToggle.isOn = false;
+        yield return WaitForGameTime(.06f);
+        Assert.That(board.DropCountdown, Is.EqualTo(10).Within(.001f), "No selected toggle must keep the full initial time.");
+        Assert.That(board.ActiveItems, Is.Empty);
+        firstToggle.isOn = true;
+        Assert.That(board.DropCountdown, Is.EqualTo(10).Within(.001f));
+        yield return WaitForGameTime(.06f);
+        float running = board.DropCountdown;
+        Assert.That(running, Is.LessThan(9.99f));
+
+        var host = Host("Additional material toggle"); host.AddComponent<RectTransform>();
+        var ui = host.AddComponent<MergeUI>(); ui.toggle = host.AddComponent<Toggle>(); ui.toggle.isOn = false;
+        board.mergeMaterials.Add(new MergeItemMaterial(definition, ui, 20, 0)); board.RefreshUI();
+        ui.toggle.isOn = true;
+        Assert.That(board.DropCountdown, Is.EqualTo(running).Within(.001f), "Adding a selection must not reset the running timer.");
+        firstToggle.isOn = false;
+        Assert.That(board.DropCountdown, Is.EqualTo(running).Within(.001f), "One remaining selection must keep the timer.");
+        ui.toggle.isOn = false;
+        Assert.That(board.DropCountdown, Is.EqualTo(10).Within(.001f));
+        yield return WaitForGameTime(.04f);
+        Assert.That(board.DropCountdown, Is.EqualTo(10).Within(.001f));
+        ui.toggle.isOn = true;
+        Assert.That(board.DropCountdown, Is.EqualTo(10).Within(.001f));
+    }
+
+    [UnityTest]
+    public IEnumerator DeselectingAndReselectingWithinOneFrameStillRestartsTheTimer()
+    {
+        board.dropInterval = 10; board.SetAutomaticDrop(true);
+        yield return WaitForGameTime(.06f);
+        Assert.That(board.DropCountdown, Is.LessThan(9.99f));
+        var toggle = board.mergeMaterials[0].mergeUI.toggle;
+        toggle.isOn = false; toggle.isOn = true;
+        Assert.That(board.DropCountdown, Is.EqualTo(10).Within(.001f), "The zero-selection transition must not depend on Update polling.");
+    }
+
     [Test]
-    public void PreviewDoesNotConsumeItemsAndConfirmationKeepsTheDisplayedSnapshot()
+    public void DragDoesNotPublishItemsUntilConfirmationAndCancellationKeepsTheLastConfirmedSnapshot()
     {
         var first = Drop(new Vector2(-.5f, -2)); var second = Drop(new Vector2(.5f, -2));
         var selection = Selection(); Vector2 start = first.Position - Vector2.one * .25f;
         Assert.That(selection.TryBeginSelection(start), Is.True);
         selection.UpdateSelection(second.Position + Vector2.one * .25f);
-        Assert.That(selection.SelectedItems.Count, Is.EqualTo(2));
+        Assert.That(selection.SelectedItems, Is.Empty);
         Assert.That(first.IsLive && second.IsLive, Is.True, "Preview must not return pooled objects.");
         Assert.That(selection.CompleteSelection(second.Position + Vector2.one * .25f), Is.EqualTo(2));
         Assert.That(board.ActiveItems, Is.Empty);
         Assert.That(selection.SelectedItems.Select(i => i.itemData), Is.All.SameAs(definition.item));
         Assert.That(selection.CompleteSelection(second.Position), Is.Zero, "The same mouse-up must not consume twice.");
-        selection.CancelSelection(); Assert.That(selection.SelectedItems, Is.Empty);
+        selection.CancelSelection(); Assert.That(selection.SelectedItems.Count, Is.EqualTo(2));
     }
 
     [Test]
-    public void SelectedIconsReuseTheAuthoredPrefabAndCancellationClearsThePreview()
+    public void OnlyConfirmedSelectionsShowIconsAndTheAuthoredPrefabIsReused()
     {
         var piece = Drop(new Vector2(0, -2)); var selection = Selection();
         var template = Host("Icon prefab", false); template.AddComponent<RectTransform>();
@@ -118,10 +167,69 @@ public class MergeItemSceneInteractionTests
         var ui = host.AddComponent<MergeSelectedItemsUI>(); ui.selection = selection; ui.content = host.transform; ui.iconPrefab = icon;
         host.SetActive(true);
         selection.TryBeginSelection(piece.Position);
-        Assert.That(host.transform.childCount, Is.EqualTo(1)); var reused = host.transform.GetChild(0);
-        selection.CancelSelection(); Assert.That(reused.gameObject.activeSelf, Is.False); Assert.That(piece.IsLive, Is.True);
+        Assert.That(host.transform.childCount, Is.Zero);
+        selection.CancelSelection(); Assert.That(host.transform.childCount, Is.Zero); Assert.That(piece.IsLive, Is.True);
         selection.TryBeginSelection(piece.Position);
+        selection.CompleteSelection(piece.Position);
+        Assert.That(host.transform.childCount, Is.EqualTo(1)); var reused = host.transform.GetChild(0);
+        ui.Hide(); Assert.That(reused.gameObject.activeSelf, Is.False);
+        piece = Drop(new Vector2(0, -2));
+        selection.TryBeginSelection(piece.Position); selection.CompleteSelection(piece.Position);
         Assert.That(host.transform.childCount, Is.EqualTo(1)); Assert.That(reused.gameObject.activeSelf, Is.True);
+    }
+
+    [UnityTest]
+    public IEnumerator ConfirmedIconsExpireInRealTimeAndRefreshCannotShowAnExpiredSelectionAgain()
+    {
+        var piece = Drop(new Vector2(0, -2)); var selection = Selection();
+        var template = Host("Icon prefab", false); template.AddComponent<RectTransform>();
+        var icon = template.AddComponent<MergeSelectedItemIcon>(); icon.icon = template.AddComponent<Image>();
+        var host = Host("Selected area", false); host.AddComponent<RectTransform>();
+        var ui = host.AddComponent<MergeSelectedItemsUI>();
+        ui.selection = selection; ui.content = host.transform; ui.iconPrefab = icon; ui.displayDuration = .04f;
+        host.SetActive(true);
+        selection.TryBeginSelection(piece.Position); selection.CompleteSelection(piece.Position);
+        Assert.That(host.transform.GetChild(0).gameObject.activeSelf, Is.True);
+        Time.timeScale = 0;
+        yield return new WaitForSecondsRealtime(.08f);
+        ui.Refresh(); Assert.That(host.transform.GetChild(0).gameObject.activeSelf, Is.False);
+        host.SetActive(false); host.SetActive(true);
+        Assert.That(host.transform.GetChild(0).gameObject.activeSelf, Is.False);
+        Assert.That(selection.SelectedItems.Count, Is.EqualTo(1), "Expiry hides presentation without consuming or sending another item.");
+    }
+
+    [UnityTest]
+    public IEnumerator IdenticalConfirmedSelectionsRestartTheDisplayTimeAndCallTheEffectOnlyOnceEach()
+    {
+        var piece = Drop(new Vector2(0, -2)); var selection = Selection();
+        var template = Host("Icon prefab", false); template.AddComponent<RectTransform>();
+        var icon = template.AddComponent<MergeSelectedItemIcon>(); icon.icon = template.AddComponent<Image>();
+        var host = Host("Selected area", false); host.AddComponent<RectTransform>();
+        var ui = host.AddComponent<MergeSelectedItemsUI>();
+        ui.selection = selection; ui.content = host.transform; ui.iconPrefab = icon; ui.displayDuration = .3f;
+        ui.selectionEffect = Host("Authored effects area").AddComponent<MergeSelectedItemsEffect>();
+        host.SetActive(true);
+        int calls = 0;
+        Application.LogCallback capture = (message, stack, type) => { if (message.StartsWith("[MergeSelectedItemsEffect]")) calls++; };
+        Application.logMessageReceived += capture;
+        try
+        {
+            selection.TryBeginSelection(piece.Position); selection.UpdateSelection(piece.Position);
+            Assert.That(calls, Is.Zero); Assert.That(host.transform.childCount, Is.Zero);
+            selection.CompleteSelection(piece.Position);
+            Assert.That(calls, Is.EqualTo(1));
+            ui.Refresh(); selection.CancelSelection();
+            yield return new WaitForSecondsRealtime(.2f);
+            piece = Drop(new Vector2(0, -2));
+            selection.TryBeginSelection(piece.Position); selection.CompleteSelection(piece.Position);
+            Assert.That(calls, Is.EqualTo(2)); Assert.That(host.transform.childCount, Is.EqualTo(1));
+            yield return new WaitForSecondsRealtime(.2f);
+            ui.Refresh(); Assert.That(host.transform.GetChild(0).gameObject.activeSelf, Is.True);
+            yield return new WaitForSecondsRealtime(.15f);
+            ui.Refresh(); Assert.That(host.transform.GetChild(0).gameObject.activeSelf, Is.False);
+            Assert.That(calls, Is.EqualTo(2));
+        }
+        finally { Application.logMessageReceived -= capture; }
     }
 
     [Test]
@@ -233,6 +341,11 @@ public class MergeItemSceneAuthoringTests
         var selectionUI = roots.SelectMany(r => r.GetComponentsInChildren<MergeSelectedItemsUI>(true)).Single();
         Assert.That(selectionUI.selection, Is.SameAs(controller.selection)); Assert.That(selectionUI.content, Is.Not.Null);
         Assert.That(AssetDatabase.GetAssetPath(selectionUI.iconPrefab), Is.EqualTo("Assets/Prefab/Merge/Selected Item Icon.prefab"));
+        Assert.That(selectionUI.displayDuration, Is.EqualTo(2f));
+        Assert.That(selectionUI.selectionEffect, Is.Not.Null);
+        Assert.That(selectionUI.selectionEffect.transform.parent, Is.SameAs(selectionUI.content));
+        Assert.That(selectionUI.selectionEffect.GetComponent<LayoutElement>().ignoreLayout, Is.True);
+        Assert.That(selectionUI.selectionEffect.GetComponent<CanvasGroup>().blocksRaycasts, Is.False);
         Assert.That(controller.selection.spawnPointDragger, Is.Not.Null);
         Assert.That(controller.selection.spawnPointDragger.inputCamera, Is.SameAs(controller.selection.inputCamera));
         foreach (var entry in controller.boxes)

@@ -62,7 +62,7 @@ public class MergegameManager : MonoBehaviour
     private void Start() { PrewarmItems(); RefreshUI(); }
     private void Update() => Dropper.Tick();
     private void LateUpdate() => Combiner.ProcessContacts();
-    private void OnDisable() => ClearItems();
+    private void OnDisable() { dropper?.End(); ClearItems(); }
 
     public void SetFeeding(bool value) => Dropper.SetFeeding(value);
     public void SetAutomaticDrop(bool value) => Dropper.SetAutomaticDrop(value);
@@ -75,6 +75,7 @@ public class MergegameManager : MonoBehaviour
 
     public void RefreshUI()
     {
+        Dropper.RefreshMaterialSelection();
         if (!displayMaterialUI || mergeMaterials == null) return;
         foreach(var material in mergeMaterials)
         {
