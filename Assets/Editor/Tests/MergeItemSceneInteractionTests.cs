@@ -70,7 +70,12 @@ public class MergeItemSceneInteractionTests
     private MergeDropZone Zone()
     {
         var host = Host("Drop zone"); host.transform.SetParent(board.transform, false);
-        var zone = host.AddComponent<MergeDropZone>(); board.dropZone = zone; return zone;
+        var zone = host.AddComponent<MergeDropZone>(); board.dropZone = zone;
+        var line = Host("Drop Limit Line"); line.transform.SetParent(host.transform, false);
+        zone.lineSprite = line.AddComponent<SpriteRenderer>();
+        zone.lineSprite.sprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Resources/UI/AdventureUI/Map/Line.png");
+        zone.lineSprite.drawMode = SpriteDrawMode.Tiled; zone.lineSprite.size = new Vector2(4, .04f);
+        return zone;
     }
 
     private static IEnumerator WaitForGameTime(float seconds)
@@ -236,7 +241,7 @@ public class MergeItemSceneInteractionTests
     public void CrossingTheLineAnywhereBlocksTheInletWithoutSpendingStockAndClearsWhenBelow()
     {
         var piece = Drop(new Vector2(0, .45f)); var zone = Zone();
-        zone.lineStart = new Vector2(-2, .5f); zone.lineEnd = new Vector2(2, .5f);
+        zone.lineSprite.transform.localPosition = Vector3.up * .5f;
         board.spawnPoint.localPosition = new Vector2(1, 2);
         int stock = board.mergeMaterials[0].count;
         Assert.That(board.TryDropCurrent(), Is.False); Assert.That(board.mergeMaterials[0].count, Is.EqualTo(stock));
@@ -250,7 +255,6 @@ public class MergeItemSceneInteractionTests
     public void ItemsAboveTheLineBlockUntilRemovedButItemsOutsideTheLineSpanDoNot()
     {
         var piece = Drop(new Vector2(0, 5)); var zone = Zone();
-        zone.lineStart = new Vector2(-2, 0); zone.lineEnd = new Vector2(2, 0);
         Assert.That(zone.IsBlocked(board), Is.True);
         piece.body.position = board.transform.TransformPoint(new Vector3(5, 5)); Physics2D.SyncTransforms();
         Assert.That(zone.IsBlocked(board), Is.False);
@@ -262,23 +266,21 @@ public class MergeItemSceneInteractionTests
     public void MovingAndScalingTheBoxLineObjectChangesBothItsWorldLineAndTheDropLimit()
     {
         var piece = Drop(new Vector2(0, .3f)); var zone = Zone();
-        var child = Host("Drop Limit Line"); child.transform.SetParent(zone.transform, false);
-        child.transform.localPosition = Vector3.up;
-        zone.lineRenderer = child.AddComponent<LineRenderer>();
-        zone.lineStart = new Vector2(-2, 0); zone.lineEnd = new Vector2(2, 0); zone.RefreshLine();
+        var child = zone.lineSprite.gameObject;
+        child.transform.localPosition = Vector3.up; zone.RefreshLine();
         Assert.That(zone.IsBlocked(board), Is.False);
         child.transform.localPosition = Vector3.up * .2f; zone.RefreshLine();
         Assert.That(zone.IsBlocked(board), Is.True);
-        Assert.That(zone.lineRenderer.GetPosition(0), Is.EqualTo(new Vector3(-2, 0, 0)));
-        Assert.That(zone.lineRenderer.GetPosition(1), Is.EqualTo(new Vector3(2, 0, 0)));
-        Assert.That(zone.lineRenderer.useWorldSpace, Is.False);
+        Assert.That(zone.lineSprite.localBounds.size.x, Is.EqualTo(4).Within(.001f));
         piece.body.position = board.transform.TransformPoint(new Vector3(1.5f, 1, 0)); Physics2D.SyncTransforms();
         child.transform.localScale = new Vector3(.5f, 1, 1);
         Assert.That(zone.IsBlocked(board), Is.False);
+        zone.lineSprite.size = new Vector2(8, .04f);
+        Assert.That(zone.IsBlocked(board), Is.True, "Resizing a tiled sprite must resize the actual limit too.");
         child.transform.localScale = new Vector3(2, 1, 1);
         Assert.That(zone.IsBlocked(board), Is.True);
         zone.showWorldLine = false; zone.RefreshLine();
-        Assert.That(zone.lineRenderer.enabled, Is.False); Assert.That(zone.IsBlocked(board), Is.True);
+        Assert.That(zone.lineSprite.enabled, Is.False); Assert.That(zone.IsBlocked(board), Is.True);
     }
 
     [TestCase(true, false)]
@@ -375,13 +377,17 @@ public class MergeItemSceneAuthoringTests
         foreach (var entry in controller.boxes)
         {
             var bindings = entry.boxRoot.GetComponentInChildren<MergeBoxBindings>(true);
-            Assert.That(bindings.dropZone, Is.Not.Null); Assert.That(bindings.dropZone.lineRenderer, Is.Not.Null);
+            Assert.That(bindings.dropZone, Is.Not.Null); Assert.That(bindings.dropZone.lineSprite != null, Is.True);
             Assert.That(bindings.dropZone.spawnMarker, Is.Not.Null); Assert.That(entry.board.dropZone, Is.SameAs(bindings.dropZone));
             Assert.That(bindings.dropZone.showWorldLine, Is.True);
-            Assert.That(bindings.dropZone.lineRenderer.transform.parent, Is.SameAs(bindings.transform));
-            Assert.That(bindings.dropZone.lineRenderer.name, Is.EqualTo("Drop Limit Line"));
-            Assert.That(bindings.dropZone.lineRenderer.GetComponent<Canvas>(), Is.Null);
-            Assert.That(bindings.dropZone.lineRenderer.sharedMaterial, Is.Not.Null);
+            Assert.That(bindings.dropZone.lineSprite.transform.parent, Is.SameAs(bindings.transform));
+            Assert.That(bindings.dropZone.lineSprite.name, Is.EqualTo("Drop Limit Line"));
+            Assert.That(bindings.dropZone.lineSprite, Is.SameAs(bindings.transform.Find("Drop Limit Line").GetComponent<SpriteRenderer>()));
+            Assert.That(bindings.dropZone.GetComponentsInChildren<LineRenderer>(true), Is.Empty);
+            Assert.That(bindings.dropZone.lineSprite.GetComponent<Canvas>(), Is.Null);
+            Assert.That(bindings.dropZone.lineSprite.sprite, Is.Not.Null);
+            Assert.That(bindings.dropZone.lineSprite.drawMode, Is.EqualTo(SpriteDrawMode.Tiled));
+            Assert.That(bindings.dropZone.lineSprite.sharedMaterial.shader.name, Is.EqualTo("Universal Render Pipeline/2D/Sprite-Unlit-Default"));
         }
         Assert.That(roots.SelectMany(r => r.GetComponentsInChildren<MergeItemSelection>(true)).Count(s => s.enabled), Is.EqualTo(1));
         EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);

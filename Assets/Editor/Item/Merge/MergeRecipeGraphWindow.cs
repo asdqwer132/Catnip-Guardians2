@@ -17,6 +17,7 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
     private MergeGraphItemNode selected;
     private ItemData inspectedData;
     private ObjectField graphField, bookField;
+    private FloatField horizontalGap, verticalGap;
 
     [MenuItem("Tools/Item/Merge/Recipe Book Graph")]
     public static void Open() => GetWindow<MergeRecipeGraphWindow>("Merge Recipe Book Graph");
@@ -53,9 +54,14 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
         toolbar.Add(new ToolbarButton(() => CreateItem(canvas.Center)) { text = "+ 머지 아이템" });
         toolbar.Add(new ToolbarButton(() => ImportAssets(Selection.objects)) { text = "선택 에셋 가져오기", tooltip = "ItemData 여러 개를 선택하면 각각 MergeItem으로 만들어 추가합니다." });
         toolbar.Add(new ToolbarButton(() => Run(() => MergeRecipeGraphEditing.Save(graph))) { text = "그래프 저장" });
-        toolbar.Add(new ToolbarButton(() => Run(() => { MergeRecipeGraphEditing.Arrange(graph); Rebuild(); canvas.FrameAll(); })) { text = "자동 정렬" });
         toolbar.Add(new ToolbarButton(() => canvas.FrameAll()) { text = "전체 보기" });
         rootVisualElement.Add(toolbar);
+        var layout = new Toolbar();
+        horizontalGap = AddGapField(layout, "가로 간격", true);
+        verticalGap = AddGapField(layout, "세로 간격", false);
+        layout.Add(new ToolbarButton(() => Run(() => { MergeRecipeGraphEditing.Arrange(graph); Rebuild(); canvas.FrameAll(); }))
+        { text = "자동 정렬", tooltip = "티어 → 연결 깊이를 유지하고, 선 교차가 줄어들도록 노드 순서를 계산합니다." });
+        rootVisualElement.Add(layout);
         var output = new Toolbar();
         bookField = new ObjectField("레시피북") { objectType = typeof(MergeRecipeBook), allowSceneObjects = false, value = graph != null ? graph.recipeBook : null };
         bookField.style.width = 370;
@@ -90,7 +96,20 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
         rootVisualElement.Add(body);
         status = new Label(); status.style.whiteSpace = WhiteSpace.Normal; status.style.paddingLeft = 8; status.style.paddingTop = status.style.paddingBottom = 4;
         rootVisualElement.Add(status); Rebuild();
-        SetStatus("머지 아이템 출력 → 결과 아이템의 N개 입력 연결 · 우클릭 해제 · 가운데 버튼 이동 · 휠 확대 / 축소");
+        SetStatus("Shift / Ctrl / Cmd + 클릭: 다중 선택 · 빈 곳 드래그: 영역 선택 · Ctrl / Cmd + C,V: 복사·붙여넣기 / D: 복제 · Delete: 삭제 · 가운데 버튼 이동 · 휠 확대 / 축소");
+    }
+    private FloatField AddGapField(Toolbar toolbar, string label, bool horizontal)
+    {
+        var field = new FloatField(label) { tooltip = "노드 테두리 사이의 빈 간격입니다. 설정은 그래프별로 저장됩니다." };
+        field.style.width = 170; field.labelElement.style.minWidth = 65;
+        field.RegisterValueChangedCallback(evt => Run(() =>
+        {
+            float value = float.IsNaN(evt.newValue) || float.IsInfinity(evt.newValue) ? 0 : Mathf.Max(0, evt.newValue);
+            Undo.RecordObject(graph, "Change merge node spacing");
+            if (horizontal) graph.nodeSpacing.x = value; else graph.nodeSpacing.y = value;
+            field.SetValueWithoutNotify(value); EditorUtility.SetDirty(graph);
+        }));
+        toolbar.Add(field); return field;
     }
     private void NewGraph()
     {
@@ -136,6 +155,10 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
         if (canvas == null) return;
         if (selected != null) selected = graph != null ? graph.items.Find(node => node.id == selected.id) : null;
         canvas.SetGraph(graph, selected);
+        selected = canvas.PrimarySelection;
+        horizontalGap?.SetValueWithoutNotify(graph != null ? graph.nodeSpacing.x : 140);
+        verticalGap?.SetValueWithoutNotify(graph != null ? graph.nodeSpacing.y : 45);
+        horizontalGap?.SetEnabled(graph != null); verticalGap?.SetEnabled(graph != null);
         if (bookField != null) bookField.SetValueWithoutNotify(graph != null ? graph.recipeBook : null);
         DrawInspector();
     }
@@ -144,13 +167,14 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
     {
         if (inspector == null) return;
         inspector.Clear(); inspectedData = null;
+        if (canvas.SelectionCount > 1) inspector.Add(new Label(canvas.SelectionCount + "개 선택 · 아래는 마지막 선택 노드"));
         Object target = selected != null ? selected.item : graph;
         if (target == null) return;
         inspector.Add(new Label(target.name) { style = { unityFontStyleAndWeight = FontStyle.Bold, marginTop = 10, marginBottom = 10 } });
         if (target is MergeRecipeGraphAsset)
         {
             var serialized = new SerializedObject(graph);
-            foreach (string field in new[] { "tierColors", "colorMinTier", "colorMaxTier" })
+            foreach (string field in new[] { "nodeSpacing", "tierColors", "colorMinTier", "colorMaxTier" })
                 inspector.Add(new PropertyField(serialized.FindProperty(field)));
             inspector.Bind(serialized);
         }
@@ -184,6 +208,11 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
     {
         if (canvas == null) return;
         canvas.RefreshPreviews();
+        if (graph != null)
+        {
+            horizontalGap?.SetValueWithoutNotify(graph.nodeSpacing.x);
+            verticalGap?.SetValueWithoutNotify(graph.nodeSpacing.y);
+        }
         if (selected != null && selected.item != null && selected.item.item != inspectedData) DrawInspector();
     }
     private void SetStatus(string text) { if (status != null) status.text = text; }
@@ -196,7 +225,7 @@ public sealed class MergeRecipeGraphAssetEditor : Editor
     {
         if (GUILayout.Button("레시피북 그래프 열기", GUILayout.Height(30))) MergeRecipeGraphWindow.Open((MergeRecipeGraphAsset)target);
         serializedObject.Update();
-        foreach (string field in new[] { "recipeBook", "tierColors", "colorMinTier", "colorMaxTier" }) EditorGUILayout.PropertyField(serializedObject.FindProperty(field));
+        foreach (string field in new[] { "recipeBook", "nodeSpacing", "tierColors", "colorMinTier", "colorMaxTier" }) EditorGUILayout.PropertyField(serializedObject.FindProperty(field));
         serializedObject.ApplyModifiedProperties();
         EditorGUILayout.LabelField("머지 아이템 " + ((MergeRecipeGraphAsset)target).items.Count);
     }

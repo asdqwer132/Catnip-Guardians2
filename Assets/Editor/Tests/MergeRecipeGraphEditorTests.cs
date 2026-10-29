@@ -180,7 +180,7 @@ public class MergeRecipeGraphEditorTests
         MergeRecipeGraphEditing.RemoveInput(graph, node, 10); Assert.That(node.ingredients.Count, Is.EqualTo(31));
     }
     [Test]
-    public void SparseInputsExportOnlyConnectedMaterialsAndStillRejectDuplicateRecipes()
+    public void SparseInputsExportOnlyConnectedMaterialsAndAllowDuplicateRecipes()
     {
         var a = Item(); var b = Item(); var result = Item(); var node = graph.items[2];
         MergeRecipeGraphEditing.SetInput(graph, node, 0, a); MergeRecipeGraphEditing.SetInput(graph, node, 3, b);
@@ -192,8 +192,10 @@ public class MergeRecipeGraphEditorTests
         Assert.That(node.ingredients.Count, Is.EqualTo(4)); Assert.That(node.ingredients[1], Is.Null); Assert.That(node.ingredients[2], Is.Null);
         string before = EditorJsonUtility.ToJson(recipe);
         Connect(Item(), b, a);
-        Assert.Throws<InvalidOperationException>(() => MergeRecipeGraphEditing.Export(graph));
-        Assert.That(book.tiers[0].itemRecipeDatas.Count, Is.EqualTo(1)); Assert.That(EditorJsonUtility.ToJson(recipe), Is.EqualTo(before));
+        Assert.DoesNotThrow(() => MergeRecipeGraphEditing.Export(graph));
+        Assert.That(book.tiers[0].itemRecipeDatas.Count, Is.EqualTo(2)); Assert.That(EditorJsonUtility.ToJson(recipe), Is.EqualTo(before));
+        Assert.That(book.TryGetRecipe(b.item, a.item, out var first), Is.True);
+        Assert.That(first, Is.SameAs(recipe), "Duplicate combinations retain the book's first-match runtime order.");
     }
     [Test]
     public void RemovingAllInputsExcludesRecipeWithoutDeletingItsAsset()
@@ -355,7 +357,9 @@ public class MergeRecipeGraphEditorTests
         Assert.That(rootNode.position.x, Is.LessThan(middleNode.position.x));
         Assert.That(middleNode.position.x, Is.LessThan(branchNode.position.x));
         Assert.That(branchNode.position.x, Is.LessThan(resultNode.position.x), "The longer ingredient path must win over a direct root connection.");
-        Assert.That(isolatedNode.position.y, Is.GreaterThan(rootNode.position.y + 140 + rootNode.ingredients.Count * 30));
+        var upper = rootNode.position.y < isolatedNode.position.y ? rootNode : isolatedNode;
+        var lower = upper == rootNode ? isolatedNode : rootNode;
+        Assert.That(lower.position.y, Is.GreaterThan(upper.position.y + 140 + upper.ingredients.Count * 30));
         CollectionAssert.AreEqual(order, graph.items, "Layout must not reorder the stored nodes or change which output a connection uses.");
         var positions = graph.items.ConvertAll(n => n.position);
         MergeRecipeGraphEditing.Arrange(graph);
@@ -413,10 +417,192 @@ public class MergeRecipeGraphEditorTests
         Undo.PerformUndo();
         Assert.That(EditorJsonUtility.ToJson(graph), Is.EqualTo(before));
     }
-    [UnityTest]
-    public IEnumerator ActualEditorDraggingConnectsDynamicInput()
+    private MergeRecipeGraphCanvas Canvas()
     {
-        if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null) Assert.Ignore("실제 Editor 드래그 검사는 그래픽 장치가 필요합니다.");
+        var canvas = new MergeRecipeGraphCanvas(_ => { }, _ => { }, _ => { }, _ => { });
+        canvas.SetGraph(graph, null); return canvas;
+    }
+    [Test]
+    public void MultiSelectionTogglesAddsAndSurvivesRebuildsByNodeId()
+    {
+        Item(); Item(); Item(); var canvas = Canvas();
+        var a = graph.items[0]; var b = graph.items[1]; var c = graph.items[2];
+        canvas.SelectNode(a); canvas.SelectNode(b, additive: true);
+        Assert.That(canvas.SelectionCount, Is.EqualTo(2));
+        canvas.SelectNode(a, keepSelectionIfSelected: true);
+        Assert.That(canvas.SelectionCount, Is.EqualTo(2), "Dragging an already selected node must keep the group.");
+        canvas.SelectNode(b, additive: true); Assert.That(canvas.SelectionCount, Is.EqualTo(1));
+        canvas.SelectAllNodes(); Assert.That(canvas.SelectionCount, Is.EqualTo(3));
+        // Undo처럼 직렬화로 노드를 다시 만들어도 객체 참조 대신 ID로 선택을 복원합니다.
+        EditorJsonUtility.FromJsonOverwrite(EditorJsonUtility.ToJson(graph), graph);
+        canvas.SetGraph(graph, graph.items.Find(node => node.id == a.id));
+        Assert.That(canvas.SelectionCount, Is.EqualTo(3));
+        Assert.That(canvas.PrimarySelection, Is.SameAs(graph.items[0]));
+        canvas.SelectNode(graph.items.Find(node => node.id == c.id));
+        Assert.That(canvas.SelectionCount, Is.EqualTo(1));
+        canvas.SetGraph(null, null); Assert.That(canvas.SelectionCount, Is.Zero);
+    }
+    [Test]
+    public void RectangleSelectionIncludesVariableHeightCardsAndShrinksWithoutAccumulatingNodes()
+    {
+        Item(); Item(); Item();
+        graph.items[0].position = new Vector2(0, 0); graph.items[1].position = new Vector2(400, 0);
+        graph.items[2].position = new Vector2(800, 0);
+        var canvas = Canvas();
+        canvas.SelectRectangle(new Rect(-1, 200, 650, 80));
+        Assert.That(canvas.SelectionCount, Is.EqualTo(2), "Selection must use the entire card, including its ingredient rows.");
+        canvas.SelectRectangle(new Rect(-1, 200, 200, 80)); Assert.That(canvas.SelectionCount, Is.EqualTo(1));
+        var additive = new[] { graph.items[2].id };
+        canvas.SelectRectangle(new Rect(-1, 0, 650, 50), additive); Assert.That(canvas.SelectionCount, Is.EqualTo(3));
+        canvas.SelectRectangle(new Rect(-1, 0, 200, 50), additive);
+        Assert.That(canvas.SelectionCount, Is.EqualTo(2)); Assert.That(canvas.IsSelected(graph.items[1]), Is.False);
+    }
+    [Test]
+    public void SelectedNodesMoveTogetherAndUndoRestoresTheirPositionsAndSelection()
+    {
+        Item(); Item(); Item(); var canvas = Canvas();
+        canvas.SelectNode(graph.items[0]); canvas.SelectNode(graph.items[1], additive: true);
+        var positions = graph.items.ConvertAll(node => node.position);
+        Undo.FlushUndoRecordObjects(); Undo.IncrementCurrentGroup();
+        canvas.MoveSelectedNodes(new Vector2(37, -19)); Undo.FlushUndoRecordObjects();
+        Assert.That(graph.items[0].position, Is.EqualTo(positions[0] + new Vector2(37, -19)));
+        Assert.That(graph.items[1].position, Is.EqualTo(positions[1] + new Vector2(37, -19)));
+        Assert.That(graph.items[2].position, Is.EqualTo(positions[2]));
+        Undo.PerformUndo(); canvas.SetGraph(graph, graph.items[0]);
+        CollectionAssert.AreEqual(positions, graph.items.ConvertAll(node => node.position));
+        Assert.That(canvas.SelectionCount, Is.EqualTo(2));
+    }
+    [Test]
+    public void RemovingSelectedNodesClearsLinksTogetherKeepsAssetsAndCanUndo()
+    {
+        var a = Item(); var b = Item(); var c = Item(); Connect(c, a, b);
+        var canvas = Canvas(); canvas.SelectNode(graph.items[0]); canvas.SelectNode(graph.items[1], additive: true);
+        string before = EditorJsonUtility.ToJson(graph);
+        Undo.FlushUndoRecordObjects(); canvas.RemoveSelectedNodes(); Undo.FlushUndoRecordObjects();
+        Assert.That(graph.items.Count, Is.EqualTo(1)); Assert.That(graph.items[0].HasIngredients, Is.False);
+        Assert.That(AssetDatabase.Contains(a), Is.True); Assert.That(AssetDatabase.Contains(b), Is.True);
+        Undo.PerformUndo(); Assert.That(EditorJsonUtility.ToJson(graph), Is.EqualTo(before));
+    }
+    [Test]
+    public void RemovingOneAlternativeRecipeKeepsLinksToItsOtherOutputNode()
+    {
+        var a = Item(); var b = Item(); Connect(b, a);
+        var alternative = new MergeGraphItemNode { item = a }; graph.items.Add(alternative);
+        var canvas = Canvas(); canvas.SelectNode(graph.items[0]); canvas.RemoveSelectedNodes();
+        Assert.That(graph.items[0].ingredients[0], Is.SameAs(a));
+        Assert.That(graph.items[1], Is.SameAs(alternative));
+    }
+    [Test]
+    public void ArrangeUncrossesReversedBranchesAndKeepsRecipePortOrderAndStoredNodeOrder()
+    {
+        var a = Item(); var b = Item(); var c = Item(); var d = Item();
+        var cNode = Connect(c, b); var dNode = Connect(d, a);
+        var order = graph.items.ToArray();
+        MergeRecipeGraphEditing.Arrange(graph);
+        bool rootsInOrder = graph.items[0].position.y < graph.items[1].position.y;
+        Assert.That(rootsInOrder, Is.EqualTo(dNode.position.y < cNode.position.y), "The two independent branches should not cross.");
+        CollectionAssert.AreEqual(order, graph.items);
+        Assert.That(cNode.ingredients[0], Is.SameAs(b)); Assert.That(dNode.ingredients[0], Is.SameAs(a));
+        var positions = graph.items.ConvertAll(node => node.position);
+        MergeRecipeGraphEditing.Arrange(graph);
+        CollectionAssert.AreEqual(positions, graph.items.ConvertAll(node => node.position));
+    }
+    [Test]
+    public void ArrangeUsesGapsBetweenCardEdgesAndPersistsTheGraphSettings()
+    {
+        var a = Item(); var b = Item(); var c = Item(); Connect(c, a, b);
+        graph.nodeSpacing = new Vector2(80, 125);
+        for (int i = 0; i < 6; i++) MergeRecipeGraphEditing.AddInput(graph, graph.items[0]);
+        MergeRecipeGraphEditing.Arrange(graph);
+        Assert.That(graph.items[2].position.x - graph.items[0].position.x, Is.EqualTo(240 + 80));
+        var upper = graph.items[0].position.y < graph.items[1].position.y ? graph.items[0] : graph.items[1];
+        var lower = upper == graph.items[0] ? graph.items[1] : graph.items[0];
+        Assert.That(lower.position.y - upper.position.y, Is.EqualTo(140 + upper.ingredients.Count * 30 + 125));
+        MergeRecipeGraphEditing.Save(graph);
+        var serialized = new SerializedObject(graph);
+        Assert.That(serialized.FindProperty("nodeSpacing").vector2Value, Is.EqualTo(new Vector2(80, 125)));
+        graph.nodeSpacing = new Vector2(-80, -125); MergeRecipeGraphEditing.Arrange(graph);
+        Assert.That(graph.items[2].position.x - graph.items[0].position.x, Is.EqualTo(240));
+    }
+    [Test]
+    public void SameItemDataAndDuplicateIngredientsExportIndependentRecipeAssets()
+    {
+        var a = Item(); var b = Item(); var c = Item(); c.item = b.item;
+        var first = Connect(b, a, a); var second = Connect(c, a, a); second.tier = 7;
+        Assert.That(MergeRecipeGraphEditing.Validate(graph), Is.Empty);
+        var book = MergeRecipeGraphEditing.Export(graph);
+        Assert.That(first.generatedRecipe, Is.Not.SameAs(second.generatedRecipe));
+        Assert.That(first.generatedRecipe.resultItem, Is.SameAs(second.generatedRecipe.resultItem));
+        Assert.That(first.generatedRecipe.tier, Is.Zero); Assert.That(second.generatedRecipe.tier, Is.EqualTo(7));
+        Assert.That(book.tiers.Count, Is.EqualTo(2));
+        var exported = MergeRecipeGraphEditing.ExportRecipes(graph);
+        Assert.That(exported.Count, Is.EqualTo(2));
+        Assert.That(AssetDatabase.FindAssets("t:ItemRecipeData", new[] { folder }).Length, Is.EqualTo(2));
+        second.generatedRecipe = first.generatedRecipe;
+        exported = MergeRecipeGraphEditing.ExportRecipes(graph);
+        Assert.That(exported[0], Is.Not.SameAs(exported[1]), "Even a manually shared output asset must not be overwritten by the next node.");
+        Assert.That(exported[0].tier, Is.Zero); Assert.That(exported[1].tier, Is.EqualTo(7));
+    }
+    [Test]
+    public void CopyPasteKeepsSharedItemDataButRemapsCopiedLinksAndUsesFreshRecipes()
+    {
+        var a = Item(); var b = Item(); var c = Item();
+        var middle = Connect(b, a); var result = Connect(c, b, a); result.tier = 5;
+        MergeRecipeGraphEditing.Export(graph);
+        var canvas = Canvas(); canvas.SelectNode(middle); canvas.SelectNode(result, additive: true);
+        string clipboard = MergeRecipeGraphClipboard.Copy(graph, new[] { middle, result });
+        canvas.PasteNodes(clipboard);
+        Assert.That(graph.items.Count, Is.EqualTo(5)); Assert.That(canvas.SelectionCount, Is.EqualTo(2));
+        var pastedMiddle = graph.items[3]; var pastedResult = graph.items[4];
+        Assert.That(pastedMiddle.item, Is.SameAs(b)); Assert.That(pastedResult.item, Is.SameAs(c));
+        Assert.That(pastedResult.id, Is.Not.EqualTo(result.id)); Assert.That(pastedResult.tier, Is.EqualTo(5));
+        Assert.That(pastedResult.ingredients, Is.Not.SameAs(result.ingredients)); Assert.That(pastedResult.generatedRecipe, Is.Null);
+        Assert.That(MergeRecipeGraphEditing.InputNode(graph, pastedResult, 0), Is.SameAs(pastedMiddle));
+        Assert.That(MergeRecipeGraphEditing.InputNode(graph, pastedResult, 1), Is.SameAs(graph.items[0]));
+        Assert.That(MergeRecipeGraphEditing.InputNode(graph, pastedMiddle, 0), Is.SameAs(graph.items[0]));
+        Assert.That(pastedResult.position - pastedMiddle.position, Is.EqualTo(result.position - middle.position));
+        MergeRecipeGraphEditing.Export(graph);
+        Assert.That(pastedResult.generatedRecipe, Is.Not.SameAs(result.generatedRecipe));
+        int assets = AssetDatabase.FindAssets("t:ItemData", new[] { folder }).Length;
+        canvas.DuplicateSelectedNodes(); Assert.That(graph.items.Count, Is.EqualTo(7));
+        Assert.That(AssetDatabase.FindAssets("t:ItemData", new[] { folder }).Length, Is.EqualTo(assets));
+        Assert.That(AssetDatabase.FindAssets("t:MergeItem", new[] { folder }).Length, Is.EqualTo(3));
+    }
+    [Test]
+    public void ClipboardPasteIsOneUndoStepAndCanBeReusedWithoutStackingNodes()
+    {
+        Item(); Item(); var canvas = Canvas(); canvas.SelectAllNodes();
+        string before = EditorJsonUtility.ToJson(graph);
+        Undo.FlushUndoRecordObjects();
+        string clipboard = MergeRecipeGraphClipboard.Copy(graph, graph.items.ToArray());
+        canvas.PasteNodes(clipboard); Undo.FlushUndoRecordObjects();
+        var firstPosition = graph.items[2].position;
+        canvas.PasteNodes(clipboard); Undo.FlushUndoRecordObjects();
+        Assert.That(graph.items.Count, Is.EqualTo(6)); Assert.That(graph.items[4].position, Is.Not.EqualTo(firstPosition));
+        Undo.PerformUndo(); Assert.That(graph.items.Count, Is.EqualTo(4));
+        Undo.PerformUndo(); Assert.That(EditorJsonUtility.ToJson(graph), Is.EqualTo(before));
+        Assert.That(MergeRecipeGraphClipboard.Paste(graph, "ordinary clipboard text"), Is.Empty);
+    }
+    [Test]
+    public void ExplicitConnectionToACopiedOutputSurvivesSaveAndSetsTheCorrectLayoutDepth()
+    {
+        var a = Item(); var b = Item(); var c = Item(); var middle = Connect(b, a);
+        var copied = MergeRecipeGraphClipboard.Paste(graph, MergeRecipeGraphClipboard.Copy(graph, new[] { middle }))[0];
+        var canvas = Canvas(); var cards = canvas.Query<VisualElement>("merge-item-node").ToList();
+        canvas.ConnectPorts(cards[3].Q("ItemOutput"), cards[2].Q("Ingredient_0"));
+        var result = graph.items[2];
+        Assert.That(MergeRecipeGraphEditing.InputNode(graph, result, 0), Is.SameAs(copied));
+        EditorJsonUtility.FromJsonOverwrite(EditorJsonUtility.ToJson(graph), graph);
+        Assert.That(MergeRecipeGraphEditing.InputNode(graph, graph.items[2], 0).id, Is.EqualTo(copied.id));
+        MergeRecipeGraphEditing.Arrange(graph);
+        Assert.That(graph.items[2].position.x, Is.GreaterThan(graph.items[3].position.x));
+        MergeRecipeGraphEditing.RemoveItem(graph, graph.items[3]);
+        Assert.That(graph.items[2].ingredients[0], Is.Null, "Deleting an explicitly linked copy must remove its wire instead of redirecting to another output.");
+    }
+    [UnityTest]
+    public IEnumerator ActualEditorDraggingConnectsDynamicInputAndMovesAndDuplicatesTheSelection()
+    {
+        if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null) Assert.Ignore("실제 Editor 포인터 검사는 그래픽 장치가 필요합니다.");
         var a = Item(); Item(); var c = Item(); Connect(c, a, a); MergeRecipeGraphEditing.AddInput(graph, graph.items[2]);
         var window = ScriptableObject.CreateInstance<MergeRecipeGraphWindow>();
         try
@@ -424,9 +610,33 @@ public class MergeRecipeGraphEditorTests
             window.position = new Rect(40, 40, 1100, 700); window.Show(); yield return null;
             var canvas = window.rootVisualElement.Q<MergeRecipeGraphCanvas>(); canvas.SetGraph(graph, null); yield return null;
             var cards = canvas.Query<VisualElement>("merge-item-node").ToList();
-            using (var down = PointerDownEvent.GetPooled(new Event { type = EventType.MouseDown, button = 0, mousePosition = cards[0].Q("ItemOutput").worldBound.center })) cards[0].Q("ItemOutput").SendEvent(down);
-            using (var up = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, button = 0, mousePosition = cards[2].Q("Ingredient_4").worldBound.center })) canvas.SendEvent(up);
+            void Down(VisualElement target, Vector2 point, EventModifiers modifiers = EventModifiers.None)
+            {
+                using (var evt = PointerDownEvent.GetPooled(new Event { type = EventType.MouseDown, button = 0, mousePosition = point, modifiers = modifiers })) target.SendEvent(evt);
+            }
+            void Up(Vector2 point)
+            {
+                using (var evt = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, button = 0, mousePosition = point })) canvas.SendEvent(evt);
+            }
+            Down(cards[0].Q("ItemOutput"), cards[0].Q("ItemOutput").worldBound.center);
+            Up(cards[2].Q("Ingredient_4").worldBound.center);
             Assert.That(graph.items[2].ingredients[4], Is.SameAs(a));
+            Vector2 first = cards[0].worldBound.position + new Vector2(30, 15);
+            Vector2 second = cards[1].worldBound.position + new Vector2(30, 15);
+            Down(cards[0], first); Up(first);
+            Down(cards[1], second, EventModifiers.Shift); Up(second);
+            Assert.That(canvas.SelectionCount, Is.EqualTo(2));
+            var before = graph.items.ConvertAll(node => node.position);
+            Down(cards[0], first);
+            using (var move = PointerMoveEvent.GetPooled(new Event { type = EventType.MouseDrag, button = 0, mousePosition = first + new Vector2(20, 30) })) canvas.SendEvent(move);
+            Up(first + new Vector2(20, 30));
+            Assert.That(graph.items[0].position, Is.EqualTo(before[0] + new Vector2(20, 30)));
+            Assert.That(graph.items[1].position, Is.EqualTo(before[1] + new Vector2(20, 30)));
+            Assert.That(graph.items[2].position, Is.EqualTo(before[2]));
+            using (var key = KeyDownEvent.GetPooled(new Event { type = EventType.KeyDown, keyCode = KeyCode.D, modifiers = Application.platform == RuntimePlatform.OSXEditor ? EventModifiers.Command : EventModifiers.Control })) canvas.SendEvent(key);
+            Assert.That(graph.items.Count, Is.EqualTo(5)); Assert.That(canvas.SelectionCount, Is.EqualTo(2));
+            using (var command = ExecuteCommandEvent.GetPooled(new Event { type = EventType.ExecuteCommand, commandName = "Duplicate" })) canvas.SendEvent(command);
+            Assert.That(graph.items.Count, Is.EqualTo(7)); Assert.That(canvas.SelectionCount, Is.EqualTo(2));
         }
         finally { window.Close(); Object.DestroyImmediate(window); }
     }

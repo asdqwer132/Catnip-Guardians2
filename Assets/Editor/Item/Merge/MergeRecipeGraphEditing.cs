@@ -97,15 +97,28 @@ public static class MergeRecipeGraphEditing
     public static void RemoveInput(MergeRecipeGraphAsset graph, MergeGraphItemNode node, int slot)
     {
         Undo.RecordObject(graph, "Remove merge ingredient input");
-        node.ingredients.RemoveAt(slot); EditorUtility.SetDirty(graph);
+        node.ingredients.RemoveAt(slot);
+        if (slot < node.ingredientNodeIds.Count) node.ingredientNodeIds.RemoveAt(slot);
+        EditorUtility.SetDirty(graph);
     }
-    public static void SetInput(MergeRecipeGraphAsset graph, MergeGraphItemNode node, int slot, MergeItem source)
+    internal static MergeGraphItemNode InputNode(MergeRecipeGraphAsset graph, MergeGraphItemNode node, int slot)
+    {
+        var item = node.ingredients[slot];
+        if (item == null) return null;
+        string id = slot < node.ingredientNodeIds.Count ? node.ingredientNodeIds[slot] : null;
+        return graph.items.Find(candidate => candidate.id == id && candidate.item == item)
+            ?? graph.items.Find(candidate => candidate.item == item);
+    }
+    public static void SetInput(MergeRecipeGraphAsset graph, MergeGraphItemNode node, int slot, MergeItem source, string sourceNodeId = null)
     {
         if (!graph.items.Contains(node) || slot < 0 || slot >= node.ingredients.Count ||
             (source != null && !graph.items.Exists(candidate => candidate.item == source)))
             throw new InvalidOperationException("그래프의 머지 아이템을 재료 입력에 연결하세요.");
         Undo.RecordObject(graph, "Connect merge ingredients");
-        node.ingredients[slot] = source; EditorUtility.SetDirty(graph);
+        node.ingredients[slot] = source;
+        while (node.ingredientNodeIds.Count <= slot) node.ingredientNodeIds.Add(null);
+        node.ingredientNodeIds[slot] = source != null ? sourceNodeId : null;
+        EditorUtility.SetDirty(graph);
     }
     public static void SetTier(MergeRecipeGraphAsset graph, MergeGraphItemNode node, int tier)
     {
@@ -116,9 +129,14 @@ public static class MergeRecipeGraphEditing
     {
         Undo.RecordObject(graph, "Remove merge item node");
         graph.items.Remove(item);
-        if (!graph.items.Exists(node => node.item == item.item))
-            foreach (var node in graph.items) for (int i = 0; i < node.ingredients.Count; i++)
-                if (node.ingredients[i] == item.item) node.ingredients[i] = null;
+        bool hasOtherOutput = graph.items.Exists(node => node.item == item.item);
+        foreach (var node in graph.items) for (int i = 0; i < node.ingredients.Count; i++)
+            if ((!hasOtherOutput && node.ingredients[i] == item.item) ||
+                (i < node.ingredientNodeIds.Count && node.ingredientNodeIds[i] == item.id))
+            {
+                node.ingredients[i] = null;
+                if (i < node.ingredientNodeIds.Count) node.ingredientNodeIds[i] = null;
+            }
         EditorUtility.SetDirty(graph);
     }
     private static MergeItem Resolve(MergeRecipeGraphAsset graph, ItemData data)
@@ -215,33 +233,21 @@ public static class MergeRecipeGraphEditing
         Upgrade(graph);
         var errors = new List<string>();
         var definitions = new HashSet<MergeItem>();
-        var byData = new Dictionary<ItemData, MergeItem>();
         foreach (var node in graph.items)
         {
             if (node.item == null || node.item.item == null) { errors.Add("레시피 추출 전에 각 MergeItem에 기존 ItemData를 할당하세요."); continue; }
             definitions.Add(node.item);
-            if (byData.TryGetValue(node.item.item, out var previous) && previous != node.item)
-                errors.Add(node.item.name + ": 같은 ItemData를 쓰는 MergeItem이 중복됩니다.");
-            else byData[node.item.item] = node.item;
             if (node.tier < 0) errors.Add(node.item.name + ": 티어는 0 이상이어야 합니다.");
         }
-        var used = new List<Dictionary<ItemData, int>>();
-        var generated = new HashSet<ItemRecipeData>();
         foreach (var node in graph.items)
         {
             if (!node.HasIngredients) continue;
-            var counts = new Dictionary<ItemData, int>();
             foreach (var source in node.ingredients)
             {
                 if (source == null) continue;
                 if (source.item == null || !definitions.Contains(source))
                 { errors.Add("연결한 재료는 ItemData가 할당된 그래프 노드여야 합니다."); continue; }
-                counts.TryGetValue(source.item, out int amount); counts[source.item] = amount + 1;
             }
-            foreach (var previous in used)
-                if (MergeTree.SameIngredients(previous, counts)) { errors.Add("동일한 재료 조합이 중복됩니다."); break; }
-            used.Add(counts);
-            if (node.generatedRecipe != null && !generated.Add(node.generatedRecipe)) errors.Add("같은 레시피 에셋이 여러 노드에 연결되어 있습니다.");
         }
         return errors;
     }
@@ -255,16 +261,19 @@ public static class MergeRecipeGraphEditing
         Undo.RecordObject(graph, "Extract merge recipes");
         string folder = Folder(graph) + "/" + SafeName(graph.name) + " Recipes";
         var output = new List<ItemRecipeData>();
+        var usedRecipes = new HashSet<ItemRecipeData>();
         foreach (var node in graph.items)
         {
             if (!node.HasIngredients) continue;
             var recipe = node.generatedRecipe;
-            if (recipe == null)
+            // 복제 노드가 같은 추출 에셋을 가리켜도 서로 덮어쓰지 않도록 별도 레시피를 만듭니다.
+            if (recipe == null || !usedRecipes.Add(recipe))
             {
                 if (!AssetDatabase.IsValidFolder(folder)) AssetDatabase.CreateFolder(Folder(graph), Path.GetFileName(folder));
                 recipe = ScriptableObject.CreateInstance<ItemRecipeData>(); recipe.name = node.item.name + " Recipe";
                 AssetDatabase.CreateAsset(recipe, AssetDatabase.GenerateUniqueAssetPath(folder + "/" + SafeName(recipe.name) + ".asset"));
                 node.generatedRecipe = recipe;
+                usedRecipes.Add(recipe);
             }
             Undo.RecordObject(recipe, "Extract merge recipe");
             recipe.resultItem = node.item.item; recipe.tier = node.tier;
@@ -342,93 +351,8 @@ public static class MergeRecipeGraphEditing
         if (manager == null || manager.recipeBook == null) throw new InvalidOperationException("매니저의 레시피북을 연결하세요.");
         ImportBook(graph, manager.recipeBook);
     }
-    public static void Arrange(MergeRecipeGraphAsset graph)
-    {
-        if (graph == null || graph.items == null || graph.items.Count == 0) return;
-        var depths = ConnectionDepths(graph.items);
-        var tiers = new SortedDictionary<int, SortedDictionary<int, List<MergeGraphItemNode>>>();
-        foreach (var node in graph.items)
-        {
-            if (node == null) continue;
-            if (!tiers.TryGetValue(node.tier, out var columns))
-                tiers.Add(node.tier, columns = new SortedDictionary<int, List<MergeGraphItemNode>>());
-            int depth = depths[node];
-            if (!columns.TryGetValue(depth, out var rows)) columns.Add(depth, rows = new List<MergeGraphItemNode>());
-            rows.Add(node);
-        }
-        Undo.RecordObject(graph, "Arrange merge nodes by tier and connection depth");
-        int column = 0;
-        // 티어가 우선이며, 같은 티어 안에서는 깊이별로 열을 나눕니다. 같은 열의 기존 노드 순서는 유지합니다.
-        foreach (var tier in tiers.Values)
-            foreach (var rows in tier.Values)
-            {
-                float y = 50f;
-                foreach (var node in rows)
-                {
-                    node.position = new Vector2(40 + column * 380, y);
-                    y += 185 + (node.ingredients?.Count ?? 0) * 30;
-                }
-                column++;
-            }
-        EditorUtility.SetDirty(graph);
-    }
+    public static void Arrange(MergeRecipeGraphAsset graph) => MergeRecipeGraphLayout.Arrange(graph);
 
-    private static Dictionary<MergeGraphItemNode, int> ConnectionDepths(List<MergeGraphItemNode> nodes)
-    {
-        // Canvas.Output과 동일하게, 같은 MergeItem의 출력이 여러 개면 첫 노드가 실제 연결의 출발점입니다.
-        var outputs = new Dictionary<MergeItem, MergeGraphItemNode>();
-        foreach (var node in nodes)
-            if (node?.item != null && !outputs.ContainsKey(node.item)) outputs.Add(node.item, node);
-        var inputs = new Dictionary<MergeGraphItemNode, List<MergeGraphItemNode>>();
-        foreach (var node in nodes)
-        {
-            if (node == null || inputs.ContainsKey(node)) continue;
-            var sources = new List<MergeGraphItemNode>();
-            if (node.ingredients != null)
-                foreach (var item in node.ingredients)
-                    if (item != null && outputs.TryGetValue(item, out var source) && !sources.Contains(source)) sources.Add(source);
-            inputs.Add(node, sources);
-        }
-
-        // 순환 연결은 같은 묶음으로 압축합니다. 연결을 지우지 않고도 유한한 깊이를 계산할 수 있습니다.
-        var indices = new Dictionary<MergeGraphItemNode, int>();
-        var lows = new Dictionary<MergeGraphItemNode, int>();
-        var stack = new Stack<MergeGraphItemNode>();
-        var onStack = new HashSet<MergeGraphItemNode>();
-        var components = new Dictionary<MergeGraphItemNode, int>();
-        var groups = new List<List<MergeGraphItemNode>>();
-        void Visit(MergeGraphItemNode node)
-        {
-            indices[node] = lows[node] = indices.Count;
-            stack.Push(node); onStack.Add(node);
-            foreach (var source in inputs[node])
-            {
-                if (!indices.ContainsKey(source)) { Visit(source); lows[node] = Math.Min(lows[node], lows[source]); }
-                else if (onStack.Contains(source)) lows[node] = Math.Min(lows[node], indices[source]);
-            }
-            if (lows[node] != indices[node]) return;
-            var group = new List<MergeGraphItemNode>();
-            MergeGraphItemNode member;
-            do
-            {
-                member = stack.Pop(); onStack.Remove(member); components[member] = groups.Count; group.Add(member);
-            } while (member != node);
-            groups.Add(group);
-        }
-        foreach (var node in nodes) if (node != null && !indices.ContainsKey(node)) Visit(node);
-
-        var groupDepths = new int[groups.Count];
-        var depths = new Dictionary<MergeGraphItemNode, int>();
-        // Visit은 재료 쪽 묶음을 먼저 완성하므로, 각 묶음은 이미 계산된 재료 깊이를 사용할 수 있습니다.
-        for (int i = 0; i < groups.Count; i++)
-        {
-            foreach (var node in groups[i])
-                foreach (var source in inputs[node])
-                    if (components[source] != i) groupDepths[i] = Math.Max(groupDepths[i], groupDepths[components[source]] + 1);
-            foreach (var node in groups[i]) depths[node] = groupDepths[i];
-        }
-        return depths;
-    }
     public static void Save(MergeRecipeGraphAsset graph)
     {
         Upgrade(graph); AssetDatabase.SaveAssetIfDirty(graph);
