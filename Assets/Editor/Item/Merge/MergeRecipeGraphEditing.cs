@@ -344,17 +344,90 @@ public static class MergeRecipeGraphEditing
     }
     public static void Arrange(MergeRecipeGraphAsset graph)
     {
-        Undo.RecordObject(graph, "Arrange merge nodes by tier");
-        var rows = new Dictionary<int, float>();
-        var ranks = new SortedSet<int>(); foreach (var node in graph.items) ranks.Add(node.tier);
-        var columns = new List<int>(ranks);
+        if (graph == null || graph.items == null || graph.items.Count == 0) return;
+        var depths = ConnectionDepths(graph.items);
+        var tiers = new SortedDictionary<int, SortedDictionary<int, List<MergeGraphItemNode>>>();
         foreach (var node in graph.items)
         {
-            rows.TryGetValue(node.tier, out float y);
-            node.position = new Vector2(40 + columns.IndexOf(node.tier) * 380, 50 + y);
-            rows[node.tier] = y + 185 + node.ingredients.Count * 30;
+            if (node == null) continue;
+            if (!tiers.TryGetValue(node.tier, out var columns))
+                tiers.Add(node.tier, columns = new SortedDictionary<int, List<MergeGraphItemNode>>());
+            int depth = depths[node];
+            if (!columns.TryGetValue(depth, out var rows)) columns.Add(depth, rows = new List<MergeGraphItemNode>());
+            rows.Add(node);
         }
+        Undo.RecordObject(graph, "Arrange merge nodes by tier and connection depth");
+        int column = 0;
+        // 티어가 우선이며, 같은 티어 안에서는 깊이별로 열을 나눕니다. 같은 열의 기존 노드 순서는 유지합니다.
+        foreach (var tier in tiers.Values)
+            foreach (var rows in tier.Values)
+            {
+                float y = 50f;
+                foreach (var node in rows)
+                {
+                    node.position = new Vector2(40 + column * 380, y);
+                    y += 185 + (node.ingredients?.Count ?? 0) * 30;
+                }
+                column++;
+            }
         EditorUtility.SetDirty(graph);
+    }
+
+    private static Dictionary<MergeGraphItemNode, int> ConnectionDepths(List<MergeGraphItemNode> nodes)
+    {
+        // Canvas.Output과 동일하게, 같은 MergeItem의 출력이 여러 개면 첫 노드가 실제 연결의 출발점입니다.
+        var outputs = new Dictionary<MergeItem, MergeGraphItemNode>();
+        foreach (var node in nodes)
+            if (node?.item != null && !outputs.ContainsKey(node.item)) outputs.Add(node.item, node);
+        var inputs = new Dictionary<MergeGraphItemNode, List<MergeGraphItemNode>>();
+        foreach (var node in nodes)
+        {
+            if (node == null || inputs.ContainsKey(node)) continue;
+            var sources = new List<MergeGraphItemNode>();
+            if (node.ingredients != null)
+                foreach (var item in node.ingredients)
+                    if (item != null && outputs.TryGetValue(item, out var source) && !sources.Contains(source)) sources.Add(source);
+            inputs.Add(node, sources);
+        }
+
+        // 순환 연결은 같은 묶음으로 압축합니다. 연결을 지우지 않고도 유한한 깊이를 계산할 수 있습니다.
+        var indices = new Dictionary<MergeGraphItemNode, int>();
+        var lows = new Dictionary<MergeGraphItemNode, int>();
+        var stack = new Stack<MergeGraphItemNode>();
+        var onStack = new HashSet<MergeGraphItemNode>();
+        var components = new Dictionary<MergeGraphItemNode, int>();
+        var groups = new List<List<MergeGraphItemNode>>();
+        void Visit(MergeGraphItemNode node)
+        {
+            indices[node] = lows[node] = indices.Count;
+            stack.Push(node); onStack.Add(node);
+            foreach (var source in inputs[node])
+            {
+                if (!indices.ContainsKey(source)) { Visit(source); lows[node] = Math.Min(lows[node], lows[source]); }
+                else if (onStack.Contains(source)) lows[node] = Math.Min(lows[node], indices[source]);
+            }
+            if (lows[node] != indices[node]) return;
+            var group = new List<MergeGraphItemNode>();
+            MergeGraphItemNode member;
+            do
+            {
+                member = stack.Pop(); onStack.Remove(member); components[member] = groups.Count; group.Add(member);
+            } while (member != node);
+            groups.Add(group);
+        }
+        foreach (var node in nodes) if (node != null && !indices.ContainsKey(node)) Visit(node);
+
+        var groupDepths = new int[groups.Count];
+        var depths = new Dictionary<MergeGraphItemNode, int>();
+        // Visit은 재료 쪽 묶음을 먼저 완성하므로, 각 묶음은 이미 계산된 재료 깊이를 사용할 수 있습니다.
+        for (int i = 0; i < groups.Count; i++)
+        {
+            foreach (var node in groups[i])
+                foreach (var source in inputs[node])
+                    if (components[source] != i) groupDepths[i] = Math.Max(groupDepths[i], groupDepths[components[source]] + 1);
+            foreach (var node in groups[i]) depths[node] = groupDepths[i];
+        }
+        return depths;
     }
     public static void Save(MergeRecipeGraphAsset graph)
     {

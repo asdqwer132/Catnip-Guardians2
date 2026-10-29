@@ -338,6 +338,81 @@ public class MergeRecipeGraphEditorTests
         Assert.That(graph.items[0].position.x, Is.LessThan(graph.items[2].position.x));
         Assert.That(graph.items[2].position.x, Is.LessThan(graph.items[1].position.x));
     }
+    [Test]
+    public void ArrangeUsesLongestConnectionDepthAndKeepsSameDepthCardsApart()
+    {
+        // 생성 순서가 연결 순서의 반대여도 재료 → 중간 결과 → 최종 결과 순으로 배치합니다.
+        var result = Item(); var branch = Item(); var middle = Item(); var root = Item(); var isolated = Item();
+        var resultNode = Connect(result, root, branch);
+        var branchNode = Connect(branch, middle);
+        var middleNode = Connect(middle, root, root);
+        var rootNode = graph.items.Find(n => n.item == root);
+        var isolatedNode = graph.items.Find(n => n.item == isolated);
+        for (int i = 0; i < 8; i++) MergeRecipeGraphEditing.AddInput(graph, rootNode);
+        var order = graph.items.ToArray();
+        MergeRecipeGraphEditing.Arrange(graph);
+        Assert.That(rootNode.position.x, Is.EqualTo(isolatedNode.position.x));
+        Assert.That(rootNode.position.x, Is.LessThan(middleNode.position.x));
+        Assert.That(middleNode.position.x, Is.LessThan(branchNode.position.x));
+        Assert.That(branchNode.position.x, Is.LessThan(resultNode.position.x), "The longer ingredient path must win over a direct root connection.");
+        Assert.That(isolatedNode.position.y, Is.GreaterThan(rootNode.position.y + 140 + rootNode.ingredients.Count * 30));
+        CollectionAssert.AreEqual(order, graph.items, "Layout must not reorder the stored nodes or change which output a connection uses.");
+        var positions = graph.items.ConvertAll(n => n.position);
+        MergeRecipeGraphEditing.Arrange(graph);
+        CollectionAssert.AreEqual(positions, graph.items.ConvertAll(n => n.position));
+    }
+    [Test]
+    public void ArrangeGroupsTierBeforeDepthAndCountsConnectionsAcrossTiers()
+    {
+        var root = Item(); var foreignRoot = Item(); var child = Item(); var result = Item();
+        var rootNode = graph.items[0]; var foreignNode = graph.items[1]; foreignNode.tier = 4;
+        var childNode = Connect(child, foreignRoot); var resultNode = Connect(result, child);
+        MergeRecipeGraphEditing.Arrange(graph);
+        Assert.That(rootNode.position.x, Is.LessThan(childNode.position.x));
+        Assert.That(childNode.position.x, Is.LessThan(resultNode.position.x));
+        Assert.That(resultNode.position.x, Is.LessThan(foreignNode.position.x), "All columns of the lower tier must precede the next tier, even if it contains a depth-zero node.");
+        Assert.That(childNode.tier, Is.Zero); Assert.That(foreignNode.tier, Is.EqualTo(4));
+    }
+    [Test]
+    public void ArrangeKeepsCyclesTogetherWithoutLosingTheirInputsOrDownstreamDepth()
+    {
+        var a = Item(); var b = Item(); var tail = Item(); var root = Item(); var self = Item();
+        var aNode = Connect(a, b, root); var bNode = Connect(b, a);
+        var tailNode = Connect(tail, a); var selfNode = Connect(self, self, root);
+        MergeRecipeGraphEditing.Arrange(graph);
+        Assert.That(graph.items[3].position.x, Is.LessThan(aNode.position.x));
+        Assert.That(aNode.position.x, Is.EqualTo(bNode.position.x));
+        Assert.That(selfNode.position.x, Is.EqualTo(aNode.position.x));
+        Assert.That(aNode.position.x, Is.LessThan(tailNode.position.x));
+        Assert.That(aNode.ingredients[0], Is.SameAs(b)); Assert.That(bNode.ingredients[0], Is.SameAs(a));
+        Assert.That(selfNode.ingredients[0], Is.SameAs(self));
+        var positions = graph.items.ConvertAll(n => n.position);
+        MergeRecipeGraphEditing.Arrange(graph);
+        CollectionAssert.AreEqual(positions, graph.items.ConvertAll(n => n.position));
+    }
+    [Test]
+    public void ArrangeFollowsTheSameFirstOutputAsTheCanvasForAlternativeRecipes()
+    {
+        var a = Item(); var b = Item(); var consumer = Item(); var deeper = Item();
+        var bNode = Connect(b, a); var consumerNode = Connect(consumer, a); var deeperNode = Connect(deeper, b);
+        var alternative = new MergeGraphItemNode { item = a, ingredients = new List<MergeItem> { deeper } };
+        graph.items.Add(alternative);
+        MergeRecipeGraphEditing.Arrange(graph);
+        Assert.That(consumerNode.position.x, Is.EqualTo(bNode.position.x));
+        Assert.That(deeperNode.position.x, Is.LessThan(alternative.position.x));
+        Assert.That(graph.items[0].item, Is.SameAs(a)); Assert.That(alternative.item, Is.SameAs(a));
+    }
+    [Test]
+    public void ArrangeCanUndoPositionsWithoutChangingRecipeConnections()
+    {
+        var result = Item(); var root = Item(); Connect(result, root);
+        string before = EditorJsonUtility.ToJson(graph);
+        Undo.IncrementCurrentGroup();
+        MergeRecipeGraphEditing.Arrange(graph); Undo.FlushUndoRecordObjects();
+        Assert.That(EditorJsonUtility.ToJson(graph), Is.Not.EqualTo(before));
+        Undo.PerformUndo();
+        Assert.That(EditorJsonUtility.ToJson(graph), Is.EqualTo(before));
+    }
     [UnityTest]
     public IEnumerator ActualEditorDraggingConnectsDynamicInput()
     {
