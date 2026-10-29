@@ -12,6 +12,8 @@ public sealed class MergeDropZone : MonoBehaviour
     public Vector2 lineStart = new Vector2(-2f, 1.5f);
     public Vector2 lineEnd = new Vector2(2f, 1.5f);
     public LineRenderer lineRenderer;
+    [Tooltip("UI로 제한선을 표시할 때는 끕니다. 실제 투입 제한 판정에는 영향을 주지 않습니다.")]
+    public bool showWorldLine = true;
 
     [Header("투입구 표시")]
     public SpriteRenderer spawnMarker;
@@ -65,7 +67,7 @@ public sealed class MergeDropZone : MonoBehaviour
     public void RefreshLine()
     {
         if (lineRenderer == null) return;
-        lineRenderer.enabled = blockAboveLine;
+        lineRenderer.enabled = blockAboveLine && showWorldLine;
         lineRenderer.useWorldSpace = false;
         lineRenderer.positionCount = 2;
         // LineRenderer를 다른 자식에 연결해도 상자 좌표와 동일한 위치에 표시합니다.

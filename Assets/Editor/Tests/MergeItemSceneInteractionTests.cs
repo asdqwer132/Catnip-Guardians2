@@ -348,13 +348,83 @@ public class MergeItemSceneAuthoringTests
         Assert.That(selectionUI.selectionEffect.GetComponent<CanvasGroup>().blocksRaycasts, Is.False);
         Assert.That(controller.selection.spawnPointDragger, Is.Not.Null);
         Assert.That(controller.selection.spawnPointDragger.inputCamera, Is.SameAs(controller.selection.inputCamera));
+        var limitLine = roots.SelectMany(r => r.GetComponentsInChildren<MergeDropLimitLineUI>(true)).Single();
+        Assert.That(limitLine.boxes, Is.SameAs(controller));
+        Assert.That(limitLine.worldCamera, Is.SameAs(controller.selection.inputCamera));
+        Assert.That(limitLine.transform.parent, Is.SameAs(controller.selection.dragAllowedArea));
+        Assert.That(limitLine.lineImage.raycastTarget, Is.False);
+        Assert.That(limitLine.GetComponent<Canvas>().overrideSorting, Is.True);
+        Assert.That(limitLine.GetComponent<Canvas>().sortingLayerName, Is.EqualTo("UI"));
         foreach (var entry in controller.boxes)
         {
             var bindings = entry.boxRoot.GetComponentInChildren<MergeBoxBindings>(true);
             Assert.That(bindings.dropZone, Is.Not.Null); Assert.That(bindings.dropZone.lineRenderer, Is.Not.Null);
             Assert.That(bindings.dropZone.spawnMarker, Is.Not.Null); Assert.That(entry.board.dropZone, Is.SameAs(bindings.dropZone));
+            Assert.That(bindings.dropZone.showWorldLine, Is.False);
         }
         Assert.That(roots.SelectMany(r => r.GetComponentsInChildren<MergeItemSelection>(true)).Count(s => s.enabled), Is.EqualTo(1));
         EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+    }
+}
+
+public class MergeDropLimitLineUITests
+{
+    private readonly List<Object> owned = new List<Object>();
+    private GameObject Host(string name, params System.Type[] components)
+    {
+        var host = new GameObject(name, components); owned.Add(host); return host;
+    }
+    [SetUp]
+    public void SetUp() => EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+    [TearDown]
+    public void TearDown()
+    {
+        for (int i = owned.Count - 1; i >= 0; i--) if (owned[i] != null) Object.DestroyImmediate(owned[i]);
+        owned.Clear();
+    }
+
+    [TestCase(RenderMode.ScreenSpaceOverlay)]
+    [TestCase(RenderMode.ScreenSpaceCamera)]
+    public void UiEndpointsFollowTheRealLimitLineAcrossBoxSwitchesAndViewportChanges(RenderMode mode)
+    {
+        var camera = Host("World camera", typeof(Camera)).GetComponent<Camera>();
+        camera.orthographic = true; camera.orthographicSize = 5; camera.transform.position = Vector3.back * 10;
+        var canvas = Host("Authored canvas", typeof(RectTransform), typeof(Canvas)).GetComponent<Canvas>();
+        canvas.renderMode = mode; canvas.worldCamera = camera; canvas.planeDistance = 10;
+        var parent = Host("Authored play area", typeof(RectTransform)).GetComponent<RectTransform>();
+        parent.SetParent(canvas.transform, false); parent.anchorMin = Vector2.zero; parent.anchorMax = Vector2.one;
+        parent.offsetMin = parent.offsetMax = Vector2.zero;
+        parent.localRotation = Quaternion.Euler(0, 0, 13); parent.localScale = new Vector3(.8f, 1.25f, 1);
+        var image = Host("Authored line image", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
+        var rect = image.rectTransform; rect.SetParent(parent, false);
+        rect.pivot = new Vector2(.2f, .8f); rect.localScale = new Vector3(1.4f, .7f, 1);
+        var line = image.gameObject.AddComponent<MergeDropLimitLineUI>(); line.worldCamera = camera; line.lineImage = image;
+        var a = Host("Box A", typeof(MergegameManager), typeof(MergeDropZone));
+        var b = Host("Box B", typeof(MergegameManager), typeof(MergeDropZone)); b.transform.position = Vector3.right * 30;
+        var controller = Host("Box controller", typeof(MergeBoxSceneController)).GetComponent<MergeBoxSceneController>();
+        controller.mianCamera = camera.transform;
+        controller.autoPlacer = Host("Authored box offsets", typeof(ObjectAutoPlacer)).GetComponent<ObjectAutoPlacer>();
+        controller.autoPlacer.offset = Vector3.right * 30;
+        var boards = new[] { a.GetComponent<MergegameManager>(), b.GetComponent<MergegameManager>() };
+        boards[0].dropZone = a.GetComponent<MergeDropZone>(); boards[1].dropZone = b.GetComponent<MergeDropZone>();
+        controller.boxes = new[] { new MergeBoxEntry { board = boards[0], boxRoot = a.transform }, new MergeBoxEntry { board = boards[1], boxRoot = b.transform } };
+        line.boxes = controller;
+        for (int i = 0; i < 2; i++)
+        {
+            controller.SelectBox(i);
+            var zone = boards[i].dropZone;
+            zone.lineStart = new Vector2(-2, .5f); zone.lineEnd = new Vector2(1.5f, 1f + i);
+            camera.rect = i == 0 ? new Rect(0, 0, 1, 1) : new Rect(.3f, .15f, .6f, .7f);
+            canvas.scaleFactor = i + 1;
+            Canvas.ForceUpdateCanvases(); line.Refresh();
+            Assert.That(image.enabled, Is.True);
+            Camera uiCamera = mode == RenderMode.ScreenSpaceOverlay ? null : camera;
+            Vector2 left = RectTransformUtility.WorldToScreenPoint(uiCamera, rect.TransformPoint(new Vector3(rect.rect.xMin, rect.rect.center.y, 0)));
+            Vector2 right = RectTransformUtility.WorldToScreenPoint(uiCamera, rect.TransformPoint(new Vector3(rect.rect.xMax, rect.rect.center.y, 0)));
+            Assert.That(Vector2.Distance(left, camera.WorldToScreenPoint(zone.transform.TransformPoint(zone.lineStart))), Is.LessThan(.15f));
+            Assert.That(Vector2.Distance(right, camera.WorldToScreenPoint(zone.transform.TransformPoint(zone.lineEnd))), Is.LessThan(.15f));
+        }
+        boards[1].dropZone.blockAboveLine = false; line.Refresh();
+        Assert.That(image.enabled, Is.False, "A disabled limit must not leave a visible UI warning line.");
     }
 }
