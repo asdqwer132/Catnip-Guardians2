@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8699dce0c4dd3846be4f88159460b12, type: 3}
+  m_Name: Weapon25 Merge Recipe
+  m_EditorClassIdentifier: Assembly-CSharp::ItemRecipeData
+  tier: 2
+  itemGrade: 2
+  itemSeries: 1
+  materials:
+  - itemData: {fileID: 11400000, guid: 8b8d0e37b315751498df205f51057aeb, type: 2}
+    amount: 1
+  - itemData: {fileID: 11400000, guid: 66342c9a5fc3be04fa9f583575d5ede0, type: 2}
+    amount: 1
+  resultItem: {fileID: 11400000, guid: 33602595d24b3564eb69ca06686496d7, type: 2}
