@@ -1,6 +1,15 @@
 using System;
 using System.Collections.Generic;
 
+[Serializable]
+public sealed class MergeBoxLevelSnapshot
+{
+    public ItemSeries series;
+    public int level = 1;
+    public static bool IsBoxSeries(ItemSeries value) => value != ItemSeries.None && value != ItemSeries.Potions && Enum.IsDefined(typeof(ItemSeries), value);
+    public MergeBoxLevelSnapshot Copy() => new MergeBoxLevelSnapshot { series = series, level = Math.Max(1, level) };
+}
+
 /// <summary>스킬트리에서 등록한 실행 아이템과 선택적인 대상 가방 ID입니다. 가방 내용은 저장하지 않습니다.</summary>
 [Serializable]
 public sealed class SkillItemSnapshot
@@ -25,16 +34,19 @@ public sealed class SkillItemSnapshot
     }
 }
 
-/// <summary>업그레이드 씬 → 제너럴 씬. 씬 오브젝트 대신 아이템 에셋과 수량만 보관합니다.</summary>
+/// <summary>업그레이드 씬 → 제너럴 씬. 아이템 에셋·수량과 시리즈별 상자 레벨을 보관합니다.</summary>
 [Serializable]
 public sealed class UpgradeToGeneralData
 {
     public List<InventoryItem> materialItems = new List<InventoryItem>();
     public List<SkillItemSnapshot> skillItems = new List<SkillItemSnapshot>();
+    public List<MergeBoxLevelSnapshot> boxLevels = new List<MergeBoxLevelSnapshot>();
 
     public UpgradeToGeneralData Copy()
     {
         var copy = new UpgradeToGeneralData { materialItems = GameSessionItemCopy.Copy(materialItems) };
+        if (boxLevels != null) foreach (var entry in boxLevels)
+            if (entry != null && MergeBoxLevelSnapshot.IsBoxSeries(entry.series)) copy.boxLevels.Add(entry.Copy());
         if (skillItems != null)
         {
             foreach (SkillItemSnapshot item in skillItems)

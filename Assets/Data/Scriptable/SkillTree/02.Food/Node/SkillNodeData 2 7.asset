@@ -13,12 +13,16 @@ MonoBehaviour:
   m_Name: SkillNodeData 2 7
   m_EditorClassIdentifier: Assembly-CSharp::SkillNodeData
   icon: {fileID: -2935489875843349602, guid: bc6f84a0491f2614a85da482dcebce0a, type: 3}
-  data: []
+  data:
+  - language: 0
+    dataName: Food Merge Box Upgrade
+    description: Upgrades this series' merge box.
+    detailDescription: Unlocks merge box level 2 for this series. Uses the box assigned
+      to level 2 in the item scene.
+  dataNumbering:
   dataId: SkillNodeData 2 7
   dataType: 0
   requireUnlock: 0
-  iconSearchFolderPath: Assets/Art/Icons/Items
-  findIconOnRebuild: 1
   skillMap: {fileID: 11400000, guid: 26bdc2a0d6cdd3f4b9172203def60c8a, type: 2}
   costs:
   - currencyType: 0
@@ -30,3 +34,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0f001038c7bfbc74b9cd457f1efdd241, type: 2}
   rewards:
   - {fileID: 11400000, guid: 9ee6ae08c6bc61d4f894259efef5d4ff, type: 2}
+  - {fileID: 11400000, guid: 5bdc8c5ad604620afb2be1fff030fb9c, type: 2}

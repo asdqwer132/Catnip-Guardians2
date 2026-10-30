@@ -133,7 +133,7 @@ public class MergeBoxLevelTests : MergeBoxLevelTestFixture
             Assert.That(entry.levelManager != null, Is.True); Assert.That(unique.Add(entry.levelManager), Is.True);
             Assert.That(series.Add(entry.board.itemSeries), Is.True);
             Assert.That(entry.levelManager.transform, Is.SameAs(entry.boxRoot));
-            Assert.That(entry.levelManager.levels.Length, Is.EqualTo(1), "Only the existing Box1 is authored; later variants remain user-defined.");
+            Assert.That(entry.levelManager.levels.Length, Is.GreaterThan(0));
             var box = entry.levelManager.levels[0].box;
             Assert.That(box.transform.IsChildOf(entry.boxRoot), Is.True);
             entry.levelManager.BindBoard(entry.board);
@@ -180,13 +180,14 @@ public class MergeBoxLevelPlayTests : MergeBoxLevelTestFixture
         var piece = board.ActiveItems.Single(); piece.body.position = manager.CurrentBox.transform.position; piece.transform.position = piece.body.position;
         piece.Velocity = new Vector2(1, 2); int life = piece.LifeId;
         var second = manager.levels[1].box; second.transform.localPosition = new Vector3(5, 2, 0); second.transform.localScale = Vector3.one * 1.5f;
-        Matrix4x4 change = second.transform.localToWorldMatrix * manager.CurrentBox.transform.worldToLocalMatrix;
-        var expectedPosition = change.MultiplyPoint3x4(piece.transform.position); var expectedVelocity = change.MultiplyVector(piece.Velocity);
+        var expectedPosition = piece.transform.position; var expectedVelocity = piece.Velocity;
+        var authoredBoxPosition = second.transform.localPosition; var authoredBoxScale = second.transform.localScale;
         int stock = material.count, bonus = material.defaultCount; float countdown = board.DropCountdown;
         Assert.That(dragger.TryBeginDrag(board.spawnPoint.position), Is.True);
         Assert.That(controller.UpgradeBox(ItemSeries.Weapon), Is.True);
         Assert.That(dragger.IsDragging, Is.False);
         Assert.That(board.spawnPoint, Is.SameAs(second.spawnPoint)); Assert.That(board.dropZone, Is.SameAs(second.dropZone));
+        Assert.That(second.transform.localPosition, Is.EqualTo(authoredBoxPosition)); Assert.That(second.transform.localScale, Is.EqualTo(authoredBoxScale));
         Assert.That(board.ActiveItems.Single(), Is.SameAs(piece)); Assert.That(piece.IsLive, Is.True); Assert.That(piece.LifeId, Is.EqualTo(life));
         Assert.That(Vector3.Distance(piece.transform.position, expectedPosition), Is.LessThan(.01f));
         Assert.That(Vector2.Distance(piece.Velocity, expectedVelocity), Is.LessThan(.001f));

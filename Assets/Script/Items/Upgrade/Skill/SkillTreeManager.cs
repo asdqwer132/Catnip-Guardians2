@@ -8,6 +8,7 @@ public class SkillTreeManager : MonoBehaviour
 
 
     public BuffSkillManager buffSkillManager;
+    public MergeBoxUpgradeManager mergeBoxUpgrades;
 
     public event Action OnSkillTreeChanged;
     public event Action<SkillNodeData> OnSkillUnlocked;
@@ -43,7 +44,8 @@ public class SkillTreeManager : MonoBehaviour
         {
             skillTreeManager = this,
             unlockManager = UnlockManager.Instance,
-            buffSkillManager = buffSkillManager
+            buffSkillManager = buffSkillManager,
+            mergeBoxUpgrades = mergeBoxUpgrades
         };
     }
 
@@ -57,7 +59,23 @@ public class SkillTreeManager : MonoBehaviour
         context.skillTreeManager = this;
         context.unlockManager = UnlockManager.Instance;
         context.buffSkillManager = buffSkillManager;
+        context.mergeBoxUpgrades = mergeBoxUpgrades;
     }
+
+    // Restore purchased nodes without charging their costs or publishing purchase events again.
+    public void RestoreUnlockedSkills(IEnumerable<SkillNodeData> nodes)
+    {
+        RefreshContext();
+        foreach (var node in nodes)
+        {
+            if (node == null || string.IsNullOrEmpty(node.dataId) || !unlockedSkillIds.Add(node.dataId)) continue;
+            AddUnlockedSkillToMap(node);
+            ApplyRewards(node);
+        }
+        OnSkillTreeChanged?.Invoke();
+    }
+
+    private void OnDestroy() { if (Instance == this) Instance = null; }
 
     public bool CanUnlock(SkillNodeData node)
     {

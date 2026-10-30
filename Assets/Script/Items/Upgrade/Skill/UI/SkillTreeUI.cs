@@ -41,6 +41,8 @@ public class SkillTreeUI : MonoBehaviour
             if (nodeUI == null)
                 continue;
 
+            if (SkillTreeManager.Instance != null)
+                SkillTreeManager.Instance.mergeBoxUpgrades?.RegisterNode(nodeUI.SkillNodeData);
             nodeUI.Init(this);
         }
 

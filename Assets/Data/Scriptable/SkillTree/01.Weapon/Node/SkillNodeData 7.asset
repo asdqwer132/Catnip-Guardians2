@@ -17,11 +17,12 @@ MonoBehaviour:
   - language: 0
     dataName: Item Box Unlock
     description: Unlocks a new item box.
+    detailDescription: Unlocks merge box level 2 for this series. Uses the box assigned
+      to level 2 in the item scene.
+  dataNumbering:
   dataId: SkillNodeData 7
   dataType: 0
   requireUnlock: 0
-  iconSearchFolderPath: Assets/Art/Icons/Items
-  findIconOnRebuild: 1
   skillMap: {fileID: 11400000, guid: d5de1aa9d85f30f4ca52d4b62c8ecee9, type: 2}
   costs:
   - currencyType: 0
@@ -33,3 +34,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 78419fa13b211804c96a0b19e2bc71ca, type: 2}
   rewards:
   - {fileID: 11400000, guid: 642a3b3f203fc6a40a1fbdd0faacd809, type: 2}
+  - {fileID: 11400000, guid: 6521b32e7c08b00f2a40fa3e4a8c1131, type: 2}

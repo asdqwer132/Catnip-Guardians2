@@ -9,6 +9,7 @@ public class UpgradeManager : MonoBehaviour
     public UnlockManager unlockManager;
     public ShopManager shopManager;
     public BuffSkillManager buffSkillManager;
+    public MergeBoxUpgradeManager mergeBoxUpgrades;
 
     [Header("UI")]
     public SkillTreeUI skillTreeUI;
@@ -26,6 +27,8 @@ public class UpgradeManager : MonoBehaviour
 
         UpgradeInit();
         UIInit();
+        if (mergeBoxUpgrades != null)
+            RefreshBroadcaster.Instance?.Broadcast(RefreshType.SkillTree | RefreshType.Unlock | RefreshType.Shop | RefreshType.Inventory | RefreshType.Bag | RefreshType.Equipment);
 
         isInited = true;
     }
@@ -57,6 +60,7 @@ public class UpgradeManager : MonoBehaviour
 
     private void UIInit()
     {
+        mergeBoxUpgrades?.Initialize();
         if (skillTreeUI != null)
             skillTreeUI.Init();
 
@@ -74,6 +78,7 @@ public class UpgradeManager : MonoBehaviour
     {
         var session = GameSession.GetOrCreate();
         var data = new UpgradeToGeneralData();
+        if (mergeBoxUpgrades != null) data.boxLevels = mergeBoxUpgrades.CaptureLevels();
         var inventory = materialInventory != null ? materialInventory : InventoryManager.instance;
         if (inventory != null)
             data.materialItems = GameSessionItemCopy.Copy(inventory.items);

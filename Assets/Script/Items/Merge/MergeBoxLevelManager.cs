@@ -8,7 +8,7 @@ public sealed class MergeBoxLevel
     public MergeBoxBindings box;
 }
 
-// 시리즈 루트 하나에 하나씩 둡니다. Box1/Box2의 물리 영역만 바꾸고 재료/레시피/풀은 기존 board가 유지합니다.
+// 시리즈 루트 하나에 하나씩 둡니다. 작성된 박스의 활성 상태와 투입 참조만 전환합니다.
 [DisallowMultipleComponent, DefaultExecutionOrder(-300)]
 public sealed class MergeBoxLevelManager : MonoBehaviour
 {
@@ -59,8 +59,6 @@ public sealed class MergeBoxLevelManager : MonoBehaviour
             // 매니저를 끄거나 재시작하지 않아 재고, 토글, 투입 타이머는 그대로 남습니다.
             board.spawnPoint = CurrentBox.spawnPoint;
             board.dropZone = CurrentBox.dropZone;
-            if (previous != null && previous != CurrentBox)
-                board.RemapLayout(CurrentBox.transform.localToWorldMatrix * previous.transform.worldToLocalMatrix);
         }
         foreach (var entry in levels)
             if (entry?.box != null && entry.box != CurrentBox) entry.box.gameObject.SetActive(false);
@@ -73,7 +71,6 @@ public sealed class MergeBoxLevelManager : MonoBehaviour
     private bool TryResolve(int value, out MergeBoxLevel target)
     {
         target = null;
-        MergeBoxLevel first = null;
         if (levels == null) return false;
         for (int i = 0; i < levels.Length; i++)
         {
@@ -91,10 +88,8 @@ public sealed class MergeBoxLevelManager : MonoBehaviour
                 if (entry.minimumLevel == other.minimumLevel || box.transform.IsChildOf(other.box.transform) ||
                     other.box.transform.IsChildOf(box.transform)) return false;
             }
-            if (first == null || entry.minimumLevel < first.minimumLevel) first = entry;
             if (entry.minimumLevel <= value && (target == null || entry.minimumLevel > target.minimumLevel)) target = entry;
         }
-        if (target == null) target = first;
         return target != null;
     }
 }
