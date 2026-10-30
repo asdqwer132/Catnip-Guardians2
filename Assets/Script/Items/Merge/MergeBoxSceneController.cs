@@ -7,6 +7,7 @@ public sealed class MergeBoxEntry
 {
     public Transform boxRoot;
     public MergegameManager board;
+    public MergeBoxLevelManager levelManager;
 }
 
 // 드롭다운 항목 순서와 boxes 순서는 Inspector에서 연결합니다. 항목 UI를 생성하지 않습니다.
@@ -22,23 +23,21 @@ public sealed class MergeBoxSceneController : MonoBehaviour
     public int SelectedIndex => selectedIndex;
     public MergegameManager SelectedBoard => selectedIndex >= 0 && selectedIndex < boxes.Length ? boxes[selectedIndex]?.board : null;
 
-    private void Awake()
+    public MergeBoxLevelManager SelectedBoxManager => selectedIndex >= 0 && selectedIndex < boxes.Length ? boxes[selectedIndex]?.levelManager : null;
+
+    private void OnEnable()
     {
         foreach (var entry in boxes)
         {
             if (entry?.board == null || entry.boxRoot == null) continue;
-            var bindings = entry.boxRoot.GetComponentInChildren<MergeBoxBindings>(true);
-            if (bindings != null)
+            if (entry.levelManager == null) entry.levelManager = entry.boxRoot.GetComponent<MergeBoxLevelManager>();
+            if (entry.levelManager != null)
             {
-                entry.board.spawnPoint = bindings.spawnPoint;
-                entry.board.dropZone = bindings.dropZone;
+                entry.levelManager.BindBoard(entry.board);
+                entry.levelManager.BoxChanged += OnBoxChanged;
             }
             entry.board.SetMaterialUIEnabled(false);
         }
-    }
-
-    private void OnEnable()
-    {
         if (seriesDropdown != null) seriesDropdown.onValueChanged.AddListener(SelectBox);
         SelectBox(seriesDropdown != null ? seriesDropdown.value : selectedIndex);
     }
@@ -48,21 +47,55 @@ public sealed class MergeBoxSceneController : MonoBehaviour
     private void OnDisable()
     {
         if (seriesDropdown != null) seriesDropdown.onValueChanged.RemoveListener(SelectBox);
+        foreach (var entry in boxes)
+            if (entry?.levelManager != null) entry.levelManager.BoxChanged -= OnBoxChanged;
         selection?.CancelSelection();
     }
+
+    private void OnBoxChanged(MergeBoxLevelManager value)
+    {
+        if (value != SelectedBoxManager) return;
+        selection?.CancelSelection();
+        if (selection != null) selection.spawnPointDragger?.EndDrag();
+    }
+
+    public MergeBoxLevelManager GetBoxManager(ItemSeries series)
+    {
+        foreach (var entry in boxes)
+            if (entry?.board != null && entry.board.itemSeries == series) return entry.levelManager;
+        return null;
+    }
+
+    public bool SetBoxLevel(ItemSeries series, int level)
+    {
+        var manager = GetBoxManager(series);
+        return manager != null && manager.TrySetLevel(level);
+    }
+
+    public bool UpgradeBox(ItemSeries series)
+    {
+        var manager = GetBoxManager(series);
+        return manager != null && manager.TryUpgrade();
+    }
+
+    public void SetCurrentBoxLevel(int level) => SelectedBoxManager?.SetLevel(level);
+    public void UpgradeCurrentBox() => SelectedBoxManager?.Upgrade();
 
     public void SelectBox(int index)
     {
         if (index < 0 || index >= boxes.Length || boxes[index]?.board == null || boxes[index].boxRoot == null) return;
         if (SelectedBoard != null) SelectedBoard.SetMaterialUIEnabled(false);
         selection?.CancelSelection();
+        if (selection != null) selection.spawnPointDragger?.EndDrag();
         selectedIndex = index;
         var entry = boxes[index];
         entry.board.SetMaterialUIEnabled(true);
-        Vector3 pos = mianCamera.transform.position;
-        pos = autoPlacer.offset * index;
-        pos.z = -10f;
-        mianCamera.transform.position = pos;
+        if (mianCamera != null && autoPlacer != null)
+        {
+            Vector3 pos = autoPlacer.offset * index;
+            pos.z = mianCamera.transform.position.z;
+            mianCamera.transform.position = pos;
+        }
         if (selection != null) selection.board = entry.board;
         if (seriesDropdown != null) seriesDropdown.SetValueWithoutNotify(index);
     }

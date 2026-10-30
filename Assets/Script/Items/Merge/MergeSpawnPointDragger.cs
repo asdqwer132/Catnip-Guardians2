@@ -18,6 +18,8 @@ public sealed class MergeSpawnPointDragger : MonoBehaviour
     private InputAction pointer, dragButton;
     private readonly List<RaycastResult> uiHits = new List<RaycastResult>();
     private MergegameManager draggingBoard;
+    private MergeDropZone draggingZone;
+    private Transform draggingSpawnPoint;
     private MergeDropZone displayedZone;
     private Vector3 lockedLocalPosition, pointerOffset;
     public bool IsDragging => draggingBoard != null;
@@ -60,7 +62,7 @@ public sealed class MergeSpawnPointDragger : MonoBehaviour
     private void MovePointer()
     {
         if (!IsDragging) return;
-        if (!CanDrag(draggingBoard) || CurrentBoard != draggingBoard || !dragButton.IsPressed() ||
+        if (!CanContinueDrag() || !dragButton.IsPressed() ||
             !TryWorld(pointer.ReadValue<Vector2>(), out var world, false)) { EndDrag(); return; }
         DragTo(world);
     }
@@ -84,6 +86,8 @@ public sealed class MergeSpawnPointDragger : MonoBehaviour
     {
         if (IsDragging || !IsFinite(world) || !IsHandleAtWorld(world)) return false;
         draggingBoard = CurrentBoard;
+        draggingZone = draggingBoard.dropZone;
+        draggingSpawnPoint = draggingBoard.spawnPoint;
         var zone = draggingBoard.dropZone.transform;
         lockedLocalPosition = zone.InverseTransformPoint(draggingBoard.spawnPoint.position);
         pointerOffset = lockedLocalPosition - zone.InverseTransformPoint(world);
@@ -95,13 +99,16 @@ public sealed class MergeSpawnPointDragger : MonoBehaviour
     {
         if (!IsDragging) return;
         if (!IsFinite(world)) return;
-        if (!CanDrag(draggingBoard) || CurrentBoard != draggingBoard) { EndDrag(); return; }
+        if (!CanContinueDrag()) { EndDrag(); return; }
         var zone = draggingBoard.dropZone;
         Vector3 target = zone.transform.TransformPoint(zone.transform.InverseTransformPoint(world) + pointerOffset);
         draggingBoard.spawnPoint.position = zone.ConstrainPosition(target, lockedLocalPosition, moveX, moveY);
     }
 
-    public void EndDrag() => draggingBoard = null;
+    private bool CanContinueDrag() => CanDrag(draggingBoard) && CurrentBoard == draggingBoard &&
+        draggingBoard.dropZone == draggingZone && draggingBoard.spawnPoint == draggingSpawnPoint;
+
+    public void EndDrag() { draggingBoard = null; draggingZone = null; draggingSpawnPoint = null; }
 
     private bool TryWorld(Vector2 screen, out Vector3 world, bool requireViewport = true)
     {
