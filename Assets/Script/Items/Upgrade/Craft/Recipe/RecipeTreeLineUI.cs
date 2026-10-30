@@ -61,15 +61,16 @@ public class RecipeTreeLineUI : MonoBehaviour
             return;
 
         RectTransform rect = transform as RectTransform;
+        if (rect == null) return;
         RectTransform parent = rect.parent as RectTransform;
-        if (rect == null || parent == null)
+        if (parent == null)
             return;
 
         Vector2 start = parent.InverseTransformPoint(from.TransformPoint(from.rect.center));
         Vector2 end = parent.InverseTransformPoint(to.TransformPoint(to.rect.center));
         Vector2 delta = end - start;
 
-        rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.anchorMin = rect.anchorMax = parent.pivot;
         rect.pivot = new Vector2(0f, 0.5f);
         rect.anchoredPosition = start;
         rect.sizeDelta = new Vector2(delta.magnitude, highlighted ? highlightedWidth : normalWidth);

@@ -101,6 +101,7 @@ internal sealed class MergeItemCombiner
                 if (ingredients[i] == null || ingredients[i].LifeId != lives[i] || !ingredients[i].IsLive) return false;
             foreach (var item in ingredients) item.ReturnToPool();
             result.Velocity = momentum / Mathf.Max(.001f, mass); result.SetSimulated(true); committed = true;
+            if (owner.discoveryHistory != null) owner.discoveryHistory.RecordCrafted(recipe.resultItem);
             owner.Report($"합성: {owner.GetItemDisplayName(recipe.resultItem)}");
             return true;
         }

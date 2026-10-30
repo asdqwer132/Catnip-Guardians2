@@ -12,6 +12,14 @@ public class MergeGamePipelineTests
     private readonly List<Object> owned = new List<Object>();
     private MergegameManager board;
     private MergeItem first, second, result;
+    private sealed class DiscoveryStore : IMergeDiscoveryStore
+    {
+        public string json;
+        public int writes;
+        public string Read() => json;
+        public void Write(string value) { json = value; writes++; }
+        public void Delete() => json = null;
+    }
     private GameObject Host(string name, bool active = true)
     {
         var host = new GameObject(name); host.SetActive(active); owned.Add(host); return host;
@@ -76,6 +84,31 @@ public class MergeGamePipelineTests
         board.currentMaterial = board.mergeMaterials[index];
         Assert.That(board.TryDropCurrent(), Is.True);
         return board.ActiveItems[board.ActiveItems.Count - 1];
+    }
+
+    [Test]
+    public void OnlyCommittedMergesRecordDiscoveriesAndRepeatedCraftsDoNotSaveAgain()
+    {
+        var store = new DiscoveryStore();
+        var history = Host("Discovery").AddComponent<MergeDiscoveryHistory>();
+        history.SetSaveStore(store);
+        board.discoveryHistory = history;
+        result.item.dataId = "Result";
+        var a = Drop(0, 40000); var b = Drop(1, 40010);
+        Assert.That(history.Count, Is.Zero, "Dropping an item is not crafting.");
+        var prefab = result.prefab;
+        result.prefab = null;
+        board.QueueContact(a, b); board.ProcessContacts();
+        Assert.That(history.Count, Is.Zero, "A failed merge must not discover the result.");
+        result.prefab = prefab;
+        board.QueueContact(a, b); board.ProcessContacts();
+        Assert.That(history.HasCrafted(result.item), Is.True);
+        Assert.That(store.writes, Is.EqualTo(1));
+        board.ClearItems();
+        a = Drop(0, 40000); b = Drop(1, 40010);
+        board.QueueContact(a, b); board.ProcessContacts();
+        Assert.That(board.ActiveItems.Count, Is.EqualTo(1));
+        Assert.That(store.writes, Is.EqualTo(1));
     }
 
     [Test]
