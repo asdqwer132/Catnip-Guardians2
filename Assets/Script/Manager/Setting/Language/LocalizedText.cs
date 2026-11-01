@@ -7,7 +7,7 @@ public enum LocalizedTextSource { TranslationKey, DataName, Description, DetailD
 
 [DisallowMultipleComponent]
 [AddComponentMenu("UI/Localization/Localized Text")]
-public sealed class LocalizedText : MonoBehaviour
+public sealed class LocalizedText : MonoBehaviour, ISceneLocalizedUI
 {
     [Tooltip("비우면 처음 작성한 영어 문구를 키로 사용합니다. Hierarchy 이름은 바꾸지 않습니다.")]
     public string key;
@@ -58,6 +58,8 @@ public sealed class LocalizedText : MonoBehaviour
         }
         else SceneLanguageMediator.RefreshText(this);
     }
+    void ISceneLocalizedUI.RefreshLanguage() => Refresh();
+    void ISceneLocalizedUI.ApplyLanguage(language selected, LocalizedTextTable table) => Apply(selected, table);
     internal void Apply(language selected, LocalizedTextTable table)
     {
         Cache();

@@ -1,35 +1,43 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 public enum CurrencyDisplaySource { Wallet, CurrentGame }
 
-
-
-public class CurrencyUIGroup : MonoBehaviour
+public class CurrencyUIGroup : MonoBehaviour, ISceneLocalizedUI
 {
-
     [Header("Currency UIs")]
     public CurrencyUI[] currencyUIs;
     [Tooltip("Wallet: 전체 보유 재화 / Current Game: 이번 게임에서 획득한 재화")]
     public CurrencyDisplaySource source;
     public bool DisplaysWallet => source == CurrencyDisplaySource.Wallet;
 
-
     [Serializable]
     public class CurrencyUI
     {
         public CurrencyType type;
+        [Tooltip("이 재화의 언어별 이름과 아이콘입니다. 모든 그룹에서 같은 에셋을 공유할 수 있습니다.")]
+        public DefaultData data;
         public GameObject textObj;
+        [FormerlySerializedAs("textUI")]
         public TextMeshProUGUI amountText;
+        [Tooltip("선택 사항: 비우면 이름을 표시하지 않습니다.")]
         public TextMeshProUGUI nameText;
+        [Tooltip("선택 사항: 비우면 아이콘을 갱신하지 않습니다.")]
+        public Image icon;
     }
 
-
+    private Scene registeredScene;
+    private language displayLanguage = language.english;
     private CurrencyManager boundManager;
     private GameStatisticsManager boundStatistics;
     private void OnEnable()
     {
+        registeredScene = gameObject.scene;
+        SceneLanguageMediator.Register(this);
         CurrencyManager.InstanceChanged += BindManager;
         GameStatisticsManager.InstanceChanged += BindManager;
         BindManager();
@@ -46,12 +54,49 @@ public class CurrencyUIGroup : MonoBehaviour
     }
     private void OnDisable()
     {
+        SceneLanguageMediator.Unregister(this, registeredScene);
         CurrencyManager.InstanceChanged -= BindManager;
         GameStatisticsManager.InstanceChanged -= BindManager;
         if (boundManager != null) boundManager.UnregisterUI(this);
         if (boundStatistics != null) boundStatistics.OnChanged -= RefreshRoundUI;
         boundManager = null;
         boundStatistics = null;
+    }
+
+    public void RefreshPresentation()
+    {
+        if (isActiveAndEnabled && registeredScene != gameObject.scene)
+        {
+            SceneLanguageMediator.Unregister(this, registeredScene);
+            registeredScene = gameObject.scene;
+            SceneLanguageMediator.Register(this);
+        }
+        else SceneLanguageMediator.RefreshText(this);
+    }
+
+    void ISceneLocalizedUI.RefreshLanguage() => RefreshPresentation();
+    void ISceneLocalizedUI.ApplyLanguage(language selected, LocalizedTextTable table)
+    {
+        displayLanguage = selected;
+        if (currencyUIs == null) return;
+        foreach (var ui in currencyUIs) ApplyPresentation(ui);
+    }
+
+    private void ApplyPresentation(CurrencyUI ui)
+    {
+        if (ui == null || ui.data == null) return;
+        if (ui.nameText != null)
+        {
+            LocalizedText.BindData(ui.nameText, ui.data, LocalizedTextSource.DataName);
+            string name = ui.data.GetDataName(displayLanguage);
+            if (string.IsNullOrEmpty(name)) name = ui.data.GetDataName(language.english);
+            ui.nameText.text = string.IsNullOrEmpty(name) ? ui.data.name : name;
+        }
+        if (ui.icon != null)
+        {
+            ui.icon.sprite = ui.data.icon;
+            ui.icon.enabled = ui.data.icon != null;
+        }
     }
 
     private void RefreshRoundUI()
@@ -74,6 +119,8 @@ public class CurrencyUIGroup : MonoBehaviour
 
             if (ui.type != type)
                 continue;
+
+            ApplyPresentation(ui);
 
             if (ui.amountText != null)
                 ui.amountText.text = amount.ToString();

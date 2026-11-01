@@ -14,7 +14,7 @@ public sealed class SceneLanguageMediator : MonoBehaviour
     private LanguageManager boundManager;
     private Scene ownedScene;
     private static readonly Dictionary<Scene, SceneLanguageMediator> owners = new Dictionary<Scene, SceneLanguageMediator>();
-    private static readonly Dictionary<Scene, HashSet<LocalizedText>> texts = new Dictionary<Scene, HashSet<LocalizedText>>();
+    private static readonly Dictionary<Scene, HashSet<MonoBehaviour>> texts = new Dictionary<Scene, HashSet<MonoBehaviour>>();
     public language CurrentLanguage => boundManager != null ? boundManager.selectedLan : standaloneLanguage;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -48,24 +48,26 @@ public sealed class SceneLanguageMediator : MonoBehaviour
     public void RefreshAll()
     {
         if (!texts.TryGetValue(ownedScene, out var registered)) return;
-        foreach (var text in new List<LocalizedText>(registered))
-            if (text != null && text.isActiveAndEnabled) text.Refresh();
+        foreach (var text in new List<MonoBehaviour>(registered))
+            if (text != null && text.isActiveAndEnabled && text is ISceneLocalizedUI target) target.RefreshLanguage();
     }
-    internal static void Register(LocalizedText text)
+    internal static void Register(MonoBehaviour text)
     {
+        if (!(text is ISceneLocalizedUI)) return;
         Scene scene = text.gameObject.scene;
-        if (!texts.TryGetValue(scene, out var registered)) texts.Add(scene, registered = new HashSet<LocalizedText>());
+        if (!texts.TryGetValue(scene, out var registered)) texts.Add(scene, registered = new HashSet<MonoBehaviour>());
         registered.Add(text); RefreshText(text);
     }
-    internal static void Unregister(LocalizedText text, Scene scene)
+    internal static void Unregister(MonoBehaviour text, Scene scene)
     {
         if (!texts.TryGetValue(scene, out var registered)) return;
         registered.Remove(text); if (registered.Count == 0) texts.Remove(scene);
     }
-    internal static void RefreshText(LocalizedText text)
+    internal static void RefreshText(MonoBehaviour text)
     {
+        if (!(text is ISceneLocalizedUI target)) return;
         if (owners.TryGetValue(text.gameObject.scene, out var owner) && owner != null)
-            text.Apply(owner.CurrentLanguage, owner.translations);
-        else text.Apply(language.english, null);
+            target.ApplyLanguage(owner.CurrentLanguage, owner.translations);
+        else target.ApplyLanguage(language.english, null);
     }
 }

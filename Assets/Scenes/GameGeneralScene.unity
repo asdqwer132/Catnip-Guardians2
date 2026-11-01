@@ -5038,20 +5038,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CurrencyUIGroup
   currencyUIs:
   - type: 0
+    data: {fileID: 11400000, guid: a205a303ef8135d3e9d60745c4505f03, type: 2}
     textObj: {fileID: 241050961}
-    textUI: {fileID: 1082452155}
+    amountText: {fileID: 1082452155}
+    nameText: {fileID: 0}
+    icon: {fileID: 0}
   - type: 1
+    data: {fileID: 11400000, guid: fb5d1649793f45e06b6e24e1e5660ac4, type: 2}
     textObj: {fileID: 733854955}
-    textUI: {fileID: 910926648}
+    amountText: {fileID: 910926648}
+    nameText: {fileID: 0}
+    icon: {fileID: 0}
   - type: 2
+    data: {fileID: 11400000, guid: b04078539b39aab2d9cb02e0a0dd5356, type: 2}
     textObj: {fileID: 280630229}
-    textUI: {fileID: 2042359187}
+    amountText: {fileID: 2042359187}
+    nameText: {fileID: 0}
+    icon: {fileID: 0}
   - type: 3
+    data: {fileID: 11400000, guid: 04516a4eb863d9f679d330a69759a5e6, type: 2}
     textObj: {fileID: 1591736872}
-    textUI: {fileID: 1987716911}
+    amountText: {fileID: 1987716911}
+    nameText: {fileID: 0}
+    icon: {fileID: 0}
   - type: 4
+    data: {fileID: 11400000, guid: 02d2388018950969a8f29868c5ffce40, type: 2}
     textObj: {fileID: 16755102}
-    textUI: {fileID: 1037661523}
+    amountText: {fileID: 1037661523}
+    nameText: {fileID: 0}
+    icon: {fileID: 0}
   source: 1
 --- !u!1 &1207082690
 GameObject:
@@ -5349,26 +5364,47 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CurrencyUIGroup
   currencyUIs:
   - type: 0
+    data: {fileID: 11400000, guid: a205a303ef8135d3e9d60745c4505f03, type: 2}
     textObj: {fileID: 1207082690}
-    textUI: {fileID: 1172264455}
+    amountText: {fileID: 1172264455}
+    nameText: {fileID: 0}
+    icon: {fileID: 1230844127}
   - type: 1
+    data: {fileID: 11400000, guid: fb5d1649793f45e06b6e24e1e5660ac4, type: 2}
     textObj: {fileID: 168859186}
-    textUI: {fileID: 1406317380}
+    amountText: {fileID: 1406317380}
+    nameText: {fileID: 0}
+    icon: {fileID: 1531639941}
   - type: 2
+    data: {fileID: 11400000, guid: b04078539b39aab2d9cb02e0a0dd5356, type: 2}
     textObj: {fileID: 1843171996}
-    textUI: {fileID: 1956614652}
+    amountText: {fileID: 1956614652}
+    nameText: {fileID: 0}
+    icon: {fileID: 58351160}
   - type: 3
+    data: {fileID: 11400000, guid: 04516a4eb863d9f679d330a69759a5e6, type: 2}
     textObj: {fileID: 68637945}
-    textUI: {fileID: 638202638}
+    amountText: {fileID: 638202638}
+    nameText: {fileID: 0}
+    icon: {fileID: 514723011}
   - type: 4
+    data: {fileID: 11400000, guid: 02d2388018950969a8f29868c5ffce40, type: 2}
     textObj: {fileID: 1578491324}
-    textUI: {fileID: 929169325}
+    amountText: {fileID: 929169325}
+    nameText: {fileID: 0}
+    icon: {fileID: 2314263}
   - type: 5
+    data: {fileID: 11400000, guid: d255e4bd93811c00b92d2c78b0a862ed, type: 2}
     textObj: {fileID: 1484001888}
-    textUI: {fileID: 974236816}
+    amountText: {fileID: 974236816}
+    nameText: {fileID: 0}
+    icon: {fileID: 1875256778}
   - type: 6
+    data: {fileID: 11400000, guid: 80c4ed92b0738f4f2a4891423a4f4286, type: 2}
     textObj: {fileID: 769152089}
-    textUI: {fileID: 1130552346}
+    amountText: {fileID: 1130552346}
+    nameText: {fileID: 0}
+    icon: {fileID: 1103026049}
   source: 1
 --- !u!1 &1230844125
 GameObject:
