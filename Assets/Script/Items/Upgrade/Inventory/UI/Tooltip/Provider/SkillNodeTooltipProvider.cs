@@ -28,7 +28,7 @@ public class SkillNodeTooltipProvider : CostTooltipProvider
         data = new CostTooltipData
         {
             sourceData = nodeData,
-            icon = nodeData.icon,
+            icon = nodeData.mapIcon == null ? nodeData.icon : nodeData.mapIcon,
             dataName = GetSkillName(nodeData),
             amountText = "",
             description = nodeData.GetDescription(),

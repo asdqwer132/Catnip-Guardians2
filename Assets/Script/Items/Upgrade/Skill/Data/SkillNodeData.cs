@@ -9,7 +9,7 @@ public class SkillNodeData : DefaultData
 {
     [Header("Map")]
     public SkillMapData skillMap;
-
+    public Sprite mapIcon;
     [Header("Cost")]
     public Cost[] costs;
 

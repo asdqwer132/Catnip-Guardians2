@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -10,6 +11,7 @@ public sealed class SkillTreeMapPanel : MonoBehaviour
     public sealed class MapBinding
     {
         public Toggle toggle;
+        public TextMeshProUGUI toggleText;
         public RectTransform graph;
         public SkillMapTooltipProvider information;
         public ScrollRect scrollRect;
@@ -108,6 +110,10 @@ public sealed class SkillTreeMapPanel : MonoBehaviour
             int unlocked = subscribedManager != null ? subscribedManager.GetUnlockedSkillCount(map) : 0;
             progressFill.fillAmount = map.totalNodeCount > 0
                 ? Mathf.Clamp01((float)unlocked / map.totalNodeCount) : 0f;
+        }
+        foreach(var mapInfo in maps)
+        {
+            mapInfo.toggleText.text = mapInfo.information.MapData.GetDataName();
         }
     }
 }

@@ -201,7 +201,7 @@ public class GameRunAccountingTests
         var text = label.AddComponent<TextMeshProUGUI>();
         var group = host.AddComponent<CurrencyUIGroup>();
         group.source = source;
-        group.currencyUIs = new[] { new CurrencyUIGroup.CurrencyUI { type = CurrencyType.CurrencyMain, textUI = text } };
+        group.currencyUIs = new[] { new CurrencyUIGroup.CurrencyUI { type = CurrencyType.CurrencyMain, nameText = text } };
         host.SetActive(true);
         return group;
     }
@@ -210,14 +210,14 @@ public class GameRunAccountingTests
     public void RoundNavigationBindsLateIgnoresWalletChangesAndResultConfirmationPaysOnce()
     {
         var navigation = CurrencyGroup(CurrencyDisplaySource.CurrentGame);
-        Assert.That(navigation.currencyUIs[0].textUI.text, Is.EqualTo("0"));
+        Assert.That(navigation.currencyUIs[0].amountText.text, Is.EqualTo("0"));
         var wallet = Host("Wallet").AddComponent<CurrencyManager>();
         int initial = wallet.GetCurrency(CurrencyType.CurrencyMain);
         var statistics = Host("Statistics").AddComponent<GameStatisticsManager>();
         statistics.AddKill(2);
         statistics.AddGold(7);
         wallet.AddCurrency(CurrencyType.CurrencyMain, 50);
-        Assert.That(navigation.currencyUIs[0].textUI.text, Is.EqualTo("7"));
+        Assert.That(navigation.currencyUIs[0].amountText.text, Is.EqualTo("7"));
 
         var panel = Host("Authored result", false);
         var title = new GameObject("Result title", typeof(RectTransform));
@@ -237,11 +237,11 @@ public class GameRunAccountingTests
         statistics.Confirm();
         statistics.Confirm();
         Assert.That(wallet.GetCurrency(CurrencyType.CurrencyMain), Is.EqualTo(initial + 50 + 7));
-        Assert.That(navigation.currencyUIs[0].textUI.text, Is.EqualTo("7"));
+        Assert.That(navigation.currencyUIs[0].amountText.text, Is.EqualTo("7"));
 
         statistics.ResetRound();
         end.ResetGameEnd();
-        Assert.That(navigation.currencyUIs[0].textUI.text, Is.EqualTo("0"));
+        Assert.That(navigation.currencyUIs[0].amountText.text, Is.EqualTo("0"));
         statistics.AddGold(3);
         statistics.Confirm();
         Assert.That(wallet.GetCurrency(CurrencyType.CurrencyMain), Is.EqualTo(initial + 50 + 10));

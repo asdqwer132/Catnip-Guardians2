@@ -4,21 +4,27 @@ using UnityEngine;
 
 public enum CurrencyDisplaySource { Wallet, CurrentGame }
 
+
+
 public class CurrencyUIGroup : MonoBehaviour
 {
-    [Serializable]
-    public class CurrencyUI
-    {
-        public CurrencyType type;
-        public GameObject textObj;
-        public TextMeshProUGUI textUI;
-    }
 
     [Header("Currency UIs")]
     public CurrencyUI[] currencyUIs;
     [Tooltip("Wallet: 전체 보유 재화 / Current Game: 이번 게임에서 획득한 재화")]
     public CurrencyDisplaySource source;
     public bool DisplaysWallet => source == CurrencyDisplaySource.Wallet;
+
+
+    [Serializable]
+    public class CurrencyUI
+    {
+        public CurrencyType type;
+        public GameObject textObj;
+        public TextMeshProUGUI amountText;
+        public TextMeshProUGUI nameText;
+    }
+
 
     private CurrencyManager boundManager;
     private GameStatisticsManager boundStatistics;
@@ -69,8 +75,8 @@ public class CurrencyUIGroup : MonoBehaviour
             if (ui.type != type)
                 continue;
 
-            if (ui.textUI != null)
-                ui.textUI.text = amount.ToString();
+            if (ui.amountText != null)
+                ui.amountText.text = amount.ToString();
 
             if (ui.textObj != null)
                 ui.textObj.SetActive(amount > 0 || type == CurrencyType.CurrencyMain);
