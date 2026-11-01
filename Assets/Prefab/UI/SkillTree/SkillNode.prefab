@@ -166,7 +166,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7747454345876928892}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -313,9 +313,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SkillNodeTooltipProvider
   anchorRect: {fileID: 0}
   skillNodeUI: {fileID: 3131203849903030181}
-  unlockedText: "\uD574\uAE08 \uC644\uB8CC"
-  canUnlockText: "\uD574\uAE08 \uAC00\uB2A5"
-  lockedText: "\uC7A0\uAE40"
 --- !u!114 &2335489100761839389
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -329,6 +326,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ToggleTooltipTrigger
   isPointer: 1
+  autoDisable: 1
+  startShow: 0
   tooltipUI: {fileID: 0}
   providerComponent: {fileID: 6370626538912415708}
   infoToggle: {fileID: 0}
@@ -386,7 +385,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8913983986458512368}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
