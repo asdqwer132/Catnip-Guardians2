@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class SkillNodeUI : MonoBehaviour
 {
@@ -13,9 +14,18 @@ public class SkillNodeUI : MonoBehaviour
     [SerializeField] private Image iconImage;
     [SerializeField] private Image lockImage;
 
+    [Header("State Sprites")]
+    [SerializeField] private Image stateImage;
+    [SerializeField] private Sprite unlockedSprite;
+    [SerializeField] private Sprite lockedSprite;
+    [SerializeField] private bool hideUnavailableNodes;
+
     private SkillTreeUI ownerUI;
+    private Sprite authoredStateSprite;
+    private bool stateSpriteCaptured;
 
     public SkillNodeData SkillNodeData => skillNodeData;
+    public IReadOnlyList<GameObject> Lines => lines;
 
     public void SetData(SkillNodeData skillNodeData, GameObject[] lines)
     {
@@ -39,10 +49,6 @@ public class SkillNodeUI : MonoBehaviour
         if (lockImage != null)
             lockImage.raycastTarget = false;
 
-        foreach (var line in lines)
-        {
-            line.gameObject.SetActive(false);
-        }
         Refresh();
     }
 
@@ -82,14 +88,13 @@ public class SkillNodeUI : MonoBehaviour
         if (SkillTreeManager.Instance != null)
         {
             isUnlocked = SkillTreeManager.Instance.IsUnlocked(skillNodeData.dataId);
-            canUnlock = SkillTreeManager.Instance.CanUnlock(skillNodeData);
+            canUnlock = CurrencyManager.instance != null && SkillTreeManager.Instance.CanUnlock(skillNodeData);
         }
 
         bool isCannotClick = !isUnlocked && !canUnlock;
         bool isCanClick = !isUnlocked && canUnlock;
-        bool isUnlockedState = isUnlocked;
-
-        if (isCannotClick)
+        SetLinesUnlocked(isUnlocked);
+        if (hideUnavailableNodes && isCannotClick)
         {
             SetNodeVisible(false);
             return;
@@ -102,6 +107,7 @@ public class SkillNodeUI : MonoBehaviour
             iconImage.sprite = skillNodeData.icon;
             iconImage.enabled = skillNodeData.icon != null;
         }
+        ApplyStateSprite(isUnlocked);
 
         if (button != null)
             button.interactable = isCanClick;
@@ -109,11 +115,7 @@ public class SkillNodeUI : MonoBehaviour
         if (lockImage != null)
             lockImage.gameObject.SetActive(isCanClick);
 
-        foreach (var line in lines)
-        {
-            line.gameObject.SetActive(false);
-        }
-        if (isUnlockedState)
+        if (isUnlocked)
         {
             if (button != null)
                 button.interactable = false;
@@ -121,10 +123,26 @@ public class SkillNodeUI : MonoBehaviour
             if (lockImage != null)
                 lockImage.gameObject.SetActive(false);
 
-            foreach(var line in lines)
-            {
-                line.gameObject.SetActive(true);
-            }
+        }
+    }
+
+    private void ApplyStateSprite(bool unlocked)
+    {
+        if (stateImage == null) return;
+        if (!stateSpriteCaptured) { authoredStateSprite = stateImage.sprite; stateSpriteCaptured = true; }
+        Sprite sprite = unlocked ? unlockedSprite : lockedSprite;
+        stateImage.sprite = sprite != null ? sprite : authoredStateSprite;
+    }
+
+    private void SetLinesUnlocked(bool unlocked)
+    {
+        if (lines == null) return;
+        foreach (var line in lines)
+        {
+            if (line == null) continue;
+            if (line.TryGetComponent<SkillTreeConnectionUI>(out var connection)) connection.SetUnlocked(unlocked);
+            else if (line.TryGetComponent<SkillTreeLineUI>(out var segment)) segment.SetUnlocked(unlocked);
+            else line.SetActive(unlocked); // 이전 씬/프리팹의 선 참조도 유지합니다.
         }
     }
 

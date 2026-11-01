@@ -10,25 +10,31 @@ public class SkillTreeUI : MonoBehaviour
 
     [Header("Option")]
     [SerializeField] private bool includeInactive = true;
+    private SkillTreeManager boundManager;
 
     private void OnEnable()
     {
-        if (SkillTreeManager.Instance != null)
-        {
-            SkillTreeManager.Instance.OnSkillTreeChanged += RefreshAllNodes;
-        }
+        CurrencyManager.InstanceChanged += RefreshAllNodes;
+        Subscribe(); RefreshAllNodes();
+    }
+    private void Subscribe()
+    {
+        if (boundManager == SkillTreeManager.Instance) return;
+        if (boundManager != null) boundManager.OnSkillTreeChanged -= RefreshAllNodes;
+        boundManager = SkillTreeManager.Instance;
+        if (boundManager != null) boundManager.OnSkillTreeChanged += RefreshAllNodes;
     }
 
     private void OnDisable()
     {
-        if (SkillTreeManager.Instance != null)
-        {
-            SkillTreeManager.Instance.OnSkillTreeChanged -= RefreshAllNodes;
-        }
+        CurrencyManager.InstanceChanged -= RefreshAllNodes;
+        if (boundManager != null) boundManager.OnSkillTreeChanged -= RefreshAllNodes;
+        boundManager = null;
     }
 
     public void Init()
     {
+        Subscribe();
         FindNodeUIs();
 
         if (skillNodeUIs == null)
