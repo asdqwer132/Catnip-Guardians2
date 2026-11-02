@@ -16,8 +16,10 @@ public enum CurrencyType
     CurrencySub2 = 2,
     CurrencySub3 = 3,
     CurrencySub4 = 4,
-    ExtraCurrency1 = 5,
-    ExtraCurrency2 = 6
+    CurrencySub5 = 5,
+    CurrencySub6 = 6,
+    CurrencySub7 = 7,
+    CurrencySub8 = 8,
 }
 
 public class CurrencyManager : MonoBehaviour
