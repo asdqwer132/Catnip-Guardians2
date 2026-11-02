@@ -22,6 +22,7 @@ public class ShopManager : MonoBehaviour
     private List<ItemBoxData> currentShopBoxes = new List<ItemBoxData>();
     private ItemBoxData currentSelectedBox;
     private ShopBoxButton currentSelectedButton;
+    private bool purchasing;
 
     private void Awake()
     {
@@ -41,6 +42,9 @@ public class ShopManager : MonoBehaviour
         ClearSelectedBox();
 
         currentShopBoxes.Clear();
+        if (boxButtons != null)
+            foreach (var button in boxButtons)
+                if (button != null) button.Init(this, null);
 
         if (boxPoolManager == null)
         {
@@ -108,17 +112,9 @@ public class ShopManager : MonoBehaviour
 
     public void SelectBox(ShopBoxButton button, ItemBoxData boxData)
     {
-        if (button == null)
-        {
-            Debug.LogWarning("선택할 버튼이 없습니다.");
+        if (button == null || boxData == null || button.IsPurchased || button.BoxData != boxData || !OwnsSlot(button))
             return;
-        }
-
-        if (boxData == null)
-        {
-            Debug.LogWarning("선택할 상자 데이터가 없습니다.");
-            return;
-        }
+        if (currentSelectedButton != null && currentSelectedButton != button) currentSelectedButton.ClearSelection();
 
         currentSelectedButton = button;
         currentSelectedBox = boxData;
@@ -129,63 +125,90 @@ public class ShopManager : MonoBehaviour
 
     public void ClearSelectedBox()
     {
+        var previous = currentSelectedButton;
         currentSelectedButton = null;
         currentSelectedBox = null;
+        if (previous != null) previous.ClearSelection();
 
         if (boxInfoUI != null)
             boxInfoUI.ClearInfo();
     }
 
-    public void BuySelectedBox()
-    {
-        if (currentSelectedBox == null)
-        {
-            Debug.LogWarning("선택된 상자가 없습니다.");
-            return;
-        }
+    public void BuySelectedBox() => TryBuySelectedBox();
 
-        BuyBox(currentSelectedBox);
+    public bool TryBuySelectedBox()
+    {
+        if (currentSelectedButton == null || currentSelectedBox == null)
+            return PurchaseFailed("선택된 상자가 없습니다.");
+        return Purchase(currentSelectedButton, currentSelectedBox);
     }
 
+    // Existing UnityEvents can keep using BuyBox. Only currently offered slots can be bought.
     public void BuyBox(ItemBoxData boxData)
     {
-        if (boxData == null)
+        if (currentSelectedButton != null && currentSelectedBox == boxData)
         {
-            Debug.LogWarning("상자 데이터가 없습니다.");
+            Purchase(currentSelectedButton, boxData);
             return;
         }
+        if (boxButtons != null)
+            foreach (var button in boxButtons)
+                if (button != null && button.BoxData == boxData && !button.IsPurchased)
+                {
+                    Purchase(button, boxData);
+                    return;
+                }
+        PurchaseFailed("구매 가능한 상자 슬롯이 없습니다.");
+    }
 
-        if (CurrencyManager.instance == null)
-        {
-            Debug.LogWarning("CurrencyManager가 없습니다.");
-            return;
-        }
+    private bool OwnsSlot(ShopBoxButton button)
+        => boxButtons != null && System.Array.IndexOf(boxButtons, button) >= 0;
 
-        bool canBuy = CurrencyManager.instance.SpendCurrencies(boxData.costs);
+    private bool Purchase(ShopBoxButton button, ItemBoxData boxData)
+    {
+        if (purchasing) return PurchaseFailed("구매 처리 중입니다.");
+        if (button == null || boxData == null || !OwnsSlot(button) || button.IsPurchased || button.BoxData != boxData)
+            return PurchaseFailed("구매 가능한 상자 슬롯이 없습니다.");
+        var wallet = CurrencyManager.instance;
+        var inventory = InventoryManager.instance;
+        if (wallet == null || inventory == null) return PurchaseFailed("재화 또는 인벤토리 매니저가 없습니다.");
 
-        if (!canBuy)
-        {
-            Debug.Log("재화가 부족합니다.");
-            return;
-        }
-
+        // Aggregate repeated currency entries before checking/spending, so a failed
+        // purchase never partially pays the same currency more than once.
+        var costs = new List<Cost>();
+        if (boxData.costs != null)
+            foreach (var cost in boxData.costs)
+            {
+                if (cost == null || cost.amount <= 0) continue;
+                var combined = costs.Find(c => c.currencyType == cost.currencyType);
+                if (combined == null) costs.Add(new Cost { currencyType = cost.currencyType, amount = cost.amount });
+                else
+                {
+                    if ((long)combined.amount + cost.amount > int.MaxValue) return PurchaseFailed("가격이 올바르지 않습니다.");
+                    combined.amount += cost.amount;
+                }
+            }
+        if (!wallet.HasCurrencies(costs)) return PurchaseFailed("재화가 부족합니다.");
         ItemData resultItem = boxData.GetRandomItem();
+        if (resultItem == null) return PurchaseFailed("지급할 보상이 없습니다.");
 
-        if (resultItem == null)
+        purchasing = true;
+        try
         {
-            Debug.LogWarning("가챠 결과 아이템이 없습니다.");
-            return;
+            if (!wallet.SpendCurrencies(costs)) return PurchaseFailed("재화가 부족합니다.");
+            inventory.AddItem(resultItem, 1);
+            button.MarkPurchased();
+            if (currentSelectedButton == button) ClearSelectedBox();
+            ShowPurchaseResult(resultItem, 1);
+            return true;
         }
+        finally { purchasing = false; }
+    }
 
-        if (InventoryManager.instance == null)
-        {
-            Debug.LogWarning("InventoryManager가 없습니다.");
-            return;
-        }
-
-        InventoryManager.instance.AddItem(resultItem, 1);
-
-        ShowPurchaseResult(resultItem, 1);
+    private bool PurchaseFailed(string reason)
+    {
+        Debug.Log("[Shop] 구매 실패: " + reason, this);
+        return false;
     }
 
     private void ShowPurchaseResult(ItemData resultItem, int count)

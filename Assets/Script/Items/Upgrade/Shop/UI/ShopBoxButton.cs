@@ -1,87 +1,76 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ShopBoxButton : MonoBehaviour
+public class ShopBoxButton : ItemDefinitionUI
 {
     private ShopManager shopManager;
     private ItemBoxData boxData;
 
-
-    [Header("UI")]
-    public Image icon;
+    [Header("Shop Slot")]
     public Toggle toggle;
+    public ShopSlotOpenAnimationUI openAnimation;
+    public GameObject purchasedOverlay;
+    public bool IsPurchased { get; private set; }
+    public ItemBoxData BoxData => boxData;
+    protected override bool UpdateIcon => !IsPurchased;
 
     private void Awake()
     {
-        if (toggle == null)
-            toggle = GetComponent<Toggle>();
-    }
-
-    private void Start()
-    {
-        if (toggle != null)
-        {
-            toggle.onValueChanged.AddListener(_ => OnClickButton());
-        }
+        if (toggle == null) toggle = GetComponent<Toggle>();
+        if (toggle != null) toggle.onValueChanged.AddListener(OnToggleChanged);
     }
 
     private void OnDestroy()
     {
-        if (toggle != null)
-            toggle.onValueChanged.RemoveListener(_ => OnClickButton());
+        if (toggle != null) toggle.onValueChanged.RemoveListener(OnToggleChanged);
     }
+
     public void Init(ShopManager manager, ItemBoxData data)
     {
         shopManager = manager;
         boxData = data;
-
-        UpdateUI();
+        IsPurchased = false;
+        ClearSelection();
+        if (purchasedOverlay != null) purchasedOverlay.SetActive(false);
+        if (toggle != null) toggle.interactable = data != null;
+        SetData(data);
+        if (openAnimation != null) openAnimation.ResetToBox(data);
     }
 
-    private void UpdateUI()
+    public void MarkPurchased()
     {
-        if (boxData == null)
-        {
-            ClearUI();
-            return;
-        }
-
-        if (icon != null)
-        {
-            icon.sprite = boxData.icon;
-            icon.enabled = boxData.icon != null;
-        }
+        if (IsPurchased) return;
+        IsPurchased = true;
+        if (toggle != null) toggle.interactable = false;
+        if (purchasedOverlay != null) purchasedOverlay.SetActive(true);
+        if (openAnimation != null) openAnimation.Play(boxData);
     }
 
-    private void ClearUI()
+    public void ClearSelection()
     {
-        if (icon != null)
+        if (toggle == null) return;
+        var group = toggle.group;
+        bool allowOff = group != null && group.allowSwitchOff;
+        try
         {
-            icon.sprite = null;
-            icon.enabled = false;
+            if (group != null) group.allowSwitchOff = true;
+            toggle.SetIsOnWithoutNotify(false);
         }
+        finally { if (group != null) group.allowSwitchOff = allowOff; }
     }
 
-    private void OnClickButton()
+    private void OnToggleChanged(bool selected)
     {
-        if (boxData == null)
+        if (shopManager == null || boxData == null || IsPurchased)
         {
-            Debug.LogWarning("버튼에 연결된 상자 데이터가 없습니다.");
+            if (selected) ClearSelection();
             return;
         }
-
-        if (shopManager == null)
+        if (selected) shopManager.SelectBox(this, boxData);
+        else if (shopManager.IsSelectedButton(this))
         {
-            Debug.LogWarning("ShopManager가 연결되지 않았습니다.");
-            return;
-        }
-
-        if (shopManager.IsSelectedButton(this))
-        {
+            if (toggle.group != null && toggle.group.AnyTogglesOn()) return;
             shopManager.ClearSelectedBox();
-            return;
         }
-
-        shopManager.SelectBox(this, boxData);
     }
 }

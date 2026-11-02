@@ -2,14 +2,12 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class RecipeSlotUI : MonoBehaviour
+public class RecipeSlotUI : ItemDefinitionUI
 {
     [Header("Base Item UI")]
-    public Image icon;
-    public TextMeshProUGUI nameText;
+    public TextMeshProUGUI nameText { get => dataNameText; set => dataNameText = value; }
     public GameObject amountImage;
     public TextMeshProUGUI amountText;
-    public TextMeshProUGUI gradeText;
 
     [Header("Button")]
     public Button fillButton;
@@ -42,20 +40,14 @@ public class RecipeSlotUI : MonoBehaviour
 
         currentItem = item;
 
-        if (item == null)
+        if (item == null || item.resultItem == null)
         {
             ClearSlot();
             return;
         }
 
-        if (icon != null)
-        {
-            icon.sprite = item.Icon;
-            icon.enabled = item.Icon != null;
-        }
-
-        if (nameText != null)
-            nameText.text = item.GetDataName();
+        SetData(item.resultItem);
+        SetClassification(item.GetItemSeries(), item.GetGrade());
 
         if (amountImage != null)
             amountImage.SetActive(false);
@@ -63,22 +55,13 @@ public class RecipeSlotUI : MonoBehaviour
         if (amountText != null)
             amountText.text = "";
 
-        if (gradeText != null)
-            gradeText.text = item.GetGrade().ToString();
     }
 
     public virtual void ClearSlot()
     {
         currentItem = null;
 
-        if (icon != null)
-        {
-            icon.sprite = null;
-            icon.enabled = false;
-        }
-
-        if (nameText != null)
-            nameText.text = "";
+        ClearData();
 
         if (amountImage != null)
             amountImage.SetActive(false);
@@ -86,8 +69,6 @@ public class RecipeSlotUI : MonoBehaviour
         if (amountText != null)
             amountText.text = "";
 
-        if (gradeText != null)
-            gradeText.text = "";
     }
 
     public ItemRecipeData GetCurrentItem()

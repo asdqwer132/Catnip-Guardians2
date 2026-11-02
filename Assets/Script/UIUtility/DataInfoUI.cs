@@ -47,6 +47,7 @@ public class DataInfoUI : MonoBehaviour, ISceneLocalizedUI
         boundData = data;
         fallbackName = nameFallback;
         hasBinding = true;
+        OnDataChanged(data);
         ApplyLanguage(SceneLanguageMediator.GetLanguage(gameObject.scene));
     }
 
@@ -84,6 +85,24 @@ public class DataInfoUI : MonoBehaviour, ISceneLocalizedUI
     }
 
     protected virtual void OnDataLanguageChanged(language selected) { }
+    protected virtual void OnDataChanged(DefinedData data) { }
+
+    public static void ApplyDefinition(TextMeshProUGUI text, Image image, DefinedData data,
+        language selected, string fallback = "", bool hideEmptyText = true)
+    {
+        if (text != null)
+        {
+            string value = DefinedDataUtility.GetName(data, selected, fallback);
+            text.text = value ?? "";
+            if (hideEmptyText) text.gameObject.SetActive(!string.IsNullOrEmpty(value));
+            LocalizedText.BindDefinedData(text, data, fallback);
+        }
+        if (image != null)
+        {
+            image.sprite = data?.Icon;
+            image.enabled = image.sprite != null;
+        }
+    }
 
     private void BindText(TextMeshProUGUI target, string value, LocalizedTextSource field, bool hideWhenEmpty)
     {

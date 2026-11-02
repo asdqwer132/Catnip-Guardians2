@@ -487,6 +487,8 @@ GameObject:
   - component: {fileID: 5799071425989491123}
   - component: {fileID: 6434748579363020050}
   - component: {fileID: 8655282150185658067}
+  - component: {fileID: 8424641706891921576}
+  - component: {fileID: 1327199142333781252}
   m_Layer: 5
   m_Name: Icon
   m_TagString: Untagged
@@ -551,6 +553,43 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!95 &8424641706891921576
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4065235677360420878}
+  m_Enabled: 0
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage:
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1327199142333781252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4065235677360420878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 587051a431414d95aad3c1db825cc0a2, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ShopSlotOpenAnimationUI
+  icon: {fileID: 8655282150185658067}
+  targetAnimator: {fileID: 8424641706891921576}
+  useUnscaledTime: 1
 --- !u!1 &4444283766208750647
 GameObject:
   m_ObjectHideFlags: 0
@@ -645,7 +684,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopBoxButton
   icon: {fileID: 8655282150185658067}
+  dataNameText: {fileID: 0}
+  descriptionText: {fileID: 0}
+  detailDescriptionText: {fileID: 0}
+  dataSource: {fileID: 0}
+  hideEmptyDescription: 0
+  hideEmptyDetailDescription: 1
+  seriesText: {fileID: 0}
+  gradeText: {fileID: 3062450692926421914}
+  seriesIcon: {fileID: 2040038925151678873}
+  gradeIcon: {fileID: 4001674669153954984}
+  series: 0
+  grade: -1
   toggle: {fileID: 6296884574704379799}
+  openAnimation: {fileID: 1327199142333781252}
+  purchasedOverlay: {fileID: 0}
 --- !u!114 &6296884574704379799
 MonoBehaviour:
   m_ObjectHideFlags: 0

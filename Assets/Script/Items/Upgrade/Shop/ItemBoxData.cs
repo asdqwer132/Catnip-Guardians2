@@ -20,6 +20,7 @@ public class ItemBoxData : DefaultData
 
     [Header("Box Animation")]
     public AnimationClip idleClip;
+    [Tooltip("구매 성공 시 선택한 상점 슬롯 아이콘에서 한 번 재생할 클립입니다.")]
     public AnimationClip openClip;
 
     [Tooltip("상자 열기 Trigger 이름")]

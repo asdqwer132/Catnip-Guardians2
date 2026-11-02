@@ -1,12 +1,11 @@
 using UnityEngine;
 using TMPro;
 
-public class BaseItemSlotUI : DataInfoUI
+public class BaseItemSlotUI : ItemDefinitionUI
 {
     [Header("Base Item UI")]
     public GameObject amountImage;
     public TextMeshProUGUI amountText;
-    public TextMeshProUGUI gradeText;
     public GameObject locked;
     [Tooltip("Shown when the slot is unlocked and has no item.")]
     public GameObject ready;
@@ -14,7 +13,6 @@ public class BaseItemSlotUI : DataInfoUI
 
     [Header("Optional Item Info")]
     public TextMeshProUGUI categoryText;
-    public TextMeshProUGUI seriesText;
     public TextMeshProUGUI weightText;
     public TextMeshProUGUI cooldownText;
 
@@ -40,12 +38,9 @@ public class BaseItemSlotUI : DataInfoUI
         SetDefinedData(data, data.dataName);
         if (amountImage != null) amountImage.SetActive(true);
         if (amountText != null) amountText.text = amount.ToString();
-        if (gradeText != null) gradeText.text = data.GradeText;
         SetOptionalText(categoryText, data.CategoryText);
-        SetOptionalText(seriesText, data.SeriesText);
         SetOptionalText(weightText, data.WeightText);
         SetOptionalText(cooldownText, data.CooldownText);
-        LocalizedText.RefreshTranslation(gradeText);
         if (locked != null) locked.SetActive(false);
         if (ready != null) ready.SetActive(false);
         IsLocked = false;
@@ -63,9 +58,7 @@ public class BaseItemSlotUI : DataInfoUI
         ClearData();
         if (amountImage != null) amountImage.SetActive(false);
         if (amountText != null) amountText.text = "";
-        if (gradeText != null) gradeText.text = "";
         SetOptionalText(categoryText, null);
-        SetOptionalText(seriesText, null);
         SetOptionalText(weightText, null);
         SetOptionalText(cooldownText, null);
         if (locked != null) locked.SetActive(false);

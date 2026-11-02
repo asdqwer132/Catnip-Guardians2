@@ -9,16 +9,15 @@ public class BoxCost
     public GameObject costPanel;
     public TextMeshProUGUI costText;
 }
-public class ShopBoxInfoUI : DataInfoUI
+public class ShopBoxInfoUI : ItemDefinitionUI
 {
     [Header("Basic Info UI")]
     public GameObject pannel;
     public Image boxIcon { get => icon; set => icon = value; }
     public ShopBoxOpenAnimationUI boxOpenAnimationUI;
     public TextMeshProUGUI boxNameText { get => dataNameText; set => dataNameText = value; }
-    public Image seriesImage;
-    public Image gradeImage;
-    public TextMeshProUGUI gradeText;
+    public Image seriesImage { get => seriesIcon; set => seriesIcon = value; }
+    public Image gradeImage { get => gradeIcon; set => gradeIcon = value; }
     public BoxCost[] extraBoxCosts;
 
     [Header("Gacha Item List")]
@@ -33,7 +32,6 @@ public class ShopBoxInfoUI : DataInfoUI
     [Header("Shop Manager")]
     public ShopManager shopManager;
 
-    protected override bool UpdateIcon => boxOpenAnimationUI == null;
 
     private void Start()
     {
@@ -55,30 +53,23 @@ public class ShopBoxInfoUI : DataInfoUI
             pannel.SetActive(true);
 
         SetData(boxData);
-        if (boxOpenAnimationUI != null)
-            boxOpenAnimationUI.SetBox(boxData);
 
         if (pickUpTitleText != null)
             pickUpTitleText.SetActive(true);
-
-        if (seriesImage != null)
-            seriesImage.sprite = DefinedDataManager.instance.seriesData.GetData(boxData.itemSeries).Icon;
-        if (gradeImage != null)
-            gradeImage.sprite = DefinedDataManager.instance.gradeData.GetData(boxData.grade).Icon;
-        if (gradeText != null)
-            gradeText.text = DefinedDataManager.instance.gradeData.GetData(boxData.grade).GetDataName();
 
         if (extraBoxCosts != null)
         {
             foreach (var item in extraBoxCosts)
             {
-                item.costPanel.SetActive(false);
+                if (item != null && item.costPanel != null) item.costPanel.SetActive(false);
             }
-            foreach (var cost in boxData.costs)
+            foreach (var cost in boxData.costs ?? Array.Empty<Cost>())
             {
+                if (cost == null) continue;
                 BoxCost boxCost = GetBoxCost(cost.currencyType);
-                boxCost.costText.text = cost.amount.ToString();
-                boxCost.costPanel.SetActive(true);
+                if (boxCost == null) continue;
+                if (boxCost.costText != null) boxCost.costText.text = cost.amount.ToString();
+                if (boxCost.costPanel != null) boxCost.costPanel.SetActive(true);
             }
         }
 
@@ -147,9 +138,6 @@ public class ShopBoxInfoUI : DataInfoUI
             return;
         }
 
-        if (boxOpenAnimationUI != null)
-            boxOpenAnimationUI.PlayOpen();
-
         shopManager.BuySelectedBox();
     }
 
@@ -164,11 +152,6 @@ public class ShopBoxInfoUI : DataInfoUI
 
         if (pickUpTitleText != null)
             pickUpTitleText.SetActive(false);
-
-        if (seriesImage != null)
-            seriesImage.sprite = null;
-        if (gradeImage != null)
-            gradeImage.sprite = null;
 
         ClearRewardList();
 

@@ -1,9 +1,7 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.Serialization;
 
-public class ItemTooltipUI : DataInfoUI
+public class ItemTooltipUI : ItemDefinitionUI
 {
     [Header("Tooltip Option")]
     public bool useTooltip = true;
@@ -20,18 +18,10 @@ public class ItemTooltipUI : DataInfoUI
 
     [Header("UI")]
     public TextMeshProUGUI amountText;
-    [FormerlySerializedAs("subTitleText")] public TextMeshProUGUI gradeText;
     public TextMeshProUGUI categoryText;
-    public TextMeshProUGUI seriesText;
     public TextMeshProUGUI weightText;
     public TextMeshProUGUI cooldownText;
 
-    [Header("Defined Item Information")]
-    public Image seriesIcon;
-    public Image gradeIcon;
-
-    private TooltipData displayedData;
-    protected override void OnDataLanguageChanged(language selected) => RefreshDefinedInformation();
 
     private object currentOwner;
     private object pinnedOwner;
@@ -149,7 +139,6 @@ public class ItemTooltipUI : DataInfoUI
 
     protected virtual void ApplyData(TooltipData data)
     {
-        displayedData = data;
         SetDefinedData(data, data.dataName);
         SetOptionalText(amountText, data.amountText);
 
@@ -157,32 +146,6 @@ public class ItemTooltipUI : DataInfoUI
         SetOptionalText(categoryText, item?.CategoryText);
         SetOptionalText(weightText, item?.WeightText);
         SetOptionalText(cooldownText, item?.CooldownText);
-    }
-
-    private void RefreshDefinedInformation()
-    {
-        var item = displayedData as ItemTooltipData;
-        if(DefinedDataManager.instance == null) return;
-        DefinedDataManager definedDataManager = DefinedDataManager.instance;
-        DefinedData series = item != null && item.series != ItemSeries.None ? definedDataManager.seriesData?.GetData(item.series) : null;
-        DefinedData grade = item != null && item.grade != ItemGrade.None ? definedDataManager.gradeData?.GetData(item.grade) : null;
-        string gradeFallback = item?.GradeText;
-        if (displayedData is BagTooltipData bag) gradeFallback = bag.bagType;
-        else if (displayedData is SkillMapTooltipData map) gradeFallback = map.totalNodesCount;
-        SetDefinedText(seriesText, series, item?.SeriesText);
-        SetDefinedText(gradeText, grade, gradeFallback);
-        SetDefinedIcon(seriesIcon, series?.Icon);
-        SetDefinedIcon(gradeIcon, grade?.Icon);
-    }
-    private void SetDefinedText(TextMeshProUGUI target, DefinedData data, string fallback)
-    {
-        SetOptionalText(target, DefinedDataUtility.GetName(data, DisplayLanguage, fallback));
-        LocalizedText.BindDefinedData(target, data, fallback);
-    }
-    private static void SetDefinedIcon(Image target, Sprite sprite)
-    {
-        if (target == null) return;
-        target.sprite = sprite; target.enabled = sprite != null;
     }
 
     private void UpdatePosition()

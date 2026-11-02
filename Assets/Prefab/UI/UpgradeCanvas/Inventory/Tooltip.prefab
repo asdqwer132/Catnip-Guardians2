@@ -49,6 +49,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2496adaf7d1069943a771ae27d7e6843, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipUI
+  icon: {fileID: 545613454280400247}
+  dataNameText: {fileID: 323103887096993095}
+  descriptionText: {fileID: 8580365208336608250}
+  detailDescriptionText: {fileID: 0}
+  dataSource: {fileID: 0}
+  hideEmptyDescription: 0
+  hideEmptyDetailDescription: 1
+  seriesText: {fileID: 0}
+  gradeText: {fileID: 2663343342365515177}
+  seriesIcon: {fileID: 0}
+  gradeIcon: {fileID: 0}
+  series: 0
+  grade: -1
   useTooltip: 1
   offset: {x: -125, y: 200}
   clampToParent: 1
@@ -56,20 +69,10 @@ MonoBehaviour:
   removePannel: 1
   alternatePanels: []
   tooltipPanel: {fileID: 6332433096817834098}
-  icon: {fileID: 545613454280400247}
-  dataNameText: {fileID: 323103887096993095}
-  descriptionText: {fileID: 8580365208336608250}
-  detailDescriptionText: {fileID: 0}
   amountText: {fileID: 1182234814775603246}
-  gradeText: {fileID: 2663343342365515177}
   categoryText: {fileID: 0}
-  seriesText: {fileID: 0}
   weightText: {fileID: 0}
   cooldownText: {fileID: 0}
-  seriesData: {fileID: 11400000, guid: 42ea9afb0ee6db20faee4896eb2d13f1, type: 2}
-  gradeData: {fileID: 11400000, guid: 26621b5097f7d15c4b2e5b7a352897e4, type: 2}
-  seriesIcon: {fileID: 0}
-  gradeIcon: {fileID: 0}
 --- !u!1 &2628580990834433947
 GameObject:
   m_ObjectHideFlags: 0

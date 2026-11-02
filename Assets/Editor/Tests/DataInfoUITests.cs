@@ -117,7 +117,7 @@ public sealed class DataInfoUITests
     }
 
     [Test]
-    public void ShopUsesSharedTextBindingWhileItsAnimationKeepsOwnershipOfTheIcon()
+    public void ShopInfoUsesStaticSharedBindingAndLeavesOpeningToThePurchasedSlot()
     {
         var ui = View<ShopBoxInfoUI>(); var box = Data<ItemBoxData>();
         ui.boxOpenAnimationUI = ui.icon.gameObject.AddComponent<ShopBoxOpenAnimationUI>();
@@ -126,7 +126,7 @@ public sealed class DataInfoUITests
         ui.ShowBoxInfo(box);
         var animationFrame = Sprite(); ui.icon.sprite = animationFrame;
         languageManager.SetLanguage(language.korean);
-        Assert.That(ui.boxNameText.text, Is.EqualTo("상자")); Assert.That(ui.icon.sprite, Is.SameAs(animationFrame));
+        Assert.That(ui.boxNameText.text, Is.EqualTo("상자")); Assert.That(ui.icon.sprite, Is.SameAs(box.icon));
         Assert.That(ui.buyButton.interactable, Is.True);
         ui.ClearInfo(); Assert.That(ui.dataNameText.text, Is.Empty); Assert.That(ui.icon.enabled, Is.False);
         Assert.That(ui.buyButton.interactable, Is.False);

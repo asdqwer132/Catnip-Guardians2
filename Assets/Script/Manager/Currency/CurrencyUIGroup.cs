@@ -86,16 +86,7 @@ public class CurrencyUIGroup : MonoBehaviour, ISceneLocalizedUI
     {
         if (ui == null || currencyData == null) return;
         DefinedData data = currencyData.GetData(ui.type);
-        if (ui.nameText != null)
-        {
-            ui.nameText.text = DefinedDataUtility.GetName(data, displayLanguage, ui.type.ToString());
-            LocalizedText.BindDefinedData(ui.nameText, data, ui.type.ToString());
-        }
-        if (ui.icon != null)
-        {
-            ui.icon.sprite = data?.Icon;
-            ui.icon.enabled = ui.icon.sprite != null;
-        }
+        DataInfoUI.ApplyDefinition(ui.nameText, ui.icon, data, displayLanguage, ui.type.ToString(), false);
     }
 
     private void RefreshRoundUI()
