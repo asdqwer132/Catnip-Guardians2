@@ -30,19 +30,21 @@ public sealed class CurrencyPresentationTests
         => Host(name, scene).AddComponent<TextMeshProUGUI>();
     private CurrencyData Data(bool korean = true)
     {
-        var data = Asset<CurrencyData>(); data.name = "Currency asset";
+        var catalog = Asset<CurrencyData>();
+        var data = new DefinedDataEntry<CurrencyType> { type = CurrencyType.CurrencyMain };
+        catalog.entries.Add(data);
         data.data = korean ? new[] {
             new Description { language = language.english, dataName = "Gold" },
             new Description { language = language.korean, dataName = "골드" }
         } : new[] { new Description { language = language.english, dataName = "Gold" } };
         var texture = new Texture2D(2, 2); owned.Add(texture);
         data.icon = Sprite.Create(texture, new Rect(0, 0, 2, 2), Vector2.zero); owned.Add(data.icon);
-        return data;
+        return catalog;
     }
-    private CurrencyUIGroup Group(Scene scene, CurrencyDisplaySource source, params CurrencyUIGroup.CurrencyUI[] rows)
+    private CurrencyUIGroup Group(Scene scene, CurrencyDisplaySource source, CurrencyData data, params CurrencyUIGroup.CurrencyUI[] rows)
     {
         var host = Host("Currency group", scene, false);
-        var group = host.AddComponent<CurrencyUIGroup>(); group.source = source; group.currencyUIs = rows;
+        var group = host.AddComponent<CurrencyUIGroup>(); group.source = source; group.currencyData = data; group.currencyUIs = rows;
         host.SetActive(true); return group;
     }
     private SceneLanguageMediator Mediator(Scene scene, language standalone = language.english)
@@ -81,9 +83,9 @@ public sealed class CurrencyPresentationTests
     {
         var data = Data(); var name = Text("Name", first); var amount = Text("Amount", first);
         var icon = Host("Icon", first).AddComponent<Image>();
-        var row = new CurrencyUIGroup.CurrencyUI { type = CurrencyType.CurrencyMain, data = data, nameText = name, amountText = amount, icon = icon };
-        Group(first, CurrencyDisplaySource.Wallet, row);
-        Assert.That(name.text, Is.EqualTo("Gold")); Assert.That(icon.sprite, Is.SameAs(data.icon));
+        var row = new CurrencyUIGroup.CurrencyUI { type = CurrencyType.CurrencyMain, nameText = name, amountText = amount, icon = icon };
+        Group(first, CurrencyDisplaySource.Wallet, data, row);
+        Assert.That(name.text, Is.EqualTo("Gold")); Assert.That(icon.sprite, Is.SameAs(data.entries[0].icon));
         var manager = Core(language.korean);
         Mediator(first);
         Assert.That(name.text, Is.EqualTo("골드"));
@@ -104,14 +106,15 @@ public sealed class CurrencyPresentationTests
         var icon = Host("Icon", first).AddComponent<Image>();
         var authored = Text("Authored Name", first); authored.text = "Keep this text";
         var data = Data();
-        var group = Group(first, CurrencyDisplaySource.Wallet,
+        var group = Group(first, CurrencyDisplaySource.Wallet, data,
             new CurrencyUIGroup.CurrencyUI { type = CurrencyType.CurrencyMain, amountText = amount },
-            new CurrencyUIGroup.CurrencyUI { type = CurrencyType.CurrencyMain, data = data, nameText = name },
-            new CurrencyUIGroup.CurrencyUI { type = CurrencyType.CurrencyMain, data = data, icon = icon },
-            new CurrencyUIGroup.CurrencyUI { type = CurrencyType.CurrencyMain, nameText = authored }, null);
+            new CurrencyUIGroup.CurrencyUI { type = CurrencyType.CurrencyMain, nameText = name },
+            new CurrencyUIGroup.CurrencyUI { type = CurrencyType.CurrencyMain, icon = icon },
+            null);
+        Group(first, CurrencyDisplaySource.Wallet, null, new CurrencyUIGroup.CurrencyUI { nameText = authored });
         group.UpdateUI(CurrencyType.CurrencyMain, 19);
         Assert.That(amount.text, Is.EqualTo("19")); Assert.That(name.text, Is.EqualTo("골드"));
-        Assert.That(icon.sprite, Is.SameAs(data.icon)); Assert.That(authored.text, Is.EqualTo("Keep this text"));
+        Assert.That(icon.sprite, Is.SameAs(data.entries[0].icon)); Assert.That(authored.text, Is.EqualTo("Keep this text"));
         group.currencyUIs = null;
         Assert.DoesNotThrow(group.RefreshPresentation);
         Assert.DoesNotThrow(() => group.UpdateUI(CurrencyType.CurrencyMain, 0));
@@ -123,8 +126,9 @@ public sealed class CurrencyPresentationTests
         Mediator(first); var manager = Core();
         var name = Text("Name", first); var amount = Text("Amount", first);
         var marker = name.gameObject.AddComponent<LocalizedText>(); marker.tmpText = name; marker.key = "Old label";
-        Group(first, CurrencyDisplaySource.CurrentGame,
-            new CurrencyUIGroup.CurrencyUI { type = CurrencyType.CurrencySub1, data = Data(), nameText = name, amountText = amount });
+        var data = Data(); data.entries[0].type = CurrencyType.CurrencySub1;
+        Group(first, CurrencyDisplaySource.CurrentGame, data,
+            new CurrencyUIGroup.CurrencyUI { type = CurrencyType.CurrencySub1, nameText = name, amountText = amount });
         var stats = Host("Round statistics", first).AddComponent<GameStatisticsManager>();
         stats.AddCurrency(CurrencyType.CurrencySub1, 12);
         var wallet = Host("Wallet", first).AddComponent<CurrencyManager>();
@@ -140,23 +144,22 @@ public sealed class CurrencyPresentationTests
     public void MissingTranslationFallsBackToEnglishAndMissingIconDoesNotShowAWhiteImage()
     {
         Mediator(first, language.korean);
-        var data = Data(false); data.icon = null;
+        var data = Data(false); data.entries[0].icon = null;
         var name = Text("Name", first); var icon = Host("Icon", first).AddComponent<Image>();
-        var group = Group(first, CurrencyDisplaySource.Wallet,
-            new CurrencyUIGroup.CurrencyUI { data = data, nameText = name, icon = icon });
+        var group = Group(first, CurrencyDisplaySource.Wallet, data,
+            new CurrencyUIGroup.CurrencyUI { nameText = name, icon = icon });
         Assert.That(name.text, Is.EqualTo("Gold")); Assert.That(icon.enabled, Is.False);
-        var unnamed = Asset<CurrencyData>(); unnamed.name = "Fallback currency";
-        group.currencyUIs[0].data = unnamed; group.RefreshPresentation();
-        Assert.That(name.text, Is.EqualTo("Fallback currency"));
+        group.currencyData = Asset<CurrencyData>(); group.RefreshPresentation();
+        Assert.That(name.text, Is.EqualTo("CurrencyMain"));
     }
 
     [Test]
     public void DisabledGroupsAndMovedGroupsUseTheCurrentSceneLanguageOnReturn()
     {
         var original = Mediator(first); Mediator(second, language.korean);
-        var name = Text("Name", first);
-        var group = Group(first, CurrencyDisplaySource.Wallet,
-            new CurrencyUIGroup.CurrencyUI { data = Data(), nameText = name });
+        var name = Text("Name", first); var data = Data();
+        var group = Group(first, CurrencyDisplaySource.Wallet, data,
+            new CurrencyUIGroup.CurrencyUI { nameText = name });
         group.gameObject.SetActive(false); var manager = Core(language.korean);
         group.gameObject.SetActive(true); Assert.That(name.text, Is.EqualTo("골드"));
         Object.DestroyImmediate(manager.gameObject);
@@ -171,28 +174,32 @@ public sealed class CurrencyPresentationAuthoringTests
     [Test]
     public void PreparedAssetsAndExistingGroupsHaveExplicitDisplayReferencesAndKeepLegacyAmounts()
     {
-        var data = Enum.GetValues(typeof(CurrencyType)).Cast<CurrencyType>().ToDictionary(type => type,
-            type => AssetDatabase.LoadAssetAtPath<CurrencyData>("Assets/Data/Scriptable/Currency/" + type + ".asset"));
-        Assert.That(data.Values.All(value => value != null), Is.True);
-        foreach (var value in data.Values)
+        const string path = "Assets/Data/Scriptable/Currency/Currencies.asset";
+        var catalog = AssetDatabase.LoadAssetAtPath<CurrencyData>(path);
+        Assert.That(catalog != null, Is.True);
+        foreach (CurrencyType type in Enum.GetValues(typeof(CurrencyType)))
         {
-            Assert.That(value.GetDataName(language.english), Is.Not.Empty);
-            Assert.That(value.GetDataName(language.korean), Is.Not.Empty);
+            var entry = catalog.GetData(type);
+            Assert.That(entry, Is.Not.Null);
+            Assert.That(entry.GetDataName(language.english), Is.Not.Empty);
+            Assert.That(entry.GetDataName(language.korean), Is.Not.Empty);
         }
         foreach (string sceneName in new[] { "UpgradeScene", "GameGeneralScene" })
         {
             var scene = EditorSceneManager.OpenScene("Assets/Scenes/" + sceneName + ".unity", OpenSceneMode.Single);
+            var expected = AssetDatabase.LoadAssetAtPath<CurrencyData>(path);
             foreach (var group in scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<CurrencyUIGroup>(true)))
+            {
+                Assert.That(group.currencyData, Is.SameAs(expected));
                 foreach (var row in group.currencyUIs)
                 {
-                    // Opening another scene can unload an asset that only the previous scene used.
-                    var expected = AssetDatabase.LoadAssetAtPath<CurrencyData>("Assets/Data/Scriptable/Currency/" + row.type + ".asset");
-                    Assert.That(row.data, Is.SameAs(expected));
+                    Assert.That(expected.GetData(row.type), Is.Not.Null);
                     if (row.textObj == null) continue;
                     Assert.That(row.amountText != null, Is.True, sceneName + ": " + row.type);
                     var icon = row.textObj.GetComponentsInChildren<Image>(true).FirstOrDefault(image => image.name == "Icon");
                     Assert.That(row.icon, Is.SameAs(icon));
                 }
+            }
         }
         // This scene still serializes textUI, before the rename to amountText.
         var legacy = EditorSceneManager.OpenScene("Assets/Scenes/UpgradeSceneLegucy.unity", OpenSceneMode.Single);

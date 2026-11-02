@@ -13909,6 +13909,10 @@ MonoBehaviour:
   seriesText: {fileID: 0}
   weightText: {fileID: 0}
   cooldownText: {fileID: 0}
+  seriesData: {fileID: 11400000, guid: 42ea9afb0ee6db20faee4896eb2d13f1, type: 2}
+  gradeData: {fileID: 11400000, guid: 26621b5097f7d15c4b2e5b7a352897e4, type: 2}
+  seriesIcon: {fileID: 0}
+  gradeIcon: {fileID: 0}
 --- !u!114 &720121773
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17266,6 +17270,10 @@ MonoBehaviour:
   seriesText: {fileID: 0}
   weightText: {fileID: 0}
   cooldownText: {fileID: 0}
+  seriesData: {fileID: 11400000, guid: 42ea9afb0ee6db20faee4896eb2d13f1, type: 2}
+  gradeData: {fileID: 11400000, guid: 26621b5097f7d15c4b2e5b7a352897e4, type: 2}
+  seriesIcon: {fileID: 0}
+  gradeIcon: {fileID: 0}
 --- !u!114 &963079606
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22989,19 +22997,30 @@ MonoBehaviour:
   currencyUIs:
   - type: 0
     textObj: {fileID: 1448601358}
-    textUI: {fileID: 316777454}
+    amountText: {fileID: 316777454}
+    nameText: {fileID: 0}
+    icon: {fileID: 0}
   - type: 1
     textObj: {fileID: 62554889}
-    textUI: {fileID: 2082319098}
+    amountText: {fileID: 2082319098}
+    nameText: {fileID: 0}
+    icon: {fileID: 0}
   - type: 2
     textObj: {fileID: 481456202}
-    textUI: {fileID: 813303476}
+    amountText: {fileID: 813303476}
+    nameText: {fileID: 0}
+    icon: {fileID: 0}
   - type: 3
     textObj: {fileID: 156474860}
-    textUI: {fileID: 583232112}
+    amountText: {fileID: 583232112}
+    nameText: {fileID: 0}
+    icon: {fileID: 0}
   - type: 4
     textObj: {fileID: 1972641697}
-    textUI: {fileID: 836553608}
+    amountText: {fileID: 836553608}
+    nameText: {fileID: 0}
+    icon: {fileID: 0}
+  currencyData: {fileID: 11400000, guid: 36fe159e10d2d72d1975d58d4a970751, type: 2}
   source: 0
 --- !u!1 &1241132813
 GameObject:
@@ -27341,6 +27360,10 @@ MonoBehaviour:
   seriesText: {fileID: 0}
   weightText: {fileID: 0}
   cooldownText: {fileID: 0}
+  seriesData: {fileID: 11400000, guid: 42ea9afb0ee6db20faee4896eb2d13f1, type: 2}
+  gradeData: {fileID: 11400000, guid: 26621b5097f7d15c4b2e5b7a352897e4, type: 2}
+  seriesIcon: {fileID: 0}
+  gradeIcon: {fileID: 0}
 --- !u!114 &1482356634
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27371,6 +27394,10 @@ MonoBehaviour:
   seriesText: {fileID: 0}
   weightText: {fileID: 0}
   cooldownText: {fileID: 0}
+  seriesData: {fileID: 11400000, guid: 42ea9afb0ee6db20faee4896eb2d13f1, type: 2}
+  gradeData: {fileID: 11400000, guid: 26621b5097f7d15c4b2e5b7a352897e4, type: 2}
+  seriesIcon: {fileID: 0}
+  gradeIcon: {fileID: 0}
   extraBoxCosts:
   - currencyType: 0
     costPanel: {fileID: 0}

@@ -11,6 +11,8 @@ public class CurrencyUIGroup : MonoBehaviour, ISceneLocalizedUI
 {
     [Header("Currency UIs")]
     public CurrencyUI[] currencyUIs;
+    [Tooltip("재화 타입별 이름·아이콘을 모은 공용 에셋입니다.")]
+    public CurrencyData currencyData;
     [Tooltip("Wallet: 전체 보유 재화 / Current Game: 이번 게임에서 획득한 재화")]
     public CurrencyDisplaySource source;
     public bool DisplaysWallet => source == CurrencyDisplaySource.Wallet;
@@ -19,8 +21,6 @@ public class CurrencyUIGroup : MonoBehaviour, ISceneLocalizedUI
     public class CurrencyUI
     {
         public CurrencyType type;
-        [Tooltip("이 재화의 언어별 이름과 아이콘입니다. 모든 그룹에서 같은 에셋을 공유할 수 있습니다.")]
-        public DefaultData data;
         public GameObject textObj;
         [FormerlySerializedAs("textUI")]
         public TextMeshProUGUI amountText;
@@ -84,18 +84,17 @@ public class CurrencyUIGroup : MonoBehaviour, ISceneLocalizedUI
 
     private void ApplyPresentation(CurrencyUI ui)
     {
-        if (ui == null || ui.data == null) return;
+        if (ui == null || currencyData == null) return;
+        DefinedData data = currencyData.GetData(ui.type);
         if (ui.nameText != null)
         {
-            LocalizedText.BindData(ui.nameText, ui.data, LocalizedTextSource.DataName);
-            string name = ui.data.GetDataName(displayLanguage);
-            if (string.IsNullOrEmpty(name)) name = ui.data.GetDataName(language.english);
-            ui.nameText.text = string.IsNullOrEmpty(name) ? ui.data.name : name;
+            ui.nameText.text = DefinedDataUtility.GetName(data, displayLanguage, ui.type.ToString());
+            LocalizedText.BindDefinedData(ui.nameText, data, ui.type.ToString());
         }
         if (ui.icon != null)
         {
-            ui.icon.sprite = ui.data.icon;
-            ui.icon.enabled = ui.data.icon != null;
+            ui.icon.sprite = data?.Icon;
+            ui.icon.enabled = ui.icon.sprite != null;
         }
     }
 

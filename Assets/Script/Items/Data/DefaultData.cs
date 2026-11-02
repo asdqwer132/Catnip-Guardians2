@@ -20,10 +20,11 @@ public class Description
     public string detailDescription;
 }
 
-public class DefaultData : ScriptableObject, IUnlockable
+public class DefaultData : ScriptableObject, IUnlockable, DefinedData
 {
     [Header("Basic Info")]
     public Sprite icon;
+    public Sprite Icon => icon;
     public Description[] data;
 
     [Header("Id Info")]

@@ -2,8 +2,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Serialization;
+using UnityEngine.SceneManagement;
 
-public class ItemTooltipUI : MonoBehaviour
+public class ItemTooltipUI : MonoBehaviour, ISceneLocalizedUI
 {
     [Header("Tooltip Option")]
     public bool useTooltip = true;
@@ -29,6 +30,32 @@ public class ItemTooltipUI : MonoBehaviour
     public TextMeshProUGUI seriesText;
     public TextMeshProUGUI weightText;
     public TextMeshProUGUI cooldownText;
+
+    [Header("Defined Item Information")]
+    public ItemSeriesData seriesData;
+    public ItemGradeData gradeData;
+    public Image seriesIcon;
+    public Image gradeIcon;
+
+    private TooltipData displayedData;
+    private Scene registeredScene;
+    private language displayLanguage = language.english;
+    private void OnEnable() { registeredScene = gameObject.scene; SceneLanguageMediator.Register(this); }
+    private void OnDisable() => SceneLanguageMediator.Unregister(this, registeredScene);
+    void ISceneLocalizedUI.RefreshLanguage()
+    {
+        if (isActiveAndEnabled && registeredScene != gameObject.scene)
+        {
+            SceneLanguageMediator.Unregister(this, registeredScene);
+            registeredScene = gameObject.scene; SceneLanguageMediator.Register(this);
+        }
+        else SceneLanguageMediator.RefreshText(this);
+    }
+    void ISceneLocalizedUI.ApplyLanguage(language selected, LocalizedTextTable table)
+    {
+        displayLanguage = selected;
+        RefreshDefinedInformation();
+    }
 
     private object currentOwner;
     private RectTransform currentAnchorRect;
@@ -126,6 +153,7 @@ public class ItemTooltipUI : MonoBehaviour
 
     protected virtual void ApplyData(TooltipData data)
     {
+        displayedData = data;
         if (icon != null)
         {
             icon.sprite = data.icon;
@@ -145,11 +173,36 @@ public class ItemTooltipUI : MonoBehaviour
         SetOptionalText(gradeText, grade);
         SetOptionalText(categoryText, item?.CategoryText);
         SetOptionalText(seriesText, item?.SeriesText);
+        RefreshDefinedInformation();
         SetOptionalText(weightText, item?.WeightText);
         SetOptionalText(cooldownText, item?.CooldownText);
         LocalizedText.BindData(dataNameText, data.sourceData, LocalizedTextSource.DataName);
         LocalizedText.BindData(descriptionText, data.sourceData, LocalizedTextSource.Description);
         LocalizedText.BindData(detailDescriptionText, data.sourceData, LocalizedTextSource.DetailDescription);
+    }
+
+    private void RefreshDefinedInformation()
+    {
+        var item = displayedData as ItemTooltipData;
+        DefinedData series = item != null && item.series != ItemSeries.None ? seriesData?.GetData(item.series) : null;
+        DefinedData grade = item != null && item.grade != ItemGrade.None ? gradeData?.GetData(item.grade) : null;
+        string gradeFallback = item?.GradeText;
+        if (displayedData is BagTooltipData bag) gradeFallback = bag.bagType;
+        else if (displayedData is SkillMapTooltipData map) gradeFallback = map.totalNodesCount;
+        SetDefinedText(seriesText, series, item?.SeriesText);
+        SetDefinedText(gradeText, grade, gradeFallback);
+        SetDefinedIcon(seriesIcon, series?.Icon);
+        SetDefinedIcon(gradeIcon, grade?.Icon);
+    }
+    private void SetDefinedText(TextMeshProUGUI target, DefinedData data, string fallback)
+    {
+        SetOptionalText(target, DefinedDataUtility.GetName(data, displayLanguage, fallback));
+        LocalizedText.BindDefinedData(target, data, fallback);
+    }
+    private static void SetDefinedIcon(Image target, Sprite sprite)
+    {
+        if (target == null) return;
+        target.sprite = sprite; target.enabled = sprite != null;
     }
 
     private static void SetOptionalText(TextMeshProUGUI target, string value)

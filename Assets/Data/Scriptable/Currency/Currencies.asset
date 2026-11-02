@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7a661a9586597366bccaf7bf44b576d, type: 3}
+  m_Name: Currencies
+  m_EditorClassIdentifier: Assembly-CSharp::CurrencyData
+  entries:
+  - type: 0
+    icon: {fileID: -695299222, guid: 6118e20d7b781af41b86234faee2e1f2, type: 3}
+    data:
+    - language: 0
+      dataName: Main Currency
+      description:
+      detailDescription:
+    - language: 1
+      dataName: "\uBA54\uC778 \uC7AC\uD654"
+      description:
+      detailDescription:
+  - type: 1
+    icon: {fileID: -2069275009, guid: 6118e20d7b781af41b86234faee2e1f2, type: 3}
+    data:
+    - language: 0
+      dataName: Sub Currency 1
+      description:
+      detailDescription:
+    - language: 1
+      dataName: "\uBCF4\uC870 \uC7AC\uD654 1"
+      description:
+      detailDescription:
+  - type: 2
+    icon: {fileID: -2023129094, guid: 89d6b9627a3a13b48948eca9d1c6f9f5, type: 3}
+    data:
+    - language: 0
+      dataName: Sub Currency 2
+      description:
+      detailDescription:
+    - language: 1
+      dataName: "\uBCF4\uC870 \uC7AC\uD654 2"
+      description:
+      detailDescription:
+  - type: 3
+    icon: {fileID: -2130251977, guid: 89d6b9627a3a13b48948eca9d1c6f9f5, type: 3}
+    data:
+    - language: 0
+      dataName: Sub Currency 3
+      description:
+      detailDescription:
+    - language: 1
+      dataName: "\uBCF4\uC870 \uC7AC\uD654 3"
+      description:
+      detailDescription:
+  - type: 4
+    icon: {fileID: -920287250, guid: 89d6b9627a3a13b48948eca9d1c6f9f5, type: 3}
+    data:
+    - language: 0
+      dataName: Sub Currency 4
+      description:
+      detailDescription:
+    - language: 1
+      dataName: "\uBCF4\uC870 \uC7AC\uD654 4"
+      description:
+      detailDescription:
+  - type: 5
+    icon: {fileID: 805210560, guid: 89d6b9627a3a13b48948eca9d1c6f9f5, type: 3}
+    data:
+    - language: 0
+      dataName: Extra Currency 1
+      description:
+      detailDescription:
+    - language: 1
+      dataName: "\uCD94\uAC00 \uC7AC\uD654 1"
+      description:
+      detailDescription:
+  - type: 6
+    icon: {fileID: -268386930, guid: 89d6b9627a3a13b48948eca9d1c6f9f5, type: 3}
+    data:
+    - language: 0
+      dataName: Extra Currency 2
+      description:
+      detailDescription:
+    - language: 1
+      dataName: "\uCD94\uAC00 \uC7AC\uD654 2"
+      description:
+      detailDescription:

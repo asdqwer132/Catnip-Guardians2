@@ -15,6 +15,9 @@ public sealed class LocalizedText : MonoBehaviour, ISceneLocalizedUI
     public Text legacyText;
     public LocalizedTextSource source;
     public DefaultData dataSource;
+    private DefinedData definedSource;
+    private bool definedBinding;
+    private string definedFallback;
     private string authoredEnglish;
     private bool captured;
     private Scene registeredScene;
@@ -43,9 +46,16 @@ public sealed class LocalizedText : MonoBehaviour, ISceneLocalizedUI
         if (target != null && target.TryGetComponent<LocalizedText>(out var marker) && marker.source == LocalizedTextSource.TranslationKey)
             marker.Refresh();
     }
+    public static void BindDefinedData(TMP_Text target, DefinedData data, string fallbackName)
+    {
+        if (target == null || !target.TryGetComponent<LocalizedText>(out var marker)) return;
+        marker.definedSource = data; marker.definedBinding = true; marker.definedFallback = fallbackName;
+        marker.dataSource = data as DefaultData; marker.source = LocalizedTextSource.DataName;
+        marker.Refresh();
+    }
     public void BindData(DefaultData data, LocalizedTextSource field)
     {
-        dataSource = data; source = field;
+        dataSource = data; source = field; definedBinding = false; definedSource = null;
         Refresh();
     }
     public void Refresh()
@@ -71,7 +81,8 @@ public sealed class LocalizedText : MonoBehaviour, ISceneLocalizedUI
         {
             text = ReadData(selected);
             if (string.IsNullOrEmpty(text)) text = ReadData(language.english);
-            if (string.IsNullOrEmpty(text)) text = source == LocalizedTextSource.DataName && dataSource != null ? dataSource.name : "";
+            if (string.IsNullOrEmpty(text)) text = source == LocalizedTextSource.DataName
+                ? definedBinding ? definedFallback : dataSource != null ? dataSource.name : "" : "";
         }
         else if (table != null)
         {
@@ -85,12 +96,13 @@ public sealed class LocalizedText : MonoBehaviour, ISceneLocalizedUI
     }
     private string ReadData(language selected)
     {
-        if (dataSource == null) return null;
+        DefinedData data = definedBinding ? definedSource : dataSource;
+        if (data == null) return null;
         switch (source)
         {
-            case LocalizedTextSource.DataName: return dataSource.GetDataName(selected);
-            case LocalizedTextSource.Description: return dataSource.GetDescription(selected);
-            case LocalizedTextSource.DetailDescription: return dataSource.GetDetailDescription(selected);
+            case LocalizedTextSource.DataName: return data.GetDataName(selected);
+            case LocalizedTextSource.Description: return data.GetDescription(selected);
+            case LocalizedTextSource.DetailDescription: return data.GetDetailDescription(selected);
             default: return null;
         }
     }
