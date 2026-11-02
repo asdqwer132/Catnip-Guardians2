@@ -27,8 +27,6 @@ public class ItemTooltipUI : DataInfoUI
     public TextMeshProUGUI cooldownText;
 
     [Header("Defined Item Information")]
-    public ItemSeriesData seriesData;
-    public ItemGradeData gradeData;
     public Image seriesIcon;
     public Image gradeIcon;
 
@@ -164,8 +162,10 @@ public class ItemTooltipUI : DataInfoUI
     private void RefreshDefinedInformation()
     {
         var item = displayedData as ItemTooltipData;
-        DefinedData series = item != null && item.series != ItemSeries.None ? seriesData?.GetData(item.series) : null;
-        DefinedData grade = item != null && item.grade != ItemGrade.None ? gradeData?.GetData(item.grade) : null;
+        if(DefinedDataManager.instance == null) return;
+        DefinedDataManager definedDataManager = DefinedDataManager.instance;
+        DefinedData series = item != null && item.series != ItemSeries.None ? definedDataManager.seriesData?.GetData(item.series) : null;
+        DefinedData grade = item != null && item.grade != ItemGrade.None ? definedDataManager.gradeData?.GetData(item.grade) : null;
         string gradeFallback = item?.GradeText;
         if (displayedData is BagTooltipData bag) gradeFallback = bag.bagType;
         else if (displayedData is SkillMapTooltipData map) gradeFallback = map.totalNodesCount;

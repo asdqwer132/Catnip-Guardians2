@@ -15,6 +15,7 @@ public class ItemBoxData : DefaultData
 
     [Header("Gacha")]
     public ItemSeries itemSeries;
+    public ItemGrade grade;
     public GachaItemInfo[] gachaItems;
 
     [Header("Box Animation")]

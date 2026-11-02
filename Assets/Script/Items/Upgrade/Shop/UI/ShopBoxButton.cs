@@ -21,11 +21,7 @@ public class ShopBoxButton : MonoBehaviour
     {
         if (toggle != null)
         {
-            toggle.onValueChanged.AddListener(isOn =>
-            {
-                if (isOn)
-                    OnClickButton();
-            });
+            toggle.onValueChanged.AddListener(_ => OnClickButton());
         }
     }
 

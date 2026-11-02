@@ -16,7 +16,9 @@ public class ShopBoxInfoUI : DataInfoUI
     public Image boxIcon { get => icon; set => icon = value; }
     public ShopBoxOpenAnimationUI boxOpenAnimationUI;
     public TextMeshProUGUI boxNameText { get => dataNameText; set => dataNameText = value; }
-    public TextMeshProUGUI seriesText;
+    public Image seriesImage;
+    public Image gradeImage;
+    public TextMeshProUGUI gradeText;
     public BoxCost[] extraBoxCosts;
 
     [Header("Gacha Item List")]
@@ -59,8 +61,13 @@ public class ShopBoxInfoUI : DataInfoUI
         if (pickUpTitleText != null)
             pickUpTitleText.SetActive(true);
 
-        if (seriesText != null)
-            seriesText.text = boxData.itemSeries.ToString();
+        if (seriesImage != null)
+            seriesImage.sprite = DefinedDataManager.instance.seriesData.GetData(boxData.itemSeries).Icon;
+        if (gradeImage != null)
+            gradeImage.sprite = DefinedDataManager.instance.gradeData.GetData(boxData.grade).Icon;
+        if (gradeText != null)
+            gradeText.text = DefinedDataManager.instance.gradeData.GetData(boxData.grade).GetDataName();
+
         if (extraBoxCosts != null)
         {
             foreach (var item in extraBoxCosts)
@@ -158,8 +165,10 @@ public class ShopBoxInfoUI : DataInfoUI
         if (pickUpTitleText != null)
             pickUpTitleText.SetActive(false);
 
-        if (seriesText != null)
-            seriesText.text = "";
+        if (seriesImage != null)
+            seriesImage.sprite = null;
+        if (gradeImage != null)
+            gradeImage.sprite = null;
 
         ClearRewardList();
 
