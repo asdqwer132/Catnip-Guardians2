@@ -62,9 +62,9 @@ public class SkillTreeUIInjecter : MonoBehaviour
             }
         }
 
-        Debug.Log(
-            $"ToggleTooltipTrigger 주입 완료: {injectedCount}개",
-            this
-        );
+        //Debug.Log(
+        //    $"ToggleTooltipTrigger 주입 완료: {injectedCount}개",
+        //    this
+        //);
     }
 }

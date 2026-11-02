@@ -129,9 +129,6 @@ public class ShopManager : MonoBehaviour
 
     public void ClearSelectedBox()
     {
-        if (currentSelectedButton != null && currentSelectedButton.objectToggleButton != null)
-            currentSelectedButton.objectToggleButton.SetObjectActive(false);
-
         currentSelectedButton = null;
         currentSelectedBox = null;
 

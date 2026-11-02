@@ -8,28 +8,32 @@ public class ShopBoxButton : MonoBehaviour
 
 
     [Header("UI")]
-    public ObjectToggleButton objectToggleButton;
     public Image icon;
-    public Button button;
+    public Toggle toggle;
 
     private void Awake()
     {
-        if (button == null)
-            button = GetComponent<Button>();
+        if (toggle == null)
+            toggle = GetComponent<Toggle>();
     }
 
     private void Start()
     {
-        if (button != null)
-            button.onClick.AddListener(OnClickButton);
+        if (toggle != null)
+        {
+            toggle.onValueChanged.AddListener(isOn =>
+            {
+                if (isOn)
+                    OnClickButton();
+            });
+        }
     }
 
     private void OnDestroy()
     {
-        if (button != null)
-            button.onClick.RemoveListener(OnClickButton);
+        if (toggle != null)
+            toggle.onValueChanged.RemoveListener(_ => OnClickButton());
     }
-
     public void Init(ShopManager manager, ItemBoxData data)
     {
         shopManager = manager;

@@ -46,10 +46,10 @@ public class BuffSkillManager : MonoBehaviour
 
         if (!ItemEffectExecutor.CanExecuteItemEffect(itemData))
         {
-            Debug.LogWarning(
-                itemData.GetDataName() +
-                " 은 실행 가능한 이펙트가 없습니다."
-            );
+            //Debug.LogWarning(
+            //    itemData.GetDataName() +
+            //    " 은 실행 가능한 이펙트가 없습니다."
+            //);
 
             return;
         }

@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1072211899723215416, guid: 75efa5ebbdbe43c43add0925033f4cc1, type: 3}
       propertyPath: m_text
-      value: Common
+      value: All
       objectReference: {fileID: 0}
     - target: {fileID: 1072211899723215416, guid: 75efa5ebbdbe43c43add0925033f4cc1, type: 3}
       propertyPath: m_fontSize
@@ -19,47 +19,67 @@ PrefabInstance:
     - target: {fileID: 4047405522648206804, guid: 75efa5ebbdbe43c43add0925033f4cc1, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 9a46cb14e7e2fa84d9c84cddd81d50e4, type: 3}
+      objectReference: {fileID: 21300000, guid: 9928342819f30aa46879989d88dd66ac, type: 3}
+    - target: {fileID: 4047405522648206804, guid: 75efa5ebbdbe43c43add0925033f4cc1, type: 3}
+      propertyPath: m_Color.a
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4047405522648206804, guid: 75efa5ebbdbe43c43add0925033f4cc1, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5714220509695794996, guid: 75efa5ebbdbe43c43add0925033f4cc1, type: 3}
       propertyPath: m_Options.m_Options.Array.size
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5714220509695794996, guid: 75efa5ebbdbe43c43add0925033f4cc1, type: 3}
       propertyPath: m_Options.m_Options.Array.data[0].m_Text
-      value: Common
+      value: All
       objectReference: {fileID: 0}
     - target: {fileID: 5714220509695794996, guid: 75efa5ebbdbe43c43add0925033f4cc1, type: 3}
       propertyPath: m_Options.m_Options.Array.data[1].m_Text
-      value: Rare
+      value: Common
       objectReference: {fileID: 0}
     - target: {fileID: 5714220509695794996, guid: 75efa5ebbdbe43c43add0925033f4cc1, type: 3}
       propertyPath: m_Options.m_Options.Array.data[2].m_Text
-      value: Epic
+      value: Rare
       objectReference: {fileID: 0}
     - target: {fileID: 5714220509695794996, guid: 75efa5ebbdbe43c43add0925033f4cc1, type: 3}
       propertyPath: m_Options.m_Options.Array.data[3].m_Text
+      value: Epic
+      objectReference: {fileID: 0}
+    - target: {fileID: 5714220509695794996, guid: 75efa5ebbdbe43c43add0925033f4cc1, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[4].m_Text
       value: Legend
       objectReference: {fileID: 0}
     - target: {fileID: 5714220509695794996, guid: 75efa5ebbdbe43c43add0925033f4cc1, type: 3}
       propertyPath: m_Options.m_Options.Array.data[0].m_Image
       value: 
-      objectReference: {fileID: 21300000, guid: 9a46cb14e7e2fa84d9c84cddd81d50e4, type: 3}
+      objectReference: {fileID: 21300000, guid: 9928342819f30aa46879989d88dd66ac, type: 3}
     - target: {fileID: 5714220509695794996, guid: 75efa5ebbdbe43c43add0925033f4cc1, type: 3}
       propertyPath: m_Options.m_Options.Array.data[1].m_Image
       value: 
-      objectReference: {fileID: 21300000, guid: 16542be5096d65a45a5276c02fd50cc9, type: 3}
+      objectReference: {fileID: 21300000, guid: 9a46cb14e7e2fa84d9c84cddd81d50e4, type: 3}
     - target: {fileID: 5714220509695794996, guid: 75efa5ebbdbe43c43add0925033f4cc1, type: 3}
       propertyPath: m_Options.m_Options.Array.data[2].m_Image
       value: 
-      objectReference: {fileID: 21300000, guid: 88aecc1237ad70044b0c3afb78b48b28, type: 3}
+      objectReference: {fileID: 21300000, guid: 16542be5096d65a45a5276c02fd50cc9, type: 3}
     - target: {fileID: 5714220509695794996, guid: 75efa5ebbdbe43c43add0925033f4cc1, type: 3}
       propertyPath: m_Options.m_Options.Array.data[3].m_Image
       value: 
+      objectReference: {fileID: 21300000, guid: 88aecc1237ad70044b0c3afb78b48b28, type: 3}
+    - target: {fileID: 5714220509695794996, guid: 75efa5ebbdbe43c43add0925033f4cc1, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[4].m_Image
+      value: 
       objectReference: {fileID: 21300000, guid: 9928342819f30aa46879989d88dd66ac, type: 3}
+    - target: {fileID: 5714220509695794996, guid: 75efa5ebbdbe43c43add0925033f4cc1, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[0].m_Color.a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5714220509695794996, guid: 75efa5ebbdbe43c43add0925033f4cc1, type: 3}
+      propertyPath: m_Options.m_Options.Array.data[1].m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6199978699354434865, guid: 75efa5ebbdbe43c43add0925033f4cc1, type: 3}
       propertyPath: m_Sprite
       value: 
