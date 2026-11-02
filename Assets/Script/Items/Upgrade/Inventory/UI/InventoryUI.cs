@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 public class InventoryUI : ItemSearchFilterTargetUI
 {
@@ -12,6 +13,9 @@ public class InventoryUI : ItemSearchFilterTargetUI
 
     [Header("Tooltip")]
     public ItemTooltipUI tooltipUI;
+    [Tooltip("Pin item information when an inventory slot Toggle is selected. Disable to keep hover tooltips.")]
+    public bool showTooltipOnSelection;
+    public ToggleGroup selectionGroup;
 
     private bool isInitialized;
     private bool isEventBound;
@@ -38,6 +42,13 @@ public class InventoryUI : ItemSearchFilterTargetUI
     private void OnDestroy()
     {
         UnbindInventoryEvent();
+    }
+
+    private void OnDisable()
+    {
+        foreach (var row in quickSlotObjects)
+            if (row != null && row.TryGetComponent<ItemTooltipTrigger>(out var trigger))
+                trigger.ReleaseSelection(true);
     }
 
     private void BindInventoryEvent()
@@ -114,6 +125,12 @@ public class InventoryUI : ItemSearchFilterTargetUI
                 quickSlotUIs[i].SetSlot(validItems[i]);
             else
                 quickSlotUIs[i].SetSlot(null);
+            var trigger = quickSlotObjects[i].GetComponent<ItemTooltipTrigger>();
+            if (trigger != null)
+            {
+                if (trigger.showOnSelection && !showTooltipOnSelection) trigger.ReleaseSelection();
+                trigger.showOnSelection = showTooltipOnSelection;
+            }
         }
     }
 
@@ -127,7 +144,20 @@ public class InventoryUI : ItemSearchFilterTargetUI
             ItemTooltipTrigger tooltipTrigger = slotObj.GetComponent<ItemTooltipTrigger>();
 
             if (tooltipTrigger != null)
+            {
                 tooltipTrigger.Init(tooltipUI);
+                tooltipTrigger.showOnSelection = showTooltipOnSelection;
+            }
+            if (slotObj.TryGetComponent<Toggle>(out var toggle))
+            {
+                toggle.group = selectionGroup != null ? selectionGroup : GetComponent<ToggleGroup>();
+                toggle.onValueChanged.AddListener(selected =>
+                {
+                    if (!selected) return;
+                    foreach (var row in quickSlotUIs)
+                        if (row is ClickableItemSlotUI other && other.slotToggle != toggle) other.ResetSelection();
+                });
+            }
 
             quickSlotObjects.Add(slotObj);
             quickSlotUIs.Add(slotUI);

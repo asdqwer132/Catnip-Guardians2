@@ -6202,6 +6202,8 @@ MonoBehaviour:
   slotParent: {fileID: 5307011477961682574}
   slotPrefab: {fileID: 7991120730881528602, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
   tooltipUI: {fileID: 410455769}
+  showTooltipOnSelection: 1
+  selectionGroup: {fileID: 0}
 --- !u!1001 &218040595
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -42695,6 +42697,8 @@ MonoBehaviour:
   slotParent: {fileID: 1643468418}
   slotPrefab: {fileID: 7991120730881528602, guid: c686f46e1f520584096e219ee0cd5736, type: 3}
   tooltipUI: {fileID: 963079605}
+  showTooltipOnSelection: 1
+  selectionGroup: {fileID: 1564652079}
 --- !u!114 &1564652079
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -42707,7 +42711,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ToggleGroup
-  m_AllowSwitchOff: 0
+  m_AllowSwitchOff: 1
 --- !u!1001 &1565572592
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -43890,7 +43894,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17a0c06c2aba490a9c8cb02a978a2437, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemCombinationPanelUI
-  manager: {fileID: 0}
+  manager: {fileID: 875675672}
   materialSlots:
   - {fileID: 1101280879}
   - {fileID: 208139769}

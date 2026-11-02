@@ -22,6 +22,68 @@ public class ItemRecipeManager : MonoBehaviour
     public bool returnFailedItem = true;
 
     public System.Action onMaterialChanged;
+    public event Action<int> MaterialSlotSelected;
+    public int SelectedMaterialSlot { get; private set; } = -1;
+    private readonly HashSet<int> lockedMaterialSlots = new HashSet<int>();
+
+    public InventoryItem GetMaterialAt(int index) => index >= 0 && index < currentMaterials.Count ? currentMaterials[index] : null;
+    public bool IsMaterialSlotLocked(int index) => index < 0 || index >= maxMaterialCount || lockedMaterialSlots.Contains(index);
+
+    public void SelectMaterialSlot(int index)
+    {
+        if (index >= 0 && IsMaterialSlotLocked(index)) return;
+        if (SelectedMaterialSlot == index) return;
+        SelectedMaterialSlot = index;
+        MaterialSlotSelected?.Invoke(index);
+    }
+
+    public void SetMaterialSlotLocked(int index, bool locked)
+    {
+        if (locked) lockedMaterialSlots.Add(index);
+        else lockedMaterialSlots.Remove(index);
+        if (locked && SelectedMaterialSlot == index) SelectMaterialSlot(-1);
+    }
+
+    private int FindReadyMaterialSlot()
+    {
+        for (int i = 0; i < maxMaterialCount; i++)
+        {
+            var entry = GetMaterialAt(i);
+            if (!IsMaterialSlotLocked(i) && (entry == null || entry.itemData == null || entry.amount <= 0)) return i;
+        }
+        return -1;
+    }
+
+    private void SetMaterialAt(int index, InventoryItem item)
+    {
+        while (currentMaterials.Count <= index) currentMaterials.Add(null);
+        currentMaterials[index] = item;
+    }
+
+    public bool TryAddMaterial(ItemData itemData)
+    {
+        InventoryManager inventory = InventoryManager.instance;
+        if (itemData == null || inventory == null) return false;
+        int index = SelectedMaterialSlot >= 0 ? SelectedMaterialSlot : FindReadyMaterialSlot();
+        if (IsMaterialSlotLocked(index)) return false;
+        InventoryItem previous = GetMaterialAt(index);
+        if (previous != null && previous.itemData == itemData && previous.amount == 1) return true;
+        if (!inventory.RemoveItem(itemData, 1)) return false;
+        SetMaterialAt(index, new InventoryItem(itemData, 1));
+        if (previous != null && previous.itemData != null && previous.amount > 0)
+            inventory.AddItem(previous.itemData, previous.amount);
+        onMaterialChanged?.Invoke();
+        return true;
+    }
+
+    public void ReturnMaterialAt(int index)
+    {
+        var entry = GetMaterialAt(index);
+        if (entry == null || entry.itemData == null || InventoryManager.instance == null) return;
+        currentMaterials[index] = null;
+        InventoryManager.instance.AddItem(entry.itemData, entry.amount);
+        onMaterialChanged?.Invoke();
+    }
 
     public bool isEmptyResult() { return resultItem == null; }
     public int GetCurrentMaterialCount()
@@ -29,7 +91,7 @@ public class ItemRecipeManager : MonoBehaviour
         int count = 0;
         foreach (var material in currentMaterials)
         {
-            if(material.itemData != null) count++;
+            if (material != null && material.itemData != null && material.amount > 0) count++;
         }
         return count;
     }
@@ -67,34 +129,7 @@ public class ItemRecipeManager : MonoBehaviour
         return result;
     }
 
-    public void AddMaterial(ItemData itemData)
-    {
-        if (itemData == null)
-            return;
-
-        if (GetCurrentMaterialCount() >= maxMaterialCount)
-        {
-            Debug.LogWarning($"[ItemRecipeManager] 재료 슬롯이 가득 찼습니다. {GetCurrentMaterialCount()} / {maxMaterialCount}");
-            return;
-        }
-
-        if (InventoryManager.instance == null)
-        {
-            Debug.LogWarning("InventoryManager가 없습니다.");
-            return;
-        }
-
-        bool removed = InventoryManager.instance.RemoveItem(itemData, 1);
-
-        if (removed == false)
-            return;
-
-        // 중요:
-        // 같은 아이템이어도 합치지 않고 한 칸씩 추가
-        currentMaterials.Add(new InventoryItem(itemData, 1));
-
-        onMaterialChanged?.Invoke();
-    }
+    public void AddMaterial(ItemData itemData) => TryAddMaterial(itemData);
 
     public bool TryFillRecipe(ItemRecipeData recipe)
     {
@@ -118,7 +153,10 @@ public class ItemRecipeManager : MonoBehaviour
 
         int recipeMaterialCount = GetRecipeTotalMaterialCount(recipe);
 
-        if (recipeMaterialCount > maxMaterialCount)
+        int availableSlots = 0;
+        for (int slot = 0; slot < maxMaterialCount; slot++)
+            if (!IsMaterialSlotLocked(slot)) availableSlots++;
+        if (recipeMaterialCount > availableSlots)
         {
             Debug.LogWarning(
                 $"[ItemRecipeManager] 레시피 재료 개수가 최대 재료 개수를 초과합니다. " +
@@ -161,7 +199,7 @@ public class ItemRecipeManager : MonoBehaviour
 
                 // 중요:
                 // amount를 올리지 않고 1개짜리 슬롯으로 계속 추가
-                currentMaterials.Add(new InventoryItem(itemData, 1));
+                SetMaterialAt(FindReadyMaterialSlot(), new InventoryItem(itemData, 1));
             }
         }
 
@@ -271,7 +309,7 @@ public class ItemRecipeManager : MonoBehaviour
             returned = true;
 
             if (material.amount <= 0)
-                currentMaterials.RemoveAt(i);
+                currentMaterials[i] = null;
 
             if (remainAmount <= 0)
                 break;

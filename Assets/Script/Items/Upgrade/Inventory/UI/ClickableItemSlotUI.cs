@@ -3,45 +3,86 @@ using UnityEngine.UI;
 
 public class ClickableItemSlotUI : BaseItemSlotUI
 {
-    [Header("Button")]
+    [Header("Interaction")]
     public Button slotButton;
+    public Toggle slotToggle;
+    private ItemTooltipTrigger selectionTooltip;
+    protected virtual bool AllowEmptySelection => false;
+    protected virtual bool KeepSelectionOnRefresh => false;
 
     protected virtual void Awake()
     {
-        if (slotButton == null)
-            slotButton = GetComponent<Button>();
+        if (slotToggle == null) slotToggle = GetComponent<Toggle>();
+        if (slotButton == null) slotButton = GetComponent<Button>();
+        selectionTooltip = GetComponent<ItemTooltipTrigger>();
+        if (slotToggle != null) slotToggle.onValueChanged.AddListener(OnToggleValueChanged);
+        else if (slotButton != null) slotButton.onClick.AddListener(OnClickSlot);
+    }
 
-        if (slotButton != null)
-            slotButton.onClick.AddListener(OnClickSlot);
-        else
-            Debug.LogWarning(name + " 슬롯에 Button이 없습니다.");
+    public void OnToggleValueChanged(bool selected)
+    {
+        if (selected && (IsLocked || (!AllowEmptySelection && (currentItem == null || currentItem.itemData == null))))
+        {
+            if (slotToggle != null) slotToggle.SetIsOnWithoutNotify(false);
+            return;
+        }
+        // Capture the clicked item before its action can consume stock and recycle this row.
+        if (selectionTooltip != null) selectionTooltip.OnSlotSelectionChanged(selected);
+        OnSelectionChanged(selected);
+    }
+
+    protected virtual void OnSelectionChanged(bool selected)
+    {
+        if (selected) OnClickSlot();
+    }
+
+    public void ResetSelection(bool hideTooltip = false)
+    {
+        if (slotToggle != null) slotToggle.SetIsOnWithoutNotify(false);
+        if (hideTooltip && selectionTooltip != null) selectionTooltip.ReleaseSelection(true);
     }
 
     public override void ClearSlot()
     {
+        if (!KeepSelectionOnRefresh) ResetSelection();
         base.ClearSlot();
-        if (slotButton != null)
-            slotButton.interactable = false;
+        RefreshInteraction();
     }
+
     public override void LockSlot()
     {
         base.LockSlot();
-        if (slotButton != null)
-            slotButton.interactable = false;
+        ResetSelection();
+        RefreshInteraction();
     }
+
     public override void SetSlot(InventoryItem item)
     {
+        if (!KeepSelectionOnRefresh && currentItem?.itemData != item?.itemData) ResetSelection();
         base.SetSlot(item);
-        if (slotButton != null)
-            slotButton.interactable = item != null && item.itemData != null;
-
+        RefreshInteraction();
     }
 
+    public override void SetItemData(ItemData itemData, int amount = 1)
+    {
+        if (!KeepSelectionOnRefresh && currentItem?.itemData != itemData) ResetSelection();
+        base.SetItemData(itemData, amount);
+        RefreshInteraction();
+    }
+
+    protected void RefreshInteraction()
+    {
+        bool hasItem = currentItem != null && currentItem.itemData != null;
+        if (slotButton != null) slotButton.interactable = !IsLocked && hasItem;
+        if (slotToggle != null) slotToggle.interactable = !IsLocked && (hasItem || AllowEmptySelection);
+    }
+
+    protected virtual void OnDisable() => ResetSelection();
 
     protected virtual void OnDestroy()
     {
-        if (slotButton != null)
-            slotButton.onClick.RemoveListener(OnClickSlot);
+        if (slotToggle != null) slotToggle.onValueChanged.RemoveListener(OnToggleValueChanged);
+        if (slotButton != null) slotButton.onClick.RemoveListener(OnClickSlot);
     }
 
     public virtual void OnClickSlot() { }

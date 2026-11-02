@@ -12,6 +12,8 @@ public class BaseItemSlotUI : MonoBehaviour
     public TextMeshProUGUI amountText;
     public TextMeshProUGUI gradeText;
     public GameObject locked;
+    [Tooltip("Shown when the slot is unlocked and has no item.")]
+    public GameObject ready;
     public bool IsLocked = false;
 
     [Header("Optional Item Info")]
@@ -54,6 +56,7 @@ public class BaseItemSlotUI : MonoBehaviour
         LocalizedText.RefreshTranslation(gradeText);
         BindLanguageData(itemData);
         if (locked != null) locked.SetActive(false);
+        if (ready != null) ready.SetActive(false);
         IsLocked = false;
     }
 
@@ -61,6 +64,7 @@ public class BaseItemSlotUI : MonoBehaviour
     {
         ClearSlot(); IsLocked = true;
         if (locked != null) locked.SetActive(true);
+        if (ready != null) ready.SetActive(false);
     }
     public virtual void ClearSlot()
     {
@@ -78,6 +82,7 @@ public class BaseItemSlotUI : MonoBehaviour
         SetOptionalText(cooldownText, null);
         BindLanguageData(null);
         if (locked != null) locked.SetActive(false);
+        if (ready != null) ready.SetActive(true);
         IsLocked = false;
     }
 

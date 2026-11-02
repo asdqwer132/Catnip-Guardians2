@@ -53,7 +53,12 @@ public sealed class ItemCombinationPanelUI : MonoBehaviour
         if (materialSlots != null)
             for (int i = 0; i < materialSlots.Length; i++)
                 if (materialSlots[i] != null)
-                    materialSlots[i].SetSlot(i < manager.currentMaterials.Count ? manager.currentMaterials[i] : null);
+                {
+                    materialSlots[i].Bind(manager, i);
+                    if (materialSlots[i].IsLocked || i >= manager.maxMaterialCount)
+                        materialSlots[i].LockSlot();
+                    else materialSlots[i].SetSlot(manager.GetMaterialAt(i));
+                }
         ItemData preview = manager.GetPreviewResult();
         if (resultSlot != null)
             resultSlot.SetSlot(preview != null ? new InventoryItem(preview, 1) : null);

@@ -32,18 +32,14 @@ public class SubPlantUIManager : MonoBehaviour
     public void RefreshUI()
     {
 
-        var materials = subplantmanager.currentMaterials;
+        if (subplantmanager == null || slots == null) return;
 
         for (int i = 0; i < slots.Length; i++)
         {
-            if (i < materials.Count)
-            {
-                slots[i].SetSlot(materials[i]);
-            }
-            else
-            {
-                slots[i].ClearSlot();
-            }
+            if (slots[i] == null) continue;
+            slots[i].Bind(subplantmanager, i);
+            if (slots[i].IsLocked || i >= subplantmanager.maxMaterialCount) slots[i].LockSlot();
+            else slots[i].SetSlot(subplantmanager.GetMaterialAt(i));
         }
         subplantmanager.Combine();
         Combine(dynamicCombine);

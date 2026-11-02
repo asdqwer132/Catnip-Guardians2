@@ -58,6 +58,7 @@ public class ItemTooltipUI : MonoBehaviour, ISceneLocalizedUI
     }
 
     private object currentOwner;
+    private object pinnedOwner;
     private RectTransform currentAnchorRect;
 
     private RectTransform tooltipRect;
@@ -107,6 +108,8 @@ public class ItemTooltipUI : MonoBehaviour, ISceneLocalizedUI
 
         if (data == null || anchor == null)
             return;
+        if (pinnedOwner != null && pinnedOwner != owner)
+            return;
 
         currentOwner = owner;
         currentAnchorRect = anchor;
@@ -123,6 +126,7 @@ public class ItemTooltipUI : MonoBehaviour, ISceneLocalizedUI
 
     public void Hide()
     {
+        pinnedOwner = null;
         if (!removePannel) return;
 
         currentOwner = null;
@@ -145,10 +149,26 @@ public class ItemTooltipUI : MonoBehaviour, ISceneLocalizedUI
 
     public void Hide(object owner)
     {
-        if (currentOwner != owner)
+        if (currentOwner != owner || pinnedOwner != null)
             return;
 
         Hide();
+    }
+
+    public void Pin(ITooltipContentProvider provider)
+    {
+        if (!useTooltip || provider == null || !provider.TryGetTooltipData(out var data)) return;
+        var anchor = provider.GetTooltipAnchor();
+        if (data == null || anchor == null) return;
+        pinnedOwner = provider;
+        Show(data, anchor, provider);
+    }
+
+    public void ReleasePin(object owner, bool hide = false)
+    {
+        if (pinnedOwner != owner) return;
+        pinnedOwner = null;
+        if (hide) Hide(owner);
     }
 
     protected virtual void ApplyData(TooltipData data)
