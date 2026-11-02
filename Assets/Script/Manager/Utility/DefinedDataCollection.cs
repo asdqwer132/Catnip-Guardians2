@@ -41,4 +41,18 @@ public static class DefinedDataUtility
         if (string.IsNullOrEmpty(name)) name = data?.GetDataName(language.english);
         return string.IsNullOrEmpty(name) ? fallback : name;
     }
+
+    public static string GetDescription(DefinedData data, language selected)
+    {
+        string value = data?.GetDescription(selected);
+        if (string.IsNullOrEmpty(value)) value = data?.GetDescription(language.english);
+        return value ?? "";
+    }
+
+    public static string GetDetailDescription(DefinedData data, language selected)
+    {
+        string value = data?.GetDetailDescription(selected);
+        if (string.IsNullOrEmpty(value)) value = data?.GetDetailDescription(language.english);
+        return value ?? "";
+    }
 }

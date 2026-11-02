@@ -47,10 +47,13 @@ public sealed class LocalizedText : MonoBehaviour, ISceneLocalizedUI
             marker.Refresh();
     }
     public static void BindDefinedData(TMP_Text target, DefinedData data, string fallbackName)
+        => BindDefinedData(target, data, LocalizedTextSource.DataName, fallbackName);
+
+    public static void BindDefinedData(TMP_Text target, DefinedData data, LocalizedTextSource field, string fallbackName = "")
     {
         if (target == null || !target.TryGetComponent<LocalizedText>(out var marker)) return;
         marker.definedSource = data; marker.definedBinding = true; marker.definedFallback = fallbackName;
-        marker.dataSource = data as DefaultData; marker.source = LocalizedTextSource.DataName;
+        marker.dataSource = data as DefaultData; marker.source = field;
         marker.Refresh();
     }
     public void BindData(DefaultData data, LocalizedTextSource field)

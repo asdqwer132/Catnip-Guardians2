@@ -91,7 +91,7 @@ public class ClickableItemSlotUI : BaseItemSlotUI
         if (slotToggle != null) slotToggle.interactable = !IsLocked && (hasItem || AllowEmptySelection);
     }
 
-    protected virtual void OnDisable() => ResetSelection();
+    protected override void OnDisable() { ResetSelection(); base.OnDisable(); }
 
     protected virtual void OnDestroy()
     {

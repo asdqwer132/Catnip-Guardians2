@@ -2,9 +2,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Serialization;
-using UnityEngine.SceneManagement;
 
-public class ItemTooltipUI : MonoBehaviour, ISceneLocalizedUI
+public class ItemTooltipUI : DataInfoUI
 {
     [Header("Tooltip Option")]
     public bool useTooltip = true;
@@ -20,10 +19,6 @@ public class ItemTooltipUI : MonoBehaviour, ISceneLocalizedUI
     public GameObject tooltipPanel;
 
     [Header("UI")]
-    public Image icon;
-    [FormerlySerializedAs("titleText")] public TextMeshProUGUI dataNameText;
-    public TextMeshProUGUI descriptionText;
-    public TextMeshProUGUI detailDescriptionText;
     public TextMeshProUGUI amountText;
     [FormerlySerializedAs("subTitleText")] public TextMeshProUGUI gradeText;
     public TextMeshProUGUI categoryText;
@@ -38,24 +33,7 @@ public class ItemTooltipUI : MonoBehaviour, ISceneLocalizedUI
     public Image gradeIcon;
 
     private TooltipData displayedData;
-    private Scene registeredScene;
-    private language displayLanguage = language.english;
-    private void OnEnable() { registeredScene = gameObject.scene; SceneLanguageMediator.Register(this); }
-    private void OnDisable() => SceneLanguageMediator.Unregister(this, registeredScene);
-    void ISceneLocalizedUI.RefreshLanguage()
-    {
-        if (isActiveAndEnabled && registeredScene != gameObject.scene)
-        {
-            SceneLanguageMediator.Unregister(this, registeredScene);
-            registeredScene = gameObject.scene; SceneLanguageMediator.Register(this);
-        }
-        else SceneLanguageMediator.RefreshText(this);
-    }
-    void ISceneLocalizedUI.ApplyLanguage(language selected, LocalizedTextTable table)
-    {
-        displayLanguage = selected;
-        RefreshDefinedInformation();
-    }
+    protected override void OnDataLanguageChanged(language selected) => RefreshDefinedInformation();
 
     private object currentOwner;
     private object pinnedOwner;
@@ -174,31 +152,13 @@ public class ItemTooltipUI : MonoBehaviour, ISceneLocalizedUI
     protected virtual void ApplyData(TooltipData data)
     {
         displayedData = data;
-        if (icon != null)
-        {
-            icon.sprite = data.icon;
-            icon.enabled = data.icon != null;
-        }
-
-        if (dataNameText != null) dataNameText.text = data.dataName ?? "";
-        if (descriptionText != null) descriptionText.text = data.description ?? "";
-        SetOptionalText(detailDescriptionText, data.detailDescription);
+        SetDefinedData(data, data.dataName);
         SetOptionalText(amountText, data.amountText);
 
         var item = data as ItemTooltipData;
-        string grade = item?.GradeText;
-        // 기존 가방/스킬 맵 화면의 보조 텍스트 연결도 유지합니다.
-        if (data is BagTooltipData bag) grade = bag.bagType;
-        else if (data is SkillMapTooltipData map) grade = map.totalNodesCount;
-        SetOptionalText(gradeText, grade);
         SetOptionalText(categoryText, item?.CategoryText);
-        SetOptionalText(seriesText, item?.SeriesText);
-        RefreshDefinedInformation();
         SetOptionalText(weightText, item?.WeightText);
         SetOptionalText(cooldownText, item?.CooldownText);
-        LocalizedText.BindData(dataNameText, data.sourceData, LocalizedTextSource.DataName);
-        LocalizedText.BindData(descriptionText, data.sourceData, LocalizedTextSource.Description);
-        LocalizedText.BindData(detailDescriptionText, data.sourceData, LocalizedTextSource.DetailDescription);
     }
 
     private void RefreshDefinedInformation()
@@ -216,21 +176,13 @@ public class ItemTooltipUI : MonoBehaviour, ISceneLocalizedUI
     }
     private void SetDefinedText(TextMeshProUGUI target, DefinedData data, string fallback)
     {
-        SetOptionalText(target, DefinedDataUtility.GetName(data, displayLanguage, fallback));
+        SetOptionalText(target, DefinedDataUtility.GetName(data, DisplayLanguage, fallback));
         LocalizedText.BindDefinedData(target, data, fallback);
     }
     private static void SetDefinedIcon(Image target, Sprite sprite)
     {
         if (target == null) return;
         target.sprite = sprite; target.enabled = sprite != null;
-    }
-
-    private static void SetOptionalText(TextMeshProUGUI target, string value)
-    {
-        if (target == null) return;
-        target.text = value ?? "";
-        target.gameObject.SetActive(!string.IsNullOrEmpty(value));
-        LocalizedText.RefreshTranslation(target);
     }
 
     private void UpdatePosition()

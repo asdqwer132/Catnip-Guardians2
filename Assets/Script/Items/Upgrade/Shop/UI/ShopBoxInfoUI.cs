@@ -9,13 +9,13 @@ public class BoxCost
     public GameObject costPanel;
     public TextMeshProUGUI costText;
 }
-public class ShopBoxInfoUI : MonoBehaviour
+public class ShopBoxInfoUI : DataInfoUI
 {
     [Header("Basic Info UI")]
     public GameObject pannel;
-    public Image boxIcon;
+    public Image boxIcon { get => icon; set => icon = value; }
     public ShopBoxOpenAnimationUI boxOpenAnimationUI;
-    public TextMeshProUGUI boxNameText;
+    public TextMeshProUGUI boxNameText { get => dataNameText; set => dataNameText = value; }
     public TextMeshProUGUI seriesText;
     public BoxCost[] extraBoxCosts;
 
@@ -30,6 +30,8 @@ public class ShopBoxInfoUI : MonoBehaviour
 
     [Header("Shop Manager")]
     public ShopManager shopManager;
+
+    protected override bool UpdateIcon => boxOpenAnimationUI == null;
 
     private void Start()
     {
@@ -50,21 +52,13 @@ public class ShopBoxInfoUI : MonoBehaviour
         if (pannel != null)
             pannel.SetActive(true);
 
+        SetData(boxData);
         if (boxOpenAnimationUI != null)
-        {
             boxOpenAnimationUI.SetBox(boxData);
-        }
-        else if (boxIcon != null)
-        {
-            boxIcon.sprite = boxData.icon;
-            boxIcon.enabled = boxData.icon != null;
-        }
 
         if (pickUpTitleText != null)
             pickUpTitleText.SetActive(true);
 
-        if (boxNameText != null)
-            boxNameText.text = boxData.GetDataName();
         if (seriesText != null)
             seriesText.text = boxData.itemSeries.ToString();
         if (extraBoxCosts != null)
@@ -154,24 +148,15 @@ public class ShopBoxInfoUI : MonoBehaviour
 
     public void ClearInfo()
     {
+        ClearData();
         if (boxOpenAnimationUI != null)
-        {
             boxOpenAnimationUI.Clear();
-        }
-        else if (boxIcon != null)
-        {
-            boxIcon.sprite = null;
-            boxIcon.enabled = false;
-        }
 
         if (pannel != null)
             pannel.SetActive(false);
 
         if (pickUpTitleText != null)
             pickUpTitleText.SetActive(false);
-
-        if (boxNameText != null)
-            boxNameText.text = "";
 
         if (seriesText != null)
             seriesText.text = "";

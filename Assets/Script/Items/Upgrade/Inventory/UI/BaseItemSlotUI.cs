@@ -1,13 +1,9 @@
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
-using UnityEngine.Serialization;
 
-public class BaseItemSlotUI : MonoBehaviour
+public class BaseItemSlotUI : DataInfoUI
 {
     [Header("Base Item UI")]
-    public Image icon;
-    [FormerlySerializedAs("nameText")] public TextMeshProUGUI dataNameText;
     public GameObject amountImage;
     public TextMeshProUGUI amountText;
     public TextMeshProUGUI gradeText;
@@ -17,8 +13,6 @@ public class BaseItemSlotUI : MonoBehaviour
     public bool IsLocked = false;
 
     [Header("Optional Item Info")]
-    public TextMeshProUGUI descriptionText;
-    public TextMeshProUGUI detailDescriptionText;
     public TextMeshProUGUI categoryText;
     public TextMeshProUGUI seriesText;
     public TextMeshProUGUI weightText;
@@ -26,6 +20,7 @@ public class BaseItemSlotUI : MonoBehaviour
 
     [Header("Reference")]
     public InventoryItem currentItem;
+    protected override bool HideDescriptionWhenEmpty => true;
 
     public virtual void SetSlot(InventoryItem item)
     {
@@ -42,19 +37,15 @@ public class BaseItemSlotUI : MonoBehaviour
         if (currentItem == null || currentItem.itemData != itemData || currentItem.amount != amount)
             currentItem = new InventoryItem(itemData, amount);
         var data = ItemTooltipData.FromItem(itemData, amount);
-        if (icon != null) { icon.sprite = data.icon; icon.enabled = data.icon != null; }
-        if (dataNameText != null) dataNameText.text = data.dataName;
+        SetDefinedData(data, data.dataName);
         if (amountImage != null) amountImage.SetActive(true);
         if (amountText != null) amountText.text = amount.ToString();
         if (gradeText != null) gradeText.text = data.GradeText;
-        SetOptionalText(descriptionText, data.description);
-        SetOptionalText(detailDescriptionText, data.detailDescription);
         SetOptionalText(categoryText, data.CategoryText);
         SetOptionalText(seriesText, data.SeriesText);
         SetOptionalText(weightText, data.WeightText);
         SetOptionalText(cooldownText, data.CooldownText);
         LocalizedText.RefreshTranslation(gradeText);
-        BindLanguageData(itemData);
         if (locked != null) locked.SetActive(false);
         if (ready != null) ready.SetActive(false);
         IsLocked = false;
@@ -69,35 +60,18 @@ public class BaseItemSlotUI : MonoBehaviour
     public virtual void ClearSlot()
     {
         currentItem = null;
-        if (icon != null) { icon.sprite = null; icon.enabled = false; }
-        if (dataNameText != null) dataNameText.text = "";
+        ClearData();
         if (amountImage != null) amountImage.SetActive(false);
         if (amountText != null) amountText.text = "";
         if (gradeText != null) gradeText.text = "";
-        SetOptionalText(descriptionText, null);
-        SetOptionalText(detailDescriptionText, null);
         SetOptionalText(categoryText, null);
         SetOptionalText(seriesText, null);
         SetOptionalText(weightText, null);
         SetOptionalText(cooldownText, null);
-        BindLanguageData(null);
         if (locked != null) locked.SetActive(false);
         if (ready != null) ready.SetActive(true);
         IsLocked = false;
     }
 
-    private void BindLanguageData(DefaultData data)
-    {
-        LocalizedText.BindData(dataNameText, data, LocalizedTextSource.DataName);
-        LocalizedText.BindData(descriptionText, data, LocalizedTextSource.Description);
-        LocalizedText.BindData(detailDescriptionText, data, LocalizedTextSource.DetailDescription);
-    }
-    private static void SetOptionalText(TextMeshProUGUI target, string value)
-    {
-        if (target == null) return;
-        target.text = value ?? "";
-        target.gameObject.SetActive(!string.IsNullOrEmpty(value));
-        LocalizedText.RefreshTranslation(target);
-    }
     public InventoryItem GetCurrentItem() => currentItem;
 }

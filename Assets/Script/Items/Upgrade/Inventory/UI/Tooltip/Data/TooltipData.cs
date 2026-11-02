@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 [Serializable]
-public class TooltipData
+public class TooltipData : DefinedData
 {
     public DefaultData sourceData;
     public Sprite icon;
@@ -12,6 +12,11 @@ public class TooltipData
     public string amountText;
     [TextArea] public string description;
     [TextArea] public string detailDescription;
+
+    public Sprite Icon => icon;
+    public string GetDataName(language selected) => sourceData != null ? sourceData.GetDataName(selected) : dataName;
+    public string GetDescription(language selected) => sourceData != null ? sourceData.GetDescription(selected) : description;
+    public string GetDetailDescription(language selected) => sourceData != null ? sourceData.GetDetailDescription(selected) : detailDescription;
 }
 
 // 슬롯과 툴팁이 같은 아이템 정보와 언어 선택을 사용합니다.
@@ -35,19 +40,13 @@ public class ItemTooltipData : TooltipData
     {
         if (item == null) return null;
         language selected = LanguageManager.instance != null ? LanguageManager.instance.selectedLan : language.english;
-        string dataName = item.GetDataName(selected);
-        string description = item.GetDescription(selected);
-        string detail = item.GetDetailDescription(selected);
-        if (string.IsNullOrEmpty(dataName)) dataName = item.GetDataName(language.english);
-        if (string.IsNullOrEmpty(description)) description = item.GetDescription(language.english);
-        if (string.IsNullOrEmpty(detail)) detail = item.GetDetailDescription(language.english);
         return new ItemTooltipData
         {
             sourceData = item,
             icon = item.icon,
-            dataName = string.IsNullOrEmpty(dataName) ? item.name : dataName,
-            description = description ?? "",
-            detailDescription = detail ?? "",
+            dataName = DefinedDataUtility.GetName(item, selected, item.name),
+            description = DefinedDataUtility.GetDescription(item, selected),
+            detailDescription = DefinedDataUtility.GetDetailDescription(item, selected),
             amount = amount,
             amountText = $"x{amount}",
             grade = item.grade,

@@ -21,8 +21,9 @@ public class SubPlantMaterialSlotUI : ClickableItemSlotUI
         ApplySelection(manager.SelectedMaterialSlot);
     }
 
-    private void OnEnable()
+    protected override void OnEnable()
     {
+        base.OnEnable();
         if (manager == null) return;
         manager.MaterialSlotSelected -= ApplySelection;
         manager.MaterialSlotSelected += ApplySelection;

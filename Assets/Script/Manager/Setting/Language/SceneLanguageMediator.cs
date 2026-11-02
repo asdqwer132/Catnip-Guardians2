@@ -68,6 +68,9 @@ public sealed class SceneLanguageMediator : MonoBehaviour
         if (!(text is ISceneLocalizedUI target)) return;
         if (owners.TryGetValue(text.gameObject.scene, out var owner) && owner != null)
             target.ApplyLanguage(owner.CurrentLanguage, owner.translations);
-        else target.ApplyLanguage(language.english, null);
+        else target.ApplyLanguage(GetLanguage(text.gameObject.scene), null);
     }
+
+    public static language GetLanguage(Scene scene)
+        => owners.TryGetValue(scene, out var owner) && owner != null ? owner.CurrentLanguage : LanguageManager.CurrentLanguage;
 }
