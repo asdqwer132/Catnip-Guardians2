@@ -17,8 +17,13 @@ public class InventoryUI : ItemSearchFilterTargetUI
     public bool showTooltipOnSelection;
     public ToggleGroup selectionGroup;
 
+    [Header("Material Returns")]
+    [Tooltip("Optional material manager. Empty uses this inventory's parent combination or sub-plant panel.")]
+    public ItemRecipeManager materialSource;
+
     private bool isInitialized;
     private bool isEventBound;
+    private ItemRecipeManager boundMaterialSource;
 
     private readonly List<InventoryItem> validItemsCache = new List<InventoryItem>();
 
@@ -27,6 +32,7 @@ public class InventoryUI : ItemSearchFilterTargetUI
 
     public void Init()
     {
+        BindMaterialReturns();
         if (isInitialized)
         {
             RefreshUI();
@@ -41,14 +47,50 @@ public class InventoryUI : ItemSearchFilterTargetUI
 
     private void OnDestroy()
     {
+        UnbindMaterialReturns();
         UnbindInventoryEvent();
     }
 
+    private void OnEnable() => BindMaterialReturns();
+
     private void OnDisable()
     {
+        UnbindMaterialReturns();
         foreach (var row in quickSlotObjects)
             if (row != null && row.TryGetComponent<ItemTooltipTrigger>(out var trigger))
                 trigger.ReleaseSelection(true);
+    }
+
+    public void ClearSelection()
+    {
+        foreach (var row in quickSlotUIs)
+            if (row is ClickableItemSlotUI slot) slot.ResetSelection();
+    }
+
+    private void BindMaterialReturns()
+    {
+        ItemRecipeManager source = materialSource;
+        if (source == null)
+        {
+            var panel = GetComponentInParent<ItemCombinationPanelUI>(true);
+            if (panel != null) source = panel.Manager;
+            else
+            {
+                var legacy = GetComponentInParent<SubPlantUIManager>(true);
+                if (legacy != null) source = legacy.subplantmanager;
+            }
+        }
+        if (boundMaterialSource == source) return;
+        UnbindMaterialReturns();
+        if (source == null || !isActiveAndEnabled) return;
+        boundMaterialSource = source;
+        boundMaterialSource.MaterialsReturned += ClearSelection;
+    }
+
+    private void UnbindMaterialReturns()
+    {
+        if (boundMaterialSource != null) boundMaterialSource.MaterialsReturned -= ClearSelection;
+        boundMaterialSource = null;
     }
 
     private void BindInventoryEvent()

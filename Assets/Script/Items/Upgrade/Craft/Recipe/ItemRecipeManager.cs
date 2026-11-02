@@ -23,6 +23,7 @@ public class ItemRecipeManager : MonoBehaviour
 
     public System.Action onMaterialChanged;
     public event Action<int> MaterialSlotSelected;
+    public event Action MaterialsReturned;
     public int SelectedMaterialSlot { get; private set; } = -1;
     private readonly HashSet<int> lockedMaterialSlots = new HashSet<int>();
 
@@ -83,6 +84,7 @@ public class ItemRecipeManager : MonoBehaviour
         currentMaterials[index] = null;
         InventoryManager.instance.AddItem(entry.itemData, entry.amount);
         onMaterialChanged?.Invoke();
+        MaterialsReturned?.Invoke();
     }
 
     public bool isEmptyResult() { return resultItem == null; }
@@ -322,6 +324,7 @@ public class ItemRecipeManager : MonoBehaviour
         }
 
         onMaterialChanged?.Invoke();
+        MaterialsReturned?.Invoke();
     }
 
     public void ReturnMaterials()
@@ -346,7 +349,10 @@ public class ItemRecipeManager : MonoBehaviour
         currentMaterials.Clear();
 
         if (notify)
+        {
             onMaterialChanged?.Invoke();
+            MaterialsReturned?.Invoke();
+        }
     }
 
     public void ClearMaterials()

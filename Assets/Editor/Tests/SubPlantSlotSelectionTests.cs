@@ -109,6 +109,83 @@ public sealed class SubPlantSlotSelectionTests
         Assert.That(panel.materialSlots[3].slotToggle.isOn, Is.True);
     }
 
+    [TestCase(true)]
+    [TestCase(false)]
+    public void GroupedMaterialSlotsSwitchOnTheFirstClickAndRespectAllowSwitchOff(bool allowSwitchOff)
+    {
+        var group = Host("Material toggle group", panel.transform).AddComponent<ToggleGroup>();
+        group.allowSwitchOff = allowSwitchOff;
+        foreach (var slot in panel.materialSlots) slot.slotToggle.group = group;
+        Click(panel.materialSlots[0].slotToggle);
+        Click(panel.materialSlots[2].slotToggle);
+        Assert.That(manager.SelectedMaterialSlot, Is.EqualTo(2));
+        Assert.That(panel.materialSlots[0].slotToggle.isOn, Is.False);
+        Assert.That(panel.materialSlots[2].slotToggle.isOn, Is.True);
+        Assert.That(group.ActiveToggles().Count(), Is.EqualTo(1));
+        Click(panel.materialSlots[2].slotToggle);
+        Assert.That(manager.SelectedMaterialSlot, Is.EqualTo(allowSwitchOff ? -1 : 2));
+        Assert.That(group.allowSwitchOff, Is.EqualTo(allowSwitchOff));
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public void ReturnButtonClearsInventorySelectionEvenWhenItsGroupRequiresOneSelection(bool allowSwitchOff)
+    {
+        var item = Item("A"); var tooltip = Tooltip(); var ui = LiveInventory(tooltip);
+        var group = ui.gameObject.AddComponent<ToggleGroup>(); group.allowSwitchOff = allowSwitchOff;
+        var row = ui.slotParent.GetComponentInChildren<SubPlantInventorySlotUI>(); row.slotToggle.group = group;
+        Click(row.slotToggle);
+        Assert.That(row.slotToggle.isOn, Is.True);
+        var button = Host("Return materials", panel.transform).AddComponent<Button>();
+        button.onClick.AddListener(panel.ReturnMaterials);
+        button.onClick.Invoke();
+        Assert.That(row.slotToggle.isOn, Is.False);
+        Assert.That(group.allowSwitchOff, Is.EqualTo(allowSwitchOff));
+        Assert.That(manager.GetCurrentMaterialCount(), Is.Zero);
+        Assert.That(inventory.GetItemAmount(item), Is.EqualTo(4));
+        Assert.That(tooltip.tooltipPanel.activeSelf, Is.True);
+        Assert.That(tooltip.dataNameText.text, Is.EqualTo("A"));
+        Click(row.slotToggle);
+        Assert.That(manager.GetCurrentMaterialCount(), Is.EqualTo(1));
+        Assert.That(inventory.GetItemAmount(item), Is.EqualTo(3));
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public void BothSingleMaterialReturnMethodsClearTheSelectedInventoryRow(bool returnByIndex)
+    {
+        var item = Item("A"); var ui = LiveInventory(Tooltip());
+        var row = ui.slotParent.GetComponentInChildren<SubPlantInventorySlotUI>();
+        Click(row.slotToggle);
+        if (returnByIndex) manager.ReturnMaterialAt(0);
+        else manager.ReturnMaterial(item);
+        Assert.That(row.slotToggle.isOn, Is.False);
+        Assert.That(inventory.GetItemAmount(item), Is.EqualTo(4));
+        Assert.That(manager.GetCurrentMaterialCount(), Is.Zero);
+    }
+
+    [Test]
+    public void ReturnSubscriptionsSurviveReopeningAndDoNotClearAnotherManagersInventory()
+    {
+        Item("A"); var ui = LiveInventory(Tooltip());
+        var otherManager = Host("Other recipe manager").AddComponent<ItemRecipeManager>();
+        var other = Host("Other inventory").AddComponent<InventoryUI>();
+        other.materialSource = otherManager;
+        other.slotParent = Host("Other rows", other.transform).transform;
+        other.slotPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(InventoryPrefab);
+        other.ClearSearchFilter(); other.Init();
+        var otherRow = other.slotParent.GetComponentInChildren<SubPlantInventorySlotUI>();
+        otherRow.slotToggle.SetIsOnWithoutNotify(true);
+        ui.gameObject.SetActive(false); ui.gameObject.SetActive(true);
+        var row = ui.slotParent.GetComponentInChildren<SubPlantInventorySlotUI>();
+        Click(row.slotToggle);
+        panel.ReturnMaterials();
+        Assert.That(row.slotToggle.isOn, Is.False);
+        Assert.That(otherRow.slotToggle.isOn, Is.True);
+        otherManager.ReturnMaterials();
+        Assert.That(otherRow.slotToggle.isOn, Is.False);
+    }
+
     [Test]
     public void NoSelectedSlotFillsReadySlotsInOrderAndReturnsDoNotShiftOtherItems()
     {

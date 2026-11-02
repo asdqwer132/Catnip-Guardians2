@@ -38,7 +38,21 @@ public class ClickableItemSlotUI : BaseItemSlotUI
 
     public void ResetSelection(bool hideTooltip = false)
     {
-        if (slotToggle != null) slotToggle.SetIsOnWithoutNotify(false);
+        if (slotToggle != null)
+        {
+            var group = slotToggle.group;
+            bool allowSwitchOff = group != null && group.allowSwitchOff;
+            try
+            {
+                // Explicit resets must clear selection even in a required group.
+                if (group != null) group.allowSwitchOff = true;
+                slotToggle.SetIsOnWithoutNotify(false);
+            }
+            finally
+            {
+                if (group != null) group.allowSwitchOff = allowSwitchOff;
+            }
+        }
         if (hideTooltip && selectionTooltip != null) selectionTooltip.ReleaseSelection(true);
     }
 

@@ -40,7 +40,13 @@ public class SubPlantMaterialSlotUI : ClickableItemSlotUI
     {
         if (manager == null) return;
         if (selected) manager.SelectMaterialSlot(materialIndex);
-        else if (manager.SelectedMaterialSlot == materialIndex) manager.SelectMaterialSlot(-1);
+        else if (manager.SelectedMaterialSlot == materialIndex)
+        {
+            // ToggleGroup turns the old slot off before notifying the new slot.
+            // Leave that in-flight selection intact until its true callback arrives.
+            if (slotToggle != null && slotToggle.group != null && slotToggle.group.AnyTogglesOn()) return;
+            manager.SelectMaterialSlot(-1);
+        }
     }
 
     private void ApplySelection(int index)
