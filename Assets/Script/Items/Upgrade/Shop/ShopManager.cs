@@ -198,7 +198,7 @@ public class ShopManager : MonoBehaviour
             if (!wallet.SpendCurrencies(costs)) return PurchaseFailed("재화가 부족합니다.");
             inventory.AddItem(resultItem, 1);
             button.MarkPurchased();
-            if (currentSelectedButton == button) ClearSelectedBox();
+            //if (currentSelectedButton == button) ClearSelectedBox();
             ShowPurchaseResult(resultItem, 1);
             return true;
         }

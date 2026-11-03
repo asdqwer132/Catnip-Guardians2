@@ -8,11 +8,9 @@ public class ShopPurchaseResultPanelUI : MonoBehaviour
 {
     [Header("Root")]
     public GameObject panelRoot;
+    public GameObject resultRoot;
     public CanvasGroup panelCanvasGroup;
 
-    [Header("Title")]
-    public TextMeshProUGUI titleText;
-    public string defaultTitle = "획득 결과";
 
     [Header("Result List")]
     public Transform itemListParent;
@@ -112,8 +110,6 @@ public class ShopPurchaseResultPanelUI : MonoBehaviour
             panelCanvasGroup.blocksRaycasts = true;
         }
 
-        if (titleText != null)
-            titleText.text = defaultTitle;
 
         if (clearPreviousOnShow)
             ClearSlots();
@@ -138,17 +134,15 @@ public class ShopPurchaseResultPanelUI : MonoBehaviour
         }
 
         ResetListEffectState();
-
-        if (panelRoot != null)
-            panelRoot.SetActive(false);
-        else
-            gameObject.SetActive(false);
+        HideImmediate();
     }
 
     public void HideImmediate()
     {
         if (panelRoot != null)
             panelRoot.SetActive(false);
+        if (resultRoot != null)
+            resultRoot.SetActive(false);
         else
             gameObject.SetActive(false);
     }

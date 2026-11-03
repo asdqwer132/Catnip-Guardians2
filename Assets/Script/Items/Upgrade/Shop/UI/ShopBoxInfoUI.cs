@@ -13,21 +13,14 @@ public class ShopBoxInfoUI : ItemDefinitionUI
 {
     [Header("Basic Info UI")]
     public GameObject pannel;
-    public Image boxIcon { get => icon; set => icon = value; }
-    public ShopBoxOpenAnimationUI boxOpenAnimationUI;
-    public TextMeshProUGUI boxNameText { get => dataNameText; set => dataNameText = value; }
-    public Image seriesImage { get => seriesIcon; set => seriesIcon = value; }
-    public Image gradeImage { get => gradeIcon; set => gradeIcon = value; }
     public BoxCost[] extraBoxCosts;
 
     [Header("Gacha Item List")]
-    public GameObject pickUpTitleText;
     public Transform itemListParent;
     public ShopBoxRewardSlotUI rewardSlotPrefab;
 
     [Header("Buy Button")]
     public Button buyButton;
-    public Toggle InvenToggle;
 
     [Header("Shop Manager")]
     public ShopManager shopManager;
@@ -54,8 +47,6 @@ public class ShopBoxInfoUI : ItemDefinitionUI
 
         SetData(boxData);
 
-        if (pickUpTitleText != null)
-            pickUpTitleText.SetActive(true);
 
         if (extraBoxCosts != null)
         {
@@ -80,8 +71,6 @@ public class ShopBoxInfoUI : ItemDefinitionUI
         if (buyButton != null)
             buyButton.interactable = true;
 
-        if (InvenToggle != null)
-            InvenToggle.interactable = true;
     }
     private BoxCost GetBoxCost(CurrencyType currencyType)
     {
@@ -144,21 +133,14 @@ public class ShopBoxInfoUI : ItemDefinitionUI
     public void ClearInfo()
     {
         ClearData();
-        if (boxOpenAnimationUI != null)
-            boxOpenAnimationUI.Clear();
 
         if (pannel != null)
             pannel.SetActive(false);
-
-        if (pickUpTitleText != null)
-            pickUpTitleText.SetActive(false);
 
         ClearRewardList();
 
         if (buyButton != null)
             buyButton.interactable = false;
 
-        if (InvenToggle != null)
-            InvenToggle.interactable = false;
     }
 }

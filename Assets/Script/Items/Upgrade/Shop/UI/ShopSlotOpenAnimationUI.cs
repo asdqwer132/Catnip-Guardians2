@@ -9,6 +9,7 @@ public sealed class ShopSlotOpenAnimationUI : MonoBehaviour
 {
     public Image icon;
     public Animator targetAnimator;
+    private AnimatorOverrideController overrideController;
     public bool useUnscaledTime = true;
     public bool IsPlaying { get; private set; }
     public AnimationClip PlayedClip { get; private set; }
@@ -22,8 +23,13 @@ public sealed class ShopSlotOpenAnimationUI : MonoBehaviour
         if (icon == null) icon = GetComponent<Image>();
         if (targetAnimator == null) targetAnimator = GetComponent<Animator>();
         targetAnimator.enabled = false;
-    }
 
+        overrideController = new AnimatorOverrideController(     
+            targetAnimator.runtimeAnimatorController);
+
+        targetAnimator.runtimeAnimatorController = overrideController;
+    }
+    
     public void ResetToBox(ItemBoxData box)
     {
         StopPlayback();
@@ -39,16 +45,8 @@ public sealed class ShopSlotOpenAnimationUI : MonoBehaviour
         PlayedClip = box != null ? box.openClip : null;
         if (PlayedClip == null || targetAnimator == null || !isActiveAndEnabled) return;
         targetAnimator.enabled = true;
-        targetAnimator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
-        graph = PlayableGraph.Create("Shop slot opening");
-        graph.SetTimeUpdateMode(DirectorUpdateMode.Manual);
-        playable = AnimationClipPlayable.Create(graph, PlayedClip);
-        playable.SetApplyFootIK(false);
-        AnimationPlayableOutput.Create(graph, "Icon", targetAnimator).SetSourcePlayable(playable);
-        elapsed = 0f;
-        graph.Play();
-        SampleFrame(0f);
-        IsPlaying = PlayedClip.length > 0f;
+        overrideController["Open"] = PlayedClip;
+        targetAnimator.Play("Open", 0, 0f);
     }
 
     private void Update()

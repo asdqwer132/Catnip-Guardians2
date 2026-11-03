@@ -10,6 +10,7 @@ public class ShopBoxButton : ItemDefinitionUI
     public Toggle toggle;
     public ShopSlotOpenAnimationUI openAnimation;
     public GameObject purchasedOverlay;
+    public ChildrenUIControler uIControler;
     public bool IsPurchased { get; private set; }
     public ItemBoxData BoxData => boxData;
     protected override bool UpdateIcon => !IsPurchased;
@@ -35,6 +36,7 @@ public class ShopBoxButton : ItemDefinitionUI
         if (toggle != null) toggle.interactable = data != null;
         SetData(data);
         if (openAnimation != null) openAnimation.ResetToBox(data);
+        if (uIControler != null) uIControler.ResetColor();
     }
 
     public void MarkPurchased()
@@ -44,6 +46,7 @@ public class ShopBoxButton : ItemDefinitionUI
         if (toggle != null) toggle.interactable = false;
         if (purchasedOverlay != null) purchasedOverlay.SetActive(true);
         if (openAnimation != null) openAnimation.Play(boxData);
+        if (uIControler != null) uIControler.ApplyColor();
     }
 
     public void ClearSelection()
