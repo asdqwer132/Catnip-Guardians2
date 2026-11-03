@@ -57,19 +57,11 @@ public sealed class ViewportCanvasScaler : CanvasScaler, ICanvasRaycastFilter
         if (!layoutInitialized || pixels != previousPixels || viewport != previousViewport || camera != previousCamera || !Mathf.Approximately(scale, previousScale))
         {
             layoutInitialized = true; previousPixels = pixels; previousViewport = viewport; previousCamera = camera; previousScale = scale;
-            // 높이가 같은 채로 가로만 바뀌면 배율은 같아도 카메라 Canvas의 가로 크기는 달라집니다.
-            if (camera != null) { camera.ResetAspect(); targetCanvas.worldCamera = camera; }
+            // Unity owns the root Canvas rect, scale and camera projection in both
+            // Edit and Play mode. Writing that driven transform here makes it fight
+            // the native Canvas update while resizing or arranging UI.
             var root = targetCanvas.transform as RectTransform;
-            if (root != null)
-            {
-                if (camera != null)
-                {
-                    root.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, viewport.width / scale);
-                    root.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, viewport.height / scale);
-                }
-                root.ForceUpdateRectTransforms();
-                LayoutRebuilder.MarkLayoutForRebuild(root);
-            }
+            if (root != null) LayoutRebuilder.MarkLayoutForRebuild(root);
         }
     }
     protected override void HandleScaleWithScreenSize()

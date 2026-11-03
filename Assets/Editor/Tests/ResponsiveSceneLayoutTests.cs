@@ -10,6 +10,31 @@ using UnityEngine.Rendering;
 
 public class ResponsiveSceneLayoutTests
 {
+    [Test] public void CanvasResizePreservesAuthoredCameraAspectAndChildOffsets()
+    {
+        var cameraHost=new GameObject("Camera",typeof(Camera));
+        var canvasHost=new GameObject("Canvas",typeof(RectTransform),typeof(Canvas),typeof(ViewportCanvasScaler));
+        var childHost=new GameObject("Authored panel",typeof(RectTransform));
+        var profile=ScriptableObject.CreateInstance<SceneUIScaleProfile>();
+        var texture=new RenderTexture(1200,800,0);
+        try
+        {
+            var camera=cameraHost.GetComponent<Camera>(); camera.targetTexture=texture; camera.aspect=2.35f;
+            var canvas=canvasHost.GetComponent<Canvas>(); canvas.renderMode=RenderMode.ScreenSpaceCamera; canvas.worldCamera=camera;
+            var child=childHost.GetComponent<RectTransform>(); child.SetParent(canvasHost.transform,false);
+            child.anchoredPosition=new Vector2(35,70); child.sizeDelta=new Vector2(200,150);
+            var scaler=canvasHost.GetComponent<ViewportCanvasScaler>(); scaler.sharedScaleProfile=profile;
+            var handle=typeof(ViewportCanvasScaler).GetMethod("Handle",BindingFlags.NonPublic|BindingFlags.Instance);
+            foreach(float width in new[] {.4f,.7f,.3f,.4f})
+            {
+                camera.rect=new Rect(0,0,width,.85f); handle.Invoke(scaler,null); Canvas.ForceUpdateCanvases();
+                Assert.That(camera.aspect,Is.EqualTo(2.35f).Within(.0001f));
+                Assert.That(child.anchoredPosition,Is.EqualTo(new Vector2(35,70)));
+                Assert.That(child.sizeDelta,Is.EqualTo(new Vector2(200,150)));
+            }
+        }
+        finally { Object.DestroyImmediate(childHost); Object.DestroyImmediate(canvasHost); Object.DestroyImmediate(cameraHost); Object.DestroyImmediate(profile); Object.DestroyImmediate(texture); }
+    }
     [Test] public void MaskCacheReadsOnlyTheSelectedSpriteRegionAndCanBeReusedAfterClear()
     {
         var texture=new Texture2D(4,2,TextureFormat.RGBA32,false);
@@ -140,138 +165,9 @@ public class ResponsiveSceneLayoutTests
         }
         finally { Object.DestroyImmediate(canvasHost); Object.DestroyImmediate(cameraHost); Object.DestroyImmediate(mask); }
     }
-    [Test] public void NavigationPaddingMatchesOverlayAndCameraWithoutChangingReservedHeight()
-    {
-        var host=new GameObject("General");
-        var cameraHost=new GameObject("Navigation",typeof(Camera),typeof(SceneCameraBinding));
-        var canvasHost=new GameObject("Existing UI",typeof(RectTransform),typeof(Canvas),typeof(ViewportCanvasScaler));
-        var panelHost=new GameObject("Existing header",typeof(RectTransform));
-        var profile=ScriptableObject.CreateInstance<SceneUIScaleProfile>();
-        try
-        {
-            cameraHost.GetComponent<SceneCameraBinding>().role=SceneCameraRole.Navigation;
-            var canvas=canvasHost.GetComponent<Canvas>(); canvas.renderMode=RenderMode.ScreenSpaceOverlay;
-            canvasHost.GetComponent<ViewportCanvasScaler>().sharedScaleProfile=profile;
-            var area=panelHost.GetComponent<RectTransform>(); area.SetParent(canvasHost.transform,false);
-            var general=host.AddComponent<GameGeneralSceneController>(); general.autoLoadChildren=general.loadCoreScene=false;
-            general.navigationCanvas=canvas; general.navigationArea=area; general.navigationHeightRatio=.15f;
-            general.navigationPadding=new SceneViewportPadding {left=20,right=40,top=12,bottom=24};
-            Rect expected=general.navigationPadding.Inset(new Rect(0,.85f,1,.15f),new Vector2(Screen.width,Screen.height),profile.CalculateScale(new Vector2(Screen.width,Screen.height)));
-            for(int i=0;i<3;i++)
-            {
-                general.ApplyLayout();
-                Assert.That(general.NavigationTopInset,Is.EqualTo(.15f));
-                Assert.That(area.anchorMin.x,Is.EqualTo(expected.xMin).Within(.00001f));
-                Assert.That(area.anchorMin.y,Is.EqualTo(expected.yMin).Within(.00001f));
-                Assert.That(area.anchorMax.x,Is.EqualTo(expected.xMax).Within(.00001f));
-                Assert.That(area.anchorMax.y,Is.EqualTo(expected.yMax).Within(.00001f));
-                Assert.That(cameraHost.GetComponent<Camera>().rect,Is.EqualTo(expected));
-            }
-        }
-        finally { Object.DestroyImmediate(host); Object.DestroyImmediate(panelHost); Object.DestroyImmediate(canvasHost); Object.DestroyImmediate(cameraHost); Object.DestroyImmediate(profile); }
-    }
-    [Test] public void MeasuredHeaderPaddingDoesNotAccumulateOrReduceReservedSpace()
-    {
-        var host=new GameObject("General");
-        var canvasHost=new GameObject("Existing UI",typeof(RectTransform),typeof(Canvas));
-        var panelHost=new GameObject("Existing header",typeof(RectTransform));
-        try
-        {
-            var canvas=canvasHost.GetComponent<Canvas>(); canvas.renderMode=RenderMode.ScreenSpaceOverlay;
-            var area=panelHost.GetComponent<RectTransform>(); area.SetParent(canvasHost.transform,false);
-            SceneUILayout.SetRect(area,new Rect(0,.8f,1,.2f));
-            var general=host.AddComponent<GameGeneralSceneController>(); general.autoLoadChildren=general.loadCoreScene=false;
-            general.navigationCanvas=canvas; general.navigationArea=area; general.navigationSizeMode=NavigationSizeMode.MeasuredPanel;
-            Canvas.ForceUpdateCanvases(); general.ApplyLayout();
-            float baseline=general.NavigationHeight;
-            general.navigationPadding=new SceneViewportPadding {left=12,right=24,top=8,bottom=16};
-            general.ApplyLayout(); Canvas.ForceUpdateCanvases();
-            Vector2 min=area.offsetMin,max=area.offsetMax;
-            for(int i=0;i<3;i++)
-            {
-                general.ApplyLayout(); Canvas.ForceUpdateCanvases();
-                Assert.That(general.NavigationHeight,Is.EqualTo(baseline).Within(.00001f));
-                Assert.That((area.offsetMin-min).magnitude,Is.LessThan(.01f));
-                Assert.That((area.offsetMax-max).magnitude,Is.LessThan(.01f));
-            }
-            general.enabled=false;
-            Assert.That(area.offsetMin.magnitude,Is.LessThan(.01f));
-            Assert.That(area.offsetMax.magnitude,Is.LessThan(.01f));
-        }
-        finally { Object.DestroyImmediate(host); Object.DestroyImmediate(panelHost); Object.DestroyImmediate(canvasHost); }
-    }
-    [Test] public void CameraCanvasWidthTracksViewportResizeEvenWhenSharedScaleDoesNotChange()
-    {
-        var cameraHost = new GameObject("Item camera",typeof(Camera));
-        var canvasHost = new GameObject("Existing item UI",typeof(RectTransform),typeof(Canvas),typeof(ViewportCanvasScaler));
-        var target = new RenderTexture(1600,900,0);
-        var profile = ScriptableObject.CreateInstance<SceneUIScaleProfile>();
-        try
-        {
-            var camera = cameraHost.GetComponent<Camera>(); camera.targetTexture = target;
-            var canvas = canvasHost.GetComponent<Canvas>(); canvas.renderMode = RenderMode.ScreenSpaceCamera; canvas.worldCamera = camera;
-            var scaler = canvasHost.GetComponent<ViewportCanvasScaler>(); scaler.sharedScaleProfile = profile;
-            profile.matchWidthOrHeight = 1;
-            var handle = typeof(ViewportCanvasScaler).GetMethod("Handle",BindingFlags.NonPublic|BindingFlags.Instance);
-            float previousScale = 0;
-            foreach(float width in new[] {.4f,.7f,.25f,.4f})
-            {
-                camera.rect = new Rect(0,0,width,.85f);
-                handle.Invoke(scaler,null); Canvas.ForceUpdateCanvases();
-                if(previousScale>0) Assert.That(canvas.scaleFactor,Is.EqualTo(previousScale).Within(.00001f));
-                previousScale = canvas.scaleFactor;
-                var size = canvasHost.GetComponent<RectTransform>().rect.size;
-                Assert.That(size.x*canvas.scaleFactor,Is.EqualTo(camera.pixelRect.width).Within(.05f));
-                Assert.That(size.y*canvas.scaleFactor,Is.EqualTo(camera.pixelRect.height).Within(.05f));
-            }
-        }
-        finally { Object.DestroyImmediate(canvasHost); Object.DestroyImmediate(cameraHost); Object.DestroyImmediate(target); Object.DestroyImmediate(profile); }
-    }
-    [Test] public void EqualFrameMultipliersProduceEqualScreenBordersInOverlayAndCameraCanvases()
-    {
-        var cameraHost = new GameObject("Item camera", typeof(Camera));
-        var overlayHost = new GameObject("Existing overlay", typeof(RectTransform), typeof(Canvas), typeof(ViewportCanvasScaler));
-        var itemHost = new GameObject("Existing item UI", typeof(RectTransform), typeof(Canvas), typeof(ViewportCanvasScaler));
-        var overlayFrame = new GameObject("Overlay frame", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-        var itemFrame = new GameObject("Item frame", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-        var profile = ScriptableObject.CreateInstance<SceneUIScaleProfile>();
-        var texture = new Texture2D(64,64);
-        var sprite = Sprite.Create(texture,new Rect(0,0,64,64),new Vector2(.5f,.5f),32,0,SpriteMeshType.FullRect,new Vector4(18,18,18,18));
-        try
-        {
-            var camera = cameraHost.GetComponent<Camera>(); camera.orthographic = true; camera.transform.position = new Vector3(0,0,-10);
-            var overlay = overlayHost.GetComponent<Canvas>(); overlay.renderMode = RenderMode.ScreenSpaceOverlay;
-            var item = itemHost.GetComponent<Canvas>(); item.renderMode = RenderMode.ScreenSpaceCamera; item.worldCamera = camera; item.planeDistance = 10;
-            var overlayScaler = overlayHost.GetComponent<ViewportCanvasScaler>(); var itemScaler = itemHost.GetComponent<ViewportCanvasScaler>();
-            overlayScaler.sharedScaleProfile = itemScaler.sharedScaleProfile = profile;
-            // 서로 다른 과거 Inspector 값이 남아 있어도 공통 프로필이 우선되어야 합니다.
-            overlayScaler.referenceResolution = new Vector2(2400,600); itemScaler.referenceResolution = new Vector2(960,1147.5f);
-            overlayScaler.referencePixelsPerUnit = 100; itemScaler.referencePixelsPerUnit = 32;
-            overlayFrame.transform.SetParent(overlay.transform,false); itemFrame.transform.SetParent(item.transform,false);
-            var a = overlayFrame.GetComponent<Image>(); var b = itemFrame.GetComponent<Image>();
-            a.sprite = b.sprite = sprite; a.type = b.type = Image.Type.Sliced;
-            SceneUILayout.SetRect(a.rectTransform,new Rect(0,0,1,1)); SceneUILayout.SetRect(b.rectTransform,new Rect(0,0,1,1));
-            var handle = typeof(ViewportCanvasScaler).GetMethod("Handle",BindingFlags.Instance|BindingFlags.NonPublic);
-            foreach (var viewport in new[] {new Rect(.6f,0,.4f,.85f),new Rect(.75f,0,.25f,1),new Rect(0,0,1,1)})
-            foreach (float multiplier in new[] {.5f,1f,2f})
-            {
-                camera.rect = viewport;
-                a.pixelsPerUnitMultiplier = b.pixelsPerUnitMultiplier = multiplier;
-                handle.Invoke(overlayScaler,null); handle.Invoke(itemScaler,null); Canvas.ForceUpdateCanvases();
-                Assert.That(item.scaleFactor,Is.EqualTo(overlay.scaleFactor).Within(.00001f));
-                Assert.That(item.referencePixelsPerUnit,Is.EqualTo(overlay.referencePixelsPerUnit));
-                Assert.That(ScreenBorder(b,camera),Is.EqualTo(ScreenBorder(a,null)).Within(.05f));
-                Assert.That(camera.rect,Is.EqualTo(viewport),"공통 배율 때문에 카메라 영역 비율을 변경하면 안 됩니다.");
-            }
-        }
-        finally
-        {
-            Object.DestroyImmediate(overlayFrame); Object.DestroyImmediate(itemFrame); Object.DestroyImmediate(overlayHost);
-            Object.DestroyImmediate(itemHost); Object.DestroyImmediate(cameraHost); Object.DestroyImmediate(sprite);
-            Object.DestroyImmediate(texture); Object.DestroyImmediate(profile);
-        }
-    }
-    private static float ScreenBorder(Image image, Camera camera)
+
+
+    internal static float ScreenBorder(Image image, Camera camera)
     {
         // 실제 Sliced 메시의 첫 두 X 경계를 화면으로 투영해 테두리 두께를 비교합니다.
         using (var vertices = new VertexHelper())
@@ -321,6 +217,145 @@ public class ResponsiveSceneLayoutTests
 // 자동 맞춤은 런타임 Canvas 콜백으로 동작하므로 실제 플레이 수명주기에서 검사합니다.
 public class WorldBoxRuntimeLayoutTests
 {
+    [UnityTest] public IEnumerator CameraCanvasWidthTracksViewportResizeEvenWhenSharedScaleDoesNotChange()
+    {
+        var cameraHost = new GameObject("Item camera",typeof(Camera));
+        var canvasHost = new GameObject("Existing item UI",typeof(RectTransform),typeof(Canvas),typeof(ViewportCanvasScaler));
+        var target = new RenderTexture(1600,900,0);
+        var profile = ScriptableObject.CreateInstance<SceneUIScaleProfile>();
+        try
+        {
+            var camera = cameraHost.GetComponent<Camera>(); camera.targetTexture = target; camera.enabled = false;
+            var canvas = canvasHost.GetComponent<Canvas>(); canvas.renderMode = RenderMode.ScreenSpaceCamera; canvas.worldCamera = camera;
+            var scaler = canvasHost.GetComponent<ViewportCanvasScaler>(); scaler.sharedScaleProfile = profile;
+            profile.matchWidthOrHeight = 1;
+            var handle = typeof(ViewportCanvasScaler).GetMethod("Handle",BindingFlags.NonPublic|BindingFlags.Instance);
+            float previousScale = 0;
+            foreach(float width in new[] {.4f,.7f,.25f,.4f})
+            {
+                camera.rect = new Rect(0,0,width,.85f);
+                handle.Invoke(scaler,null); Canvas.ForceUpdateCanvases();
+                yield return null;
+                Canvas.ForceUpdateCanvases();
+                if(previousScale>0) Assert.That(canvas.scaleFactor,Is.EqualTo(previousScale).Within(.00001f));
+                previousScale = canvas.scaleFactor;
+                var size = canvasHost.GetComponent<RectTransform>().rect.size;
+                Assert.That(size.x*canvas.scaleFactor,Is.EqualTo(camera.pixelRect.width).Within(.05f));
+                Assert.That(size.y*canvas.scaleFactor,Is.EqualTo(camera.pixelRect.height).Within(.05f));
+            }
+        }
+        finally { Object.DestroyImmediate(canvasHost); Object.DestroyImmediate(cameraHost); Object.DestroyImmediate(target); Object.DestroyImmediate(profile); }
+    }
+    [UnityTest] public IEnumerator EqualFrameMultipliersProduceEqualScreenBordersInOverlayAndCameraCanvases()
+    {
+        var cameraHost = new GameObject("Item camera", typeof(Camera));
+        var overlayHost = new GameObject("Existing overlay", typeof(RectTransform), typeof(Canvas), typeof(ViewportCanvasScaler));
+        var itemHost = new GameObject("Existing item UI", typeof(RectTransform), typeof(Canvas), typeof(ViewportCanvasScaler));
+        var overlayFrame = new GameObject("Overlay frame", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        var itemFrame = new GameObject("Item frame", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        var profile = ScriptableObject.CreateInstance<SceneUIScaleProfile>();
+        var texture = new Texture2D(64,64);
+        var sprite = Sprite.Create(texture,new Rect(0,0,64,64),new Vector2(.5f,.5f),32,0,SpriteMeshType.FullRect,new Vector4(18,18,18,18));
+        try
+        {
+            var camera = cameraHost.GetComponent<Camera>(); camera.enabled = false; camera.orthographic = true; camera.transform.position = new Vector3(0,0,-10);
+            var overlay = overlayHost.GetComponent<Canvas>(); overlay.renderMode = RenderMode.ScreenSpaceOverlay;
+            var item = itemHost.GetComponent<Canvas>(); item.renderMode = RenderMode.ScreenSpaceCamera; item.worldCamera = camera; item.planeDistance = 10;
+            var overlayScaler = overlayHost.GetComponent<ViewportCanvasScaler>(); var itemScaler = itemHost.GetComponent<ViewportCanvasScaler>();
+            overlayScaler.sharedScaleProfile = itemScaler.sharedScaleProfile = profile;
+            // 서로 다른 과거 Inspector 값이 남아 있어도 공통 프로필이 우선되어야 합니다.
+            overlayScaler.referenceResolution = new Vector2(2400,600); itemScaler.referenceResolution = new Vector2(960,1147.5f);
+            overlayScaler.referencePixelsPerUnit = 100; itemScaler.referencePixelsPerUnit = 32;
+            overlayFrame.transform.SetParent(overlay.transform,false); itemFrame.transform.SetParent(item.transform,false);
+            var a = overlayFrame.GetComponent<Image>(); var b = itemFrame.GetComponent<Image>();
+            a.sprite = b.sprite = sprite; a.type = b.type = Image.Type.Sliced;
+            SceneUILayout.SetRect(a.rectTransform,new Rect(0,0,1,1)); SceneUILayout.SetRect(b.rectTransform,new Rect(0,0,1,1));
+            var handle = typeof(ViewportCanvasScaler).GetMethod("Handle",BindingFlags.Instance|BindingFlags.NonPublic);
+            foreach (var viewport in new[] {new Rect(.6f,0,.4f,.85f),new Rect(.75f,0,.25f,1),new Rect(0,0,1,1)})
+            foreach (float multiplier in new[] {.5f,1f,2f})
+            {
+                camera.rect = viewport;
+                a.pixelsPerUnitMultiplier = b.pixelsPerUnitMultiplier = multiplier;
+                handle.Invoke(overlayScaler,null); handle.Invoke(itemScaler,null); Canvas.ForceUpdateCanvases();
+                yield return null;
+                Canvas.ForceUpdateCanvases();
+                Assert.That(item.scaleFactor,Is.EqualTo(overlay.scaleFactor).Within(.00001f));
+                Assert.That(item.referencePixelsPerUnit,Is.EqualTo(overlay.referencePixelsPerUnit));
+                Assert.That(ResponsiveSceneLayoutTests.ScreenBorder(b,camera),Is.EqualTo(ResponsiveSceneLayoutTests.ScreenBorder(a,null)).Within(.05f));
+                Assert.That(camera.rect,Is.EqualTo(viewport),"공통 배율 때문에 카메라 영역 비율을 변경하면 안 됩니다.");
+            }
+        }
+        finally
+        {
+            Object.DestroyImmediate(overlayFrame); Object.DestroyImmediate(itemFrame); Object.DestroyImmediate(overlayHost);
+            Object.DestroyImmediate(itemHost); Object.DestroyImmediate(cameraHost); Object.DestroyImmediate(sprite);
+            Object.DestroyImmediate(texture); Object.DestroyImmediate(profile);
+        }
+    }
+    [Test] public void MeasuredHeaderPaddingDoesNotAccumulateOrReduceReservedSpace()
+    {
+        var host=new GameObject("General");
+        var canvasHost=new GameObject("Existing UI",typeof(RectTransform),typeof(Canvas));
+        var panelHost=new GameObject("Existing header",typeof(RectTransform));
+        try
+        {
+            var canvas=canvasHost.GetComponent<Canvas>(); canvas.renderMode=RenderMode.ScreenSpaceOverlay;
+            var area=panelHost.GetComponent<RectTransform>(); area.SetParent(canvasHost.transform,false);
+            SceneUILayout.SetRect(area,new Rect(0,.8f,1,.2f));
+            var general=host.AddComponent<GameGeneralSceneController>(); general.autoLoadChildren=general.loadCoreScene=false;
+            general.navigationCanvas=canvas; general.navigationArea=area; general.navigationSizeMode=NavigationSizeMode.MeasuredPanel;
+            Canvas.ForceUpdateCanvases(); general.ApplyLayout();
+            float baseline=general.NavigationHeight;
+            general.navigationPadding=new SceneViewportPadding {left=12,right=24,top=8,bottom=16};
+            general.ApplyLayout(); Canvas.ForceUpdateCanvases();
+            Vector2 min=area.offsetMin,max=area.offsetMax;
+            for(int i=0;i<3;i++)
+            {
+                area.hasChanged=false;
+                general.ApplyLayout();
+                Assert.That(area.hasChanged,Is.False,"Unchanged padding must not rewrite the header every render callback.");
+                Canvas.ForceUpdateCanvases();
+                Assert.That(general.NavigationHeight,Is.EqualTo(baseline).Within(.00001f));
+                Assert.That((area.offsetMin-min).magnitude,Is.LessThan(.01f));
+                Assert.That((area.offsetMax-max).magnitude,Is.LessThan(.01f));
+            }
+            general.enabled=false;
+            Assert.That(area.offsetMin.magnitude,Is.LessThan(.01f));
+            Assert.That(area.offsetMax.magnitude,Is.LessThan(.01f));
+        }
+        finally { Object.DestroyImmediate(host); Object.DestroyImmediate(panelHost); Object.DestroyImmediate(canvasHost); }
+    }
+    [Test] public void NavigationPaddingMatchesOverlayAndCameraWithoutChangingReservedHeight()
+    {
+        var host=new GameObject("General");
+        var cameraHost=new GameObject("Navigation",typeof(Camera),typeof(SceneCameraBinding));
+        var canvasHost=new GameObject("Existing UI",typeof(RectTransform),typeof(Canvas),typeof(ViewportCanvasScaler));
+        var panelHost=new GameObject("Existing header",typeof(RectTransform));
+        var profile=ScriptableObject.CreateInstance<SceneUIScaleProfile>();
+        try
+        {
+            cameraHost.GetComponent<SceneCameraBinding>().role=SceneCameraRole.Navigation;
+            var canvas=canvasHost.GetComponent<Canvas>(); canvas.renderMode=RenderMode.ScreenSpaceOverlay;
+            canvasHost.GetComponent<ViewportCanvasScaler>().sharedScaleProfile=profile;
+            var area=panelHost.GetComponent<RectTransform>(); area.SetParent(canvasHost.transform,false);
+            var general=host.AddComponent<GameGeneralSceneController>(); general.autoLoadChildren=general.loadCoreScene=false;
+            general.navigationCanvas=canvas; general.navigationArea=area; general.navigationHeightRatio=.15f;
+            general.navigationPadding=new SceneViewportPadding {left=20,right=40,top=12,bottom=24};
+            Rect expected=general.navigationPadding.Inset(new Rect(0,.85f,1,.15f),new Vector2(Screen.width,Screen.height),profile.CalculateScale(new Vector2(Screen.width,Screen.height)));
+            for(int i=0;i<3;i++)
+            {
+                general.ApplyLayout();
+                Assert.That(general.NavigationTopInset,Is.EqualTo(.15f));
+                Assert.That(area.anchorMin.x,Is.EqualTo(expected.xMin).Within(.00001f));
+                Assert.That(area.anchorMin.y,Is.EqualTo(expected.yMin).Within(.00001f));
+                Assert.That(area.anchorMax.x,Is.EqualTo(expected.xMax).Within(.00001f));
+                Assert.That(area.anchorMax.y,Is.EqualTo(expected.yMax).Within(.00001f));
+                Assert.That(cameraHost.GetComponent<Camera>().rect,Is.EqualTo(expected));
+            }
+        }
+        finally { Object.DestroyImmediate(host); Object.DestroyImmediate(panelHost); Object.DestroyImmediate(canvasHost); Object.DestroyImmediate(cameraHost); Object.DestroyImmediate(profile); }
+    }
+
     [UnitySetUp]
     public IEnumerator SetUp()
     {

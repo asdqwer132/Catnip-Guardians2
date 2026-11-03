@@ -177,7 +177,9 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     public void SetNavigationHeightRatio(float value) { navigationHeightRatio = value; ApplyLayout(); }
     private void ConnectNavigation()
     {
-        ClearMeasuredNavigationPadding();
+        if (paddedNavigationArea != null && (paddedNavigationArea != navigationArea ||
+            navigationSizeMode != NavigationSizeMode.MeasuredPanel || navigationCanvas == null ||
+            navigationCanvas.renderMode != RenderMode.ScreenSpaceOverlay)) ClearMeasuredNavigationPadding();
         if (navigationState != null && navigationState.canvas != navigationCanvas) RestoreNavigation();
         // 하위 씬/코어의 Canvas를 실수로 연결해도 해당 UI를 변경하지 않습니다.
         if (navigationCanvas == null || !navigationCanvas.isRootCanvas || navigationCanvas.gameObject.scene != gameObject.scene)
@@ -279,18 +281,26 @@ public sealed class GameGeneralSceneController : MonoBehaviour
         { SceneUILayout.SetRect(navigationArea,navigationRect); return; }
         if(navigationSizeMode!=NavigationSizeMode.MeasuredPanel || !(navigationArea.parent is RectTransform parent) || output.x<=0 || output.y<=0) return;
         navigationArea.GetWorldCorners(navigationCorners);
-        Vector2 a=RectTransformUtility.WorldToScreenPoint(null,navigationCorners[0]);
-        Vector2 b=RectTransformUtility.WorldToScreenPoint(null,navigationCorners[2]);
+        // Measure the unpadded geometry without restoring/reapplying the RectTransform.
+        // Otherwise every camera/Canvas callback dirties the entire layout again.
+        Vector3 oldMin = paddedNavigationArea == navigationArea ? parent.TransformVector(navigationPaddingMin) : Vector3.zero;
+        Vector3 oldMax = paddedNavigationArea == navigationArea ? parent.TransformVector(navigationPaddingMax) : Vector3.zero;
+        Vector2 a=RectTransformUtility.WorldToScreenPoint(null,navigationCorners[0]-oldMin);
+        Vector2 b=RectTransformUtility.WorldToScreenPoint(null,navigationCorners[2]-oldMax);
         Rect original=Rect.MinMaxRect(a.x/output.x,a.y/output.y,b.x/output.x,b.y/output.y);
         Rect padded=navigationPadding.Inset(original,output,scale);
-        if(padded==original) return;
+        if(padded==original) { ClearMeasuredNavigationPadding(); return; }
         if(!RectTransformUtility.ScreenPointToLocalPointInRectangle(parent,a,null,out var originalMin) ||
             !RectTransformUtility.ScreenPointToLocalPointInRectangle(parent,b,null,out var originalMax) ||
             !RectTransformUtility.ScreenPointToLocalPointInRectangle(parent,Vector2.Scale(padded.min,output),null,out var paddedMin) ||
             !RectTransformUtility.ScreenPointToLocalPointInRectangle(parent,Vector2.Scale(padded.max,output),null,out var paddedMax)) return;
+        Vector2 nextMin=paddedMin-originalMin, nextMax=paddedMax-originalMax;
+        Vector2 deltaMin=nextMin-(paddedNavigationArea==navigationArea?navigationPaddingMin:Vector2.zero);
+        Vector2 deltaMax=nextMax-(paddedNavigationArea==navigationArea?navigationPaddingMax:Vector2.zero);
+        if(deltaMin.sqrMagnitude>.000001f) navigationArea.offsetMin+=deltaMin;
+        if(deltaMax.sqrMagnitude>.000001f) navigationArea.offsetMax+=deltaMax;
         paddedNavigationArea=navigationArea;
-        navigationPaddingMin=paddedMin-originalMin; navigationPaddingMax=paddedMax-originalMax;
-        navigationArea.offsetMin+=navigationPaddingMin; navigationArea.offsetMax+=navigationPaddingMax;
+        navigationPaddingMin=nextMin; navigationPaddingMax=nextMax;
     }
     private void ClearMeasuredNavigationPadding()
     {
