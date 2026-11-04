@@ -86,6 +86,96 @@ public class MergeItemSceneInteractionTests
         Assert.That(Time.time, Is.GreaterThanOrEqualTo(until), "The game clock did not advance.");
     }
 
+    private MergeItemMaterial PreviewMaterial(string name, int count, int bonus = 0, bool selected = true)
+    {
+        var data = Asset<ItemData>(); data.name = name;
+        var texture = new Texture2D(4, 4); owned.Add(texture);
+        data.icon = Sprite.Create(texture, new Rect(0, 0, 4, 4), Vector2.one * .5f); owned.Add(data.icon);
+        var merge = Asset<MergeItem>(); merge.item = data; merge.radius = .1f; merge.prefab = definition.prefab;
+        var ui = Host(name + " toggle").AddComponent<MergeUI>(); ui.toggle = ui.gameObject.AddComponent<Toggle>();
+        ui.toggle.isOn = selected;
+        var material = new MergeItemMaterial(merge, ui, count, bonus); board.mergeMaterials.Add(material);
+        return material;
+    }
+    private Image PreviewImage(string name) => Host(name).AddComponent<Image>();
+
+    [Test]
+    public void FourItemPreviewMatchesActualAutomaticDropsWithoutConsumingStock()
+    {
+        board.mergeMaterials.Clear();
+        var a = PreviewMaterial("A", 2); var b = PreviewMaterial("B", 0, 1); var c = PreviewMaterial("C", 1);
+        board.currentMaterial = a; board.SetAutomaticDrop(true); board.cycleAutomaticMaterials = true; board.RefreshUI();
+        var preview = new List<ItemData>(); board.GetUpcomingDropItems(preview, 4);
+        CollectionAssert.AreEqual(new[] { a.mergeItem.item, b.mergeItem.item, c.mergeItem.item, a.mergeItem.item }, preview);
+        Assert.That(a.count, Is.EqualTo(2)); Assert.That(b.defaultCount, Is.EqualTo(1));
+        Assert.That(board.currentMaterial, Is.SameAs(a));
+        var timer = Host("Timer").AddComponent<MergeDropTimerUI>(); timer.board = board;
+        timer.nextItemIcon = PreviewImage("Next");
+        timer.nextExtraItemIcons = new[] { PreviewImage("Second"), PreviewImage("Third"), PreviewImage("Fourth") };
+        timer.Refresh();
+        Assert.That(timer.nextItemIcon.sprite, Is.SameAs(preview[0].icon));
+        for (int i = 0; i < 3; i++) Assert.That(timer.nextExtraItemIcons[i].sprite, Is.SameAs(preview[i + 1].icon));
+        var dropper = typeof(MergegameManager).GetField("dropper", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(board);
+        var nextTime = dropper.GetType().GetField("nextAutomaticDropAt", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+        for (int i = 0; i < preview.Count; i++)
+        {
+            board.spawnPoint.localPosition = new Vector3(i * 2, 0, 0);
+            nextTime.SetValue(dropper, float.NegativeInfinity); board.SendMessage("Update");
+            Assert.That(board.ActiveItems.Count, Is.EqualTo(i + 1));
+            Assert.That(board.ActiveItems[i].Definition.item, Is.SameAs(preview[i]));
+        }
+        timer.Refresh();
+        Assert.That(timer.nextItemIcon.enabled, Is.False);
+        foreach (var image in timer.nextExtraItemIcons) Assert.That(image.enabled, Is.False);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void PreviewHonorsDrainOrderAndSkipsDeselectedOrEmptyMaterials(bool automatic)
+    {
+        board.mergeMaterials.Clear();
+        var a = PreviewMaterial("A", 1, 1); PreviewMaterial("Unselected", 9, 0, false);
+        PreviewMaterial("Empty", 0); var b = PreviewMaterial("B", 1);
+        board.currentMaterial = a; board.SetAutomaticDrop(automatic); board.cycleAutomaticMaterials = !automatic; board.RefreshUI();
+        var preview = new List<ItemData>(); board.GetUpcomingDropItems(preview, 4);
+        CollectionAssert.AreEqual(new[] { a.mergeItem.item, a.mergeItem.item, b.mergeItem.item }, preview);
+        Assert.That(a.count, Is.EqualTo(1)); Assert.That(a.defaultCount, Is.EqualTo(1));
+        board.GetUpcomingDropItems(preview, 1); Assert.That(preview.Count, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void MaterialHelperButtonsSelectOnlyTheirBoardAndKeepGaugeAndCountdownInSync()
+    {
+        board.mergeMaterials.Clear();
+        var a = PreviewMaterial("A", 2, 0, false); var b = PreviewMaterial("B", 0, 2, false);
+        var empty = PreviewMaterial("Empty", 0, 0, false);
+        board.dropInterval = 10; board.SetAutomaticDrop(true); board.RefreshUI();
+        var timer = Host("Timer").AddComponent<MergeDropTimerUI>(); timer.board = board;
+        timer.progressImage = PreviewImage("Gauge fill");
+        var helperHost = Host("Selection helper", false); var helper = helperHost.AddComponent<MergeMaterialSelectionUI>();
+        helper.board = board; helper.selectAllButton = Host("All").AddComponent<Button>();
+        helper.clearSelectionButton = Host("Clear").AddComponent<Button>(); helperHost.SetActive(true);
+        helper.selectAllButton.onClick.Invoke();
+        Assert.That(a.mergeUI.toggle.isOn && b.mergeUI.toggle.isOn, Is.True);
+        Assert.That(empty.mergeUI.toggle.isOn, Is.False);
+        Assert.That(board.DropCountdown, Is.EqualTo(10).Within(.001f));
+        var dropper = typeof(MergegameManager).GetField("dropper", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(board);
+        dropper.GetType().GetField("nextAutomaticDropAt", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).SetValue(dropper, Time.time + 4);
+        helper.selectAllButton.onClick.Invoke(); timer.Refresh();
+        Assert.That(board.DropCountdown, Is.EqualTo(4).Within(.001f));
+        Assert.That(timer.progressImage.fillAmount, Is.EqualTo(.6f).Within(.001f));
+        helper.clearSelectionButton.onClick.Invoke(); timer.Refresh();
+        Assert.That(a.mergeUI.toggle.isOn || b.mergeUI.toggle.isOn, Is.False);
+        Assert.That(timer.progressImage.fillAmount, Is.Zero);
+        Assert.That(board.DropCountdown, Is.EqualTo(10).Within(.001f));
+        board.SetMaterialUIEnabled(false); helper.SendMessage("LateUpdate");
+        Assert.That(helper.selectAllButton.gameObject.activeSelf || helper.clearSelectionButton.gameObject.activeSelf, Is.False);
+        board.SetMaterialUIEnabled(true); helper.SendMessage("LateUpdate");
+        Assert.That(helper.selectAllButton.gameObject.activeSelf && helper.clearSelectionButton.gameObject.activeSelf, Is.True);
+        helperHost.SetActive(false); helper.selectAllButton.onClick.Invoke();
+        Assert.That(a.mergeUI.toggle.isOn, Is.False, "Disabled helpers must detach their listeners.");
+    }
+
     [UnityTest]
     public IEnumerator CountdownReadsTheRealFeederAndPauseDoesNotConsumeMaterials()
     {
@@ -391,5 +481,39 @@ public class MergeItemSceneAuthoringTests
         }
         Assert.That(roots.SelectMany(r => r.GetComponentsInChildren<MergeItemSelection>(true)).Count(s => s.enabled), Is.EqualTo(1));
         EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+    }
+}
+
+public class MergeFeedingSceneConnectionsTests
+{
+    [Test]
+    public void AuthoredGaugeQueueAndEveryMaterialHelperAreConnected()
+    {
+        var scene = EditorSceneManager.OpenScene("Assets/Scenes/GameItemScene.unity", OpenSceneMode.Single);
+        try
+        {
+            var roots = scene.GetRootGameObjects();
+            var controller = roots.SelectMany(r => r.GetComponentsInChildren<MergeBoxSceneController>(true)).Single();
+            var timer = roots.SelectMany(r => r.GetComponentsInChildren<MergeDropTimerUI>(true)).Single();
+            Assert.That(timer.boxes, Is.SameAs(controller));
+            Assert.That(timer.timeText, Is.Not.Null);
+            Assert.That(timer.progressImage, Is.Not.Null); Assert.That(timer.progressImage.name, Is.EqualTo("Fill"));
+            Assert.That(timer.progressImage.type, Is.EqualTo(Image.Type.Filled));
+            Assert.That(timer.nextExtraItemIcons.Length, Is.EqualTo(3));
+            foreach (var image in timer.nextExtraItemIcons)
+                Assert.That(image.transform.parent.name, Is.EqualTo("NextExtraItemIcons"));
+            var helpers = roots.SelectMany(r => r.GetComponentsInChildren<MergeMaterialSelectionUI>(true)).ToArray();
+            Assert.That(helpers.Length, Is.EqualTo(8));
+            foreach (var helper in helpers)
+            {
+                Assert.That(helper.board, Is.Not.Null); Assert.That(helper.selectAllButton, Is.Not.Null); Assert.That(helper.clearSelectionButton, Is.Not.Null);
+                var injector = roots.SelectMany(r => r.GetComponentsInChildren<MergeItemInjecter>(true)).Single(i =>
+                    new SerializedObject(i).FindProperty("mergegameManager").objectReferenceValue == helper.board);
+                var area = new SerializedObject(injector).FindProperty("mergeUIRoot").objectReferenceValue as GameObject;
+                Assert.That(area, Is.Not.Null);
+                Assert.That(area.transform.IsChildOf(PrefabUtility.GetNearestPrefabInstanceRoot(helper).transform), Is.True);
+            }
+        }
+        finally { EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single); }
     }
 }

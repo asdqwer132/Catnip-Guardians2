@@ -52,6 +52,7 @@ public class MergegameManager : MonoBehaviour
     public ItemData NextDropItem => Dropper.NextItem;
     public float DropCountdown => Dropper.Countdown;
     public float DropInterval => Dropper.Interval;
+    public bool MaterialUIEnabled => displayMaterialUI;
     public bool CanOperate => isActiveAndEnabled && !clearing && Time.timeScale > 0f;
     internal int Revision => revision;
     internal int ActiveItemCount
@@ -68,6 +69,8 @@ public class MergegameManager : MonoBehaviour
     public void SetFeeding(bool value) => Dropper.SetFeeding(value);
     public void SetAutomaticDrop(bool value) => Dropper.SetAutomaticDrop(value);
     public bool TryDropCurrent() => Dropper.TryDropCurrent();
+    public void GetUpcomingDropItems(List<ItemData> result, int maximum) => Dropper.GetUpcomingItems(result, maximum);
+    public void SetAllMaterialsSelected(bool selected) => Dropper.SetAllMaterialsSelected(selected);
     public void SetSessionMaterials(IReadOnlyList<InventoryItem> items, GameSession source = null) => Dropper.SetSessionMaterials(items, source);
     public void ResetRoundMaterials() => Dropper.ResetRoundMaterials();
     public void RefreshSessionMaterials(IReadOnlyList<InventoryItem> items) => Dropper.RefreshSessionMaterials(items);

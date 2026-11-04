@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,6 +11,9 @@ public sealed class MergeDropTimerUI : MonoBehaviour
     public MergegameManager board;
     public TMP_Text timeText;
     public Image nextItemIcon;
+    [Tooltip("Second, third, fourth upcoming items, in UI order.")]
+    public Image[] nextExtraItemIcons = Array.Empty<Image>();
+    private readonly List<ItemData> upcoming = new List<ItemData>(4);
     public Image progressImage;
 
     private void OnEnable() => Refresh();
@@ -17,15 +22,21 @@ public sealed class MergeDropTimerUI : MonoBehaviour
     public void Refresh()
     {
         var current = boxes != null ? boxes.SelectedBoard : board;
-        if (timeText != null) timeText.SetText("{0:1}s", current != null ? current.DropCountdown : 0f);
-        var item = current != null ? current.NextDropItem : null;
-        if (nextItemIcon != null)
-        {
-            var sprite = item != null ? item.icon : null;
-            if (nextItemIcon.sprite != sprite) nextItemIcon.sprite = sprite;
-            nextItemIcon.enabled = sprite != null;
-        }
+        float countdown = current != null ? current.DropCountdown : 0f;
+        if (timeText != null) timeText.SetText("{0:1}s", countdown);
+        if (current != null) current.GetUpcomingDropItems(upcoming, 1 + (nextExtraItemIcons?.Length ?? 0));
+        else upcoming.Clear();
+        SetIcon(nextItemIcon, 0);
+        if (nextExtraItemIcons != null)
+            for (int i = 0; i < nextExtraItemIcons.Length; i++) SetIcon(nextExtraItemIcons[i], i + 1);
         if (progressImage != null)
-            progressImage.fillAmount = current != null ? 1f - Mathf.Clamp01(current.DropCountdown / current.DropInterval) : 0f;
+            progressImage.fillAmount = current != null ? 1f - Mathf.Clamp01(countdown / current.DropInterval) : 0f;
+    }
+    private void SetIcon(Image image, int index)
+    {
+        if (image == null) return;
+        var sprite = index < upcoming.Count && upcoming[index] != null ? upcoming[index].icon : null;
+        if (image.sprite != sprite) image.sprite = sprite;
+        image.enabled = sprite != null;
     }
 }

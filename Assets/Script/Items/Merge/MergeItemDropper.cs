@@ -10,6 +10,7 @@ internal sealed class MergeItemDropper
     private readonly Collider2D[] overlap = new Collider2D[32];
     private readonly Dictionary<MergeItemMaterial, int> roundBonuses = new Dictionary<MergeItemMaterial, int>();
     private readonly List<Toggle> observedToggles = new List<Toggle>();
+    private readonly Dictionary<MergeItemMaterial, long> previewStock = new Dictionary<MergeItemMaterial, long>();
     private GameSession materialSession;
     private bool usesSessionMaterials, dropping;
     private float nextDropAt, nextAutomaticDropAt;
@@ -27,6 +28,47 @@ internal sealed class MergeItemDropper
         }
     }
     public ItemData NextItem { get { RefreshSelectionState(); return owner.currentMaterial?.mergeItem?.item; } }
+
+    // Forecast with virtual stock only: never advance the real selection or consume inventory.
+    public void GetUpcomingItems(List<ItemData> result, int maximum)
+    {
+        result.Clear();
+        RefreshSelectionState();
+        if (maximum <= 0 || owner.mergeMaterials == null) return;
+        previewStock.Clear();
+        foreach (var material in owner.mergeMaterials)
+            if (CanFeedMaterial(material))
+                previewStock[material] = (long)Math.Max(0, material.count) + Math.Max(0, material.defaultCount);
+        var current = owner.currentMaterial;
+        bool cycle = owner.automaticDrop && owner.cycleAutomaticMaterials;
+        for (int i = 0; i < maximum && current != null; i++)
+        {
+            if (!previewStock.TryGetValue(current, out long remaining) || remaining <= 0) break;
+            result.Add(current.mergeItem.item);
+            previewStock[current] = remaining - 1;
+            if (!cycle && remaining > 1) continue;
+            int start = owner.mergeMaterials.IndexOf(current);
+            current = null;
+            for (int offset = 1; offset <= owner.mergeMaterials.Count; offset++)
+            {
+                var candidate = owner.mergeMaterials[(start + offset) % owner.mergeMaterials.Count];
+                if (candidate != null && previewStock.TryGetValue(candidate, out long stock) && stock > 0)
+                { current = candidate; break; }
+            }
+        }
+    }
+
+    public void SetAllMaterialsSelected(bool selected)
+    {
+        RefreshMaterialSelection();
+        if (owner.mergeMaterials == null) return;
+        foreach (var material in owner.mergeMaterials)
+        {
+            var toggle = material?.mergeUI != null ? material.mergeUI.toggle : null;
+            if (toggle != null) toggle.isOn = selected && MergeTree.IsAvailable(material);
+        }
+        RefreshSelectionState();
+    }
 
     public void Begin()
     {
