@@ -22,6 +22,18 @@ public sealed class MergeBoxBindings : MonoBehaviour
         linePosition = transform.InverseTransformPoint(dropZone.lineSprite.transform.position);
         lineSize = dropZone.lineSprite.size;
     }
+    private float ReferenceFloor
+    {
+        get
+        {
+            foreach (var part in visuals)
+                if (part != null && part.role == MergeBoxSpriteRole.BottomWall) return part.position.y;
+            return -referenceSize.y * .5f;
+        }
+    }
+    private Vector3 ResizePoint(Vector3 point, Vector2 ratio)
+        => new Vector3(point.x * ratio.x, ReferenceFloor + (point.y - ReferenceFloor) * ratio.y, point.z);
+
     public void ApplyVisualLayout(Vector2 size, Vector2 spawnOffset, Vector2 deadlineOffset)
         => ApplyVisualLayout(size, spawnOffset, deadlineOffset, Vector4.zero);
 
@@ -34,14 +46,14 @@ public sealed class MergeBoxBindings : MonoBehaviour
             part?.Apply(transform, size - referenceSize, ratio);
             part?.ApplyBackgroundPadding(transform, backgroundPadding);
         }
-        MergeBoxSpritePart.Place(transform, spawnPoint, spawnPosition, ratio);
+        if (spawnPoint != null) spawnPoint.position = transform.TransformPoint(ResizePoint(spawnPosition, ratio));
         if (spawnPoint != null) spawnPoint.position += transform.TransformVector(spawnOffset);
         if (dropZone == null) return;
-        dropZone.movementArea = Rect.MinMaxRect(originalMovement.xMin * ratio.x, originalMovement.yMin * ratio.y,
-            originalMovement.xMax * ratio.x, originalMovement.yMax * ratio.y);
+        dropZone.movementArea = Rect.MinMaxRect(originalMovement.xMin * ratio.x, ResizePoint(originalMovement.min, ratio).y,
+            originalMovement.xMax * ratio.x, ResizePoint(originalMovement.max, ratio).y);
         if (dropZone.lineSprite != null)
         {
-            MergeBoxSpritePart.Place(transform, dropZone.lineSprite.transform, linePosition, ratio);
+            dropZone.lineSprite.transform.position = transform.TransformPoint(ResizePoint(linePosition, ratio));
             dropZone.lineSprite.transform.position += transform.TransformVector(deadlineOffset);
             dropZone.lineSprite.size = new Vector2(lineSize.x * ratio.x, lineSize.y);
         }

@@ -30,6 +30,56 @@ public class MergeBoxVisualLayoutTests
         return box;
     }
 
+    [TestCase(0f)]
+    [TestCase(.5f)]
+    [TestCase(1f)]
+    public void HeightChangesGrowUpwardWhileKeepingTheFloorFixed(float pivotY)
+    {
+        var root = new GameObject("Series"); var texture = new Texture2D(16, 16);
+        var sprite = Sprite.Create(texture, new Rect(0, 0, 16, 16), new Vector2(.5f, pivotY), 16);
+        try
+        {
+            root.transform.position = new Vector3(7, -5, 0); root.transform.localScale = new Vector3(2, 3, 1);
+            var box = CreateBox(root, sprite, new Vector2(4, 6));
+            box.visuals[2].target.transform.localPosition = Vector3.down * 3;
+            foreach (int index in new[] { 0, 1, 3 })
+                box.visuals[index].target.transform.localPosition = new Vector3(0, -3 - box.visuals[index].renderer.localBounds.min.y, 0);
+            box.dropZone.lineSprite.transform.localPosition = Vector3.up * 2.4f;
+            box.dropZone.movementArea = new Rect(-1, 2, 2, .6f);
+            box.CaptureVisualLayout(new Vector2(4, 6));
+            Vector3 floorPosition = box.visuals[2].target.transform.position;
+            var control = root.AddComponent<MergeBoxVisualController>();
+            var entry = new MergeBoxVisualSize { box = box, width = 4, height = 6 };
+            control.boxes = new[] { entry };
+            control.backgroundPadding = new MergeBoxBackgroundPadding { bottom = .2f, top = .3f };
+            control.parts[0].colliderPadding = new MergeBoxColliderPadding { bottom = .1f };
+            foreach (float height in new[] { 6f, 10f, 8f, 4f, 6f })
+            {
+                entry.height = height; control.ApplySizes(); control.ApplySizes();
+                Assert.That(Vector3.Distance(box.visuals[2].target.transform.position, floorPosition), Is.LessThan(.001f));
+                foreach (int index in new[] { 0, 1 })
+                {
+                    var renderer = box.visuals[index].renderer;
+                    float bottom = box.transform.InverseTransformPoint(renderer.transform.TransformPoint(renderer.localBounds.min)).y;
+                    float top = box.transform.InverseTransformPoint(renderer.transform.TransformPoint(renderer.localBounds.max)).y;
+                    Assert.That(bottom, Is.EqualTo(-3).Within(.001f));
+                    Assert.That(top, Is.EqualTo(height - 3).Within(.001f));
+                }
+                var background = box.visuals[3].renderer;
+                Assert.That(box.transform.InverseTransformPoint(background.transform.TransformPoint(background.localBounds.min)).y,
+                    Is.EqualTo(-2.8f).Within(.001f));
+                var collider = box.visuals[0].wallCollider;
+                Assert.That(box.transform.InverseTransformPoint(collider.transform.TransformPoint(collider.offset - collider.size * .5f)).y,
+                    Is.EqualTo(-2.9f).Within(.001f));
+                Assert.That(box.spawnPoint.localPosition.y, Is.EqualTo(height - 3).Within(.001f));
+                Assert.That(box.dropZone.lineSprite.transform.localPosition.y, Is.EqualTo(-3 + 5.4f * height / 6).Within(.001f));
+                Assert.That(box.dropZone.movementArea.yMin, Is.EqualTo(-3 + 5 * height / 6).Within(.001f));
+                Assert.That(box.dropZone.movementArea.yMax, Is.EqualTo(-3 + 5.6f * height / 6).Within(.001f));
+            }
+        }
+        finally { Object.DestroyImmediate(root); Object.DestroyImmediate(sprite); Object.DestroyImmediate(texture); }
+    }
+
     [Test]
     public void SharedRoleSettingsApplyAcrossBoxesWhileDropPositionsRemainIndividual()
     {

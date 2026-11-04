@@ -41,9 +41,28 @@ public sealed class MergeBoxSpritePart
         if (renderer == null) return;
         Vector2 resize = role == MergeBoxSpriteRole.Fixed ? Vector2.zero : (role == MergeBoxSpriteRole.SideWall || role == MergeBoxSpriteRole.LeftWall || role == MergeBoxSpriteRole.RightWall) ? new Vector2(0, delta.y) :
             role == MergeBoxSpriteRole.BottomWall ? new Vector2(delta.x, 0) : delta;
-        renderer.size = Vector2.Max(Vector2.one * .01f, originalSize + resize / units);
-        Vector2 positionRatio = role == MergeBoxSpriteRole.Fixed ? Vector2.one : ratio;
+        Vector2 positionRatio = role == MergeBoxSpriteRole.Fixed ? Vector2.one : new Vector2(ratio.x, 1);
         Place(box, renderer.transform, position, positionRatio);
+        // Rebuild from the captured size so repeated edits never accumulate a shift.
+        // Keep the visual's lower edge fixed, regardless of its Sprite Editor pivot.
+        renderer.size = originalSize;
+        float bottom = BottomInBox(box);
+        renderer.size = Vector2.Max(Vector2.one * .01f, originalSize + resize / units);
+        float lift = bottom - BottomInBox(box);
+        renderer.transform.position += box.TransformVector(new Vector3(0, lift, 0));
+    }
+
+    private float BottomInBox(Transform box)
+    {
+        Bounds bounds = renderer.localBounds;
+        float bottom = float.PositiveInfinity;
+        for (int x = 0; x < 2; x++) for (int y = 0; y < 2; y++)
+        {
+            Vector3 corner = renderer.transform.TransformPoint(new Vector3(x == 0 ? bounds.min.x : bounds.max.x,
+                y == 0 ? bounds.min.y : bounds.max.y, bounds.center.z));
+            bottom = Mathf.Min(bottom, box.InverseTransformPoint(corner).y);
+        }
+        return bottom;
     }
 
     public void ApplyBackgroundPadding(Transform box, Vector4 padding)
