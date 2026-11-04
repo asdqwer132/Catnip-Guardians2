@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class WallSpriteInput : MonoBehaviour
 {
+    [SerializeField] private MergeBoxBindings[] boxes;
     [SerializeField] private SpriteRenderer[] sideWall;
     [SerializeField] private SpriteRenderer bottomWall;
     [SerializeField] private SpriteRenderer backFrame;
@@ -67,6 +68,19 @@ public class WallSpriteInput : MonoBehaviour
             side = LoadSprite($"{folder}/SideWall");
             bottom = LoadSprite($"{folder}/BottomWall");
             back = LoadSprite($"{folder}/BoxBack 1");
+        }
+
+        if (boxes != null) foreach (var box in boxes)
+        {
+            if (box == null || !box.transform.IsChildOf(transform)) continue;
+            foreach (var part in box.visuals)
+            {
+                if (part == null || part.renderer == null) continue;
+                Sprite selected = part.role == MergeBoxSpriteRole.SideWall ? side :
+                    part.role == MergeBoxSpriteRole.BottomWall ? bottom :
+                    part.role == MergeBoxSpriteRole.BackFrame ? back : null;
+                if (selected != null) part.renderer.sprite = selected;
+            }
         }
 
         if (side != null && sideWall != null)

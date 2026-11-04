@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4602517530497694814}
   - component: {fileID: 3401685766570148374}
+  - component: {fileID: 4783042846926521334}
+  - component: {fileID: 7821177070210774819}
   m_Layer: 0
   m_Name: BoxOrigin
   m_TagString: Untagged
@@ -43,13 +45,57 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cc9435bff86c48d39d393a567173c61f, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxLevelManager
   levels:
   - minimumLevel: 1
     box: {fileID: 679165611071614342}
   currentLevel: 1
   board: {fileID: 0}
+--- !u!114 &4783042846926521334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4804535939393210474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92af25d49357dd04b896e06f42bafeda, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::WallSpriteInput
+  boxes:
+  - {fileID: 679165611071614342}
+  sideWall: []
+  bottomWall: {fileID: 0}
+  backFrame: {fileID: 0}
+  spritePath: MergeBox
+  series: 01-weapon
+  useSpriteSheet: 0
+  spriteSheetPath: Item/MergeBox/MergeBox (1).png
+  sheetNumber: 1
+  sideSpriteName: SideWall
+  bottomSpriteName: BottomWall
+  backSpriteName: Back
+  applyOnAwake: 0
+--- !u!114 &7821177070210774819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4804535939393210474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b32f0cd62a2f436088b211d7b61a5524, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MergeBoxVisualController
+  boxes:
+  - box: {fileID: 679165611071614342}
+    width: 4.5
+    height: 5.5
+    spawnOffset: {x: 0, y: 0}
+    deadlineOffset: {x: 0, y: 0}
 --- !u!1001 &679165449612893572
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -116,7 +162,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f2ad2411312047828f3731d8f6f25d34, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxBindings
 --- !u!4 &8053486174470761174 stripped
 Transform:

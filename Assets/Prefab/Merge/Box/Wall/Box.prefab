@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7399232087317575506}
   - component: {fileID: 990400000002}
-  - component: {fileID: 3904717262373032437}
   - component: {fileID: 4811276694686574449}
   m_Layer: 0
   m_Name: Box
@@ -52,34 +51,55 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2ad2411312047828f3731d8f6f25d34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxBindings
+  visuals:
+  - role: 0
+    renderer: {fileID: 1571433202013540961}
+    wallCollider: {fileID: 5022512252071045872}
+    originalSize: {x: 0.75, y: 5.5}
+    colliderSize: {x: 1, y: 6}
+    position: {x: -2.5, y: -1.5, z: 0}
+    colliderPosition: {x: -2.5, y: -1.5, z: 0}
+    units: {x: 1, y: 1}
+    colliderUnits: {x: 1, y: 1}
+  - role: 0
+    renderer: {fileID: 7152976627827781681}
+    wallCollider: {fileID: 4055148427283468369}
+    originalSize: {x: 0.75, y: 5.5}
+    colliderSize: {x: 1, y: 6}
+    position: {x: 2.5, y: -1.5, z: 0}
+    colliderPosition: {x: 2.5, y: -1.5, z: 0}
+    units: {x: 1, y: 1}
+    colliderUnits: {x: 1, y: 1}
+  - role: 1
+    renderer: {fileID: 2613701511448968909}
+    wallCollider: {fileID: 4461962437637006983}
+    originalSize: {x: 5.75, y: 0.9375}
+    colliderSize: {x: 5, y: 0.8}
+    position: {x: 0, y: -4.2, z: 0}
+    colliderPosition: {x: 0, y: -4.2, z: 0}
+    units: {x: 1, y: 1}
+    colliderUnits: {x: 1, y: 1}
+  - role: 2
+    renderer: {fileID: 4482963995737655858}
+    wallCollider: {fileID: 0}
+    originalSize: {x: 4.5, y: 5.5}
+    colliderSize: {x: 0, y: 0}
+    position: {x: 0, y: -1.7, z: 0}
+    colliderPosition: {x: 0, y: 0, z: 0}
+    units: {x: 1, y: 1}
+    colliderUnits: {x: 0, y: 0}
+  referenceSize: {x: 4.5, y: 5.5}
+  spawnPosition: {x: 0, y: 2, z: 0}
+  linePosition: {x: 0, y: 1.5, z: 0}
+  lineSize: {x: 4, y: 0.125}
+  originalMovement:
+    serializedVersion: 2
+    x: -1.8
+    y: 1.9
+    width: 3.6
+    height: 0.6
   spawnPoint: {fileID: 6512285261805217502}
   dropZone: {fileID: 4811276694686574449}
---- !u!114 &3904717262373032437
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1661963024455000052}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92af25d49357dd04b896e06f42bafeda, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WallSpriteInput
-  sideWall:
-  - {fileID: 1571433202013540961}
-  - {fileID: 7152976627827781681}
-  bottomWall: {fileID: 2613701511448968909}
-  backFrame: {fileID: 4482963995737655858}
-  spritePath: MergeBox
-  series: 01-weapon
-  useSpriteSheet: 0
-  spriteSheetPath: Item/MergeBox/MergeBox (1).png
-  sheetNumber: 1
-  sideSpriteName: SideWall
-  bottomSpriteName: BottomWall
-  backSpriteName: Back
-  applyOnAwake: 0
 --- !u!114 &4811276694686574449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -506,6 +526,11 @@ SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 4006382383942622677, guid: a98f2cc96b11d6e438f109ea178f1fa1, type: 3}
   m_PrefabInstance: {fileID: 1431084890129523480}
   m_PrefabAsset: {fileID: 0}
+--- !u!61 &4461962437637006983 stripped
+BoxCollider2D:
+  m_CorrespondingSourceObject: {fileID: 3328211880188839327, guid: a98f2cc96b11d6e438f109ea178f1fa1, type: 3}
+  m_PrefabInstance: {fileID: 1431084890129523480}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6588450325314342276 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5238491801768324764, guid: a98f2cc96b11d6e438f109ea178f1fa1, type: 3}
@@ -593,6 +618,11 @@ SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 5739984924189929245, guid: fccae6c04222b804c84b1be89b9e06af, type: 3}
   m_PrefabInstance: {fileID: 6513999239007550844}
   m_PrefabAsset: {fileID: 0}
+--- !u!61 &5022512252071045872 stripped
+BoxCollider2D:
+  m_CorrespondingSourceObject: {fileID: 2293972149046105996, guid: fccae6c04222b804c84b1be89b9e06af, type: 3}
+  m_PrefabInstance: {fileID: 6513999239007550844}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6847203341139419473 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 387442482986490925, guid: fccae6c04222b804c84b1be89b9e06af, type: 3}
@@ -678,6 +708,11 @@ PrefabInstance:
 --- !u!4 &606997594913638786 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8744794689820890793, guid: fa262bdd77bd77842872b539f03ffe8d, type: 3}
+  m_PrefabInstance: {fileID: 8158197508542504747}
+  m_PrefabAsset: {fileID: 0}
+--- !u!61 &4055148427283468369 stripped
+BoxCollider2D:
+  m_CorrespondingSourceObject: {fileID: 5292140137806827386, guid: fa262bdd77bd77842872b539f03ffe8d, type: 3}
   m_PrefabInstance: {fileID: 8158197508542504747}
   m_PrefabAsset: {fileID: 0}
 --- !u!212 &7152976627827781681 stripped
