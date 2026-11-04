@@ -11,7 +11,7 @@ PrefabInstance:
     - target: {fileID: 2063276773228974053, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: f4f323662e53460bbcb1d1ff7d902225, type: 3}
+      objectReference: {fileID: 21300000, guid: 5f1c8c8a20ece9a4d8a54d85394f736e, type: 3}
     - target: {fileID: 2196802175250481776, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
       propertyPath: m_Name
       value: Box1
@@ -31,7 +31,15 @@ PrefabInstance:
     - target: {fileID: 3254232046514742089, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 6f3981d362254f539afee082f3a74fe6, type: 3}
+      objectReference: {fileID: 21300000, guid: 8bb32fd7e6642b5489c88fd5e5c5e0fb, type: 3}
+    - target: {fileID: 3254232046514742089, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+      propertyPath: m_DrawMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3254232046514742089, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+      propertyPath: m_MaskInteraction
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3988589894311745462, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -80,13 +88,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: Box (1.Weapon)
       objectReference: {fileID: 0}
+    - target: {fileID: 5317337050182621310, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5317337050182621310, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7649534634253725109, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: f4f323662e53460bbcb1d1ff7d902225, type: 3}
+      objectReference: {fileID: 21300000, guid: 5f1c8c8a20ece9a4d8a54d85394f736e, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 4002017649438429058, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+    - {fileID: 2608098819558564827, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}

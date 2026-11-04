@@ -34,7 +34,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -10, y: 10}
+  m_AnchoredPosition: {x: -15, y: 15}
   m_SizeDelta: {x: 35, y: 20}
   m_Pivot: {x: 1, y: 0}
 --- !u!222 &5893539878100312247
@@ -416,7 +416,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1.5
+  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &112284016848460286
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -463,16 +463,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InventorySlotUI
   icon: {fileID: 4047147333766088748}
   dataNameText: {fileID: 0}
+  descriptionText: {fileID: 0}
+  detailDescriptionText: {fileID: 0}
+  dataSource: {fileID: 0}
+  hideEmptyDescription: 0
+  hideEmptyDetailDescription: 1
+  seriesText: {fileID: 0}
+  gradeText: {fileID: 0}
+  seriesIcon: {fileID: 0}
+  gradeIcon: {fileID: 0}
+  series: 0
+  grade: -1
   amountImage: {fileID: 0}
   amountText: {fileID: 7320215863083533165}
-  gradeText: {fileID: 0}
   locked: {fileID: 0}
   ready: {fileID: 0}
   IsLocked: 0
-  descriptionText: {fileID: 0}
-  detailDescriptionText: {fileID: 0}
   categoryText: {fileID: 0}
-  seriesText: {fileID: 0}
   weightText: {fileID: 0}
   cooldownText: {fileID: 0}
   currentItem:

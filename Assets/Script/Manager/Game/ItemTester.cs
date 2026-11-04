@@ -20,16 +20,16 @@ public class ItemTester : MonoBehaviour
     public ItemUsePositionProvider positionProvider;
     public RectTransform testerDisplayer;
     public RectTransform testerDisplayerHp;
-    private bool isTest = false;
+    public bool isTest = false;
     public void Init()
     {
+        if (!isTest) return;
         foreach (var items in itemss)
         {
             foreach (var test in items.item)
             {
                 if (items.isUse)
                 {
-                    isTest = true;
                     foreach (var equip in items.targetBagData.equippedItems)
                     {
                         if (equip.amount == 0)
@@ -42,7 +42,6 @@ public class ItemTester : MonoBehaviour
                 }
             }
         }
-        if(isTest)
             SetTestMode();
     }
     private void SetTestMode()
@@ -52,7 +51,7 @@ public class ItemTester : MonoBehaviour
         pos.x = 25f;
         testerDisplayer.anchoredPosition = pos;
         Vector2 poshp = testerDisplayerHp.anchoredPosition;
-        pos.y = 150+25f;
+        pos.y = 25f;
         testerDisplayerHp.anchoredPosition = pos;
     }
 }

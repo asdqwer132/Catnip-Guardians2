@@ -238,6 +238,8 @@ GameObject:
   - component: {fileID: 7570214334520406802}
   - component: {fileID: 513547614949932833}
   - component: {fileID: 2661863430750436515}
+  - component: {fileID: 6525263893122599244}
+  - component: {fileID: 2229069120191355478}
   m_Layer: 5
   m_Name: SubPlantMaterialSlot
   m_TagString: Untagged
@@ -320,16 +322,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SubPlantMaterialSlotUI
   icon: {fileID: 1295650540954652643}
   dataNameText: {fileID: 0}
+  descriptionText: {fileID: 0}
+  detailDescriptionText: {fileID: 0}
+  dataSource: {fileID: 0}
+  hideEmptyDescription: 0
+  hideEmptyDetailDescription: 1
+  seriesText: {fileID: 0}
+  gradeText: {fileID: 0}
+  seriesIcon: {fileID: 0}
+  gradeIcon: {fileID: 0}
+  series: 0
+  grade: -1
   amountImage: {fileID: 0}
   amountText: {fileID: 0}
-  gradeText: {fileID: 0}
   locked: {fileID: 7336025985430094095}
   ready: {fileID: 4706958963158884449}
   IsLocked: 0
-  descriptionText: {fileID: 0}
-  detailDescriptionText: {fileID: 0}
   categoryText: {fileID: 0}
-  seriesText: {fileID: 0}
   weightText: {fileID: 0}
   cooldownText: {fileID: 0}
   currentItem:
@@ -385,6 +394,38 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsOn: 0
+--- !u!114 &6525263893122599244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4933690953776530023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f811147cfbd52a4b8cf7877b3eb1bc0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipTrigger
+  isPointer: 0
+  autoDisable: 1
+  startShow: 0
+  showOnSelection: 1
+  tooltipUI: {fileID: 0}
+  providerComponent: {fileID: 2229069120191355478}
+--- !u!114 &2229069120191355478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4933690953776530023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 231b2d1c8c7747045aa0d46cd57f8cc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemSlotTooltipProvider
+  anchorRect: {fileID: 0}
+  slot: {fileID: 513547614949932833}
 --- !u!1 &7336025985430094095
 GameObject:
   m_ObjectHideFlags: 0
