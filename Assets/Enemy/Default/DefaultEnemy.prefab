@@ -197,6 +197,10 @@ MonoBehaviour:
   patternRunner: {fileID: 2148724508074491466}
   buffManager: {fileID: 0}
   statusController: {fileID: 0}
+  minimumHitReactionTime: 0.15
+  behaviorState: 0
+  movementControlImmune: 0
+  movementControlResistance: 0
   currentStat:
     speed: 2
     maxHp: 10
@@ -225,6 +229,7 @@ MonoBehaviour:
   deceleration: 45
   externalDamping: 10
   stopVelocityThreshold: 0.02
+  faceAgainstMovementControl: 1
   visual: {fileID: 7063470980320774977}
   attack: {fileID: 2430655365351377237}
   isMoving: 0
@@ -255,6 +260,13 @@ MonoBehaviour:
   hitTriggerName: Hit
   dieTriggerName: Die
   idleStateName: Idle
+  attackStateName: Attack
+  hitStateName: Hit
+  dieStateName: Die
+  attackFallbackDuration: 0.3
+  hitFallbackDuration: 0.18
+  animationEntryTimeout: 0.2
+  maximumActionAnimationTime: 5
 --- !u!114 &2430655365351377237
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -271,6 +283,8 @@ MonoBehaviour:
   attackRange: 1.5
   attackCooldown: 1
   attackDistanceTolerance: 0.15
+  slotAttackSoundCategory: 
+  attackPreparationTime: 0.1
   target: {fileID: 1506509451877719227}
   visual: {fileID: 7063470980320774977}
   mover: {fileID: 0}
@@ -352,6 +366,10 @@ PrefabInstance:
     - target: {fileID: 3331972996395047062, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
       propertyPath: m_Name
       value: HealthComponent
+      objectReference: {fileID: 0}
+    - target: {fileID: 5609621908077858473, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
+      propertyPath: offset.y
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5609621908077858473, guid: 393a15ed02493eb4a9f622a49953c64f, type: 3}
       propertyPath: popupPoint
@@ -437,38 +455,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8319794836907226570}
     m_Modifications:
-    - target: {fileID: 1995457126076436292, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
-      propertyPath: m_Pivot.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1995457126076436292, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1995457126076436292, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1995457126076436292, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1995457126076436292, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 1995457126076436292, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 1995457126076436292, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1995457126076436292, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 25
-      objectReference: {fileID: 0}
     - target: {fileID: 2065138663563921696, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
       propertyPath: m_Name
       value: HpFill
@@ -511,11 +497,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5186795204256957725, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 5186795204256957725, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 150
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5186795204256957725, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
       propertyPath: m_LocalPosition.x
@@ -551,7 +537,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5186795204256957725, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5186795204256957725, guid: b630e88ad2020cd4dbef3778d30e6773, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
