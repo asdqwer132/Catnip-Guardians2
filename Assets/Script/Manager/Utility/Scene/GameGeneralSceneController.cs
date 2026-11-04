@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.Rendering;
 
 public enum NavigationSizeMode { ScreenRatio, MeasuredPanel }
+public enum GameViewportSource { Ratios, UIRegions }
 
 // 새 UI를 생성하지 않고 기존 씬 카메라와 Canvas/패널의 표시 영역을 연결합니다.
 public sealed class GameGeneralSceneController : MonoBehaviour
@@ -15,28 +16,35 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     public bool autoLoadChildren = true;
     [Tooltip("제너럴 통합 실행에 필요한 설정/재화/세션을 코어에서 불러옵니다. 배틀/아이템 단독 실행에는 영향이 없습니다.")]
     public bool loadCoreScene = true;
-    [Header("화면 분할")]
+    [Header("화면 영역 배치 방식")]
+    [Tooltip("UI Regions는 직접 배치한 Overlay UI 영역을 읽어 카메라만 맞춥니다. 기존 비율/간격/패딩 설정은 Ratios에서만 사용합니다.")]
+    public GameViewportSource viewportSource;
+    [Tooltip("UI Regions: 제너럴 씬의 Screen Space Overlay Canvas 안에 직접 배치한 배틀 영역입니다.")]
+    public RectTransform battleArea;
+    [Tooltip("UI Regions: 제너럴 씬의 Screen Space Overlay Canvas 안에 직접 배치한 아이템 영역입니다.")]
+    public RectTransform itemArea;
+    [Header("Ratios 전용 화면 분할")]
     public GameScreenLayout layout;
     [Range(0.1f, 0.9f)] public float battleRatio = 0.6f;
     public bool battleFirst = true;
     [Range(0f, 0.1f)] public float gap;
     [Tooltip("기존 Screen Space Overlay Canvas를 해당 씬의 카메라에 연결합니다. 코어 UI는 전체 화면으로 유지합니다.")]
     public bool fitSceneCanvases = true;
-    [Header("화면별 패딩")]
+    [Header("Ratios 전용 화면별 패딩")]
     [Tooltip("Shared Scale Profile 기준 UI 픽셀입니다. 각 분할 영역 안쪽의 상하좌우 여백이며, 원래 분할 비율은 유지됩니다.")]
     public SceneViewportPadding navigationPadding;
     public SceneViewportPadding battlePadding;
     public SceneViewportPadding itemPadding;
     [Header("직접 만든 상단 내비게이션 UI")]
-    [Tooltip("제너럴 씬의 루트 Canvas. 같은 씬의 Navigation 카메라와 연결합니다.")]
+    [Tooltip("제너럴 씬의 루트 Canvas. Ratios에서 Navigation 카메라와 연결합니다. UI Regions에서는 Screen Space Overlay로 직접 배치한 UI를 유지합니다.")]
     public Canvas navigationCanvas;
-    [Tooltip("기존 상단 바 Panel입니다. Screen Ratio에서는 화면 비율에 맞춰 크기를 정하고, Measured Panel에서는 이 패널의 하단을 측정합니다.")]
+    [Tooltip("기존 상단 바 Panel입니다. UI Regions에서는 Overlay에 배치한 이 영역을 그대로 읽습니다. Ratios에서는 Navigation Size Mode로 크기를 정합니다.")]
     public RectTransform navigationArea;
     public bool reserveNavigationSpace = true;
-    [Tooltip("Screen Ratio는 UI와 카메라 경계를 같은 화면 비율로 맞춥니다. Measured Panel은 직접 정한 패널 높이를 측정합니다.")]
+    [Tooltip("Ratios 전용: Screen Ratio는 화면 비율로 높이를 정하고, Measured Panel은 직접 정한 패널 높이를 측정합니다.")]
     public NavigationSizeMode navigationSizeMode = NavigationSizeMode.ScreenRatio;
     [Range(0f, 0.8f)] public float navigationHeightRatio = 0.15f;
-    [Tooltip("같은 Sorting Layer 안의 Canvas 순서. 기본 내비게이션 100 / 코어 설정 200 / 로딩 300입니다.")]
+    [Tooltip("Ratios에서 적용할 Canvas 순서. UI Regions에서는 Canvas의 직접 설정을 유지합니다. 기본 내비게이션 100 / 코어 설정 200 / 로딩 300입니다.")]
     public int navigationSortingOrder = 100;
     [Header("서브 게임 격리")]
     [Range(8, 31)] public int itemLayer = 31;
@@ -177,6 +185,14 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     public void SetNavigationHeightRatio(float value) { navigationHeightRatio = value; ApplyLayout(); }
     private void ConnectNavigation()
     {
+        if (viewportSource == GameViewportSource.UIRegions)
+        {
+            // The authored Overlay remains the full-screen coordinate system.
+            // Connecting it to the cropped Navigation camera would create a layout feedback loop.
+            RestoreNavigation();
+            navigationView = SceneCameraBinding.NavigationIn(gameObject.scene);
+            return;
+        }
         if (paddedNavigationArea != null && (paddedNavigationArea != navigationArea ||
             navigationSizeMode != NavigationSizeMode.MeasuredPanel || navigationCanvas == null ||
             navigationCanvas.renderMode != RenderMode.ScreenSpaceOverlay)) ClearMeasuredNavigationPadding();
@@ -225,6 +241,8 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     {
         get
         {
+            if (viewportSource == GameViewportSource.UIRegions)
+                return ReadUIArea(navigationArea, NavigationCamera).height;
             if (navigationState == null || navigationCanvas == null || !navigationCanvas.isActiveAndEnabled)
                 return 0f;
             if (navigationArea != null && !navigationArea.gameObject.activeInHierarchy) return 0f;
@@ -249,6 +267,15 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     {
         if (!isActiveAndEnabled) return;
         ConnectNavigation();
+        if (viewportSource == GameViewportSource.UIRegions)
+        {
+            ApplyCamera(NavigationCamera, ReadUIArea(navigationArea, NavigationCamera));
+            ApplyCamera(BattleCamera, ReadUIArea(battleArea, BattleCamera));
+            ApplyCamera(ItemCamera, ReadUIArea(itemArea, ItemCamera));
+            SceneCameraBinding.Refresh();
+            SceneAudioListenerOwner.Refresh();
+            return;
+        }
         float top = NavigationTopInset;
         GetPaddingMetrics(out var output,out float scale);
         Rect navigationAllocation=new Rect(0,1f-NavigationHeight,1,NavigationHeight);
@@ -264,6 +291,13 @@ public sealed class GameGeneralSceneController : MonoBehaviour
         ApplyCamera(ItemCamera,itemPadding.Inset(itemRect,output,scale));
         SceneCameraBinding.Refresh();
         SceneAudioListenerOwner.Refresh();
+    }
+    private Rect ReadUIArea(RectTransform area, Camera camera)
+    {
+        // Missing/hidden/off-screen regions hide their camera instead of falling back
+        // to a full-screen viewport. Cross-scene serialized UI references are not required.
+        return area != null && area.gameObject.scene == gameObject.scene &&
+            SceneUILayout.TryViewportRect(area, camera, out var rect) ? rect : default;
     }
     private void GetPaddingMetrics(out Vector2 output,out float scale)
     {
