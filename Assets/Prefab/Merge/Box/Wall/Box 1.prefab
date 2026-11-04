@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 990400000002}
   - component: {fileID: 4811276694686574449}
   m_Layer: 0
-  m_Name: Box
+  m_Name: Box 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -57,7 +57,7 @@ MonoBehaviour:
     wallCollider: {fileID: 5022512252071045872}
     originalSize: {x: 0.75, y: 5.5}
     colliderSize: {x: 1, y: 6}
-    position: {x: -2.5, y: -1.5, z: 0}
+    position: {x: -2.5, y: -1.75, z: 0}
     colliderPosition: {x: -2.5, y: -1.5, z: 0}
     units: {x: 1, y: 1}
     colliderUnits: {x: 1, y: 1}
@@ -66,7 +66,7 @@ MonoBehaviour:
     wallCollider: {fileID: 4055148427283468369}
     originalSize: {x: 0.75, y: 5.5}
     colliderSize: {x: 1, y: 6}
-    position: {x: 2.5, y: -1.5, z: 0}
+    position: {x: 2.5, y: -1.75, z: 0}
     colliderPosition: {x: 2.5, y: -1.5, z: 0}
     units: {x: 1, y: 1}
     colliderUnits: {x: 1, y: 1}
@@ -82,13 +82,13 @@ MonoBehaviour:
   - role: 2
     renderer: {fileID: 4482963995737655858}
     wallCollider: {fileID: 0}
-    originalSize: {x: 4.5, y: 5.5}
+    originalSize: {x: 5, y: 5.5}
     colliderSize: {x: 0, y: 0}
     position: {x: 0, y: -1.7, z: 0}
     colliderPosition: {x: 0, y: 0, z: 0}
     units: {x: 1, y: 1}
     colliderUnits: {x: 0, y: 0}
-  referenceSize: {x: 4.5, y: 5.5}
+  referenceSize: {x: 5, y: 5.5}
   spawnPosition: {x: 0, y: 2, z: 0}
   linePosition: {x: 0, y: 1.5, z: 0}
   lineSize: {x: 4, y: 0.125}
@@ -450,15 +450,15 @@ SpriteRenderer:
   m_SortingLayer: -1
   m_SortingOrder: -52
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 646bd269ba599554a861b85fe52d63ba, type: 3}
+  m_Sprite: {fileID: -6353280959002906696, guid: c4581b9f9f3382d4db9554b7a12e9493, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
-  m_Size: {x: 4.5, y: 5.5}
+  m_Size: {x: 5, y: 5.5}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
 --- !u!1001 &1431084890129523480
 PrefabInstance:
@@ -468,10 +468,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7399232087317575506}
     m_Modifications:
-    - target: {fileID: 4006382383942622677, guid: a98f2cc96b11d6e438f109ea178f1fa1, type: 3}
-      propertyPath: m_SortingOrder
-      value: -49
-      objectReference: {fileID: 0}
     - target: {fileID: 5238491801768324764, guid: a98f2cc96b11d6e438f109ea178f1fa1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -588,26 +584,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: LeftWall
       objectReference: {fileID: 0}
-    - target: {fileID: 5739984924189929245, guid: fccae6c04222b804c84b1be89b9e06af, type: 3}
-      propertyPath: m_Size.x
-      value: 0.75
-      objectReference: {fileID: 0}
-    - target: {fileID: 5739984924189929245, guid: fccae6c04222b804c84b1be89b9e06af, type: 3}
-      propertyPath: m_Size.y
-      value: 5.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5739984924189929245, guid: fccae6c04222b804c84b1be89b9e06af, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 3639139755843216323, guid: c4581b9f9f3382d4db9554b7a12e9493, type: 3}
-    - target: {fileID: 5739984924189929245, guid: fccae6c04222b804c84b1be89b9e06af, type: 3}
-      propertyPath: m_SortingOrder
-      value: -50
-      objectReference: {fileID: 0}
-    - target: {fileID: 5739984924189929245, guid: fccae6c04222b804c84b1be89b9e06af, type: 3}
-      propertyPath: m_WasSpriteAssigned
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -639,26 +615,6 @@ PrefabInstance:
     - target: {fileID: 878728987180973204, guid: fa262bdd77bd77842872b539f03ffe8d, type: 3}
       propertyPath: m_Name
       value: RightWall
-      objectReference: {fileID: 0}
-    - target: {fileID: 1329625327005052698, guid: fa262bdd77bd77842872b539f03ffe8d, type: 3}
-      propertyPath: m_Size.x
-      value: 0.75
-      objectReference: {fileID: 0}
-    - target: {fileID: 1329625327005052698, guid: fa262bdd77bd77842872b539f03ffe8d, type: 3}
-      propertyPath: m_Size.y
-      value: 5.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1329625327005052698, guid: fa262bdd77bd77842872b539f03ffe8d, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 3639139755843216323, guid: c4581b9f9f3382d4db9554b7a12e9493, type: 3}
-    - target: {fileID: 1329625327005052698, guid: fa262bdd77bd77842872b539f03ffe8d, type: 3}
-      propertyPath: m_SortingOrder
-      value: -50
-      objectReference: {fileID: 0}
-    - target: {fileID: 1329625327005052698, guid: fa262bdd77bd77842872b539f03ffe8d, type: 3}
-      propertyPath: m_WasSpriteAssigned
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8744794689820890793, guid: fa262bdd77bd77842872b539f03ffe8d, type: 3}
       propertyPath: m_LocalPosition.x
