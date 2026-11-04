@@ -4,6 +4,54 @@ using UnityEngine;
 
 public class MergeBoxVisualLayoutTests
 {
+    [TestCase(0)]
+    [TestCase(1)]
+    [TestCase(2)]
+    [TestCase(3)]
+    public void PerFrameOffsetsAndColliderInsetsDoNotAccumulate(int hierarchy)
+    {
+        var root = new GameObject("Series root");
+        var boxHost = new GameObject("Box"); boxHost.transform.SetParent(root.transform, false);
+        var visual = new GameObject("Wall"); visual.transform.SetParent(boxHost.transform, false);
+        var colliderHost = hierarchy == 0 ? visual : new GameObject("Collider");
+        if (hierarchy != 0) colliderHost.transform.SetParent(boxHost.transform, false);
+        if (hierarchy == 2) visual.transform.SetParent(colliderHost.transform, false);
+        if (hierarchy == 3) colliderHost.transform.SetParent(visual.transform, false);
+        try
+        {
+            root.transform.localScale = new Vector3(2, 3, 1);
+            var renderer = visual.AddComponent<SpriteRenderer>(); renderer.drawMode = SpriteDrawMode.Sliced;
+            renderer.size = new Vector2(4, 6);
+            var collider = colliderHost.AddComponent<BoxCollider2D>(); collider.size = new Vector2(4, 6);
+            collider.offset = new Vector2(.1f, .2f); collider.autoTiling = true;
+            var box = boxHost.AddComponent<MergeBoxBindings>();
+            box.visuals = new[] { new MergeBoxSpritePart { role = MergeBoxSpriteRole.SideWall, renderer = renderer, wallCollider = collider } };
+            box.CaptureVisualLayout(new Vector2(4, 6));
+            var control = root.AddComponent<MergeBoxVisualController>();
+            var entry = new MergeBoxVisualSize { box = box, width = 4, height = 6 };
+            control.boxes = new[] { entry }; control.ApplySizes();
+            Assert.That(entry.parts.Length, Is.EqualTo(1));
+            entry.parts[0].positionOffset = new Vector2(.3f, -.4f);
+            entry.parts[0].colliderPadding = new MergeBoxColliderPadding { left = .5f, right = .2f, top = .4f, bottom = .1f };
+            for (int i = 0; i < 5; i++)
+            {
+                control.ApplySizes();
+                Assert.That(Vector2.Distance(collider.size, new Vector2(3.3f, 5.5f)), Is.LessThan(.001f));
+                Assert.That(Vector2.Distance(collider.offset, new Vector2(.25f, .05f)), Is.LessThan(.001f));
+                Assert.That(Vector2.Distance(box.transform.InverseTransformPoint(visual.transform.position), new Vector2(.3f, -.4f)), Is.LessThan(.001f));
+                Assert.That(Vector2.Distance(box.transform.InverseTransformPoint(colliderHost.transform.position), new Vector2(.3f, -.4f)), Is.LessThan(.001f));
+                Assert.That(renderer.size, Is.EqualTo(new Vector2(4, 6)));
+                Assert.That(collider.autoTiling, Is.False);
+            }
+            entry.parts[0].colliderPadding = default; entry.parts[0].positionOffset = Vector2.zero;
+            control.ApplySizes();
+            Assert.That(collider.offset, Is.EqualTo(new Vector2(.1f, .2f)));
+            Assert.That(collider.size, Is.EqualTo(new Vector2(4, 6)));
+            Assert.That(visual.transform.localPosition, Is.EqualTo(Vector3.zero));
+        }
+        finally { Object.DestroyImmediate(root); }
+    }
+
     [Test]
     public void BackgroundPaddingRespectsPivotScaleAndRepeatedUpdates()
     {
