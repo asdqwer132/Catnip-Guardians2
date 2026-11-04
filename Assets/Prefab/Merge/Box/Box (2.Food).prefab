@@ -20,6 +20,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: d84468e3f88c49e7bc1509e2f6f774dd, type: 3}
+    - target: {fileID: 3254232046514742089, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3988589894311745462, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -27,6 +31,14 @@ PrefabInstance:
     - target: {fileID: 4565725099804691569, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
       propertyPath: series
       value: 02-food
+      objectReference: {fileID: 0}
+    - target: {fileID: 4565725099804691569, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+      propertyPath: sheetNumber
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4565725099804691569, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+      propertyPath: useSpriteSheet
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4602517530497694814, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
       propertyPath: m_LocalPosition.x
@@ -77,7 +89,8 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: a5f72fbb753b48a3badfcb2bb706a601, type: 3}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 4002017649438429058, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}

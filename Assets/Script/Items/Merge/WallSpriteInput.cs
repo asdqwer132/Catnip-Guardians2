@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class WallSpriteInput : MonoBehaviour
@@ -11,8 +12,14 @@ public class WallSpriteInput : MonoBehaviour
 
     [Header("Sprite Sheet (Resources)")]
     [SerializeField] private bool useSpriteSheet;
-    [Tooltip("Resources-relative sheet path, without extension. Texture Sprite Mode must be Multiple.")]
-    [SerializeField] private string spriteSheetPath;
+
+    [Tooltip("Resources 기준 경로. (1)은 Sheet Number로 교체됩니다.")]
+    [SerializeField]
+    private string spriteSheetPath =
+        "Item/MergeBox/MergeBox (1).png";
+
+    [SerializeField, Min(1)] private int sheetNumber = 1;
+
     [SerializeField] private string sideSpriteName = "SideWall";
     [SerializeField] private string bottomSpriteName = "BottomWall";
     [SerializeField] private string backSpriteName = "Back";
@@ -21,28 +28,42 @@ public class WallSpriteInput : MonoBehaviour
 
     private void Awake()
     {
-        if (applyOnAwake) ApplySprites();
+        if (applyOnAwake)
+            ApplySprites();
     }
 
     [ContextMenu("Apply Sprites")]
     public void ApplySprites()
     {
-        Sprite side, bottom, back;
+        Sprite side;
+        Sprite bottom;
+        Sprite back;
+
         if (useSpriteSheet)
         {
             if (string.IsNullOrWhiteSpace(spriteSheetPath))
             {
-                Debug.LogError("Wall sprite sheet path is empty.", this);
+                Debug.LogError("스프라이트 시트 경로가 비어 있습니다.", this);
                 return;
             }
-            Sprite[] sprites = Resources.LoadAll<Sprite>(spriteSheetPath.Trim());
-            side = MatchSprite(sprites, sideSpriteName);
-            bottom = MatchSprite(sprites, bottomSpriteName);
-            back = MatchSprite(sprites, backSpriteName);
+
+            string path = spriteSheetPath.Trim()
+                .Replace("(1)", $"({sheetNumber})");
+
+            // Resources.LoadAll에는 확장자 없이 전달합니다.
+            if (path.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+                path = path.Substring(0, path.Length - 4);
+
+            Sprite[] sprites = Resources.LoadAll<Sprite>(path);
+
+            side = MatchSprite(sprites, sideSpriteName, path);
+            bottom = MatchSprite(sprites, bottomSpriteName, path);
+            back = MatchSprite(sprites, backSpriteName, path);
         }
         else
         {
             string folder = $"{spritePath.TrimEnd('/')}/{series}";
+
             side = LoadSprite($"{folder}/SideWall");
             bottom = LoadSprite($"{folder}/BottomWall");
             back = LoadSprite($"{folder}/BoxBack 1");
@@ -64,22 +85,32 @@ public class WallSpriteInput : MonoBehaviour
             backFrame.sprite = back;
     }
 
-    private Sprite MatchSprite(Sprite[] sprites, string spriteName)
+    private Sprite MatchSprite(Sprite[] sprites, string spriteName, string path)
     {
         Sprite match = null;
+
         foreach (Sprite sprite in sprites)
         {
-            if (sprite == null || !string.Equals(sprite.name, spriteName, System.StringComparison.OrdinalIgnoreCase))
+            if (sprite == null ||
+                !string.Equals(sprite.name, spriteName, StringComparison.OrdinalIgnoreCase))
                 continue;
+
             if (match != null)
             {
-                Debug.LogError($"Duplicate wall sprite name '{spriteName}' in '{spriteSheetPath}'.", this);
+                Debug.LogError($"'{path}'에 '{spriteName}' 스프라이트가 중복됩니다.", this);
                 return null;
             }
+
             match = sprite;
         }
+
         if (match == null)
-            Debug.LogError($"Wall sprite '{spriteName}' not found in '{spriteSheetPath}'. Check the Sprite Editor slice name.", this);
+        {
+            Debug.LogError(
+                $"'{path}'에서 '{spriteName}'을 찾지 못했습니다. Sprite Editor의 슬라이스 이름을 확인하세요.",
+                this);
+        }
+
         return match;
     }
 
