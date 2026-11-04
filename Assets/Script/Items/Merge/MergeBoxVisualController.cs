@@ -13,8 +13,15 @@ public sealed class MergeBoxSpritePart
     [HideInInspector] public Vector3 position, colliderPosition;
     [HideInInspector] public Vector2 units, colliderUnits;
 
-    [SerializeField, HideInInspector] private Vector2 originalColliderOffset;
-    [SerializeField, HideInInspector] private bool colliderOffsetCaptured;
+    [NonSerialized] private bool colliderFitted;
+    [NonSerialized] private Sprite fittedSprite;
+    [NonSerialized] private Bounds fittedBounds;
+    [NonSerialized] private Matrix4x4 fittedVisualMatrix, fittedColliderMatrix;
+    [NonSerialized] private Vector2 fittedSize, fittedOffset;
+    public bool ColliderNeedsFit => renderer != null && renderer.sprite != null && wallCollider != null &&
+        (!colliderFitted || fittedSprite != renderer.sprite || fittedBounds != renderer.localBounds ||
+         fittedVisualMatrix != renderer.transform.localToWorldMatrix || fittedColliderMatrix != wallCollider.transform.localToWorldMatrix ||
+         fittedSize != wallCollider.size || fittedOffset != wallCollider.offset || wallCollider.autoTiling);
 
     public void Capture(Transform box)
     {
@@ -23,7 +30,6 @@ public sealed class MergeBoxSpritePart
         position = box.InverseTransformPoint(renderer.transform.position);
         units = Units(box, renderer.transform);
         if (wallCollider == null) return;
-        originalColliderOffset = wallCollider.offset; colliderOffsetCaptured = true;
         colliderSize = wallCollider.size;
         colliderPosition = box.InverseTransformPoint(wallCollider.transform.position);
         colliderUnits = Units(box, wallCollider.transform);
@@ -38,24 +44,9 @@ public sealed class MergeBoxSpritePart
             role == MergeBoxSpriteRole.BottomWall ? new Vector2(delta.x, 0) : delta;
         renderer.size = Vector2.Max(Vector2.one * .01f, originalSize + resize / units);
         Vector2 positionRatio = role == MergeBoxSpriteRole.Fixed ? Vector2.one : ratio;
-        if (wallCollider == null) { Place(box, renderer.transform, position, positionRatio); return; }
-        // Older prefabs have no captured offset yet. Capture it once before applying padding.
-        if (!colliderOffsetCaptured) { originalColliderOffset = wallCollider.offset; colliderOffsetCaptured = true; }
-        // This controller owns the collider geometry; auto-tiling would overwrite its insets.
-        if (wallCollider.autoTiling) wallCollider.autoTiling = false;
-        wallCollider.offset = originalColliderOffset;
-        wallCollider.size = Vector2.Max(Vector2.one * .01f, colliderSize + resize / colliderUnits);
-        if (wallCollider.transform.IsChildOf(renderer.transform))
-        {
-            Place(box, renderer.transform, position, positionRatio);
-            if (wallCollider.transform != renderer.transform) Place(box, wallCollider.transform, colliderPosition, positionRatio);
-        }
-        else
-        {
-            Place(box, wallCollider.transform, colliderPosition, positionRatio);
-            Place(box, renderer.transform, position, positionRatio);
-        }
+        Place(box, renderer.transform, position, positionRatio);
     }
+
     public void ApplyBackgroundPadding(Transform box, Vector4 padding)
     {
         if (renderer == null || role != MergeBoxSpriteRole.BackFrame) return;
@@ -74,16 +65,37 @@ public sealed class MergeBoxSpritePart
     {
         if (renderer == null) return;
         Vector3 offset = box.TransformVector(adjustment.positionOffset);
-        Transform colliderTransform = wallCollider != null ? wallCollider.transform : null;
-        // Move a shared transform or parent only once; siblings each receive the offset.
-        if (colliderTransform == null || !renderer.transform.IsChildOf(colliderTransform))
-            renderer.transform.position += offset;
-        if (colliderTransform != null && !colliderTransform.IsChildOf(renderer.transform))
-            colliderTransform.position += offset;
-        if (wallCollider == null) return;
-        if (colliderTransform == renderer.transform) renderer.transform.position += offset;
+        renderer.transform.position += offset;
+        FitCollider(box, adjustment.colliderPadding.Value);
+    }
+    public void FitCollider(Transform box, Vector4 padding)
+    {
+        if (wallCollider == null || renderer == null || renderer.sprite == null) return;
+        Transform colliderTransform = wallCollider.transform;
+        // Match the Visual object's transform, preserving the visual when the collider
+        // is on its parent. Padding is then measured from the current sprite bounds.
+        Vector3 visualPosition = renderer.transform.position;
+        Quaternion visualRotation = renderer.transform.rotation;
+        if (colliderTransform != renderer.transform && !box.IsChildOf(colliderTransform))
+        {
+            colliderTransform.SetPositionAndRotation(visualPosition, visualRotation);
+            renderer.transform.SetPositionAndRotation(visualPosition, visualRotation);
+        }
+        if (wallCollider.autoTiling) wallCollider.autoTiling = false;
+        Bounds bounds = renderer.localBounds;
+        Vector2 min = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
+        Vector2 max = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
+        for (int cornerX = 0; cornerX < 2; cornerX++) for (int cornerY = 0; cornerY < 2; cornerY++)
+        {
+            Vector3 corner = renderer.transform.TransformPoint(new Vector3(cornerX == 0 ? bounds.min.x : bounds.max.x,
+                cornerY == 0 ? bounds.min.y : bounds.max.y, bounds.center.z));
+            Vector2 local = colliderTransform.InverseTransformPoint(corner);
+            min = Vector2.Min(min, local); max = Vector2.Max(max, local);
+        }
+        wallCollider.size = Vector2.Max(Vector2.one * .01f, max - min);
+        wallCollider.offset = (min + max) * .5f;
+        colliderUnits = Units(box, colliderTransform);
 
-        Vector4 padding = adjustment.colliderPadding.Value;
         Vector2 available = Vector2.Max(Vector2.zero, (wallCollider.size - Vector2.one * .01f) * colliderUnits);
         float horizontal = padding.x + padding.z, vertical = padding.y + padding.w;
         float x = horizontal > 0 ? Mathf.Min(1, available.x / horizontal) : 0;
@@ -92,6 +104,9 @@ public sealed class MergeBoxSpritePart
         wallCollider.size -= new Vector2((padding.x + padding.z) / colliderUnits.x, (padding.y + padding.w) / colliderUnits.y);
         wallCollider.offset += (Vector2)colliderTransform.InverseTransformVector(box.TransformVector(
             new Vector3((padding.x - padding.z) * .5f, (padding.y - padding.w) * .5f, 0)));
+        colliderFitted = true; fittedSprite = renderer.sprite; fittedBounds = renderer.localBounds;
+        fittedVisualMatrix = renderer.transform.localToWorldMatrix; fittedColliderMatrix = colliderTransform.localToWorldMatrix;
+        fittedSize = wallCollider.size; fittedOffset = wallCollider.offset;
     }
     public static void Place(Transform box, Transform target, Vector3 original, Vector2 ratio)
     {
@@ -134,7 +149,7 @@ public sealed class MergeBoxVisualSize
     public MergeBoxBindings box;
     [Min(.01f)] public float width = 4.5f;
     [Min(.01f)] public float height = 5.5f;
-    [Tooltip("Insets only the BackFrame visual, in box-local units. Walls, colliders and drop positions are unchanged.")]
+    [Tooltip("Insets the BackFrame visual in box-local units. Its associated collider follows the resulting sprite bounds.")]
     public MergeBoxBackgroundPadding backgroundPadding;
     [Tooltip("Additional offsets in the box's local coordinates.")]
     public Vector2 spawnOffset;
@@ -172,6 +187,17 @@ public sealed class MergeBoxVisualSize
         foreach (var part in parts) if (part.Changed) return true;
         return false;
     }
+    internal bool RefreshColliders()
+    {
+        bool changed = false;
+        foreach (var setting in parts)
+            foreach (var part in box.visuals)
+                if (part?.renderer == setting.renderer && part.ColliderNeedsFit)
+                {
+                    part.FitCollider(box.transform, setting.colliderPadding.Value); changed = true; break;
+                }
+        return changed;
+    }
     internal void ApplyParts()
     {
         foreach (var setting in parts)
@@ -201,7 +227,8 @@ public sealed class MergeBoxVisualController : MonoBehaviour
             if (entry?.box == null || !entry.box.transform.IsChildOf(transform)) continue;
             bool partsChanged = entry.SynchronizeParts() || entry.PartsChanged();
             Vector2 size = new Vector2(Mathf.Max(.01f, entry.width), Mathf.Max(.01f, entry.height));
-            if (!refresh && !partsChanged && size == entry.appliedSize && entry.spawnOffset == entry.appliedSpawn && entry.deadlineOffset == entry.appliedDeadline && entry.backgroundPadding.Value == entry.appliedPadding) continue;
+            if (!refresh && !partsChanged && size == entry.appliedSize && entry.spawnOffset == entry.appliedSpawn && entry.deadlineOffset == entry.appliedDeadline && entry.backgroundPadding.Value == entry.appliedPadding)
+            { changed |= entry.RefreshColliders(); continue; }
             if (!entry.box.HasVisualLayout) continue;
             entry.box.ApplyVisualLayout(size, entry.spawnOffset, entry.deadlineOffset, entry.backgroundPadding.Value);
             entry.ApplyParts();

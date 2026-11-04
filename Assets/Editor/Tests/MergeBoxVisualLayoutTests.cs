@@ -8,6 +8,7 @@ public class MergeBoxVisualLayoutTests
     [TestCase(1)]
     [TestCase(2)]
     [TestCase(3)]
+    [TestCase(4)]
     public void PerFrameOffsetsAndColliderInsetsDoNotAccumulate(int hierarchy)
     {
         var root = new GameObject("Series root");
@@ -17,13 +18,19 @@ public class MergeBoxVisualLayoutTests
         if (hierarchy != 0) colliderHost.transform.SetParent(boxHost.transform, false);
         if (hierarchy == 2) visual.transform.SetParent(colliderHost.transform, false);
         if (hierarchy == 3) colliderHost.transform.SetParent(visual.transform, false);
+        var texture = new Texture2D(16, 16);
+        var sprite = Sprite.Create(texture, new Rect(0, 0, 16, 16), Vector2.one * .5f, 16);
         try
         {
             root.transform.localScale = new Vector3(2, 3, 1);
-            var renderer = visual.AddComponent<SpriteRenderer>(); renderer.drawMode = SpriteDrawMode.Sliced;
+            var renderer = visual.AddComponent<SpriteRenderer>(); renderer.sprite = sprite; renderer.drawMode = SpriteDrawMode.Sliced;
             renderer.size = new Vector2(4, 6);
-            var collider = colliderHost.AddComponent<BoxCollider2D>(); collider.size = new Vector2(4, 6);
+            if (hierarchy == 4) colliderHost.transform.localScale = new Vector3(2, .5f, 1);
+            if (hierarchy != 0) colliderHost.transform.localPosition = new Vector3(-2, 3, 0);
+            // Stale collider settings must be replaced by the Visual geometry.
+            var collider = colliderHost.AddComponent<BoxCollider2D>(); collider.size = new Vector2(9, 13);
             collider.offset = new Vector2(.1f, .2f); collider.autoTiling = true;
+            visual.transform.position = boxHost.transform.position;
             var box = boxHost.AddComponent<MergeBoxBindings>();
             box.visuals = new[] { new MergeBoxSpritePart { role = MergeBoxSpriteRole.SideWall, renderer = renderer, wallCollider = collider } };
             box.CaptureVisualLayout(new Vector2(4, 6));
@@ -36,20 +43,25 @@ public class MergeBoxVisualLayoutTests
             for (int i = 0; i < 5; i++)
             {
                 control.ApplySizes();
-                Assert.That(Vector2.Distance(collider.size, new Vector2(3.3f, 5.5f)), Is.LessThan(.001f));
-                Assert.That(Vector2.Distance(collider.offset, new Vector2(.25f, .05f)), Is.LessThan(.001f));
+                Assert.That(Vector2.Distance(collider.size, hierarchy == 4 ? new Vector2(1.65f, 11) : new Vector2(3.3f, 5.5f)), Is.LessThan(.001f));
+                Assert.That(Vector2.Distance(collider.offset, hierarchy == 4 ? new Vector2(.075f, -.3f) : new Vector2(.15f, -.15f)), Is.LessThan(.001f));
                 Assert.That(Vector2.Distance(box.transform.InverseTransformPoint(visual.transform.position), new Vector2(.3f, -.4f)), Is.LessThan(.001f));
                 Assert.That(Vector2.Distance(box.transform.InverseTransformPoint(colliderHost.transform.position), new Vector2(.3f, -.4f)), Is.LessThan(.001f));
                 Assert.That(renderer.size, Is.EqualTo(new Vector2(4, 6)));
                 Assert.That(collider.autoTiling, Is.False);
             }
+            visual.transform.position += box.transform.TransformVector(new Vector3(.2f, .1f, 0));
+            Vector3 manuallyMoved = visual.transform.position;
+            typeof(MergeBoxVisualController).GetMethod("Update", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).Invoke(control, null);
+            Assert.That(Vector3.Distance(collider.transform.position, manuallyMoved), Is.LessThan(.001f));
+            Assert.That(Vector3.Distance(visual.transform.position, manuallyMoved), Is.LessThan(.001f));
             entry.parts[0].colliderPadding = default; entry.parts[0].positionOffset = Vector2.zero;
             control.ApplySizes();
-            Assert.That(collider.offset, Is.EqualTo(new Vector2(.1f, .2f)));
-            Assert.That(collider.size, Is.EqualTo(new Vector2(4, 6)));
+            Assert.That(collider.offset.magnitude, Is.LessThan(.001f));
+            Assert.That(Vector2.Distance(collider.size, hierarchy == 4 ? new Vector2(2, 12) : new Vector2(4, 6)), Is.LessThan(.001f));
             Assert.That(visual.transform.localPosition, Is.EqualTo(Vector3.zero));
         }
-        finally { Object.DestroyImmediate(root); }
+        finally { Object.DestroyImmediate(root); Object.DestroyImmediate(sprite); Object.DestroyImmediate(texture); }
     }
 
     [Test]
@@ -66,8 +78,9 @@ public class MergeBoxVisualLayoutTests
             visual.transform.localScale = new Vector3(.5f, 2, 1);
             var renderer = visual.AddComponent<SpriteRenderer>();
             renderer.sprite = sprite; renderer.drawMode = SpriteDrawMode.Sliced; renderer.size = new Vector2(12, 2);
+            var collider = visual.AddComponent<BoxCollider2D>();
             var box = boxHost.AddComponent<MergeBoxBindings>();
-            box.visuals = new[] { new MergeBoxSpritePart { role = MergeBoxSpriteRole.BackFrame, renderer = renderer } };
+            box.visuals = new[] { new MergeBoxSpritePart { role = MergeBoxSpriteRole.BackFrame, renderer = renderer, wallCollider = collider } };
             box.CaptureVisualLayout(new Vector2(6, 4));
             var control = root.AddComponent<MergeBoxVisualController>();
             var entry = new MergeBoxVisualSize { box = box, width = 6, height = 4,
@@ -80,6 +93,8 @@ public class MergeBoxVisualLayoutTests
                 Vector3 max = box.transform.InverseTransformPoint(renderer.transform.TransformPoint(renderer.localBounds.max));
                 Assert.That(Vector2.Distance(min, new Vector2(1, .2f)), Is.LessThan(.001f));
                 Assert.That(Vector2.Distance(max, new Vector2(5.5f, 3.2f)), Is.LessThan(.001f));
+                Assert.That(Vector2.Distance(collider.size, renderer.localBounds.size), Is.LessThan(.001f));
+                Assert.That(Vector2.Distance(collider.offset, renderer.localBounds.center), Is.LessThan(.001f));
             }
             entry.backgroundPadding = new MergeBoxBackgroundPadding { left = 100, right = 100, top = 100, bottom = 100 };
             control.ApplySizes();
