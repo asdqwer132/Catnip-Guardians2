@@ -23,10 +23,17 @@ public sealed class MergeBoxBindings : MonoBehaviour
         lineSize = dropZone.lineSprite.size;
     }
     public void ApplyVisualLayout(Vector2 size, Vector2 spawnOffset, Vector2 deadlineOffset)
+        => ApplyVisualLayout(size, spawnOffset, deadlineOffset, Vector4.zero);
+
+    public void ApplyVisualLayout(Vector2 size, Vector2 spawnOffset, Vector2 deadlineOffset, Vector4 backgroundPadding)
     {
         if (!HasVisualLayout) return;
         Vector2 ratio = size / referenceSize;
-        foreach (var part in visuals) part?.Apply(transform, size - referenceSize, ratio);
+        foreach (var part in visuals)
+        {
+            part?.Apply(transform, size - referenceSize, ratio);
+            part?.ApplyBackgroundPadding(transform, backgroundPadding);
+        }
         MergeBoxSpritePart.Place(transform, spawnPoint, spawnPosition, ratio);
         if (spawnPoint != null) spawnPoint.position += transform.TransformVector(spawnOffset);
         if (dropZone == null) return;
