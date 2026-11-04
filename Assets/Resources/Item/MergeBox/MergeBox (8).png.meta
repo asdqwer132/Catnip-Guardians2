@@ -1,19 +1,19 @@
 fileFormatVersion: 2
-guid: 79d2b479b6b4c7e4392de2036fab1ddd
+guid: 6ae548262a251404bb7c04c4953635d9
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3497067181387604318
-    second: MergeBox (8)_0
+      213: -6353280959002906696
+    second: MergeBox (1)_0
   - first:
-      213: -1428481458449177020
-    second: MergeBox (8)_1
+      213: 7218784553746491251
+    second: MergeBox (1)_1
   - first:
-      213: 1546605299321642642
-    second: MergeBox (8)_2
+      213: 3639139755843216323
+    second: MergeBox (1)_2
   - first:
-      213: -4779669643041334626
-    second: MergeBox (8)_3
+      213: 9060506117712288113
+    second: MergeBox (1)_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -60,7 +60,7 @@ TextureImporter:
   spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 16
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -122,7 +122,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: MergeBox (8)_0
+      name: Back
       rect:
         serializedVersion: 2
         x: 0
@@ -137,8 +137,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e51e84eb214188030800000000000000
-      internalID: 3497067181387604318
+      spriteID: 8bfe06001ac94d7a0800000000000000
+      internalID: -6353280959002906696
       vertices: []
       indices: 
       edges: []
@@ -148,9 +148,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 33
-        y: 41
+        y: 43
         width: 108
-        height: 15
+        height: 13
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 20, y: 0, z: 20, w: 0}
@@ -159,8 +159,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 446a7e49ea30d2ce0800000000000000
-      internalID: -1428481458449177020
+      spriteID: 377e22c0e464e2460800000000000000
+      internalID: 7218784553746491251
       vertices: []
       indices: 
       edges: []
@@ -181,14 +181,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 29e9dc15355a67510800000000000000
-      internalID: 1546605299321642642
+      spriteID: 3c36903b352d08230800000000000000
+      internalID: 3639139755843216323
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: LeftDexo
+      name: LeftDeco
       rect:
         serializedVersion: 2
         x: 34
@@ -203,8 +203,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e9a9dce88c33badb0800000000000000
-      internalID: -4779669643041334626
+      spriteID: 1799e773f426dbd70800000000000000
+      internalID: 9060506117712288113
       vertices: []
       indices: 
       edges: []
@@ -218,15 +218,15 @@ TextureImporter:
         width: 22
         height: 22
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7526fa92a04b44e4ba60259a313dbc72
-      internalID: 868182429
+      spriteID: 0a5a4cccf1ba8794a8f9196a722d2bb2
+      internalID: 1886498370
       vertices: []
       indices: 
       edges: []
@@ -235,7 +235,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 0a2565f4497f9464ebb06bc5e651eae7
+    spriteID: 95cdb8786e0bfe14ea8c7338c1cc8965
     internalID: 0
     vertices: []
     indices: 
@@ -245,11 +245,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      BottomWall: -1428481458449177020
-      LeftDexo: -4779669643041334626
-      MergeBox (8)_0: 3497067181387604318
-      RightDeco: 868182429
-      SideWall: 1546605299321642642
+      Back: -6353280959002906696
+      BottomWall: 7218784553746491251
+      LeftDeco: 9060506117712288113
+      RightDeco: 1886498370
+      SideWall: 3639139755843216323
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
