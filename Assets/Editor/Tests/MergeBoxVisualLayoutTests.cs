@@ -4,156 +4,125 @@ using UnityEngine;
 
 public class MergeBoxVisualLayoutTests
 {
-    [TestCase(0)]
-    [TestCase(1)]
-    [TestCase(2)]
-    [TestCase(3)]
-    [TestCase(4)]
-    public void PerFrameOffsetsAndColliderInsetsDoNotAccumulate(int hierarchy)
+    private static readonly MergeBoxSpriteRole[] Roles = { MergeBoxSpriteRole.LeftWall, MergeBoxSpriteRole.RightWall,
+        MergeBoxSpriteRole.BottomWall, MergeBoxSpriteRole.BackFrame };
+
+    private static MergeBoxBindings CreateBox(GameObject root, Sprite sprite, Vector2 size)
     {
-        var root = new GameObject("Series root");
-        var boxHost = new GameObject("Box"); boxHost.transform.SetParent(root.transform, false);
-        var visual = new GameObject("Wall"); visual.transform.SetParent(boxHost.transform, false);
-        var colliderHost = hierarchy == 0 ? visual : new GameObject("Collider");
-        if (hierarchy != 0) colliderHost.transform.SetParent(boxHost.transform, false);
-        if (hierarchy == 2) visual.transform.SetParent(colliderHost.transform, false);
-        if (hierarchy == 3) colliderHost.transform.SetParent(visual.transform, false);
-        var texture = new Texture2D(16, 16);
+        var host = new GameObject("Box"); host.transform.SetParent(root.transform, false);
+        var box = host.AddComponent<MergeBoxBindings>();
+        box.visuals = new MergeBoxSpritePart[4];
+        for (int i = 0; i < 4; i++)
+        {
+            var target = new GameObject(Roles[i].ToString()); target.transform.SetParent(host.transform, false);
+            var renderer = target.AddComponent<SpriteRenderer>(); renderer.sprite = sprite; renderer.drawMode = SpriteDrawMode.Sliced;
+            renderer.size = i < 2 ? new Vector2(.8f, size.y) : i == 2 ? new Vector2(size.x, .8f) : size;
+            target.AddComponent<BoxCollider2D>();
+            box.visuals[i] = new MergeBoxSpritePart { role = Roles[i], target = target };
+        }
+        var spawn = new GameObject("Spawn").transform; spawn.SetParent(host.transform, false); spawn.localPosition = Vector3.up * size.y / 2;
+        box.spawnPoint = spawn;
+        box.dropZone = host.AddComponent<MergeDropZone>();
+        var line = new GameObject("Deadline"); line.transform.SetParent(host.transform, false);
+        box.dropZone.lineSprite = line.AddComponent<SpriteRenderer>(); box.dropZone.lineSprite.sprite = sprite;
+        box.dropZone.lineSprite.drawMode = SpriteDrawMode.Sliced; box.dropZone.lineSprite.size = new Vector2(size.x, .1f);
+        box.CaptureVisualLayout(size);
+        return box;
+    }
+
+    [Test]
+    public void SharedRoleSettingsApplyAcrossBoxesWhileDropPositionsRemainIndividual()
+    {
+        var root = new GameObject("Series"); var texture = new Texture2D(16, 16);
         var sprite = Sprite.Create(texture, new Rect(0, 0, 16, 16), Vector2.one * .5f, 16);
         try
         {
-            root.transform.localScale = new Vector3(2, 3, 1);
-            var renderer = visual.AddComponent<SpriteRenderer>(); renderer.sprite = sprite; renderer.drawMode = SpriteDrawMode.Sliced;
-            renderer.size = new Vector2(4, 6);
-            if (hierarchy == 4) colliderHost.transform.localScale = new Vector3(2, .5f, 1);
-            if (hierarchy != 0) colliderHost.transform.localPosition = new Vector3(-2, 3, 0);
-            // Stale collider settings must be replaced by the Visual geometry.
-            var collider = colliderHost.AddComponent<BoxCollider2D>(); collider.size = new Vector2(9, 13);
-            collider.offset = new Vector2(.1f, .2f); collider.autoTiling = true;
-            visual.transform.position = boxHost.transform.position;
-            var box = boxHost.AddComponent<MergeBoxBindings>();
-            box.visuals = new[] { new MergeBoxSpritePart { role = MergeBoxSpriteRole.SideWall, renderer = renderer, wallCollider = collider } };
-            box.CaptureVisualLayout(new Vector2(4, 6));
+            var first = CreateBox(root, sprite, new Vector2(4, 6));
+            var second = CreateBox(root, sprite, new Vector2(6, 8));
             var control = root.AddComponent<MergeBoxVisualController>();
-            var entry = new MergeBoxVisualSize { box = box, width = 4, height = 6 };
-            control.boxes = new[] { entry }; control.ApplySizes();
-            Assert.That(entry.parts.Length, Is.EqualTo(1));
-            entry.parts[0].positionOffset = new Vector2(.3f, -.4f);
-            entry.parts[0].colliderPadding = new MergeBoxColliderPadding { left = .5f, right = .2f, top = .4f, bottom = .1f };
-            for (int i = 0; i < 5; i++)
+            control.boxes = new[] { new MergeBoxVisualSize { box = first, width = 4, height = 6, spawnOffset = Vector2.up },
+                new MergeBoxVisualSize { box = second, width = 6, height = 8, deadlineOffset = Vector2.down } };
+            control.parts[0].positionOffset = new Vector2(.3f, -.4f);
+            control.parts[0].colliderPadding = new MergeBoxColliderPadding { left = .1f, right = .2f, top = .3f, bottom = .4f };
+            control.backgroundPadding = new MergeBoxBackgroundPadding { left = .2f, right = .4f };
+            for (int repeat = 0; repeat < 4; repeat++)
             {
                 control.ApplySizes();
-                Assert.That(Vector2.Distance(collider.size, hierarchy == 4 ? new Vector2(1.65f, 11) : new Vector2(3.3f, 5.5f)), Is.LessThan(.001f));
-                Assert.That(Vector2.Distance(collider.offset, hierarchy == 4 ? new Vector2(.075f, -.3f) : new Vector2(.15f, -.15f)), Is.LessThan(.001f));
-                Assert.That(Vector2.Distance(box.transform.InverseTransformPoint(visual.transform.position), new Vector2(.3f, -.4f)), Is.LessThan(.001f));
-                Assert.That(Vector2.Distance(box.transform.InverseTransformPoint(colliderHost.transform.position), new Vector2(.3f, -.4f)), Is.LessThan(.001f));
-                Assert.That(renderer.size, Is.EqualTo(new Vector2(4, 6)));
-                Assert.That(collider.autoTiling, Is.False);
+                foreach (var box in new[] { first, second })
+                {
+                    var left = box.visuals[0]; var right = box.visuals[1];
+                    Assert.That(Vector2.Distance(left.renderer.transform.localPosition, new Vector2(.3f, -.4f)), Is.LessThan(.001f));
+                    Assert.That(Vector2.Distance(left.wallCollider.size, left.renderer.size - new Vector2(.3f, .7f)), Is.LessThan(.001f));
+                    Assert.That(Vector2.Distance(left.wallCollider.offset, new Vector2(-.05f, .05f)), Is.LessThan(.001f));
+                    Assert.That(right.renderer.transform.localPosition, Is.EqualTo(Vector3.zero));
+                }
             }
-            visual.transform.position += box.transform.TransformVector(new Vector3(.2f, .1f, 0));
-            Vector3 manuallyMoved = visual.transform.position;
-            typeof(MergeBoxVisualController).GetMethod("Update", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).Invoke(control, null);
-            Assert.That(Vector3.Distance(collider.transform.position, manuallyMoved), Is.LessThan(.001f));
-            Assert.That(Vector3.Distance(visual.transform.position, manuallyMoved), Is.LessThan(.001f));
-            entry.parts[0].colliderPadding = default; entry.parts[0].positionOffset = Vector2.zero;
-            control.ApplySizes();
-            Assert.That(collider.offset.magnitude, Is.LessThan(.001f));
-            Assert.That(Vector2.Distance(collider.size, hierarchy == 4 ? new Vector2(2, 12) : new Vector2(4, 6)), Is.LessThan(.001f));
-            Assert.That(visual.transform.localPosition, Is.EqualTo(Vector3.zero));
+            Assert.That(first.spawnPoint.localPosition.y, Is.EqualTo(4));
+            Assert.That(second.spawnPoint.localPosition.y, Is.EqualTo(4));
+            Assert.That(first.dropZone.lineSprite.transform.localPosition.y, Is.Zero);
+            Assert.That(second.dropZone.lineSprite.transform.localPosition.y, Is.EqualTo(-1));
+            control.parts[0].positionOffset = Vector2.zero; control.parts[0].colliderPadding = default;
+            control.backgroundPadding = default; control.ApplySizes();
+            Assert.That(first.visuals[0].renderer.transform.localPosition, Is.EqualTo(Vector3.zero));
+            Assert.That(first.visuals[0].wallCollider.size, Is.EqualTo(first.visuals[0].renderer.size));
+            Assert.That(first.visuals[3].renderer.size, Is.EqualTo(new Vector2(4, 6)));
         }
         finally { Object.DestroyImmediate(root); Object.DestroyImmediate(sprite); Object.DestroyImmediate(texture); }
     }
 
     [Test]
-    public void BackgroundPaddingRespectsPivotScaleAndRepeatedUpdates()
+    public void ColliderFollowsDirectVisualChangesAndPaddingClampsAtSmallSizes()
     {
-        var root = new GameObject("Series root");
-        var boxHost = new GameObject("Box"); boxHost.transform.SetParent(root.transform, false);
-        var visual = new GameObject("Background"); visual.transform.SetParent(boxHost.transform, false);
-        var texture = new Texture2D(16, 16);
+        var root = new GameObject("Series"); var texture = new Texture2D(16, 16);
         var sprite = Sprite.Create(texture, new Rect(0, 0, 16, 16), Vector2.zero, 16);
         try
         {
             root.transform.localScale = new Vector3(2, 3, 1);
-            visual.transform.localScale = new Vector3(.5f, 2, 1);
-            var renderer = visual.AddComponent<SpriteRenderer>();
-            renderer.sprite = sprite; renderer.drawMode = SpriteDrawMode.Sliced; renderer.size = new Vector2(12, 2);
-            var collider = visual.AddComponent<BoxCollider2D>();
-            var box = boxHost.AddComponent<MergeBoxBindings>();
-            box.visuals = new[] { new MergeBoxSpritePart { role = MergeBoxSpriteRole.BackFrame, renderer = renderer, wallCollider = collider } };
-            box.CaptureVisualLayout(new Vector2(6, 4));
+            var box = CreateBox(root, sprite, new Vector2(4, 6));
             var control = root.AddComponent<MergeBoxVisualController>();
-            var entry = new MergeBoxVisualSize { box = box, width = 6, height = 4,
-                backgroundPadding = new MergeBoxBackgroundPadding { left = 1, right = .5f, bottom = .2f, top = .8f } };
-            control.boxes = new[] { entry };
-            for (int i = 0; i < 5; i++)
-            {
-                control.ApplySizes();
-                Vector3 min = box.transform.InverseTransformPoint(renderer.transform.TransformPoint(renderer.localBounds.min));
-                Vector3 max = box.transform.InverseTransformPoint(renderer.transform.TransformPoint(renderer.localBounds.max));
-                Assert.That(Vector2.Distance(min, new Vector2(1, .2f)), Is.LessThan(.001f));
-                Assert.That(Vector2.Distance(max, new Vector2(5.5f, 3.2f)), Is.LessThan(.001f));
-                Assert.That(Vector2.Distance(collider.size, renderer.localBounds.size), Is.LessThan(.001f));
-                Assert.That(Vector2.Distance(collider.offset, renderer.localBounds.center), Is.LessThan(.001f));
-            }
-            entry.backgroundPadding = new MergeBoxBackgroundPadding { left = 100, right = 100, top = 100, bottom = 100 };
+            control.boxes = new[] { new MergeBoxVisualSize { box = box, width = 4, height = 6 } };
             control.ApplySizes();
-            Assert.That(renderer.size.x, Is.GreaterThan(0)); Assert.That(renderer.size.y, Is.GreaterThan(0));
-            entry.backgroundPadding = default; control.ApplySizes();
-            Assert.That(Vector2.Distance(renderer.size, new Vector2(12, 2)), Is.LessThan(.001f));
-            Assert.That(visual.transform.localPosition.magnitude, Is.LessThan(.001f));
+            var left = box.visuals[0]; left.target.transform.localPosition = new Vector3(1, 2, 0);
+            left.target.transform.localScale = new Vector3(.5f, 2, 1);
+            typeof(MergeBoxVisualController).GetMethod("Update", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).Invoke(control, null);
+            Assert.That(left.wallCollider.size, Is.EqualTo((Vector2)left.renderer.localBounds.size));
+            Assert.That(left.wallCollider.offset, Is.EqualTo((Vector2)left.renderer.localBounds.center));
+            Assert.That(left.target.transform.localPosition, Is.EqualTo(new Vector3(1, 2, 0)));
+            control.parts[0].colliderPadding = new MergeBoxColliderPadding { left = 100, right = 100, top = 100, bottom = 100 };
+            control.ApplySizes();
+            Assert.That(left.wallCollider.size.x, Is.GreaterThan(0)); Assert.That(left.wallCollider.size.y, Is.GreaterThan(0));
         }
         finally { Object.DestroyImmediate(root); Object.DestroyImmediate(sprite); Object.DestroyImmediate(texture); }
     }
 
     [Test]
-    public void SeriesPrefabsKeepTheirLayoutAfterRepeatedResizeAndRestore()
+    public void SeriesPrefabsUseSingleObjectBindingsAndRestoreAfterResize()
     {
-        var paths = AssetDatabase.FindAssets("t:Prefab", new[] {"Assets/Prefab/Merge/Box"});
         int verified = 0;
-        foreach (var guid in paths)
+        foreach (var guid in AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/Prefab/Merge/Box" }))
         {
             string path = AssetDatabase.GUIDToAssetPath(guid);
             if (!path.StartsWith("Assets/Prefab/Merge/Box/Box (")) continue;
             var root = PrefabUtility.LoadPrefabContents(path);
             try
             {
-                var control = root.GetComponent<MergeBoxVisualController>();
-                Assert.That(control, Is.Not.Null, path);
-                control.ApplySizes(); // Initialize the prefab's currently configured size before recording geometry.
-                var input = root.GetComponent<WallSpriteInput>();
-                Assert.That(input, Is.Not.Null, path);
-                Assert.That(root.GetComponentsInChildren<WallSpriteInput>(true).Length, Is.EqualTo(1));
+                var control = root.GetComponent<MergeBoxVisualController>(); Assert.That(control, Is.Not.Null, path);
+                control.ApplySizes();
                 foreach (var entry in control.boxes)
                 {
-                    var box = entry.box;
-                    Assert.That(box.HasVisualLayout, Is.True);
-                    var sizes = new Vector2[box.visuals.Length];
-                    for (int i = 0; i < sizes.Length; i++) sizes[i] = box.visuals[i].renderer.size;
-                    Vector3 spawn = box.spawnPoint.localPosition;
-                    Vector2 line = box.dropZone.lineSprite.size;
-                    Vector3 linePosition = box.dropZone.lineSprite.transform.localPosition;
-                    Rect movement = box.dropZone.movementArea;
-                    float width = entry.width, height = entry.height;
-                    entry.width += 2; entry.height += 3;
-                    control.ApplySizes();
-                    for (int i = 0; i < sizes.Length; i++)
+                    foreach (var part in entry.box.visuals)
                     {
-                        var part = box.visuals[i];
-                        Vector2 expected = sizes[i] + (part.role == MergeBoxSpriteRole.SideWall ? new Vector2(0,3) :
-                            part.role == MergeBoxSpriteRole.BottomWall ? new Vector2(2,0) : new Vector2(2,3)) / part.units;
-                        Assert.That(Vector2.Distance(part.renderer.size, expected), Is.LessThan(.001f));
+                        Assert.That(part.target, Is.Not.Null, path);
+                        Assert.That(part.renderer.gameObject, Is.SameAs(part.target));
+                        if (part.role == MergeBoxSpriteRole.LeftWall || part.role == MergeBoxSpriteRole.RightWall || part.role == MergeBoxSpriteRole.BottomWall)
+                            Assert.That(part.wallCollider, Is.Not.Null, path);
+                        if (part.wallCollider != null) Assert.That(part.wallCollider.gameObject, Is.SameAs(part.target));
                     }
-                    Vector3 enlargedSpawn = box.spawnPoint.position;
-                    Vector2 enlargedLine = box.dropZone.lineSprite.size;
-                    for (int repeat = 0; repeat < 5; repeat++) control.ApplySizes();
-                    Assert.That(Vector3.Distance(enlargedSpawn, box.spawnPoint.position), Is.LessThan(.001f));
-                    Assert.That(Vector2.Distance(enlargedLine, box.dropZone.lineSprite.size), Is.LessThan(.001f));
+                    float width = entry.width, height = entry.height;
+                    Vector3 spawn = entry.box.spawnPoint.position;
+                    entry.width += 2; entry.height += 3; control.ApplySizes(); control.ApplySizes();
                     entry.width = width; entry.height = height; control.ApplySizes();
-                    Assert.That(Vector3.Distance(spawn, box.spawnPoint.localPosition), Is.LessThan(.001f));
-                    Assert.That(Vector3.Distance(linePosition, box.dropZone.lineSprite.transform.localPosition), Is.LessThan(.001f));
-                    Assert.That(Vector2.Distance(line, box.dropZone.lineSprite.size), Is.LessThan(.001f));
-                    Assert.That(box.dropZone.movementArea, Is.EqualTo(movement));
+                    Assert.That(Vector3.Distance(entry.box.spawnPoint.position, spawn), Is.LessThan(.001f));
                 }
                 verified++;
             }

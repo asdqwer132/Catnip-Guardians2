@@ -1,16 +1,17 @@
 using System;
 using UnityEngine;
 
-public enum MergeBoxSpriteRole { SideWall, BottomWall, BackFrame, Fixed }
+public enum MergeBoxSpriteRole { SideWall, BottomWall, BackFrame, Fixed, LeftWall, RightWall }
 
 [Serializable]
 public sealed class MergeBoxSpritePart
 {
     public MergeBoxSpriteRole role;
-    public SpriteRenderer renderer;
-    public BoxCollider2D wallCollider;
-    [HideInInspector] public Vector2 originalSize, colliderSize;
-    [HideInInspector] public Vector3 position, colliderPosition;
+    public GameObject target;
+    public SpriteRenderer renderer => target != null ? target.GetComponent<SpriteRenderer>() : null;
+    public BoxCollider2D wallCollider => target != null ? target.GetComponent<BoxCollider2D>() : null;
+    [HideInInspector] public Vector2 originalSize;
+    [HideInInspector] public Vector3 position;
     [HideInInspector] public Vector2 units, colliderUnits;
 
     [NonSerialized] private bool colliderFitted;
@@ -30,8 +31,6 @@ public sealed class MergeBoxSpritePart
         position = box.InverseTransformPoint(renderer.transform.position);
         units = Units(box, renderer.transform);
         if (wallCollider == null) return;
-        colliderSize = wallCollider.size;
-        colliderPosition = box.InverseTransformPoint(wallCollider.transform.position);
         colliderUnits = Units(box, wallCollider.transform);
     }
     private static Vector2 Units(Transform box, Transform part) => new Vector2(
@@ -40,7 +39,7 @@ public sealed class MergeBoxSpritePart
     public void Apply(Transform box, Vector2 delta, Vector2 ratio)
     {
         if (renderer == null) return;
-        Vector2 resize = role == MergeBoxSpriteRole.Fixed ? Vector2.zero : role == MergeBoxSpriteRole.SideWall ? new Vector2(0, delta.y) :
+        Vector2 resize = role == MergeBoxSpriteRole.Fixed ? Vector2.zero : (role == MergeBoxSpriteRole.SideWall || role == MergeBoxSpriteRole.LeftWall || role == MergeBoxSpriteRole.RightWall) ? new Vector2(0, delta.y) :
             role == MergeBoxSpriteRole.BottomWall ? new Vector2(delta.x, 0) : delta;
         renderer.size = Vector2.Max(Vector2.one * .01f, originalSize + resize / units);
         Vector2 positionRatio = role == MergeBoxSpriteRole.Fixed ? Vector2.one : ratio;
@@ -64,9 +63,9 @@ public sealed class MergeBoxSpritePart
     public void ApplyAdjustment(Transform box, MergeBoxPartAdjustment adjustment)
     {
         if (renderer == null) return;
-        Vector3 offset = box.TransformVector(adjustment.positionOffset);
+        Vector3 offset = box.TransformVector(adjustment != null ? adjustment.positionOffset : Vector2.zero);
         renderer.transform.position += offset;
-        FitCollider(box, adjustment.colliderPadding.Value);
+        FitCollider(box, adjustment != null ? adjustment.colliderPadding.Value : Vector4.zero);
     }
     public void FitCollider(Transform box, Vector4 padding)
     {
@@ -131,16 +130,16 @@ public struct MergeBoxColliderPadding
 [Serializable]
 public sealed class MergeBoxPartAdjustment
 {
-    public string name;
-    public SpriteRenderer renderer;
-    [Tooltip("Box-local offset. Moves this visual and its associated collider together.")]
+    public MergeBoxSpriteRole role;
+    [Tooltip("Common box-local position offset for this role in every box.")]
     public Vector2 positionOffset;
-    [Tooltip("Insets only this collider in box-local units; asymmetric padding also shifts its center.")]
     public MergeBoxColliderPadding colliderPadding;
-    [NonSerialized] internal Vector2 appliedOffset;
-    [NonSerialized] internal Vector4 appliedPadding;
-    internal bool Changed => positionOffset != appliedOffset || colliderPadding.Value != appliedPadding;
-    internal void Remember() { appliedOffset = positionOffset; appliedPadding = colliderPadding.Value; }
+    [NonSerialized] private bool applied;
+    [NonSerialized] private MergeBoxSpriteRole appliedRole;
+    [NonSerialized] private Vector2 appliedOffset;
+    [NonSerialized] private Vector4 appliedPadding;
+    internal bool Changed => !applied || role != appliedRole || positionOffset != appliedOffset || colliderPadding.Value != appliedPadding;
+    internal void Remember() { applied = true; appliedRole = role; appliedOffset = positionOffset; appliedPadding = colliderPadding.Value; }
 }
 
 [Serializable]
@@ -149,94 +148,74 @@ public sealed class MergeBoxVisualSize
     public MergeBoxBindings box;
     [Min(.01f)] public float width = 4.5f;
     [Min(.01f)] public float height = 5.5f;
-    [Tooltip("Insets the BackFrame visual in box-local units. Its associated collider follows the resulting sprite bounds.")]
-    public MergeBoxBackgroundPadding backgroundPadding;
-    [Tooltip("Additional offsets in the box's local coordinates.")]
     public Vector2 spawnOffset;
     public Vector2 deadlineOffset;
-    [Tooltip("Automatically matched to this box's role bindings. Each wall/frame can be adjusted separately.")]
-    public MergeBoxPartAdjustment[] parts = Array.Empty<MergeBoxPartAdjustment>();
-    internal bool SynchronizeParts()
-    {
-        var visuals = box.visuals;
-        int count = 0;
-        foreach (var part in visuals) if (part?.renderer != null) count++;
-        bool same = parts != null && parts.Length == count;
-        int index = 0;
-        foreach (var part in visuals)
-        {
-            if (part?.renderer == null) continue;
-            if (same && (parts[index] == null || parts[index].renderer != part.renderer)) same = false;
-            index++;
-        }
-        if (same) return false;
-        var matched = new MergeBoxPartAdjustment[count]; index = 0;
-        foreach (var part in visuals)
-        {
-            if (part?.renderer == null) continue;
-            MergeBoxPartAdjustment setting = null;
-            if (parts != null) foreach (var existing in parts)
-                if (existing != null && existing.renderer == part.renderer) { setting = existing; break; }
-            matched[index++] = setting ?? new MergeBoxPartAdjustment { renderer = part.renderer,
-                name = part.role + " - " + (part.renderer.transform.parent != null ? part.renderer.transform.parent.name + "/" : "") + part.renderer.gameObject.name };
-        }
-        parts = matched; return true;
-    }
-    internal bool PartsChanged()
-    {
-        foreach (var part in parts) if (part.Changed) return true;
-        return false;
-    }
-    internal bool RefreshColliders()
-    {
-        bool changed = false;
-        foreach (var setting in parts)
-            foreach (var part in box.visuals)
-                if (part?.renderer == setting.renderer && part.ColliderNeedsFit)
-                {
-                    part.FitCollider(box.transform, setting.colliderPadding.Value); changed = true; break;
-                }
-        return changed;
-    }
-    internal void ApplyParts()
-    {
-        foreach (var setting in parts)
-        {
-            foreach (var part in box.visuals)
-                if (part?.renderer == setting.renderer) { part.ApplyAdjustment(box.transform, setting); break; }
-            setting.Remember();
-        }
-    }
+    [NonSerialized] internal MergeBoxBindings appliedBox;
     [NonSerialized] internal Vector2 appliedSize, appliedSpawn, appliedDeadline;
-    [NonSerialized] internal Vector4 appliedPadding;
 }
 
 // One component on the series root; no changes to active box levels or object scale.
 [ExecuteAlways, DisallowMultipleComponent, DefaultExecutionOrder(-400)]
 public sealed class MergeBoxVisualController : MonoBehaviour
 {
+    [Header("Common settings for every box")]
+    public MergeBoxBackgroundPadding backgroundPadding;
+    [Tooltip("Matched by role from each MergeBoxBindings; no duplicate object references are needed here.")]
+    public MergeBoxPartAdjustment[] parts = {
+        new MergeBoxPartAdjustment { role = MergeBoxSpriteRole.LeftWall },
+        new MergeBoxPartAdjustment { role = MergeBoxSpriteRole.RightWall },
+        new MergeBoxPartAdjustment { role = MergeBoxSpriteRole.BottomWall },
+        new MergeBoxPartAdjustment { role = MergeBoxSpriteRole.BackFrame }
+    };
+    [Header("Individual box sizes and drop positions")]
     public MergeBoxVisualSize[] boxes = Array.Empty<MergeBoxVisualSize>();
     private bool refresh = true;
+    private Vector4 appliedPadding;
+    private MergeBoxPartAdjustment[] appliedParts;
+    private int appliedPartCount;
     private void OnEnable() => refresh = true;
     private void OnValidate() => refresh = true;
+    private MergeBoxPartAdjustment SettingsFor(MergeBoxSpriteRole role)
+    {
+        if (parts != null) foreach (var setting in parts)
+            if (setting != null && setting.role == role) return setting;
+        return null;
+    }
     private void Update()
     {
+        bool commonChanged = refresh || appliedPadding != backgroundPadding.Value || appliedParts != parts || appliedPartCount != (parts?.Length ?? 0);
+        if (parts != null) foreach (var setting in parts)
+            if (setting != null && setting.Changed) commonChanged = true;
         bool changed = false;
         if (boxes != null) foreach (var entry in boxes)
         {
             if (entry?.box == null || !entry.box.transform.IsChildOf(transform)) continue;
-            bool partsChanged = entry.SynchronizeParts() || entry.PartsChanged();
             Vector2 size = new Vector2(Mathf.Max(.01f, entry.width), Mathf.Max(.01f, entry.height));
-            if (!refresh && !partsChanged && size == entry.appliedSize && entry.spawnOffset == entry.appliedSpawn && entry.deadlineOffset == entry.appliedDeadline && entry.backgroundPadding.Value == entry.appliedPadding)
-            { changed |= entry.RefreshColliders(); continue; }
             if (!entry.box.HasVisualLayout) continue;
-            entry.box.ApplyVisualLayout(size, entry.spawnOffset, entry.deadlineOffset, entry.backgroundPadding.Value);
-            entry.ApplyParts();
-            entry.appliedPadding = entry.backgroundPadding.Value;
-            entry.appliedSize = size; entry.appliedSpawn = entry.spawnOffset; entry.appliedDeadline = entry.deadlineOffset;
-            changed = true;
+            bool apply = commonChanged || entry.box != entry.appliedBox || size != entry.appliedSize ||
+                entry.spawnOffset != entry.appliedSpawn || entry.deadlineOffset != entry.appliedDeadline;
+            if (apply)
+            {
+                entry.box.ApplyVisualLayout(size, entry.spawnOffset, entry.deadlineOffset, backgroundPadding.Value);
+                entry.appliedBox = entry.box; entry.appliedSize = size;
+                entry.appliedSpawn = entry.spawnOffset; entry.appliedDeadline = entry.deadlineOffset;
+                changed = true;
+            }
+            foreach (var part in entry.box.visuals)
+            {
+                if (part?.renderer == null) continue;
+                var setting = SettingsFor(part.role);
+                if (apply) part.ApplyAdjustment(entry.box.transform, setting);
+                else if (part.ColliderNeedsFit)
+                {
+                    part.FitCollider(entry.box.transform, setting != null ? setting.colliderPadding.Value : Vector4.zero);
+                    changed = true;
+                }
+            }
         }
-        refresh = false;
+        if (parts != null) foreach (var setting in parts) setting?.Remember();
+        appliedParts = parts; appliedPartCount = parts?.Length ?? 0;
+        appliedPadding = backgroundPadding.Value; refresh = false;
         if (changed && Application.isPlaying) Physics2D.SyncTransforms();
     }
     [ContextMenu("Capture Current Layout As Baseline")]

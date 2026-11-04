@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cc9435bff86c48d39d393a567173c61f, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxLevelManager
   levels:
   - minimumLevel: 1
@@ -62,7 +62,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 92af25d49357dd04b896e06f42bafeda, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::WallSpriteInput
   boxes:
   - {fileID: 1075378653009848375}
@@ -82,8 +82,42 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b32f0cd62a2f436088b211d7b61a5524, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxVisualController
+  backgroundPadding:
+    left: 0
+    right: 0
+    top: 0
+    bottom: 0
+  parts:
+  - role: 4
+    positionOffset: {x: 0, y: 0}
+    colliderPadding:
+      left: 0
+      right: 0
+      top: 0
+      bottom: 0
+  - role: 5
+    positionOffset: {x: 0, y: 0}
+    colliderPadding:
+      left: 0
+      right: 0
+      top: 0
+      bottom: 0
+  - role: 1
+    positionOffset: {x: 0, y: 0}
+    colliderPadding:
+      left: 0
+      right: 0
+      top: 0
+      bottom: 0
+  - role: 2
+    positionOffset: {x: 0, y: 0}
+    colliderPadding:
+      left: 0
+      right: 0
+      top: 0
+      bottom: 0
   boxes:
   - box: {fileID: 1075378653009848375}
     width: 5
@@ -138,6 +172,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: -0.72727275
       objectReference: {fileID: 0}
+    - target: {fileID: 3619804701920711825, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
+      propertyPath: m_SpriteTilingProperty.newSize.y
+      value: 0.9375
+      objectReference: {fileID: 0}
     - target: {fileID: 4055148427283468369, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
       propertyPath: m_Size.x
       value: 1
@@ -173,6 +211,10 @@ PrefabInstance:
     - target: {fileID: 5022512252071045872, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
       propertyPath: m_Size.y
       value: 7.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5762484826358658351, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
+      propertyPath: m_SpriteTilingProperty.newSize.y
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 6512285261805217502, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
       propertyPath: m_LocalPosition.y
@@ -246,6 +288,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 1.9090909
       objectReference: {fileID: 0}
+    - target: {fileID: 8775603597013452301, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
+      propertyPath: m_SpriteTilingProperty.newSize.y
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -260,7 +306,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f2ad2411312047828f3731d8f6f25d34, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxBindings
 --- !u!4 &7513087919045504871 stripped
 Transform:

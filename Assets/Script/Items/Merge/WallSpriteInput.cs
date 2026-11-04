@@ -49,7 +49,7 @@ public class WallSpriteInput : MonoBehaviour
             foreach (var part in box.visuals)
             {
                 if (part == null || part.renderer == null) continue;
-                Sprite selected = part.role == MergeBoxSpriteRole.SideWall ? side :
+                Sprite selected = (part.role == MergeBoxSpriteRole.SideWall || part.role == MergeBoxSpriteRole.LeftWall || part.role == MergeBoxSpriteRole.RightWall) ? side :
                     part.role == MergeBoxSpriteRole.BottomWall ? bottom :
                     part.role == MergeBoxSpriteRole.BackFrame ? back : null;
                 if (selected != null) part.renderer.sprite = selected;
