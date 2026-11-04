@@ -4,16 +4,7 @@ using UnityEngine;
 public class WallSpriteInput : MonoBehaviour
 {
     [SerializeField] private MergeBoxBindings[] boxes;
-    [SerializeField] private SpriteRenderer[] sideWall;
-    [SerializeField] private SpriteRenderer bottomWall;
-    [SerializeField] private SpriteRenderer backFrame;
-
-    [SerializeField] private string spritePath = "MergeBox";
-    [SerializeField] private string series = "01-weapon";
-
     [Header("Sprite Sheet (Resources)")]
-    [SerializeField] private bool useSpriteSheet;
-
     [Tooltip("Resources 기준 경로. (1)은 Sheet Number로 교체됩니다.")]
     [SerializeField]
     private string spriteSheetPath =
@@ -36,39 +27,21 @@ public class WallSpriteInput : MonoBehaviour
     [ContextMenu("Apply Sprites")]
     public void ApplySprites()
     {
-        Sprite side;
-        Sprite bottom;
-        Sprite back;
-
-        if (useSpriteSheet)
+        if (string.IsNullOrWhiteSpace(spriteSheetPath))
         {
-            if (string.IsNullOrWhiteSpace(spriteSheetPath))
-            {
-                Debug.LogError("스프라이트 시트 경로가 비어 있습니다.", this);
-                return;
-            }
-
-            string path = spriteSheetPath.Trim()
-                .Replace("(1)", $"({sheetNumber})");
-
-            // Resources.LoadAll에는 확장자 없이 전달합니다.
-            if (path.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
-                path = path.Substring(0, path.Length - 4);
-
-            Sprite[] sprites = Resources.LoadAll<Sprite>(path);
-
-            side = MatchSprite(sprites, sideSpriteName, path);
-            bottom = MatchSprite(sprites, bottomSpriteName, path);
-            back = MatchSprite(sprites, backSpriteName, path);
+            Debug.LogError("스프라이트 시트 경로가 비어 있습니다.", this);
+            return;
         }
-        else
-        {
-            string folder = $"{spritePath.TrimEnd('/')}/{series}";
 
-            side = LoadSprite($"{folder}/SideWall");
-            bottom = LoadSprite($"{folder}/BottomWall");
-            back = LoadSprite($"{folder}/BoxBack 1");
-        }
+        string path = spriteSheetPath.Trim().Replace("(1)", $"({Mathf.Max(1, sheetNumber)})");
+        // Resources.LoadAll에는 확장자 없이 전달합니다.
+        if (path.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+            path = path.Substring(0, path.Length - 4);
+
+        Sprite[] sprites = Resources.LoadAll<Sprite>(path);
+        Sprite side = MatchSprite(sprites, sideSpriteName, path);
+        Sprite bottom = MatchSprite(sprites, bottomSpriteName, path);
+        Sprite back = MatchSprite(sprites, backSpriteName, path);
 
         if (boxes != null) foreach (var box in boxes)
         {
@@ -83,20 +56,6 @@ public class WallSpriteInput : MonoBehaviour
             }
         }
 
-        if (side != null && sideWall != null)
-        {
-            foreach (SpriteRenderer wall in sideWall)
-            {
-                if (wall != null)
-                    wall.sprite = side;
-            }
-        }
-
-        if (bottom != null && bottomWall != null)
-            bottomWall.sprite = bottom;
-
-        if (back != null && backFrame != null)
-            backFrame.sprite = back;
     }
 
     private Sprite MatchSprite(Sprite[] sprites, string spriteName, string path)
@@ -128,13 +87,4 @@ public class WallSpriteInput : MonoBehaviour
         return match;
     }
 
-    private Sprite LoadSprite(string path)
-    {
-        Sprite sprite = Resources.Load<Sprite>(path);
-
-        if (sprite == null)
-            Debug.LogError($"스프라이트를 불러오지 못했습니다: {path}", this);
-
-        return sprite;
-    }
 }
