@@ -204,9 +204,7 @@ public sealed class SkillTreeLayoutAuthoringTests
                 Vector2 position = (Vector2)placer.nodeArea.InverseTransformPoint(node.transform.position) - placer.nodeArea.rect.center;
                 Assert.That(Vector2.Distance(saved.position, position), Is.LessThan(.01f));
                 var serialized = new SerializedObject(node);
-                Assert.That(serialized.FindProperty("stateImage").objectReferenceValue != null, Is.True);
-                Assert.That(serialized.FindProperty("lockedSprite").objectReferenceValue != null, Is.True);
-                Assert.That(serialized.FindProperty("unlockedSprite").objectReferenceValue != null, Is.True);
+                Assert.That(serialized.FindProperty("iconImage").objectReferenceValue != null, Is.True);
             }
             foreach (var connection in placer.lineArea.GetComponentsInChildren<SkillTreeConnectionUI>(true))
             {
@@ -239,6 +237,28 @@ public sealed class SkillTreeStateTests : SkillTreeLayoutFixture
         var sprite = UnityEngine.Sprite.Create(texture, new Rect(0, 0, 2, 2), Vector2.zero); owned.Add(sprite); return sprite;
     }
     [Test]
+    public void EnabledTreeBindsLateManagerAndUpdatesIconsWithoutManualInitialization()
+    {
+        var root = Host("Tree"); root.SetActive(false);
+        root.AddComponent<SkillTreeUI>();
+        var node = Host("Node", root.transform).AddComponent<SkillNodeUI>();
+        var image = node.gameObject.AddComponent<Image>(); Set(node, "iconImage", image);
+        var data = Data("Late manager node"); data.icon = Sprite(); data.unlockedIcon = Sprite();
+        node.SetData(data);
+        root.SetActive(true);
+        Host("Wallet").AddComponent<CurrencyManager>();
+        var manager = Host("Late manager").AddComponent<SkillTreeManager>();
+        Assert.That(image.sprite, Is.SameAs(data.icon));
+        Assert.That(manager.UnlockSkill(data), Is.True);
+        Assert.That(image.sprite, Is.SameAs(data.unlockedIcon));
+        manager.ClearAllSkills();
+        Assert.That(image.sprite, Is.SameAs(data.icon));
+        data.unlockedIcon = null;
+        manager.RestoreUnlockedSkills(new[] { data });
+        Assert.That(image.sprite, Is.SameAs(data.icon));
+    }
+
+    [Test]
     public void LateWalletRefreshesTheBuyButtonWithoutReinitializingTheSkillTree()
     {
         var tree = Host("Manager").AddComponent<SkillTreeManager>();
@@ -262,10 +282,11 @@ public sealed class SkillTreeStateTests : SkillTreeLayoutFixture
         var source = Host("A", root.transform).AddComponent<SkillNodeUI>();
         var target = Host("B", root.transform).AddComponent<SkillNodeUI>();
         var locked = Sprite(); var unlocked = Sprite();
+        a.icon = b.icon = locked; a.unlockedIcon = b.unlockedIcon = unlocked;
         foreach (var node in new[] { source, target })
         {
             var image = Host("Frame", node.transform).AddComponent<Image>();
-            Set(node, "stateImage", image); Set(node, "lockedSprite", locked); Set(node, "unlockedSprite", unlocked);
+            Set(node, "iconImage", image);
             Set(node, "nodeRootObject", image.gameObject);
         }
         var connection = Host("Connection", root.transform).AddComponent<SkillTreeConnectionUI>();

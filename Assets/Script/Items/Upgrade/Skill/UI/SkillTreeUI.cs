@@ -15,7 +15,8 @@ public class SkillTreeUI : MonoBehaviour
     private void OnEnable()
     {
         CurrencyManager.InstanceChanged += RefreshAllNodes;
-        Subscribe(); RefreshAllNodes();
+        SkillTreeManager.InstanceChanged += Init;
+        Init();
     }
     private void Subscribe()
     {
@@ -28,6 +29,7 @@ public class SkillTreeUI : MonoBehaviour
     private void OnDisable()
     {
         CurrencyManager.InstanceChanged -= RefreshAllNodes;
+        SkillTreeManager.InstanceChanged -= Init;
         if (boundManager != null) boundManager.OnSkillTreeChanged -= RefreshAllNodes;
         boundManager = null;
     }

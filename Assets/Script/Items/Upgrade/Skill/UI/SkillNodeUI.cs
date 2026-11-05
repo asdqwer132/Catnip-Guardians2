@@ -14,15 +14,10 @@ public class SkillNodeUI : MonoBehaviour
     [SerializeField] private Image iconImage;
     [SerializeField] private Image lockImage;
 
-    [Header("State Sprites")]
-    [SerializeField] private Image stateImage;
-    [SerializeField] private Sprite unlockedSprite;
-    [SerializeField] private Sprite lockedSprite;
+    [Header("Visibility")]
     [SerializeField] private bool hideUnavailableNodes;
 
     private SkillTreeUI ownerUI;
-    private Sprite authoredStateSprite;
-    private bool stateSpriteCaptured;
 
     public SkillNodeData SkillNodeData => skillNodeData;
     public IReadOnlyList<GameObject> Lines => lines;
@@ -70,8 +65,7 @@ public class SkillNodeUI : MonoBehaviour
 
         if (success && ownerUI != null)
             ownerUI.RefreshAllNodes();
-        else
-            Refresh();
+        Refresh();
     }
 
     public void Refresh()
@@ -109,7 +103,6 @@ public class SkillNodeUI : MonoBehaviour
             iconImage.sprite = icon;
             iconImage.enabled = icon != null;
         }
-        ApplyStateSprite(isUnlocked);
 
         if (button != null)
             button.interactable = isCanClick;
@@ -126,14 +119,6 @@ public class SkillNodeUI : MonoBehaviour
                 lockImage.gameObject.SetActive(false);
 
         }
-    }
-
-    private void ApplyStateSprite(bool unlocked)
-    {
-        if (stateImage == null) return;
-        if (!stateSpriteCaptured) { authoredStateSprite = stateImage.sprite; stateSpriteCaptured = true; }
-        Sprite sprite = unlocked ? unlockedSprite : lockedSprite;
-        stateImage.sprite = sprite != null ? sprite : authoredStateSprite;
     }
 
     private void SetLinesUnlocked(bool unlocked)

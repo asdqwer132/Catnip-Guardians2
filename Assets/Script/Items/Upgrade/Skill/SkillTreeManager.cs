@@ -5,6 +5,7 @@ using UnityEngine;
 public class SkillTreeManager : MonoBehaviour
 {
     public static SkillTreeManager Instance { get; private set; }
+    public static event Action InstanceChanged;
 
 
     public BuffSkillManager buffSkillManager;
@@ -31,6 +32,7 @@ public class SkillTreeManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        InstanceChanged?.Invoke();
     }
 
     private void Start()
@@ -75,7 +77,12 @@ public class SkillTreeManager : MonoBehaviour
         OnSkillTreeChanged?.Invoke();
     }
 
-    private void OnDestroy() { if (Instance == this) Instance = null; }
+    private void OnDestroy()
+    {
+        if (Instance != this) return;
+        Instance = null;
+        InstanceChanged?.Invoke();
+    }
 
     public bool CanUnlock(SkillNodeData node)
     {
