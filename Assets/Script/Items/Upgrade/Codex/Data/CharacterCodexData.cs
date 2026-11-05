@@ -33,6 +33,7 @@ public sealed class CharacterCodexPortrait : DefinedData
 [CreateAssetMenu(fileName = "Character Codex", menuName = "03.Upgrade/Codex/Character")]
 public sealed class CharacterCodexData : DefaultData
 {
+    [Header("Extra Data")]
     [Tooltip("Each sprite and its localized information are stored in one entry; pose and text cannot drift between parallel arrays.")]
     public List<CharacterCodexPortrait> portraits = new List<CharacterCodexPortrait>();
 

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 [System.Serializable]
 public class EnemySpawnInfo
@@ -15,24 +16,24 @@ public class EnemySpawnInfo
 [CreateAssetMenu(menuName = "01.Entities/Plant/Plant Data")]
 public class PlantData : DefaultData
 {
-    [Header("Visual")]
-    public Sprite seed;
-    public Sprite[] growing;
-    public Sprite grownUp;
+    [Header("Extra Data / Visual")]
+    [FormerlySerializedAs("grownUp")]
+    public Sprite visualSprite;
 
-    [Header("Stat")]
-    public float maxHP = 100f;
-    public float growTime = 60f;
+    [Header("Extra Data / Battle And Growth")]
+    [Min(1f)] public float maxHP = 100f;
+    [FormerlySerializedAs("growTime")]
+    [Min(0f)] public float nutrientsRequired = 60f;
+    [Min(0f)] public float nutrientsPerSecond = 1f;
 
-    [Header("Resource")]
+    [Header("Extra Data / Reward")]
     public Cost[] reward;
-    public Cost[] buyCosts;
 
-    [Header("Normal Enemy Spawn")]
+    [Header("Extra Data / Normal Enemy Spawn")]
     public int spawnNormalEnemyCount = 1;
     public EnemySpawnInfo[] normalEnemies;
 
-    [Header("Special Enemy Spawn")]
+    [Header("Extra Data / Special Enemy Spawn")]
     public EnemySpawnInfo middleBossEnemies;
     public EnemySpawnInfo bossEnemies;
 }

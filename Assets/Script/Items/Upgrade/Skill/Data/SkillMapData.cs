@@ -10,6 +10,7 @@ public enum SkillMapType
 )]
 public class SkillMapData : DefaultData
 {
+    [Header("Extra Data")]
     public int totalNodeCount;
     public SkillMapType type;
 }

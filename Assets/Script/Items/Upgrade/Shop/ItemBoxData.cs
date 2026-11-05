@@ -10,15 +10,15 @@ public class GachaItemInfo
 [CreateAssetMenu(fileName = "Box", menuName = "03.Upgrade/Shop/Box")]
 public class ItemBoxData : DefaultData
 {
-    [Header("Price")]
+    [Header("Extra Data / Price")]
     public Cost[] costs;
 
-    [Header("Gacha")]
+    [Header("Extra Data / Gacha")]
     public ItemSeries itemSeries;
     public ItemGrade grade;
     public GachaItemInfo[] gachaItems;
 
-    [Header("Box Animation")]
+    [Header("Extra Data / Box Animation")]
     public AnimationClip idleClip;
     [Tooltip("구매 성공 시 선택한 상점 슬롯 아이콘에서 한 번 재생할 클립입니다.")]
     public AnimationClip openClip;

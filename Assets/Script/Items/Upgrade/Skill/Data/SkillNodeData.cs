@@ -7,19 +7,19 @@ using UnityEngine;
 )]
 public class SkillNodeData : DefaultData
 {
-    [Header("Node Icon")]
+    [Header("Extra Data / Node Icon")]
     [Tooltip("Icon shown after unlocking. Empty uses the basic icon.")]
     public Sprite unlockedIcon;
 
-    [Header("Map")]
+    [Header("Extra Data / Map")]
     public SkillMapData skillMap;
     public Sprite mapIcon;
-    [Header("Cost")]
+    [Header("Extra Data / Cost")]
     public Cost[] costs;
 
-    [Header("Requirement")]
+    [Header("Extra Data / Requirement")]
     public List<SkillNodeData> requiredSkills = new List<SkillNodeData>();
 
-    [Header("Rewards")]
+    [Header("Extra Data / Rewards")]
     public List<SkillRewardData> rewards = new List<SkillRewardData>();
 }

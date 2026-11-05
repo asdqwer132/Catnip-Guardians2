@@ -16,10 +16,8 @@ public class GrowManager : MonoBehaviour
     [Header("Managers")]
     public GameManager gameManager;
 
-    private PlantUI plantUI;
-    private PlantData plantData;
     private bool isGrowing = false;
-    private int currentGrowingIndex = -1;
+    private float nutrientsPerSecond;
 
     public float CurrentGrowValue => growValue;
     public float MaxGrowValue => maxGrowValue;
@@ -33,17 +31,17 @@ public class GrowManager : MonoBehaviour
         instance = this;
     }
 
+    private void OnDestroy() { if (instance == this) instance = null; }
+
     public void Init(PlantData data, PlantUI ui)
     {
-        plantData = data;
-        plantUI = ui;
+        maxGrowValue = data != null ? Mathf.Max(0f, data.nutrientsRequired) : 0f;
+        nutrientsPerSecond = data != null ? Mathf.Max(0f, data.nutrientsPerSecond) : 0f;
 
-        growValue = startGrowValue;
+        growValue = Mathf.Clamp(startGrowValue, 0f, maxGrowValue);
         isGrowing = false;
-        currentGrowingIndex = -1;
 
-        if (plantUI != null)
-            plantUI.SetPlantData(plantData);
+        if (ui != null) ui.SetPlantData(data);
 
         if (growthFill != null)
         {
@@ -52,7 +50,6 @@ public class GrowManager : MonoBehaviour
         }
 
         UpdateUI();
-        UpdateGrowingSprite();
     }
 
     public void SetMaxGrowValue(float value)
@@ -63,7 +60,6 @@ public class GrowManager : MonoBehaviour
             growValue = maxGrowValue;
 
         UpdateUI();
-        UpdateGrowingSprite();
     }
 
     public void SetStartGrowValue(float value)
@@ -73,9 +69,8 @@ public class GrowManager : MonoBehaviour
 
     public void StartGrowth()
     {
-        growValue = startGrowValue;
+        growValue = Mathf.Clamp(startGrowValue, 0f, maxGrowValue);
         isGrowing = true;
-        currentGrowingIndex = -1;
 
         if (maxGrowValue <= 0f)
         {
@@ -94,7 +89,6 @@ public class GrowManager : MonoBehaviour
         }
 
         UpdateUI();
-        UpdateGrowingSprite();
     }
 
     public void AddGrowth(float amount)
@@ -113,13 +107,12 @@ public class GrowManager : MonoBehaviour
             growValue = maxGrowValue;
 
             UpdateUI();
-            UpdateGrowingSprite();
+
             CompleteGrowth();
             return;
         }
 
         UpdateUI();
-        UpdateGrowingSprite();
     }
 
     public void SetGrowth(float value)
@@ -127,7 +120,6 @@ public class GrowManager : MonoBehaviour
         growValue = Mathf.Clamp(value, 0f, maxGrowValue);
 
         UpdateUI();
-        UpdateGrowingSprite();
 
         if (isGrowing && growValue >= maxGrowValue)
             CompleteGrowth();
@@ -148,42 +140,9 @@ public class GrowManager : MonoBehaviour
         growthFill.SetFill(growValue, maxGrowValue);
     }
 
-    private void UpdateGrowingSprite()
+    private void Update()
     {
-        if (plantUI == null)
-            return;
-        if (plantData == null)
-            return;
-        if (plantData.growing == null || plantData.growing.Length == 0)
-            return;
-
-        int nextIndex = GetGrowingIndex();
-
-        if (currentGrowingIndex == nextIndex)
-            return;
-
-        currentGrowingIndex = nextIndex;
-        plantUI.SetGrowingSprite(nextIndex);
-    }
-
-    private int GetGrowingIndex()
-    {
-        if (plantData == null)
-            return 0;
-        if (plantData.growing == null || plantData.growing.Length == 0)
-            return 0;
-        if (maxGrowValue <= 0f)
-            return plantData.growing.Length - 1;
-
-        float progress = growValue / maxGrowValue;
-        int index = Mathf.FloorToInt(progress * plantData.growing.Length);
-
-        if (index < 0)
-            index = 0;
-        if (index >= plantData.growing.Length)
-            index = plantData.growing.Length - 1;
-
-        return index;
+        if (isGrowing) AddGrowth(nutrientsPerSecond * Time.deltaTime);
     }
 
     public void StopGrowth()
@@ -193,12 +152,10 @@ public class GrowManager : MonoBehaviour
 
     public void ResetGrowth()
     {
-        growValue = startGrowValue;
+        growValue = Mathf.Clamp(startGrowValue, 0f, maxGrowValue);
         isGrowing = false;
-        currentGrowingIndex = -1;
 
         UpdateUI();
-        UpdateGrowingSprite();
     }
 
     private void CompleteGrowth()
@@ -207,9 +164,6 @@ public class GrowManager : MonoBehaviour
             return;
 
         isGrowing = false;
-
-        if (plantUI != null)
-            plantUI.SetGrownUpSprite();
 
         if (gameManager != null)
             gameManager.Victory();

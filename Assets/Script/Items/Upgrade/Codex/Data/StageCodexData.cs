@@ -5,6 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Stage Codex", menuName = "03.Upgrade/Codex/Stage Item")]
 public sealed class StageCodexData : ItemData
 {
+    [Header("Extra Data")]
     public MapCodexData map;
     [Min(1)] public int stageNumber = 1;
     public Sprite preview;

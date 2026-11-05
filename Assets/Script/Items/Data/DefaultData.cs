@@ -22,12 +22,12 @@ public class Description
 
 public class DefaultData : ScriptableObject, IUnlockable, DefinedData
 {
-    [Header("Basic Info")]
+    [Header("Basic Data / Display")]
     public Sprite icon;
     public Sprite Icon => icon;
     public Description[] data;
 
-    [Header("Id Info")]
+    [Header("Basic Data / Identity And Unlock")]
     public string dataNumbering;
     public string dataId;
     public DataType dataType;

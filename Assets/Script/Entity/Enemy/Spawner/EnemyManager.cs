@@ -59,6 +59,9 @@ public class EnemyManager : MonoBehaviour
         fieldLimitReached = false;
         StopAllSpawners();
         KillAllEnemies();
+        if (plantData != null)
+            maxAliveEnemyCount = Mathf.Max(1, Mathf.CeilToInt(plantData.maxHP));
+        RefreshEnemyCount();
         if (attackSlotManager != null) attackSlotManager.ClearReservations();
 
         allEnemiesActionDisabled = false;
