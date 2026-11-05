@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &6041953591954870596
+--- !u!1001 &7083559280953630551
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -20,9 +20,9 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1727509598648383614, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
-      propertyPath: m_Value
-      value: 0
+    - target: {fileID: 3275813019440117299, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
+      propertyPath: tooltipUI
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 3878791493398360599, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
       propertyPath: m_AnchorMax.x
@@ -82,15 +82,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5128053417248910356, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5128053417248910356, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5128053417248910356, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5128053417248910356, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -114,18 +114,28 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5287735941668706396, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
       propertyPath: m_Name
-      value: Inventory Variant
+      value: Inventory Codex
+      objectReference: {fileID: 0}
+    - target: {fileID: 6828980840827645629, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6828980840827645629, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8936779777747725687, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
       propertyPath: m_CellSize.x
-      value: 116.166725
+      value: 245.50008
       objectReference: {fileID: 0}
     - target: {fileID: 8936779777747725687, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
       propertyPath: m_CellSize.y
-      value: 116.166725
+      value: 245.50008
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 6230743224225982846, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
+    - {fileID: 5010115388263357518, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}

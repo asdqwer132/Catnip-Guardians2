@@ -5,9 +5,13 @@ using UnityEngine.UI;
 // Owns the recipe view only. Crafting and inventory transfers remain in the manager.
 public sealed class PotionRecipePanelUI : ItemSearchFilterTargetUI
 {
+    [Header("Manage")]
     public PotionCraftManager manager;
     public InventoryManager inventory;
     public PotionRecipeHistory history;
+
+    [Header("UI")]
+    public GameObject recipeInfoPannel;
     public Transform recipeContent;
     public PotionRecipeSlotUI recipeSlotPrefab;
     public ItemDefinitionUI details;
@@ -40,6 +44,7 @@ public sealed class PotionRecipePanelUI : ItemSearchFilterTargetUI
         if (goToCraftingButton != null) goToCraftingButton.onClick.RemoveListener(GoToCrafting);
     }
     protected override void OnSearchFilterChanged() => RefreshRecipes();
+    private void SetActivePannel(bool isOn) => recipeInfoPannel.SetActive(isOn);
     public void RefreshRecipes()
     {
         visibleRecipes.Clear();
@@ -50,12 +55,17 @@ public sealed class PotionRecipePanelUI : ItemSearchFilterTargetUI
                     IsItemDataVisible(recipe.resultItem) && seen.Add(recipe.resultItem)) visibleRecipes.Add(recipe);
         if (recipeContent != null && recipeSlotPrefab != null)
         {
-            while (slots.Count < visibleRecipes.Count) slots.Add(Instantiate(recipeSlotPrefab, recipeContent));
+            while (slots.Count < visibleRecipes.Count)
+            {
+                var newSlot = Instantiate(recipeSlotPrefab, recipeContent);
+                slots.Add(newSlot);
+
+            }
             for (int i = 0; i < slots.Count; i++)
             {
                 bool active = i < visibleRecipes.Count;
                 slots[i].gameObject.SetActive(active);
-                if (active) slots[i].Bind(visibleRecipes[i], SelectRecipe);
+                if (active) slots[i].Bind(visibleRecipes[i], SelectRecipe, recipeInfoPannel);
             }
         }
         if (SelectedRecipe != null && !visibleRecipes.Contains(SelectedRecipe)) SelectRecipe(null);
