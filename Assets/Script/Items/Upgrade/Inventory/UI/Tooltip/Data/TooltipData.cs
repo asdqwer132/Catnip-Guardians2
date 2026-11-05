@@ -75,4 +75,5 @@ public class BagTooltipData : TooltipData
 public class CostTooltipData : TooltipData
 {
     public Cost[] costs;
+    public bool isUnlocked;
 }

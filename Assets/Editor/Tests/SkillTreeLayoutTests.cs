@@ -198,6 +198,10 @@ public sealed class SkillTreeLayoutAuthoringTests
             var panel = roots.SelectMany(r => r.GetComponentsInChildren<SkillTreeMapPanel>(true)).Single();
             var injector = roots.SelectMany(r => r.GetComponentsInChildren<SkillTreeUIInjecter>(true)).Single();
             Assert.That(panel.nodeInformation, Is.TypeOf<CostTooltipUI>());
+            var skillInfo = (CostTooltipUI)panel.nodeInformation;
+            Assert.That(skillInfo.needCurrencyPanel.name, Is.EqualTo("MapNeedCurrency"));
+            Assert.That(skillInfo.unlockButtonPanel.name, Is.EqualTo("MapUnlock"));
+            Assert.That(skillInfo.unlockedPanel.name, Is.EqualTo("MapReward"));
             Assert.That(panel.nodeInformation.name, Is.EqualTo("SkillInfo"));
             Assert.That(panel.mapInformation.name, Is.EqualTo("MapInfo"));
             Assert.That(panel.mapInformation.GetType(), Is.EqualTo(typeof(ItemTooltipUI)));

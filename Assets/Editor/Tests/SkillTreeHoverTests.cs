@@ -40,6 +40,9 @@ public sealed class SkillTreeHoverTests : SkillTreeLayoutFixture
         skill.tooltipPanel = skillHost; skill.positionAtAnchor = false;
         skill.dataNameText = Text("Skill name", skillHost.transform);
         skill.alternatePanels = new[] { mapHost };
+        skill.needCurrencyPanel = Host("Need currency", skillHost.transform);
+        skill.unlockButtonPanel = Host("Unlock button", skillHost.transform);
+        skill.unlockedPanel = Host("Already unlocked", skillHost.transform);
         var graph = Host("Graph", root.transform);
         var first = Data("First skill"); var second = Data("Second skill");
         second.skillMap = first.skillMap; first.skillMap.totalNodeCount = 2;
@@ -70,6 +73,9 @@ public sealed class SkillTreeHoverTests : SkillTreeLayoutFixture
         Assert.That(skill.IsVisible, Is.True, "The very first hover must survive the inactive tooltip's first Awake.");
         Assert.That(skill.dataNameText.text, Is.EqualTo(first.name));
         Assert.That(mapHost.activeSelf, Is.False);
+        Assert.That(skill.needCurrencyPanel.activeSelf, Is.True);
+        Assert.That(skill.unlockButtonPanel.activeSelf, Is.True);
+        Assert.That(skill.unlockedPanel.activeSelf, Is.False);
         ExecuteEvents.Execute(hover.gameObject, pointer, ExecuteEvents.pointerExitHandler);
         yield return null;
         Assert.That(skillHost.activeSelf, Is.True, "Leaving the node keeps its information without pinning it against other nodes.");
@@ -80,10 +86,19 @@ public sealed class SkillTreeHoverTests : SkillTreeLayoutFixture
         Assert.That(map.amountText.text, Is.EqualTo("1"), "Restored map information must include the latest unlock count.");
 
         ExecuteEvents.Execute(hover.gameObject, pointer, ExecuteEvents.pointerEnterHandler);
+        Assert.That(skill.needCurrencyPanel.activeSelf, Is.False);
+        Assert.That(skill.unlockButtonPanel.activeSelf, Is.False);
+        Assert.That(skill.unlockedPanel.activeSelf, Is.True);
+        ExecuteEvents.Execute(hover.gameObject, pointer, ExecuteEvents.pointerExitHandler);
+        Assert.That(skillHost.activeSelf, Is.False); Assert.That(mapHost.activeSelf, Is.True);
+        ExecuteEvents.Execute(hover.gameObject, pointer, ExecuteEvents.pointerEnterHandler);
         ExecuteEvents.Execute(otherHover.gameObject, pointer, ExecuteEvents.pointerEnterHandler);
         ExecuteEvents.Execute(hover.gameObject, pointer, ExecuteEvents.pointerExitHandler);
         Assert.That(skill.dataNameText.text, Is.EqualTo(second.name));
         Assert.That(skillHost.activeSelf, Is.True); Assert.That(mapHost.activeSelf, Is.False);
+        Assert.That(skill.needCurrencyPanel.activeSelf, Is.True);
+        Assert.That(skill.unlockButtonPanel.activeSelf, Is.True);
+        Assert.That(skill.unlockedPanel.activeSelf, Is.False);
         ExecuteEvents.Execute(otherHover.gameObject, pointer, ExecuteEvents.pointerExitHandler);
         Assert.That(manager.UnlockSkill(first), Is.False, "An already unlocked skill cannot be purchased twice.");
         Assert.That(skillHost.activeSelf, Is.True); Assert.That(mapHost.activeSelf, Is.False);

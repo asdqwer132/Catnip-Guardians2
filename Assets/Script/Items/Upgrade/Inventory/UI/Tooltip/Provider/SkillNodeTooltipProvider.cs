@@ -4,6 +4,8 @@ public class SkillNodeTooltipProvider : CostTooltipProvider
 {
     [Header("Target")]
     [SerializeField] private SkillNodeUI skillNodeUI;
+    public override bool HideOnPointerExit => skillNodeUI != null &&
+        SkillTreeManager.Instance != null && SkillTreeManager.Instance.IsUnlocked(skillNodeUI.SkillNodeData?.dataId);
 
     protected override void Awake()
     {
@@ -33,7 +35,8 @@ public class SkillNodeTooltipProvider : CostTooltipProvider
             amountText = "",
             description = nodeData.GetDescription(),
             detailDescription = nodeData.GetDetailDescription(),
-            costs = nodeData.costs
+            costs = nodeData.costs,
+            isUnlocked = HideOnPointerExit
 
         };
 

@@ -53,7 +53,9 @@ public class ItemTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerE
 
     public virtual void OnPointerExit(PointerEventData eventData)
     {
-        if (isPointer && !showOnSelection && hideOnPointerExit)
+        if (!isPointer || showOnSelection) return;
+        CacheProvider();
+        if (hideOnPointerExit || (provider is TooltipProvider source && source.HideOnPointerExit))
             HideTooltip();
     }
 

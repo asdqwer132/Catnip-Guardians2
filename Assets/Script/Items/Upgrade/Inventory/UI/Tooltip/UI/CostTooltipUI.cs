@@ -5,12 +5,20 @@ using UnityEngine;
 public class CostTooltipUI : ItemTooltipUI
 {
     public BoxCost[] extraBoxCosts;
+    [Header("Unlock State Panels")]
+    public GameObject needCurrencyPanel;
+    public GameObject unlockButtonPanel;
+    public GameObject unlockedPanel;
     protected override void ApplyData(TooltipData data)
     {
         base.ApplyData(data);
 
         if (data is not CostTooltipData costData)
             return;
+
+        if (needCurrencyPanel != null) needCurrencyPanel.SetActive(!costData.isUnlocked);
+        if (unlockButtonPanel != null) unlockButtonPanel.SetActive(!costData.isUnlocked);
+        if (unlockedPanel != null) unlockedPanel.SetActive(costData.isUnlocked);
 
         if (extraBoxCosts != null)
         {
@@ -19,7 +27,7 @@ public class CostTooltipUI : ItemTooltipUI
                 if (item != null && item.costPanel != null)
                     item.costPanel.SetActive(false);
             }
-            if (costData.costs == null)
+            if (costData.costs == null || costData.isUnlocked)
                 return;
 
             foreach (var cost in costData.costs)

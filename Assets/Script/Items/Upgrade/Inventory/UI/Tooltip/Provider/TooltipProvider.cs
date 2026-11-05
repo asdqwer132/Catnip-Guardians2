@@ -2,6 +2,7 @@ using UnityEngine;
 
 public abstract class TooltipProvider : MonoBehaviour, ITooltipContentProvider
 {
+    public virtual bool HideOnPointerExit => false;
     [Header("Anchor")]
     [SerializeField] protected RectTransform anchorRect;
 
