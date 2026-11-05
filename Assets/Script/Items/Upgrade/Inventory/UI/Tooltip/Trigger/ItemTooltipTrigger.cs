@@ -7,6 +7,7 @@ public class ItemTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerE
     public bool isPointer = true;
     public bool autoDisable = true;
     public bool startShow = false;
+    public bool hideOnPointerExit = true;
     [Tooltip("Select a slot Toggle to pin its item information. Pointer hover is ignored in this mode.")]
     public bool showOnSelection;
     [Header("Tooltip")]
@@ -52,7 +53,7 @@ public class ItemTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerE
 
     public virtual void OnPointerExit(PointerEventData eventData)
     {
-        if (isPointer && !showOnSelection)
+        if (isPointer && !showOnSelection && hideOnPointerExit)
             HideTooltip();
     }
 

@@ -203,6 +203,7 @@ public sealed class SkillTreeLayoutAuthoringTests
             Assert.That(panel.mapInformation.GetType(), Is.EqualTo(typeof(ItemTooltipUI)));
             Assert.That(panel.nodeInformation.transform.parent, Is.SameAs(panel.mapInformation.transform.parent));
             Assert.That(injector.tooltipUI, Is.SameAs(panel.nodeInformation));
+            Assert.That(injector.keepInfoOnPointerExit, Is.True);
             Assert.That(panel.nodeInformation.alternatePanels, Does.Contain(panel.mapInformation.tooltipPanel));
             Assert.That(panel.nodeInformation.removePannel, Is.True);
             injector.Inject();
@@ -211,6 +212,7 @@ public sealed class SkillTreeLayoutAuthoringTests
                 .Where(t => t.GetComponent<SkillNodeTooltipProvider>() != null).ToArray();
             Assert.That(triggers.Length, Is.GreaterThan(0));
             Assert.That(triggers.All(t => t.tooltipUI == panel.nodeInformation && t.infoToggle == null && t.invenToggle == null), Is.True);
+            Assert.That(triggers.All(t => !t.hideOnPointerExit), Is.True);
         }
         finally { EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single); }
     }

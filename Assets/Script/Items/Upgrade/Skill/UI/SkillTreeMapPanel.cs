@@ -54,10 +54,16 @@ public sealed class SkillTreeMapPanel : MonoBehaviour
         if (subscribedManager == SkillTreeManager.Instance)
             return;
         if (subscribedManager != null)
+        {
             subscribedManager.OnSkillTreeChanged -= RefreshInformation;
+            subscribedManager.OnSkillUnlocked -= OnSkillUnlocked;
+        }
         subscribedManager = SkillTreeManager.Instance;
         if (subscribedManager != null)
+        {
             subscribedManager.OnSkillTreeChanged += RefreshInformation;
+            subscribedManager.OnSkillUnlocked += OnSkillUnlocked;
+        }
     }
 
     private void OnDisable()
@@ -65,7 +71,10 @@ public sealed class SkillTreeMapPanel : MonoBehaviour
         if (nodeInformation != null)
             nodeInformation.VisibilityChanged -= OnNodeVisibilityChanged;
         if (subscribedManager != null)
+        {
             subscribedManager.OnSkillTreeChanged -= RefreshInformation;
+            subscribedManager.OnSkillUnlocked -= OnSkillUnlocked;
+        }
         subscribedManager = null;
         for (int i = 0; listeners != null && i < maps.Length; i++)
             if (maps[i].toggle != null)
@@ -124,5 +133,11 @@ public sealed class SkillTreeMapPanel : MonoBehaviour
     private void OnNodeVisibilityChanged(bool visible)
     {
         if (!visible && isActiveAndEnabled) RefreshInformation();
+    }
+
+    private void OnSkillUnlocked(SkillNodeData node)
+    {
+        if (nodeInformation != null) nodeInformation.Hide();
+        RefreshInformation();
     }
 }

@@ -18,6 +18,9 @@ public class SkillTreeUIInjecter : MonoBehaviour
     [Tooltip("Awake에서 자동으로 주입합니다.")]
     public bool injectOnAwake = true;
 
+    [Tooltip("Keep the last hovered skill information until a skill is unlocked or the map changes.")]
+    public bool keepInfoOnPointerExit = true;
+
     private void Awake()
     {
         if (injectOnAwake)
@@ -55,6 +58,7 @@ public class SkillTreeUIInjecter : MonoBehaviour
                     continue;
 
                 trigger.tooltipUI = tooltipUI;
+                trigger.hideOnPointerExit = !keepInfoOnPointerExit;
                 trigger.infoToggle = infoToggel;
                 trigger.invenToggle = invenToggle;
 

@@ -25,7 +25,7 @@ public sealed class SkillTreeHoverTests : SkillTreeLayoutFixture
         => Host(name, parent).AddComponent<TextMeshProUGUI>();
 
     [UnityTest]
-    public IEnumerator AuthoredNodeTriggersSwapPanelsThroughFirstHoverUnlockExitAndDisable()
+    public IEnumerator AuthoredNodeTriggersKeepInformationOnExitAndRestoreMapOnSuccessfulUnlock()
     {
         Host("Wallet").AddComponent<CurrencyManager>();
         var manager = Host("Manager").AddComponent<SkillTreeManager>();
@@ -70,10 +70,12 @@ public sealed class SkillTreeHoverTests : SkillTreeLayoutFixture
         Assert.That(skill.IsVisible, Is.True, "The very first hover must survive the inactive tooltip's first Awake.");
         Assert.That(skill.dataNameText.text, Is.EqualTo(first.name));
         Assert.That(mapHost.activeSelf, Is.False);
+        ExecuteEvents.Execute(hover.gameObject, pointer, ExecuteEvents.pointerExitHandler);
+        yield return null;
+        Assert.That(skillHost.activeSelf, Is.True, "Leaving the node keeps its information without pinning it against other nodes.");
+        Assert.That(mapHost.activeSelf, Is.False);
         Assert.That(manager.UnlockSkill(first), Is.True);
         yield return null;
-        Assert.That(mapHost.activeSelf, Is.False, "A map progress refresh must not cover a hovered skill.");
-        ExecuteEvents.Execute(hover.gameObject, pointer, ExecuteEvents.pointerExitHandler);
         Assert.That(skillHost.activeSelf, Is.False); Assert.That(mapHost.activeSelf, Is.True);
         Assert.That(map.amountText.text, Is.EqualTo("1"), "Restored map information must include the latest unlock count.");
 
@@ -82,6 +84,12 @@ public sealed class SkillTreeHoverTests : SkillTreeLayoutFixture
         ExecuteEvents.Execute(hover.gameObject, pointer, ExecuteEvents.pointerExitHandler);
         Assert.That(skill.dataNameText.text, Is.EqualTo(second.name));
         Assert.That(skillHost.activeSelf, Is.True); Assert.That(mapHost.activeSelf, Is.False);
+        ExecuteEvents.Execute(otherHover.gameObject, pointer, ExecuteEvents.pointerExitHandler);
+        Assert.That(manager.UnlockSkill(first), Is.False, "An already unlocked skill cannot be purchased twice.");
+        Assert.That(skillHost.activeSelf, Is.True); Assert.That(mapHost.activeSelf, Is.False);
+        panels.SelectMap(0);
+        Assert.That(skillHost.activeSelf, Is.False); Assert.That(mapHost.activeSelf, Is.True);
+        ExecuteEvents.Execute(otherHover.gameObject, pointer, ExecuteEvents.pointerEnterHandler);
         secondNode.gameObject.SetActive(false);
         Assert.That(skillHost.activeSelf, Is.False); Assert.That(mapHost.activeSelf, Is.True);
     }
