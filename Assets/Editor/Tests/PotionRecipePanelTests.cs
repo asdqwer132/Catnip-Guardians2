@@ -92,20 +92,62 @@ public class PotionRecipePanelTests
         Assert.That(store.writes, Is.EqualTo(1), "Crafting the same potion twice must not duplicate its discovery.");
     }
     [Test]
-    public void InvalidRecipesCannotCraftOrGiveFallbackRewardsAndPurchasesDoNotDiscoverRecipes()
+    public void UnmatchedMaterialsProduceFailureAndConsumeOneAttemptWithoutDiscoveringRecipes()
     {
         inventory.AddItem(potion); Assert.That(history.Count, Is.Zero);
+        var failedItem = Item("Failed potion"); manager.failedItem = failedItem;
+        var root = Host("Craft panel", active: false);
+        var panel = root.AddComponent<ItemCombinationPanelUI>(); panel.manager = manager;
+        panel.combineButton = Host("Craft", root.transform).AddComponent<Button>();
+        root.SetActive(true);
+        Assert.That(panel.combineButton.interactable, Is.False);
         inventory.AddItem(a); inventory.AddItem(old);
-        manager.AddMaterial(a); manager.AddMaterial(old);
-        manager.returnFailedItem = true; manager.failedItem = old;
-        Assert.That(manager.CanCraft(), Is.False); Assert.That(manager.GetPreviewResult(), Is.Null);
-        Assert.That(manager.TryCombine(out var failed), Is.False); Assert.That(failed, Is.Null);
+        manager.AddMaterial(a);
+        Assert.That(panel.combineButton.interactable, Is.False);
+        Assert.That(manager.TryCombine(out _), Is.False);
+        Assert.That(manager.GetCurrentMaterialCount(), Is.EqualTo(1));
+        manager.AddMaterial(old);
+        Assert.That(manager.CanCraft(), Is.True); Assert.That(panel.combineButton.interactable, Is.True);
+        Assert.That(manager.GetPreviewResult(), Is.Null);
+        Assert.That(manager.TryCombine(out var failed), Is.True); Assert.That(failed, Is.SameAs(failedItem));
         Assert.That(history.Count, Is.Zero); Assert.That(store.writes, Is.Zero);
-        Assert.That(manager.GetCurrentMaterialCount(), Is.EqualTo(2));
-        Assert.That(inventory.GetItemAmount(old), Is.Zero, "Potion crafting never uses the generic manager's fallback reward.");
+        Assert.That(manager.GetCurrentMaterialCount(), Is.Zero);
+        Assert.That(panel.combineButton.interactable, Is.False);
+        Assert.That(inventory.GetItemAmount(failedItem), Is.EqualTo(1));
+        Assert.That(manager.TryCombine(out _), Is.False, "A consumed attempt cannot be repeated without new materials.");
         manager.ReturnMaterials();
-        Assert.That(inventory.GetItemAmount(a), Is.EqualTo(1));
-        Assert.That(inventory.GetItemAmount(old), Is.EqualTo(1));
+        Assert.That(inventory.GetItemAmount(a) + inventory.GetItemAmount(old), Is.Zero);
+    }
+
+    [Test]
+    public void RecipeMatchingIgnoresOrderButRequiresExactMaterialQuantities()
+    {
+        manager.failedItem = Item("Failed potion");
+        inventory.AddItem(a, 6); inventory.AddItem(b, 3); inventory.AddItem(old);
+        manager.AddMaterial(b); manager.AddMaterial(a); manager.AddMaterial(a);
+        Assert.That(manager.GetPreviewResult(), Is.Null);
+        Assert.That(manager.TryCombine(out var result), Is.True); Assert.That(result, Is.SameAs(potion));
+
+        manager.AddMaterial(a); manager.AddMaterial(b);
+        Assert.That(manager.GetPreviewResult(), Is.Null);
+        Assert.That(manager.TryCombine(out result), Is.True); Assert.That(result, Is.SameAs(manager.failedItem));
+
+        manager.AddMaterial(a); manager.AddMaterial(b); manager.AddMaterial(a); manager.AddMaterial(old);
+        Assert.That(manager.TryCombine(out result), Is.True); Assert.That(result, Is.SameAs(manager.failedItem));
+        Assert.That(inventory.GetItemAmount(potion), Is.EqualTo(1));
+        Assert.That(inventory.GetItemAmount(manager.failedItem), Is.EqualTo(2));
+        Assert.That(history.Count, Is.EqualTo(1)); Assert.That(store.writes, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void TwoUnitsOfTheSameMaterialEnableAnAttempt()
+    {
+        manager.failedItem = Item("Failed potion");
+        inventory.AddItem(a, 2); manager.AddMaterial(a); manager.AddMaterial(a);
+        Assert.That(manager.CanCraft(), Is.True);
+        Assert.That(manager.TryCombine(out var result), Is.True);
+        Assert.That(result, Is.SameAs(manager.failedItem));
+        Assert.That(inventory.GetItemAmount(a), Is.Zero);
     }
 
     [Test]
@@ -283,6 +325,7 @@ public class PotionRecipeAuthoringTests
             var roots = scene.GetRootGameObjects();
             var panel = roots.SelectMany(r => r.GetComponentsInChildren<PotionRecipePanelUI>(true)).Single();
             Assert.That(panel.manager, Is.Not.Null); Assert.That(panel.history, Is.SameAs(panel.manager.recipeHistory));
+            Assert.That(panel.manager.failedItem, Is.Not.Null, "Unmatched potion attempts need their configured failure item.");
             Assert.That(panel.inventory, Is.Not.Null); Assert.That(panel.details, Is.Not.Null);
             Assert.That(panel.details.detailDescriptionText, Is.Not.Null);
             Assert.That(panel.recipeContent.childCount, Is.Zero); Assert.That(panel.materialsContent.childCount, Is.Zero);

@@ -111,6 +111,48 @@ public sealed class SubPlantSlotSelectionTests
 
     [TestCase(true)]
     [TestCase(false)]
+    public void RepeatedInventoryClicksAddOneMaterialEachAndKeepSelectionVisible(bool allowSwitchOff)
+    {
+        var item = Item("A", 6); var ui = LiveInventory(Tooltip());
+        var group = ui.gameObject.AddComponent<ToggleGroup>(); group.allowSwitchOff = allowSwitchOff;
+        var row = ui.slotParent.GetComponentInChildren<SubPlantInventorySlotUI>(); row.slotToggle.group = group;
+        for (int count = 1; count <= 4; count++)
+        {
+            Click(row.slotToggle);
+            Assert.That(manager.GetCurrentMaterialCount(), Is.EqualTo(count));
+            Assert.That(inventory.GetItemAmount(item), Is.EqualTo(6 - count));
+            Assert.That(row.slotToggle.isOn, Is.True);
+        }
+        Click(row.slotToggle); // Full destination cannot spend any more inventory.
+        Assert.That(manager.GetCurrentMaterialCount(), Is.EqualTo(4));
+        Assert.That(inventory.GetItemAmount(item), Is.EqualTo(2));
+        Assert.That(row.slotToggle.isOn, Is.True);
+        manager.ReturnMaterials();
+        Assert.That(row.slotToggle.isOn, Is.False);
+        Assert.That(inventory.GetItemAmount(item), Is.EqualTo(6));
+        Assert.That(group.allowSwitchOff, Is.EqualTo(allowSwitchOff));
+    }
+
+    [Test]
+    public void RepeatedInventorySubmissionAddsOncePerActionAndRespectsDisabledInput()
+    {
+        var item = Item("A", 5); var slot = InventorySlot(item);
+        ExecuteEvents.Execute(slot.gameObject, new BaseEventData(null), ExecuteEvents.submitHandler);
+        ExecuteEvents.Execute(slot.gameObject, new BaseEventData(null), ExecuteEvents.submitHandler);
+        Assert.That(manager.GetCurrentMaterialCount(), Is.EqualTo(2));
+        Assert.That(slot.slotToggle.isOn, Is.True);
+        slot.slotToggle.interactable = false;
+        Click(slot.slotToggle);
+        ExecuteEvents.Execute(slot.gameObject, new BaseEventData(null), ExecuteEvents.submitHandler);
+        Assert.That(manager.GetCurrentMaterialCount(), Is.EqualTo(2));
+        slot.slotToggle.interactable = true;
+        ExecuteEvents.Execute(slot.gameObject, new PointerEventData(null) { button = PointerEventData.InputButton.Right }, ExecuteEvents.pointerClickHandler);
+        Assert.That(manager.GetCurrentMaterialCount(), Is.EqualTo(2));
+        Assert.That(inventory.GetItemAmount(item), Is.EqualTo(3));
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
     public void GroupedMaterialSlotsSwitchOnTheFirstClickAndRespectAllowSwitchOff(bool allowSwitchOff)
     {
         var group = Host("Material toggle group", panel.transform).AddComponent<ToggleGroup>();
@@ -285,7 +327,8 @@ public sealed class SubPlantSlotSelectionTests
     public void HoverModeStillShowsAndHidesInformationAndInventorySelectionStillAddsMaterials()
     {
         var item = Item("A"); var slot = InventorySlot(item); var tooltip = Tooltip();
-        var trigger = slot.GetComponent<ItemTooltipTrigger>(); trigger.tooltipUI = tooltip; trigger.showOnSelection = false;
+        var trigger = slot.GetComponent<ItemTooltipTrigger>(); trigger.tooltipUI = tooltip;
+        trigger.showOnSelection = false; trigger.isPointer = true;
         trigger.OnPointerEnter(new PointerEventData(null)); Assert.That(tooltip.tooltipPanel.activeSelf, Is.True);
         trigger.OnPointerExit(new PointerEventData(null)); Assert.That(tooltip.tooltipPanel.activeSelf, Is.False);
         Click(slot.slotToggle);

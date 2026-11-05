@@ -13,21 +13,23 @@ public class PotionCraftManager : ItemRecipeManager
     private bool preparingRecipe;
     private bool crafting;
 
-    private ItemRecipeData GetCraftableRecipe()
+    // An attempt is allowed with two material units, including repeated items.
+    // Matching a recipe determines the outcome, not whether the button is enabled.
+    public bool CanCraft()
     {
-        if (preparingRecipe || crafting || GetCurrentMaterialCount() < 2 || InventoryManager.instance == null)
-            return null;
+        if (preparingRecipe || crafting || InventoryManager.instance == null)
+            return false;
 
-        var recipe = FindRecipe();
-        return recipe != null && recipe.resultItem != null ? recipe : null;
+        long count = 0;
+        foreach (var entry in currentMaterials)
+            if (entry?.itemData != null && entry.amount > 0) count += entry.amount;
+        return count >= 2;
     }
-
-    // Discovery affects presentation only; the first craft must still be possible.
-    public bool CanCraft() => GetCraftableRecipe() != null;
 
     public override ItemData GetPreviewResult()
     {
-        var recipe = GetCraftableRecipe();
+        if (!CanCraft()) return null;
+        var recipe = FindRecipe();
         return recipe != null && recipeHistory != null && recipeHistory.HasCrafted(recipe.resultItem)
             ? recipe.resultItem : null;
     }
@@ -128,9 +130,13 @@ public class PotionCraftManager : ItemRecipeManager
     public bool TryCombine(out ItemData craftedItem)
     {
         craftedItem = null;
-        var recipe = GetCraftableRecipe();
-        if (recipe == null)
+        if (!CanCraft())
             return false;
+
+        var recipe = FindRecipe();
+        bool success = recipe != null && recipe.resultItem != null;
+        var output = success ? recipe.resultItem : failedItem;
+        if (output == null) return false;
 
         crafting = true;
         try
@@ -139,9 +145,9 @@ public class PotionCraftManager : ItemRecipeManager
             // Spend those reservations before granting the potion so callbacks cannot
             // craft twice or return the same materials. Do not charge inventory again.
             currentMaterials.Clear();
-            resultItem = craftedItem = recipe.resultItem;
+            resultItem = craftedItem = output;
             InventoryManager.instance.AddItem(craftedItem, 1);
-            if (recipeHistory != null) recipeHistory.RecordCrafted(craftedItem);
+            if (success && recipeHistory != null) recipeHistory.RecordCrafted(craftedItem);
             if (craftSuccessEffectUI != null) craftSuccessEffectUI.Play(craftedItem.icon);
             return true;
         }
