@@ -19,6 +19,15 @@ public sealed class SaveDataInspectionTests
     }
     private string directory;
 
+    private sealed class Deletions : ISavePreferenceDeletion
+    {
+        public readonly HashSet<string> keys = new HashSet<string>();
+        public int saves;
+        public void DeleteKey(string key) => keys.Remove(key);
+        public void DeleteAll() => keys.Clear();
+        public void Save() => saves++;
+    }
+
     [SetUp]
     public void SetUp() => directory = Path.Combine(Path.GetTempPath(), "catnip-save-viewer-" + Guid.NewGuid().ToString("N"));
     [TearDown]
@@ -133,5 +142,49 @@ public sealed class SaveDataInspectionTests
         var window = ScriptableObject.CreateInstance<SaveDataViewerWindow>();
         try { Assert.DoesNotThrow(window.RefreshData); }
         finally { UnityEngine.Object.DestroyImmediate(window); }
+    }
+
+    [Test]
+    public void IndividualJsonDeletionRemovesOnlySelectedSaveAndItsPendingWrite()
+    {
+        string selected = Write(PotionRecipeHistory.SaveFileName, "{}");
+        Write(PotionRecipeHistory.SaveFileName + ".tmp", "pending");
+        string other = Write(MergeDiscoveryHistory.SaveFileName, "{}");
+        SaveDataInspection.DeleteJson(directory, selected);
+        Assert.That(File.Exists(selected), Is.False); Assert.That(File.Exists(selected + ".tmp"), Is.False);
+        Assert.That(File.Exists(other), Is.True);
+        Assert.DoesNotThrow(() => SaveDataInspection.DeleteJson(directory, selected));
+    }
+
+    [Test]
+    public void AllJsonDeletionIncludesNestedSavesAndLeavesOtherFilesIntact()
+    {
+        string first = Write(PotionRecipeHistory.SaveFileName, "{}");
+        string nested = Write(Path.Combine("slot-2", "save.json"), "{}");
+        string text = Write("notes.txt", "keep");
+        SaveDataInspection.DeleteAllJson(directory);
+        Assert.That(File.Exists(first), Is.False); Assert.That(File.Exists(nested), Is.False);
+        Assert.That(File.ReadAllText(text), Is.EqualTo("keep"));
+    }
+
+    [Test]
+    public void JsonDeletionRejectsPathsOutsideSaveDirectoryAndNonJsonFiles()
+    {
+        string text = Write("keep.txt", "keep");
+        Assert.Throws<ArgumentException>(() => SaveDataInspection.DeleteJson(directory, text));
+        Assert.Throws<ArgumentException>(() => SaveDataInspection.DeleteJson(directory, Path.Combine(directory, "..", "other.json")));
+        Assert.That(File.ReadAllText(text), Is.EqualTo("keep"));
+    }
+
+    [Test]
+    public void PreferenceDeletionSupportsIndividualKeysAndAllKeysIncludingUnlistedOnes()
+    {
+        var storage = new Deletions();
+        storage.keys.UnionWith(new[] { SettingManager.SHOW_BUFF, "custom-key" });
+        SaveDataInspection.DeletePreference(SettingManager.SHOW_BUFF, storage);
+        Assert.That(storage.keys.SetEquals(new[] { "custom-key" }), Is.True); Assert.That(storage.saves, Is.EqualTo(1));
+        Assert.Throws<ArgumentException>(() => SaveDataInspection.DeletePreference("", storage));
+        SaveDataInspection.DeleteAllPreferences(storage);
+        Assert.That(storage.keys, Is.Empty); Assert.That(storage.saves, Is.EqualTo(2));
     }
 }

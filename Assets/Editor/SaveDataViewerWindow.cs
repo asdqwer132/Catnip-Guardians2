@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
@@ -54,6 +55,8 @@ public sealed class SaveDataViewerWindow : EditorWindow
             if (GUILayout.Button("Refresh", EditorStyles.toolbarButton, GUILayout.Width(75f))) RefreshData();
         }
         EditorGUILayout.LabelField(Application.companyName + " / " + Application.productName, EditorStyles.boldLabel);
+        if (EditorApplication.isPlayingOrWillChangePlaymode)
+            EditorGUILayout.HelpBox("Stop Play mode to delete saved data. Running managers may write cached values back.", MessageType.Info);
         scroll = EditorGUILayout.BeginScrollView(scroll);
         if (tab == 0) DrawJson();
         else DrawPreferences();
@@ -81,6 +84,17 @@ public sealed class SaveDataViewerWindow : EditorWindow
             using (new EditorGUI.DisabledScope(!Directory.Exists(Application.persistentDataPath)))
                 if (GUILayout.Button("Show in folder")) EditorUtility.RevealInFinder(json.Exists ? json.Path : Application.persistentDataPath);
         }
+        using (new EditorGUI.DisabledScope(EditorApplication.isPlayingOrWillChangePlaymode))
+        using (new EditorGUILayout.HorizontalScope())
+        {
+            using (new EditorGUI.DisabledScope(!json.Exists && !File.Exists(json.Path + ".tmp")))
+                if (GUILayout.Button("Delete this JSON"))
+                    ConfirmDeletion("Delete JSON file?", json.Path + "\n\nIts pending .tmp file will also be removed.",
+                        () => SaveDataInspection.DeleteJson(Application.persistentDataPath, json.Path));
+            if (GUILayout.Button("Delete all JSON files"))
+                ConfirmDeletion("Delete all JSON saves?", "Delete all JSON saves and their pending .tmp files in:\n" + Application.persistentDataPath,
+                    () => SaveDataInspection.DeleteAllJson(Application.persistentDataPath));
+        }
         if (!json.Exists)
         {
             EditorGUILayout.LabelField("No saved file yet.");
@@ -101,6 +115,10 @@ public sealed class SaveDataViewerWindow : EditorWindow
     private void DrawPreferences()
     {
         EditorGUILayout.LabelField("PlayerPrefs for this Unity Editor project. Refresh after changing settings.", EditorStyles.wordWrappedLabel);
+        using (new EditorGUI.DisabledScope(EditorApplication.isPlayingOrWillChangePlaymode))
+            if (GUILayout.Button("Delete all PlayerPrefs"))
+                ConfirmDeletion("Delete all PlayerPrefs?", "Delete EVERY PlayerPrefs key for this Unity Editor project, including keys not listed here. Settings and progress will return to their defaults.",
+                    () => SaveDataInspection.DeleteAllPreferences());
         string group = null;
         foreach (var pref in preferences)
         {
@@ -121,14 +139,28 @@ public sealed class SaveDataViewerWindow : EditorWindow
         if (customPreference != null) DrawPreference(customPreference);
     }
 
-    private static void DrawPreference(SavePreferenceSnapshot pref)
+    private void DrawPreference(SavePreferenceSnapshot pref)
     {
         using (new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
         {
             EditorGUILayout.LabelField(new GUIContent(pref.Label, "Default: " + pref.DefaultValue), new GUIContent(pref.Value));
             EditorGUILayout.LabelField("Type / state", pref.Kind + " / " + (pref.HasKey ? "Stored" : "Not set (default)"), EditorStyles.miniLabel);
             EditorGUILayout.SelectableLabel(pref.Key, EditorStyles.miniLabel, GUILayout.Height(EditorGUIUtility.singleLineHeight));
+            using (new EditorGUI.DisabledScope(EditorApplication.isPlayingOrWillChangePlaymode || !pref.HasKey))
+                if (GUILayout.Button("Delete key", GUILayout.Width(95f)))
+                    ConfirmDeletion("Delete PlayerPrefs key?", pref.Key + "\nCurrent value: " + pref.Value,
+                        () => SaveDataInspection.DeletePreference(pref.Key));
         }
+    }
+
+    private void ConfirmDeletion(string title, string message, Action delete)
+    {
+        if (!EditorUtility.DisplayDialog(title, message, "Delete", "Cancel")) return;
+        try { delete(); }
+        catch (Exception error) when (error is IOException || error is UnauthorizedAccessException || error is ArgumentException)
+        { EditorUtility.DisplayDialog("Could not delete saved data", error.Message, "OK"); }
+        RefreshData();
+        GUIUtility.ExitGUI();
     }
 
     private static void Selectable(string value, float height = 0f)

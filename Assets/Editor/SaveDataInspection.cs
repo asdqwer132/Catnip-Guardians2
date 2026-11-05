@@ -8,6 +8,20 @@ using UnityEngine;
 
 internal enum SavePreferenceKind { Integer, Float, Boolean, String }
 
+internal interface ISavePreferenceDeletion
+{
+    void DeleteKey(string key);
+    void DeleteAll();
+    void Save();
+}
+
+internal sealed class UnitySavePreferenceDeletion : ISavePreferenceDeletion
+{
+    public void DeleteKey(string key) => PlayerPrefs.DeleteKey(key);
+    public void DeleteAll() => PlayerPrefs.DeleteAll();
+    public void Save() => PlayerPrefs.Save();
+}
+
 internal interface ISavePreferenceReader
 {
     bool HasKey(string key);
@@ -42,6 +56,42 @@ internal sealed class SaveJsonSnapshot
 // Reads the storage APIs directly. It neither creates managers nor modifies their cached state.
 internal static class SaveDataInspection
 {
+    public static void DeleteJson(string directory, string path)
+    {
+        string root = System.IO.Path.GetFullPath(directory).TrimEnd(System.IO.Path.DirectorySeparatorChar, System.IO.Path.AltDirectorySeparatorChar) + System.IO.Path.DirectorySeparatorChar;
+        string target = System.IO.Path.GetFullPath(path);
+        var comparison = Application.platform == RuntimePlatform.WindowsEditor ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+        if (!target.StartsWith(root, comparison) || !target.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
+            throw new ArgumentException("Only JSON files inside the save directory can be deleted.");
+        for (string current = target; current != null && current.StartsWith(root, comparison); current = System.IO.Path.GetDirectoryName(current))
+            if ((File.Exists(current) || Directory.Exists(current)) && (File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0)
+                throw new IOException("Deletion through a symbolic link is not supported: " + current);
+        if (File.Exists(target)) File.Delete(target);
+        if (File.Exists(target + ".tmp")) File.Delete(target + ".tmp");
+    }
+
+    public static void DeleteAllJson(string directory)
+    {
+        var paths = ListJsonFiles(directory, out string error);
+        if (!string.IsNullOrEmpty(error)) throw new IOException(error);
+        foreach (string path in paths) DeleteJson(directory, path);
+    }
+
+    public static void DeletePreference(string key, ISavePreferenceDeletion storage = null)
+    {
+        if (string.IsNullOrWhiteSpace(key)) throw new ArgumentException("A PlayerPrefs key is required.");
+        storage = storage ?? new UnitySavePreferenceDeletion();
+        storage.DeleteKey(key);
+        storage.Save();
+    }
+
+    public static void DeleteAllPreferences(ISavePreferenceDeletion storage = null)
+    {
+        storage = storage ?? new UnitySavePreferenceDeletion();
+        storage.DeleteAll();
+        storage.Save();
+    }
+
     private sealed class Preference
     {
         public string Group, Label, Key;
