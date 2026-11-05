@@ -30,6 +30,10 @@ public class InventoryUI : ItemSearchFilterTargetUI
     private readonly List<GameObject> quickSlotObjects = new List<GameObject>();
     private readonly List<BaseItemSlotUI> quickSlotUIs = new List<BaseItemSlotUI>();
 
+    protected virtual bool ListenForMaterialReturns => true;
+    protected virtual bool CanDisplayItem(InventoryItem item) => IsInventoryItemVisible(item);
+    protected virtual void ConfigureSlot(BaseItemSlotUI slot) { }
+
     public void Init()
     {
         BindMaterialReturns();
@@ -69,6 +73,7 @@ public class InventoryUI : ItemSearchFilterTargetUI
 
     private void BindMaterialReturns()
     {
+        if (!ListenForMaterialReturns) return;
         ItemRecipeManager source = materialSource;
         if (source == null)
         {
@@ -140,7 +145,7 @@ public class InventoryUI : ItemSearchFilterTargetUI
 
         foreach (InventoryItem item in InventoryManager.instance.items)
         {
-            if (!IsInventoryItemVisible(item))
+            if (!CanDisplayItem(item))
                 continue;
 
             result.Add(item);
@@ -201,6 +206,7 @@ public class InventoryUI : ItemSearchFilterTargetUI
                 });
             }
 
+            ConfigureSlot(slotUI);
             quickSlotObjects.Add(slotObj);
             quickSlotUIs.Add(slotUI);
         }

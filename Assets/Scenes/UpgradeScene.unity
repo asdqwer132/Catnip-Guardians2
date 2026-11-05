@@ -543,7 +543,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New potion name
+  m_text:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a1b0c2e5851feb40e99694907c5f47e9, type: 2}
   m_sharedMaterial: {fileID: -3747181013191543084, guid: a1b0c2e5851feb40e99694907c5f47e9, type: 2}
@@ -998,7 +998,7 @@ PrefabInstance:
       objectReference: {fileID: 1301261417}
     - target: {fileID: 6500863067822367230, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
-      value: 4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6500863067822367230, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -1134,6 +1134,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6345719850758304572, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
   m_PrefabInstance: {fileID: 45209823}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &45209825 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
+  m_PrefabInstance: {fileID: 45209823}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5035d55bb44a4b90a1efd646cfb2ebab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PotionEquipSlotUI
 --- !u!114 &51304169 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9128605483782793079, guid: a45ab729053b53b4e9c509979f8c7692, type: 3}
@@ -5452,7 +5463,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 234908421}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -5465,7 +5476,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 190971951, guid: 89d6b9627a3a13b48948eca9d1c6f9f5, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -5585,7 +5596,7 @@ PrefabInstance:
       objectReference: {fileID: 1301261417}
     - target: {fileID: 6500863067822367230, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
-      value: 4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6500863067822367230, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -5725,6 +5736,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6345719850758304572, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
   m_PrefabInstance: {fileID: 236818600}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &236818602 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
+  m_PrefabInstance: {fileID: 236818600}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5035d55bb44a4b90a1efd646cfb2ebab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PotionEquipSlotUI
 --- !u!1001 &237594801
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8676,7 +8698,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 333306230}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -8689,7 +8711,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 190971951, guid: 89d6b9627a3a13b48948eca9d1c6f9f5, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -16370,7 +16392,7 @@ PrefabInstance:
       objectReference: {fileID: 1301261417}
     - target: {fileID: 6500863067822367230, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
-      value: 4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6500863067822367230, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -16510,6 +16532,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6345719850758304572, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
   m_PrefabInstance: {fileID: 590247537}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &590247539 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
+  m_PrefabInstance: {fileID: 590247537}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5035d55bb44a4b90a1efd646cfb2ebab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PotionEquipSlotUI
 --- !u!1 &593982217
 GameObject:
   m_ObjectHideFlags: 0
@@ -17895,6 +17928,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 644756140}
+  - component: {fileID: 644756141}
   m_Layer: 5
   m_Name: PotionEquip
   m_TagString: Untagged
@@ -17923,6 +17957,39 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -50, y: -50}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &644756141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 644756139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df1c05663409424691ecf3d791482942, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PotionEquipmentPanelUI
+  manager: {fileID: 875675674}
+  inventoryView: {fileID: 1748633612}
+  equipmentSlots:
+  - {fileID: 45209825}
+  - {fileID: 1623956672}
+  - {fileID: 949045613}
+  - {fileID: 1759258625}
+  - {fileID: 236818602}
+  - {fileID: 1799780489}
+  - {fileID: 590247539}
+  - {fileID: 970439393}
+  selectedDetails: {fileID: 696343473}
+  notSelectedDetails: {fileID: 436525984}
+  equippedPotion: {fileID: 2109920027}
+  newPotion: {fileID: 1776001222}
+  replacementArrow: {fileID: 1678681785}
+  selectedConfirmArea: {fileID: 198964393}
+  notSelectedConfirmArea: {fileID: 2006647206}
+  unequipButton: {fileID: 1686352704}
+  replaceButton: {fileID: 1424370446}
+  clearButton: {fileID: 1063991687}
 --- !u!1 &654430583
 GameObject:
   m_ObjectHideFlags: 0
@@ -22231,6 +22298,7 @@ GameObject:
   - component: {fileID: 875675671}
   - component: {fileID: 875675672}
   - component: {fileID: 875675673}
+  - component: {fileID: 875675674}
   m_Layer: 0
   m_Name: PotionManager
   m_TagString: Untagged
@@ -22290,6 +22358,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a69385c0cd849819bbb9efc64829c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PotionRecipeHistory
+--- !u!114 &875675674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 875675670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3de33e2a263e466d9cf09ec72508ac25, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PotionEquipmentManager
+  inventory: {fileID: 1979291818}
+  slots:
+  - locked: 0
+    potion: {fileID: 0}
+  - locked: 0
+    potion: {fileID: 0}
+  - locked: 0
+    potion: {fileID: 0}
+  - locked: 0
+    potion: {fileID: 0}
+  - locked: 0
+    potion: {fileID: 0}
+  - locked: 0
+    potion: {fileID: 0}
+  - locked: 0
+    potion: {fileID: 0}
+  - locked: 0
+    potion: {fileID: 0}
 --- !u!1001 &878860095
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23824,7 +23922,7 @@ PrefabInstance:
       objectReference: {fileID: 1301261417}
     - target: {fileID: 6500863067822367230, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
-      value: 4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6500863067822367230, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -23964,6 +24062,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6345719850758304572, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
   m_PrefabInstance: {fileID: 949045611}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &949045613 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
+  m_PrefabInstance: {fileID: 949045611}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5035d55bb44a4b90a1efd646cfb2ebab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PotionEquipSlotUI
 --- !u!1001 &955795642
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24504,7 +24613,7 @@ PrefabInstance:
       objectReference: {fileID: 1301261417}
     - target: {fileID: 6500863067822367230, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
-      value: 4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6500863067822367230, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -24644,6 +24753,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6345719850758304572, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
   m_PrefabInstance: {fileID: 970439391}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &970439393 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
+  m_PrefabInstance: {fileID: 970439391}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5035d55bb44a4b90a1efd646cfb2ebab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PotionEquipSlotUI
 --- !u!1 &973850284
 GameObject:
   m_ObjectHideFlags: 0
@@ -25025,7 +25145,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Equiped potion name
+  m_text:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a1b0c2e5851feb40e99694907c5f47e9, type: 2}
   m_sharedMaterial: {fileID: -3747181013191543084, guid: a1b0c2e5851feb40e99694907c5f47e9, type: 2}
@@ -27133,17 +27253,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
---- !u!114 &1062670475 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6092755726076457832, guid: b63e1a8f67d497f4588fce12f71571fb, type: 3}
-  m_PrefabInstance: {fileID: 1748633607}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd896b871a4ba59479c106217bb1d150, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventoryUI
 --- !u!1 &1063307056
 GameObject:
   m_ObjectHideFlags: 0
@@ -27387,6 +27496,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8551487739303024711, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
   m_PrefabInstance: {fileID: 1063991685}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1063991687 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
+  m_PrefabInstance: {fileID: 1063991685}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1001 &1076891082
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -35874,6 +35994,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Craft
       objectReference: {fileID: 0}
+    - target: {fileID: 3217733625769636221, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3648852083055054787, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_text
       value: Craft
@@ -35988,6 +36112,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8551487739303024711, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
   m_PrefabInstance: {fileID: 1424370444}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1424370446 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
+  m_PrefabInstance: {fileID: 1424370444}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1 &1424742910
 GameObject:
   m_ObjectHideFlags: 0
@@ -40561,7 +40696,7 @@ PrefabInstance:
       objectReference: {fileID: 1301261417}
     - target: {fileID: 6500863067822367230, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
-      value: 4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6500863067822367230, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -40701,6 +40836,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6345719850758304572, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
   m_PrefabInstance: {fileID: 1623956670}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1623956672 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
+  m_PrefabInstance: {fileID: 1623956670}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5035d55bb44a4b90a1efd646cfb2ebab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PotionEquipSlotUI
 --- !u!1 &1628472989
 GameObject:
   m_ObjectHideFlags: 0
@@ -41059,7 +41205,7 @@ MonoBehaviour:
   skillTreeUI: {fileID: 1482356631}
   inventoryUIs:
   - {fileID: 827058195}
-  - {fileID: 1062670475}
+  - {fileID: 1748633612}
   - {fileID: 51304169}
   sceneMoveManager: {fileID: 910000300001}
   materialInventory: {fileID: 1979291818}
@@ -42515,7 +42661,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1678681786
 RectTransform:
   m_ObjectHideFlags: 0
@@ -42935,6 +43081,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Unequip
       objectReference: {fileID: 0}
+    - target: {fileID: 3217733625769636221, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3648852083055054787, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_text
       value: Unequip
@@ -43029,6 +43179,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8551487739303024711, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
   m_PrefabInstance: {fileID: 1686352702}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1686352704 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
+  m_PrefabInstance: {fileID: 1686352702}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1 &1694622383
 GameObject:
   m_ObjectHideFlags: 0
@@ -44534,6 +44695,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: 270.8333
       objectReference: {fileID: 0}
+    - target: {fileID: 5352491990154218257, guid: b63e1a8f67d497f4588fce12f71571fb, type: 3}
+      propertyPath: targetUI
+      value:
+      objectReference: {fileID: 1748633612}
     - target: {fileID: 5489865717622814540, guid: b63e1a8f67d497f4588fce12f71571fb, type: 3}
       propertyPath: m_AnchorMax.x
       value: 1
@@ -44598,11 +44763,76 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: -60
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6092755726076457832, guid: b63e1a8f67d497f4588fce12f71571fb, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6973859931171565152, guid: b63e1a8f67d497f4588fce12f71571fb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1748633612}
   m_SourcePrefab: {fileID: 100100000, guid: b63e1a8f67d497f4588fce12f71571fb, type: 3}
+--- !u!114 &1748633608 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4095557553382139620, guid: b63e1a8f67d497f4588fce12f71571fb, type: 3}
+  m_PrefabInstance: {fileID: 1748633607}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2496adaf7d1069943a771ae27d7e6843, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipUI
+--- !u!224 &1748633609 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7711879813726985792, guid: b63e1a8f67d497f4588fce12f71571fb, type: 3}
+  m_PrefabInstance: {fileID: 1748633607}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1748633610 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6973859931171565152, guid: b63e1a8f67d497f4588fce12f71571fb, type: 3}
+  m_PrefabInstance: {fileID: 1748633607}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1748633611 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4816595183796709329, guid: b63e1a8f67d497f4588fce12f71571fb, type: 3}
+  m_PrefabInstance: {fileID: 1748633607}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1748633610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ToggleGroup
+--- !u!114 &1748633612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1748633610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa0b0f427dab4265a7f87cb7de841b30, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PotionEquipmentInventoryUI
+  searchFilter:
+    useCategory: 0
+    category: 0
+    useSeries: 0
+    series: 1
+    useGrade: 0
+    grade: 0
+  categoryMask: ffffffff
+  seriesMask: 000000000100000002000000030000000400000005000000060000000700000008000000
+  gradeMask: ffffffff
+  slotParent: {fileID: 1748633609}
+  slotPrefab: {fileID: 7136583117844029784, guid: 7c346ae05f3fe0873b14ded718cab271, type: 3}
+  tooltipUI: {fileID: 1748633608}
+  showTooltipOnSelection: 1
+  selectionGroup: {fileID: 1748633611}
+  materialSource: {fileID: 875675672}
+  equipmentPanel: {fileID: 644756141}
 --- !u!1 &1750186781
 GameObject:
   m_ObjectHideFlags: 0
@@ -44965,7 +45195,7 @@ PrefabInstance:
       objectReference: {fileID: 1301261417}
     - target: {fileID: 6500863067822367230, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
-      value: 4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6500863067822367230, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -45105,6 +45335,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6345719850758304572, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
   m_PrefabInstance: {fileID: 1759258623}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1759258625 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
+  m_PrefabInstance: {fileID: 1759258623}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5035d55bb44a4b90a1efd646cfb2ebab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PotionEquipSlotUI
 --- !u!1001 &1764439238
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -46278,13 +46519,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1776001221}
+  - component: {fileID: 1776001222}
   m_Layer: 5
   m_Name: Selected
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1776001221
 RectTransform:
   m_ObjectHideFlags: 0
@@ -46307,6 +46549,31 @@ RectTransform:
   m_AnchoredPosition: {x: 469.16666, y: -160}
   m_SizeDelta: {x: 200, y: 290}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1776001222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1776001220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c6c7c8c4472a413aabb1ed6b7618812, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ItemDefinitionUI
+  icon: {fileID: 234908423}
+  dataNameText: {fileID: 26861988}
+  descriptionText: {fileID: 0}
+  detailDescriptionText: {fileID: 0}
+  dataSource: {fileID: 0}
+  hideEmptyDescription: 0
+  hideEmptyDetailDescription: 1
+  seriesText: {fileID: 0}
+  gradeText: {fileID: 0}
+  seriesIcon: {fileID: 0}
+  gradeIcon: {fileID: 0}
+  series: 0
+  grade: -1
 --- !u!1001 &1777458070
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -47530,7 +47797,7 @@ PrefabInstance:
       objectReference: {fileID: 1301261417}
     - target: {fileID: 6500863067822367230, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.size
-      value: 4
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6500863067822367230, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -47670,6 +47937,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6345719850758304572, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
   m_PrefabInstance: {fileID: 1799780487}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1799780489 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
+  m_PrefabInstance: {fileID: 1799780487}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5035d55bb44a4b90a1efd646cfb2ebab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PotionEquipSlotUI
 --- !u!1 &1800138096
 GameObject:
   m_ObjectHideFlags: 0
@@ -54006,13 +54284,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2109920026}
+  - component: {fileID: 2109920027}
   m_Layer: 5
   m_Name: Equiped
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2109920026
 RectTransform:
   m_ObjectHideFlags: 0
@@ -54035,6 +54314,31 @@ RectTransform:
   m_AnchoredPosition: {x: 139.16666, y: -160}
   m_SizeDelta: {x: 200, y: 290}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2109920027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2109920025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c6c7c8c4472a413aabb1ed6b7618812, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ItemDefinitionUI
+  icon: {fileID: 333306232}
+  dataNameText: {fileID: 989736249}
+  descriptionText: {fileID: 0}
+  detailDescriptionText: {fileID: 0}
+  dataSource: {fileID: 0}
+  hideEmptyDescription: 0
+  hideEmptyDetailDescription: 1
+  seriesText: {fileID: 0}
+  gradeText: {fileID: 0}
+  seriesIcon: {fileID: 0}
+  gradeIcon: {fileID: 0}
+  series: 0
+  grade: -1
 --- !u!1001 &2113179463
 PrefabInstance:
   m_ObjectHideFlags: 0

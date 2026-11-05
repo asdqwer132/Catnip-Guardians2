@@ -147,6 +147,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6345719850758304572}
   - component: {fileID: 6500863067822367230}
+  - component: {fileID: 5688156519195858012}
   m_Layer: 5
   m_Name: PotionEquipSlot
   m_TagString: Untagged
@@ -222,7 +223,46 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_IsOn: 1
+  m_IsOn: 0
+--- !u!114 &5688156519195858012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1128468844478580642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5035d55bb44a4b90a1efd646cfb2ebab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PotionEquipSlotUI
+  icon: {fileID: 7959508048502999691}
+  dataNameText: {fileID: 0}
+  descriptionText: {fileID: 0}
+  detailDescriptionText: {fileID: 0}
+  dataSource: {fileID: 0}
+  hideEmptyDescription: 0
+  hideEmptyDetailDescription: 1
+  seriesText: {fileID: 0}
+  gradeText: {fileID: 0}
+  seriesIcon: {fileID: 0}
+  gradeIcon: {fileID: 0}
+  series: 0
+  grade: -1
+  amountImage: {fileID: 0}
+  amountText: {fileID: 0}
+  locked: {fileID: 4776647456038925181}
+  ready: {fileID: 1201660906467768346}
+  IsLocked: 0
+  categoryText: {fileID: 0}
+  weightText: {fileID: 0}
+  cooldownText: {fileID: 0}
+  currentItem:
+    itemData: {fileID: 0}
+    amount: 0
+  slotButton: {fileID: 0}
+  slotToggle: {fileID: 6500863067822367230}
+  slotNumberText: {fileID: 7109114783874992853}
 --- !u!1 &1201660906467768346
 GameObject:
   m_ObjectHideFlags: 0
@@ -240,7 +280,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5412342708167497820
 RectTransform:
   m_ObjectHideFlags: 0
@@ -350,7 +390,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1262787087464108270}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -363,7 +403,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 190971951, guid: 89d6b9627a3a13b48948eca9d1c6f9f5, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
