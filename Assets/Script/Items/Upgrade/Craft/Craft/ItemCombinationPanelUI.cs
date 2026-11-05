@@ -9,7 +9,7 @@ public sealed class ItemCombinationPanelUI : MonoBehaviour
     public InventorySlotUI resultSlot;
     public ItemTooltipTrigger resultTooltip;
     public Button combineButton;
-    public ShopPurchaseResultPanelUI resultPanel;
+    public ResultPanelUI resultPanel;
 
     public ItemCombinationManager Manager => manager;
 

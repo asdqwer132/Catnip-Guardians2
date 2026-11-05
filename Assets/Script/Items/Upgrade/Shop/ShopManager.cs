@@ -17,7 +17,7 @@ public class ShopManager : MonoBehaviour
     public ShopBoxInfoUI boxInfoUI;
 
     [Header("Purchase Result")]
-    public ShopPurchaseResultPanelUI purchaseResultPanelUI;
+    public ResultPanelUI purchaseResultPanelUI;
 
     private List<ItemBoxData> currentShopBoxes = new List<ItemBoxData>();
     private ItemBoxData currentSelectedBox;

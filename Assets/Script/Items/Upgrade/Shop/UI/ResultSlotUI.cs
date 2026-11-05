@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ShopPurchaseResultSlotUI : MonoBehaviour
+public class ResultSlotUI : MonoBehaviour
 {
     [Header("UI")]
     public Image iconImage;

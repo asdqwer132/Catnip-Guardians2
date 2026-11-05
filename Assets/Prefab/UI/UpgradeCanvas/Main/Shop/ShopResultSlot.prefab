@@ -381,7 +381,7 @@ GameObject:
   - component: {fileID: 4122984926874993190}
   - component: {fileID: 9170416510781388119}
   - component: {fileID: 4645257464552506007}
-  - component: {fileID: 660314717990358531}
+  - component: {fileID: 7904810608403991496}
   m_Layer: 5
   m_Name: ShopResultSlot
   m_TagString: Untagged
@@ -449,7 +449,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &660314717990358531
+--- !u!114 &7904810608403991496
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -458,9 +458,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 6290563323005572185}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ebb93ad7cd6b19f44892f3b14a3d16ed, type: 3}
+  m_Script: {fileID: 11500000, guid: 5c3f7ef541f926f49aadd644d46f817b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ShopPurchaseResultSlotUI
+  m_EditorClassIdentifier: Assembly-CSharp::ResultSlotUI
   iconImage: {fileID: 2216131771238147903}
   nameText: {fileID: 9168399122201652280}
   countText: {fileID: 3528722285627592232}

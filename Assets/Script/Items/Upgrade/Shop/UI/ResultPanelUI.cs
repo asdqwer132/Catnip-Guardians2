@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ShopPurchaseResultPanelUI : MonoBehaviour
+public class ResultPanelUI : MonoBehaviour
 {
     [Header("Root")]
     public GameObject panelRoot;
@@ -14,7 +14,7 @@ public class ShopPurchaseResultPanelUI : MonoBehaviour
 
     [Header("Result List")]
     public Transform itemListParent;
-    public ShopPurchaseResultSlotUI resultSlotPrefab;
+    public ResultSlotUI resultSlotPrefab;
 
     [Header("Confirm")]
     public Button confirmButton;
@@ -158,7 +158,7 @@ public class ShopPurchaseResultPanelUI : MonoBehaviour
             if (result.itemData == null || result.count <= 0)
                 continue;
 
-            ShopPurchaseResultSlotUI slot = Instantiate(resultSlotPrefab, itemListParent);
+            ResultSlotUI slot = Instantiate(resultSlotPrefab, itemListParent);
             slot.SetSlot(result.itemData, result.count);
             spawnedSlots.Add(slot.gameObject);
         }
