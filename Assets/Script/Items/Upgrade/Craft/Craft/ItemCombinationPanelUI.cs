@@ -21,6 +21,8 @@ public sealed class ItemCombinationPanelUI : MonoBehaviour
             if (manager.recipeHistory != null) manager.recipeHistory.Changed += RefreshUI;
         }
         RefreshUI();
+        if (combineButton != null)
+            combineButton.onClick.AddListener(manager.Combine);
     }
 
     private void OnDisable()

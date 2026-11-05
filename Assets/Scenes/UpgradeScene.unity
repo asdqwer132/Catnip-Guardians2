@@ -1134,6 +1134,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6345719850758304572, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
   m_PrefabInstance: {fileID: 45209823}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &51304169 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9128605483782793079, guid: a45ab729053b53b4e9c509979f8c7692, type: 3}
+  m_PrefabInstance: {fileID: 668823022667250664}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd896b871a4ba59479c106217bb1d150, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryUI
 --- !u!1 &56719790
 GameObject:
   m_ObjectHideFlags: 0
@@ -21423,6 +21434,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 824168496}
   m_CullTransparentMesh: 1
+--- !u!114 &827058195 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6092755726076457832, guid: b63e1a8f67d497f4588fce12f71571fb, type: 3}
+  m_PrefabInstance: {fileID: 6775275061191960007}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd896b871a4ba59479c106217bb1d150, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryUI
 --- !u!224 &829188086 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2969261783221912670, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
@@ -22250,7 +22272,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 0482ef0afa568284f8596fbc36e89253, type: 2}
     - {fileID: 11400000, guid: 9fbddf1699953b94ea4d468848fc38bd, type: 2}
   currentMaterials: []
-  resultItem: {fileID: 11400000, guid: 4c8dbe18b0fb4d86aa524c97eac94bd3, type: 2}
+  resultItem: {fileID: 0}
   failedItem: {fileID: 11400000, guid: 8af16961f0ab11444945aea6bd38ea29, type: 2}
   maxMaterialCount: 4
   returnFailedItem: 1
@@ -27111,6 +27133,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
+--- !u!114 &1062670475 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6092755726076457832, guid: b63e1a8f67d497f4588fce12f71571fb, type: 3}
+  m_PrefabInstance: {fileID: 1748633607}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd896b871a4ba59479c106217bb1d150, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryUI
 --- !u!1 &1063307056
 GameObject:
   m_ObjectHideFlags: 0
@@ -30419,7 +30452,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.038951796}
+  m_AnchoredPosition: {x: 0, y: -0.000015610533}
   m_SizeDelta: {x: 0, y: 265.5}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1190655909
@@ -41024,7 +41057,10 @@ MonoBehaviour:
   buffSkillManager: {fileID: 1190752872}
   mergeBoxUpgrades: {fileID: 1482356635}
   skillTreeUI: {fileID: 1482356631}
-  inventoryUIs: []
+  inventoryUIs:
+  - {fileID: 827058195}
+  - {fileID: 1062670475}
+  - {fileID: 51304169}
   sceneMoveManager: {fileID: 910000300001}
   materialInventory: {fileID: 1979291818}
 --- !u!114 &1644459206
