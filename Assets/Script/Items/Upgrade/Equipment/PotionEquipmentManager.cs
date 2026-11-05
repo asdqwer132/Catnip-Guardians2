@@ -29,6 +29,13 @@ public sealed class PotionEquipmentManager : MonoBehaviour
     public ItemData GetPotion(int index) => ValidIndex(index) ? slots[index].potion : null;
     public int GetAvailableCount(ItemData item) => Inventory != null ? Inventory.GetItemAmount(item) : 0;
 
+    public int FindFirstEmptySlot()
+    {
+        for (int i = 0; i < SlotCount; i++)
+            if (!IsLocked(i) && GetPotion(i) == null) return i;
+        return -1;
+    }
+
     public bool SetSlotLocked(int index, bool locked)
     {
         if (changing || !ValidIndex(index)) return false;
@@ -50,6 +57,7 @@ public sealed class PotionEquipmentManager : MonoBehaviour
         if (changing || stock == null || IsLocked(index) || !IsPotion(potion)) return false;
         var previous = slots[index].potion;
         if (replace != (previous != null)) return false;
+        if (replace && previous == potion) return false;
 
         changing = true;
         bool changed = false;

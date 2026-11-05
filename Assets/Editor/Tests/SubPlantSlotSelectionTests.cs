@@ -106,7 +106,34 @@ public sealed class SubPlantSlotSelectionTests
         Assert.That(manager.GetMaterialAt(3).itemData, Is.SameAs(item));
         Assert.That(manager.GetMaterialAt(0), Is.Null);
         Assert.That(inventory.GetItemAmount(item), Is.EqualTo(3));
-        Assert.That(panel.materialSlots[3].slotToggle.isOn, Is.True);
+        Assert.That(panel.materialSlots[3].slotToggle.isOn, Is.False);
+        Assert.That(manager.SelectedMaterialSlot, Is.EqualTo(-1));
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public void FillingSelectedEmptyMaterialSlotDeselectsItAndNextClickUsesFirstUnlockedEmptySlot(bool allowSwitchOff)
+    {
+        var item = Item("A", 5); var ui = LiveInventory(Tooltip());
+        var group = Host("Material selection", panel.transform).AddComponent<ToggleGroup>(); group.allowSwitchOff = allowSwitchOff;
+        foreach (var slot in panel.materialSlots) slot.slotToggle.group = group;
+        panel.materialSlots[0].LockSlot();
+        Click(panel.materialSlots[3].slotToggle);
+        Assert.That(manager.SelectedMaterialSlot, Is.EqualTo(3));
+        Assert.That(manager.TryAddMaterial(Asset<ItemData>()), Is.False);
+        Assert.That(manager.SelectedMaterialSlot, Is.EqualTo(3), "Failed additions must keep the requested destination.");
+        var row = ui.slotParent.GetComponentInChildren<SubPlantInventorySlotUI>();
+        Click(row.slotToggle);
+        Assert.That(manager.GetMaterialAt(3).itemData, Is.SameAs(item));
+        Assert.That(manager.SelectedMaterialSlot, Is.EqualTo(-1));
+        Assert.That(panel.materialSlots.All(s => !s.slotToggle.isOn), Is.True);
+        Assert.That(row.slotToggle.isOn, Is.True, "Only the destination selection is cleared.");
+        Click(row.slotToggle);
+        Assert.That(manager.GetMaterialAt(0), Is.Null);
+        Assert.That(manager.GetMaterialAt(1).itemData, Is.SameAs(item));
+        Assert.That(manager.GetCurrentMaterialCount(), Is.EqualTo(2));
+        Assert.That(inventory.GetItemAmount(item), Is.EqualTo(3));
+        Assert.That(group.allowSwitchOff, Is.EqualTo(allowSwitchOff));
     }
 
     [TestCase(true)]
@@ -249,7 +276,10 @@ public sealed class SubPlantSlotSelectionTests
     {
         var a = Item("A"); var b = Item("B", 1);
         manager.SelectMaterialSlot(2); manager.AddMaterial(a);
+        Assert.That(manager.SelectedMaterialSlot, Is.EqualTo(-1));
+        manager.SelectMaterialSlot(2); // Replacing an occupied slot requires explicitly selecting it again.
         Assert.That(manager.TryAddMaterial(b), Is.True);
+        Assert.That(manager.SelectedMaterialSlot, Is.EqualTo(2));
         Assert.That(inventory.GetItemAmount(a), Is.EqualTo(4));
         Assert.That(inventory.GetItemAmount(b), Is.Zero);
         Assert.That(manager.GetMaterialAt(2).itemData, Is.SameAs(b));

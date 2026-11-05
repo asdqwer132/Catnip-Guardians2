@@ -129,7 +129,7 @@ public sealed class PotionEquipmentTests
         Assert.That(callbacks, Is.EqualTo(2));
         Assert.That(manager.GetPotion(0), Is.SameAs(second));
         Assert.That(inventory.GetItemAmount(first), Is.EqualTo(2)); Assert.That(inventory.GetItemAmount(second), Is.EqualTo(1));
-        Assert.That(manager.TryReplace(0, second), Is.True, "Replacing the same type must also conserve its quantity.");
+        Assert.That(manager.TryReplace(0, second), Is.False, "The same potion must not replace itself.");
         Assert.That(inventory.GetItemAmount(second), Is.EqualTo(1));
         manager.TryUnequip(0); Assert.That(inventory.GetItemAmount(second), Is.EqualTo(2));
     }
@@ -137,15 +137,18 @@ public sealed class PotionEquipmentTests
     [Test]
     public void AuthoredInventoryEquipsSelectedEmptySlotAndOnlyConfirmedReplacementSpendsStock()
     {
-        inventory.AddItem(first, 2); inventory.AddItem(second, 2);
+        inventory.AddItem(first, 3); inventory.AddItem(second, 2);
         inventory.AddItem(Potion("Material", ItemSeries.Mineral));
         var crafting = Host("Separate crafting manager").AddComponent<PotionCraftManager>();
         var panel = Panel(crafting);
         Assert.That(panel.inventoryView.slotParent.GetComponentsInChildren<PotionEquipInventorySlotUI>().Length, Is.EqualTo(2));
         Click(Row(panel, first).slotToggle);
-        Assert.That(inventory.GetItemAmount(first), Is.EqualTo(2), "No chosen equipment slot means no transfer.");
+        Assert.That(inventory.GetItemAmount(first), Is.EqualTo(2));
+        Assert.That(manager.GetPotion(0), Is.SameAs(first), "An unselected destination uses the first empty slot.");
         Click(panel.equipmentSlots[2].slotToggle); Click(Row(panel, first).slotToggle);
         Assert.That(manager.GetPotion(2), Is.SameAs(first)); Assert.That(inventory.GetItemAmount(first), Is.EqualTo(1));
+        Assert.That(panel.SelectedSlot, Is.EqualTo(-1)); Assert.That(panel.equipmentSlots[2].slotToggle.isOn, Is.False);
+        Click(panel.equipmentSlots[2].slotToggle);
         Assert.That(panel.equippedPotion.dataNameText.text, Is.EqualTo("Potion A"));
         Assert.That(panel.equippedPotion.gameObject.activeSelf, Is.True); Assert.That(panel.newPotion.gameObject.activeSelf, Is.False);
         Assert.That(panel.unequipButton.interactable, Is.True); Assert.That(panel.replaceButton.gameObject.activeSelf, Is.False);
@@ -165,6 +168,92 @@ public sealed class PotionEquipmentTests
         panel.unequipButton.onClick.Invoke();
         Assert.That(manager.GetPotion(2), Is.Null); Assert.That(inventory.GetItemAmount(second), Is.EqualTo(2));
         Assert.That(panel.selectedDetails.activeSelf, Is.False);
+    }
+
+    [Test]
+    public void AutomaticEquipmentSkipsLockedSlotsAndNeverOverwritesWhenFull()
+    {
+        inventory.AddItem(first, 10); manager.SetSlotLocked(0, true); manager.SetSlotLocked(3, true);
+        var panel = Panel(); var row = Row(panel, first);
+        foreach (int index in new[] { 1, 2, 4, 5, 6, 7 })
+        {
+            Click(row.slotToggle);
+            Assert.That(manager.GetPotion(index), Is.SameAs(first));
+            Assert.That(panel.SelectedSlot, Is.EqualTo(-1));
+            Assert.That(panel.equipmentSlots.All(s => !s.slotToggle.isOn), Is.True);
+            Assert.That(row.slotToggle.isOn, Is.True);
+        }
+        Click(row.slotToggle);
+        Assert.That(inventory.GetItemAmount(first), Is.EqualTo(4));
+        Assert.That(manager.FindFirstEmptySlot(), Is.EqualTo(-1));
+        Assert.That(manager.GetPotion(0), Is.Null); Assert.That(manager.GetPotion(3), Is.Null);
+        Assert.That(panel.PendingPotion, Is.Null); Assert.That(panel.selectedDetails.activeSelf, Is.False);
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public void FillingExplicitEmptyEquipmentSlotClearsOnlyDestinationEvenInRequiredToggleGroup(bool allowSwitchOff)
+    {
+        inventory.AddItem(first, 3); var panel = Panel();
+        var group = panel.equipmentSlots[0].slotToggle.group; group.allowSwitchOff = allowSwitchOff;
+        Click(panel.equipmentSlots[2].slotToggle);
+        var row = Row(panel, first); Click(row.slotToggle);
+        Assert.That(manager.GetPotion(2), Is.SameAs(first)); Assert.That(panel.SelectedSlot, Is.EqualTo(-1));
+        Assert.That(panel.equipmentSlots.All(s => !s.slotToggle.isOn), Is.True);
+        Assert.That(row.slotToggle.isOn, Is.True);
+        Click(row.slotToggle);
+        Assert.That(manager.GetPotion(0), Is.SameAs(first));
+        Assert.That(inventory.GetItemAmount(first), Is.EqualTo(1));
+        Assert.That(panel.PendingPotion, Is.Null); Assert.That(group.allowSwitchOff, Is.EqualTo(allowSwitchOff));
+    }
+
+    [Test]
+    public void ClickingEquippedPotionCannotProposeOrConfirmAnIdenticalReplacement()
+    {
+        inventory.AddItem(first, 3); inventory.AddItem(second);
+        manager.TryEquip(0, first); var panel = Panel();
+        Click(panel.equipmentSlots[0].slotToggle); Click(Row(panel, second).slotToggle);
+        Assert.That(panel.PendingPotion, Is.SameAs(second));
+        var row = Row(panel, first); Click(row.slotToggle); Click(row.slotToggle);
+        Assert.That(panel.PendingPotion, Is.Null); Assert.That(panel.SelectedSlot, Is.Zero);
+        Assert.That(panel.newPotion.gameObject.activeSelf, Is.False); Assert.That(panel.replaceButton.gameObject.activeSelf, Is.False);
+        Assert.That(panel.unequipButton.interactable, Is.True);
+        panel.ConfirmReplace();
+        Assert.That(inventory.GetItemAmount(first), Is.EqualTo(2));
+        Assert.That(inventory.GetItemAmount(second), Is.EqualTo(1));
+        Assert.That(manager.GetPotion(0), Is.SameAs(first));
+    }
+
+    [Test]
+    public void EmptySlotFilledThroughManagerAlsoClearsDestinationSelection()
+    {
+        inventory.AddItem(first, 2); var panel = Panel();
+        Click(panel.equipmentSlots[2].slotToggle);
+        Assert.That(manager.TryEquip(2, first), Is.True);
+        Assert.That(panel.SelectedSlot, Is.EqualTo(-1)); Assert.That(panel.equipmentSlots[2].slotToggle.isOn, Is.False);
+        Click(Row(panel, first).slotToggle);
+        Assert.That(manager.GetPotion(0), Is.SameAs(first));
+        Assert.That(manager.GetPotion(2), Is.SameAs(first)); Assert.That(inventory.GetItemAmount(first), Is.Zero);
+    }
+
+    [Test]
+    public void EquipmentValueChangesOnlySelectAndEachClickOrSubmitPerformsExactlyOneAction()
+    {
+        inventory.AddItem(first, 5); var panel = Panel(); var row = Row(panel, first);
+        Assert.That(row.slotToggle, Is.TypeOf<PotionEquipInventoryToggle>());
+        int valueChanges = 0; row.slotToggle.onValueChanged.AddListener(_ => valueChanges++);
+        row.slotToggle.isOn = true;
+        Assert.That(manager.GetPotion(0), Is.Null, "Selection changes cannot trigger equipment actions.");
+        Click(row.slotToggle); Click(row.slotToggle);
+        ExecuteEvents.Execute(row.gameObject, new BaseEventData(null), ExecuteEvents.submitHandler);
+        Assert.That(manager.GetPotion(0), Is.SameAs(first)); Assert.That(manager.GetPotion(1), Is.SameAs(first));
+        Assert.That(manager.GetPotion(2), Is.SameAs(first)); Assert.That(manager.GetPotion(3), Is.Null);
+        Assert.That(inventory.GetItemAmount(first), Is.EqualTo(2));
+        Assert.That(valueChanges, Is.EqualTo(1), "Repeated equipment actions must not replay toggle value changes.");
+        ExecuteEvents.Execute(row.gameObject, new PointerEventData(null) { button = PointerEventData.InputButton.Right }, ExecuteEvents.pointerClickHandler);
+        row.slotToggle.interactable = false;
+        Click(row.slotToggle); ExecuteEvents.Execute(row.gameObject, new BaseEventData(null), ExecuteEvents.submitHandler);
+        Assert.That(inventory.GetItemAmount(first), Is.EqualTo(2)); Assert.That(manager.GetPotion(3), Is.Null);
     }
 
     [Test]
@@ -256,6 +345,8 @@ public sealed class PotionEquipmentAuthoringTests
             var prefab = panel.inventoryView.slotPrefab;
             Assert.That(prefab.GetComponent<PotionEquipInventorySlotUI>(), Is.Not.Null);
             Assert.That(prefab.GetComponent<SubPlantInventorySlotUI>(), Is.Null);
+            Assert.That(prefab.GetComponent<PotionEquipInventoryToggle>(), Is.Not.Null);
+            Assert.That(prefab.GetComponent<RepeatClickToggle>(), Is.Null);
             Assert.That(prefab.GetComponent<PotionEquipInventorySlotUI>().amountText, Is.Not.Null);
             Assert.That(panel.equippedPotion.icon, Is.Not.Null); Assert.That(panel.newPotion.dataNameText, Is.Not.Null);
             Assert.That(panel.unequipButton, Is.Not.Null); Assert.That(panel.replaceButton, Is.Not.Null); Assert.That(panel.clearButton, Is.Not.Null);
@@ -263,6 +354,7 @@ public sealed class PotionEquipmentAuthoringTests
             Assert.That(craft.manager, Is.Not.Null);
             var craftInventory = craft.transform.Find("Main/Main/Padding/Pannels/InventoryPotionCraft/Inventory").GetComponent<InventoryUI>();
             Assert.That(craftInventory.slotPrefab.GetComponent<SubPlantInventorySlotUI>(), Is.Not.Null);
+            Assert.That(craftInventory.slotPrefab.GetComponent<RepeatClickToggle>(), Is.Not.Null);
             var search = panel.inventoryView.GetComponentInChildren<InventorySearchUI>(true);
             Assert.That(search.GetTargetUI(), Is.SameAs(panel.inventoryView));
         }

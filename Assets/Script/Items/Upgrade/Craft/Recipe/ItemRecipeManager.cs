@@ -57,8 +57,12 @@ public class ItemRecipeManager : MonoBehaviour
 
     private void SetMaterialAt(int index, InventoryItem item)
     {
+        var previous = GetMaterialAt(index);
+        bool wasEmpty = previous == null || previous.itemData == null || previous.amount <= 0;
         while (currentMaterials.Count <= index) currentMaterials.Add(null);
         currentMaterials[index] = item;
+        if (wasEmpty && item?.itemData != null && item.amount > 0 && SelectedMaterialSlot == index)
+            SelectMaterialSlot(-1);
     }
 
     public bool TryAddMaterial(ItemData itemData)

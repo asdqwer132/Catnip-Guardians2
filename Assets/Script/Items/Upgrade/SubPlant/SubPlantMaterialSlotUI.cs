@@ -52,7 +52,9 @@ public class SubPlantMaterialSlotUI : ClickableItemSlotUI
 
     private void ApplySelection(int index)
     {
-        if (slotToggle != null) slotToggle.SetIsOnWithoutNotify(index == materialIndex && !IsLocked);
+        if (slotToggle == null) return;
+        if (index == materialIndex && !IsLocked) slotToggle.SetIsOnWithoutNotify(true);
+        else ResetSelection();
     }
 
     public override void LockSlot()
