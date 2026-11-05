@@ -2,7 +2,7 @@ using UnityEngine;
 
 public static class StorySave
 {
-    private const string StoryChapterProgressKey = "StoryChapterProgress";
+    public const string StoryChapterProgressKey = "StoryChapterProgress";
 
     public static int GetStoryChapterProgress()
     {

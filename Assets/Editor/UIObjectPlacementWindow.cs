@@ -16,7 +16,7 @@ namespace Catnip.EditorTools
         private Vector2 scroll;
         private string result;
 
-        [MenuItem("Catnip/Tools/UI Object Placement")]
+        [MenuItem("Tools/UI/UI Object Placement")]
         private static void Open()
         {
             var window = GetWindow<UIObjectPlacementWindow>("UI 기준 배치");

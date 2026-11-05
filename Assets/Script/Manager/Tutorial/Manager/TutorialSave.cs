@@ -2,7 +2,7 @@ using UnityEngine;
 
 public static class TutorialSave
 {
-    private const string TutorialProgressKey = "TutorialProgress";
+    public const string TutorialProgressKey = "TutorialProgress";
 
     public static TutorialProgress GetProgress()
     {

@@ -7,6 +7,7 @@ using UnityEngine;
 [DefaultExecutionOrder(-50), DisallowMultipleComponent]
 public sealed class MergeBoxUpgradeManager : MonoBehaviour
 {
+    public const string SaveFileName = "merge-box-upgrades.json";
     [Serializable] private sealed class Progress
     {
         public List<string> unlockedSkillIds = new List<string>();
@@ -40,7 +41,7 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
     private void Load()
     {
         if (loaded) return;
-        if (store == null) store = new MergeBoxUpgradeFileStore(Path.Combine(Application.persistentDataPath, "merge-box-upgrades.json"));
+        if (store == null) store = new MergeBoxUpgradeFileStore(Path.Combine(Application.persistentDataPath, SaveFileName));
         string json = store.Read();
         if (!string.IsNullOrEmpty(json)) progress = JsonUtility.FromJson<Progress>(json) ?? new Progress();
         if (progress.unlockedSkillIds == null) progress.unlockedSkillIds = new List<string>();

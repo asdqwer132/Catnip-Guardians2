@@ -31,7 +31,7 @@ namespace Catnip.EditorTools
         private Vector2 scroll;
         private string result;
 
-        [MenuItem("Catnip/Tools/UI Line Prefab")]
+        [MenuItem("Tools/UI/UI Line Prefab")]
         private static void Open()
         {
             var window = GetWindow<UILinePrefabWindow>("UI Line Prefab");

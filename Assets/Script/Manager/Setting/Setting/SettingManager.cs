@@ -16,14 +16,14 @@ public class SettingManager : MonoBehaviour
     [Header("Setting Change Listeners")]
     [SerializeField] private List<MonoBehaviour> settingListeners = new List<MonoBehaviour>();
 
-    private const string MASTER_VOLUME = "Setting_MasterVolume";
-    private const string BGM_VOLUME = "Setting_BgmVolume";
-    private const string SFX_VOLUME = "Setting_SfxVolume";
-    private const string CURSOR_SCALE = "Setting_CursorScale";
-    private const string INDICATOR_SPRITE_SIZE = "Setting_IndicatorSpriteSize";
-    private const string SHOW_DAMAGE_POPUP = "Setting_ShowDamagePopup";
-    private const string SHOW_BUFF = "Setting_ShowBuff";
-    private const string SHOW_HEALTH_BAR = "Setting_ShowHealthBar";
+    public const string MASTER_VOLUME = "Setting_MasterVolume";
+    public const string BGM_VOLUME = "Setting_BgmVolume";
+    public const string SFX_VOLUME = "Setting_SfxVolume";
+    public const string CURSOR_SCALE = "Setting_CursorScale";
+    public const string INDICATOR_SPRITE_SIZE = "Setting_IndicatorSpriteSize";
+    public const string SHOW_DAMAGE_POPUP = "Setting_ShowDamagePopup";
+    public const string SHOW_BUFF = "Setting_ShowBuff";
+    public const string SHOW_HEALTH_BAR = "Setting_ShowHealthBar";
 
     private void Awake()
     {

@@ -29,6 +29,7 @@ public sealed class PotionRecipeFileStore : IPotionRecipeHistoryStore
 [DisallowMultipleComponent]
 public sealed class PotionRecipeHistory : MonoBehaviour
 {
+    public const string SaveFileName = "potion-discoveries.json";
     [Serializable] private sealed class SaveData { public List<string> craftedPotionIds = new List<string>(); }
     private readonly HashSet<string> crafted = new HashSet<string>(StringComparer.Ordinal);
     private IPotionRecipeHistoryStore store;
@@ -36,7 +37,7 @@ public sealed class PotionRecipeHistory : MonoBehaviour
     public event Action Changed;
     public int Count { get { EnsureLoaded(); return crafted.Count; } }
     private IPotionRecipeHistoryStore Store => store ?? (store = new PotionRecipeFileStore(
-        Path.Combine(Application.persistentDataPath, "potion-discoveries.json")));
+        Path.Combine(Application.persistentDataPath, SaveFileName)));
     public void SetSaveStore(IPotionRecipeHistoryStore value)
     {
         store = value ?? throw new ArgumentNullException(nameof(value));

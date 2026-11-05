@@ -34,6 +34,7 @@ public sealed class MergeDiscoveryFileStore : IMergeDiscoveryStore
 [DisallowMultipleComponent]
 public sealed class MergeDiscoveryHistory : MonoBehaviour
 {
+    public const string SaveFileName = "merge-discoveries.json";
     [Serializable]
     private sealed class SaveData
     {
@@ -46,7 +47,7 @@ public sealed class MergeDiscoveryHistory : MonoBehaviour
     public event Action Changed;
     public int Count { get { EnsureLoaded(); return crafted.Count; } }
     private IMergeDiscoveryStore Store => store ?? (store = new MergeDiscoveryFileStore(
-        Path.Combine(Application.persistentDataPath, "merge-discoveries.json")));
+        Path.Combine(Application.persistentDataPath, SaveFileName)));
 
     public void SetSaveStore(IMergeDiscoveryStore value)
     {

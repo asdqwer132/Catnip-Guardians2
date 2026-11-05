@@ -31,9 +31,9 @@ public static class CoreScenePlayBootstrap
             SessionState.EraseString("Catnip.SceneToPlay");
         }
     }
-    [MenuItem("Catnip/Scenes/Select Play Settings")]
+    [MenuItem("Tools/Scenes/Select Play Settings")]
     private static void SelectSettings() => Selection.activeObject = AssetDatabase.LoadAssetAtPath<ScenePlaySettings>(SettingsPath);
-    [MenuItem("Catnip/Scenes/Open Core Additively")]
+    [MenuItem("Tools/Scenes/Open Core Additively")]
     private static void OpenCore()
     {
         if (!SceneManager.GetSceneByName(GameSceneRoutes.Core).isLoaded)
