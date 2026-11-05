@@ -21,6 +21,7 @@ public class SkillNodeUI : MonoBehaviour
 
     public SkillNodeData SkillNodeData => skillNodeData;
     public IReadOnlyList<GameObject> Lines => lines;
+    public bool IsVisible { get; private set; } = true;
 
     public void SetData(SkillNodeData skillNodeData, GameObject[] lines)
     {
@@ -73,6 +74,7 @@ public class SkillNodeUI : MonoBehaviour
         if (skillNodeData == null)
         {
             SetNodeVisible(false);
+            SetLinesUnlocked(false);
             return;
         }
 
@@ -87,14 +89,9 @@ public class SkillNodeUI : MonoBehaviour
 
         bool isCannotClick = !isUnlocked && !canUnlock;
         bool isCanClick = !isUnlocked && canUnlock;
+        SetNodeVisible(!hideUnavailableNodes || !isCannotClick);
         SetLinesUnlocked(isUnlocked);
-        if (hideUnavailableNodes && isCannotClick)
-        {
-            SetNodeVisible(false);
-            return;
-        }
-
-        SetNodeVisible(true);
+        if (!IsVisible) return;
 
         if (iconImage != null)
         {
@@ -127,14 +124,23 @@ public class SkillNodeUI : MonoBehaviour
         foreach (var line in lines)
         {
             if (line == null) continue;
-            if (line.TryGetComponent<SkillTreeConnectionUI>(out var connection)) connection.SetUnlocked(unlocked);
-            else if (line.TryGetComponent<SkillTreeLineUI>(out var segment)) segment.SetUnlocked(unlocked);
-            else line.SetActive(unlocked); // 이전 씬/프리팹의 선 참조도 유지합니다.
+            if (line.TryGetComponent<SkillTreeConnectionUI>(out var connection))
+            {
+                connection.SetUnlocked(unlocked);
+                connection.RefreshGeometry();
+            }
+            else if (line.TryGetComponent<SkillTreeLineUI>(out var segment))
+            {
+                line.SetActive(IsVisible);
+                segment.SetUnlocked(unlocked);
+            }
+            else line.SetActive(IsVisible && unlocked);
         }
     }
 
     private void SetNodeVisible(bool visible)
     {
+        IsVisible = visible;
         if (nodeRootObject != null)
             nodeRootObject.SetActive(visible);
 

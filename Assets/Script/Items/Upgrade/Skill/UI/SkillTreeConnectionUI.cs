@@ -22,6 +22,14 @@ public sealed class SkillTreeConnectionUI : MonoBehaviour
 
     public void RefreshGeometry()
     {
+        // Keep the controller active so a later unlock can reveal its segments again.
+        if (Application.isPlaying &&
+            ((from != null && !from.IsVisible) || (to != null && !to.IsVisible)))
+        {
+            Hide(horizontalLine);
+            Hide(verticalLine);
+            return;
+        }
         var space = transform as RectTransform;
         var startRect = from != null ? from.transform as RectTransform : null;
         var endRect = to != null ? to.transform as RectTransform : null;

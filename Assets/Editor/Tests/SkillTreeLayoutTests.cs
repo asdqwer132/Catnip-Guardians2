@@ -189,6 +189,33 @@ public sealed class SkillTreeLayoutTests : SkillTreeLayoutFixture
 public sealed class SkillTreeLayoutAuthoringTests
 {
     [Test]
+    public void SkillHoverInjectorTargetsTheAuthoredSubInformationPanels()
+    {
+        var scene = EditorSceneManager.OpenScene("Assets/Scenes/UpgradeScene.unity", OpenSceneMode.Single);
+        try
+        {
+            var roots = scene.GetRootGameObjects();
+            var panel = roots.SelectMany(r => r.GetComponentsInChildren<SkillTreeMapPanel>(true)).Single();
+            var injector = roots.SelectMany(r => r.GetComponentsInChildren<SkillTreeUIInjecter>(true)).Single();
+            Assert.That(panel.nodeInformation, Is.TypeOf<CostTooltipUI>());
+            Assert.That(panel.nodeInformation.name, Is.EqualTo("SkillInfo"));
+            Assert.That(panel.mapInformation.name, Is.EqualTo("MapInfo"));
+            Assert.That(panel.mapInformation.GetType(), Is.EqualTo(typeof(ItemTooltipUI)));
+            Assert.That(panel.nodeInformation.transform.parent, Is.SameAs(panel.mapInformation.transform.parent));
+            Assert.That(injector.tooltipUI, Is.SameAs(panel.nodeInformation));
+            Assert.That(panel.nodeInformation.alternatePanels, Does.Contain(panel.mapInformation.tooltipPanel));
+            Assert.That(panel.nodeInformation.removePannel, Is.True);
+            injector.Inject();
+            var triggers = injector.NodesParents.Where(p => p != null)
+                .SelectMany(p => p.GetComponentsInChildren<ToggleTooltipTrigger>(true))
+                .Where(t => t.GetComponent<SkillNodeTooltipProvider>() != null).ToArray();
+            Assert.That(triggers.Length, Is.GreaterThan(0));
+            Assert.That(triggers.All(t => t.tooltipUI == panel.nodeInformation && t.infoToggle == null && t.invenToggle == null), Is.True);
+        }
+        finally { EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single); }
+    }
+
+    [Test]
     public void ExistingSkillGraphsHaveSavedFreePositionsSeparateLineStatesAndExplicitNodeSprites()
     {
         var scene = EditorSceneManager.OpenScene("Assets/Scenes/UpgradeScene.unity", OpenSceneMode.Single);
@@ -235,6 +262,60 @@ public sealed class SkillTreeStateTests : SkillTreeLayoutFixture
     {
         var texture = new Texture2D(2, 2); owned.Add(texture);
         var sprite = UnityEngine.Sprite.Create(texture, new Rect(0, 0, 2, 2), Vector2.zero); owned.Add(sprite); return sprite;
+    }
+    [UnityTest]
+    public IEnumerator HiddenEndpointsHideConnectionsAndUnlockingRestoresThemAfterGeometryUpdates()
+    {
+        Host("Wallet").AddComponent<CurrencyManager>();
+        var manager = Host("Manager").AddComponent<SkillTreeManager>();
+        var root = Host("Tree"); var tree = root.AddComponent<SkillTreeUI>();
+        var a = Data("A"); var b = Data("B"); b.requiredSkills.Add(a);
+        var source = Host("A", root.transform).AddComponent<SkillNodeUI>();
+        var target = Host("B", root.transform).AddComponent<SkillNodeUI>();
+        target.GetComponent<RectTransform>().anchoredPosition = new Vector2(300, 200);
+        foreach (var node in new[] { source, target })
+        {
+            Set(node, "nodeRootObject", Host("Visual", node.transform));
+            var settings = new SerializedObject(node);
+            settings.FindProperty("hideUnavailableNodes").boolValue = true;
+            settings.ApplyModifiedPropertiesWithoutUndo();
+        }
+        var connection = Host("Connection", root.transform).AddComponent<SkillTreeConnectionUI>();
+        connection.from = source; connection.to = target;
+        connection.horizontalLine = Line("Horizontal", connection.transform);
+        connection.verticalLine = Line("Vertical", connection.transform);
+        var legacySegment = Line("Legacy segment", root.transform);
+        var legacyLine = Host("Legacy line", root.transform);
+        source.SetData(a, new[] { connection.gameObject, legacySegment.gameObject, legacyLine });
+        target.SetData(b, null); tree.Init();
+        yield return null;
+        Assert.That(source.IsVisible, Is.True); Assert.That(target.IsVisible, Is.False);
+        Assert.That(connection.horizontalLine.gameObject.activeSelf, Is.False);
+        Assert.That(connection.verticalLine.gameObject.activeSelf, Is.False);
+
+        Assert.That(manager.UnlockSkill(a), Is.True);
+        yield return null;
+        Assert.That(target.IsVisible, Is.True);
+        Assert.That(connection.horizontalLine.gameObject.activeSelf, Is.True);
+        Assert.That(connection.verticalLine.gameObject.activeSelf, Is.True);
+        Assert.That(connection.horizontalLine.unlockedLine.activeSelf, Is.True);
+
+        a.requiredSkills.Add(Data("Unavailable prerequisite"));
+        manager.ClearAllSkills();
+        yield return null;
+        Assert.That(source.IsVisible, Is.False);
+        Assert.That(connection.horizontalLine.gameObject.activeSelf, Is.False);
+        Assert.That(connection.verticalLine.gameObject.activeSelf, Is.False);
+        Assert.That(legacySegment.gameObject.activeSelf, Is.False);
+        Assert.That(legacyLine.activeSelf, Is.False);
+        Assert.That(connection.gameObject.activeSelf, Is.True, "The controller must remain able to restore its segments.");
+
+        manager.RestoreUnlockedSkills(new[] { a, b });
+        yield return null;
+        Assert.That(connection.horizontalLine.gameObject.activeSelf, Is.True);
+        Assert.That(connection.verticalLine.gameObject.activeSelf, Is.True);
+        Assert.That(legacySegment.gameObject.activeSelf, Is.True);
+        Assert.That(legacyLine.activeSelf, Is.True);
     }
     [Test]
     public void EnabledTreeBindsLateManagerAndUpdatesIconsWithoutManualInitialization()

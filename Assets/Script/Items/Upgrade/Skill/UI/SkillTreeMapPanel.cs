@@ -29,6 +29,8 @@ public sealed class SkillTreeMapPanel : MonoBehaviour
 
     private void OnEnable()
     {
+        if (nodeInformation != null)
+            nodeInformation.VisibilityChanged += OnNodeVisibilityChanged;
         listeners = new UnityAction<bool>[maps.Length];
         for (int i = 0; i < maps.Length; i++)
         {
@@ -60,6 +62,8 @@ public sealed class SkillTreeMapPanel : MonoBehaviour
 
     private void OnDisable()
     {
+        if (nodeInformation != null)
+            nodeInformation.VisibilityChanged -= OnNodeVisibilityChanged;
         if (subscribedManager != null)
             subscribedManager.OnSkillTreeChanged -= RefreshInformation;
         subscribedManager = null;
@@ -102,7 +106,7 @@ public sealed class SkillTreeMapPanel : MonoBehaviour
         SkillMapTooltipProvider provider = maps[selectedIndex].information;
         if (provider == null)
             return;
-        if (mapInformation != null)
+        if (mapInformation != null && (nodeInformation == null || !nodeInformation.IsVisible))
             mapInformation.Show(provider);
         SkillMapData map = provider.MapData;
         if (progressFill != null && map != null)
@@ -115,5 +119,10 @@ public sealed class SkillTreeMapPanel : MonoBehaviour
         {
             mapInfo.toggleText.text = mapInfo.information.MapData.GetDataName();
         }
+    }
+
+    private void OnNodeVisibilityChanged(bool visible)
+    {
+        if (!visible && isActiveAndEnabled) RefreshInformation();
     }
 }

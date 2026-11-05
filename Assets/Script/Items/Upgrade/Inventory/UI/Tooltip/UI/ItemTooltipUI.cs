@@ -32,6 +32,9 @@ public class ItemTooltipUI : ItemDefinitionUI
     private Canvas rootCanvas;
     private Camera uiCamera;
 
+    public bool IsVisible => currentOwner != null && tooltipPanel != null && tooltipPanel.activeSelf;
+    public event System.Action<bool> VisibilityChanged;
+
     private void Awake()
     {
         if (tooltipPanel == null)
@@ -45,7 +48,8 @@ public class ItemTooltipUI : ItemDefinitionUI
         if (rootCanvas != null && rootCanvas.renderMode != RenderMode.ScreenSpaceOverlay)
             uiCamera = rootCanvas.worldCamera;
 
-        Hide();
+        // Show may activate an authored panel before its first Awake.
+        if (currentOwner == null) Hide();
     }
 
     public void Show(ITooltipContentProvider provider)
@@ -88,6 +92,7 @@ public class ItemTooltipUI : ItemDefinitionUI
         SetAlternatePanelsActive(false);
 
         UpdatePosition();
+        VisibilityChanged?.Invoke(true);
     }
 
     public void Hide()
@@ -102,6 +107,7 @@ public class ItemTooltipUI : ItemDefinitionUI
             tooltipPanel.SetActive(false);
 
         SetAlternatePanelsActive(true);
+        VisibilityChanged?.Invoke(false);
     }
 
     private void SetAlternatePanelsActive(bool active)
