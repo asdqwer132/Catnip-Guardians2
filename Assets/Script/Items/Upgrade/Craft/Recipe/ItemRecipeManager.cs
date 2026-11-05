@@ -377,7 +377,7 @@ public class ItemRecipeManager : MonoBehaviour
     }
 
     // Preview only: selecting materials must not craft or use the resulting item.
-    public ItemData GetPreviewResult()
+    public virtual ItemData GetPreviewResult()
     {
         ItemRecipeData recipe = FindRecipe();
         return recipe != null ? recipe.resultItem : returnFailedItem ? failedItem : null;

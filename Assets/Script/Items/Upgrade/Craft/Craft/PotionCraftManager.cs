@@ -1,13 +1,36 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Scripting.APIUpdating;
 
-public class ItemCombinationManager : ItemRecipeManager
+[MovedFrom(true, sourceAssembly: "Assembly-CSharp", sourceClassName: "ItemCombinationManager")]
+[AddComponentMenu("Items/Crafting/Potion Craft Manager")]
+public class PotionCraftManager : ItemRecipeManager
 {
-    public static ItemCombinationManager instance;
+    public static PotionCraftManager instance;
     public CraftSuccessEffectUI craftSuccessEffectUI;
     public PotionRecipeHistory recipeHistory;
     private bool preparingRecipe;
+    private bool crafting;
+
+    private ItemRecipeData GetCraftableRecipe()
+    {
+        if (preparingRecipe || crafting || GetCurrentMaterialCount() < 2 || InventoryManager.instance == null)
+            return null;
+
+        var recipe = FindRecipe();
+        return recipe != null && recipe.resultItem != null ? recipe : null;
+    }
+
+    // Discovery affects presentation only; the first craft must still be possible.
+    public bool CanCraft() => GetCraftableRecipe() != null;
+
+    public override ItemData GetPreviewResult()
+    {
+        var recipe = GetCraftableRecipe();
+        return recipe != null && recipeHistory != null && recipeHistory.HasCrafted(recipe.resultItem)
+            ? recipe.resultItem : null;
+    }
 
     public int GetAvailableMaterialCount(ItemData item)
     {
@@ -30,13 +53,13 @@ public class ItemCombinationManager : ItemRecipeManager
         return total >= 2 && total <= slots.Count;
     }
     public bool CanPrepareRecipe(ItemRecipeData recipe)
-        => !preparingRecipe && TryPlanRecipe(recipe, out _, out _);
+        => !preparingRecipe && !crafting && TryPlanRecipe(recipe, out _, out _);
 
     // Reserve only the difference between the old and new material sets. A failed
     // reservation leaves existing crafting slots untouched and refunds withdrawals.
     public bool TryPrepareRecipe(ItemRecipeData recipe)
     {
-        if (preparingRecipe || !TryPlanRecipe(recipe, out var required, out var slots)) return false;
+        if (preparingRecipe || crafting || !TryPlanRecipe(recipe, out var required, out var slots)) return false;
         var inventory = InventoryManager.instance;
         var previous = new List<InventoryItem>();
         var held = new Dictionary<ItemData, int>();
@@ -105,21 +128,27 @@ public class ItemCombinationManager : ItemRecipeManager
     public bool TryCombine(out ItemData craftedItem)
     {
         craftedItem = null;
-        if (preparingRecipe || GetCurrentMaterialCount() < 2 || InventoryManager.instance == null)
+        var recipe = GetCraftableRecipe();
+        if (recipe == null)
             return false;
 
-        var recipe = FindRecipe();
-        resultItem = recipe != null ? recipe.resultItem : returnFailedItem ? failedItem : null;
-        if (resultItem == null)
-            return false;
-
-        craftedItem = resultItem;
-        // Grant the result without executing its item effects or throwing it.
-        InventoryManager.instance.AddItem(craftedItem, 1);
-        ClearMaterials();
-        if (recipe != null && recipeHistory != null) recipeHistory.RecordCrafted(craftedItem);
-        if (craftSuccessEffectUI != null)
-            craftSuccessEffectUI.Play(craftedItem.icon);
-        return true;
+        crafting = true;
+        try
+        {
+            // Slots already reserve inventory quantities through ItemRecipeManager.
+            // Spend those reservations before granting the potion so callbacks cannot
+            // craft twice or return the same materials. Do not charge inventory again.
+            currentMaterials.Clear();
+            resultItem = craftedItem = recipe.resultItem;
+            InventoryManager.instance.AddItem(craftedItem, 1);
+            if (recipeHistory != null) recipeHistory.RecordCrafted(craftedItem);
+            if (craftSuccessEffectUI != null) craftSuccessEffectUI.Play(craftedItem.icon);
+            return true;
+        }
+        finally
+        {
+            crafting = false;
+            onMaterialChanged?.Invoke();
+        }
     }
 }

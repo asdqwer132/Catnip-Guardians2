@@ -23,7 +23,7 @@ public class PotionRecipePanelTests
     }
     private readonly List<Object> owned = new List<Object>();
     private InventoryManager inventory;
-    private ItemCombinationManager manager;
+    private PotionCraftManager manager;
     private PotionRecipeHistory history;
     private MemoryStore store;
     private ItemData a, b, old, potion;
@@ -52,7 +52,7 @@ public class PotionRecipePanelTests
         EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         yield return new EnterPlayMode();
         inventory = Host("Inventory").AddComponent<InventoryManager>(); InventoryManager.instance = inventory;
-        manager = Host("Potion manager").AddComponent<ItemCombinationManager>();
+        manager = Host("Potion manager").AddComponent<PotionCraftManager>();
         history = manager.gameObject.AddComponent<PotionRecipeHistory>(); store = new MemoryStore(); history.SetSaveStore(store);
         manager.recipeHistory = history; manager.returnFailedItem = false;
         a = Item("Material A"); b = Item("Material B"); old = Item("Old material"); potion = Item("Potion A");
@@ -75,24 +75,111 @@ public class PotionRecipePanelTests
         inventory.AddItem(a, 4); inventory.AddItem(b, 2);
         Assert.That(manager.TryPrepareRecipe(recipe), Is.True);
         Assert.That(history.Count, Is.Zero, "Preparing or previewing cannot discover a potion.");
-        Assert.That(manager.GetPreviewResult(), Is.SameAs(potion)); Assert.That(history.Count, Is.Zero);
+        Assert.That(manager.GetPreviewResult(), Is.Null);
+        Assert.That(((ItemRecipeManager)manager).GetPreviewResult(), Is.Null, "Base-typed callers must not leak an undiscovered result.");
+        Assert.That(manager.CanCraft(), Is.True, "The first craft must not depend on its hidden preview.");
+        Assert.That(history.Count, Is.Zero);
         Assert.That(manager.TryCombine(out var crafted), Is.True); Assert.That(crafted, Is.SameAs(potion));
         Assert.That(inventory.GetItemAmount(potion), Is.EqualTo(1)); Assert.That(history.HasCrafted(potion), Is.True);
         Assert.That(store.writes, Is.EqualTo(1));
-        Assert.That(manager.TryPrepareRecipe(recipe), Is.True); manager.TryCombine(out _);
-        Assert.That(store.writes, Is.EqualTo(1), "Crafting the same potion twice must not duplicate its discovery.");
         var reloaded = Host("Reloaded history").AddComponent<PotionRecipeHistory>(); reloaded.SetSaveStore(store);
         var renamedAsset = Item(potion.dataId); renamedAsset.name = "Renamed potion asset";
         Assert.That(reloaded.HasCrafted(renamedAsset), Is.True);
+        manager.recipeHistory = reloaded;
+        Assert.That(manager.TryPrepareRecipe(recipe), Is.True);
+        Assert.That(manager.GetPreviewResult(), Is.SameAs(potion), "Saved discoveries enable previews after reload.");
+        manager.TryCombine(out _);
+        Assert.That(store.writes, Is.EqualTo(1), "Crafting the same potion twice must not duplicate its discovery.");
     }
     [Test]
-    public void FailureRewardsAndInventoryPurchasesDoNotDiscoverRecipes()
+    public void InvalidRecipesCannotCraftOrGiveFallbackRewardsAndPurchasesDoNotDiscoverRecipes()
     {
         inventory.AddItem(potion); Assert.That(history.Count, Is.Zero);
-        manager.currentMaterials.Add(new InventoryItem(a, 1)); manager.currentMaterials.Add(new InventoryItem(old, 1));
+        inventory.AddItem(a); inventory.AddItem(old);
+        manager.AddMaterial(a); manager.AddMaterial(old);
         manager.returnFailedItem = true; manager.failedItem = old;
-        Assert.That(manager.TryCombine(out var failed), Is.True); Assert.That(failed, Is.SameAs(old));
+        Assert.That(manager.CanCraft(), Is.False); Assert.That(manager.GetPreviewResult(), Is.Null);
+        Assert.That(manager.TryCombine(out var failed), Is.False); Assert.That(failed, Is.Null);
         Assert.That(history.Count, Is.Zero); Assert.That(store.writes, Is.Zero);
+        Assert.That(manager.GetCurrentMaterialCount(), Is.EqualTo(2));
+        Assert.That(inventory.GetItemAmount(old), Is.Zero, "Potion crafting never uses the generic manager's fallback reward.");
+        manager.ReturnMaterials();
+        Assert.That(inventory.GetItemAmount(a), Is.EqualTo(1));
+        Assert.That(inventory.GetItemAmount(old), Is.EqualTo(1));
+    }
+
+    [Test]
+    public void ManualSlotsReserveReturnAndConsumeExactlyOneRecipeSet()
+    {
+        inventory.AddItem(a, 4); inventory.AddItem(b, 2);
+        for (int attempt = 0; attempt < 2; attempt++)
+        {
+            manager.AddMaterial(a); manager.AddMaterial(a); manager.AddMaterial(b);
+            Assert.That(inventory.GetItemAmount(a), Is.EqualTo(2));
+            Assert.That(inventory.GetItemAmount(b), Is.EqualTo(1));
+            if (attempt == 0)
+            {
+                manager.ReturnMaterials();
+                Assert.That(inventory.GetItemAmount(a), Is.EqualTo(4));
+                Assert.That(inventory.GetItemAmount(b), Is.EqualTo(2));
+            }
+        }
+        Assert.That(manager.TryCombine(out _), Is.True);
+        Assert.That(manager.GetCurrentMaterialCount(), Is.Zero);
+        Assert.That(manager.TryCombine(out _), Is.False);
+        manager.ReturnMaterials();
+        Assert.That(inventory.GetItemAmount(a), Is.EqualTo(2));
+        Assert.That(inventory.GetItemAmount(b), Is.EqualTo(1));
+        Assert.That(inventory.GetItemAmount(potion), Is.EqualTo(1));
+    }
+
+    [Test]
+    public void InventoryCallbacksCannotCraftAgainOrRefundAlreadyConsumedMaterials()
+    {
+        inventory.AddItem(a, 2); inventory.AddItem(b);
+        Assert.That(manager.TryPrepareRecipe(recipe), Is.True);
+        bool notified = false;
+        Action onGrant = () =>
+        {
+            if (inventory.GetItemAmount(potion) == 0) return;
+            notified = true;
+            Assert.That(manager.TryCombine(out _), Is.False);
+            manager.ReturnMaterials();
+        };
+        inventory.onInventoryChanged += onGrant;
+        try { Assert.That(manager.TryCombine(out _), Is.True); }
+        finally { inventory.onInventoryChanged -= onGrant; }
+        Assert.That(notified, Is.True);
+        Assert.That(inventory.GetItemAmount(a) + inventory.GetItemAmount(b), Is.Zero);
+        Assert.That(inventory.GetItemAmount(potion), Is.EqualTo(1));
+        Assert.That(store.writes, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void FirstCraftButtonWorksWithHiddenPreviewAndOnlyDiscoveredPotionsAppear()
+    {
+        var root = Host("Craft panel", active: false);
+        var panel = root.AddComponent<ItemCombinationPanelUI>(); panel.manager = manager;
+        panel.resultSlot = Host("Preview", root.transform).AddComponent<InventorySlotUI>();
+        panel.combineButton = Host("Craft", root.transform).AddComponent<Button>();
+        panel.combineButton.onClick.AddListener(panel.Combine);
+        root.SetActive(true);
+        inventory.AddItem(a, 4); inventory.AddItem(b, 2);
+        manager.TryPrepareRecipe(recipe);
+        Assert.That(panel.resultSlot.currentItem, Is.Null);
+        Assert.That(panel.combineButton.interactable, Is.True);
+        panel.combineButton.onClick.Invoke();
+        Assert.That(inventory.GetItemAmount(potion), Is.EqualTo(1));
+        Assert.That(panel.combineButton.interactable, Is.False);
+        manager.TryPrepareRecipe(recipe);
+        Assert.That(panel.resultSlot.currentItem.itemData, Is.SameAs(potion));
+
+        var other = Asset<ItemRecipeData>(); other.resultItem = Item("Undiscovered potion");
+        other.materials = new[] { new RecipeMaterial { itemData = old, amount = 1 }, new RecipeMaterial { itemData = b, amount = 1 } };
+        manager.recipes[0].recipes.Add(other); inventory.AddItem(old);
+        Assert.That(manager.TryPrepareRecipe(other), Is.True);
+        Assert.That(panel.resultSlot.currentItem, Is.Null, "Discovering one potion must not reveal other results.");
+        Assert.That(panel.combineButton.interactable, Is.True);
     }
     [Test]
     public void RealFileHistoryReloadsStableIdsAndAtomicallyUpdatesExistingSave()

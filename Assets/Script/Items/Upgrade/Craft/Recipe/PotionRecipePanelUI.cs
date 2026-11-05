@@ -5,7 +5,7 @@ using UnityEngine.UI;
 // Owns the recipe view only. Crafting and inventory transfers remain in the manager.
 public sealed class PotionRecipePanelUI : ItemSearchFilterTargetUI
 {
-    public ItemCombinationManager manager;
+    public PotionCraftManager manager;
     public InventoryManager inventory;
     public PotionRecipeHistory history;
     public Transform recipeContent;

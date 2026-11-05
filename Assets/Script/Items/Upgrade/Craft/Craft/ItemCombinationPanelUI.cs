@@ -1,29 +1,35 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-// Uses the existing potion slots. The combination manager grants inventory items only.
+// Connects the authored potion slots to deterministic recipe crafting.
 public sealed class ItemCombinationPanelUI : MonoBehaviour
 {
-    public ItemCombinationManager manager;
+    public PotionCraftManager manager;
     public SubPlantMaterialSlotUI[] materialSlots;
     public InventorySlotUI resultSlot;
     public ItemTooltipTrigger resultTooltip;
     public Button combineButton;
     public ResultPanelUI resultPanel;
 
-    public ItemCombinationManager Manager => manager;
+    public PotionCraftManager Manager => manager;
 
     private void OnEnable()
     {
         if (manager != null)
+        {
             manager.onMaterialChanged += RefreshUI;
+            if (manager.recipeHistory != null) manager.recipeHistory.Changed += RefreshUI;
+        }
         RefreshUI();
     }
 
     private void OnDisable()
     {
         if (manager != null)
+        {
             manager.onMaterialChanged -= RefreshUI;
+            if (manager.recipeHistory != null) manager.recipeHistory.Changed -= RefreshUI;
+        }
         if (resultTooltip != null)
             resultTooltip.HideTooltip();
     }
@@ -63,7 +69,7 @@ public sealed class ItemCombinationPanelUI : MonoBehaviour
         if (resultSlot != null)
             resultSlot.SetSlot(preview != null ? new InventoryItem(preview, 1) : null);
         if (combineButton != null)
-            combineButton.interactable = preview != null && manager.GetCurrentMaterialCount() >= 2;
+            combineButton.interactable = manager.CanCraft();
         if (resultTooltip != null)
         {
             if (preview != null)

@@ -14,7 +14,7 @@ public class RecipeTreeInfo
 public class RecipeTreeInfoUI : MonoBehaviour
 {
     [Header("Manager")]
-    public ItemCombinationManager itemCombinationManager;
+    public PotionCraftManager itemCombinationManager;
 
     [Header("Info")]
     public TextMeshProUGUI totalNodeText;

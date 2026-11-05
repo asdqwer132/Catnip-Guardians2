@@ -17,7 +17,7 @@ public sealed class SubPlantSlotSelectionTests
     private const string InventoryPrefab = "Assets/Prefab/UI/UpgradeCanvas/Main/Potion/PotionCraftInventorySlot.prefab";
     private List<Object> owned;
     private InventoryManager inventory;
-    private ItemCombinationManager manager;
+    private PotionCraftManager manager;
     private ItemCombinationPanelUI panel;
 
     private GameObject Host(string name, Transform parent = null, bool active = true)
@@ -65,7 +65,7 @@ public sealed class SubPlantSlotSelectionTests
         EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         yield return new EnterPlayMode(); owned = new List<Object>();
         inventory = Host("Inventory manager").AddComponent<InventoryManager>();
-        manager = Host("Combination manager").AddComponent<ItemCombinationManager>();
+        manager = Host("Combination manager").AddComponent<PotionCraftManager>();
         var host = Host("Panel", active: false); panel = host.AddComponent<ItemCombinationPanelUI>();
         panel.manager = manager; panel.materialSlots = new SubPlantMaterialSlotUI[4];
         for (int i = 0; i < 4; i++)
