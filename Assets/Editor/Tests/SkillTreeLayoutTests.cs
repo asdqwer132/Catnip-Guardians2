@@ -200,10 +200,13 @@ public sealed class SkillTreeLayoutAuthoringTests
             Assert.That(panel.nodeInformation, Is.TypeOf<CostTooltipUI>());
             var skillInfo = (CostTooltipUI)panel.nodeInformation;
             Assert.That(skillInfo.needCurrencyPanel.name, Is.EqualTo("MapNeedCurrency"));
-            Assert.That(skillInfo.unlockButtonPanel.name, Is.EqualTo("MapUnlock"));
+            Assert.That(skillInfo.unlockButtonPanel.name, Is.EqualTo("ButtonText"));
+            Assert.That(skillInfo.lockedStatusPanel.name, Is.EqualTo("MapUnlock"));
+            Assert.That(skillInfo.lockedStatusPanel.GetComponent<Button>(), Is.Null);
             var unlockButton = skillInfo.unlockButtonPanel.GetComponent<Button>();
             Assert.That(unlockButton, Is.Not.Null);
-            Assert.That(unlockButton.targetGraphic, Is.Not.Null);
+            Assert.That(unlockButton.targetGraphic, Is.SameAs(unlockButton.GetComponent<Image>()));
+            Assert.That(unlockButton.transition, Is.EqualTo(Selectable.Transition.SpriteSwap));
             Assert.That(unlockButton.onClick.GetPersistentTarget(0), Is.SameAs(skillInfo));
             Assert.That(unlockButton.onClick.GetPersistentMethodName(0), Is.EqualTo(nameof(CostTooltipUI.UnlockSkill)));
             Assert.That(skillInfo.unlockedPanel.name, Is.EqualTo("MapReward"));

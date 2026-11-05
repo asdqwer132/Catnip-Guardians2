@@ -4086,7 +4086,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 137956251}
-  - component: {fileID: 137956252}
   m_Layer: 5
   m_Name: MapUnlock
   m_TagString: Untagged
@@ -18664,7 +18663,8 @@ MonoBehaviour:
     costPanel: {fileID: 0}
     costText: {fileID: 0}
   needCurrencyPanel: {fileID: 101423550}
-  unlockButtonPanel: {fileID: 137956250}
+  unlockButtonPanel: {fileID: 1680466136}
+  lockedStatusPanel: {fileID: 137956250}
   unlockedPanel: {fileID: 78098851}
 --- !u!1001 &583378513
 PrefabInstance:
@@ -49132,10 +49132,6 @@ PrefabInstance:
       value: Unlock
       objectReference: {fileID: 0}
     - target: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
-      propertyPath: m_TargetGraphic
-      value: 
-      objectReference: {fileID: 1223030482}
-    - target: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_SpriteState.m_PressedSprite
       value: 
       objectReference: {fileID: 21300000, guid: db3b5b3169a7f1e47a30eeee39abe8a7, type: 3}
@@ -49238,6 +49234,30 @@ PrefabInstance:
     - target: {fileID: 8551487739303024711, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value:
+      objectReference: {fileID: 580940351}
+    - target: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: CostTooltipUI, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: UnlockSkill
+      objectReference: {fileID: 0}
+    - target: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -67068,40 +67088,8 @@ SceneRoots:
   - {fileID: 1945993584}
   - {fileID: 618159609}
   - {fileID: 1603326670}
---- !u!114 &137956252
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+--- !u!1 &1680466136 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3217733625769636221, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
+  m_PrefabInstance: {fileID: 1680466134}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 137956250}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
-  m_Navigation:
-    m_Mode: 0
-    m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
-  m_Transition: 0
-  m_Interactable: 1
-  m_TargetGraphic: {fileID: 1973518563}
-  m_OnClick:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 580940351}
-        m_TargetAssemblyTypeName: CostTooltipUI, Assembly-CSharp
-        m_MethodName: UnlockSkill
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument:
-          m_BoolArgument: 0
-        m_CallState: 2

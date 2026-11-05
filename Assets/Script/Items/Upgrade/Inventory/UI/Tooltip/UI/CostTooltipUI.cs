@@ -8,6 +8,7 @@ public class CostTooltipUI : ItemTooltipUI
     [Header("Unlock State Panels")]
     public GameObject needCurrencyPanel;
     public GameObject unlockButtonPanel;
+    public GameObject lockedStatusPanel;
     public GameObject unlockedPanel;
     private SkillNodeData displayedSkill;
 
@@ -27,6 +28,7 @@ public class CostTooltipUI : ItemTooltipUI
 
         if (needCurrencyPanel != null) needCurrencyPanel.SetActive(!costData.isUnlocked);
         if (unlockButtonPanel != null) unlockButtonPanel.SetActive(!costData.isUnlocked);
+        if (lockedStatusPanel != null) lockedStatusPanel.SetActive(!costData.isUnlocked);
         if (unlockedPanel != null) unlockedPanel.SetActive(costData.isUnlocked);
 
         if (extraBoxCosts != null)
