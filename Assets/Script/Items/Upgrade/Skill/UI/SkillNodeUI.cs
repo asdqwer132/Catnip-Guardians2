@@ -104,8 +104,10 @@ public class SkillNodeUI : MonoBehaviour
 
         if (iconImage != null)
         {
-            iconImage.sprite = skillNodeData.icon;
-            iconImage.enabled = skillNodeData.icon != null;
+            Sprite icon = isUnlocked && skillNodeData.unlockedIcon != null
+                ? skillNodeData.unlockedIcon : skillNodeData.icon;
+            iconImage.sprite = icon;
+            iconImage.enabled = icon != null;
         }
         ApplyStateSprite(isUnlocked);
 

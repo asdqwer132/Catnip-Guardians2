@@ -7,6 +7,10 @@ using UnityEngine;
 )]
 public class SkillNodeData : DefaultData
 {
+    [Header("Node Icon")]
+    [Tooltip("Icon shown after unlocking. Empty uses the basic icon.")]
+    public Sprite unlockedIcon;
+
     [Header("Map")]
     public SkillMapData skillMap;
     public Sprite mapIcon;
