@@ -9,8 +9,17 @@ public class CostTooltipUI : ItemTooltipUI
     public GameObject needCurrencyPanel;
     public GameObject unlockButtonPanel;
     public GameObject unlockedPanel;
+    private SkillNodeData displayedSkill;
+
+    public void UnlockSkill()
+    {
+        if (!IsVisible || displayedSkill == null || SkillTreeManager.Instance == null) return;
+        if (SkillTreeManager.Instance.UnlockSkill(displayedSkill) && IsVisible) Hide();
+    }
+
     protected override void ApplyData(TooltipData data)
     {
+        displayedSkill = data is CostTooltipData ? data.sourceData as SkillNodeData : null;
         base.ApplyData(data);
 
         if (data is not CostTooltipData costData)

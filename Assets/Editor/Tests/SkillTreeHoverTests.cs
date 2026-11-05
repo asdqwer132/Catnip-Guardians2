@@ -7,6 +7,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.TestTools;
+using UnityEngine.UI;
 
 public sealed class SkillTreeHoverTests : SkillTreeLayoutFixture
 {
@@ -27,7 +28,9 @@ public sealed class SkillTreeHoverTests : SkillTreeLayoutFixture
     [UnityTest]
     public IEnumerator AuthoredNodeTriggersKeepInformationOnExitAndRestoreMapOnSuccessfulUnlock()
     {
-        Host("Wallet").AddComponent<CurrencyManager>();
+        var walletHost = Host("Wallet"); walletHost.SetActive(false);
+        walletHost.AddComponent<CurrencyManager>().defaultStartAmount = 0;
+        walletHost.SetActive(true);
         var manager = Host("Manager").AddComponent<SkillTreeManager>();
         var root = Host("Skill panel"); root.SetActive(false);
         var panels = root.AddComponent<SkillTreeMapPanel>();
@@ -42,6 +45,8 @@ public sealed class SkillTreeHoverTests : SkillTreeLayoutFixture
         skill.alternatePanels = new[] { mapHost };
         skill.needCurrencyPanel = Host("Need currency", skillHost.transform);
         skill.unlockButtonPanel = Host("Unlock button", skillHost.transform);
+        var unlockButton = skill.unlockButtonPanel.AddComponent<Button>();
+        unlockButton.onClick.AddListener(skill.UnlockSkill);
         skill.unlockedPanel = Host("Already unlocked", skillHost.transform);
         var graph = Host("Graph", root.transform);
         var first = Data("First skill"); var second = Data("Second skill");
@@ -80,7 +85,8 @@ public sealed class SkillTreeHoverTests : SkillTreeLayoutFixture
         yield return null;
         Assert.That(skillHost.activeSelf, Is.True, "Leaving the node keeps its information without pinning it against other nodes.");
         Assert.That(mapHost.activeSelf, Is.False);
-        Assert.That(manager.UnlockSkill(first), Is.True);
+        ExecuteEvents.Execute(unlockButton.gameObject, pointer, ExecuteEvents.pointerClickHandler);
+        Assert.That(manager.IsUnlocked(first.dataId), Is.True);
         yield return null;
         Assert.That(skillHost.activeSelf, Is.False); Assert.That(mapHost.activeSelf, Is.True);
         Assert.That(map.amountText.text, Is.EqualTo("1"), "Restored map information must include the latest unlock count.");
@@ -100,12 +106,23 @@ public sealed class SkillTreeHoverTests : SkillTreeLayoutFixture
         Assert.That(skill.unlockButtonPanel.activeSelf, Is.True);
         Assert.That(skill.unlockedPanel.activeSelf, Is.False);
         ExecuteEvents.Execute(otherHover.gameObject, pointer, ExecuteEvents.pointerExitHandler);
-        Assert.That(manager.UnlockSkill(first), Is.False, "An already unlocked skill cannot be purchased twice.");
+        second.costs = new[] { new Cost { currencyType = CurrencyType.CurrencyMain, amount = 10 } };
+        ExecuteEvents.Execute(unlockButton.gameObject, pointer, ExecuteEvents.pointerClickHandler);
+        Assert.That(manager.IsUnlocked(second.dataId), Is.False, "The information-panel button must respect currency requirements.");
         Assert.That(skillHost.activeSelf, Is.True); Assert.That(mapHost.activeSelf, Is.False);
         panels.SelectMap(0);
         Assert.That(skillHost.activeSelf, Is.False); Assert.That(mapHost.activeSelf, Is.True);
         ExecuteEvents.Execute(otherHover.gameObject, pointer, ExecuteEvents.pointerEnterHandler);
         secondNode.gameObject.SetActive(false);
+        Assert.That(skillHost.activeSelf, Is.False); Assert.That(mapHost.activeSelf, Is.True);
+        CurrencyManager.instance.AddCurrency(CurrencyType.CurrencyMain, 10);
+        skill.UnlockSkill();
+        Assert.That(manager.IsUnlocked(second.dataId), Is.False, "A hidden panel must not unlock stale information.");
+        secondNode.gameObject.SetActive(true);
+        ExecuteEvents.Execute(otherHover.gameObject, pointer, ExecuteEvents.pointerEnterHandler);
+        ExecuteEvents.Execute(unlockButton.gameObject, pointer, ExecuteEvents.pointerClickHandler);
+        Assert.That(manager.IsUnlocked(second.dataId), Is.True, "After changing hovered nodes the button must unlock the current node.");
+        Assert.That(CurrencyManager.instance.GetCurrency(CurrencyType.CurrencyMain), Is.Zero);
         Assert.That(skillHost.activeSelf, Is.False); Assert.That(mapHost.activeSelf, Is.True);
     }
 }
