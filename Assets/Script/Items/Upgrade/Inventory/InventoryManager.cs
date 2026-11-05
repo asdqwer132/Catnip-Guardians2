@@ -33,6 +33,9 @@ public class InventoryManager : MonoBehaviour
             return;
         }
 
+        if (amount <= 0)
+            return;
+
         InventoryItem existingItem = items.Find(x => x.itemData == itemData);
 
         if (existingItem != null)
@@ -46,6 +49,7 @@ public class InventoryManager : MonoBehaviour
         }
 
         SortItemsByDataId();
+        CodexDiscoveryHistory.Current.RecordItem(itemData);
 
         onInventoryChanged?.Invoke();
     }

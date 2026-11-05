@@ -47,7 +47,7 @@ public sealed class SaveDataInspectionTests
     public void MissingSavesAreListedWithoutCreatingFilesOrDirectories()
     {
         var paths = SaveDataInspection.ListJsonFiles(directory, out string error);
-        Assert.That(error, Is.Empty); Assert.That(paths.Count, Is.EqualTo(3));
+        Assert.That(error, Is.Empty); Assert.That(paths.Count, Is.EqualTo(4));
         foreach (string path in paths)
         {
             var data = SaveDataInspection.ReadJson(path);
@@ -71,6 +71,20 @@ public sealed class SaveDataInspectionTests
     }
 
     [Test]
+    public void UnifiedCodexSaveShowsEachDiscoveryCategory()
+    {
+        string contents = "{\"discoveredItemIds\":[\"item-a\"],\"discoveredEnemyIds\":[\"enemy-a\"],\"discoveredCharacterIds\":[\"character-a\"],\"discoveredMapIds\":[\"map-a\"]}";
+        string path = Write(CodexDiscoveryHistory.SaveFileName, contents);
+        var data = SaveDataInspection.ReadJson(path);
+        Assert.That(data.Error, Is.Empty); Assert.That(data.Json, Is.EqualTo(contents));
+        Assert.That(data.Summary, Does.Contain("Discovered items: 1").And.Contain("Defeated enemies: 1")
+            .And.Contain("Characters: 1").And.Contain("Maps: 1")
+            .And.Contain("item-a").And.Contain("enemy-a").And.Contain("character-a").And.Contain("map-a"));
+        SaveDataInspection.DeleteJson(directory, path);
+        Assert.That(File.Exists(path), Is.False);
+    }
+
+    [Test]
     public void UpgradeSaveShowsUnlockedSkillsAndNamedSeriesLevels()
     {
         string path = Write(MergeBoxUpgradeManager.SaveFileName,
@@ -87,7 +101,7 @@ public sealed class SaveDataInspectionTests
         string additional = Write("additional.json", "{\"coins\":12}");
         string nested = Write(Path.Combine("slot-2", "other.json"), "[]");
         var paths = SaveDataInspection.ListJsonFiles(directory, out string error);
-        Assert.That(error, Is.Empty); Assert.That(paths.Count, Is.EqualTo(5)); Assert.That(paths.Distinct().Count(), Is.EqualTo(5));
+        Assert.That(error, Is.Empty); Assert.That(paths.Count, Is.EqualTo(6)); Assert.That(paths.Distinct().Count(), Is.EqualTo(6));
         Assert.That(paths, Does.Contain(additional).And.Contain(nested));
         Assert.That(SaveDataInspection.ReadJson(additional).Json, Does.Contain("12"));
     }

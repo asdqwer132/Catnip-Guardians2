@@ -12,6 +12,15 @@ using Object = UnityEngine.Object;
 
 public sealed class CodexUITests
 {
+    private sealed class DiscoveryStore : ICodexDiscoveryStore
+    {
+        private string json;
+        public string Read() => json;
+        public void Write(string value) => json = value;
+        public void Clear() => json = null;
+    }
+    private System.IDisposable discoveryScope;
+    private DiscoveryStore discoveryStore;
     private readonly List<Object> owned = new List<Object>();
     private GameObject Host(string name, Transform parent = null, bool active = true)
     {
@@ -49,6 +58,7 @@ public sealed class CodexUITests
     private CodexInventoryUI Inventory(CodexDetailsUI details, bool toggle = false)
     {
         var root = Host("Catalog"); var inventory = root.AddComponent<CodexInventoryUI>();
+        inventory.discoveredOnly = false; // These tests isolate catalog presentation; discovery rules are tested below.
         inventory.details = details; inventory.slotParent = Host("Rows", root.transform).transform;
         inventory.selectionGroup = inventory.slotParent.gameObject.AddComponent<ToggleGroup>(); inventory.selectionGroup.allowSwitchOff = true;
         var template = Host("Slot template", active: false);
@@ -70,6 +80,8 @@ public sealed class CodexUITests
     {
         EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         yield return new EnterPlayMode();
+        discoveryStore = new DiscoveryStore();
+        discoveryScope = CodexDiscoveryHistory.OverrideCurrent(new CodexDiscoveryHistory(discoveryStore));
         InventoryManager.instance = null;
     }
     [UnityTearDown]
@@ -77,7 +89,35 @@ public sealed class CodexUITests
     {
         for (int i = owned.Count - 1; i >= 0; i--) if (owned[i] != null) Object.DestroyImmediate(owned[i]);
         owned.Clear(); InventoryManager.instance = null;
+        discoveryScope.Dispose();
         yield return new ExitPlayMode();
+    }
+
+    [Test]
+    public void DiscoveredCatalogUpdatesAfterDiscoveryAndResetWithoutChangingCharacterOrMapRules()
+    {
+        var item = Data<ItemData>("Discovered item");
+        var enemy = Data<EnemyDataSet>("Battle enemy");
+        var display = Data<EnemyDataSet>("Enemy codex display"); enemy.codexEntry = display;
+        var character = Data<CharacterCodexData>("Character");
+        var map = Data<MapCodexData>("Map");
+        var stage = Data<StageCodexData>("Stage");
+        var details = Details("Details"); var inventory = Inventory(details);
+        inventory.discoveredOnly = true;
+        inventory.SetEntries(new DefaultData[] { item, enemy, display, character, map, stage });
+        Assert.That(inventory.VisibleEntries, Is.EquivalentTo(new DefaultData[] { character, map, stage }));
+
+        CodexDiscoveryHistory.Current.RecordItem(item);
+        Assert.That(inventory.VisibleEntries, Does.Contain(item), "A discovery must refresh enabled UI without owning stock.");
+        CodexDiscoveryHistory.Current.RecordEnemy(display);
+        Assert.That(inventory.VisibleEntries, Is.EquivalentTo(new DefaultData[] { item, display, character, map, stage }));
+        inventory.Select(item);
+        Assert.That(details.SelectedData, Is.SameAs(item));
+
+        discoveryStore.Clear(); CodexDiscoveryHistory.Current.Reload();
+        Assert.That(inventory.VisibleEntries, Is.EquivalentTo(new DefaultData[] { character, map, stage }));
+        Assert.That(inventory.SelectedEntry, Is.Null);
+        Assert.That(details.gameObject.activeSelf, Is.False);
     }
 
     [Test]

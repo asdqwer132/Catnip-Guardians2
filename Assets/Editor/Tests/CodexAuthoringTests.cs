@@ -23,10 +23,13 @@ public sealed class CodexAuthoringTests
                 Assert.That(list.details, Is.Not.Null); Assert.That(list.slotParent.childCount, Is.Zero);
             }
             var items = top.Single(i => i.entries.All(e => e is ItemData));
+            Assert.That(items.discoveredOnly, Is.True, "The authored item catalog must hide undiscovered entries.");
             Assert.That(items.entries.Length, Is.GreaterThanOrEqualTo(330));
             Assert.That(items.entries.Cast<ItemData>().Where(i => i.effectDatas != null).SelectMany(i => i.effectDatas)
                 .Where(e => e != null).All(e => e.codexDescription != null), Is.True);
-            Assert.That(top.Single(i => i.entries.All(e => e is EnemyDataSet)).entries.Length, Is.EqualTo(11));
+            var enemies = top.Single(i => i.entries.All(e => e is EnemyDataSet));
+            Assert.That(enemies.entries.Length, Is.EqualTo(11));
+            Assert.That(enemies.discoveredOnly, Is.True, "The authored enemy catalog must require a recorded defeat.");
             var characters = top.Single(i => i.entries.All(e => e is CharacterCodexData));
             Assert.That(characters.entries.Length, Is.EqualTo(8));
             Assert.That(characters.details.previousPortrait, Is.Not.Null); Assert.That(characters.details.nextPortrait, Is.Not.Null);

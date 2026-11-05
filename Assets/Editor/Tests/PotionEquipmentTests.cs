@@ -16,6 +16,7 @@ public sealed class PotionEquipmentTests
 {
     private const string Folder = "Assets/Prefab/UI/UpgradeCanvas/Main/Potion/";
     private readonly List<Object> owned = new List<Object>();
+    private CodexDiscoveryTestScope codexScope;
     private InventoryManager inventory;
     private PotionEquipmentManager manager;
     private ItemData first, second;
@@ -81,6 +82,7 @@ public sealed class PotionEquipmentTests
     {
         EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         yield return new EnterPlayMode();
+        codexScope = new CodexDiscoveryTestScope();
         inventory = Host("Inventory manager").AddComponent<InventoryManager>(); InventoryManager.instance = inventory;
         manager = Host("Equipment manager").AddComponent<PotionEquipmentManager>(); manager.inventory = inventory;
         first = Potion("Potion A"); second = Potion("Potion B");
@@ -90,6 +92,7 @@ public sealed class PotionEquipmentTests
     {
         for (int i = owned.Count - 1; i >= 0; i--) if (owned[i] != null) Object.DestroyImmediate(owned[i]);
         owned.Clear(); InventoryManager.instance = null;
+        codexScope?.Dispose();
         yield return new ExitPlayMode();
     }
 

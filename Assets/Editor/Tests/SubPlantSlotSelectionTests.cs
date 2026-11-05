@@ -16,6 +16,7 @@ public sealed class SubPlantSlotSelectionTests
     private const string MaterialPrefab = "Assets/Prefab/UI/UpgradeCanvas/Main/Potion/PotionCraftMaterialSlot.prefab";
     private const string InventoryPrefab = "Assets/Prefab/UI/UpgradeCanvas/Main/Potion/PotionCraftInventorySlot.prefab";
     private List<Object> owned;
+    private CodexDiscoveryTestScope codexScope;
     private InventoryManager inventory;
     private PotionCraftManager manager;
     private ItemCombinationPanelUI panel;
@@ -64,6 +65,7 @@ public sealed class SubPlantSlotSelectionTests
     {
         EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         yield return new EnterPlayMode(); owned = new List<Object>();
+        codexScope = new CodexDiscoveryTestScope();
         inventory = Host("Inventory manager").AddComponent<InventoryManager>();
         manager = Host("Combination manager").AddComponent<PotionCraftManager>();
         var host = Host("Panel", active: false); panel = host.AddComponent<ItemCombinationPanelUI>();
@@ -79,7 +81,7 @@ public sealed class SubPlantSlotSelectionTests
     public IEnumerator TearDown()
     {
         for (int i = owned.Count - 1; i >= 0; i--) if (owned[i] != null) Object.DestroyImmediate(owned[i]);
-        owned.Clear(); yield return new ExitPlayMode();
+        owned.Clear(); codexScope?.Dispose(); yield return new ExitPlayMode();
     }
 
     [Test]

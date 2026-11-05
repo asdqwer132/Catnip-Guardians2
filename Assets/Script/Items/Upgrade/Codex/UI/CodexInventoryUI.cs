@@ -11,12 +11,25 @@ public sealed class CodexInventoryUI : ItemSearchFilterTargetUI
     public CodexSlotUI slotPrefab;
     public CodexDetailsUI details;
     public ToggleGroup selectionGroup;
+    [Tooltip("Items require acquisition/crafting, enemies require a kill. Character and map visibility is unchanged.")]
+    public bool discoveredOnly = true;
+    private CodexDiscoveryHistory subscribedHistory;
     private readonly List<CodexSlotUI> slots = new List<CodexSlotUI>();
     private readonly List<DefaultData> visible = new List<DefaultData>();
     public IReadOnlyList<DefaultData> VisibleEntries => visible;
     public DefaultData SelectedEntry { get; private set; }
 
-    private void OnEnable() => RefreshUI();
+    private void OnEnable()
+    {
+        subscribedHistory = CodexDiscoveryHistory.Current;
+        subscribedHistory.Changed += RefreshUI;
+        RefreshUI();
+    }
+    private void OnDisable()
+    {
+        if (subscribedHistory != null) subscribedHistory.Changed -= RefreshUI;
+        subscribedHistory = null;
+    }
     private void Start() => RefreshUI();
     public void Init() => RefreshUI();
     public void OnTabSelected(bool selected)
@@ -40,8 +53,11 @@ public sealed class CodexInventoryUI : ItemSearchFilterTargetUI
         visible.Clear();
         var seen = new HashSet<DefaultData>();
         if (entries != null)
-            foreach (var entry in entries)
-                if (entry != null && seen.Add(entry) && (!(entry is ItemData item) || IsItemDataVisible(item))) visible.Add(entry);
+            foreach (var source in entries)
+            {
+                var entry = source is EnemyDataSet enemy && enemy.codexEntry != null ? enemy.codexEntry : source;
+                if (entry != null && seen.Add(entry) && IsDiscovered(entry) && (!(entry is ItemData item) || IsItemDataVisible(item))) visible.Add(entry);
+            }
         if (slotParent != null && slotPrefab != null)
         {
             while (slots.Count < visible.Count)
@@ -66,6 +82,15 @@ public sealed class CodexInventoryUI : ItemSearchFilterTargetUI
         SelectedEntry = entry != null && visible.Contains(entry) ? entry : null;
         ApplySelection();
         if (details != null) details.Show(SelectedEntry);
+    }
+
+    private bool IsDiscovered(DefaultData entry)
+    {
+        if (!discoveredOnly || entry is StageCodexData) return true;
+        var history = subscribedHistory ?? CodexDiscoveryHistory.Current;
+        if (entry is ItemData item) return history.HasItem(item);
+        if (entry is EnemyDataSet enemy) return history.HasEnemy(enemy);
+        return true;
     }
 
     private void ApplySelection()

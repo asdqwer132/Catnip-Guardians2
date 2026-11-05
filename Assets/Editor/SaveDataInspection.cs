@@ -68,6 +68,9 @@ internal static class SaveDataInspection
                 throw new IOException("Deletion through a symbolic link is not supported: " + current);
         if (File.Exists(target)) File.Delete(target);
         if (File.Exists(target + ".tmp")) File.Delete(target + ".tmp");
+        if (string.Equals(System.IO.Path.GetFullPath(Application.persistentDataPath).TrimEnd(System.IO.Path.DirectorySeparatorChar) + System.IO.Path.DirectorySeparatorChar, root, comparison)
+            && System.IO.Path.GetFileName(target) == CodexDiscoveryHistory.SaveFileName)
+            CodexDiscoveryHistory.Current.Reload();
     }
 
     public static void DeleteAllJson(string directory)
@@ -126,11 +129,20 @@ internal static class SaveDataInspection
         public List<MergeBoxLevelSnapshot> boxLevels = new List<MergeBoxLevelSnapshot>();
     }
 
+    [Serializable] private sealed class CodexDiscoveries
+    {
+        public List<string> discoveredItemIds = new List<string>();
+        public List<string> discoveredEnemyIds = new List<string>();
+        public List<string> discoveredCharacterIds = new List<string>();
+        public List<string> discoveredMapIds = new List<string>();
+    }
+
     public static List<string> ListJsonFiles(string directory, out string error)
     {
         error = "";
         var paths = new List<string>
         {
+            System.IO.Path.Combine(directory, CodexDiscoveryHistory.SaveFileName),
             System.IO.Path.Combine(directory, PotionRecipeHistory.SaveFileName),
             System.IO.Path.Combine(directory, MergeDiscoveryHistory.SaveFileName),
             System.IO.Path.Combine(directory, MergeBoxUpgradeManager.SaveFileName)
@@ -150,6 +162,7 @@ internal static class SaveDataInspection
     {
         switch (System.IO.Path.GetFileName(path))
         {
+            case CodexDiscoveryHistory.SaveFileName: return "Codex discoveries";
             case PotionRecipeHistory.SaveFileName: return "Potion recipe discoveries";
             case MergeDiscoveryHistory.SaveFileName: return "Merge item discoveries";
             case MergeBoxUpgradeManager.SaveFileName: return "Skills and merge box upgrades";
@@ -177,6 +190,14 @@ internal static class SaveDataInspection
     private static string DescribeJson(string file, string json)
     {
         if (string.IsNullOrWhiteSpace(json)) return "Empty file";
+        if (file == CodexDiscoveryHistory.SaveFileName)
+        {
+            var data = JsonUtility.FromJson<CodexDiscoveries>(json);
+            return DescribeIds("Discovered items", data?.discoveredItemIds) + "\n\n" +
+                DescribeIds("Defeated enemies", data?.discoveredEnemyIds) + "\n\n" +
+                DescribeIds("Characters", data?.discoveredCharacterIds) + "\n\n" +
+                DescribeIds("Maps", data?.discoveredMapIds);
+        }
         if (file == PotionRecipeHistory.SaveFileName || file == MergeDiscoveryHistory.SaveFileName)
         {
             var data = JsonUtility.FromJson<Discoveries>(json);

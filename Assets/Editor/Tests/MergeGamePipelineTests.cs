@@ -10,6 +10,7 @@ using Object = UnityEngine.Object;
 public class MergeGamePipelineTests
 {
     private readonly List<Object> owned = new List<Object>();
+    private CodexDiscoveryTestScope codexScope;
     private MergegameManager board;
     private MergeItem first, second, result;
     private sealed class DiscoveryStore : IMergeDiscoveryStore
@@ -49,6 +50,7 @@ public class MergeGamePipelineTests
     {
         EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         yield return new EnterPlayMode();
+        codexScope = new CodexDiscoveryTestScope();
         Time.timeScale = 1;
         first = Definition("First"); second = Definition("Second"); result = Definition("Result");
         var host = Host("Board", false); host.transform.position = new Vector3(40000, 40000, 0);
@@ -76,6 +78,7 @@ public class MergeGamePipelineTests
         Time.timeScale = 1;
         for (int i = owned.Count - 1; i >= 0; i--) if (owned[i] != null) Object.DestroyImmediate(owned[i]);
         owned.Clear();
+        codexScope?.Dispose();
         yield return new ExitPlayMode();
     }
     private MergeItemObject Drop(int index, float x)
