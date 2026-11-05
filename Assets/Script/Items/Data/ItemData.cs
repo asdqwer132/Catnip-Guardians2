@@ -19,6 +19,10 @@ public class ItemData : DefaultData
 
     public ItemEffectData[] effectDatas;
 
+    [Header("Codex Effect Information")]
+    [Tooltip("Display descriptions shared with enemy codex entries. Effect assets can also provide their own description.")]
+    public CodexEffectDescription[] codexEffects;
+
     [Header("Optional Item Completion")]
     [Tooltip("비워두면 효과별 End Visual만 사용합니다. 지정하면 투척/소환/버프/하위 공격이 모두 끝난 뒤 한 번 재생합니다.")]
     public EffectVisualData endVisualData;

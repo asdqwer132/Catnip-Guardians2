@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec1afcbcbf3541ad9464cd91808d0b03, type: 3}
   m_Name: Food13_EffectData1
   m_EditorClassIdentifier: Assembly-CSharp::RepeatItemEffect
+  codexDescription: {fileID: 11400000, guid: baeefdba4ffc27940a0bcffa94c1221e, type: 2}
   conditionMode: 0
   conditions: []
   visualData: {fileID: 0}
@@ -54,6 +55,9 @@ MonoBehaviour:
   placement: 4
   directionMode: 0
   fixedWorldDirection: {x: 1, y: 0}
+  shotgunDistribution: 0
+  spreadStartMode: 0
+  clockwiseSpread: 0
   startPosition: 0
   throwItems: 1
   projectilePrefab: {fileID: 2153336256934016628, guid: 7d27764ab7c84ac489fdc540376ba873, type: 3}

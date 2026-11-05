@@ -12,9 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e20c7e985daa4bf6b903dce54dac69b2, type: 3}
   m_Name: ElectricEel_20_17_14_11_8
   m_EditorClassIdentifier:
+  codexDescription: {fileID: 11400000, guid: eb4b4a1823a2cfc85a5680334c75d954, type: 2}
   conditionMode: 0
   conditions: []
   visualData: {fileID: 0}
+  impactVfxPrefab: {fileID: 0}
+  impactBaseScale: {x: 1, y: 1, z: 1}
+  scaleImpactVfxByRadius: 1
+  useAnimatorClipLifeTime: 1
+  audioSource:
+  impactVfxLifeTime: 1
   endVisualData: {fileID: 0}
   attackStat:
     chainFirstDamage: 20

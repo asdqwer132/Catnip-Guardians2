@@ -12,9 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94b672408cb64620a38bf34fc8d19f79, type: 3}
   m_Name: Food18_HoneyJar
   m_EditorClassIdentifier:
+  codexDescription: {fileID: 11400000, guid: 3f4ab72b62b218d6299daf1295451c83, type: 2}
   conditionMode: 0
   conditions: []
   visualData: {fileID: 0}
+  impactVfxPrefab: {fileID: 0}
+  impactBaseScale: {x: 1, y: 1, z: 1}
+  scaleImpactVfxByRadius: 1
+  useAnimatorClipLifeTime: 1
+  audioSource:
+  impactVfxLifeTime: 1
   endVisualData: {fileID: 0}
   effects:
   - {fileID: 11400000, guid: ce14b9c4e3de4fc2838a0884a8bf6003, type: 2}

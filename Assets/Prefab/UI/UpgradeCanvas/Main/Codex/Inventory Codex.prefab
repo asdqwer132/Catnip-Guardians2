@@ -24,6 +24,10 @@ PrefabInstance:
       propertyPath: tooltipUI
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 3727863953008905802, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
+      propertyPath: targetUI
+      value:
+      objectReference: {fileID: 2019502801175080788}
     - target: {fileID: 3878791493398360599, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -132,10 +136,62 @@ PrefabInstance:
       propertyPath: m_CellSize.y
       value: 245.50008
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3275813019440117299, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
     m_RemovedGameObjects:
     - {fileID: 6230743224225982846, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
     - {fileID: 5010115388263357518, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1816066860771175227, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2019502801175080788}
   m_SourcePrefab: {fileID: 100100000, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
+--- !u!114 &6440701582244232669 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4263831687699309194, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
+  m_PrefabInstance: {fileID: 7083559280953630551}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8898598922029003884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ToggleGroup
+--- !u!224 &8120014244042900556 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1368476689044314907, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
+  m_PrefabInstance: {fileID: 7083559280953630551}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8898598922029003884 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1816066860771175227, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
+  m_PrefabInstance: {fileID: 7083559280953630551}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2019502801175080788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8898598922029003884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 453120efd3734007967d30fcfc491669, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CodexInventoryUI
+  searchFilter:
+    useCategory: 0
+    category: 0
+    useSeries: 0
+    series: 0
+    useGrade: 0
+    grade: 0
+  categoryMask:
+  seriesMask:
+  gradeMask:
+  entries: []
+  slotParent: {fileID: 8120014244042900556}
+  slotPrefab: {fileID: 3061887855606594649, guid: 0bb5c7819dc2a9048aa6fe49aeff6f2b, type: 3}
+  details: {fileID: 0}
+  selectionGroup: {fileID: 6440701582244232669}

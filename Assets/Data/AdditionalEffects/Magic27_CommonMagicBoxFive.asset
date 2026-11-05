@@ -12,9 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13c72d6b34c242f38ce3cae2bdd4e217, type: 3}
   m_Name: Magic27_CommonMagicBoxFive
   m_EditorClassIdentifier:
+  codexDescription: {fileID: 11400000, guid: cb656605d9fcd4ce79544239a04f92ca, type: 2}
   conditionMode: 0
   conditions: []
   visualData: {fileID: 0}
+  impactVfxPrefab: {fileID: 0}
+  impactBaseScale: {x: 1, y: 1, z: 1}
+  scaleImpactVfxByRadius: 1
+  useAnimatorClipLifeTime: 1
+  audioSource:
+  impactVfxLifeTime: 1
   endVisualData: {fileID: 0}
   entries:
   - weight: 1

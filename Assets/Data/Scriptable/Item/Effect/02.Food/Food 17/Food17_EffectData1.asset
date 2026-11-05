@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b250f045bef3cf34fbfec8a0516c81f9, type: 3}
   m_Name: Food17_EffectData1
   m_EditorClassIdentifier: Assembly-CSharp::BuffEffect
+  codexDescription: {fileID: 11400000, guid: d3fb45564e4a88e8e8b0de6e2bb416b1, type: 2}
   conditionMode: 0
   conditions: []
   visualData: {fileID: 0}
@@ -26,6 +27,7 @@ MonoBehaviour:
   buffInfo:
     stackMode: 0
     maxStack: 1
+    reapplyMode: 0
     applyTiming: 0
     useLimitType: 0
     duration: 1
@@ -33,6 +35,10 @@ MonoBehaviour:
     useCountConsumeMode: 0
     consumeItems: []
   includeSelf: 0
+  buffClassification: {fileID: 0}
+  harmful: 0
+  dispellable: 1
+  flags: []
   buffIcon: {fileID: 0}
   showInUI: 1
   modifiers:

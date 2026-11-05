@@ -12,9 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94b672408cb64620a38bf34fc8d19f79, type: 3}
   m_Name: Magic18_AbyssPotion
   m_EditorClassIdentifier:
+  codexDescription: {fileID: 11400000, guid: d117734cea277329381a3a12ba92f3d9, type: 2}
   conditionMode: 0
   conditions: []
   visualData: {fileID: 0}
+  impactVfxPrefab: {fileID: 0}
+  impactBaseScale: {x: 1, y: 1, z: 1}
+  scaleImpactVfxByRadius: 1
+  useAnimatorClipLifeTime: 1
+  audioSource:
+  impactVfxLifeTime: 1
   endVisualData: {fileID: 0}
   effects:
   - {fileID: 11400000, guid: 1e193a04b77048118c015208864e8d37, type: 2}

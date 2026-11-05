@@ -12,10 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbe3f4c5d0d27d444ae03b43d60d096e, type: 3}
   m_Name: Magic25_HatRainbowBranch
   m_EditorClassIdentifier:
+  codexDescription: {fileID: 11400000, guid: 60c5c00bbe39bef0bbadde22c6c140d6, type: 2}
   conditionMode: 0
   conditions:
   - {fileID: 11400000, guid: 6dc737559f494b2cb3e3dfd5a19a2aa6, type: 2}
   - {fileID: 11400000, guid: af9e55d2c2f148809644e4f1161b9eeb, type: 2}
+  visualData: {fileID: 0}
+  impactVfxPrefab: {fileID: 0}
+  impactBaseScale: {x: 1, y: 1, z: 1}
+  scaleImpactVfxByRadius: 1
+  useAnimatorClipLifeTime: 1
+  audioSource:
+  impactVfxLifeTime: 1
+  endVisualData: {fileID: 0}
   effectWhenTrue: {fileID: 11400000, guid: 6a1e9d29efdd45d3b9aca1449aa89f43, type: 2}
   effectWhenFalse: {fileID: 11400000, guid: e4e6db2653c14399910330afb2f67773, type: 2}
   freezeBranchAtPrepare: 1

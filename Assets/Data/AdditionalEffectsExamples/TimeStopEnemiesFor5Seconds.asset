@@ -12,9 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82ff6b72bc2c4242b04613fa535b640a, type: 3}
   m_Name: TimeStopEnemiesFor5Seconds
   m_EditorClassIdentifier:
+  codexDescription: {fileID: 11400000, guid: dd0c60cfe408a5496b26742962628ade, type: 2}
   conditionMode: 0
   conditions: []
   visualData: {fileID: 0}
+  impactVfxPrefab: {fileID: 0}
+  impactBaseScale: {x: 1, y: 1, z: 1}
+  scaleImpactVfxByRadius: 1
+  useAnimatorClipLifeTime: 1
+  audioSource:
+  impactVfxLifeTime: 1
   endVisualData: {fileID: 0}
   duration: 5
   targets: 7
+  buffUI:
+    showInUI: 0
+    displayName:
+    buffIcon: {fileID: 0}

@@ -2,6 +2,9 @@
 
 public abstract class ItemEffectData : ScriptableObject
 {
+    [Header("Codex Information")]
+    public CodexEffectDescription codexDescription;
+
     [Header("Execution Conditions")]
     [Tooltip("All: 모든 조건 만족 / Any: 하나 이상 만족. 조건 목록이 비어 있으면 항상 실행합니다.")]
     public ItemEffectConditionMode conditionMode = ItemEffectConditionMode.All;

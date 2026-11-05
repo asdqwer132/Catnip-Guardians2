@@ -12,9 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e20c7e985daa4bf6b903dce54dac69b2, type: 3}
   m_Name: Mackerel_Chain8Then6_Max4Hits
   m_EditorClassIdentifier:
+  codexDescription: {fileID: 11400000, guid: ad485ed7adbc39426a1a43140e1aed9d, type: 2}
   conditionMode: 0
   conditions: []
   visualData: {fileID: 0}
+  impactVfxPrefab: {fileID: 0}
+  impactBaseScale: {x: 1, y: 1, z: 1}
+  scaleImpactVfxByRadius: 1
+  useAnimatorClipLifeTime: 1
+  audioSource:
+  impactVfxLifeTime: 1
   endVisualData: {fileID: 0}
   attackStat:
     chainFirstDamage: 8

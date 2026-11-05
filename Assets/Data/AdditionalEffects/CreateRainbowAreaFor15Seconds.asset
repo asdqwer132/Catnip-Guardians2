@@ -12,9 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e01a99b60af4be2b656100962319658, type: 3}
   m_Name: CreateRainbowAreaFor15Seconds
   m_EditorClassIdentifier:
+  codexDescription: {fileID: 11400000, guid: 8f127524694e549f5a7442195acbec22, type: 2}
   conditionMode: 0
   conditions: []
   visualData: {fileID: 0}
+  impactVfxPrefab: {fileID: 0}
+  impactBaseScale: {x: 1, y: 1, z: 1}
+  scaleImpactVfxByRadius: 1
+  useAnimatorClipLifeTime: 1
+  audioSource:
+  impactVfxLifeTime: 1
   endVisualData: {fileID: 0}
   areaDefinition: {fileID: 11400000, guid: 433d69bcda8d4253ad27defb958004ac, type: 2}
   defaultEffects: []

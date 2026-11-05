@@ -49,8 +49,8 @@ GameObject:
   - component: {fileID: 4094047121359912115}
   - component: {fileID: 5974249248727114617}
   - component: {fileID: 5852591789056757769}
-  - component: {fileID: 6810733220590938245}
   - component: {fileID: 7782848943758366898}
+  - component: {fileID: 548747728089310052}
   m_Layer: 5
   m_Name: CharacterSlot
   m_TagString: Untagged
@@ -117,44 +117,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6810733220590938245
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3139681303707674522}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a3f5b214a30c2d40a875f5d7a93b459, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventorySlotUI
-  icon: {fileID: 5797240013902139340}
-  dataNameText: {fileID: 3788129827527091108}
-  descriptionText: {fileID: 0}
-  detailDescriptionText: {fileID: 0}
-  dataSource: {fileID: 0}
-  hideEmptyDescription: 0
-  hideEmptyDetailDescription: 1
-  seriesText: {fileID: 0}
-  gradeText: {fileID: 0}
-  seriesIcon: {fileID: 0}
-  gradeIcon: {fileID: 0}
-  series: 0
-  grade: -1
-  amountImage: {fileID: 0}
-  amountText: {fileID: 0}
-  locked: {fileID: 0}
-  ready: {fileID: 0}
-  IsLocked: 0
-  categoryText: {fileID: 0}
-  weightText: {fileID: 0}
-  cooldownText: {fileID: 0}
-  currentItem:
-    itemData: {fileID: 0}
-    amount: 0
-  slotButton: {fileID: 0}
-  slotToggle: {fileID: 7782848943758366898}
 --- !u!114 &7782848943758366898
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -203,6 +165,44 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsOn: 0
+--- !u!114 &548747728089310052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3139681303707674522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85110a33f02448fb91ce2c0d7d6c603d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CodexSlotUI
+  icon: {fileID: 5797240013902139340}
+  dataNameText: {fileID: 3788129827527091108}
+  descriptionText: {fileID: 0}
+  detailDescriptionText: {fileID: 0}
+  dataSource: {fileID: 0}
+  hideEmptyDescription: 0
+  hideEmptyDetailDescription: 1
+  seriesText: {fileID: 0}
+  gradeText: {fileID: 0}
+  seriesIcon: {fileID: 0}
+  gradeIcon: {fileID: 0}
+  series: 0
+  grade: -1
+  amountImage: {fileID: 0}
+  amountText: {fileID: 0}
+  locked: {fileID: 0}
+  ready: {fileID: 0}
+  IsLocked: 0
+  categoryText: {fileID: 0}
+  weightText: {fileID: 0}
+  cooldownText: {fileID: 0}
+  currentItem:
+    itemData: {fileID: 0}
+    amount: 0
+  slotButton: {fileID: 0}
+  slotToggle: {fileID: 7782848943758366898}
 --- !u!1 &3165852335942761381
 GameObject:
   m_ObjectHideFlags: 0

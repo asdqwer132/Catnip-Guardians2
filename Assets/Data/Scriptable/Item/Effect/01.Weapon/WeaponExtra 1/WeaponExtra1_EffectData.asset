@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d07875e6312a2984dac8a27131630342, type: 3}
   m_Name: WeaponExtra1_EffectData
   m_EditorClassIdentifier: Assembly-CSharp::DamageAreaAttackEffect
+  codexDescription: {fileID: 11400000, guid: 9097e2e76dd88570fb60cfb2f35422d7, type: 2}
   conditionMode: 0
   conditions: []
   visualData: {fileID: 0}
@@ -21,6 +22,7 @@ MonoBehaviour:
   useAnimatorClipLifeTime: 1
   audioSource: 
   impactVfxLifeTime: 1
+  endVisualData: {fileID: 0}
   attackStat:
     damageAreaPower: 50
     damageAreaInterval: 2.5

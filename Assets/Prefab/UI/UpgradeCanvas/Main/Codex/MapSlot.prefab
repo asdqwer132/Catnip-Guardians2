@@ -262,7 +262,7 @@ GameObject:
   - component: {fileID: 3343848731710268408}
   - component: {fileID: 2433329230039779711}
   - component: {fileID: 5262751473322214062}
-  - component: {fileID: 7650146312367110338}
+  - component: {fileID: 2330871444683440165}
   m_Layer: 5
   m_Name: MapSlot
   m_TagString: Untagged
@@ -384,7 +384,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5483321173696496035}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3f811147cfbd52a4b8cf7877b3eb1bc0, type: 3}
   m_Name: 
@@ -408,8 +408,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemSlotTooltipProvider
   anchorRect: {fileID: 7882634811190927490}
-  slot: {fileID: 7650146312367110338}
---- !u!114 &7650146312367110338
+  slot: {fileID: 2330871444683440165}
+--- !u!114 &2330871444683440165
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -418,11 +418,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 5483321173696496035}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a3f5b214a30c2d40a875f5d7a93b459, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventorySlotUI
+  m_Script: {fileID: 11500000, guid: 85110a33f02448fb91ce2c0d7d6c603d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CodexSlotUI
   icon: {fileID: 7833381607381465268}
-  dataNameText: {fileID: 0}
+  dataNameText: {fileID: 1672177661723416664}
   descriptionText: {fileID: 0}
   detailDescriptionText: {fileID: 0}
   dataSource: {fileID: 0}
