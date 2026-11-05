@@ -674,6 +674,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6937268404356911945}
+  - component: {fileID: 7771040421683614545}
   m_Layer: 5
   m_Name: NeedMatreial
   m_TagString: Untagged
@@ -703,6 +704,27 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &7771040421683614545
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8089140364874420212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ce526dbad58464fb695da99b9ba1463, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PotionRecipeMaterialUI
+  icon: {fileID: 2664287361154437094}
+  dataNameText: {fileID: 3802847275885340065}
+  descriptionText: {fileID: 0}
+  detailDescriptionText: {fileID: 0}
+  dataSource: {fileID: 0}
+  hideEmptyDescription: 0
+  hideEmptyDetailDescription: 1
+  requiredCount: {fileID: 4831509591160999525}
+  ownedCount: {fileID: 6762466460523062230}
 --- !u!1 &8677051578938234362
 GameObject:
   m_ObjectHideFlags: 0

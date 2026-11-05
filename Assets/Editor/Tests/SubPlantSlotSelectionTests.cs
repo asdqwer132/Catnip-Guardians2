@@ -13,8 +13,8 @@ using Object = UnityEngine.Object;
 
 public sealed class SubPlantSlotSelectionTests
 {
-    private const string MaterialPrefab = "Assets/Prefab/UI/UpgradeCanvas/Main/SubPlant/SubPlantMaterialSlot.prefab";
-    private const string InventoryPrefab = "Assets/Prefab/UI/UpgradeCanvas/Main/SubPlant/SubPlantInventorySlot.prefab";
+    private const string MaterialPrefab = "Assets/Prefab/UI/UpgradeCanvas/Main/Potion/PotionCraftMaterialSlot.prefab";
+    private const string InventoryPrefab = "Assets/Prefab/UI/UpgradeCanvas/Main/Potion/PotionCraftInventorySlot.prefab";
     private List<Object> owned;
     private InventoryManager inventory;
     private ItemCombinationManager manager;

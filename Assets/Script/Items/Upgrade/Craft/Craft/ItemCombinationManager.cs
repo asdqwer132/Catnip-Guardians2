@@ -1,9 +1,96 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ItemCombinationManager : ItemRecipeManager
 {
     public static ItemCombinationManager instance;
     public CraftSuccessEffectUI craftSuccessEffectUI;
+    public PotionRecipeHistory recipeHistory;
+    private bool preparingRecipe;
+
+    public int GetAvailableMaterialCount(ItemData item)
+    {
+        long amount = InventoryManager.instance != null ? InventoryManager.instance.GetItemAmount(item) : 0;
+        foreach (var entry in currentMaterials)
+            if (entry?.itemData == item && entry.amount > 0) amount += entry.amount;
+        return (int)Math.Min(int.MaxValue, amount);
+    }
+    private bool TryPlanRecipe(ItemRecipeData recipe, out List<InventoryItem> required, out List<int> slots)
+    {
+        required = new List<InventoryItem>(); slots = new List<int>();
+        if (recipe == null || InventoryManager.instance == null || !recipe.TryGetRequiredMaterials(required)) return false;
+        long total = 0;
+        foreach (var entry in required)
+        {
+            total += entry.amount;
+            if (GetAvailableMaterialCount(entry.itemData) < entry.amount) return false;
+        }
+        for (int i = 0; i < maxMaterialCount; i++) if (!IsMaterialSlotLocked(i)) slots.Add(i);
+        return total >= 2 && total <= slots.Count;
+    }
+    public bool CanPrepareRecipe(ItemRecipeData recipe)
+        => !preparingRecipe && TryPlanRecipe(recipe, out _, out _);
+
+    // Reserve only the difference between the old and new material sets. A failed
+    // reservation leaves existing crafting slots untouched and refunds withdrawals.
+    public bool TryPrepareRecipe(ItemRecipeData recipe)
+    {
+        if (preparingRecipe || !TryPlanRecipe(recipe, out var required, out var slots)) return false;
+        var inventory = InventoryManager.instance;
+        var previous = new List<InventoryItem>();
+        var held = new Dictionary<ItemData, int>();
+        foreach (var entry in currentMaterials)
+        {
+            previous.Add(entry == null ? null : new InventoryItem(entry.itemData, entry.amount));
+            if (entry?.itemData == null || entry.amount <= 0) continue;
+            held.TryGetValue(entry.itemData, out int amount); held[entry.itemData] = amount + entry.amount;
+        }
+        var withdrawn = new List<InventoryItem>();
+        bool committed = false;
+        preparingRecipe = true;
+        try
+        {
+            foreach (var entry in required)
+            {
+                held.TryGetValue(entry.itemData, out int amount);
+                int additional = entry.amount - amount;
+                if (additional <= 0) continue;
+                if (!inventory.RemoveItem(entry.itemData, additional)) return false;
+                withdrawn.Add(new InventoryItem(entry.itemData, additional));
+            }
+            // Inventory callbacks may change locks or materials. Do not overwrite a newer selection.
+            if (previous.Count != currentMaterials.Count) return false;
+            for (int i = 0; i < previous.Count; i++)
+            {
+                var a = previous[i]; var b = currentMaterials[i];
+                if (a == null ? b != null : b == null || a.itemData != b.itemData || a.amount != b.amount) return false;
+            }
+            foreach (int slot in slots) if (IsMaterialSlotLocked(slot)) return false;
+            currentMaterials.Clear();
+            int next = 0;
+            foreach (var entry in required)
+            {
+                for (int i = 0; i < entry.amount; i++)
+                {
+                    int index = slots[next++];
+                    while (currentMaterials.Count <= index) currentMaterials.Add(null);
+                    currentMaterials[index] = new InventoryItem(entry.itemData, 1);
+                }
+                held.TryGetValue(entry.itemData, out int amount); held[entry.itemData] = amount - entry.amount;
+            }
+            committed = true;
+            foreach (var entry in held) if (entry.Value > 0) inventory.AddItem(entry.Key, entry.Value);
+            SelectMaterialSlot(-1);
+            return true;
+        }
+        finally
+        {
+            if (!committed) foreach (var entry in withdrawn) inventory.AddItem(entry.itemData, entry.amount);
+            preparingRecipe = false;
+            onMaterialChanged?.Invoke();
+        }
+    }
 
     private void Awake() => instance = this;
 
@@ -18,10 +105,11 @@ public class ItemCombinationManager : ItemRecipeManager
     public bool TryCombine(out ItemData craftedItem)
     {
         craftedItem = null;
-        if (GetCurrentMaterialCount() < 2 || InventoryManager.instance == null)
+        if (preparingRecipe || GetCurrentMaterialCount() < 2 || InventoryManager.instance == null)
             return false;
 
-        base.Combine();
+        var recipe = FindRecipe();
+        resultItem = recipe != null ? recipe.resultItem : returnFailedItem ? failedItem : null;
         if (resultItem == null)
             return false;
 
@@ -29,6 +117,7 @@ public class ItemCombinationManager : ItemRecipeManager
         // Grant the result without executing its item effects or throwing it.
         InventoryManager.instance.AddItem(craftedItem, 1);
         ClearMaterials();
+        if (recipe != null && recipeHistory != null) recipeHistory.RecordCrafted(craftedItem);
         if (craftSuccessEffectUI != null)
             craftSuccessEffectUI.Play(craftedItem.icon);
         return true;
