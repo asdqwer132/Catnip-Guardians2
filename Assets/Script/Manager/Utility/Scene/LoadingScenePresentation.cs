@@ -26,6 +26,10 @@ public sealed class LoadingScenePresentation : MonoBehaviour
     public float roadHeightOffset = -20f;
     [Header("Movement")]
     public LoadingRunnerMovement movement;
+    [Tooltip("Optional UI point for the first character's starting X. If empty, use the road's left edge. Height is controlled by Road Height Offset.")]
+    public RectTransform startPoint;
+    [Tooltip("Horizontal offset from Start Point or the road's left edge, in road Canvas units. Negative values start farther left, including outside the screen.")]
+    public float startOffsetX;
     [Min(1f)] public float speed = 180f;
     [Tooltip("Gap between characters, in Canvas units.")]
     [Min(0f)] public float characterSpacing = 24f;
@@ -81,6 +85,9 @@ public sealed class LoadingScenePresentation : MonoBehaviour
             while (runners.Count < roster.Count) runners.Add(Instantiate(runnerTemplate, road, false));
         }
         for (int i = 0; i < runners.Count; i++) runners[i].gameObject.SetActive(i < roster.Count);
+        // The Canvas can still have zero-sized bounds in OnEnable. Resolve its layout
+        // before positioning the first visible frame, rather than briefly showing the center.
+        Canvas.ForceUpdateCanvases();
         RefreshVisuals();
     }
 
@@ -106,6 +113,7 @@ public sealed class LoadingScenePresentation : MonoBehaviour
         float width = Mathf.Max(1f, characterSize.x), height = Mathf.Max(1f, characterSize.y);
         float spacing = width + Mathf.Max(0f, characterSpacing);
         float left = road.rect.xMin, right = road.rect.xMax;
+        float startX = (startPoint != null ? road.InverseTransformPoint(startPoint.position).x : left) + startOffsetX;
         float loopLeft = left - width * 0.5f, loopRight = right + width * 0.5f;
         if (screenBounds != null)
         {
@@ -127,9 +135,17 @@ public sealed class LoadingScenePresentation : MonoBehaviour
             rect.pivot = new Vector2(0.5f, 0.5f);
             rect.sizeDelta = new Vector2(width, height);
             rect.localScale = new Vector3(roster[i].flipHorizontal ? -1f : 1f, 1f, 1f);
-            float x = movement == LoadingRunnerMovement.LoadingProgress
-                ? Mathf.Lerp(left, right, Progress) - i * spacing
-                : loopRight - loopLength + Mathf.Repeat(left - (loopRight - loopLength) + elapsed * Mathf.Max(1f, speed) - i * spacing, loopLength);
+            float initialX = startX - i * spacing;
+            float x = Mathf.Lerp(startX, right, Progress) - i * spacing;
+            if (movement == LoadingRunnerMovement.ConstantSpeed)
+            {
+                float distance = elapsed * Mathf.Max(1f, speed);
+                float distanceToExit = Mathf.Max(0f, loopRight - initialX);
+                // Do not wrap an off-screen starting point (or trailing characters)
+                // to the right on the very first frame. Wrap only after passing the exit.
+                x = distance <= distanceToExit ? initialX + distance
+                    : loopRight - loopLength + Mathf.Repeat(distance - distanceToExit, loopLength);
+            }
             rect.anchoredPosition = new Vector2(x, road.rect.yMax + roadHeightOffset + height * 0.5f);
             image.sprite = roster[i].FrameAt(elapsed);
         }

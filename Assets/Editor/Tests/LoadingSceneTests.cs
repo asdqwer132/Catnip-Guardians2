@@ -96,6 +96,42 @@ public sealed class LoadingSceneTests
         value.Begin(new LoadingCharacterAnimation[0]); Assert.That(Runners(value), Is.Empty);
     }
 
+    [TestCase(LoadingRunnerMovement.LoadingProgress)]
+    [TestCase(LoadingRunnerMovement.ConstantSpeed)]
+    public void CustomStartPointIsAppliedOnTheFirstFrameIncludingOutsideTheScreen(LoadingRunnerMovement movement)
+    {
+        var value = Presentation(); value.movement = movement;
+        var marker = new GameObject("Authored start point", typeof(RectTransform)).GetComponent<RectTransform>();
+        marker.SetParent(visual.transform, false);
+        marker.anchorMin = marker.anchorMax = new Vector2(0f, .5f);
+        marker.anchoredPosition = new Vector2(-200f, 0f);
+        value.startPoint = marker; value.startOffsetX = -50f;
+        value.characterSelection = LoadingCharacterSelection.AcquiredCharacters;
+        value.Begin(new[] { value.randomCharacters[0], value.randomCharacters[1] });
+        float start = value.road.InverseTransformPoint(marker.position).x - 50f;
+        var images = Runners(value);
+        Assert.That(images[0].rectTransform.anchoredPosition.x, Is.EqualTo(start).Within(.01f));
+        Assert.That(images[1].rectTransform.anchoredPosition.x,
+            Is.EqualTo(start - value.characterSize.x - value.characterSpacing).Within(.01f));
+        if (movement == LoadingRunnerMovement.LoadingProgress)
+        {
+            value.SetProgress(1f);
+            Assert.That(images[0].rectTransform.anchoredPosition.x, Is.EqualTo(value.road.rect.xMax).Within(.01f));
+        }
+        else
+        {
+            At(value, .1f);
+            Assert.That(images[0].rectTransform.anchoredPosition.x, Is.EqualTo(start + value.speed * .1f).Within(.01f));
+        }
+    }
+
+    [Test] public void OffsetFromRoadEdgeAlsoAppliesWithoutAStartPoint()
+    {
+        var value = Presentation(); value.startOffsetX = -300f; value.Begin();
+        Assert.That(Runners(value).Single().rectTransform.anchoredPosition.x,
+            Is.EqualTo(value.road.rect.xMin - 300f).Within(.01f));
+    }
+
     [Test] public void FixedSpeedWrapsBeyondScreenBoundsAndRecalculatesAfterResize()
     {
         var value = Presentation(); value.movement = LoadingRunnerMovement.ConstantSpeed;
