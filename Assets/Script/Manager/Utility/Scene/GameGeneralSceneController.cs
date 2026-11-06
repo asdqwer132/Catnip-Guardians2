@@ -88,18 +88,23 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     }
     private IEnumerator Start()
     {
-        yield return EnsureCore();
-        if (autoLoadChildren && (SceneMoveManager.instance == null || !SceneMoveManager.instance.IsLoading)) yield return LoadChildren();
+        if (autoLoadChildren)
+        {
+            if (SceneMoveManager.instance != null && !SceneMoveManager.instance.IsLoading)
+                yield return SceneMoveManager.instance.LoadChildrenWithLoading(this);
+        }
+        else yield return EnsureCore();
     }
     private IEnumerator EnsureCore()
     {
         if (loadCoreScene && !SceneManager.GetSceneByName(GameSceneRoutes.Core).isLoaded)
             yield return SceneManager.LoadSceneAsync(GameSceneRoutes.Core, LoadSceneMode.Additive);
     }
-    public IEnumerator LoadChildren()
+    public IEnumerator LoadChildren() => LoadChildren(null);
+    public IEnumerator LoadChildren(System.Action<float> progress)
     {
         while (loading) yield return null;
-        if (ready) yield break;
+        if (ready) { progress?.Invoke(1f); yield break; }
         if (battleScene == itemScene || battleScene == GameSceneRoutes.Core || itemScene == GameSceneRoutes.Core ||
             battleScene == gameObject.scene.name || itemScene == gameObject.scene.name ||
             !Application.CanStreamedLevelBeLoaded(battleScene) || !Application.CanStreamedLevelBeLoaded(itemScene))
@@ -109,13 +114,15 @@ public sealed class GameGeneralSceneController : MonoBehaviour
         {
             yield return EnsureCore();
             battle = SceneManager.GetSceneByName(battleScene);
-            if (!battle.isLoaded) yield return SceneManager.LoadSceneAsync(battleScene, LoadSceneMode.Additive);
+            if (!battle.isLoaded)
+                yield return TrackChildLoad(SceneManager.LoadSceneAsync(battleScene, LoadSceneMode.Additive), 0f, progress);
+            progress?.Invoke(0.5f);
             battle = SceneManager.GetSceneByName(battleScene);
             PrepareContentScene(battle);
             item = SceneManager.GetSceneByName(itemScene);
             if (!item.isLoaded)
-                yield return SceneManager.LoadSceneAsync(itemScene, new LoadSceneParameters(LoadSceneMode.Additive,
-                    isolateItemPhysics ? LocalPhysicsMode.Physics2D : LocalPhysicsMode.None));
+                yield return TrackChildLoad(SceneManager.LoadSceneAsync(itemScene, new LoadSceneParameters(LoadSceneMode.Additive,
+                    isolateItemPhysics ? LocalPhysicsMode.Physics2D : LocalPhysicsMode.None)), 0.5f, progress);
             item = SceneManager.GetSceneByName(itemScene);
             PrepareContentScene(item);
             if (!battle.isLoaded || !item.isLoaded) yield break;
@@ -124,8 +131,19 @@ public sealed class GameGeneralSceneController : MonoBehaviour
             { Debug.LogError("배틀/아이템 카메라에 SceneCameraBinding을 붙이고 Role을 Content로 설정하세요.", this); yield break; }
             Canvas.ForceUpdateCanvases();
             ready = true; ApplyLayout();
+            progress?.Invoke(1f);
         }
         finally { loading = false; }
+    }
+    private static IEnumerator TrackChildLoad(AsyncOperation operation, float start, System.Action<float> progress)
+    {
+        if (operation == null) yield break;
+        while (!operation.isDone)
+        {
+            progress?.Invoke(start + Mathf.Clamp01(operation.progress / 0.9f) * 0.5f);
+            yield return null;
+        }
+        progress?.Invoke(start + 0.5f);
     }
     private void OnContentSceneLoaded(Scene scene, LoadSceneMode mode)
     {

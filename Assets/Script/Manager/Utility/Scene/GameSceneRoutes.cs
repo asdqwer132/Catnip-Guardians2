@@ -2,6 +2,7 @@ using System.IO;
 
 public static class GameSceneRoutes
 {
+    public const string Loading = "LoadingScene";
     public const string Core = "CoreScene";
     public const string Main = "MainScene";
     public const string General = "GameGeneralScene";

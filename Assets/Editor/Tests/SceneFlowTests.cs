@@ -199,34 +199,6 @@ public sealed class SceneFlowTests
             CurrencyManager.instance = previous; notify();
         }
     }
-    [Test] public void LoadingPanelIsShownBeforeAnySceneWorkAndIsHiddenOnCancellation()
-    {
-        var previous = SceneMoveManager.instance;
-        var host = new GameObject("Loading test"); host.SetActive(false);
-        var canvasHost = new GameObject("Authored loading canvas", typeof(RectTransform), typeof(Canvas));
-        var panel = new GameObject("Authored loading panel"); panel.transform.SetParent(canvasHost.transform);
-        System.Collections.IEnumerator routine = null;
-        try
-        {
-            var loader = host.AddComponent<SceneMoveManager>();
-            loader.loadingPanel = panel; loader.loadingCanvas = canvasHost.GetComponent<Canvas>();
-            panel.SetActive(false); loader.loadingCanvas.enabled = false;
-            routine = (System.Collections.IEnumerator)typeof(SceneMoveManager)
-                .GetMethod("LoadSceneRoutine", BindingFlags.Instance | BindingFlags.NonPublic)
-                .Invoke(loader, new object[] { GameSceneRoutes.General });
-            Assert.That(routine.MoveNext(), Is.True);
-            Assert.That(routine.Current, Is.Null, "씬 작업 전에 최소 한 프레임 표시해야 합니다.");
-            Assert.That(loader.IsLoading && panel.activeInHierarchy && loader.loadingCanvas.enabled, Is.True);
-            ((System.IDisposable)routine).Dispose(); routine = null;
-            Assert.That(loader.IsLoading, Is.False);
-            Assert.That(panel.activeSelf, Is.False);
-        }
-        finally
-        {
-            (routine as System.IDisposable)?.Dispose();
-            Object.DestroyImmediate(host); Object.DestroyImmediate(canvasHost); SceneMoveManager.instance = previous;
-        }
-    }
     [Test] public void NavigationCameraUsesOnlyTheHeaderWhileTheCanvasKeepsItsAuthoredLayer()
     {
         var host = new GameObject("General camera test");
