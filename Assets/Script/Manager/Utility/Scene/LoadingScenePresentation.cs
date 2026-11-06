@@ -47,6 +47,8 @@ public sealed class LoadingScenePresentation : MonoBehaviour
     private readonly Vector3[] corners = new Vector3[4];
     private static readonly string[] dots = { ".", "..", "..." };
     private float elapsed;
+    private double previousAnimationTime;
+    private bool animationClockStarted;
     private int lastDot = -1;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -68,6 +70,7 @@ public sealed class LoadingScenePresentation : MonoBehaviour
     {
         if (ownedCharacters != null) acquiredCharacters = (LoadingCharacterAnimation[])ownedCharacters.Clone();
         elapsed = 0f; Progress = 0f; lastDot = -1;
+        animationClockStarted = false;
         roster.Clear(); candidates.Clear();
         var source = characterSelection == LoadingCharacterSelection.RandomSingle ? randomCharacters : acquiredCharacters;
         if (source != null)
@@ -100,8 +103,12 @@ public sealed class LoadingScenePresentation : MonoBehaviour
 
     private void Update()
     {
-        // Loading also animates while gameplay is paused.
-        elapsed += Time.unscaledDeltaTime;
+        // The first frame's delta includes scene loading before Begin. Start our
+        // own unscaled clock on the first Update so the first image stays at Start Point.
+        double now = Time.unscaledTimeAsDouble;
+        if (animationClockStarted) elapsed += (float)(now - previousAnimationTime);
+        else animationClockStarted = true;
+        previousAnimationTime = now;
         RefreshVisuals();
     }
     private void RefreshVisuals()

@@ -201,6 +201,36 @@ public sealed class LoadingTransitionTests
         Assert.That(ready(), Is.True, "Scene transition timed out.");
     }
 
+    [UnityTest] public IEnumerator ConstantSpeedFirstUpdateDoesNotCountTheStartupFrameBeforeBegin()
+    {
+        // Scene import can stall the frame before the loading UI is enabled.
+        // The first Update must not move a newly created runner by that entire frame's delta.
+        System.Threading.Thread.Sleep(250);
+        yield return null;
+        Assert.That(Time.unscaledDeltaTime, Is.GreaterThan(.2f));
+        var visual = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(
+            "Assets/Prefab/UI/Setting/Canvas/SceneMoveCanvas.prefab"));
+        try
+        {
+            var view = visual.GetComponent<LoadingScenePresentation>();
+            view.movement = LoadingRunnerMovement.ConstantSpeed;
+            view.startOffsetX = -100f;
+            view.speed = view.road.rect.width * .5f / Time.unscaledDeltaTime;
+            view.Begin();
+            var runner = view.road.GetComponentsInChildren<Image>()
+                .Single(i => i.transform.parent == view.road && i != view.runnerTemplate);
+            float start = view.road.rect.xMin + view.startOffsetX;
+            typeof(LoadingScenePresentation).GetMethod("Update", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(view, null);
+            Assert.That(runner.rectTransform.anchoredPosition.x, Is.EqualTo(start).Within(.01f),
+                "The first update counted startup time and skipped from the configured start toward the middle.");
+            yield return null;
+            Assert.That(runner.rectTransform.anchoredPosition.x, Is.GreaterThan(start),
+                "Movement must continue normally after the initial frame.");
+        }
+        finally { Object.DestroyImmediate(visual); }
+    }
+
     [UnityTest] public IEnumerator StandaloneTransitionSurvivesSourceUnloadAndAnimatesWhilePaused()
     {
         var source = SceneManager.GetActiveScene();
