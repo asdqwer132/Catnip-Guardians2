@@ -1568,6 +1568,18 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8382135684488884663, guid: 942ba075e421cb24f96055c5c5b2f3ba, type: 3}
+      propertyPath: currencyData
+      value:
+      objectReference: {fileID: 11400000, guid: 36fe159e10d2d72d1975d58d4a970751, type: 2}
+    - target: {fileID: 8382135684488884663, guid: 942ba075e421cb24f96055c5c5b2f3ba, type: 3}
+      propertyPath: requiredAmountText
+      value:
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382135684488884663, guid: 942ba075e421cb24f96055c5c5b2f3ba, type: 3}
+      propertyPath: type
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 8272386077284795670, guid: 942ba075e421cb24f96055c5c5b2f3ba, type: 3}
@@ -3275,6 +3287,22 @@ PrefabInstance:
     - target: {fileID: 9139082176770283112, guid: 942ba075e421cb24f96055c5c5b2f3ba, type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382135684488884663, guid: 942ba075e421cb24f96055c5c5b2f3ba, type: 3}
+      propertyPath: type
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382135684488884663, guid: 942ba075e421cb24f96055c5c5b2f3ba, type: 3}
+      propertyPath: nameText
+      value:
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382135684488884663, guid: 942ba075e421cb24f96055c5c5b2f3ba, type: 3}
+      propertyPath: currencyData
+      value:
+      objectReference: {fileID: 11400000, guid: 36fe159e10d2d72d1975d58d4a970751, type: 2}
+    - target: {fileID: 8382135684488884663, guid: 942ba075e421cb24f96055c5c5b2f3ba, type: 3}
+      propertyPath: requiredAmountText
+      value:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
@@ -5073,51 +5101,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CurrencyUIGroup
   currencyUIs:
-  - type: 0
-    textObj: {fileID: 280959873}
-    amountText: {fileID: 280959870}
-    nameText: {fileID: 280959871}
-    icon: {fileID: 280959872}
-  - type: 1
-    textObj: {fileID: 1233383356}
-    amountText: {fileID: 0}
-    nameText: {fileID: 0}
-    icon: {fileID: 1233383355}
-  - type: 2
-    textObj: {fileID: 752246084}
-    amountText: {fileID: 0}
-    nameText: {fileID: 0}
-    icon: {fileID: 0}
-  - type: 3
-    textObj: {fileID: 0}
-    amountText: {fileID: 0}
-    nameText: {fileID: 0}
-    icon: {fileID: 0}
-  - type: 4
-    textObj: {fileID: 0}
-    amountText: {fileID: 0}
-    nameText: {fileID: 0}
-    icon: {fileID: 0}
-  - type: 5
-    textObj: {fileID: 0}
-    amountText: {fileID: 0}
-    nameText: {fileID: 0}
-    icon: {fileID: 0}
-  - type: 6
-    textObj: {fileID: 0}
-    amountText: {fileID: 0}
-    nameText: {fileID: 0}
-    icon: {fileID: 0}
-  - type: 7
-    textObj: {fileID: 0}
-    amountText: {fileID: 0}
-    nameText: {fileID: 0}
-    icon: {fileID: 0}
-  - type: 8
-    textObj: {fileID: 0}
-    amountText: {fileID: 0}
-    nameText: {fileID: 0}
-    icon: {fileID: 0}
+  - {fileID: 979071098}
+  - {fileID: 1233383357}
+  - {fileID: 752246085}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   currencyData: {fileID: 11400000, guid: 36fe159e10d2d72d1975d58d4a970751, type: 2}
   source: 1
 --- !u!1001 &1233383353
@@ -5331,6 +5323,22 @@ PrefabInstance:
     - target: {fileID: 9139082176770283112, guid: 942ba075e421cb24f96055c5c5b2f3ba, type: 3}
       propertyPath: m_Enabled
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382135684488884663, guid: 942ba075e421cb24f96055c5c5b2f3ba, type: 3}
+      propertyPath: type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382135684488884663, guid: 942ba075e421cb24f96055c5c5b2f3ba, type: 3}
+      propertyPath: nameText
+      value:
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382135684488884663, guid: 942ba075e421cb24f96055c5c5b2f3ba, type: 3}
+      propertyPath: currencyData
+      value:
+      objectReference: {fileID: 11400000, guid: 36fe159e10d2d72d1975d58d4a970751, type: 2}
+    - target: {fileID: 8382135684488884663, guid: 942ba075e421cb24f96055c5c5b2f3ba, type: 3}
+      propertyPath: requiredAmountText
+      value:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
@@ -10567,3 +10575,36 @@ SceneRoots:
   - {fileID: 466438815}
   - {fileID: 851919016}
   - {fileID: 910010200001}
+--- !u!114 &752246085 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8382135684488884663, guid: 942ba075e421cb24f96055c5c5b2f3ba, type: 3}
+  m_PrefabInstance: {fileID: 752246082}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 752246084}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6ab090434214ed89bbe5e98139cde84, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CurrencyUI
+--- !u!114 &979071098 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8382135684488884663, guid: 942ba075e421cb24f96055c5c5b2f3ba, type: 3}
+  m_PrefabInstance: {fileID: 280959868}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 280959873}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6ab090434214ed89bbe5e98139cde84, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CurrencyUI
+--- !u!114 &1233383357 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8382135684488884663, guid: 942ba075e421cb24f96055c5c5b2f3ba, type: 3}
+  m_PrefabInstance: {fileID: 1233383353}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1233383356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6ab090434214ed89bbe5e98139cde84, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CurrencyUI

@@ -201,7 +201,8 @@ public class GameRunAccountingTests
         var text = label.AddComponent<TextMeshProUGUI>();
         var group = host.AddComponent<CurrencyUIGroup>();
         group.source = source;
-        group.currencyUIs = new[] { new CurrencyUIGroup.CurrencyUI { type = CurrencyType.CurrencyMain, amountText = text } };
+        var row = host.AddComponent<CurrencyUI>(); row.type = CurrencyType.CurrencyMain; row.amountText = text;
+        group.currencyUIs = new[] { row };
         host.SetActive(true);
         return group;
     }

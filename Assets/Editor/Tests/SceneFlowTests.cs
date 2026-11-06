@@ -173,7 +173,8 @@ public sealed class SceneFlowTests
         try
         {
             CurrencyManager.instance = null;
-            group.currencyUIs = new[] { new CurrencyUIGroup.CurrencyUI { type = CurrencyType.CurrencySub1, textObj = seedVisual } };
+            var row = uiHost.AddComponent<CurrencyUI>(); row.type = CurrencyType.CurrencySub1; row.textObj = seedVisual;
+            group.currencyUIs = new[] { row };
             onEnable.Invoke(group, null);
             var first = firstHost.AddComponent<CurrencyManager>(); first.AddCurrency(CurrencyType.CurrencySub1, 1);
             CurrencyManager.instance = first; notify();
