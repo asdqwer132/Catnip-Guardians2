@@ -181,6 +181,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
   enemyPrefab: {fileID: 5831428086637394887, guid: f0573149fcf2d5845a2f85c7a51b852b, type: 3}
   enemyInfos: []
+  spawnIntervalOffsetRange: {x: 0, y: 0}
   baseStat:
     spawnInterval: 1.5
     spawnDistance: 20
@@ -189,8 +190,9 @@ MonoBehaviour:
   spawnImmediatelyOnStart: 0
   overSpawn: 1
   isBoss: 1
-  spawnShape: 1
-  spawnCenter: {x: 0, y: 21}
+  spawnShape: 0
+  spawnCenter: {x: 0, y: 0}
+  spawnCenterTarget: {fileID: 1230235209}
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -496,6 +498,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
   enemyPrefab: {fileID: 5831428086637394887, guid: f0573149fcf2d5845a2f85c7a51b852b, type: 3}
   enemyInfos: []
+  spawnIntervalOffsetRange: {x: -0.2, y: 0.2}
   baseStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -504,8 +507,9 @@ MonoBehaviour:
   spawnImmediatelyOnStart: 1
   overSpawn: 0
   isBoss: 0
-  spawnShape: 1
-  spawnCenter: {x: 0, y: 9}
+  spawnShape: 0
+  spawnCenter: {x: 0, y: 0}
+  spawnCenterTarget: {fileID: 1230235209}
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -2280,6 +2284,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
   enemyPrefab: {fileID: 5831428086637394887, guid: f0573149fcf2d5845a2f85c7a51b852b, type: 3}
   enemyInfos: []
+  spawnIntervalOffsetRange: {x: -0.2, y: 0.2}
   baseStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -2288,8 +2293,9 @@ MonoBehaviour:
   spawnImmediatelyOnStart: 1
   overSpawn: 0
   isBoss: 0
-  spawnShape: 1
-  spawnCenter: {x: 0, y: 9}
+  spawnShape: 0
+  spawnCenter: {x: 0, y: 0}
+  spawnCenterTarget: {fileID: 1230235209}
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -2566,6 +2572,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
   enemyPrefab: {fileID: 5831428086637394887, guid: f0573149fcf2d5845a2f85c7a51b852b, type: 3}
   enemyInfos: []
+  spawnIntervalOffsetRange: {x: -0.2, y: 0.2}
   baseStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -2574,8 +2581,9 @@ MonoBehaviour:
   spawnImmediatelyOnStart: 1
   overSpawn: 0
   isBoss: 0
-  spawnShape: 1
-  spawnCenter: {x: 0, y: 9}
+  spawnShape: 0
+  spawnCenter: {x: 0, y: 0}
+  spawnCenterTarget: {fileID: 1230235209}
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -2870,6 +2878,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
   enemyPrefab: {fileID: 5831428086637394887, guid: f0573149fcf2d5845a2f85c7a51b852b, type: 3}
   enemyInfos: []
+  spawnIntervalOffsetRange: {x: -0.2, y: 0.2}
   baseStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -2878,8 +2887,9 @@ MonoBehaviour:
   spawnImmediatelyOnStart: 1
   overSpawn: 0
   isBoss: 0
-  spawnShape: 1
-  spawnCenter: {x: 0, y: 9}
+  spawnShape: 0
+  spawnCenter: {x: 0, y: 0}
+  spawnCenterTarget: {fileID: 1230235209}
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -10119,6 +10129,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
   enemyPrefab: {fileID: 5831428086637394887, guid: f0573149fcf2d5845a2f85c7a51b852b, type: 3}
   enemyInfos: []
+  spawnIntervalOffsetRange: {x: -0.2, y: 0.2}
   baseStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -10127,8 +10138,9 @@ MonoBehaviour:
   spawnImmediatelyOnStart: 1
   overSpawn: 0
   isBoss: 0
-  spawnShape: 1
-  spawnCenter: {x: 0, y: 9}
+  spawnShape: 0
+  spawnCenter: {x: 0, y: 0}
+  spawnCenterTarget: {fileID: 1230235209}
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -18220,6 +18232,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
   enemyPrefab: {fileID: 5831428086637394887, guid: f0573149fcf2d5845a2f85c7a51b852b, type: 3}
   enemyInfos: []
+  spawnIntervalOffsetRange: {x: 0, y: 0}
   baseStat:
     spawnInterval: 1.5
     spawnDistance: 20
@@ -18228,8 +18241,9 @@ MonoBehaviour:
   spawnImmediatelyOnStart: 0
   overSpawn: 1
   isBoss: 1
-  spawnShape: 1
-  spawnCenter: {x: 0, y: 21}
+  spawnShape: 0
+  spawnCenter: {x: 0, y: 0}
+  spawnCenterTarget: {fileID: 1230235209}
   currentStat:
     spawnInterval: 1.5
     spawnDistance: 8
@@ -47581,6 +47595,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a5f929549ea447b3b4cf4eccfc2df658, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAttackSlotManager
+  layout: 1
+  centerTarget: {fileID: 1230235209}
+  centerOffset: {x: 0, y: 0}
   slots:
   - label: Slot 1
     area:
@@ -47589,6 +47606,8 @@ MonoBehaviour:
       y: 0.75
       width: 40
       height: 0.5
+    radius: 2
+    radialThickness: 0.5
     capacity: 60
     reservedCount: 0
   - label: Slot 2
@@ -47598,6 +47617,8 @@ MonoBehaviour:
       y: 1.75
       width: 40
       height: 0.5
+    radius: 3
+    radialThickness: 0.5
     capacity: 60
     reservedCount: 0
   - label: Slot 3
@@ -47607,6 +47628,8 @@ MonoBehaviour:
       y: 2.75
       width: 40
       height: 0.5
+    radius: 4
+    radialThickness: 0.5
     capacity: 60
     reservedCount: 0
   - label: Slot 4
@@ -47616,6 +47639,8 @@ MonoBehaviour:
       y: 3.75
       width: 40
       height: 0.5
+    radius: 5
+    radialThickness: 0.5
     capacity: 60
     reservedCount: 0
   - label: Slot 5
@@ -47625,6 +47650,8 @@ MonoBehaviour:
       y: 4.75
       width: 40
       height: 0.5
+    radius: 6
+    radialThickness: 0.5
     capacity: 60
     reservedCount: 0
   arrivalTolerance: 0.03

@@ -203,9 +203,59 @@ public class EnemySlotBattleTests
         var round = host.AddComponent<RoundManager>();
         round.plantManager = plants;
         round.endManager = end;
-        typeof(RoundManager).GetMethod("Next", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
-            .Invoke(round, null);
+        plants.SetPlants();
+        round.Victory();
         Assert.That(end.CurrentEndType, Is.EqualTo(GameEndType.Win));
+    }
+
+    [UnityTest]
+    public IEnumerator CircularSlotsKeepIncomingAnglesAndAttackWithoutPlantDamage()
+    {
+        slots.layout = EnemyAttackSlotLayout.RadialRings;
+        slots.centerTarget = plant.transform;
+        plant.transform.position = new Vector3(10f, -3f, 0f);
+        slots.slots[0].radius = 2f; slots.slots[0].radialThickness = .5f; slots.slots[0].capacity = 5;
+        var directions = new[] { Vector2.right, Vector2.up, Vector2.left, Vector2.down, new Vector2(1, 1).normalized };
+        var incoming = new Enemy[directions.Length];
+        var destinations = new Vector2[directions.Length];
+        int attacks = 0; slots.onSlotAttack.AddListener(_ => attacks++);
+        float initialHp = plant.health.Hp;
+        for (int i = 0; i < directions.Length; i++)
+        {
+            Vector2 spawn = slots.RingCenter + directions[i] * 6f;
+            incoming[i] = Spawn(spawn.x, spawn.y);
+            Assert.That(slots.TryGetDestination(incoming[i], out destinations[i]), Is.True);
+            var offset = destinations[i] - slots.RingCenter;
+            Assert.That(offset.magnitude, Is.InRange(1.75f, 2.25f));
+            Assert.That(Vector2.Dot(offset.normalized, directions[i]), Is.EqualTo(1f).Within(.0001f));
+        }
+        yield return WaitForGameSeconds(.5f);
+        for (int i = 0; i < incoming.Length; i++)
+        {
+            Assert.That(incoming[i].IsAtAttackSlot, Is.True, incoming[i].transform.position.ToString());
+            Assert.That(Vector2.Distance(incoming[i].transform.position, destinations[i]), Is.LessThanOrEqualTo(slots.arrivalTolerance));
+        }
+        Assert.That(attacks, Is.GreaterThan(0));
+        Assert.That(plant.health.Hp, Is.EqualTo(initialHp));
+    }
+
+    [Test]
+    public void CircularReservationsFillInnerRingsFirstAndReleaseOnDeath()
+    {
+        slots.layout = EnemyAttackSlotLayout.RadialRings;
+        slots.slots[0].radius = 2f; slots.slots[0].radialThickness = 1f;
+        slots.slots[1].radius = 4f; slots.slots[1].radialThickness = 1f;
+        var first = Spawn(8, 0); var second = Spawn(0, -8); var waiting = Spawn(-8, 0);
+        Assert.That(slots.TryGetDestination(first, out var inner), Is.True);
+        Assert.That(slots.TryGetDestination(second, out var outer), Is.True);
+        Assert.That(inner.magnitude, Is.InRange(1.5f, 2.5f));
+        Assert.That(outer.magnitude, Is.InRange(3.5f, 4.5f));
+        Assert.That(slots.TryGetDestination(first, out var repeated), Is.True);
+        Assert.That(repeated, Is.EqualTo(inner), "The random stopping point is sampled once per reservation.");
+        Assert.That(slots.TryGetDestination(waiting, out _), Is.False);
+        first.TakeDamage(100f);
+        Assert.That(slots.TryGetDestination(waiting, out var freed), Is.True);
+        Assert.That(freed.magnitude, Is.InRange(1.5f, 2.5f));
     }
 
     [UnityTest]

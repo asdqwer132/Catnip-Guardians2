@@ -15,6 +15,27 @@ public sealed class EnemyAttackSlotManagerEditor : Editor
         {
             var slot = manager.slots[i];
             if (slot == null) continue;
+            if (manager.layout == EnemyAttackSlotLayout.RadialRings)
+            {
+                using (new Handles.DrawingScope(manager.gizmoColor))
+                {
+                    Vector3 center = manager.RingCenter;
+                    string ringLabel = string.IsNullOrEmpty(slot.label) ? $"Ring {i + 1}" : slot.label;
+                    Handles.Label(center + Vector3.right * slot.radius, $"{ringLabel} ({slot.ReservedCount}/{slot.capacity})");
+                    EditorGUI.BeginChangeCheck();
+                    float inner = Handles.RadiusHandle(Quaternion.identity, center, Mathf.Max(0f, slot.radius - slot.radialThickness * .5f));
+                    float outer = Handles.RadiusHandle(Quaternion.identity, center, slot.radius + slot.radialThickness * .5f);
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        serializedObject.Update();
+                        var element = serializedObject.FindProperty("slots").GetArrayElementAtIndex(i);
+                        element.FindPropertyRelative("radius").floatValue = Mathf.Max(0f, (inner + outer) * .5f);
+                        element.FindPropertyRelative("radialThickness").floatValue = Mathf.Abs(outer - inner);
+                        serializedObject.ApplyModifiedProperties();
+                    }
+                }
+                continue;
+            }
             while (handles.Count <= i) handles.Add(new BoxBoundsHandle());
             var bounds = handles[i];
             bounds.axes = PrimitiveBoundsHandle.Axes.X | PrimitiveBoundsHandle.Axes.Y;

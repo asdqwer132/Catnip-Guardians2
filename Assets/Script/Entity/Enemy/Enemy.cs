@@ -258,9 +258,11 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         if (attackSlots == null) return;
         if (patternRunner != null) patternRunner.StopPattern();
         CancelAttack();
-        if (!attackSlots.TryGetDestination(this, out _))
-            attackSlots.SetSpawnSortPosition(this, transform.position);
-        if (visual != null) visual.LookDirection(Vector2.down);
+        if (attackSlots.TryGetDestination(this, out var destination))
+        {
+            if (visual != null) visual.LookDirection(destination - (Vector2)transform.position);
+        }
+        else attackSlots.SetSpawnSortPosition(this, transform.position);
     }
 
     private void ReleaseAttackSlot()
@@ -282,7 +284,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         {
             behaviorState = EnemyBehaviorState.Moving;
             CancelAttack();
-            if (mover != null) mover.MoveToPosition(new Vector3(transform.position.x, destination.y, transform.position.z), 0f);
+            if (mover != null) mover.MoveToPosition(new Vector3(destination.x, destination.y, transform.position.z), 0f);
             return;
         }
         StopMove();

@@ -116,12 +116,13 @@ public class EnemyManager : MonoBehaviour
                 plantData.normalEnemies,
                 Target,
                 i,
-                spawnStartTime
+                spawnStartTime,
+                plantData.normalSpawnInterval
             );
         }
     }
 
-    private void SetupSpecialSpawner(EnemySpawner spawner, EnemySpawnInfo spawnInfo, int spawnerIndex)
+    private void SetupSpecialSpawner(EnemySpawner spawner, SpecialEnemySpawnInfo spawnInfo, int spawnerIndex)
     {
         if (spawner == null)
             return;
@@ -140,7 +141,8 @@ public class EnemyManager : MonoBehaviour
             new EnemySpawnInfo[] { spawnInfo },
             Target,
             spawnerIndex,
-            spawnStartTime
+            spawnStartTime,
+            spawnInfo.spawnRate
         );
     }
 

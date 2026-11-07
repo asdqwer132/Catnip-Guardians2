@@ -9,7 +9,13 @@ public class EnemySpawnInfo
     [Tooltip("일반 적 배열에서 랜덤 선택될 확률입니다.")]
     public float spawnWeight = 1f;
 
-    [Tooltip("일반 스포너에서는 반복 스폰 간격, 미들보스/보스 스포너에서는 등장까지 대기 시간입니다.")]
+}
+
+[System.Serializable]
+public class SpecialEnemySpawnInfo : EnemySpawnInfo
+{
+    [Tooltip("Special enemy spawn interval in seconds. Independent of the normal enemy interval.")]
+    [Min(.05f)]
     public float spawnRate = 1f;
 }
 
@@ -37,10 +43,14 @@ public class PlantData : DefaultData
     public Cost[] reward;
 
     [Header("Extra Data / Normal Enemy Spawn")]
+    [Tooltip("Number of normal spawners to activate, starting from the first entry in Enemy Manager.")]
+    [Min(0)]
     public int spawnNormalEnemyCount = 1;
+    [Tooltip("Shared cooldown in seconds for all normal enemy choices and active normal spawners.")]
+    [Min(.05f)] public float normalSpawnInterval = 1.5f;
     public EnemySpawnInfo[] normalEnemies;
 
     [Header("Extra Data / Special Enemy Spawn")]
-    public EnemySpawnInfo middleBossEnemies;
-    public EnemySpawnInfo bossEnemies;
+    public SpecialEnemySpawnInfo middleBossEnemies;
+    public SpecialEnemySpawnInfo bossEnemies;
 }

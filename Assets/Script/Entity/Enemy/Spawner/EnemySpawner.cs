@@ -14,12 +14,17 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
     public bool spawnImmediatelyOnStart = false;
     public bool overSpawn = false;
     public bool isBoss = false;
+    [Tooltip("Random seconds added to each buffed spawn interval. Each spawner samples independently every cycle. Immediate first spawns skip this wait.")]
+    public Vector2 spawnIntervalOffsetRange;
 
     [Header("Spawn Area")]
     [Tooltip("Circle: 원의 둘레 / Rectangle: 지정한 사각형 영역 안에서 소환합니다.")]
     public EnemySpawnShape spawnShape;
     [Tooltip("월드 좌표 기준 영역 중심입니다. 사각형 크기는 Base Stat의 Spawn Width / Height로 설정합니다.")]
     public Vector2 spawnCenter;
+    [Tooltip("Optional center transform. Spawn Center becomes an offset from this transform.")]
+    public Transform spawnCenterTarget;
+    public Vector2 SpawnWorldCenter => spawnCenterTarget != null ? (Vector2)spawnCenterTarget.position + spawnCenter : spawnCenter;
 
     [Header("Runtime Stat")]
     [SerializeField] private EnemySpawnerStat currentStat = new EnemySpawnerStat();
@@ -80,6 +85,13 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
 
     public void SetSpawner(EnemySpawnInfo[] infos, Plant plant, int index, float startTime)
     {
+        SetSpawner(infos, plant, index, startTime, buffManager);
+    }
+
+    public void SetSpawner(EnemySpawnInfo[] infos, Plant plant, int index, float startTime, float interval)
+    {
+        if (baseStat == null) baseStat = new EnemySpawnerStat();
+        baseStat.spawnInterval = EffectStatUtility.Safe(interval, .05f, 100000f, 1.5f);
         SetSpawner(infos, plant, index, startTime, buffManager);
     }
 
@@ -167,14 +179,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
                 continue;
             }
 
-            baseStat.spawnInterval = Mathf.Max(0.01f, selectedInfo.spawnRate);
-            RefreshBuffedStat();
-
-            float interval = currentStat != null
-                ? currentStat.spawnInterval
-                : selectedInfo.spawnRate;
-
-            interval = Mathf.Max(0.01f, interval);
+            float interval = GetNextSpawnInterval();
 
             StartSpawnDebugTimer(selectedInfo, interval);
 
@@ -191,6 +196,15 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
 
             SpawnEnemy(selectedInfo, interval);
         }
+    }
+
+    public float GetNextSpawnInterval()
+    {
+        RefreshBuffedStat();
+        float first = EffectStatUtility.Safe(spawnIntervalOffsetRange.x, -100000f, 100000f, 0f);
+        float second = EffectStatUtility.Safe(spawnIntervalOffsetRange.y, -100000f, 100000f, 0f);
+        float offset = Random.Range(Mathf.Min(first, second), Mathf.Max(first, second));
+        return Mathf.Max(.05f, (currentStat != null ? currentStat.spawnInterval : 1.5f) + offset);
     }
 
     private void StartSpawnDebugTimer(EnemySpawnInfo info, float interval)
@@ -248,7 +262,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         debugSpawnProgress01 = 0f;
 
 
-        debugSelectedSpawnRate = info != null ? info.spawnRate : 0f;
+        debugSelectedSpawnRate = baseStat != null ? baseStat.spawnInterval : 0f;
         debugSelectedSpawnWeight = info != null ? info.spawnWeight : 0f;
     }
 
@@ -322,12 +336,12 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         if (spawnShape == EnemySpawnShape.Circle)
         {
             float angle = Random.Range(0f, Mathf.PI * 2f);
-            return spawnCenter + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * GetSpawnDistance();
+            return SpawnWorldCenter + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * GetSpawnDistance();
         }
 
         Vector2 size = SpawnRectangleSize;
-        Vector2 min = spawnCenter - size * .5f;
-        Vector2 max = spawnCenter + size * .5f;
+        Vector2 min = SpawnWorldCenter - size * .5f;
+        Vector2 max = SpawnWorldCenter + size * .5f;
         return new Vector2(Random.Range(min.x, max.x), Random.Range(min.y, max.y));
     }
 
@@ -352,7 +366,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
             "[Spawner " + spawnerIndex + "] " +
             elapsedTime.ToString("F1") + "초 경과 / " +
             enemyName + " 소환 / " +
-            "사용된 SpawnRate: " + info.spawnRate.ToString("F1") + " / " +
+            "기본 Spawn Interval: " + (baseStat != null ? baseStat.spawnInterval : 0f).ToString("F1") + " / " +
             "실제 대기시간: " + usedInterval.ToString("F1")
         );
     }
@@ -451,7 +465,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         if (!drawSpawnGizmo)
             return;
 
-        Vector3 center = spawnCenter;
+        Vector3 center = SpawnWorldCenter;
         float extent;
 
         Gizmos.color = spawnGizmoColor;
