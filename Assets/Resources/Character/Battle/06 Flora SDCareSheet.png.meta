@@ -93,7 +93,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
     flipGreenChannel: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -106,7 +106,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -120,7 +120,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -144,7 +144,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -185,19 +185,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_0
       rect:
         serializedVersion: 2
-        x: 40
-        y: 239
-        width: 19
-        height: 22
+        x: 0
+        y: 200
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 9e41a7e7837e25850800000000000000
+      spriteID: 6fa4ebb05e2711346aae7291ecf0e831
       internalID: 6364403453254046953
       vertices: []
       indices: 
@@ -207,19 +207,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_1
       rect:
         serializedVersion: 2
-        x: 139
-        y: 239
-        width: 20
-        height: 22
+        x: 100
+        y: 200
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: dc63e13048ec6e860800000000000000
+      spriteID: 646e40182f4070442b84911bd9f014c1
       internalID: 7558956090971272909
       vertices: []
       indices: 
@@ -229,19 +229,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_2
       rect:
         serializedVersion: 2
-        x: 239
-        y: 239
-        width: 20
-        height: 22
+        x: 200
+        y: 200
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f2266dcef2a8b06f0800000000000000
+      spriteID: bf1aa8f9da742be4486941eb7fa73ad1
       internalID: -717327777193893329
       vertices: []
       indices: 
@@ -251,19 +251,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_3
       rect:
         serializedVersion: 2
-        x: 340
-        y: 239
-        width: 19
-        height: 22
+        x: 300
+        y: 200
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1d72f8dc7f1318120800000000000000
+      spriteID: d7d6e165715d3aa4cad6fd80056c4bf4
       internalID: 2414265815622690769
       vertices: []
       indices: 
@@ -273,19 +273,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_4
       rect:
         serializedVersion: 2
-        x: 439
-        y: 239
-        width: 20
-        height: 22
+        x: 400
+        y: 200
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: df6442bdd5ebaa620800000000000000
+      spriteID: bb7cce4e36917cc46896bfcbe8a9b756
       internalID: 2786248629799896829
       vertices: []
       indices: 
@@ -295,19 +295,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_5
       rect:
         serializedVersion: 2
-        x: 539
-        y: 239
-        width: 20
-        height: 22
+        x: 500
+        y: 200
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 4075dc93528f2b2b0800000000000000
+      spriteID: 52754eb806d349641ad05c2c51c8fedb
       internalID: -5570116950336645372
       vertices: []
       indices: 
@@ -317,19 +317,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_6
       rect:
         serializedVersion: 2
-        x: 640
-        y: 239
-        width: 19
-        height: 22
+        x: 600
+        y: 200
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: daf31afba6b2926c0800000000000000
+      spriteID: 560c3964ddc808442b87778ed341c095
       internalID: -4167752242673139795
       vertices: []
       indices: 
@@ -339,19 +339,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_7
       rect:
         serializedVersion: 2
-        x: 740
-        y: 239
-        width: 19
-        height: 22
+        x: 700
+        y: 200
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f8d5c202e1f90b170800000000000000
+      spriteID: 31646ef303f43f140bee9ae60e7191fb
       internalID: 8192222673924545935
       vertices: []
       indices: 
@@ -361,19 +361,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_8
       rect:
         serializedVersion: 2
-        x: 39
-        y: 139
-        width: 19
-        height: 22
+        x: 0
+        y: 100
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: b366520b1bd1610a0800000000000000
+      spriteID: 496d20cc427a2ed4da8085efcf4f6577
       internalID: -6911303929151789509
       vertices: []
       indices: 
@@ -383,19 +383,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_9
       rect:
         serializedVersion: 2
-        x: 139
-        y: 139
-        width: 19
-        height: 22
+        x: 100
+        y: 100
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 5bc14983f9e0c8f70800000000000000
+      spriteID: 259424b9ee125f64cb2ff5599f2349c2
       internalID: 9190737016568159413
       vertices: []
       indices: 
@@ -405,19 +405,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_10
       rect:
         serializedVersion: 2
-        x: 239
-        y: 139
-        width: 19
-        height: 22
+        x: 200
+        y: 100
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: eb0799fc0ea5c16f0800000000000000
+      spriteID: 5a003785eea0ea847b60f9a66c5fcab7
       internalID: -712594719429267266
       vertices: []
       indices: 
@@ -427,19 +427,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_11
       rect:
         serializedVersion: 2
-        x: 339
-        y: 139
-        width: 19
-        height: 22
+        x: 300
+        y: 100
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 65890156d76bacd70800000000000000
+      spriteID: 3cd2bbbc561fd6440ad44c901d169789
       internalID: 9064257849719298134
       vertices: []
       indices: 
@@ -449,19 +449,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_12
       rect:
         serializedVersion: 2
-        x: 439
-        y: 139
-        width: 21
-        height: 22
+        x: 400
+        y: 100
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 75d0a78ed4562d420800000000000000
+      spriteID: aab3a85dc778da042b610c19e1a579eb
       internalID: 2653294515761843543
       vertices: []
       indices: 
@@ -471,19 +471,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_13
       rect:
         serializedVersion: 2
-        x: 540
-        y: 139
-        width: 19
-        height: 22
+        x: 500
+        y: 100
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e85a9543c608a3990800000000000000
+      spriteID: b0203a284513ed540b38628cf908fade
       internalID: -7405465435034245746
       vertices: []
       indices: 
@@ -493,19 +493,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_14
       rect:
         serializedVersion: 2
-        x: 640
-        y: 139
-        width: 18
-        height: 22
+        x: 600
+        y: 100
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1837c082229cfc4f0800000000000000
+      spriteID: e622ccb83936aa64fb016fd6274a0ff5
       internalID: -806204659738053759
       vertices: []
       indices: 
@@ -515,19 +515,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_15
       rect:
         serializedVersion: 2
-        x: 739
-        y: 139
-        width: 19
-        height: 22
+        x: 700
+        y: 100
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 11d3b061dead37330800000000000000
+      spriteID: 830033a63d7ddbb4e98e0ada92b7fa09
       internalID: 3707547630067989777
       vertices: []
       indices: 
@@ -537,19 +537,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_16
       rect:
         serializedVersion: 2
-        x: 39
-        y: 39
-        width: 19
-        height: 22
+        x: 0
+        y: 0
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1f367ad9f6e8d46c0800000000000000
+      spriteID: 618e9b44c23bcb046abbf90c06eca235
       internalID: -4157510270955592719
       vertices: []
       indices: 
@@ -559,19 +559,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_17
       rect:
         serializedVersion: 2
-        x: 139
-        y: 39
-        width: 19
-        height: 22
+        x: 100
+        y: 0
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a35b6c6fa1ca2df80800000000000000
+      spriteID: 8ba97a99e0a781743bc91c71f1bfbfcb
       internalID: -8083209149367274182
       vertices: []
       indices: 
@@ -581,19 +581,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_18
       rect:
         serializedVersion: 2
-        x: 239
-        y: 39
-        width: 19
-        height: 22
+        x: 200
+        y: 0
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6af2aee471a6e6d10800000000000000
+      spriteID: 95d923be29bfc754f8d76381208bae2b
       internalID: 2120749122878844838
       vertices: []
       indices: 
@@ -603,19 +603,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_19
       rect:
         serializedVersion: 2
-        x: 339
-        y: 39
-        width: 20
-        height: 22
+        x: 300
+        y: 0
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: f13af3a6d9c2d6330800000000000000
+      spriteID: 025d998898d70284bb5d8b2f763ded1a
       internalID: 3705667122999829279
       vertices: []
       indices: 
@@ -625,19 +625,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_20
       rect:
         serializedVersion: 2
-        x: 439
-        y: 39
-        width: 21
-        height: 22
+        x: 400
+        y: 0
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: a35d27cdec8f1b120800000000000000
+      spriteID: 0294d7bdf7bd9e542ac8323a4e66afd9
       internalID: 2427995241474872634
       vertices: []
       indices: 
@@ -647,19 +647,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_21
       rect:
         serializedVersion: 2
-        x: 539
-        y: 39
-        width: 19
-        height: 22
+        x: 500
+        y: 0
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e4225961ac33cd910800000000000000
+      spriteID: 16b9a127a8afb9145af0d97c71f2a7fb
       internalID: 1863421288879825486
       vertices: []
       indices: 
@@ -669,19 +669,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_22
       rect:
         serializedVersion: 2
-        x: 640
-        y: 39
-        width: 18
-        height: 22
+        x: 600
+        y: 0
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c9dd18b789153af50800000000000000
+      spriteID: ee69ef61fdb0c1748bb682d925c530c7
       internalID: 6891441570155978140
       vertices: []
       indices: 
@@ -691,19 +691,19 @@ TextureImporter:
       name: 06 Flora SDCareSheet_23
       rect:
         serializedVersion: 2
-        x: 739
-        y: 39
-        width: 19
-        height: 22
+        x: 700
+        y: 0
+        width: 100
+        height: 100
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: e340a6de9ef111750800000000000000
+      spriteID: 941d459b1e0510a469f5cab00a5cacdd
       internalID: 6273830845474800702
       vertices: []
       indices: 
@@ -713,7 +713,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 613ad3b1f90657144a34fc6f66359425
     internalID: 0
     vertices: []
     indices: 
