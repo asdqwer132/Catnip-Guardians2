@@ -315,6 +315,7 @@ MonoBehaviour:
   gradeMask: ffffffff
   slotParent: {fileID: 1368476689044314907}
   slotPrefab: {fileID: 7991120730881528602, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
+  showItemCount: 1
   tooltipUI: {fileID: 4696551264481371071}
   showTooltipOnSelection: 1
   selectionGroup: {fileID: 4263831687699309194}
@@ -434,7 +435,7 @@ MonoBehaviour:
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 1727509598648383614}
   m_HorizontalScrollbarVisibility: 2
-  m_VerticalScrollbarVisibility: 2
+  m_VerticalScrollbarVisibility: 0
   m_HorizontalScrollbarSpacing: -3
   m_VerticalScrollbarSpacing: 10
   m_OnValueChanged:
@@ -1132,9 +1133,9 @@ RectTransform:
   m_Father: {fileID: 6773125971773501024}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -60, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &4063349588062933155
 CanvasRenderer:

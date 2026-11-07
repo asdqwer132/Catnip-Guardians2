@@ -18,21 +18,24 @@ MonoBehaviour:
     dataName: "\uBABB"
     description: "\uC7AC\uB8CC\uB97C \uB2E8\uB2E8\uD788 \uACE0\uC815\uD558\uB294
       \uBFB0\uC871\uD55C \uC1E0\uBABB"
+    detailDescription: 
   - language: 0
     dataName: Cannot
     description: Sharp iron nails that firmly secure the material
+    detailDescription: 
   dataNumbering: 004
   dataId: WeaponMaterial4
   dataType: 1
   requireUnlock: 0
   grade: 1
-  category: 0
+  category: 1
   series: 1
   tags: []
   weight: 1
   cooldown: 1
   effectDatas:
   - {fileID: 11400000, guid: 860bd383df3ae8f46ad00f54a9dd029c, type: 2}
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

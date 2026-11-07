@@ -4,17 +4,17 @@ using System;
 public class InventorySearchFilter
 {
     public bool useCategory;
-    public ItemCategory category;
+    public Category category;
 
     public bool useSeries;
     public ItemSeries series;
 
     public bool useGrade;
-    public ItemGrade grade;
+    public Grade grade;
 
-    private ItemCategory[] categoryMask;
+    private Category[] categoryMask;
     private ItemSeries[] seriesMask;
-    private ItemGrade[] gradeMask;
+    private Grade[] gradeMask;
 
     public bool IsMatch(ISearchable item)
     {
@@ -54,7 +54,7 @@ public class InventorySearchFilter
         return false;
     }
 
-    public bool IsCategoryMasked(ItemCategory value)
+    public bool IsCategoryMasked(Category value)
     {
         if (categoryMask == null)
             return false;
@@ -82,7 +82,7 @@ public class InventorySearchFilter
         return false;
     }
 
-    public bool IsGradeMasked(ItemGrade value)
+    public bool IsGradeMasked(Grade value)
     {
         if (gradeMask == null)
             return false;
@@ -97,9 +97,9 @@ public class InventorySearchFilter
     }
 
     public void SetMask(
-        ItemCategory[] categoryMask,
+        Category[] categoryMask,
         ItemSeries[] seriesMask,
-        ItemGrade[] gradeMask
+        Grade[] gradeMask
     )
     {
         this.categoryMask = categoryMask;

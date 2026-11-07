@@ -24,14 +24,14 @@ public class TooltipData : DefinedData
 public class ItemTooltipData : TooltipData
 {
     public int amount;
-    public ItemGrade grade;
-    public ItemCategory category;
+    public Grade grade;
+    public Category category;
     public ItemSeries series;
     public float weight;
     public float cooldown;
 
-    public string GradeText => grade == ItemGrade.None ? "" : grade.ToString();
-    public string CategoryText => category == ItemCategory.None ? "" : category.ToString();
+    public string GradeText => grade == Grade.None ? "" : grade.ToString();
+    public string CategoryText => category == Category.None ? "" : category.ToString();
     public string SeriesText => series == ItemSeries.None ? "" : series.ToString();
     public string WeightText => weight.ToString("0.##", CultureInfo.InvariantCulture);
     public string CooldownText => cooldown.ToString("0.##", CultureInfo.InvariantCulture);

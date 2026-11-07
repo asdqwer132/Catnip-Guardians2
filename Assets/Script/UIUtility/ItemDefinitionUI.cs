@@ -13,7 +13,7 @@ public class ItemDefinitionUI : DataInfoUI
     [FormerlySerializedAs("seriesImage")] public Image seriesIcon;
     [FormerlySerializedAs("gradeImage")] public Image gradeIcon;
     public ItemSeries series = ItemSeries.None;
-    public ItemGrade grade = ItemGrade.None;
+    public Grade grade = Grade.None;
 
     private string alternateGradeLabel;
 
@@ -33,7 +33,7 @@ public class ItemDefinitionUI : DataInfoUI
     {
         base.OnDataChanged(data);
         series = ItemSeries.None;
-        grade = ItemGrade.None;
+        grade = Grade.None;
         alternateGradeLabel = null;
         switch (data)
         {
@@ -45,7 +45,7 @@ public class ItemDefinitionUI : DataInfoUI
         }
     }
 
-    public void SetClassification(ItemSeries itemSeries, ItemGrade itemGrade)
+    public void SetClassification(ItemSeries itemSeries, Grade itemGrade)
     {
         series = itemSeries;
         grade = itemGrade;
@@ -59,7 +59,7 @@ public class ItemDefinitionUI : DataInfoUI
         var manager = DefinedDataManager.instance;
         ApplyDefinition(seriesText, seriesIcon, series != ItemSeries.None ? manager?.GetSeries(series) : null,
             selected, series != ItemSeries.None ? series.ToString() : "");
-        ApplyDefinition(gradeText, gradeIcon, grade != ItemGrade.None ? manager?.GetGrade(grade) : null,
-            selected, alternateGradeLabel ?? (grade != ItemGrade.None ? grade.ToString() : ""));
+        ApplyDefinition(gradeText, gradeIcon, grade != Grade.None ? manager?.GetGrade(grade) : null,
+            selected, alternateGradeLabel ?? (grade != Grade.None ? grade.ToString() : ""));
     }
 }

@@ -18,21 +18,24 @@ MonoBehaviour:
     dataName: "\uB098\uBB34\uD310\uC790"
     description: "\uD1B5\uB098\uBB34\uB97C \uD3C9\uD3C9\uD558\uAC8C \uC798\uB77C
       \uB9CC\uB4E0 \uBAA9\uC7AC"
+    detailDescription: 
   - language: 0
     dataName: wooden plank
     description: Lumber made by cutting logs flat.
+    detailDescription: 
   dataNumbering: 003
   dataId: WeaponMaterial3
   dataType: 1
   requireUnlock: 0
   grade: 0
-  category: 0
+  category: 1
   series: 1
   tags: []
   weight: 1
   cooldown: 1
   effectDatas:
   - {fileID: 11400000, guid: 860bd383df3ae8f46ad00f54a9dd029c, type: 2}
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

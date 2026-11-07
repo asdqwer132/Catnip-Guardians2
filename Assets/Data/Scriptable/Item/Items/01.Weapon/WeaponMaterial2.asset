@@ -18,21 +18,24 @@ MonoBehaviour:
     dataName: "\uB3CC\uB369\uC774"
     description: "\uC5B4\uB514\uC11C\uB098 \uAD6C\uD560 \uC218 \uC788\uB294 \uAC70\uCE5C
       \uB3CC \uC870\uAC01"
+    detailDescription: 
   - language: 0
     dataName: stone
     description: Rough stone carvings available anywhere
+    detailDescription: 
   dataNumbering: 002
   dataId: WeaponMaterial2
   dataType: 1
   requireUnlock: 0
   grade: 0
-  category: 0
+  category: 1
   series: 1
   tags: []
   weight: 1
   cooldown: 1
   effectDatas:
   - {fileID: 11400000, guid: 860bd383df3ae8f46ad00f54a9dd029c, type: 2}
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

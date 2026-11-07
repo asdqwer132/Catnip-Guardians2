@@ -12,8 +12,8 @@ public class InventorySearchUI : ItemSearchUIBase
             ResetCategoryFilter();
             return;
         }
-        if (Enum.IsDefined(typeof(ItemCategory), value))
-            ChangeCategoryFilter(true, (ItemCategory)value);
+        if (Enum.IsDefined(typeof(Category), value))
+            ChangeCategoryFilter(true, (Category)value);
     }
 
     public void OnSeriesChanged(int value)
@@ -34,8 +34,8 @@ public class InventorySearchUI : ItemSearchUIBase
             ResetGradeFilter();
             return;
         }
-        if (Enum.IsDefined(typeof(ItemGrade), value))
-            ChangeGradeFilter(true, (ItemGrade)value);
+        if (Enum.IsDefined(typeof(Grade), value))
+            ChangeGradeFilter(true, (Grade)value);
     }
 
     // Keep the shared filter/target/synchronization lifecycle without controlling any UI.

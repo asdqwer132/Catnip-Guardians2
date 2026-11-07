@@ -5,7 +5,7 @@ using UnityEngine;
 public class ItemRecipeData : ScriptableObject, ISearchable
 {
     public int tier;
-    public ItemGrade itemGrade;
+    public Grade itemGrade;
     public ItemSeries itemSeries;
     public RecipeMaterial[] materials;
 
@@ -32,8 +32,8 @@ public class ItemRecipeData : ScriptableObject, ISearchable
 
     public Sprite Icon => resultItem.icon;
     public string GetDataName() => resultItem.GetDataName();
-    public ItemGrade GetGrade() { return itemGrade; }
-    public ItemCategory GetItemCategory() { return ItemCategory.None; }
+    public Grade GetGrade() { return itemGrade; }
+    public Category GetItemCategory() { return Category.None; }
     public ItemSeries GetItemSeries() { return itemSeries; }
 
 
@@ -41,7 +41,7 @@ public class ItemRecipeData : ScriptableObject, ISearchable
     private void OnValidate()
     {
         if (resultItem == null) return;
-        if (itemGrade == ItemGrade.None)
+        if (itemGrade == Grade.None)
             itemGrade = resultItem.grade;
         if (itemSeries == ItemSeries.None)
             itemSeries = resultItem.series;

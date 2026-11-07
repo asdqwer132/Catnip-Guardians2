@@ -18,21 +18,24 @@ MonoBehaviour:
     dataName: "\uD654\uC5FC\uAC00\uB8E8"
     description: "\uB728\uAC70\uC6B4 \uBD88\uAF43\uC758 \uAE30\uC6B4\uC744 \uBA38\uAE08\uC740
       \uAC00\uB8E8"
+    detailDescription: 
   - language: 0
     dataName: Flame powder
     description: Powder infused with the energy of a fiery flame
+    detailDescription: 
   dataNumbering: 007
   dataId: WeaponMaterial7
   dataType: 1
   requireUnlock: 0
   grade: 2
-  category: 0
+  category: 1
   series: 1
   tags: []
   weight: 1
   cooldown: 1
   effectDatas:
   - {fileID: 11400000, guid: 860bd383df3ae8f46ad00f54a9dd029c, type: 2}
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

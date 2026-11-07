@@ -4,8 +4,8 @@
 public class ItemData : DefaultData
 {
     [Header("Extra Data / Item Class")]
-    public ItemGrade grade;
-    public ItemCategory category;
+    public Grade grade;
+    public Category category;
     public ItemSeries series;
     [Tooltip("하위 분류 에셋. 예: 뼈, 깃털. 이름이나 Monster 시리즈 전체로 대상을 추정하지 않습니다.")]
     public ItemTagDefinition[] tags;
@@ -41,7 +41,7 @@ public class ItemData : DefaultData
 
 
 }
-public enum ItemGrade
+public enum Grade
 {
     None = -1,
     Common = 0,
@@ -49,16 +49,14 @@ public enum ItemGrade
     Epic = 2,
     Legendary = 3,
 }
-public enum ItemCategory
+public enum Category
 {
     None = -1,
-    Attack = 0,
-    Heal = 1, 
-    Buff = 2,
-    Debuff = 3,
-    Utility = 4,
-    Resource = 5,
-    Special = 6
+    Item = 0,
+    ItemMaterial = 1,
+    Enemy = 2,
+    Character = 3,
+    Map = 4,
 }
 public enum ItemSeries
 {

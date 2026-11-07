@@ -41,7 +41,7 @@ public sealed class ItemDefinitionUITests
         manager.seriesData = Asset<ItemSeriesData>(); manager.gradeData = Asset<ItemGradeData>();
         manager.seriesData.entries.Add(new DefinedDataEntry<ItemSeries> { type = ItemSeries.Weapon, icon = Sprite(), data = new[] {
             new Description { language = language.english, dataName = "Weapon" }, new Description { language = language.korean, dataName = "무기" } } });
-        manager.gradeData.entries.Add(new DefinedDataEntry<ItemGrade> { type = ItemGrade.Rare, icon = Sprite(), data = new[] {
+        manager.gradeData.entries.Add(new DefinedDataEntry<Grade> { type = Grade.Rare, icon = Sprite(), data = new[] {
             new Description { language = language.english, dataName = "Rare" }, new Description { language = language.korean, dataName = "희귀" } } });
         root.SetActive(true); return manager;
     }
@@ -63,8 +63,8 @@ public sealed class ItemDefinitionUITests
     public void ItemBoxSlotAndTooltipUseTheSameManagerFramesAndLocalizedNames()
     {
         var defs = Definitions(); var language = Host("Language").AddComponent<LanguageManager>();
-        var box = Asset<ItemBoxData>(); box.itemSeries = ItemSeries.Weapon; box.grade = ItemGrade.Rare;
-        var item = Asset<ItemData>(); item.series = ItemSeries.Weapon; item.grade = ItemGrade.Rare;
+        var box = Asset<ItemBoxData>(); box.itemSeries = ItemSeries.Weapon; box.grade = Grade.Rare;
+        var item = Asset<ItemData>(); item.series = ItemSeries.Weapon; item.grade = Grade.Rare;
         var info = View<ShopBoxInfoUI>(); var slot = View<BaseItemSlotUI>(); var tooltip = View<ItemTooltipUI>();
         info.ShowBoxInfo(box); var entry = new InventoryItem(item, 7); slot.SetSlot(entry);
         tooltip.Show(ItemTooltipData.FromItem(item, 7), (RectTransform)slot.transform, this);
@@ -73,7 +73,7 @@ public sealed class ItemDefinitionUITests
         {
             Assert.That(ui.seriesText.text, Is.EqualTo("무기")); Assert.That(ui.gradeText.text, Is.EqualTo("희귀"));
             Assert.That(ui.seriesIcon.sprite, Is.SameAs(defs.GetSeries(ItemSeries.Weapon).Icon));
-            Assert.That(ui.gradeIcon.sprite, Is.SameAs(defs.GetGrade(ItemGrade.Rare).Icon));
+            Assert.That(ui.gradeIcon.sprite, Is.SameAs(defs.GetGrade(Grade.Rare).Icon));
         }
         Assert.That(slot.currentItem, Is.SameAs(entry)); Assert.That(entry.amount, Is.EqualTo(7));
     }
@@ -81,7 +81,7 @@ public sealed class ItemDefinitionUITests
     [Test]
     public void LateAndRemovedManagersRefreshViewsWithoutLeavingOldFrames()
     {
-        var ui = View<ItemDefinitionUI>(); ui.SetClassification(ItemSeries.Weapon, ItemGrade.Rare);
+        var ui = View<ItemDefinitionUI>(); ui.SetClassification(ItemSeries.Weapon, Grade.Rare);
         Assert.That(ui.gradeText.text, Is.EqualTo("Rare")); Assert.That(ui.gradeIcon.enabled, Is.False);
         var defs = Definitions(); Assert.That(ui.gradeIcon.enabled, Is.True);
         Object.DestroyImmediate(defs.gameObject);
@@ -94,7 +94,7 @@ public sealed class ItemDefinitionUITests
     public void BagAndMapPayloadsKeepTheirAlternateLabelsAndClearItemFrames()
     {
         Definitions(); var ui = View<ItemTooltipUI>(); var anchor = (RectTransform)Host("Anchor").transform;
-        var item = Asset<ItemData>(); item.series = ItemSeries.Weapon; item.grade = ItemGrade.Rare;
+        var item = Asset<ItemData>(); item.series = ItemSeries.Weapon; item.grade = Grade.Rare;
         ui.Show(ItemTooltipData.FromItem(item, 1), anchor, this);
         ui.Show(new BagTooltipData { bagType = "Equipment" }, anchor, this);
         Assert.That(ui.gradeText.text, Is.EqualTo("Equipment")); Assert.That(ui.seriesIcon.enabled || ui.gradeIcon.enabled, Is.False);

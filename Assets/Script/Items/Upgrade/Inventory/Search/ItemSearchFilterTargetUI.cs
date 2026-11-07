@@ -6,9 +6,9 @@ public abstract class ItemSearchFilterTargetUI : MonoBehaviour, IItemSearchFilte
     [SerializeField] protected InventorySearchFilter searchFilter = new InventorySearchFilter();
 
     [Header("Search Mask")]
-    public ItemCategory[] categoryMask;
+    public Category[] categoryMask;
     public ItemSeries[] seriesMask;
-    public ItemGrade[] gradeMask;
+    public Grade[] gradeMask;
 
     public InventorySearchFilter GetSearchFilter()
     {
@@ -45,7 +45,7 @@ public abstract class ItemSearchFilterTargetUI : MonoBehaviour, IItemSearchFilte
 
     protected abstract void OnSearchFilterChanged();
 
-    public bool IsCategoryMasked(ItemCategory value)
+    public bool IsCategoryMasked(Category value)
     {
         if (categoryMask == null)
             return false;
@@ -73,7 +73,7 @@ public abstract class ItemSearchFilterTargetUI : MonoBehaviour, IItemSearchFilte
         return false;
     }
 
-    public bool IsGradeMasked(ItemGrade value)
+    public bool IsGradeMasked(Grade value)
     {
         if (gradeMask == null)
             return false;

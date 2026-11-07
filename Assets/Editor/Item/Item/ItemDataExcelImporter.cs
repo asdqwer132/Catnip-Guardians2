@@ -224,8 +224,8 @@ namespace ItemDataExcelTools
                     item.Type = ReadEnum(dataType, existing == null ? default(DataType) : existing.dataType);
                     item.Numbering = items.Value(row, "dataNumbering");
                     item.RequireUnlock = ReadBool(items.Value(row, "requireUnlock"), existing != null && existing.requireUnlock);
-                    item.Grade = ReadEnum(items.Value(row, "grade"), existing == null ? ItemGrade.Common : existing.grade);
-                    item.Category = ReadEnum(items.Value(row, "category"), existing == null ? ItemCategory.None : existing.category);
+                    item.Grade = ReadEnum(items.Value(row, "grade"), existing == null ? Grade.Common : existing.grade);
+                    item.Category = ReadEnum(items.Value(row, "category"), existing == null ? Category.None : existing.category);
                     item.Series = ReadEnum(items.Value(row, "series"), existing == null ? ItemSeries.None : existing.series);
                     item.Weight = ReadFloat(items.Value(row, "weight"), existing == null ? 1f : existing.weight);
                     item.Cooldown = ReadFloat(items.Value(row, "cooldown"), existing == null ? 0.5f : existing.cooldown);
@@ -555,7 +555,7 @@ namespace ItemDataExcelTools
         private static void CopyEnumList()
         {
             var text = new StringBuilder();
-            foreach (Type type in new[] { typeof(ItemGrade), typeof(ItemCategory), typeof(ItemSeries), typeof(DataType), typeof(language) })
+            foreach (Type type in new[] { typeof(Grade), typeof(Category), typeof(ItemSeries), typeof(DataType), typeof(language) })
                 foreach (string name in Enum.GetNames(type))
                     text.Append(type.Name).Append('\t').Append(name).Append('\t')
                         .Append(Convert.ToInt64(Enum.Parse(type, name), CultureInfo.InvariantCulture)).Append('\t').AppendLine();
@@ -580,8 +580,8 @@ namespace ItemDataExcelTools
             public ItemData Existing;
             public DataType Type;
             public bool RequireUnlock;
-            public ItemGrade Grade;
-            public ItemCategory Category;
+            public Grade Grade;
+            public Category Category;
             public ItemSeries Series;
             public float Weight, Cooldown;
             public Sprite Icon;

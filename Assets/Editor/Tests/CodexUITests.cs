@@ -151,10 +151,10 @@ public sealed class CodexUITests
     public void ItemFiltersKeepOtherDataVisibleAndToggleSelectionPersistsUntilAnotherEntry()
     {
         var weapon = Data<ItemData>("Weapon"); weapon.series = ItemSeries.Weapon;
-        var food = Data<ItemData>("Food"); food.series = ItemSeries.Food; food.grade = ItemGrade.Rare;
+        var food = Data<ItemData>("Food"); food.series = ItemSeries.Food; food.grade = Grade.Rare;
         var enemy = Data<EnemyDataSet>("Enemy"); var details = Details("Details"); var inventory = Inventory(details, toggle: true);
         inventory.SetEntries(new DefaultData[] { weapon, food, enemy }); Click(Row(inventory, weapon).slotToggle);
-        inventory.SetSearchFilter(new InventorySearchFilter { useSeries = true, series = ItemSeries.Food, useGrade = true, grade = ItemGrade.Rare });
+        inventory.SetSearchFilter(new InventorySearchFilter { useSeries = true, series = ItemSeries.Food, useGrade = true, grade = Grade.Rare });
         Assert.That(inventory.VisibleEntries, Is.EquivalentTo(new DefaultData[] { food, enemy }));
         Assert.That(inventory.SelectedEntry, Is.Null); Assert.That(details.gameObject.activeSelf, Is.False);
         var row = Row(inventory, food); Click(row.slotToggle); Click(row.slotToggle);

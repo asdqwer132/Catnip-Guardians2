@@ -9,7 +9,7 @@ public class InventoryToggleSearchUI : ItemSearchUIBase
     public class CategoryToggleOption
     {
         public Toggle toggle;
-        public ItemCategory value;
+        public Category value;
     }
 
     [Serializable]
@@ -23,7 +23,7 @@ public class InventoryToggleSearchUI : ItemSearchUIBase
     public class GradeToggleOption
     {
         public Toggle toggle;
-        public ItemGrade value;
+        public Grade value;
     }
 
     [Header("Reset Button")]
@@ -405,8 +405,8 @@ public class InventoryToggleSearchUI : ItemSearchUIBase
         if (!isOn)
             return;
 
-        ApplyCategoryToggleVisual(false, default(ItemCategory));
-        ChangeCategoryFilter(false, default(ItemCategory));
+        ApplyCategoryToggleVisual(false, default(Category));
+        ChangeCategoryFilter(false, default(Category));
     }
 
     private void OnSeriesAllChanged(bool isOn)
@@ -423,8 +423,8 @@ public class InventoryToggleSearchUI : ItemSearchUIBase
         if (!isOn)
             return;
 
-        ApplyGradeToggleVisual(false, default(ItemGrade));
-        ChangeGradeFilter(false, default(ItemGrade));
+        ApplyGradeToggleVisual(false, default(Grade));
+        ChangeGradeFilter(false, default(Grade));
     }
 
     private void OnCategoryOptionChanged(int index, bool isOn)
@@ -472,7 +472,7 @@ public class InventoryToggleSearchUI : ItemSearchUIBase
     private void ApplyCategoryToggleValue()
     {
         bool useValue = filter != null && filter.useCategory;
-        ItemCategory value = useValue ? filter.category : default(ItemCategory);
+        Category value = useValue ? filter.category : default(Category);
         ApplyCategoryToggleVisual(useValue, value);
     }
 
@@ -486,11 +486,11 @@ public class InventoryToggleSearchUI : ItemSearchUIBase
     private void ApplyGradeToggleValue()
     {
         bool useValue = filter != null && filter.useGrade;
-        ItemGrade value = useValue ? filter.grade : default(ItemGrade);
+        Grade value = useValue ? filter.grade : default(Grade);
         ApplyGradeToggleVisual(useValue, value);
     }
 
-    private void ApplyCategoryToggleVisual(bool useValue, ItemCategory selectedValue)
+    private void ApplyCategoryToggleVisual(bool useValue, Category selectedValue)
     {
         if (categoryAllToggle != null)
             categoryAllToggle.SetIsOnWithoutNotify(!useValue);
@@ -536,7 +536,7 @@ public class InventoryToggleSearchUI : ItemSearchUIBase
         }
     }
 
-    private void ApplyGradeToggleVisual(bool useValue, ItemGrade selectedValue)
+    private void ApplyGradeToggleVisual(bool useValue, Grade selectedValue)
     {
         if (gradeAllToggle != null)
             gradeAllToggle.SetIsOnWithoutNotify(!useValue);
@@ -559,7 +559,7 @@ public class InventoryToggleSearchUI : ItemSearchUIBase
         }
     }
 
-    private bool HasUsableCategoryOption(ItemCategory value)
+    private bool HasUsableCategoryOption(Category value)
     {
         if (categoryOptions == null)
             return false;
@@ -597,7 +597,7 @@ public class InventoryToggleSearchUI : ItemSearchUIBase
         return false;
     }
 
-    private bool HasUsableGradeOption(ItemGrade value)
+    private bool HasUsableGradeOption(Grade value)
     {
         if (gradeOptions == null)
             return false;

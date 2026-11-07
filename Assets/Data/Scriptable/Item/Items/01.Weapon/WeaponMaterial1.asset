@@ -18,21 +18,24 @@ MonoBehaviour:
     dataName: "\uB098\uBB47\uAC00\uC9C0"
     description: "\uB098\uBB34\uC5D0\uC11C \uAEBE\uC5B4 \uC5BB\uC740 \uAC00\uB290\uB2E4\uB780
       \uAC00\uC9C0"
+    detailDescription: 
   - language: 0
     dataName: tree branch
     description: A slender branch picked from a tree
+    detailDescription: 
   dataNumbering: 001
   dataId: WeaponMaterial1
   dataType: 1
   requireUnlock: 0
   grade: 0
-  category: 0
+  category: 1
   series: 1
   tags: []
   weight: 1
   cooldown: 1
   effectDatas:
   - {fileID: 11400000, guid: 860bd383df3ae8f46ad00f54a9dd029c, type: 2}
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

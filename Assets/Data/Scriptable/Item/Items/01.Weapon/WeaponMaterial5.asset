@@ -18,21 +18,24 @@ MonoBehaviour:
     dataName: "\uCCA0\uAD6C\uC2AC"
     description: "\uB2E8\uB2E8\uD55C \uCCA0\uC744 \uB465\uAE00\uAC8C \uB2E4\uB4EC\uC740
       \uC1E0\uAD6C\uC2AC"
+    detailDescription: 
   - language: 0
     dataName: iron ball
     description: Steel balls made by rounding hard iron
+    detailDescription: 
   dataNumbering: 005
   dataId: WeaponMaterial5
   dataType: 1
   requireUnlock: 0
   grade: 1
-  category: 0
+  category: 1
   series: 1
   tags: []
   weight: 1
   cooldown: 1
   effectDatas:
   - {fileID: 11400000, guid: 860bd383df3ae8f46ad00f54a9dd029c, type: 2}
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

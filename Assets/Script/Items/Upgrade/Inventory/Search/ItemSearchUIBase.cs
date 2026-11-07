@@ -171,7 +171,7 @@ public abstract class ItemSearchUIBase : MonoBehaviour
         ApplyFilter(true);
     }
 
-    protected void ChangeCategoryFilter(bool useCategory, ItemCategory category)
+    protected void ChangeCategoryFilter(bool useCategory, Category category)
     {
         EnsureFilter();
 
@@ -202,7 +202,7 @@ public abstract class ItemSearchUIBase : MonoBehaviour
         ApplyFilter(true);
     }
 
-    protected void ChangeGradeFilter(bool useGrade, ItemGrade grade)
+    protected void ChangeGradeFilter(bool useGrade, Grade grade)
     {
         EnsureFilter();
 
@@ -217,7 +217,7 @@ public abstract class ItemSearchUIBase : MonoBehaviour
         ApplyFilter(true);
     }
 
-    protected bool IsCategoryMasked(ItemCategory value)
+    protected bool IsCategoryMasked(Category value)
     {
         return targetUI != null && targetUI.IsCategoryMasked(value);
     }
@@ -227,7 +227,7 @@ public abstract class ItemSearchUIBase : MonoBehaviour
         return targetUI != null && targetUI.IsSeriesMasked(value);
     }
 
-    protected bool IsGradeMasked(ItemGrade value)
+    protected bool IsGradeMasked(Grade value)
     {
         return targetUI != null && targetUI.IsGradeMasked(value);
     }

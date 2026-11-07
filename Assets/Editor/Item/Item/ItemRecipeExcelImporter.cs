@@ -220,7 +220,7 @@ public class ItemRecipeCsvImporter : EditorWindow
                 continue;
             }
 
-            ItemGrade grade = ParseEnumOrFallback(row.grade, resultItem.grade);
+            Grade grade = ParseEnumOrFallback(row.grade, resultItem.grade);
             ItemSeries series = ParseEnumOrFallback(row.series, resultItem.series);
 
             if (!int.TryParse(row.tier, out int tier) || tier < 1)
@@ -278,7 +278,7 @@ public class ItemRecipeCsvImporter : EditorWindow
     private static void ApplyRecipe(
         ItemRecipeData recipe,
         ItemData resultItem,
-        ItemGrade grade,
+        Grade grade,
         ItemSeries series,
         int tier,
         List<ItemData> materialItems)

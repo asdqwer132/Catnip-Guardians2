@@ -27,6 +27,6 @@ public class DefinedDataManager : MonoBehaviour
     private void OnDisable() { if (instance == this) instance = null; }
 
     public DefinedData GetSeries(ItemSeries type) => seriesData != null ? seriesData.GetData(type) : null;
-    public DefinedData GetGrade(ItemGrade type) => gradeData != null ? gradeData.GetData(type) : null;
+    public DefinedData GetGrade(Grade type) => gradeData != null ? gradeData.GetData(type) : null;
     public void RefreshDefinitions() => DefinitionsChanged?.Invoke();
 }

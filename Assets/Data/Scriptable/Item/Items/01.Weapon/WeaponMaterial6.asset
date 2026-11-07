@@ -18,21 +18,24 @@ MonoBehaviour:
     dataName: "\uBC27\uC904"
     description: "\uC9C8\uAE34 \uC12C\uC720\uB97C \uC5EC\uB7EC \uACB9 \uAF2C\uC544
       \uB9CC\uB4E0 \uC904"
+    detailDescription: 
   - language: 0
     dataName: rope
     description: A string made by twisting tough fibers in multiple layers
+    detailDescription: 
   dataNumbering: 006
   dataId: WeaponMaterial6
   dataType: 1
   requireUnlock: 0
   grade: 1
-  category: 0
+  category: 1
   series: 1
   tags: []
   weight: 1
   cooldown: 1
   effectDatas:
   - {fileID: 11400000, guid: 860bd383df3ae8f46ad00f54a9dd029c, type: 2}
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

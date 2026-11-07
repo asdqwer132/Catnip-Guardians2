@@ -13,8 +13,8 @@ public class InventoryItem : ISearchable
     }
 
 
-    public ItemGrade GetGrade() { return itemData.grade; }
-    public ItemCategory GetItemCategory() { return itemData.category; }
+    public Grade GetGrade() { return itemData.grade; }
+    public Category GetItemCategory() { return itemData.category; }
     public ItemSeries GetItemSeries() { return itemData.series; }
 
 }
