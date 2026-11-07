@@ -63,6 +63,24 @@ public sealed class LoadingSceneTests
         Assert.That(camera.GetComponent<SceneCameraBinding>().role, Is.EqualTo(SceneCameraRole.Background));
     }
 
+    [Test] public void RepeatedBeginKeepsTheFirstRandomCharacterForTheLoadingScene()
+    {
+        var previousRandom = Random.state;
+        try
+        {
+            var value = Presentation(); value.Begin();
+            var first = Runners(value).Single().sprite;
+            var afterSelection = Random.state;
+            for (int i = 0; i < 20; i++)
+            {
+                value.Begin();
+                Assert.That(Runners(value).Single().sprite, Is.SameAs(first));
+                Assert.That(Random.state, Is.EqualTo(afterSelection), "Repeated initialization must not draw another character.");
+            }
+        }
+        finally { Random.state = previousRandom; }
+    }
+
     [Test] public void DotsAndSlicedFramesCycleIndependentlyOfProgress()
     {
         var value = Presentation(); value.Begin();

@@ -44,6 +44,7 @@ public sealed class LoadingScenePresentation : MonoBehaviour
     private readonly List<Image> runners = new List<Image>();
     private readonly List<LoadingCharacterAnimation> roster = new List<LoadingCharacterAnimation>();
     private readonly List<LoadingCharacterAnimation> candidates = new List<LoadingCharacterAnimation>();
+    private LoadingCharacterAnimation randomCharacter;
     private readonly Vector3[] corners = new Vector3[4];
     private static readonly string[] dots = { ".", "..", "..." };
     private float elapsed;
@@ -78,7 +79,13 @@ public sealed class LoadingScenePresentation : MonoBehaviour
                 if (character != null && character.runFrames != null && character.runFrames.Length > 0 && !candidates.Contains(character))
                     candidates.Add(character);
         if (characterSelection == LoadingCharacterSelection.RandomSingle && candidates.Count > 0)
-            roster.Add(candidates[UnityEngine.Random.Range(0, candidates.Count)]);
+        {
+            // OnEnable and the scene loader both call Begin. Keep the first draw
+            // for this loading scene instance; unloading the scene releases it.
+            if (randomCharacter == null || !candidates.Contains(randomCharacter))
+                randomCharacter = candidates[UnityEngine.Random.Range(0, candidates.Count)];
+            roster.Add(randomCharacter);
+        }
         else roster.AddRange(candidates);
 
         // Only copy the authored visual. No Canvas, layout or UI components are generated here.
