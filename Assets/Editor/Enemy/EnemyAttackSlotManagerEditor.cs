@@ -15,6 +15,30 @@ public sealed class EnemyAttackSlotManagerEditor : Editor
         {
             var slot = manager.slots[i];
             if (slot == null) continue;
+            if (manager.layout == EnemyAttackSlotLayout.RectangularRings)
+            {
+                using (new Handles.DrawingScope(manager.gizmoColor))
+                {
+                    Vector3 center = manager.RingCenter;
+                    EnemyRegionGeometry.RectangleHalfSizes(slot.rectangularSize, slot.rectangularThickness, out var inner, out var outer);
+                    Handles.DrawWireCube(center, inner * 2f);
+                    Handles.DrawWireCube(center, outer * 2f);
+                    Handles.Label(center + Vector3.up * outer.y, $"{slot.label} ({slot.ReservedCount}/{slot.capacity})");
+                    EditorGUI.BeginChangeCheck();
+                    float width = Handles.ScaleSlider(slot.rectangularSize.x * .5f, center, Vector3.right,
+                        Quaternion.identity, HandleUtility.GetHandleSize(center), .1f) * 2f;
+                    float height = Handles.ScaleSlider(slot.rectangularSize.y * .5f, center, Vector3.up,
+                        Quaternion.identity, HandleUtility.GetHandleSize(center), .1f) * 2f;
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        serializedObject.Update();
+                        serializedObject.FindProperty("slots").GetArrayElementAtIndex(i).FindPropertyRelative("rectangularSize").vector2Value
+                            = new Vector2(Mathf.Max(.01f, width), Mathf.Max(.01f, height));
+                        serializedObject.ApplyModifiedProperties();
+                    }
+                }
+                continue;
+            }
             if (manager.layout == EnemyAttackSlotLayout.RadialRings)
             {
                 using (new Handles.DrawingScope(manager.gizmoColor))

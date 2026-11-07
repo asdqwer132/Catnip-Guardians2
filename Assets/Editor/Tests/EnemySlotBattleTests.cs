@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -256,6 +257,101 @@ public class EnemySlotBattleTests
         first.TakeDamage(100f);
         Assert.That(slots.TryGetDestination(waiting, out var freed), Is.True);
         Assert.That(freed.magnitude, Is.InRange(1.5f, 2.5f));
+    }
+
+    [UnityTest]
+    public IEnumerator RectangularBandsAcceptEnemiesFromAllSidesAndKeepTheirIncomingAngles()
+    {
+        slots.layout = EnemyAttackSlotLayout.RectangularRings;
+        slots.centerTarget = plant.transform; plant.transform.position = new Vector3(12, -4, 0);
+        slots.slots[0].rectangularSize = new Vector2(8, 4);
+        slots.slots[0].rectangularThickness = 1; slots.slots[0].capacity = 5;
+        var directions = new[] { Vector2.right, Vector2.up, Vector2.left, Vector2.down, new Vector2(2, 1).normalized };
+        var incoming = new List<Enemy>();
+        foreach (var direction in directions)
+        {
+            Vector2 spawn = slots.RingCenter + direction * 9;
+            var enemy = Spawn(spawn.x, spawn.y); incoming.Add(enemy);
+            Assert.That(slots.TryGetDestination(enemy, out var destination), Is.True);
+            var point = destination - slots.RingCenter;
+            Assert.That(Mathf.Abs(point.x) <= 4.5001f && Mathf.Abs(point.y) <= 2.5001f, Is.True);
+            Assert.That(Mathf.Abs(point.x) >= 3.4999f || Mathf.Abs(point.y) >= 1.4999f, Is.True);
+            Assert.That(Vector2.Dot(point.normalized, direction), Is.EqualTo(1).Within(.0001f));
+        }
+        yield return WaitForGameSeconds(.6f);
+        foreach (var enemy in incoming) Assert.That(enemy.IsAtAttackSlot, Is.True, enemy.transform.position.ToString());
+    }
+
+    [Test]
+    public void CapacityBudgetIsExactAndZeroCapacityBandsDoNotAdmitEnemies()
+    {
+        slots.layout = EnemyAttackSlotLayout.RadialRings;
+        slots.slots = Enumerable.Range(0, 5).Select(i => new EnemyAttackSlot { radius = i + 1 }).ToList();
+        slots.slots.Insert(2, null);
+        slots.SetTotalCapacity(103);
+        Assert.That(slots.slots.Where(s => s != null).Select(s => s.capacity), Is.EqualTo(new[] { 21, 21, 21, 20, 20 }));
+        var existing = Spawn(8, 0);
+        Assert.That(slots.TryGetDestination(existing, out var original), Is.True);
+        slots.SetTotalCapacity(0);
+        Assert.That(slots.TryGetDestination(existing, out var retained), Is.True);
+        Assert.That(retained, Is.EqualTo(original), "A capacity decrease must not move an existing reservation.");
+        var waiting = Spawn(0, 8);
+        Assert.That(slots.TryGetDestination(waiting, out _), Is.False);
+        slots.SetTotalCapacity(2);
+        Assert.That(slots.slots.Where(s => s != null).Select(s => s.capacity), Is.EqualTo(new[] { 1, 1, 0, 0, 0 }));
+        Assert.That(slots.TryGetDestination(waiting, out _), Is.True);
+        Assert.That(slots.slots[1].ReservedCount, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void PlantMaxHpBuffsImmediatelyUpdateLimitCapacitiesGaugeAndDefeatThreshold()
+    {
+        var buffs = Host("Plant buffs").AddComponent<BuffManager>();
+        plant.buffManager = buffs;
+        var plantData = Asset<PlantData>(); plantData.maxHP = 7;
+        plant.Init(plantData);
+        slots.layout = EnemyAttackSlotLayout.RadialRings;
+        slots.slots = Enumerable.Range(1, 3).Select(i => new EnemyAttackSlot { radius = i }).ToList();
+        enemies.Target = plant; enemies.logSpawnTime = false; enemies.Init(plantData);
+        var gaugeHost = Host("Population gauge", false);
+        var image = gaugeHost.AddComponent<UnityEngine.UI.Image>(); image.type = UnityEngine.UI.Image.Type.Filled;
+        var fill = gaugeHost.AddComponent<ImageFillUI>(); fill.fillImage = image;
+        var gauge = gaugeHost.AddComponent<HealthBarUI>(); gauge.hpFill = fill;
+        gauge.hideWhenFullHp = gauge.hideWhenDead = false; gauge.SetEnemyManager(enemies); gaugeHost.SetActive(true);
+        var first = Spawn(8, 0); Spawn(0, 8);
+        Assert.That(slots.TryGetDestination(first, out var original), Is.True);
+        Assert.That(slots.slots.Select(s => s.capacity), Is.EqualTo(new[] { 3, 2, 2 }));
+
+        var resolver = Asset<DirectBuffTargetResolver>(); resolver.targetComponent = plant.health;
+        var modifier = Asset<FloatFieldBuffModifier>(); modifier.targetStatTypeName = nameof(HealthStat);
+        modifier.fieldName = "maxHp"; modifier.addValue = 4;
+        var effect = Asset<BuffEffect>(); effect.includeSelf = true; effect.targetResolver = resolver;
+        effect.buffInfo.useLimitType = BuffUseLimitType.Infinite; effect.modifiers = new BuffModifier[] { modifier };
+        effect.Execute(new ItemEffectContext(plant.gameObject, null, Vector3.zero, Vector3.right, null, buffManager: buffs));
+        Assert.That(enemies.maxAliveEnemyCount, Is.EqualTo(11));
+        Assert.That(slots.slots.Select(s => s.capacity), Is.EqualTo(new[] { 4, 4, 3 }));
+        Assert.That(image.fillAmount, Is.EqualTo(2f / 11).Within(.0001f));
+        buffs.RemoveBuffHandle(buffs.Storage.activeBuffs.Single());
+        Assert.That(enemies.maxAliveEnemyCount, Is.EqualTo(7));
+        Assert.That(slots.TotalCapacity, Is.EqualTo(7));
+        Assert.That(image.fillAmount, Is.EqualTo(2f / 7).Within(.0001f));
+        Assert.That(slots.TryGetDestination(first, out var unchanged), Is.True);
+        Assert.That(unchanged, Is.EqualTo(original));
+
+        enemies.enabled = false;
+        plant.health.ApplyBuffedStat(new HealthStat { maxHp = 13 });
+        Assert.That(enemies.maxAliveEnemyCount, Is.EqualTo(7));
+        enemies.enabled = true;
+        Assert.That(enemies.maxAliveEnemyCount, Is.EqualTo(13));
+        plant.health.ApplyBuffedStat(new HealthStat { maxHp = 2 });
+        Assert.That(slots.slots.Select(s => s.capacity), Is.EqualTo(new[] { 1, 1, 0 }));
+        Assert.That(end.CurrentEndType, Is.EqualTo(GameEndType.Lose));
+        Assert.That(enemies.CurrentAliveEnemyCount, Is.EqualTo(2));
+
+        end.ResetGameEnd(); enemies.PrepareRound();
+        plantData.maxHP = 1; plant.Init(plantData); enemies.Init(plantData);
+        Assert.That(enemies.maxAliveEnemyCount, Is.EqualTo(1));
+        Assert.That(end.IsGameEnded, Is.False, "Retry must clear the previous population before rebinding plant HP.");
     }
 
     [UnityTest]

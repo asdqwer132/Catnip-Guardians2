@@ -25,6 +25,7 @@ public class InitManager : MonoBehaviour
 
     public void InitAll()
     {
+        enemyManager.PrepareRound();
         plantManager.SetPlants();
         enemyManager.Init(plantManager.CurrentPlant);
         bagManager.Init();

@@ -64,7 +64,18 @@ public class EnemySpawnAreaTests
                 var normals = serialized.FindProperty("normalEnemies");
                 for (int i = 0; i < normals.arraySize; i++)
                     Assert.That(normals.GetArrayElementAtIndex(i).FindPropertyRelative("spawnRate"), Is.Null);
-                Assert.That(serialized.FindProperty("bossEnemies").FindPropertyRelative("spawnRate"), Is.Not.Null);
+                foreach (string field in new[] { "middleBossEnemies", "bossEnemies" })
+                {
+                    var list = serialized.FindProperty(field);
+                    Assert.That(list.isArray, Is.True);
+                    for (int i = 0; i < list.arraySize; i++)
+                    {
+                        var entry = list.GetArrayElementAtIndex(i);
+                        Assert.That(entry.FindPropertyRelative("spawnRate"), Is.Not.Null);
+                        Assert.That(entry.FindPropertyRelative("spawnWeight"), Is.Null);
+                        Assert.That(entry.FindPropertyRelative("dataSet").objectReferenceValue, Is.Not.Null, data.name);
+                    }
+                }
             }
         }
         finally { EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single); }
@@ -123,19 +134,54 @@ public class EnemySpawnAreaTests
     }
 
     [Test]
+    public void RectangularPerimeterUsesWidthHeightAndThicknessWithoutFillingTheCenter()
+    {
+        var host = new GameObject("Rectangular border"); host.SetActive(false);
+        var randomState = Random.state;
+        try
+        {
+            var spawner = host.AddComponent<EnemySpawner>(); spawner.spawnShape = EnemySpawnShape.RectanglePerimeter;
+            spawner.spawnCenter = new Vector2(12, -4);
+            spawner.baseStat.spawnWidth = 12; spawner.baseStat.spawnHeight = 6;
+            spawner.baseStat.spawnBorderThickness = 2;
+            Random.InitState(33521);
+            var sides = new bool[4];
+            for (int i = 0; i < 2000; i++)
+            {
+                var point = spawner.GetRandomSpawnPosition() - spawner.SpawnWorldCenter;
+                float x = Mathf.Abs(point.x), y = Mathf.Abs(point.y);
+                Assert.That(x <= 7.0001f && y <= 4.0001f, Is.True, point.ToString());
+                Assert.That(x >= 4.9999f || y >= 1.9999f, Is.True, "The inner rectangle must remain empty.");
+                sides[(x / 6 > y / 3 ? (point.x > 0 ? 0 : 1) : (point.y > 0 ? 2 : 3))] = true;
+            }
+            Assert.That(sides.All(s => s), Is.True);
+            spawner.baseStat.spawnBorderThickness = 0;
+            for (int i = 0; i < 200; i++)
+            {
+                var point = spawner.GetRandomSpawnPosition() - spawner.SpawnWorldCenter;
+                Assert.That(Mathf.Min(Mathf.Abs(Mathf.Abs(point.x) - 6), Mathf.Abs(Mathf.Abs(point.y) - 3)), Is.LessThan(.0001f));
+            }
+        }
+        finally { Random.state = randomState; Object.DestroyImmediate(host); }
+    }
+
+    [Test]
     public void RectangleDimensionsSurviveStatCloningAndClampInvalidSizes()
     {
-        var stat = new EnemySpawnerStat { spawnWidth = 27f, spawnHeight = 11f };
+        var stat = new EnemySpawnerStat { spawnWidth = 27f, spawnHeight = 11f, spawnBorderThickness = 2f };
         var copy = stat.Clone();
         stat.spawnWidth = 100f;
         Assert.That(copy.spawnWidth, Is.EqualTo(27f));
         Assert.That(copy.spawnHeight, Is.EqualTo(11f));
+        Assert.That(copy.spawnBorderThickness, Is.EqualTo(2f));
         copy.spawnWidth = -1f;
         copy.spawnHeight = float.NaN;
+        copy.spawnBorderThickness = float.NaN;
         copy.Clamp();
         Assert.That(copy.spawnWidth, Is.GreaterThan(0f));
         Assert.That(copy.spawnHeight, Is.GreaterThan(0f));
         Assert.That(float.IsNaN(copy.spawnHeight), Is.False);
+        Assert.That(copy.spawnBorderThickness, Is.Zero);
     }
 
     [UnityTearDown]
@@ -177,8 +223,8 @@ public class EnemySpawnAreaTests
             manager.bossSpawner = Spawner("Boss", 500);
             data.spawnNormalEnemyCount = 2; data.normalSpawnInterval = .2f;
             data.normalEnemies = new[] { new EnemySpawnInfo { dataSet = first, spawnWeight = 1 }, new EnemySpawnInfo { dataSet = second, spawnWeight = 3 } };
-            data.middleBossEnemies = new SpecialEnemySpawnInfo { dataSet = first, spawnRate = 4 };
-            data.bossEnemies = new SpecialEnemySpawnInfo { dataSet = second, spawnRate = 7 };
+            data.middleBossEnemies = new[] { new SpecialEnemySpawnInfo { dataSet = first, spawnRate = 4 } };
+            data.bossEnemies = new[] { new SpecialEnemySpawnInfo { dataSet = second, spawnRate = 7 } };
             float started = Time.time; manager.Init(data);
             Assert.That(a.gameObject.activeSelf && b.gameObject.activeSelf, Is.True);
             Assert.That(unused.gameObject.activeSelf, Is.False);
@@ -215,6 +261,82 @@ public class EnemySpawnAreaTests
             Object.DestroyImmediate(host); Object.DestroyImmediate(prefab);
             Object.DestroyImmediate(data); Object.DestroyImmediate(first); Object.DestroyImmediate(second);
         }
+    }
+
+    [UnityTest]
+    public IEnumerator SpecialListsUseIndependentCooldownsAndPauseStopAndRestartTogether()
+    {
+        EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        yield return new EnterPlayMode();
+        // Create captured test state after the domain reload; EnterPlayMode cannot restore a closure.
+        yield return RunSpecialListTiming();
+    }
+
+    private IEnumerator RunSpecialListTiming()
+    {
+        Time.timeScale = 1f;
+        float previousMaximumDelta = Time.maximumDeltaTime; Time.maximumDeltaTime = .02f;
+        var host = new GameObject("Special list timing");
+        var prefab = new GameObject("Special enemy"); prefab.SetActive(false);
+        prefab.AddComponent<Health>(); prefab.AddComponent<ActorTarget>(); prefab.AddComponent<Enemy>();
+        prefab.AddComponent<PooledObject>().SetPoolGroup(PoolObjectGroup.Enemy);
+        var data = ScriptableObject.CreateInstance<PlantData>();
+        var first = ScriptableObject.CreateInstance<EnemyDataSet>();
+        var firstStats = ScriptableObject.CreateInstance<EnemyStatData>();
+        var second = ScriptableObject.CreateInstance<EnemyDataSet>();
+        var secondStats = ScriptableObject.CreateInstance<EnemyStatData>();
+        try
+        {
+            Assert.That(first, Is.Not.Null); Assert.That(firstStats, Is.Not.Null);
+            Assert.That(second, Is.Not.Null); Assert.That(secondStats, Is.Not.Null);
+            first.statData = firstStats; second.statData = secondStats;
+            var pool = host.AddComponent<ObjectPoolManager>();
+            pool.poolParent = pool.enemyActiveParent = pool.enemyPoolParent = pool.transform;
+            var plantHost = new GameObject("Plant"); plantHost.transform.SetParent(host.transform);
+            var health = plantHost.AddComponent<Health>(); var plant = plantHost.AddComponent<Plant>(); plant.health = health; plant.Init(data);
+            var manager = host.AddComponent<EnemyManager>(); manager.Target = plant; manager.logSpawnTime = false;
+            var spawnHost = new GameObject("Special spawner"); spawnHost.transform.SetParent(host.transform);
+            var spawner = spawnHost.AddComponent<EnemySpawner>(); spawner.enemyPrefab = prefab;
+            manager.middleBossSpawner = spawner;
+            data.middleBossEnemies = new[] { null, new SpecialEnemySpawnInfo(),
+                new SpecialEnemySpawnInfo { dataSet = first, spawnRate = .1f },
+                new SpecialEnemySpawnInfo { dataSet = second, spawnRate = .3f } };
+            manager.Init(data);
+            yield return WaitForSpawnTime(.25f);
+            Assert.That(manager.ActiveEnemies.Count(e => e.statData == first.statData), Is.GreaterThanOrEqualTo(2),
+                $"Active={manager.ActiveEnemies.Count}, pooled={pool.GetComponentsInChildren<PooledObject>(true).Count(p => p.IsSpawned)}, " +
+                $"next={spawner.DebugNextEnemyName}, remaining={spawner.DebugSpawnRemainingTime}, interval={spawner.DebugSpawnInterval}, " +
+                $"stopped={TimeStopRuntime.IsStopped(TimeStopTargets.EnemySpawning)}, enabled={spawner.isActiveAndEnabled}");
+            Assert.That(manager.ActiveEnemies.Count(e => e.statData == second.statData), Is.Zero,
+                "A slower entry must keep its own countdown while the faster entry repeats.");
+            int count = manager.ActiveEnemies.Count;
+            Time.timeScale = 0;
+            float pausedUntil = Time.realtimeSinceStartup + .04f;
+            while (Time.realtimeSinceStartup < pausedUntil) yield return null;
+            Assert.That(manager.ActiveEnemies.Count, Is.EqualTo(count));
+            Time.timeScale = 1; yield return WaitForSpawnTime(.12f);
+            Assert.That(manager.ActiveEnemies.Count(e => e.statData == second.statData), Is.GreaterThanOrEqualTo(1));
+            spawner.StopSpawning(); count = manager.ActiveEnemies.Count;
+            yield return WaitForSpawnTime(.15f);
+            Assert.That(manager.ActiveEnemies.Count, Is.EqualTo(count));
+            spawner.StartSpawning(); yield return WaitForSpawnTime(.15f);
+            Assert.That(manager.ActiveEnemies.Count, Is.GreaterThan(count));
+        }
+        finally
+        {
+            Time.timeScale = 1; Time.maximumDeltaTime = previousMaximumDelta;
+            Object.DestroyImmediate(host); Object.DestroyImmediate(prefab); Object.DestroyImmediate(data);
+            Object.DestroyImmediate(firstStats); Object.DestroyImmediate(secondStats);
+            Object.DestroyImmediate(first); Object.DestroyImmediate(second);
+        }
+    }
+
+    private static IEnumerator WaitForSpawnTime(float duration)
+    {
+        float until = Time.time + duration;
+        float timeout = Time.realtimeSinceStartup + 5f;
+        while (Time.time < until && Time.realtimeSinceStartup < timeout) yield return null;
+        Assert.That(Time.time, Is.GreaterThanOrEqualTo(until), "The timer test must advance actual game time.");
     }
 
     [UnityTest]

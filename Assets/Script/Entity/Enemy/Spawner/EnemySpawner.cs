@@ -1,7 +1,8 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public enum EnemySpawnShape { Circle, Rectangle }
+public enum EnemySpawnShape { Circle, Rectangle, RectanglePerimeter }
 
 [BuffTargetGroups("EnemySpawner")]
 public class EnemySpawner : MonoBehaviour, IBuffTarget
@@ -9,6 +10,8 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
     [Header("Setting")]
     public GameObject enemyPrefab;
     public EnemySpawnInfo[] enemyInfos;
+    public SpecialEnemySpawnInfo[] specialEnemyInfos;
+    [SerializeField] private bool useSpecialEntries;
     public EnemySpawnerStat baseStat = new EnemySpawnerStat();
     [Tooltip("켜면 스포너 시작 시 첫 번째 적은 대기시간 없이 바로 소환됩니다.")]
     public bool spawnImmediatelyOnStart = false;
@@ -18,7 +21,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
     public Vector2 spawnIntervalOffsetRange;
 
     [Header("Spawn Area")]
-    [Tooltip("Circle: 원의 둘레 / Rectangle: 지정한 사각형 영역 안에서 소환합니다.")]
+    [Tooltip("Circle: circular perimeter / Rectangle: filled rectangle / Rectangle Perimeter: rectangular border.")]
     public EnemySpawnShape spawnShape;
     [Tooltip("월드 좌표 기준 영역 중심입니다. 사각형 크기는 Base Stat의 Spawn Width / Height로 설정합니다.")]
     public Vector2 spawnCenter;
@@ -98,6 +101,34 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
     public void SetSpawner(EnemySpawnInfo[] infos, Plant plant, int index, float startTime, BuffManager manager)
     {
         enemyInfos = infos;
+        specialEnemyInfos = null;
+        useSpecialEntries = false;
+        Configure(plant, index, startTime, manager);
+        pendingImmediateSpawn = spawnImmediatelyOnStart ? GetRandomEnemySpawnInfo() : null;
+        StartSpawning();
+    }
+
+    public void SetSpecialSpawner(SpecialEnemySpawnInfo[] infos, Plant plant, int index, float startTime)
+    {
+        StopSpawning();
+        specialEnemyInfos = infos;
+        enemyInfos = null;
+        useSpecialEntries = true;
+        pendingImmediateSpawn = null;
+        if (baseStat == null) baseStat = new EnemySpawnerStat();
+        if (infos != null)
+            foreach (var info in infos)
+                if (info != null && info.dataSet != null)
+                {
+                    baseStat.spawnInterval = EffectStatUtility.Safe(info.spawnRate, .05f, 100000f, 1.5f);
+                    break;
+                }
+        Configure(plant, index, startTime, buffManager);
+        StartSpawning();
+    }
+
+    private void Configure(Plant plant, int index, float startTime, BuffManager manager)
+    {
         targetPlant = plant;
         spawnerIndex = index;
         spawnStartTime = startTime;
@@ -107,15 +138,6 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
             buffManager.RegisterBuffTarget(this);
 
         RefreshBuffedStat();
-
-
-        pendingImmediateSpawn = null;
-        if (spawnImmediatelyOnStart)
-        {
-
-            pendingImmediateSpawn = GetRandomEnemySpawnInfo();
-        }
-        StartSpawning();
     }
 
     public void RefreshBuffedStat()
@@ -138,11 +160,12 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
     {
         StopSpawning();
 
-        if (enemyInfos == null || enemyInfos.Length == 0)
+        if (useSpecialEntries ? specialEnemyInfos == null || specialEnemyInfos.Length == 0
+            : enemyInfos == null || enemyInfos.Length == 0)
             return;
 
         isSpawning = true;
-        spawnCoroutine = StartCoroutine(SpawnRoutine());
+        spawnCoroutine = StartCoroutine(useSpecialEntries ? SpecialSpawnRoutine() : SpawnRoutine());
     }
 
     public void StopSpawning()
@@ -201,10 +224,69 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
     public float GetNextSpawnInterval()
     {
         RefreshBuffedStat();
+        return ApplyIntervalOffset(currentStat != null ? currentStat.spawnInterval : 1.5f);
+    }
+
+    private float GetSpecialInterval(SpecialEnemySpawnInfo info)
+    {
+        var stat = baseStat != null ? baseStat.Clone() : new EnemySpawnerStat();
+        stat.spawnInterval = EffectStatUtility.Safe(info.spawnRate, .05f, 100000f, 1.5f);
+        var buffed = buffManager != null ? buffManager.GetBuffedStatForTarget(stat, this) : stat;
+        if (buffed == null) buffed = stat;
+        buffed.Clamp();
+        return ApplyIntervalOffset(buffed.spawnInterval);
+    }
+
+    private float ApplyIntervalOffset(float interval)
+    {
         float first = EffectStatUtility.Safe(spawnIntervalOffsetRange.x, -100000f, 100000f, 0f);
         float second = EffectStatUtility.Safe(spawnIntervalOffsetRange.y, -100000f, 100000f, 0f);
         float offset = Random.Range(Mathf.Min(first, second), Mathf.Max(first, second));
-        return Mathf.Max(.05f, (currentStat != null ? currentStat.spawnInterval : 1.5f) + offset);
+        return Mathf.Max(.05f, interval + offset);
+    }
+
+    private sealed class SpecialTimer
+    {
+        public SpecialEnemySpawnInfo info;
+        public float interval;
+        public float remaining;
+    }
+
+    private IEnumerator SpecialSpawnRoutine()
+    {
+        var timers = new List<SpecialTimer>();
+        foreach (var info in specialEnemyInfos)
+        {
+            if (info == null || info.dataSet == null) continue;
+            float interval = spawnImmediatelyOnStart ? 0f : GetSpecialInterval(info);
+            timers.Add(new SpecialTimer { info = info, interval = interval, remaining = interval });
+        }
+        while (isSpawning && timers.Count > 0)
+        {
+            if (!TimeStopRuntime.IsStopped(TimeStopTargets.EnemySpawning))
+            {
+                foreach (var timer in timers)
+                {
+                    if (timer.remaining > 0f) continue;
+                    SpawnEnemy(timer.info, timer.interval);
+                    if (!isSpawning) yield break;
+                    timer.interval = GetSpecialInterval(timer.info);
+                    timer.remaining = timer.interval;
+                }
+            }
+            if (enableSpawnDebug)
+            {
+                var next = timers[0];
+                foreach (var timer in timers) if (timer.remaining < next.remaining) next = timer;
+                SetSpawnDebug(next.info, next.interval);
+                debugSelectedSpawnRate = next.info.spawnRate;
+                debugSpawnRemainingTime = RoundToOneDecimal(Mathf.Max(0f, next.remaining));
+                debugSpawnProgress01 = next.interval > 0f ? Mathf.Clamp01(1f - next.remaining / next.interval) : 1f;
+            }
+            yield return null;
+            if (!TimeStopRuntime.IsStopped(TimeStopTargets.EnemySpawning))
+                foreach (var timer in timers) timer.remaining -= Time.deltaTime;
+        }
     }
 
     private void StartSpawnDebugTimer(EnemySpawnInfo info, float interval)
@@ -251,7 +333,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         debugSpawnProgress01 = 1f;
     }
 
-    private void SetSpawnDebug(EnemySpawnInfo info, float interval)
+    private void SetSpawnDebug(EnemySpawnData info, float interval)
     {
         debugNextEnemyName = info != null && info.dataSet != null
             ? info.dataSet.name
@@ -263,7 +345,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
 
 
         debugSelectedSpawnRate = baseStat != null ? baseStat.spawnInterval : 0f;
-        debugSelectedSpawnWeight = info != null ? info.spawnWeight : 0f;
+        debugSelectedSpawnWeight = info is EnemySpawnInfo normal ? normal.spawnWeight : 0f;
     }
 
     private void SetSpawnDebugCompleted()
@@ -291,7 +373,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         return Mathf.Round(Mathf.Max(0f, value) * 10f) / 10f;
     }
 
-    private void SpawnEnemy(EnemySpawnInfo info, float usedInterval)
+    private void SpawnEnemy(EnemySpawnData info, float usedInterval)
     {
         if (EnemyManager.instance != null && EnemyManager.instance.FieldLimitReached) return;
         if (TimeStopRuntime.IsStopped(TimeStopTargets.EnemySpawning) || info == null)
@@ -340,6 +422,8 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         }
 
         Vector2 size = SpawnRectangleSize;
+        if (spawnShape == EnemySpawnShape.RectanglePerimeter)
+            return SpawnWorldCenter + EnemyRegionGeometry.RectangleBorderPoint(size, SpawnAreaStat?.spawnBorderThickness ?? 0f);
         Vector2 min = SpawnWorldCenter - size * .5f;
         Vector2 max = SpawnWorldCenter + size * .5f;
         return new Vector2(Random.Range(min.x, max.x), Random.Range(min.y, max.y));
@@ -348,7 +432,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
     private float GetSpawnDistance()
         => EffectStatUtility.Safe(SpawnAreaStat?.spawnDistance ?? 8f, 0.01f, 100000f, 8f);
 
-    private void LogSpawnTime(EnemySpawnInfo info, float usedInterval)
+    private void LogSpawnTime(EnemySpawnData info, float usedInterval)
     {
         if (EnemyManager.instance == null)
             return;
@@ -366,7 +450,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
             "[Spawner " + spawnerIndex + "] " +
             elapsedTime.ToString("F1") + "초 경과 / " +
             enemyName + " 소환 / " +
-            "기본 Spawn Interval: " + (baseStat != null ? baseStat.spawnInterval : 0f).ToString("F1") + " / " +
+            "기본 Spawn Interval: " + (info is SpecialEnemySpawnInfo special ? special.spawnRate : baseStat != null ? baseStat.spawnInterval : 0f).ToString("F1") + " / " +
             "실제 대기시간: " + usedInterval.ToString("F1")
         );
     }
@@ -470,10 +554,16 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
 
         Gizmos.color = spawnGizmoColor;
 
-        if (spawnShape == EnemySpawnShape.Rectangle)
+        if (spawnShape != EnemySpawnShape.Circle)
         {
             Vector2 size = SpawnRectangleSize;
-            Gizmos.DrawWireCube(center, new Vector3(size.x, size.y, 0f));
+            if (spawnShape == EnemySpawnShape.RectanglePerimeter)
+            {
+                EnemyRegionGeometry.RectangleHalfSizes(size, SpawnAreaStat?.spawnBorderThickness ?? 0f, out var inner, out var outer);
+                Gizmos.DrawWireCube(center, inner * 2f);
+                Gizmos.DrawWireCube(center, outer * 2f);
+            }
+            else Gizmos.DrawWireCube(center, new Vector3(size.x, size.y, 0f));
             extent = Mathf.Max(size.x, size.y) * .5f;
         }
         else

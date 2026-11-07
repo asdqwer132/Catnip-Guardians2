@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public enum EnemyAttackSlotLayout { VerticalRows, RadialRings }
+public enum EnemyAttackSlotLayout { VerticalRows, RadialRings, RectangularRings }
 
 [Serializable]
 public sealed class EnemyAttackSlot
@@ -13,7 +13,9 @@ public sealed class EnemyAttackSlot
     public Rect area = new Rect(-8f, .75f, 16f, .5f);
     [Min(0f)] public float radius = 2f;
     [Min(0f)] public float radialThickness = .5f;
-    [Min(1)] public int capacity = 10;
+    public Vector2 rectangularSize = new Vector2(4f, 4f);
+    [Min(0f)] public float rectangularThickness = .5f;
+    [Min(0)] public int capacity = 10;
     [SerializeField] private int reservedCount;
     public int ReservedCount => reservedCount;
     internal void SetReservedCount(int count) => reservedCount = count;
@@ -30,6 +32,23 @@ public sealed class EnemyAttackSlotManager : MonoBehaviour
     public Vector2 RingCenter => centerTarget != null ? (Vector2)centerTarget.position + centerOffset : centerOffset;
 
     public List<EnemyAttackSlot> slots = new List<EnemyAttackSlot>();
+    [SerializeField] private int totalCapacity = -1;
+    public int TotalCapacity => totalCapacity;
+
+    // Preserve existing reservations; a shrinking band blocks new arrivals until it has room again.
+    public void SetTotalCapacity(int total)
+    {
+        totalCapacity = Mathf.Max(0, total);
+        int count = 0;
+        foreach (var slot in slots) if (slot != null) count++;
+        if (count == 0) return;
+        int remainder = totalCapacity % count;
+        foreach (var slot in slots)
+        {
+            if (slot == null) continue;
+            slot.capacity = totalCapacity / count + (remainder-- > 0 ? 1 : 0);
+        }
+    }
     [Min(.001f)] public float arrivalTolerance = .03f;
     [Tooltip("피해 없이 슬롯 공격이 완료될 때 호출됩니다. 추가 효과를 연결할 수 있습니다.")]
     public UnityEvent<Enemy> onSlotAttack = new UnityEvent<Enemy>();
@@ -84,7 +103,7 @@ public sealed class EnemyAttackSlotManager : MonoBehaviour
         if (reservations.TryGetValue(enemy, out var reservation))
         {
             if (reservation.layout == layout && slots.Contains(reservation.slot) &&
-                (layout == EnemyAttackSlotLayout.RadialRings
+                (layout != EnemyAttackSlotLayout.VerticalRows
                     ? Vector2.Distance(position, RingCenter) + arrivalTolerance >= reservation.point.magnitude
                     : CoversX(reservation.slot, position.x) && reservation.point.y <= position.y + arrivalTolerance))
             {
@@ -96,7 +115,7 @@ public sealed class EnemyAttackSlotManager : MonoBehaviour
 
         foreach (var slot in slots)
         {
-            if (slot == null || slot.ReservedCount >= Mathf.Max(1, slot.capacity) ||
+            if (slot == null || slot.ReservedCount >= Mathf.Max(0, slot.capacity) ||
                 !TryCreatePoint(slot, position, out var point)) continue;
             reservation = new Reservation { slot = slot, point = point, layout = layout };
             reservations.Add(enemy, reservation);
@@ -109,7 +128,7 @@ public sealed class EnemyAttackSlotManager : MonoBehaviour
     }
 
     private Vector2 GetReservedPoint(Reservation reservation, Vector2 position)
-        => reservation.layout == EnemyAttackSlotLayout.RadialRings
+        => reservation.layout != EnemyAttackSlotLayout.VerticalRows
             ? RingCenter + reservation.point : new Vector2(position.x, reservation.point.y);
 
     private bool TryCreatePoint(EnemyAttackSlot slot, Vector2 position, out Vector2 point)
@@ -126,10 +145,17 @@ public sealed class EnemyAttackSlotManager : MonoBehaviour
         float distance = offset.magnitude;
         float inner = Mathf.Max(0f, slot.radius - slot.radialThickness * .5f);
         float outer = Mathf.Max(inner, slot.radius + slot.radialThickness * .5f);
+        Vector2 direction = distance > .0001f ? offset / distance : Vector2.up;
+        if (layout == EnemyAttackSlotLayout.RectangularRings)
+        {
+            EnemyRegionGeometry.RectangleHalfSizes(slot.rectangularSize, slot.rectangularThickness, out var innerSize, out var outerSize);
+            inner = EnemyRegionGeometry.RectangleRayDistance(direction, innerSize);
+            outer = EnemyRegionGeometry.RectangleRayDistance(direction, outerSize);
+        }
         // Keep the incoming angle and never send an enemy back to a ring it has already passed.
         if (distance + arrivalTolerance < inner) return false;
         float radius = UnityEngine.Random.Range(Mathf.Min(inner, distance), Mathf.Min(outer, distance));
-        point = (distance > .0001f ? offset / distance : Vector2.up) * radius;
+        point = direction * radius;
         return true;
     }
 
@@ -138,7 +164,7 @@ public sealed class EnemyAttackSlotManager : MonoBehaviour
         if (!isActiveAndEnabled || enemy == null || !reservations.TryGetValue(enemy, out var reservation)) return false;
         if (enemy.IsDead || reservation.layout != layout) return false;
         Vector2 position = enemy.transform.position;
-        return (layout == EnemyAttackSlotLayout.RadialRings || CoversX(reservation.slot, position.x)) &&
+        return (layout != EnemyAttackSlotLayout.VerticalRows || CoversX(reservation.slot, position.x)) &&
             Vector2.Distance(position, GetReservedPoint(reservation, position)) <= Mathf.Max(.001f, arrivalTolerance);
     }
 
@@ -194,6 +220,12 @@ public sealed class EnemyAttackSlotManager : MonoBehaviour
             if (slot == null) continue;
             if (layout == EnemyAttackSlotLayout.VerticalRows)
                 Gizmos.DrawWireCube(slot.area.center, new Vector3(slot.area.width, slot.area.height, 0f));
+            else if (layout == EnemyAttackSlotLayout.RectangularRings)
+            {
+                EnemyRegionGeometry.RectangleHalfSizes(slot.rectangularSize, slot.rectangularThickness, out var inner, out var outer);
+                Gizmos.DrawWireCube(RingCenter, inner * 2f);
+                Gizmos.DrawWireCube(RingCenter, outer * 2f);
+            }
             else
             {
                 DrawRing(Mathf.Max(0f, slot.radius - slot.radialThickness * .5f));

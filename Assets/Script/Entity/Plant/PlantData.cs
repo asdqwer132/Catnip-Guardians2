@@ -2,17 +2,21 @@
 using UnityEngine.Serialization;
 
 [System.Serializable]
-public class EnemySpawnInfo
+public class EnemySpawnData
 {
     public EnemyDataSet dataSet;
+}
 
+[System.Serializable]
+public class EnemySpawnInfo : EnemySpawnData
+{
     [Tooltip("일반 적 배열에서 랜덤 선택될 확률입니다.")]
     public float spawnWeight = 1f;
 
 }
 
 [System.Serializable]
-public class SpecialEnemySpawnInfo : EnemySpawnInfo
+public class SpecialEnemySpawnInfo : EnemySpawnData
 {
     [Tooltip("Special enemy spawn interval in seconds. Independent of the normal enemy interval.")]
     [Min(.05f)]
@@ -51,6 +55,6 @@ public class PlantData : DefaultData
     public EnemySpawnInfo[] normalEnemies;
 
     [Header("Extra Data / Special Enemy Spawn")]
-    public SpecialEnemySpawnInfo middleBossEnemies;
-    public SpecialEnemySpawnInfo bossEnemies;
+    public SpecialEnemySpawnInfo[] middleBossEnemies = new SpecialEnemySpawnInfo[0];
+    public SpecialEnemySpawnInfo[] bossEnemies = new SpecialEnemySpawnInfo[0];
 }
