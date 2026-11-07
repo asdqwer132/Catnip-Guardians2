@@ -20,8 +20,8 @@ public class EnemyPrefabBatchCreator : EditorWindow
     [Header("Sprite Name Rules")]
     [SerializeField] private string idleSpriteSuffix = "-Idle";
     [SerializeField] private string attackSpriteSuffix = "-Attack01";
-    [SerializeField] private string hitSpriteSuffix = "-Hurt";
-    [SerializeField] private string dieSpriteSuffix = "-Death";
+    [SerializeField] private string hitSpriteSuffix = "-Hit";
+    [SerializeField] private string dieSpriteSuffix = "-Die";
     [SerializeField] private string walkSpriteSuffix = "-Walk";
 
     [Header("Generated Clip Names")]
@@ -46,6 +46,12 @@ public class EnemyPrefabBatchCreator : EditorWindow
     public static void Open()
     {
         GetWindow<EnemyPrefabBatchCreator>("Enemy Prefab Creator");
+    }
+
+    private void OnEnable()
+    {
+        if (hitSpriteSuffix == "-Hurt") hitSpriteSuffix = "-Hit";
+        if (dieSpriteSuffix == "-Death") dieSpriteSuffix = "-Die";
     }
 
     private void OnGUI()
@@ -94,6 +100,7 @@ public class EnemyPrefabBatchCreator : EditorWindow
         EditorGUILayout.Space(8);
 
         EditorGUILayout.LabelField("Generated Clip Names", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Additional sheets", "Enemy-Pattern1, Enemy-Pattern2, ...");
 
         idleClipName = EditorGUILayout.TextField("Idle Clip Name", idleClipName);
         attackClipName = EditorGUILayout.TextField("Attack Clip Name", attackClipName);
@@ -183,7 +190,9 @@ public class EnemyPrefabBatchCreator : EditorWindow
             return;
         }
 
-        string[] enemyFolders = AssetDatabase.GetSubFolders(resourceRootPath);
+        string[] enemyFolders = AssetDatabase.FindAssets("t:Texture2D", new[] { resourceRootPath })
+            .Select(g => Path.GetDirectoryName(AssetDatabase.GUIDToAssetPath(g)).Replace('\\', '/'))
+            .Where(folder => folder != resourceRootPath).Distinct().OrderBy(folder => folder).ToArray();
 
         if (enemyFolders == null || enemyFolders.Length == 0)
         {
@@ -227,135 +236,136 @@ public class EnemyPrefabBatchCreator : EditorWindow
                 logFrameCount
             );
 
+            // Flying enemies use the same flight cycle for idle and locomotion.
+            if (idleSprites.Count == 0) idleSprites = walkSprites;
+            if (walkSprites.Count == 0) walkSprites = idleSprites;
             if (!HasSprites(enemyName, "Idle", idleSprites)) continue;
             if (!HasSprites(enemyName, "Attack", attackSprites)) continue;
             if (!HasSprites(enemyName, "Hit", hitSprites)) continue;
             if (!HasSprites(enemyName, "Die", dieSprites)) continue;
             if (!HasSprites(enemyName, "Walk", walkSprites)) continue;
 
-            string enemyOutputFolder = $"{outputPath}/{enemyName}";
-
-            if (!AssetDatabase.IsValidFolder(enemyOutputFolder))
-            {
-                AssetDatabase.CreateFolder(outputPath, enemyName);
-            }
+            string relativeFolder = enemyFolderPath.Substring(resourceRootPath.Length).TrimStart('/');
+            string enemyOutputFolder = outputPath + "/" + relativeFolder;
+            EnsureFolder(enemyOutputFolder);
 
             string newPrefabPath = $"{enemyOutputFolder}/{enemyName}.prefab";
             string newControllerPath = $"{enemyOutputFolder}/{enemyName}.controller";
             string newStatPath = $"{enemyOutputFolder}/{enemyName}.asset";
 
-            DeleteIfExists(newPrefabPath);
-            DeleteIfExists(newControllerPath);
-            DeleteIfExists(newStatPath);
-
-            AssetDatabase.CopyAsset(templatePrefabPath, newPrefabPath);
-            AssetDatabase.CopyAsset(templateControllerPath, newControllerPath);
-            AssetDatabase.CopyAsset(templateStatPath, newStatPath);
-
-            AssetDatabase.ImportAsset(newPrefabPath);
-            AssetDatabase.ImportAsset(newControllerPath);
-            AssetDatabase.ImportAsset(newStatPath);
+            CopyIfMissing(templatePrefabPath, newPrefabPath);
+            CopyIfMissing(templateControllerPath, newControllerPath);
+            CopyIfMissing(templateStatPath, newStatPath);
 
             GameObject prefabRoot = PrefabUtility.LoadPrefabContents(newPrefabPath);
 
-            prefabRoot.name = enemyName;
-
-            Animator animator = prefabRoot.GetComponentInChildren<Animator>();
-            SpriteRenderer spriteRenderer = prefabRoot.GetComponentInChildren<SpriteRenderer>();
-
-            if (animator == null)
+            try
             {
-                Debug.LogWarning($"{enemyName} 프리팹에 Animator가 없습니다. 스킵합니다.");
-                PrefabUtility.UnloadPrefabContents(prefabRoot);
-                continue;
+                prefabRoot.name = enemyName;
+
+                Animator animator = prefabRoot.GetComponentInChildren<Animator>(true);
+                SpriteRenderer spriteRenderer = prefabRoot.GetComponentInChildren<SpriteRenderer>(true);
+
+                if (animator == null)
+                {
+                    Debug.LogWarning($"{enemyName} 프리팹에 Animator가 없습니다. 스킵합니다.");
+                    continue;
+                }
+
+                if (spriteRenderer == null)
+                {
+                    Debug.LogWarning($"{enemyName} 프리팹에 SpriteRenderer가 없습니다. 스킵합니다.");
+                    continue;
+                }
+
+                string spriteRendererPath = GetRelativePath(
+                    animator.transform,
+                    spriteRenderer.transform
+                );
+
+                AnimationClip idleClip = CreateSpriteAnimationClip(
+                    $"{enemyOutputFolder}/{enemyName}-{idleClipName}.anim",
+                    idleSprites,
+                    spriteRendererPath,
+                    frameRate,
+                    loopIdle
+                );
+
+                AnimationClip attackClip = CreateSpriteAnimationClip(
+                    $"{enemyOutputFolder}/{enemyName}-{attackClipName}.anim",
+                    attackSprites,
+                    spriteRendererPath,
+                    frameRate,
+                    loopAttack
+                );
+
+                AnimationClip hitClip = CreateSpriteAnimationClip(
+                    $"{enemyOutputFolder}/{enemyName}-{hitClipName}.anim",
+                    hitSprites,
+                    spriteRendererPath,
+                    frameRate,
+                    loopHit
+                );
+
+                AnimationClip dieClip = CreateSpriteAnimationClip(
+                    $"{enemyOutputFolder}/{enemyName}-{dieClipName}.anim",
+                    dieSprites,
+                    spriteRendererPath,
+                    frameRate,
+                    loopDie
+                );
+
+                AnimationClip walkClip = CreateSpriteAnimationClip(
+                    $"{enemyOutputFolder}/{enemyName}-{walkClipName}.anim",
+                    walkSprites,
+                    spriteRendererPath,
+                    frameRate,
+                    loopWalk
+                );
+
+                AnimatorController controller =
+                    AssetDatabase.LoadAssetAtPath<AnimatorController>(newControllerPath);
+
+                EnemyStatData statData =
+                    AssetDatabase.LoadAssetAtPath<EnemyStatData>(newStatPath);
+
+                ReplaceControllerClips(
+                    controller,
+                    idleClip,
+                    attackClip,
+                    hitClip,
+                    dieClip,
+                    walkClip
+                );
+
+                CreateAdditionalAnimations(controller, enemyFolderPath, enemyName, enemyOutputFolder, spriteRendererPath,
+                    new[] { idleSpriteSuffix, attackSpriteSuffix, hitSpriteSuffix, dieSpriteSuffix, walkSpriteSuffix });
+                var setData = CreateDataSet(templateFolderPath, enemyOutputFolder, enemyName, controller, statData, idleSprites[0]);
+                var runner = prefabRoot.GetComponent<EnemyPatternRunner>();
+                if (runner != null) runner.patternData = setData.patternData;
+                animator.runtimeAnimatorController = controller;
+
+                Enemy enemy = prefabRoot.GetComponent<Enemy>();
+
+                if (enemy != null)
+                {
+                    enemy.statData = statData;
+                    EditorUtility.SetDirty(enemy);
+                }
+                else
+                {
+                    Debug.LogWarning($"{enemyName} 프리팹에 Enemy 컴포넌트가 없습니다.");
+                }
+
+                EditorUtility.SetDirty(controller);
+                EditorUtility.SetDirty(statData);
+                // Controller assignment may restore the template's default pose; save the preview last.
+                spriteRenderer.sprite = idleSprites[0];
+                EditorUtility.SetDirty(spriteRenderer);
+                EditorUtility.SetDirty(animator);
+                PrefabUtility.SaveAsPrefabAsset(prefabRoot, newPrefabPath);
             }
-
-            if (spriteRenderer == null)
-            {
-                Debug.LogWarning($"{enemyName} 프리팹에 SpriteRenderer가 없습니다. 스킵합니다.");
-                PrefabUtility.UnloadPrefabContents(prefabRoot);
-                continue;
-            }
-
-            string spriteRendererPath = GetRelativePath(
-                animator.transform,
-                spriteRenderer.transform
-            );
-
-            AnimationClip idleClip = CreateSpriteAnimationClip(
-                $"{enemyOutputFolder}/{enemyName}-{idleClipName}.anim",
-                idleSprites,
-                spriteRendererPath,
-                frameRate,
-                loopIdle
-            );
-
-            AnimationClip attackClip = CreateSpriteAnimationClip(
-                $"{enemyOutputFolder}/{enemyName}-{attackClipName}.anim",
-                attackSprites,
-                spriteRendererPath,
-                frameRate,
-                loopAttack
-            );
-
-            AnimationClip hitClip = CreateSpriteAnimationClip(
-                $"{enemyOutputFolder}/{enemyName}-{hitClipName}.anim",
-                hitSprites,
-                spriteRendererPath,
-                frameRate,
-                loopHit
-            );
-
-            AnimationClip dieClip = CreateSpriteAnimationClip(
-                $"{enemyOutputFolder}/{enemyName}-{dieClipName}.anim",
-                dieSprites,
-                spriteRendererPath,
-                frameRate,
-                loopDie
-            );
-
-            AnimationClip walkClip = CreateSpriteAnimationClip(
-                $"{enemyOutputFolder}/{enemyName}-{walkClipName}.anim",
-                walkSprites,
-                spriteRendererPath,
-                frameRate,
-                loopWalk
-            );
-
-            AnimatorController controller =
-                AssetDatabase.LoadAssetAtPath<AnimatorController>(newControllerPath);
-
-            EnemyStatData statData =
-                AssetDatabase.LoadAssetAtPath<EnemyStatData>(newStatPath);
-
-            ReplaceControllerClips(
-                controller,
-                idleClip,
-                attackClip,
-                hitClip,
-                dieClip,
-                walkClip
-            );
-
-            animator.runtimeAnimatorController = controller;
-
-            Enemy enemy = prefabRoot.GetComponent<Enemy>();
-
-            if (enemy != null)
-            {
-                enemy.statData = statData;
-                EditorUtility.SetDirty(enemy);
-            }
-            else
-            {
-                Debug.LogWarning($"{enemyName} 프리팹에 Enemy 컴포넌트가 없습니다.");
-            }
-
-            PrefabUtility.SaveAsPrefabAsset(prefabRoot, newPrefabPath);
-            PrefabUtility.UnloadPrefabContents(prefabRoot);
-
-            EditorUtility.SetDirty(controller);
-            EditorUtility.SetDirty(statData);
+            finally { PrefabUtility.UnloadPrefabContents(prefabRoot); }
 
             createdCount++;
 
@@ -376,10 +386,13 @@ public class EnemyPrefabBatchCreator : EditorWindow
         bool loop
     )
     {
-        DeleteIfExists(clipPath);
-
-        AnimationClip clip = new AnimationClip();
-        clip.frameRate = frameRate;
+        AnimationClip clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(clipPath);
+        bool isNew = clip == null;
+        if (isNew) clip = new AnimationClip();
+        clip.frameRate = Mathf.Clamp(frameRate, 1f, 120f);
+        foreach (var binding in AnimationUtility.GetObjectReferenceCurveBindings(clip))
+            if (binding.type == typeof(SpriteRenderer) && binding.propertyName == "m_Sprite")
+                AnimationUtility.SetObjectReferenceCurve(clip, binding, null);
 
         EditorCurveBinding spriteBinding = new EditorCurveBinding
         {
@@ -391,7 +404,7 @@ public class EnemyPrefabBatchCreator : EditorWindow
         ObjectReferenceKeyframe[] keyframes =
             new ObjectReferenceKeyframe[sprites.Count];
 
-        float safeFrameRate = Mathf.Max(1f, frameRate);
+        float safeFrameRate = clip.frameRate;
         float frameTime = 1f / safeFrameRate;
 
         for (int i = 0; i < sprites.Count; i++)
@@ -413,10 +426,9 @@ public class EnemyPrefabBatchCreator : EditorWindow
         settings.loopTime = loop;
         AnimationUtility.SetAnimationClipSettings(clip, settings);
 
-        AssetDatabase.CreateAsset(clip, clipPath);
-        AssetDatabase.ImportAsset(clipPath);
-
-        return AssetDatabase.LoadAssetAtPath<AnimationClip>(clipPath);
+        if (isNew) AssetDatabase.CreateAsset(clip, clipPath);
+        else EditorUtility.SetDirty(clip);
+        return clip;
     }
 
     private static void ReplaceControllerClips(
@@ -468,7 +480,7 @@ public class EnemyPrefabBatchCreator : EditorWindow
 
             foreach (var pair in clipMap)
             {
-                if (state.name.Contains(pair.Key))
+                if (string.Equals(state.name, pair.Key, System.StringComparison.OrdinalIgnoreCase))
                 {
                     state.motion = pair.Value;
                     EditorUtility.SetDirty(state);
@@ -486,57 +498,15 @@ public class EnemyPrefabBatchCreator : EditorWindow
         }
     }
 
-    private static List<Sprite> FindSprites(
-        string folderPath,
-        string prefix,
-        bool logFrameCount
-    )
+    private static List<Sprite> FindSprites(string folderPath, string textureName, bool logFrameCount)
     {
-        string[] guids = AssetDatabase.FindAssets(
-            "t:Texture2D",
-            new[] { folderPath }
-        );
-
-        List<Sprite> sprites = new List<Sprite>();
-
-        foreach (string guid in guids)
-        {
-            string path = AssetDatabase.GUIDToAssetPath(guid);
-
-            Object[] subAssets = AssetDatabase.LoadAllAssetRepresentationsAtPath(path);
-
-            foreach (Object subAsset in subAssets)
-            {
-                Sprite sprite = subAsset as Sprite;
-
-                if (sprite == null)
-                    continue;
-
-                if (sprite.name.StartsWith(prefix))
-                {
-                    if (!sprites.Contains(sprite))
-                        sprites.Add(sprite);
-                }
-            }
-
-            Sprite singleSprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
-
-            if (singleSprite != null && singleSprite.name.StartsWith(prefix))
-            {
-                if (!sprites.Contains(singleSprite))
-                    sprites.Add(singleSprite);
-            }
-        }
-
-        sprites = sprites
-            .OrderBy(sprite => sprite.name, new NaturalStringComparer())
-            .ToList();
-
-        if (logFrameCount)
-        {
-            Debug.Log($"{prefix} 프레임 수: {sprites.Count}");
-        }
-
+        // Match a complete sheet name so Attack02 and Attack02_Effect never share a clip.
+        var sprites = AssetDatabase.FindAssets("t:Texture2D", new[] { folderPath })
+            .Select(AssetDatabase.GUIDToAssetPath)
+            .Where(path => string.Equals(Path.GetFileNameWithoutExtension(path), textureName, System.StringComparison.OrdinalIgnoreCase))
+            .SelectMany(AssetDatabase.LoadAllAssetsAtPath).OfType<Sprite>()
+            .OrderBy(sprite => sprite.name, new NaturalStringComparer()).ToList();
+        if (logFrameCount) Debug.Log($"{textureName}: {sprites.Count} frames");
         return sprites;
     }
 
@@ -609,12 +579,80 @@ public class EnemyPrefabBatchCreator : EditorWindow
         return null;
     }
 
-    private static void DeleteIfExists(string assetPath)
+    private static void EnsureFolder(string path)
     {
-        if (AssetDatabase.LoadAssetAtPath<Object>(assetPath) != null)
+        if (AssetDatabase.IsValidFolder(path)) return;
+        string parent = Path.GetDirectoryName(path).Replace('\\', '/');
+        EnsureFolder(parent);
+        AssetDatabase.CreateFolder(parent, Path.GetFileName(path));
+    }
+
+    private static void CopyIfMissing(string source, string destination)
+    {
+        if (AssetDatabase.LoadAssetAtPath<Object>(destination) != null) return;
+        if (!AssetDatabase.CopyAsset(source, destination))
+            throw new System.IO.IOException("Could not copy " + source + " to " + destination);
+    }
+
+    private void CreateAdditionalAnimations(AnimatorController controller, string folder, string enemyName,
+        string output, string rendererPath, string[] baseSuffixes)
+    {
+        var machine = controller.layers[0].stateMachine;
+        var idle = machine.states.FirstOrDefault(s => s.state.name == "Idle").state;
+        foreach (string guid in AssetDatabase.FindAssets("t:Texture2D", new[] { folder }))
         {
-            AssetDatabase.DeleteAsset(assetPath);
+            string texture = Path.GetFileNameWithoutExtension(AssetDatabase.GUIDToAssetPath(guid));
+            if (!texture.StartsWith(enemyName + "-", System.StringComparison.OrdinalIgnoreCase)) continue;
+            string suffix = texture.Substring(enemyName.Length);
+            if (baseSuffixes.Any(s => string.Equals(s, suffix, System.StringComparison.OrdinalIgnoreCase))) continue;
+            var sprites = FindSprites(folder, texture, false);
+            if (sprites.Count == 0) continue;
+            string stateName = suffix.TrimStart('-');
+            if (!Regex.IsMatch(stateName, @"^Pattern[1-9][0-9]*$", RegexOptions.IgnoreCase)) continue;
+            stateName = "Pattern" + stateName.Substring(7);
+            bool loop = stateName.StartsWith("Walk", System.StringComparison.OrdinalIgnoreCase) && loopWalk;
+            var clip = CreateSpriteAnimationClip(output + "/" + texture + ".anim", sprites, rendererPath, frameRate, loop);
+            var state = machine.states.FirstOrDefault(s => s.state.name == stateName).state;
+            if (state == null)
+            {
+                state = machine.AddState(stateName);
+                if (idle != null)
+                {
+                    var transition = state.AddTransition(idle);
+                    transition.hasExitTime = true; transition.exitTime = 1f; transition.duration = 0f;
+                }
+            }
+            state.motion = clip;
+            EditorUtility.SetDirty(state);
         }
+    }
+
+    private EnemyDataSet CreateDataSet(string templateFolderPath, string output, string enemyName,
+        AnimatorController controller, EnemyStatData stats, Sprite icon)
+    {
+        string path = output + "/" + enemyName + " SetData.asset";
+        var data = AssetDatabase.LoadAssetAtPath<EnemyDataSet>(path);
+        if (data == null)
+        {
+            string template = FindAssetPath<EnemyDataSet>(templateFolderPath, templateEnemyName + " SetData");
+            if (!string.IsNullOrEmpty(template)) CopyIfMissing(template, path);
+            else AssetDatabase.CreateAsset(ScriptableObject.CreateInstance<EnemyDataSet>(), path);
+            data = AssetDatabase.LoadAssetAtPath<EnemyDataSet>(path);
+            data.dataId = Regex.Replace(enemyName, @"\s+", "");
+            data.data = new[] { new Description { language = language.english,
+                dataName = Regex.Replace(enemyName, @"^\d+\s+", "") } };
+            if (data.patternData != null)
+            {
+                string patternPath = output + "/" + enemyName + " Pattern.asset";
+                CopyIfMissing(AssetDatabase.GetAssetPath(data.patternData), patternPath);
+                data.patternData = AssetDatabase.LoadAssetAtPath<EnemyPatternSetData>(patternPath);
+            }
+        }
+        data.icon = icon;
+        data.animatorController = controller;
+        data.statData = stats;
+        EditorUtility.SetDirty(data);
+        return data;
     }
 
     private class NaturalStringComparer : IComparer<string>
