@@ -14,7 +14,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5950829455748439677, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
       propertyPath: slot
-      value:
+      value: 
       objectReference: {fileID: 3061887855606594649}
     - target: {fileID: 7991120730881528602, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
       propertyPath: m_Name
@@ -118,7 +118,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!1 &835390537407768722 stripped
 GameObject:
@@ -135,10 +135,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 85110a33f02448fb91ce2c0d7d6c603d, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CodexSlotUI
   icon: {fileID: 6727135109022069668}
-  dataNameText: {fileID: 65143009584068837}
+  dataNameText: {fileID: 0}
   descriptionText: {fileID: 0}
   detailDescriptionText: {fileID: 0}
   dataSource: {fileID: 0}
@@ -172,7 +172,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!114 &6758088048695071093 stripped
 MonoBehaviour:
@@ -183,5 +183,5 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Toggle

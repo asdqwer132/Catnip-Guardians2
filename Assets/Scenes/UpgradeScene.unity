@@ -25214,17 +25214,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 824168496}
   m_CullTransparentMesh: 1
---- !u!114 &827058195 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6092755726076457832, guid: b63e1a8f67d497f4588fce12f71571fb, type: 3}
-  m_PrefabInstance: {fileID: 6775275061191960007}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd896b871a4ba59479c106217bb1d150, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventoryUI
 --- !u!1 &827349026
 GameObject:
   m_ObjectHideFlags: 0
@@ -47285,7 +47274,7 @@ MonoBehaviour:
   mergeBoxUpgrades: {fileID: 1482356635}
   skillTreeUI: {fileID: 1482356631}
   inventoryUIs:
-  - {fileID: 827058195}
+  - {fileID: 1748633612}
   - {fileID: 1748633612}
   sceneMoveManager: {fileID: 910000300001}
   materialInventory: {fileID: 1979291818}
@@ -47353,7 +47342,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 8b8d0e37b315751498df205f51057aeb, type: 2}
     - {fileID: 11400000, guid: a50977c0d156ec0479acc3b30e9260bc, type: 2}
   - memo: Food
-    isUse: 1
+    isUse: 0
     itemDatas:
     - {fileID: 11400000, guid: d85269965fb9a6d47bd2a22cd1920033, type: 2}
     - {fileID: 11400000, guid: 065f9f91662693d49a0cdf6c50a2ab32, type: 2}
@@ -47395,7 +47384,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: c8bde6be88a1bfb46bc6cddc50b150d4, type: 2}
     - {fileID: 11400000, guid: 2c56dd2d3091e3d48a3f69337854bf5a, type: 2}
   - memo: Mineral
-    isUse: 1
+    isUse: 0
     itemDatas:
     - {fileID: 11400000, guid: 5865985a9d6396643b29abcc8a2482a0, type: 2}
     - {fileID: 11400000, guid: 280344813b89c3a449baa96e706dd38f, type: 2}
@@ -47437,7 +47426,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 3e75dca69a0cb8541a278c2c2a04564d, type: 2}
     - {fileID: 11400000, guid: ac86a6595780bfd45b43e8c8be867097, type: 2}
   - memo: Monster
-    isUse: 1
+    isUse: 0
     itemDatas:
     - {fileID: 11400000, guid: 9b53c0445e2e6b24a988332167206f50, type: 2}
     - {fileID: 11400000, guid: 3c7ce1913a61cae418c832fe08e96f67, type: 2}
@@ -47479,7 +47468,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 4d2488c2cf61d9c4985abb5b928cd4fe, type: 2}
     - {fileID: 11400000, guid: e859f9eb3fe18b845be714b178139d69, type: 2}
   - memo: Fishing
-    isUse: 1
+    isUse: 0
     itemDatas:
     - {fileID: 11400000, guid: 3ab5c6bae0c46274288be7b3cb1dffc9, type: 2}
     - {fileID: 11400000, guid: 8af16961f0ab11444945aea6bd38ea29, type: 2}
@@ -47569,7 +47558,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: b7b60f44b6e3a1846b219ffb42865d24, type: 2}
     - {fileID: 11400000, guid: b6b4d2e4c2b0d214c8dd09ddc97e5f08, type: 2}
   - memo: Machine
-    isUse: 1
+    isUse: 0
     itemDatas:
     - {fileID: 11400000, guid: 6fe694fe2e8d80048b9e156ff8c669ec, type: 2}
     - {fileID: 11400000, guid: 3f3fb758e906cef4a85d1c2812b53bd5, type: 2}
@@ -47611,7 +47600,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 24aa37ff2a726c343bc0f80684fc970f, type: 2}
     - {fileID: 11400000, guid: 12087711fc10845409fc736df973b784, type: 2}
   - memo: Magic
-    isUse: 1
+    isUse: 0
     itemDatas:
     - {fileID: 11400000, guid: 5fe8b93bc693ea64fafc39439b2301ee, type: 2}
     - {fileID: 11400000, guid: 7c2dc5fa0ffd22d4499566478b2715bf, type: 2}
@@ -47655,9 +47644,9 @@ MonoBehaviour:
   - memo: WeaponMaterial
     isUse: 1
     itemDatas:
-    - {fileID: 11400000, guid: 93758f7537ed6684898dc8cab8237aaa, type: 2}
-    - {fileID: 11400000, guid: 9a41f7892b5c8e445987b81b88bacb9b, type: 2}
-    - {fileID: 11400000, guid: 61c6e66301b82a84d861eeb9b36bff4e, type: 2}
+    - {fileID: 11400000, guid: fa3464a86d46a3c4e80853d2d8d84338, type: 2}
+    - {fileID: 11400000, guid: 8e9ad0b64ab344d49939a1071de8de6d, type: 2}
+    - {fileID: 11400000, guid: 93432b520869c5c4bb34b5703e60ada9, type: 2}
   setAmount: 5
 --- !u!114 &1644459207
 MonoBehaviour:
