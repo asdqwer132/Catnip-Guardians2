@@ -20,7 +20,7 @@ public class AnimationController : MonoBehaviour
             clipManager = GetComponent<AnimatorClipManager>();
     }
 
-    private void Start()
+    public void PlayOnStart()
     {
         if (playOnStart)
             StartRandom();
@@ -54,6 +54,7 @@ public class AnimationController : MonoBehaviour
     public void StartRandom()
     {
         StopRandom();
+        PlayRandom();
         randomRoutine = StartCoroutine(RandomRoutine());
     }
 

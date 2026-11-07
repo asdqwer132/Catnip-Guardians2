@@ -60,8 +60,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 085a9bdeebb7baf49b0eca4321e56890, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimationController
-  clipManager: {fileID: 0}
-  randomStateName: Random
+  clipManager: {fileID: 3501544984060064405}
+  randomStateName: RandomCareMoition
   interval: 3
   randomOffset: 1
   playOnStart: 1
@@ -80,3 +80,6 @@ MonoBehaviour:
   diameter: 5
   interval: 3
   randomOffset: 1
+  spriteRenderer: {fileID: 0}
+  root: {fileID: 0}
+  target: {fileID: 9072996820132088390}

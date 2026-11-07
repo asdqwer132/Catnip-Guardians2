@@ -10,21 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eda0e8ff03735a14599958deea0a77a4, type: 3}
-  m_Name: MainTree 3
+  m_Name: MainTree 4
   m_EditorClassIdentifier: Assembly-CSharp::PlantData
-  icon: {fileID: -1773102970, guid: efe67b985d5838242bcaa783eeb0f150, type: 3}
+  icon: {fileID: 8648288515219240390, guid: eee2138deb337c346ac95d245b1a43ff, type: 3}
   data: []
-  dataId: MainTree 3
+  dataNumbering: 
+  dataId: MainTree 4
   dataType: 0
   requireUnlock: 0
-  iconSearchFolderPath: Assets/Art/Icons/Items
-  findIconOnRebuild: 1
   growthSprites:
-  - {fileID: -1773102970, guid: efe67b985d5838242bcaa783eeb0f150, type: 3}
-  maxHP: 1000000
-  nutrientsRequired: 500
+  - {fileID: 8648288515219240390, guid: eee2138deb337c346ac95d245b1a43ff, type: 3}
+  - {fileID: -2293954340948820292, guid: eee2138deb337c346ac95d245b1a43ff, type: 3}
+  - {fileID: 2505622087787812697, guid: eee2138deb337c346ac95d245b1a43ff, type: 3}
+  - {fileID: -1552496811178882113, guid: eee2138deb337c346ac95d245b1a43ff, type: 3}
+  - {fileID: -8389111359959498520, guid: eee2138deb337c346ac95d245b1a43ff, type: 3}
+  maxHP: 100
+  nutrientsRequired: 100
   nutrientsPerSecond: 1
-  reward: []
+  reward:
+  - currencyType: 5
+    amount: 1
   spawnNormalEnemyCount: 5
   normalEnemies:
   - dataSet: {fileID: 11400000, guid: 87d2731841b5f5d4096c16f91d360265, type: 2}

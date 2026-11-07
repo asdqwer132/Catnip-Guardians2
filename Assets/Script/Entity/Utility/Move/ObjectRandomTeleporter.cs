@@ -3,21 +3,19 @@ using UnityEngine;
 
 public class ObjectRandomTeleporter : MonoBehaviour
 {
-
-    [Header("Teleport Interval")]
+    [Header("Teleport Settings")]
     [SerializeField] private float diameter = 5f;
     [SerializeField] private float interval = 3f;
     [SerializeField] private float randomOffset = 1f;
 
-
-    [Header("UI")]
+    [Header("References")]
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Transform root;
-    private Vector3 centerPosition;
+    [SerializeField] private Transform target;
 
     private void Start()
     {
-        centerPosition = root != null ? root.position : transform.position;
+        Teleport();
         StartCoroutine(TeleportRoutine());
     }
 
@@ -25,39 +23,57 @@ public class ObjectRandomTeleporter : MonoBehaviour
     {
         while (true)
         {
-            float delay = Mathf.Max(0.01f,
-                interval + Random.Range(-randomOffset, randomOffset));
+            float delay = Mathf.Max(
+                0.01f,
+                interval + Random.Range(-randomOffset, randomOffset)
+            );
 
             yield return new WaitForSeconds(delay);
 
             Teleport();
         }
     }
+
+    private void Teleport()
+    {
+        if (root == null || target == null) return;
+
+        float angle = Random.Range(0f, Mathf.PI * 2f);
+        float radius = diameter * 0.5f;
+
+        Vector3 offset = new Vector3(
+            Mathf.Cos(angle) * radius,
+            Mathf.Sin(angle) * radius,
+            0f
+        );
+
+        Vector3 position = root.position + offset;
+        position.z = target.position.z;
+
+        target.position = position;
+
+        LookAt();
+    }
+
+    private void LookAt()
+    {
+        if (root == null || spriteRenderer == null || target == null)
+            return;
+
+        float directionX = root.position.x - target.position.x;
+
+        if (Mathf.Abs(directionX) > 0.001f)
+            spriteRenderer.flipX = directionX < 0f;
+    }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.green;
 
-        Gizmos.DrawWireSphere(
-            transform.position,
-            diameter * 0.5f
-        );
-    }
-    private void Teleport()
-    {
-        Vector2 offset = Random.insideUnitCircle * (diameter * 0.5f);
+        Vector3 center = root != null
+            ? root.position
+            : transform.position;
 
-        transform.position = centerPosition +
-            new Vector3(offset.x, offset.y, 0f);
-        LookAt();
-    }
-    private void LookAt()
-    {
-
-        if (root == null || spriteRenderer == null) return;
-
-        float directionX = root.position.x - transform.position.x;
-
-        if (Mathf.Abs(directionX) > 0.001f)
-            spriteRenderer.flipX = directionX < 0f;
+        Gizmos.DrawWireSphere(center, diameter * 0.5f);
     }
 }
