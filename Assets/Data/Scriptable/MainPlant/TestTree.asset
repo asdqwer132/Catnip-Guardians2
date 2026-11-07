@@ -24,14 +24,14 @@ MonoBehaviour:
   - {fileID: 1550449559, guid: 000cf1c15f864e64c970de36d69182ba, type: 3}
   - {fileID: -446725817, guid: 000cf1c15f864e64c970de36d69182ba, type: 3}
   - {fileID: 2141502318, guid: 000cf1c15f864e64c970de36d69182ba, type: 3}
-  maxHP: 100
-  nutrientsRequired: 5
+  maxHP: 10
+  nutrientsRequired: 100
   nutrientsPerSecond: 1
   reward:
   - currencyType: 2
     amount: 1
   spawnNormalEnemyCount: 5
-  normalSpawnInterval: 1000
+  normalSpawnInterval: 5
   normalEnemies:
   - dataSet: {fileID: 11400000, guid: 87d2731841b5f5d4096c16f91d360265, type: 2}
     spawnWeight: 50
