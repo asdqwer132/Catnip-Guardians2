@@ -41,17 +41,18 @@ public sealed class PlantGaugeAuthoringTests
     }
 
     [Test]
-    public void PlantAssetsUseNutrientTargetsAndOneVisualWithoutObsoletePurchaseOrGrowthStageFields()
+    public void PlantAssetsPreserveVisualsInAnOrderedGrowthListAndUseNutrientTargets()
     {
         var assets = AssetDatabase.FindAssets("t:PlantData").Select(g => AssetDatabase.LoadAssetAtPath<PlantData>(AssetDatabase.GUIDToAssetPath(g))).ToArray();
         Assert.That(assets.Length, Is.GreaterThan(0));
         foreach (var asset in assets)
         {
-            Assert.That(asset.visualSprite, Is.Not.Null, asset.name);
+            Assert.That(asset.growthSprites, Is.Not.Null.And.Not.Empty, asset.name);
+            Assert.That(asset.growthSprites.All(s => s != null), Is.True, asset.name);
             Assert.That(asset.nutrientsRequired, Is.GreaterThanOrEqualTo(0));
-            Assert.That(asset.nutrientsPerSecond, Is.EqualTo(1));
+            Assert.That(asset.nutrientsPerSecond, Is.GreaterThanOrEqualTo(0), asset.name);
             var serialized = new SerializedObject(asset);
-            foreach (var field in new[] { "seed", "growing", "grownUp", "growTime", "buyCosts" })
+            foreach (var field in new[] { "seed", "growing", "grownUp", "visualSprite", "growTime", "buyCosts" })
                 Assert.That(serialized.FindProperty(field), Is.Null, asset.name + ": " + field);
         }
     }

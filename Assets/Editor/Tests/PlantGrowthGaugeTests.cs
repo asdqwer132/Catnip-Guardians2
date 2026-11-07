@@ -88,20 +88,110 @@ public sealed class PlantGrowthGaugeTests
     }
 
     [Test]
-    public void OnePlantSpriteIsUsedForTheWholeGrowthCycleAndDataHealthInitializesThePlant()
+    public void OrderedSpritesFollowGrowthFromSeedToCompletionAndResetWithThePlant()
     {
-        var data = Data<PlantData>(); data.maxHP = 77; data.nutrientsRequired = 5; data.nutrientsPerSecond = 0;
+        var data = Data<PlantData>(); data.maxHP = 77; data.nutrientsRequired = 100; data.nutrientsPerSecond = 0;
         var texture = new Texture2D(2, 2); owned.Add(texture);
-        var sprite = Sprite.Create(texture, new Rect(0, 0, 2, 2), Vector2.one * .5f); owned.Add(sprite);
-        data.visualSprite = sprite;
+        data.growthSprites = new Sprite[6];
+        for (int i = 0; i < data.growthSprites.Length; i++)
+        {
+            var sprite = Sprite.Create(texture, new Rect(0, 0, 2, 2), Vector2.one * .5f); owned.Add(sprite);
+            data.growthSprites[i] = sprite;
+        }
         var go = Host("Plant", false); var health = go.AddComponent<Health>();
         var plant = go.AddComponent<Plant>(); plant.health = health; plant.useHealthDefeat = false;
         plant.plantUI = go.AddComponent<PlantUI>(); plant.plantUI.spriteRenderer = go.AddComponent<SpriteRenderer>();
         plant.growManager = go.AddComponent<GrowManager>(); go.SetActive(true); plant.Init(data);
         Assert.That(health.MaxHp, Is.EqualTo(77));
-        Assert.That(plant.plantUI.spriteRenderer.sprite, Is.SameAs(sprite));
-        plant.growManager.AddGrowth(2); Assert.That(plant.plantUI.spriteRenderer.sprite, Is.SameAs(sprite));
-        plant.growManager.AddGrowth(3); Assert.That(plant.plantUI.spriteRenderer.sprite, Is.SameAs(sprite));
+        Assert.That(plant.plantUI.CurrentSprite, Is.SameAs(data.growthSprites[0]));
+        plant.growManager.AddGrowth(19);
+        Assert.That(plant.plantUI.CurrentSprite, Is.SameAs(data.growthSprites[0]));
+        plant.growManager.AddGrowth(1);
+        Assert.That(plant.plantUI.CurrentSprite, Is.SameAs(data.growthSprites[1]));
+        for (int i = 2; i < 6; i++)
+        {
+            plant.growManager.AddGrowth(20);
+            Assert.That(plant.plantUI.CurrentSprite, Is.SameAs(data.growthSprites[i]));
+        }
+        Assert.That(plant.growManager.IsGrowing, Is.False);
+        plant.growManager.ResetGrowth();
+        Assert.That(plant.plantUI.CurrentSprite, Is.SameAs(data.growthSprites[0]));
+        plant.growManager.SetGrowth(99);
+        Assert.That(plant.plantUI.CurrentSprite, Is.SameAs(data.growthSprites[4]));
+        Assert.That(data.GetGrowthSprite(-1), Is.SameAs(data.growthSprites[0]));
+        Assert.That(data.GetGrowthSprite(2), Is.SameAs(data.growthSprites[5]));
+    }
+
+    [Test]
+    public void EmptySingleAndInstantGrowthVisualsAreSafe()
+    {
+        var data = Data<PlantData>();
+        Assert.That(data.GetGrowthSprite(.5f), Is.Null);
+        var texture = new Texture2D(2, 2); owned.Add(texture);
+        var sprite = Sprite.Create(texture, new Rect(0, 0, 2, 2), Vector2.zero); owned.Add(sprite);
+        data.growthSprites = new[] { sprite };
+        Assert.That(data.GetGrowthSprite(0), Is.SameAs(sprite));
+        Assert.That(data.GetGrowthSprite(1), Is.SameAs(sprite));
+        data.growthSprites = new[] { null, sprite };
+        data.nutrientsRequired = 0;
+        var go = Host("Instant growth");
+        var ui = go.AddComponent<PlantUI>(); ui.spriteRenderer = go.AddComponent<SpriteRenderer>();
+        var growth = go.AddComponent<GrowManager>(); growth.growthFill = Fill("Instant growth fill"); growth.Init(data, ui);
+        Assert.That(ui.CurrentSprite, Is.Null);
+        growth.StartGrowth();
+        Assert.That(ui.CurrentSprite, Is.SameAs(sprite));
+        Assert.That(growth.GrowProgress01, Is.EqualTo(1));
+        Assert.That(growth.growthFill.fillImage.fillAmount, Is.EqualTo(1));
+        growth.ResetGrowth();
+        Assert.That(ui.CurrentSprite, Is.Null);
+    }
+
+    [UnityTest]
+    public IEnumerator CompletingTheSelectedPlantEndsTheBattleWithoutAdvancingOrClearingEnemies()
+    {
+        var first = Data<PlantData>();
+        var selected = Data<PlantData>(); selected.nutrientsRequired = 100; selected.nutrientsPerSecond = 0;
+        selected.reward = new[] { new Cost { currencyType = CurrencyType.CurrencyMain, amount = 7 } };
+        var texture = new Texture2D(2, 2); owned.Add(texture);
+        var sprite = Sprite.Create(texture, new Rect(0, 0, 2, 2), Vector2.zero); owned.Add(sprite);
+        selected.growthSprites = new[] { null, sprite };
+        var last = Data<PlantData>();
+        var actor = Host("Plant");
+        var plant = actor.AddComponent<Plant>(); plant.health = actor.AddComponent<Health>(); plant.useHealthDefeat = false;
+        plant.plantUI = actor.AddComponent<PlantUI>(); plant.plantUI.spriteRenderer = actor.AddComponent<SpriteRenderer>();
+        plant.growManager = actor.AddComponent<GrowManager>();
+        var plants = Host("Selected plant manager").AddComponent<PlantManager>();
+        plants.plant = plant; plants.allPlants = new[] { first, selected, last }; plants.SetPlantIndex(1);
+
+        var end = Host("End flow").AddComponent<GameEndManager>();
+        var panel = Host("Result", false);
+        var fields = new SerializedObject(end); fields.FindProperty("resultPanel").objectReferenceValue = panel;
+        fields.ApplyModifiedPropertiesWithoutUndo();
+        var enemies = Host("Enemies").AddComponent<EnemyManager>(); enemies.logSpawnTime = false;
+        var enemy = Register(enemies);
+        var round = Host("Round").AddComponent<RoundManager>();
+        round.plantManager = plants; round.enemyManager = enemies; round.endManager = end;
+        var game = Host("Game", false).AddComponent<GameManager>(); game.enabled = false;
+        game.roundManager = round; game.gameObject.SetActive(true);
+        plant.gameManager = game;
+        var statistics = Host("Statistics").AddComponent<GameStatisticsManager>();
+        statistics.plantManager = plants; statistics.growManager = plant.growManager;
+
+        plants.SetPlants(); statistics.ResetRound(); plant.growManager.AddGrowth(100);
+        Assert.That(end.CurrentEndType, Is.EqualTo(GameEndType.Win));
+        Assert.That(panel.activeSelf, Is.True, "No delay or next-plant transition before showing results.");
+        Assert.That(Time.timeScale, Is.Zero);
+        Assert.That(plants.CurrentPlantIndex, Is.EqualTo(1)); Assert.That(plants.CurrentPlant, Is.SameAs(selected));
+        Assert.That(enemies.ActiveEnemies, Does.Contain(enemy)); Assert.That(statistics.RoundKillCount, Is.Zero);
+        Assert.That(statistics.GameProgress01, Is.EqualTo(1));
+        Assert.That(statistics.CurrentPlantIcon, Is.SameAs(sprite));
+        Assert.That(statistics.RoundGold, Is.EqualTo(7));
+        round.Victory(); Assert.That(statistics.RoundGold, Is.EqualTo(7), "Completion rewards are awarded once.");
+        yield return new WaitForSecondsRealtime(.05f);
+        Assert.That(plants.CurrentPlantIndex, Is.EqualTo(1)); Assert.That(enemies.ActiveEnemies, Does.Contain(enemy));
+        end.ResetGameEnd(); plants.SetPlants();
+        Assert.That(plants.CurrentPlant, Is.SameAs(selected), "Starting the next attempt preserves the selected plant.");
+        Assert.That(plant.growManager.CurrentGrowValue, Is.Zero);
     }
 
     [UnityTest]

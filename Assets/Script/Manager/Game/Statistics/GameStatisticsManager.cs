@@ -16,13 +16,14 @@ public class GameStatisticsManager : MonoBehaviour
     [SerializeField] private float stageProgress01;
     [SerializeField] private int currentStageNumber;
     [SerializeField] private int totalStages;
+    [SerializeField] private Sprite currentPlantSprite;
     private bool roundStarted;
     public float BattleTimeSeconds => battleTimeSeconds;
     public float GameProgress01 => gameProgress01;
     public float StageProgress01 => stageProgress01;
     public int CurrentStageNumber => currentStageNumber;
     public int TotalStages => totalStages;
-    public Sprite CurrentPlantIcon => plantManager != null && plantManager.CurrentPlant != null ? plantManager.CurrentPlant.Icon : null;
+    public Sprite CurrentPlantIcon => currentPlantSprite;
     public event Action OnProgressChanged;
 
 
@@ -115,10 +116,14 @@ public class GameStatisticsManager : MonoBehaviour
     }
     private void CaptureProgress()
     {
-        totalStages = plantManager != null && plantManager.allPlants != null ? plantManager.allPlants.Length : 0;
-        currentStageNumber = totalStages > 0 ? Mathf.Clamp(plantManager.CurrentPlantIndex + 1, 1, totalStages) : 0;
+        var selectedPlant = plantManager != null ? plantManager.CurrentPlant : null;
+        totalStages = selectedPlant != null ? 1 : 0;
+        currentStageNumber = totalStages;
         stageProgress01 = growManager != null ? Mathf.Clamp01(growManager.GrowProgress01) : 0f;
-        gameProgress01 = totalStages > 0 ? Mathf.Clamp01((currentStageNumber - 1 + stageProgress01) / totalStages) : 0f;
+        gameProgress01 = stageProgress01;
+        var visual = plantManager != null && plantManager.plant != null ? plantManager.plant.plantUI : null;
+        currentPlantSprite = visual != null ? visual.CurrentSprite
+            : selectedPlant != null ? selectedPlant.GetGrowthSprite(stageProgress01) : null;
     }
     public void FinishRound()
     {

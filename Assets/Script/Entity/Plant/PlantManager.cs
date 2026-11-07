@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlantManager : MonoBehaviour
@@ -8,33 +7,45 @@ public class PlantManager : MonoBehaviour
     [Header("Plant List")]
     public Plant plant;
     public PlantData[] allPlants;
-    [SerializeField] private int currentPlantIndex = 0;
+    [Tooltip("Index in All Plants selected before battle. A battle grows only this plant.")]
+    [SerializeField, Min(0)] private int currentPlantIndex = 0;
 
     public int CurrentPlantIndex => currentPlantIndex;
     public PlantData CurrentPlant { get; private set; }
 
     void Awake() { instance = this; }
 
-    public void SetPlants()
+    private void OnDestroy() { if (instance == this) instance = null; }
+
+    // Select before starting a battle. Retry keeps this selection.
+    public void SetPlantIndex(int index)
     {
-        PlantData plantData = allPlants[currentPlantIndex];
-
-        if (plantData != null && UnlockCheckUtility.CanUse(plantData))
-            CurrentPlant = plantData;
-
-        plant.Init(CurrentPlant);
+        if (allPlants == null || index < 0 || index >= allPlants.Length)
+        {
+            Debug.LogWarning("Plant index is outside All Plants.", this);
+            return;
+        }
+        currentPlantIndex = index;
     }
 
-    public void ResetStageProgress() => currentPlantIndex = 0;
-
-    public bool UpIndex()
+    public void SetPlants()
     {
-        if(currentPlantIndex + 1 >= allPlants.Length) return false;
+        CurrentPlant = null;
+        if (allPlants == null || currentPlantIndex < 0 || currentPlantIndex >= allPlants.Length)
+        {
+            Debug.LogWarning("Plant index is outside All Plants.", this);
+            return;
+        }
 
-        currentPlantIndex++;
-        SetPlants();
+        var data = allPlants[currentPlantIndex];
+        if (data == null || !UnlockCheckUtility.CanUse(data))
+        {
+            Debug.LogWarning("Selected plant is missing or locked.", this);
+            return;
+        }
 
-        return true;
+        CurrentPlant = data;
+        if (plant != null) plant.Init(data);
     }
 
     public void PlayGrown()

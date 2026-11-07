@@ -9,6 +9,9 @@ public class RoundManager : MonoBehaviour
 
     public void Victory()
     {
+        var result = endManager != null ? endManager : GameEndManager.instance;
+        if (result != null && result.IsGameEnded) return;
+
         if (plantManager == null || plantManager.CurrentPlant == null)
         {
             Debug.LogWarning("CurrentPlant is null");
@@ -21,35 +24,8 @@ public class RoundManager : MonoBehaviour
                 if (reward != null)
                     GameStatisticsManager.Instance.AddCurrency(reward.currencyType, reward.amount);
 
-        if (enemyManager != null)
-            enemyManager.AllStop();
-
         plantManager.PlayGrown();
-
-        Invoke(nameof(Next), 2f);
-    }
-
-    private void Next()
-    {
-        if (plantManager == null)
-        {
-            GameOver();
-            return;
-        }
-
-        if (plantManager.UpIndex())
-        {
-            if (enemyManager != null)
-            {
-                enemyManager.KillAllEnemies();
-                enemyManager.Init(plantManager.CurrentPlant);
-                enemyManager.AllStart();
-            }
-        }
-        else
-        {
-            CompleteGame();
-        }
+        CompleteGame();
     }
 
     public void GameOver() => FinishGame(GameEndType.Lose);

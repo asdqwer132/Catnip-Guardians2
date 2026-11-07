@@ -17,8 +17,15 @@ public class EnemySpawnInfo
 public class PlantData : DefaultData
 {
     [Header("Extra Data / Visual")]
-    [FormerlySerializedAs("grownUp")]
-    public Sprite visualSprite;
+    [Tooltip("Growth order: first is the seed, last is fully grown. Intermediate sprites change at equal progress intervals.")]
+    public Sprite[] growthSprites = new Sprite[0];
+
+    public Sprite GetGrowthSprite(float progress01)
+    {
+        if (growthSprites == null || growthSprites.Length == 0) return null;
+        int index = Mathf.FloorToInt(Mathf.Clamp01(progress01) * (growthSprites.Length - 1));
+        return growthSprites[index];
+    }
 
     [Header("Extra Data / Battle And Growth")]
     [Min(1f)] public float maxHP = 100f;

@@ -18,10 +18,12 @@ public class GrowManager : MonoBehaviour
 
     private bool isGrowing = false;
     private float nutrientsPerSecond;
+    private PlantUI plantUI;
+    private bool growthCompleted;
 
     public float CurrentGrowValue => growValue;
     public float MaxGrowValue => maxGrowValue;
-    public float GrowProgress01 => maxGrowValue > 0f ? growValue / maxGrowValue : 0f;
+    public float GrowProgress01 => maxGrowValue > 0f ? growValue / maxGrowValue : growthCompleted ? 1f : 0f;
     public float GrowProgressPercent => GrowProgress01 * 100f;
     public bool IsGrowing => isGrowing;
     public event Action<float, float> GrowthChanged;
@@ -40,8 +42,10 @@ public class GrowManager : MonoBehaviour
 
         growValue = Mathf.Clamp(startGrowValue, 0f, maxGrowValue);
         isGrowing = false;
+        growthCompleted = false;
 
-        if (ui != null) ui.SetPlantData(data);
+        plantUI = ui;
+        if (plantUI != null) plantUI.SetPlantData(data);
 
         if (growthFill != null)
         {
@@ -69,6 +73,7 @@ public class GrowManager : MonoBehaviour
 
     public void StartGrowth()
     {
+        growthCompleted = false;
         growValue = Mathf.Clamp(startGrowValue, 0f, maxGrowValue);
         isGrowing = true;
 
@@ -127,17 +132,12 @@ public class GrowManager : MonoBehaviour
 
     private void UpdateUI()
     {
+        if (plantUI != null) plantUI.SetGrowthProgress(GrowProgress01);
         GrowthChanged?.Invoke(growValue, maxGrowValue);
         if (growthFill == null)
             return;
 
-        if (maxGrowValue <= 0f)
-        {
-            growthFill.SetFill01(0f);
-            return;
-        }
-
-        growthFill.SetFill(growValue, maxGrowValue);
+        growthFill.SetFill01(GrowProgress01);
     }
 
     private void Update()
@@ -154,6 +154,7 @@ public class GrowManager : MonoBehaviour
     {
         growValue = Mathf.Clamp(startGrowValue, 0f, maxGrowValue);
         isGrowing = false;
+        growthCompleted = false;
 
         UpdateUI();
     }
@@ -164,6 +165,8 @@ public class GrowManager : MonoBehaviour
             return;
 
         isGrowing = false;
+        growthCompleted = true;
+        UpdateUI();
 
         if (gameManager != null)
             gameManager.Victory();
