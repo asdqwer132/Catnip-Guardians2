@@ -133,7 +133,18 @@ public sealed class CodexUITests
         stock.AddItem(item, 3);
         Row(inventory, item).slotButton.onClick.Invoke();
         Assert.That(details.SelectedData, Is.SameAs(item)); Assert.That(stock.GetItemAmount(item), Is.EqualTo(3));
+        Assert.That(inventory, Is.InstanceOf<InventoryUI>());
+        Assert.That(Row(inventory, item).amountImage.activeSelf, Is.True);
+        Assert.That(Row(inventory, item).amountText.text, Is.EqualTo("3"));
+        Assert.That(Row(inventory, enemy).amountImage.activeSelf, Is.False);
+        stock.AddItem(item, 2);
+        Assert.That(Row(inventory, item).amountText.text, Is.EqualTo("5"));
+        inventory.showItemCount = false; inventory.RefreshUI();
         Assert.That(Row(inventory, item).amountImage.activeSelf, Is.False);
+        stock.RemoveItem(item, 1);
+        Assert.That(Row(inventory, item).amountImage.activeSelf, Is.False);
+        inventory.showItemCount = true; inventory.RefreshUI();
+        Assert.That(Row(inventory, item).amountText.text, Is.EqualTo("4"));
     }
 
     [Test]

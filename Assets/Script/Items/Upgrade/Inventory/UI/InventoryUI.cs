@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class InventoryUI : ItemSearchFilterTargetUI
@@ -10,6 +9,8 @@ public class InventoryUI : ItemSearchFilterTargetUI
 
     [Header("Quick Inventory Slot")]
     public GameObject slotPrefab;
+    [Tooltip("Show owned quantities on inventory item slots.")]
+    public bool showItemCount = true;
 
     [Header("Tooltip")]
     public ItemTooltipUI tooltipUI;
@@ -22,7 +23,7 @@ public class InventoryUI : ItemSearchFilterTargetUI
     public ItemRecipeManager materialSource;
 
     private bool isInitialized;
-    private bool isEventBound;
+    private InventoryManager boundInventory;
     private ItemRecipeManager boundMaterialSource;
 
     private readonly List<InventoryItem> validItemsCache = new List<InventoryItem>();
@@ -34,31 +35,37 @@ public class InventoryUI : ItemSearchFilterTargetUI
     protected virtual bool CanDisplayItem(InventoryItem item) => IsInventoryItemVisible(item);
     protected virtual void ConfigureSlot(BaseItemSlotUI slot) { }
 
-    public void Init()
+    public virtual void Init()
     {
         BindMaterialReturns();
+        BindInventoryEvent();
         if (isInitialized)
         {
             RefreshUI();
             return;
         }
 
-        BindInventoryEvent();
-
         isInitialized = true;
         RefreshUI();
     }
 
-    private void OnDestroy()
+    protected virtual void OnDestroy()
     {
         UnbindMaterialReturns();
         UnbindInventoryEvent();
     }
 
-    private void OnEnable() => BindMaterialReturns();
-
-    private void OnDisable()
+    protected virtual void OnEnable()
     {
+        BindMaterialReturns();
+        InventoryManager.InstanceChanged += OnInventorySourceChanged;
+        if (isInitialized) { BindInventoryEvent(); RefreshUI(); }
+    }
+
+    protected virtual void OnDisable()
+    {
+        InventoryManager.InstanceChanged -= OnInventorySourceChanged;
+        UnbindInventoryEvent();
         UnbindMaterialReturns();
         foreach (var row in quickSlotObjects)
             if (row != null && row.TryGetComponent<ItemTooltipTrigger>(out var trigger))
@@ -98,27 +105,22 @@ public class InventoryUI : ItemSearchFilterTargetUI
         boundMaterialSource = null;
     }
 
+    private void OnInventorySourceChanged()
+    {
+        BindInventoryEvent();
+        if (isInitialized) RefreshUI();
+    }
     private void BindInventoryEvent()
     {
-        if (isEventBound)
-            return;
-
-        if (InventoryManager.instance == null)
-            return;
-
-        InventoryManager.instance.onInventoryChanged += RefreshUI;
-        isEventBound = true;
+        if (boundInventory == InventoryManager.instance) return;
+        UnbindInventoryEvent();
+        boundInventory = InventoryManager.instance;
+        if (boundInventory != null) boundInventory.onInventoryChanged += RefreshUI;
     }
-
     private void UnbindInventoryEvent()
     {
-        if (!isEventBound)
-            return;
-
-        if (InventoryManager.instance != null)
-            InventoryManager.instance.onInventoryChanged -= RefreshUI;
-
-        isEventBound = false;
+        if (boundInventory != null) boundInventory.onInventoryChanged -= RefreshUI;
+        boundInventory = null;
     }
 
     protected override void OnSearchFilterChanged()
@@ -126,14 +128,17 @@ public class InventoryUI : ItemSearchFilterTargetUI
         RefreshUI();
     }
 
-    public void RefreshUI()
+    protected IReadOnlyList<BaseItemSlotUI> Slots => quickSlotUIs;
+    protected virtual int DisplayItemCount => validItemsCache.Count;
+    protected virtual void CollectDisplayItems() => GetValidItems(validItemsCache);
+    protected virtual void BindSlot(BaseItemSlotUI slot, int index) => slot.SetSlot(validItemsCache[index]);
+    protected virtual void OnSlotsRefreshed() { }
+
+    public virtual void RefreshUI()
     {
-        if (InventoryManager.instance == null)
-            return;
-
-        GetValidItems(validItemsCache);
-
-        RefreshQuickInventory(validItemsCache);
+        CollectDisplayItems();
+        RefreshQuickInventory(DisplayItemCount);
+        OnSlotsRefreshed();
     }
 
     private void GetValidItems(List<InventoryItem> result)
@@ -152,16 +157,16 @@ public class InventoryUI : ItemSearchFilterTargetUI
         }
     }
 
-    private void RefreshQuickInventory(List<InventoryItem> validItems)
+    private void RefreshQuickInventory(int count)
     {
         if (slotParent == null || slotPrefab == null)
             return;
 
-        EnsureQuickSlots(validItems.Count);
+        EnsureQuickSlots(count);
 
         for (int i = 0; i < quickSlotObjects.Count; i++)
         {
-            bool active = i < validItems.Count;
+            bool active = i < count;
 
             quickSlotObjects[i].SetActive(active);
 
@@ -169,9 +174,10 @@ public class InventoryUI : ItemSearchFilterTargetUI
                 continue;
 
             if (active)
-                quickSlotUIs[i].SetSlot(validItems[i]);
+                BindSlot(quickSlotUIs[i], i);
             else
                 quickSlotUIs[i].SetSlot(null);
+            quickSlotUIs[i].SetAmountVisible(showItemCount);
             var trigger = quickSlotObjects[i].GetComponent<ItemTooltipTrigger>();
             if (trigger != null)
             {

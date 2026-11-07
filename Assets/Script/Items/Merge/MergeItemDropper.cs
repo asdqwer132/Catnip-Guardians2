@@ -240,6 +240,7 @@ internal sealed class MergeItemDropper
         int reservedBonusRevision = bonusRevision;
         var source = materialSession;
         int sourceRevision = source != null ? source.GameDataRevision : -1;
+        int sourceRound = source != null ? source.RoundRevision : -1;
         MergeItemObject piece = null;
         try
         {
@@ -279,7 +280,7 @@ internal sealed class MergeItemDropper
                     }
                     else if (useSessionStock)
                     {
-                        source?.RefundMaterial(material.mergeItem.item, sourceRevision);
+                        source?.RefundMaterial(material.mergeItem.item, sourceRevision, sourceRound);
                         if (source != null && source.GameDataRevision == sourceRevision)
                             material.count = source.GetMaterialCount(material.mergeItem.item);
                     }

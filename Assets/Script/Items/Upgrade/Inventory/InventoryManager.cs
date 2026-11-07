@@ -5,6 +5,7 @@ using UnityEngine;
 public class InventoryManager : MonoBehaviour
 {
     public static InventoryManager instance;
+    public static event Action InstanceChanged;
 
     [Header("Referrences")]
     public List<InventoryItem> items = new List<InventoryItem>();
@@ -14,7 +15,17 @@ public class InventoryManager : MonoBehaviour
     private void Awake()
     {
         if (instance == null)
+        {
             instance = this;
+            InstanceChanged?.Invoke();
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (instance != this) return;
+        instance = null;
+        InstanceChanged?.Invoke();
     }
 
     public void AddItem(InventoryItem inventoryItem)

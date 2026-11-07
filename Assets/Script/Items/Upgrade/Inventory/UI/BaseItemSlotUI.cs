@@ -18,6 +18,14 @@ public class BaseItemSlotUI : ItemDefinitionUI
 
     [Header("Reference")]
     public InventoryItem currentItem;
+    private bool showAmount = true;
+    public void SetAmountVisible(bool visible)
+    {
+        showAmount = visible;
+        bool active = visible && currentItem != null && currentItem.itemData != null;
+        if (amountImage != null) amountImage.SetActive(active);
+        if (amountText != null) amountText.gameObject.SetActive(active);
+    }
     protected override bool HideDescriptionWhenEmpty => true;
 
     public virtual void SetSlot(InventoryItem item)
@@ -36,7 +44,7 @@ public class BaseItemSlotUI : ItemDefinitionUI
             currentItem = new InventoryItem(itemData, amount);
         var data = ItemTooltipData.FromItem(itemData, amount);
         SetDefinedData(data, data.dataName);
-        if (amountImage != null) amountImage.SetActive(true);
+        SetAmountVisible(showAmount);
         if (amountText != null) amountText.text = amount.ToString();
         SetOptionalText(categoryText, data.CategoryText);
         SetOptionalText(weightText, data.WeightText);

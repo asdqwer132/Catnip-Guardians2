@@ -6,6 +6,30 @@ using UnityEngine;
 public sealed class CodexAuthoringTests
 {
     [Test]
+    public void CodexInventoriesReuseInventoryRenderingAndRetainAllSlotBindings()
+    {
+        var scene = EditorSceneManager.OpenScene("Assets/Scenes/UpgradeScene.unity", OpenSceneMode.Single);
+        try
+        {
+            var lists = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<CodexInventoryUI>(true)).ToArray();
+            Assert.That(lists.Length, Is.EqualTo(5));
+            foreach (var list in lists)
+            {
+                Assert.That(list, Is.InstanceOf<InventoryUI>());
+                Assert.That(list.slotPrefab, Is.Not.Null);
+                Assert.That(((InventoryUI)list).slotPrefab, Is.SameAs(list.slotPrefab.gameObject));
+                Assert.That(list.slotParent, Is.Not.Null);
+                Assert.That(list.details, Is.Not.Null);
+            }
+            var items = lists.Single(l => l.entries.Length > 0 && l.entries.All(e => e is ItemData));
+            Assert.That(items.showItemCount, Is.True);
+            Assert.That(items.slotPrefab.amountText, Is.Not.Null);
+            Assert.That(items.slotPrefab.amountText.enabled, Is.True);
+        }
+        finally { EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single); }
+    }
+
+    [Test]
     public void UpgradeSceneConnectsCatalogsPortraitPagingAndStageItemDetails()
     {
         var scene = EditorSceneManager.OpenScene("Assets/Scenes/UpgradeScene.unity", OpenSceneMode.Single);

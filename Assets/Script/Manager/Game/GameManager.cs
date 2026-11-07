@@ -53,6 +53,10 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f;
 
+        // Pay the finished battle before ResetRound clears its rewards.
+        if (GameEndManager.instance != null && GameEndManager.instance.IsGameEnded)
+            (statisticsManager != null ? statisticsManager : GameStatisticsManager.Instance)?.Confirm();
+
         GameSession.GetOrCreate().BeginRound();
 
         if (GameEndManager.instance != null)

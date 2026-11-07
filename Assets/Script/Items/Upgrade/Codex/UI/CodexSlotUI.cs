@@ -9,10 +9,13 @@ public sealed class CodexSlotUI : InventorySlotUI
         owner = inventory;
         Entry = entry;
         IsLocked = false;
-        currentItem = entry is ItemData item ? new InventoryItem(item, 1) : null;
-        SetData(entry);
-        if (amountImage != null) amountImage.SetActive(false);
-        if (amountText != null) amountText.text = "";
+        if (entry is ItemData item)
+            SetSlot(new InventoryItem(item, InventoryManager.instance != null ? InventoryManager.instance.GetItemAmount(item) : 0));
+        else
+        {
+            ClearSlot();
+            SetData(entry);
+        }
         if (locked != null) locked.SetActive(false);
         if (ready != null) ready.SetActive(false);
         if (slotToggle != null) slotToggle.interactable = entry != null;

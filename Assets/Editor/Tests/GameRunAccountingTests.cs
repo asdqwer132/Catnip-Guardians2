@@ -102,6 +102,7 @@ public class GameRunAccountingTests
     [Test]
     public void BonusIsSpentFirstAndOnlyMainStockChangesTheReturningInventory()
     {
+        session.consumeUpgradeInventoryMaterials = true;
         var board = Board(2, 40000f);
         var material = board.mergeMaterials[0];
         DropAndClear(board);
@@ -130,6 +131,7 @@ public class GameRunAccountingTests
     [Test]
     public void SharedBoardsCannotDuplicateTheLastMainMaterial()
     {
+        session.consumeUpgradeInventoryMaterials = true;
         var first = Board(0, 40000f);
         var second = Board(0, 40010f);
         DropAndClear(first);
@@ -143,6 +145,35 @@ public class GameRunAccountingTests
         inventory.items.Add(new InventoryItem(item, 99));
         Assert.That(session.RestoreMaterialInventory(inventory), Is.True);
         Assert.That(inventory.GetItemAmount(item), Is.Zero, "An empty saved inventory must replace old/default stock too.");
+    }
+
+    [Test]
+    public void DefaultMaterialCopyPreservesUpgradeStockAndRefillsOnRetry()
+    {
+        Assert.That(session.consumeUpgradeInventoryMaterials, Is.False);
+        var board = Board(1, 40000f);
+        DropAndClear(board); DropAndClear(board);
+        Assert.That(session.GetMaterialCount(item), Is.EqualTo(2));
+        var inventory = Host("Returning inventory", false).AddComponent<InventoryManager>();
+        session.RestoreMaterialInventory(inventory);
+        Assert.That(inventory.GetItemAmount(item), Is.EqualTo(3));
+        session.BeginRound();
+        Assert.That(board.mergeMaterials[0].defaultCount, Is.EqualTo(1));
+        Assert.That(board.mergeMaterials[0].count, Is.EqualTo(3));
+        Assert.That(session.GetMaterialCount(item), Is.EqualTo(3));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void FailedReservationAcrossRetryKeepsCorrectStock(bool consumeUpgradeStock)
+    {
+        session.consumeUpgradeInventoryMaterials = consumeUpgradeStock;
+        int game = session.GameDataRevision, round = session.RoundRevision;
+        Assert.That(session.TryConsumeMaterial(item), Is.True);
+        session.BeginRound();
+        typeof(GameSession).GetMethod("RefundMaterial", BindingFlags.Instance | BindingFlags.NonPublic)
+            .Invoke(session, new object[] { item, game, round });
+        Assert.That(session.GetMaterialCount(item), Is.EqualTo(3));
     }
 
     [TestCase(0)]
@@ -173,6 +204,7 @@ public class GameRunAccountingTests
     [UnityTest]
     public IEnumerator MainStockSurvivesUnloadingItemSceneAndRestoresBeforeUpgradeDefaults()
     {
+        session.consumeUpgradeInventoryMaterials = true;
         var outgoing = SceneManager.CreateScene("Item stock test");
         var board = Board(0, 40000f);
         SceneManager.MoveGameObjectToScene(board.gameObject, outgoing);
@@ -250,6 +282,22 @@ public class GameRunAccountingTests
 
     private static void SetPrivate(Object component, string field, object value)
         => component.GetType().GetField(field, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(component, value);
+
+    [Test]
+    public void RetryAndConfirmPayFinishedRewardsExactlyOnce()
+    {
+        var wallet = Host("Wallet").AddComponent<CurrencyManager>();
+        int initial = wallet.GetCurrency(CurrencyType.CurrencyMain);
+        var statistics = Host("Statistics").AddComponent<GameStatisticsManager>();
+        var end = Host("End").AddComponent<GameEndManager>();
+        var game = Host("Battle").AddComponent<GameManager>(); game.statisticsManager = statistics;
+        statistics.ResetRound(); statistics.AddGold(7); end.LoseGame();
+        game.RetryGame(); game.RetryGame();
+        Assert.That(wallet.GetCurrency(CurrencyType.CurrencyMain), Is.EqualTo(initial + 7));
+        statistics.ResetRound(); statistics.AddGold(4); end.LoseGame();
+        game.ConfirmEnd(); game.ConfirmEnd();
+        Assert.That(wallet.GetCurrency(CurrencyType.CurrencyMain), Is.EqualTo(initial + 11));
+    }
 
     [Test]
     public void EnemyDeathRecordsOneKillAndRewardPerLife()

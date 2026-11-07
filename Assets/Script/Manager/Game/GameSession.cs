@@ -16,6 +16,11 @@ public class GameSession : MonoBehaviour
     [SerializeField] private UpgradeToGeneralData generalData = new UpgradeToGeneralData();
     [SerializeField] private bool hasGeneralData;
 
+    [Header("Material Stock Policy")]
+    [Tooltip("When enabled, main materials consumed in battle are deducted from the returning upgrade inventory. Disabled uses a fresh copy each round and preserves upgrade stock.")]
+    public bool consumeUpgradeInventoryMaterials;
+    [SerializeField] private List<InventoryItem> startingMaterialItems = new List<InventoryItem>();
+
     [Header("Game Item → Battle")]
     [Tooltip("배틀 씬에서 아직 받지 않은 아이템 묶음입니다. 먼저 보낸 순서로 전달됩니다.")]
     [SerializeField] private List<GameItemToBattleData> pendingBattleItems = new List<GameItemToBattleData>();
@@ -68,6 +73,7 @@ public class GameSession : MonoBehaviour
     public void SaveUpgradeToGeneral(UpgradeToGeneralData data)
     {
         generalData = (data ?? new UpgradeToGeneralData()).Copy();
+        startingMaterialItems = GameSessionItemCopy.Copy(generalData.materialItems);
         hasGeneralData = true;
         GameDataRevision++;
         ClearBattleTransfers();
@@ -82,6 +88,8 @@ public class GameSession : MonoBehaviour
 
     public void BeginRound()
     {
+        if (!consumeUpgradeInventoryMaterials && hasGeneralData)
+            generalData.materialItems = GameSessionItemCopy.Copy(startingMaterialItems);
         RoundRevision++;
         RoundStarted?.Invoke();
     }
@@ -115,10 +123,10 @@ public class GameSession : MonoBehaviour
         return true;
     }
 
-    internal void RefundMaterial(ItemData item, int revision)
+    internal void RefundMaterial(ItemData item, int revision, int roundRevision)
     {
         // 풀 콜백 도중 새 게임이 시작되었다면 이전 게임의 예약을 돌려주지 않습니다.
-        if (item == null || !hasGeneralData || revision != GameDataRevision) return;
+        if (item == null || !hasGeneralData || (revision != GameDataRevision || (!consumeUpgradeInventoryMaterials && roundRevision != RoundRevision))) return;
         var entry = generalData.materialItems.Find(value => value.itemData == item);
         if (entry == null) generalData.materialItems.Add(new InventoryItem(item, 1));
         else entry.amount++;
@@ -128,7 +136,7 @@ public class GameSession : MonoBehaviour
     public bool RestoreMaterialInventory(InventoryManager inventory)
     {
         if (inventory == null || !TryReadGeneralData(out var data)) return false;
-        inventory.items = data.materialItems;
+        inventory.items = consumeUpgradeInventoryMaterials ? data.materialItems : GameSessionItemCopy.Copy(startingMaterialItems);
         inventory.onInventoryChanged?.Invoke();
         return true;
     }
@@ -177,6 +185,7 @@ public class GameSession : MonoBehaviour
     public void ClearAll()
     {
         generalData = new UpgradeToGeneralData();
+        startingMaterialItems.Clear();
         hasGeneralData = false;
         GameDataRevision++;
         ClearBattleTransfers();
