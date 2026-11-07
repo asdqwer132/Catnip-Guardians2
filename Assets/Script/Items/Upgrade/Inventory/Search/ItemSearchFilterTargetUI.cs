@@ -2,8 +2,7 @@ using UnityEngine;
 
 public abstract class ItemSearchFilterTargetUI : MonoBehaviour, IItemSearchFilterTarget
 {
-    [Header("Search")]
-    [SerializeField] protected InventorySearchFilter searchFilter = new InventorySearchFilter();
+    [System.NonSerialized] protected InventorySearchFilter searchFilter = new InventorySearchFilter();
 
     [Header("Search Mask")]
     public Category[] categoryMask;
@@ -16,7 +15,6 @@ public abstract class ItemSearchFilterTargetUI : MonoBehaviour, IItemSearchFilte
             searchFilter = new InventorySearchFilter();
 
         ApplyMaskToSearchFilter();
-
         return searchFilter;
     }
 

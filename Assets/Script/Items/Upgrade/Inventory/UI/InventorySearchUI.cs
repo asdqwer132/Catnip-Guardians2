@@ -1,13 +1,23 @@
 using System;
-using UnityEngine.UI;
+using UnityEngine;
 
 // UI creation, layout and event wiring are authored in the Inspector.
-// Event arguments are actual enum values, not dropdown indices or an automatically built list.
+// On...Changed takes enum values; OnGradeDropdownChanged maps authored row indices.
 public class InventorySearchUI : ItemSearchUIBase
 {
+    [Header("Authored Grade Dropdown")]
+    [Tooltip("Grade for each existing dropdown row. None means All. This maps values only; it does not create or change UI options.")]
+    public Grade[] gradeDropdownValues = { Grade.None, Grade.Common, Grade.Rare, Grade.Epic, Grade.Legendary };
+
+    public void OnGradeDropdownChanged(int index)
+    {
+        if (gradeDropdownValues != null && index >= 0 && index < gradeDropdownValues.Length)
+            OnGradeChanged((int)gradeDropdownValues[index]);
+    }
+
     public void OnCategoryChanged(int value)
     {
-        if (value == 0)
+        if (value == (int)Category.None)
         {
             ResetCategoryFilter();
             return;
@@ -29,7 +39,7 @@ public class InventorySearchUI : ItemSearchUIBase
 
     public void OnGradeChanged(int value)
     {
-        if (value == 0)
+        if (value == (int)Grade.None)
         {
             ResetGradeFilter();
             return;

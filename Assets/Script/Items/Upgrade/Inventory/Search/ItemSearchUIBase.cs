@@ -11,8 +11,16 @@ public abstract class ItemSearchUIBase : MonoBehaviour
     public bool resetSeries = true;
     public bool resetGrade = true;
 
-    [Header("Runtime Filter")]
-    [SerializeField] protected InventorySearchFilter filter = new InventorySearchFilter();
+    private readonly InventorySearchFilter localFilter = new InventorySearchFilter();
+    // A connected search UI reads the target's live filter, including its masks.
+    protected InventorySearchFilter filter
+    {
+        get
+        {
+            ResolveTarget();
+            return targetUI != null ? targetUI.GetSearchFilter() : localFilter;
+        }
+    }
 
     public event Action OnFilterChanged;
 
@@ -21,7 +29,6 @@ public abstract class ItemSearchUIBase : MonoBehaviour
     protected virtual void Awake()
     {
         ResolveTarget();
-        EnsureFilter();
     }
 
     protected virtual void OnEnable()
@@ -36,7 +43,6 @@ public abstract class ItemSearchUIBase : MonoBehaviour
 
     public InventorySearchFilter GetCurrentFilter()
     {
-        EnsureFilter();
         return filter;
     }
 
@@ -53,7 +59,7 @@ public abstract class ItemSearchUIBase : MonoBehaviour
 
     public void Init()
     {
-        //RefreshSearchUI();
+        RefreshSearchUI();
     }
 
     public void ResetSearch()
@@ -86,17 +92,11 @@ public abstract class ItemSearchUIBase : MonoBehaviour
     public void RefreshSearchUI()
     {
         ResolveTarget();
-        EnsureFilter();
         UnbindEvents();
 
         RebuildControls();
-        CopyFilterFromTarget();
         NormalizeFilter();
         ApplyFilterToControlsWithoutNotify();
-
-        ResetCategoryFilter();
-        ResetGradeFilter();
-        ResetSeriesFilter();
 
         BindEvents();
         ApplyFilter(false);
@@ -112,7 +112,6 @@ public abstract class ItemSearchUIBase : MonoBehaviour
         bool notifyFilterChanged
     )
     {
-        EnsureFilter();
         InventorySearchFilterUtil.Copy(externalFilter, filter);
 
         NormalizeFilter();
@@ -122,8 +121,6 @@ public abstract class ItemSearchUIBase : MonoBehaviour
 
     public void ResetFilter()
     {
-        EnsureFilter();
-
         if (resetCategory)
             filter.useCategory = false;
 
@@ -143,7 +140,6 @@ public abstract class ItemSearchUIBase : MonoBehaviour
         if (!resetCategory)
             return;
 
-        EnsureFilter();
         filter.useCategory = false;
         ApplyFilterToControlsWithoutNotify();
         ApplyFilter(true);
@@ -154,7 +150,6 @@ public abstract class ItemSearchUIBase : MonoBehaviour
         if (!resetSeries)
             return;
 
-        EnsureFilter();
         filter.useSeries = false;
         ApplyFilterToControlsWithoutNotify();
         ApplyFilter(true);
@@ -165,7 +160,6 @@ public abstract class ItemSearchUIBase : MonoBehaviour
         if (!resetGrade)
             return;
 
-        EnsureFilter();
         filter.useGrade = false;
         ApplyFilterToControlsWithoutNotify();
         ApplyFilter(true);
@@ -173,8 +167,6 @@ public abstract class ItemSearchUIBase : MonoBehaviour
 
     protected void ChangeCategoryFilter(bool useCategory, Category category)
     {
-        EnsureFilter();
-
         if (useCategory && IsCategoryMasked(category))
             useCategory = false;
 
@@ -188,8 +180,6 @@ public abstract class ItemSearchUIBase : MonoBehaviour
 
     protected void ChangeSeriesFilter(bool useSeries, ItemSeries series)
     {
-        EnsureFilter();
-
         if (useSeries && IsSeriesMasked(series))
             useSeries = false;
 
@@ -198,14 +188,11 @@ public abstract class ItemSearchUIBase : MonoBehaviour
         if (useSeries)
             filter.series = series;
 
-        Debug.Log("Asd");
         ApplyFilter(true);
     }
 
     protected void ChangeGradeFilter(bool useGrade, Grade grade)
     {
-        EnsureFilter();
-
         if (useGrade && IsGradeMasked(grade))
             useGrade = false;
 
@@ -252,24 +239,8 @@ public abstract class ItemSearchUIBase : MonoBehaviour
             targetUI = GetComponentInParent<ItemSearchFilterTargetUI>();
     }
 
-    private void EnsureFilter()
-    {
-        if (filter == null)
-            filter = new InventorySearchFilter();
-    }
-
-    private void CopyFilterFromTarget()
-    {
-        if (targetUI == null)
-            return;
-
-        InventorySearchFilterUtil.Copy(targetUI.GetSearchFilter(), filter);
-    }
-
     private void NormalizeFilter()
     {
-        EnsureFilter();
-
         if (filter.useCategory && IsCategoryMasked(filter.category))
             filter.useCategory = false;
 
@@ -284,14 +255,9 @@ public abstract class ItemSearchUIBase : MonoBehaviour
 
     private void ApplyFilter(bool notifyFilterChanged)
     {
-        EnsureFilter();
         NormalizeFilter();
 
-        if (targetUI != null)
-        {
-            targetUI.SetSearchFilter(filter);
-            InventorySearchFilterUtil.Copy(targetUI.GetSearchFilter(), filter);
-        }
+        if (targetUI != null) targetUI.SetSearchFilter(filter);
 
         ApplyFilterToControlsWithoutNotify();
 
