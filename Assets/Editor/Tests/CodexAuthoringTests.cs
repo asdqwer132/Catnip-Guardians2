@@ -6,6 +6,28 @@ using UnityEngine;
 public sealed class CodexAuthoringTests
 {
     [Test]
+    public void SharedDetailsBaseRetainsAuthoredCodexEffectsAndTooltipFields()
+    {
+        var scene = EditorSceneManager.OpenScene("Assets/Scenes/UpgradeScene.unity", OpenSceneMode.Single);
+        try
+        {
+            var roots = scene.GetRootGameObjects();
+            var lists = roots.SelectMany(r => r.GetComponentsInChildren<CodexInventoryUI>(true));
+            foreach (var list in lists.Where(l => l.entries.Any(e => e is ItemData || e is EnemyDataSet)))
+            {
+                Assert.That(list.details, Is.InstanceOf<ItemDetailsUI>());
+                Assert.That(list.details.effectDescriptions, Is.Not.Null,
+                    "Moving the effect field to the common base must preserve its scene reference.");
+            }
+            var tooltips = roots.SelectMany(r => r.GetComponentsInChildren<ItemTooltipUI>(true)).ToArray();
+            Assert.That(tooltips.Length, Is.GreaterThan(0));
+            Assert.That(tooltips.Any(t => t.amountText != null), Is.True,
+                "Existing tooltip amount bindings must survive the base-class change.");
+        }
+        finally { EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single); }
+    }
+
+    [Test]
     public void CodexInventoriesReuseInventoryRenderingAndRetainAllSlotBindings()
     {
         var scene = EditorSceneManager.OpenScene("Assets/Scenes/UpgradeScene.unity", OpenSceneMode.Single);

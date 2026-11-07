@@ -1,7 +1,6 @@
-using TMPro;
 using UnityEngine;
 
-public class ItemTooltipUI : ItemDefinitionUI
+public class ItemTooltipUI : ItemDetailsUI
 {
     [Header("Tooltip Option")]
     public bool useTooltip = true;
@@ -15,13 +14,6 @@ public class ItemTooltipUI : ItemDefinitionUI
 
     [Header("Tooltip Objects")]
     public GameObject tooltipPanel;
-
-    [Header("UI")]
-    public TextMeshProUGUI amountText;
-    public TextMeshProUGUI categoryText;
-    public TextMeshProUGUI weightText;
-    public TextMeshProUGUI cooldownText;
-
 
     private object currentOwner;
     private object pinnedOwner;
@@ -146,12 +138,6 @@ public class ItemTooltipUI : ItemDefinitionUI
     protected virtual void ApplyData(TooltipData data)
     {
         SetDefinedData(data, data.dataName);
-        SetOptionalText(amountText, data.amountText);
-
-        var item = data as ItemTooltipData;
-        SetOptionalText(categoryText, item?.CategoryText);
-        SetOptionalText(weightText, item?.WeightText);
-        SetOptionalText(cooldownText, item?.CooldownText);
     }
 
     private void UpdatePosition()

@@ -1,13 +1,11 @@
 using System.Collections.Generic;
-using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 // All objects below are authored UI references or instances of authored slot prefabs.
-public sealed class CodexDetailsUI : ItemDefinitionUI
+public sealed class CodexDetailsUI : ItemDetailsUI
 {
-    public TMP_Text effectDescriptions;
     public Image portraitImage;
     public Image previewImage;
     public TMP_Text portraitDescription;
@@ -118,21 +116,6 @@ public sealed class CodexDetailsUI : ItemDefinitionUI
     protected override void OnDataLanguageChanged(language selected)
     {
         base.OnDataLanguageChanged(selected);
-        if (effectDescriptions != null)
-        {
-            var text = new StringBuilder();
-            foreach (var effect in CodexEffectUtility.GetDescriptions(SelectedData))
-            {
-                string name = DefinedDataUtility.GetName(effect, selected, effect.name);
-                string description = DefinedDataUtility.GetDescription(effect, selected);
-                string detail = DefinedDataUtility.GetDetailDescription(effect, selected);
-                if (text.Length > 0) text.Append("\n\n");
-                text.Append(name);
-                if (!string.IsNullOrEmpty(description)) text.Append("\n" + description);
-                if (!string.IsNullOrEmpty(detail)) text.Append("\n" + detail);
-            }
-            effectDescriptions.text = text.ToString();
-        }
         if (SelectedPortrait >= 0 && SelectedData is CharacterCodexData character)
             SetImage(portraitImage, character.GetPortrait(SelectedPortrait)?.sprite);
         ApplyPreview();

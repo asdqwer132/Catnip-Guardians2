@@ -164,6 +164,72 @@ public sealed class CodexUITests
     }
 
     [Test]
+    public void DetailsAndTooltipShareFieldsWithoutSharingPanelVisibility()
+    {
+        var item = Data<ItemData>("Shared item");
+        item.series = ItemSeries.Food; item.grade = Grade.Rare;
+        item.category = Category.Item; item.weight = 2.5f;
+        var effect = Data<CodexEffectDescription>("Shared effect");
+        item.codexEffects = new[] { effect };
+
+        var details = Details("Codex details");
+        details.categoryText = Text("Category", details.transform);
+        details.weightText = Text("Weight", details.transform);
+        details.Show(item);
+
+        var root = Host("Tooltip", active: false);
+        var tooltip = root.AddComponent<ItemTooltipUI>();
+        tooltip.tooltipPanel = root;
+        tooltip.positionAtAnchor = false;
+        tooltip.dataNameText = Text("Name", root.transform);
+        tooltip.amountText = Text("Amount", root.transform);
+        tooltip.categoryText = Text("Category", root.transform);
+        tooltip.weightText = Text("Weight", root.transform);
+        tooltip.effectDescriptions = Text("Effects", root.transform);
+        var anchor = (RectTransform)Host("Tooltip anchor").transform;
+        tooltip.Show(ItemTooltipData.FromItem(item, 4), anchor, item);
+
+        Assert.That(details, Is.InstanceOf<ItemDetailsUI>());
+        Assert.That(tooltip, Is.InstanceOf<ItemDetailsUI>());
+        Assert.That(details, Is.Not.InstanceOf<ItemTooltipUI>());
+        Assert.That(tooltip.dataNameText.text, Is.EqualTo(details.dataNameText.text));
+        Assert.That(tooltip.categoryText.text, Is.EqualTo(details.categoryText.text));
+        Assert.That(tooltip.weightText.text, Is.EqualTo("2.5").And.EqualTo(details.weightText.text));
+        Assert.That(tooltip.effectDescriptions.text, Is.EqualTo(details.effectDescriptions.text));
+        Assert.That(tooltip.amountText.text, Is.EqualTo("x4"));
+        Assert.That(tooltip.series, Is.EqualTo(details.series));
+        Assert.That(tooltip.grade, Is.EqualTo(details.grade));
+
+        tooltip.Hide();
+        Assert.That(root.activeSelf, Is.False);
+        Assert.That(details.gameObject.activeSelf, Is.True);
+        Assert.That(details.SelectedData, Is.SameAs(item));
+        Assert.That(item.weight, Is.EqualTo(2.5f), "Displaying data must not change it.");
+    }
+
+    [Test]
+    public void CommonDetailsBindingClearsItemFieldsAndEffectsWhenDataChanges()
+    {
+        var details = Details("Details");
+        details.amountText = Text("Amount", details.transform);
+        details.categoryText = Text("Category", details.transform);
+        details.weightText = Text("Weight", details.transform);
+        var item = Data<ItemData>("Item"); item.codexEffects = new[] { Data<CodexEffectDescription>("Effect") };
+        details.SetDefinedData(ItemTooltipData.FromItem(item, 3));
+        Assert.That(details.amountText.text, Is.EqualTo("x3"));
+        Assert.That(details.effectDescriptions.text, Is.EqualTo("Effect"));
+
+        details.Show(Data<MapCodexData>("Map"));
+        Assert.That(details.amountText.gameObject.activeSelf, Is.False);
+        Assert.That(details.categoryText.gameObject.activeSelf, Is.False);
+        Assert.That(details.weightText.gameObject.activeSelf, Is.False);
+        Assert.That(details.effectDescriptions.text, Is.Empty);
+        details.Show(null);
+        Assert.That(details.dataNameText.text, Is.Empty);
+        Assert.That(details.gameObject.activeSelf, Is.False);
+    }
+
+    [Test]
     public void ItemAndEnemyDetailsShareLocalizedEffectDescriptions()
     {
         var effect = Data<CodexEffectDescription>("Burn");
