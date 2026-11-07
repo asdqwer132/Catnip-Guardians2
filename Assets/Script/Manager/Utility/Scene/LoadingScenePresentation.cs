@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public enum LoadingRunnerMovement { LoadingProgress, ConstantSpeed }
+public enum LoadingRunnerMovement { LoadingProgress = 0, ConstantSpeed = 1, Stationary = 2 }
 public enum LoadingCharacterSelection { RandomSingle, AcquiredCharacters }
 
 // LoadingScene owns the authored UI; the persistent loader only supplies progress and a roster.
@@ -144,7 +144,12 @@ public sealed class LoadingScenePresentation : MonoBehaviour
             rect.localScale = new Vector3(roster[i].flipHorizontal ? -1f : 1f, 1f, 1f);
             float initialX = startX - i * spacing;
             float x = Mathf.Lerp(startX, right, Progress) - i * spacing;
-            if (movement == LoadingRunnerMovement.ConstantSpeed)
+            if (movement == LoadingRunnerMovement.Stationary)
+            {
+                // Center the entire roster while preserving its configured spacing.
+                x = road.rect.center.x + (roster.Count - 1) * spacing * 0.5f - i * spacing;
+            }
+            else if (movement == LoadingRunnerMovement.ConstantSpeed)
             {
                 float distance = elapsed * Mathf.Max(1f, speed);
                 float distanceToExit = Mathf.Max(0f, loopRight - initialX);

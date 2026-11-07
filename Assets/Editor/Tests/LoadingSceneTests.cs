@@ -132,6 +132,29 @@ public sealed class LoadingSceneTests
             Is.EqualTo(value.road.rect.xMin - 300f).Within(.01f));
     }
 
+    [TestCase(LoadingCharacterSelection.RandomSingle)]
+    [TestCase(LoadingCharacterSelection.AcquiredCharacters)]
+    public void StationaryRunnersStayCenteredWhileTheirAnimationContinues(LoadingCharacterSelection selection)
+    {
+        var value = Presentation(); value.movement = LoadingRunnerMovement.Stationary;
+        value.characterSelection = selection;
+        value.startOffsetX = -500f; // Travel settings must not offset the stationary group.
+        value.Begin(new[] { value.randomCharacters[0], value.randomCharacters[1] });
+        var images = Runners(value);
+        Assert.That(images.Length, Is.EqualTo(selection == LoadingCharacterSelection.RandomSingle ? 1 : 2));
+        var positions = images.Select(i => i.rectTransform.anchoredPosition).ToArray();
+        Assert.That(positions.Average(p => p.x), Is.EqualTo(value.road.rect.center.x).Within(.01f));
+        if (images.Length > 1)
+            Assert.That(positions[0].x - positions[1].x,
+                Is.EqualTo(value.characterSize.x + value.characterSpacing).Within(.01f));
+        var character = value.randomCharacters.Single(c => c.runFrames.Contains(images[0].sprite));
+        At(value, 1f / character.framesPerSecond + .001f);
+        value.SetProgress(1f);
+        for (int i = 0; i < images.Length; i++)
+            Assert.That(images[i].rectTransform.anchoredPosition, Is.EqualTo(positions[i]));
+        Assert.That(images[0].sprite, Is.SameAs(character.runFrames[1]));
+    }
+
     [Test] public void FixedSpeedWrapsBeyondScreenBoundsAndRecalculatesAfterResize()
     {
         var value = Presentation(); value.movement = LoadingRunnerMovement.ConstantSpeed;
