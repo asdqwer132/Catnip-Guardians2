@@ -10,14 +10,20 @@ public class MergeUI : MonoBehaviour
     public Toggle toggle;
     public void SetSlot(bool isActive)
     {
-        if (slotObj != null) slotObj.SetActive(isActive);
+        // Exhausted material stays visible with a zero count.
+        if (slotObj != null) slotObj.SetActive(true);
+        if (toggle != null)
+        {
+            toggle.interactable = isActive;
+            if (!isActive) toggle.SetIsOnWithoutNotify(false);
+        }
     }
     public void SetCount(int c, int dc)
     {
 
         if (countText != null)
-            countText.text = "" + c;
+            countText.text = Mathf.Max(0, c).ToString();
         if (defaultCountText != null)
-            defaultCountText.text = "(+" + dc + ")";
+            defaultCountText.text = "(+" + Mathf.Max(0, dc) + ")";
     }
 }

@@ -176,6 +176,28 @@ public class MergeItemSceneInteractionTests
         Assert.That(a.mergeUI.toggle.isOn, Is.False, "Disabled helpers must detach their listeners.");
     }
 
+    [Test]
+    public void ExhaustedMaterialStaysVisibleAtZeroAndStopsTheTimerUntilReselected()
+    {
+        var material = board.mergeMaterials[0]; material.count = 1; material.defaultCount = 0;
+        var ui = material.mergeUI; ui.slotObj = ui.gameObject;
+        var label = Host("Count"); label.AddComponent<RectTransform>(); ui.countText = label.AddComponent<TextMeshProUGUI>();
+        board.SetAutomaticDrop(true); board.RefreshUI();
+        var timer = Host("Timer").AddComponent<MergeDropTimerUI>(); timer.board = board;
+        var timerLabel = Host("Time"); timerLabel.AddComponent<RectTransform>(); timer.timeText = timerLabel.AddComponent<TextMeshProUGUI>();
+        timer.progressImage = PreviewImage("Gauge");
+        Assert.That(board.IsDropTimerRunning, Is.True);
+        Drop(Vector2.zero); timer.Refresh();
+        Assert.That(material.count, Is.Zero);
+        Assert.That(ui.countText.text, Is.EqualTo("0")); Assert.That(ui.slotObj.activeSelf, Is.True);
+        Assert.That(ui.toggle.interactable || ui.toggle.isOn, Is.False);
+        Assert.That(board.IsDropTimerRunning, Is.False); Assert.That(board.NextDropItem, Is.Null);
+        Assert.That(timer.timeText.text, Is.EqualTo("0.0s")); Assert.That(timer.progressImage.fillAmount, Is.Zero);
+        material.count = 2; board.RefreshUI();
+        Assert.That(ui.toggle.interactable, Is.True); Assert.That(board.IsDropTimerRunning, Is.False);
+        ui.toggle.isOn = true; Assert.That(board.IsDropTimerRunning, Is.True);
+    }
+
     [UnityTest]
     public IEnumerator CountdownReadsTheRealFeederAndPauseDoesNotConsumeMaterials()
     {

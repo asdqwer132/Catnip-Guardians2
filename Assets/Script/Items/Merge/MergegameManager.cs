@@ -51,6 +51,7 @@ public class MergegameManager : MonoBehaviour
     public string LastMessage => lastMessage;
     public ItemData NextDropItem => Dropper.NextItem;
     public float DropCountdown => Dropper.Countdown;
+    public bool IsDropTimerRunning => Dropper.IsTimerRunning;
     public float DropInterval => Dropper.Interval;
     public bool MaterialUIEnabled => displayMaterialUI;
     public bool CanOperate => isActiveAndEnabled && !clearing && Time.timeScale > 0f;
@@ -79,13 +80,13 @@ public class MergegameManager : MonoBehaviour
 
     public void RefreshUI()
     {
+        if (displayMaterialUI && mergeMaterials != null)
+            foreach (var material in mergeMaterials)
+            {
+                material?.SetCountText();
+                material?.SetActive();
+            }
         Dropper.RefreshMaterialSelection();
-        if (!displayMaterialUI || mergeMaterials == null) return;
-        foreach(var material in mergeMaterials)
-        {
-            material?.SetCountText();
-            material?.SetActive();
-        }
     }
 
     public void PrewarmItems()

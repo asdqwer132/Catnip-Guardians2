@@ -27,6 +27,7 @@ internal sealed class MergeItemDropper
             return Mathf.Max(0f, (owner.automaticDrop ? Mathf.Max(nextDropAt, nextAutomaticDropAt) : nextDropAt) - Time.time);
         }
     }
+    public bool IsTimerRunning => owner.automaticDrop && owner.isFeeding && RefreshSelectionState();
     public ItemData NextItem { get { RefreshSelectionState(); return owner.currentMaterial?.mergeItem?.item; } }
 
     // Forecast with virtual stock only: never advance the real selection or consume inventory.
@@ -107,7 +108,7 @@ internal sealed class MergeItemDropper
         bool selected = false;
         if (owner.mergeMaterials != null)
             foreach (var material in owner.mergeMaterials)
-                if (material?.mergeItem != null && material.mergeUI != null && material.mergeUI.toggle != null && material.mergeUI.toggle.isOn)
+                if (CanFeedMaterial(material))
                 { selected = true; break; }
         // 0개일 때는 초기값으로 정지, 0→1개일 때만 다시 시작합니다. 추가 선택은 시각을 바꾸지 않습니다.
         if (!selected || !hadSelectedMaterial) nextAutomaticDropAt = Time.time + AutomaticInterval;
@@ -178,8 +179,10 @@ internal sealed class MergeItemDropper
     {
         materialSession = source;
         usesSessionMaterials = source != null;
-        ResetRoundMaterials();
+        // Apply incoming stock before refreshing availability, so the initial
+        // placeholder zero cannot disable a preselected material.
         RefreshSessionMaterials(items);
+        ResetRoundMaterials();
     }
 
     public void ResetRoundMaterials()

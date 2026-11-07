@@ -22,7 +22,8 @@ public sealed class MergeDropTimerUI : MonoBehaviour
     public void Refresh()
     {
         var current = boxes != null ? boxes.SelectedBoard : board;
-        float countdown = current != null ? current.DropCountdown : 0f;
+        bool running = current != null && current.IsDropTimerRunning;
+        float countdown = running ? current.DropCountdown : 0f;
         if (timeText != null) timeText.SetText("{0:1}s", countdown);
         if (current != null) current.GetUpcomingDropItems(upcoming, 1 + (nextExtraItemIcons?.Length ?? 0));
         else upcoming.Clear();
@@ -30,7 +31,7 @@ public sealed class MergeDropTimerUI : MonoBehaviour
         if (nextExtraItemIcons != null)
             for (int i = 0; i < nextExtraItemIcons.Length; i++) SetIcon(nextExtraItemIcons[i], i + 1);
         if (progressImage != null)
-            progressImage.fillAmount = current != null ? 1f - Mathf.Clamp01(countdown / current.DropInterval) : 0f;
+            progressImage.fillAmount = running ? 1f - Mathf.Clamp01(countdown / current.DropInterval) : 0f;
     }
     private void SetIcon(Image image, int index)
     {
