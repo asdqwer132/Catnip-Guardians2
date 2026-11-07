@@ -60,6 +60,7 @@ public class GameManager : MonoBehaviour
 
         if (initManager != null)
         {
+            if (initManager.plantManager != null) initManager.plantManager.ResetStageProgress();
             initManager.isInited = false;
             initManager.InitAll();
         }

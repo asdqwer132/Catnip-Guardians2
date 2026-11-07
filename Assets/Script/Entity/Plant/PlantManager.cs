@@ -10,6 +10,7 @@ public class PlantManager : MonoBehaviour
     public PlantData[] allPlants;
     [SerializeField] private int currentPlantIndex = 0;
 
+    public int CurrentPlantIndex => currentPlantIndex;
     public PlantData CurrentPlant { get; private set; }
 
     void Awake() { instance = this; }
@@ -23,6 +24,8 @@ public class PlantManager : MonoBehaviour
 
         plant.Init(CurrentPlant);
     }
+
+    public void ResetStageProgress() => currentPlantIndex = 0;
 
     public bool UpIndex()
     {

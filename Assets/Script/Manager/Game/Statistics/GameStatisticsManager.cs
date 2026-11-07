@@ -8,6 +8,23 @@ public class GameStatisticsManager : MonoBehaviour
     public static event Action InstanceChanged;
 
     public StatisticsUI ui;
+    [Header("Battle Progress Sources (same scene)")]
+    public PlantManager plantManager;
+    public GrowManager growManager;
+    [SerializeField] private float battleTimeSeconds;
+    [SerializeField] private float gameProgress01;
+    [SerializeField] private float stageProgress01;
+    [SerializeField] private int currentStageNumber;
+    [SerializeField] private int totalStages;
+    private bool roundStarted;
+    public float BattleTimeSeconds => battleTimeSeconds;
+    public float GameProgress01 => gameProgress01;
+    public float StageProgress01 => stageProgress01;
+    public int CurrentStageNumber => currentStageNumber;
+    public int TotalStages => totalStages;
+    public Sprite CurrentPlantIcon => plantManager != null && plantManager.CurrentPlant != null ? plantManager.CurrentPlant.Icon : null;
+    public event Action OnProgressChanged;
+
 
     [Header("Round Statistics")]
     [SerializeField] private int roundKillCount;
@@ -74,6 +91,9 @@ public class GameStatisticsManager : MonoBehaviour
     public void ResetRound()
     {
         roundFinished = false;
+        roundStarted = true;
+        battleTimeSeconds = 0f;
+        CaptureProgress();
         rewardsConfirmed = false;
         roundKillCount = 0;
 
@@ -86,7 +106,28 @@ public class GameStatisticsManager : MonoBehaviour
 
         OnChanged?.Invoke();
     }
-    public void FinishRound() => roundFinished = true;
+    private void Update()
+    {
+        if (!roundStarted || roundFinished || Time.deltaTime <= 0f) return;
+        battleTimeSeconds += Time.deltaTime;
+        CaptureProgress();
+        OnProgressChanged?.Invoke();
+    }
+    private void CaptureProgress()
+    {
+        totalStages = plantManager != null && plantManager.allPlants != null ? plantManager.allPlants.Length : 0;
+        currentStageNumber = totalStages > 0 ? Mathf.Clamp(plantManager.CurrentPlantIndex + 1, 1, totalStages) : 0;
+        stageProgress01 = growManager != null ? Mathf.Clamp01(growManager.GrowProgress01) : 0f;
+        gameProgress01 = totalStages > 0 ? Mathf.Clamp01((currentStageNumber - 1 + stageProgress01) / totalStages) : 0f;
+    }
+    public void FinishRound()
+    {
+        if (roundFinished) return;
+        CaptureProgress();
+        roundFinished = true;
+        OnChanged?.Invoke();
+        OnProgressChanged?.Invoke();
+    }
     private void RefreshUI() => ui?.RefreshUI();
     public void AddKill(int amount = 1)
     {

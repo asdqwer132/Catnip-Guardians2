@@ -17896,6 +17896,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StatisticsUI
   statisticsManager: {fileID: 1143083051}
   currencyUIGroup: []
+  battleTimeText: {fileID: 0}
+  killCountText: {fileID: 0}
+  progressText: {fileID: 0}
+  stageText: {fileID: 0}
+  stageProgressText: {fileID: 0}
+  progressFill: {fileID: 0}
+  plantIcon: {fileID: 0}
 --- !u!114 &1143083051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17909,6 +17916,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameStatisticsManager
   ui: {fileID: 1143083050}
+  plantManager: {fileID: 1230235214}
+  growManager: {fileID: 1571861292}
+  battleTimeSeconds: 0
+  gameProgress01: 0
+  stageProgress01: 0
+  currentStageNumber: 0
+  totalStages: 0
   roundKillCount: 0
   roundFinished: 0
   rewardsConfirmed: 0
