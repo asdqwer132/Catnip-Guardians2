@@ -26,7 +26,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3727863953008905802, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
       propertyPath: targetUI
-      value:
+      value: 
       objectReference: {fileID: 2019502801175080788}
     - target: {fileID: 3878791493398360599, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
       propertyPath: m_AnchorMax.x
@@ -156,7 +156,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ToggleGroup
 --- !u!224 &8120014244042900556 stripped
 RectTransform:
@@ -178,20 +178,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 453120efd3734007967d30fcfc491669, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CodexInventoryUI
-  searchFilter:
-    useCategory: 0
-    category: 0
-    useSeries: 0
-    series: 0
-    useGrade: 0
-    grade: 0
-  categoryMask:
-  seriesMask:
-  gradeMask:
-  entries: []
+  categoryMask: ffffffff
+  seriesMask: 00000000
+  gradeMask: ffffffff
   slotParent: {fileID: 8120014244042900556}
   slotPrefab: {fileID: 835390537407768722, guid: 0bb5c7819dc2a9048aa6fe49aeff6f2b, type: 3}
-  details: {fileID: 0}
+  showItemCount: 1
+  tooltipUI: {fileID: 0}
+  showTooltipOnSelection: 0
   selectionGroup: {fileID: 6440701582244232669}
+  materialSource: {fileID: 0}
+  entries: []
+  details: {fileID: 0}
+  discoveredOnly: 1
