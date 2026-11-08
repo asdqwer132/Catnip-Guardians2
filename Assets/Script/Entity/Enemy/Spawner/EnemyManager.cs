@@ -120,8 +120,8 @@ public class EnemyManager : MonoBehaviour
             return;
 
         SetupNormalSpawners(plantData);
-        SetupSpecialSpawner(middleBossSpawner, plantData.middleBossEnemies, MiddleBossSpawnerIndex);
-        SetupSpecialSpawner(bossSpawner, plantData.bossEnemies, BossSpawnerIndex);
+        SetupSpecialSpawner(middleBossSpawner, plantData.middleBossEnemies, MiddleBossSpawnerIndex, plantData.middleBossSpawnSettings);
+        SetupSpecialSpawner(bossSpawner, plantData.bossEnemies, BossSpawnerIndex, plantData.bossSpawnSettings);
 
         if (logSpawnTime)
             Debug.Log("Enemy Spawn Init Time: 0.00√ ");
@@ -168,7 +168,7 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
-    private void SetupSpecialSpawner(EnemySpawner spawner, SpecialEnemySpawnInfo[] infos, int spawnerIndex)
+    private void SetupSpecialSpawner(EnemySpawner spawner, SpecialEnemySpawnInfo[] infos, int spawnerIndex, SpecialEnemySpawnSettings settings)
     {
         if (spawner == null) return;
         spawner.StopSpawning();
@@ -179,7 +179,7 @@ public class EnemyManager : MonoBehaviour
         spawner.gameObject.SetActive(hasSpawnInfo);
         if (!hasSpawnInfo) return;
         spawner.overSpawn = specialSpawnerIgnoresMaxAliveCount;
-        spawner.SetSpecialSpawner(infos, Target, spawnerIndex, spawnStartTime);
+        spawner.SetSpecialSpawner(infos, Target, spawnerIndex, spawnStartTime, settings, this);
     }
 
     private bool HasValidSpawnInfos(EnemySpawnInfo[] infos)

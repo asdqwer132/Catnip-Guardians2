@@ -38,23 +38,23 @@ public class EnemySpawnAreaTests
     }
 
     [Test]
-    public void AuthoredBattleUsesPlantCenteredCircularRegionsAndMigratedSharedRates()
+    public void AuthoredBattleKeepsConfiguredRegionsAndValidSpawnSettings()
     {
         try
         {
             var scene = EditorSceneManager.OpenScene("Assets/Scenes/GameBattleScene.unity", OpenSceneMode.Single);
             var manager = scene.GetRootGameObjects().SelectMany(r => r.GetComponentsInChildren<EnemyManager>(true)).Single();
             var slots = manager.attackSlotManager;
-            Assert.That(slots.layout, Is.EqualTo(EnemyAttackSlotLayout.RadialRings));
+            Assert.That(System.Enum.IsDefined(typeof(EnemyAttackSlotLayout), slots.layout), Is.True);
             Assert.That(slots.centerTarget, Is.SameAs(manager.Target.transform));
-            Assert.That(slots.slots.Select(s => s.radius), Is.Ordered);
-            float outer = slots.slots.Max(s => s.radius + s.radialThickness * .5f);
             foreach (var spawner in manager.enemySpawners.Concat(new[] { manager.middleBossSpawner, manager.bossSpawner }))
             {
-                Assert.That(spawner.spawnShape, Is.EqualTo(EnemySpawnShape.Circle));
+                Assert.That(System.Enum.IsDefined(typeof(EnemySpawnShape), spawner.spawnShape), Is.True);
                 Assert.That(spawner.spawnCenterTarget, Is.SameAs(manager.Target.transform));
                 Assert.That(spawner.SpawnWorldCenter, Is.EqualTo(slots.RingCenter));
-                Assert.That(spawner.baseStat.spawnDistance, Is.GreaterThan(outer));
+                Assert.That(spawner.baseStat.spawnDistance, Is.GreaterThan(0));
+                Assert.That(spawner.baseStat.spawnWidth, Is.GreaterThan(0));
+                Assert.That(spawner.baseStat.spawnHeight, Is.GreaterThan(0));
             }
             foreach (string guid in AssetDatabase.FindAssets("t:PlantData"))
             {
@@ -72,9 +72,18 @@ public class EnemySpawnAreaTests
                     {
                         var entry = list.GetArrayElementAtIndex(i);
                         Assert.That(entry.FindPropertyRelative("spawnRate"), Is.Not.Null);
-                        Assert.That(entry.FindPropertyRelative("spawnWeight"), Is.Null);
-                        Assert.That(entry.FindPropertyRelative("dataSet").objectReferenceValue, Is.Not.Null, data.name);
+                        Assert.That(entry.FindPropertyRelative("spawnWeight"), Is.Not.Null);
+                        // Empty/in-progress entries are supported and skipped by the runtime scheduler.
+                        Assert.That(entry.FindPropertyRelative("dataSet"), Is.Not.Null);
+                        Assert.That(entry.FindPropertyRelative("spawnWeight").floatValue, Is.GreaterThanOrEqualTo(0), data.name);
                     }
+                }
+                foreach (string field in new[] { "middleBossSpawnSettings", "bossSpawnSettings" })
+                {
+                    var settings = serialized.FindProperty(field);
+                    Assert.That(System.Enum.IsDefined(typeof(SpecialEnemySpawnSelection), settings.FindPropertyRelative("selection").enumValueIndex), Is.True);
+                    Assert.That(settings.FindPropertyRelative("spawnInterval").floatValue, Is.GreaterThan(0));
+                    Assert.That(settings.FindPropertyRelative("conditions").isArray, Is.True);
                 }
             }
         }

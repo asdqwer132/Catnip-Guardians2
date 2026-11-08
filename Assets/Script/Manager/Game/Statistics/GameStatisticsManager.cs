@@ -36,6 +36,7 @@ public class GameStatisticsManager : MonoBehaviour
     [SerializeField] private List<RoundCurrencyInfo> roundCurrencies = new List<RoundCurrencyInfo>();
 
     public int RoundKillCount => roundKillCount;
+    public int RoundVersion { get; private set; }
     public int RoundGold => GetCurrency(CurrencyType.CurrencyMain);
     public IReadOnlyList<RoundCurrencyInfo> RoundCurrencies => roundCurrencies;
 
@@ -91,6 +92,7 @@ public class GameStatisticsManager : MonoBehaviour
     }
     public void ResetRound()
     {
+        unchecked { RoundVersion++; }
         roundFinished = false;
         roundStarted = true;
         battleTimeSeconds = 0f;

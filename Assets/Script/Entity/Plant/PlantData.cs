@@ -18,7 +18,9 @@ public class EnemySpawnInfo : EnemySpawnData
 [System.Serializable]
 public class SpecialEnemySpawnInfo : EnemySpawnData
 {
-    [Tooltip("Special enemy spawn interval in seconds. Independent of the normal enemy interval.")]
+    [Tooltip("Relative chance in Weighted One mode. Zero excludes this entry from weighted selection.")]
+    [Min(0f)] public float spawnWeight = 1f;
+    [Tooltip("Interval in seconds used only in Independent Intervals mode.")]
     [Min(.05f)]
     public float spawnRate = 1f;
 }
@@ -54,7 +56,10 @@ public class PlantData : DefaultData
     [Min(.05f)] public float normalSpawnInterval = 1.5f;
     public EnemySpawnInfo[] normalEnemies;
 
-    [Header("Extra Data / Special Enemy Spawn")]
+    [Header("Extra Data / Middle Boss Spawn")]
+    public SpecialEnemySpawnSettings middleBossSpawnSettings = new SpecialEnemySpawnSettings();
     public SpecialEnemySpawnInfo[] middleBossEnemies = new SpecialEnemySpawnInfo[0];
+    [Header("Extra Data / Final Boss Spawn")]
+    public SpecialEnemySpawnSettings bossSpawnSettings = new SpecialEnemySpawnSettings();
     public SpecialEnemySpawnInfo[] bossEnemies = new SpecialEnemySpawnInfo[0];
 }
