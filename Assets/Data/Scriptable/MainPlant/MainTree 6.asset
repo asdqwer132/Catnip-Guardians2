@@ -33,11 +33,11 @@ MonoBehaviour:
   spawnNormalEnemyCount: 5
   normalSpawnInterval: 1000
   normalEnemies:
-  - dataSet: {fileID: 11400000, guid: 87d2731841b5f5d4096c16f91d360265, type: 2}
+  - dataSet: {fileID: 11400000, guid: b6aaffaee47cee34b82f87765e4991b8, type: 2}
     spawnWeight: 50
-  - dataSet: {fileID: 11400000, guid: e78442e74fd016b4684aa02e4841b223, type: 2}
+  - dataSet: {fileID: 11400000, guid: 1d57bec4500d27e44a6e98f1a21b9da6, type: 2}
     spawnWeight: 30
-  - dataSet: {fileID: 11400000, guid: 1502456bd987cdd48af6678cce59a604, type: 2}
+  - dataSet: {fileID: 11400000, guid: fe7b1494b205f354bb29092d346d24b2, type: 2}
     spawnWeight: 20
   middleBossSpawnSettings:
     selection: 0
@@ -45,7 +45,7 @@ MonoBehaviour:
     conditionMatch: 0
     conditions: []
   middleBossEnemies:
-  - dataSet: {fileID: 11400000, guid: 189a0743b5546254aa30874d82bb2d9e, type: 2}
+  - dataSet: {fileID: 11400000, guid: 65c9de082b5d6e5438a45bc400310bd8, type: 2}
     spawnWeight: 1
     spawnRate: 1000
   bossSpawnSettings:
@@ -54,6 +54,6 @@ MonoBehaviour:
     conditionMatch: 0
     conditions: []
   bossEnemies:
-  - dataSet: {fileID: 11400000, guid: 16d1cbd92a9524649bfe3469b4d01056, type: 2}
+  - dataSet: {fileID: 11400000, guid: 606e17ddd27e4b047b1673b01b60a877, type: 2}
     spawnWeight: 1
     spawnRate: 1000
