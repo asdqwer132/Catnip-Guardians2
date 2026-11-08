@@ -1,21 +1,35 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
-public class StoryManager : MonoBehaviour
+public class StoryManager : MonoBehaviour, ISceneLocalizedUI
 {
-    [Header("Chapters")]
-    public StoryChapterPanel[] chapterPanels;
+    [Header("Stories")]
+    [SerializeField] private StoryData[] stories;
+
+    [Header("Cuts")]
+    [SerializeField] private Image[] cuts;
+    [SerializeField] private TMP_Text dialogueText;
+    [SerializeField] private TMP_Text speakerText;
 
     [Header("Scene")]
-    public string returnSceneName = GameSceneRoutes.General;
+    [SerializeField] private string returnSceneName = GameSceneRoutes.General;
 
     [Header("Buttons")]
-    public Button prevButton;
-    public Button nextButton;
-    public Button skipButton;
+    [SerializeField] private Button prevButton;
+    [SerializeField] private Button nextButton;
+    [SerializeField] private Button skipButton;
 
-    private int currentChapterIndex;
+    [Header("Index")]
+    [SerializeField] private bool isTest = false;
+    [SerializeField] private int testIndex = 0;
+
+    private int currentStoryIndex;
+    private int currentDialogueIndex;
     private int currentCutIndex;
+    private bool isPlaying;
+
+    private StoryData CurrentStory => stories[currentStoryIndex];
 
     private void Awake()
     {
@@ -29,100 +43,178 @@ public class StoryManager : MonoBehaviour
             skipButton.onClick.AddListener(SkipStory);
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        StartStory();
+        SceneLanguageMediator.Register(this);
     }
 
-    private void StartStory()
+    private void OnDisable()
     {
-        if (chapterPanels == null || chapterPanels.Length == 0)
+        SceneLanguageMediator.Unregister(this, gameObject.scene);
+    }
+
+    private void Start()
+    {
+        if (isPlaying) return;
+
+        StartStory(isTest
+            ? testIndex
+            : StorySave.GetStoryChapterProgress());
+    }
+
+    public void StartStory(int index)
+    {
+        if (stories == null ||
+            index < 0 ||
+            index >= stories.Length ||
+            stories[index] == null)
         {
-            Debug.LogWarning("등록된 챕터 패널이 없습니다.");
             MoveToReturnScene();
             return;
         }
 
-        currentChapterIndex = StorySave.GetStoryChapterProgress();
+        currentStoryIndex = index;
+        currentDialogueIndex = 0;
         currentCutIndex = 0;
+        isPlaying = true;
 
-        if (currentChapterIndex >= chapterPanels.Length)
-        {
-            MoveToReturnScene();
-            return;
-        }
-
-        ClampProgress();
         RefreshView();
     }
 
     public void NextCut()
     {
-        StoryChapterPanel currentChapter = GetCurrentChapter();
+        if (!isPlaying) return;
 
-        if (currentChapter == null)
-            return;
+        var dialogues = CurrentStory.dialogues;
 
-        if (currentCutIndex < currentChapter.CutCount - 1)
+        if (dialogues == null ||
+            currentDialogueIndex >= dialogues.Length - 1)
         {
-            currentCutIndex++;
-            RefreshView();
+            CompleteCurrentStory();
             return;
         }
 
-        CompleteCurrentChapter();
+        currentDialogueIndex++;
+        RefreshView();
     }
 
     public void PrevCut()
     {
-        if (currentCutIndex <= 0)
+        if (!isPlaying || currentDialogueIndex <= 0)
             return;
 
-        currentCutIndex--;
+        currentDialogueIndex--;
         RefreshView();
     }
 
     public void SkipStory()
     {
-        CompleteCurrentChapter();
+        if (isPlaying)
+            CompleteCurrentStory();
     }
 
-    private void CompleteCurrentChapter()
+    private void CompleteCurrentStory()
     {
-        currentChapterIndex++;
-        StorySave.SetStoryChapterProgress(currentChapterIndex);
+        isPlaying = false;
+
+        StorySave.SetStoryChapterProgress(
+            Mathf.Max(
+                StorySave.GetStoryChapterProgress(),
+                currentStoryIndex + 1
+            )
+        );
+
         MoveToReturnScene();
     }
 
     private void RefreshView()
     {
-        RefreshChapters();
+        RefreshCuts();
+        RefreshLanguage();
         RefreshButtons();
     }
 
-    private void RefreshChapters()
+    private void RefreshCuts()
     {
-        for (int i = 0; i < chapterPanels.Length; i++)
+        var story = CurrentStory;
+        var dialogues = story.dialogues;
+
+        currentCutIndex = 0;
+
+        if (dialogues != null)
         {
-            StoryChapterPanel chapter = chapterPanels[i];
-
-            if (chapter == null)
-                continue;
-
-            bool isCurrentChapter = i == currentChapterIndex;
-            chapter.gameObject.SetActive(isCurrentChapter);
-
-            if (isCurrentChapter)
-                chapter.ShowCutProgress(currentCutIndex);
-            else
-                chapter.HideAllCuts();
+            for (int i = 0;
+                 i <= currentDialogueIndex && i < dialogues.Length;
+                 i++)
+            {
+                if (dialogues[i] != null && dialogues[i].nextImage)
+                    currentCutIndex++;
+            }
         }
+
+        int spriteCount = story.sprites?.Length ?? 0;
+
+        currentCutIndex = Mathf.Clamp(
+            currentCutIndex,
+            0,
+            Mathf.Max(0, spriteCount - 1)
+        );
+
+        for (int i = 0; i < cuts.Length; i++)
+        {
+            if (cuts[i] == null) continue;
+
+            bool active = i < spriteCount;
+            cuts[i].gameObject.SetActive(active);
+
+            if (active)
+            {
+                cuts[i].sprite = story.sprites[i];
+                cuts[i].enabled = i <= currentCutIndex;
+            }
+        }
+    }
+
+    private void RefreshDialogue(language selected)
+    {
+        if (!isPlaying) return;
+
+        var dialogues = CurrentStory.dialogues;
+        StoryData.LocalizedDialogue data = null;
+
+        if (dialogues != null &&
+            currentDialogueIndex < dialogues.Length &&
+            dialogues[currentDialogueIndex] != null)
+        {
+            data = dialogues[currentDialogueIndex]
+                .GetDialogue(selected);
+        }
+
+        if (dialogueText != null)
+            dialogueText.text = data?.dialogue ?? "";
+
+        if (speakerText != null)
+            speakerText.text = data?.speaker ?? "";
+    }
+
+    public void RefreshLanguage()
+    {
+        RefreshDialogue(
+            SceneLanguageMediator.GetLanguage(gameObject.scene)
+        );
+    }
+
+    public void ApplyLanguage(
+        language selected,
+        LocalizedTextTable table)
+    {
+        RefreshDialogue(selected);
     }
 
     private void RefreshButtons()
     {
         if (prevButton != null)
-            prevButton.interactable = currentCutIndex > 0;
+            prevButton.interactable = currentDialogueIndex > 0;
 
         if (nextButton != null)
             nextButton.interactable = true;
@@ -136,44 +228,9 @@ public class StoryManager : MonoBehaviour
             Debug.LogWarning("SceneMoveManager가 없습니다.");
     }
 
-    private void ClampProgress()
-    {
-        if (currentChapterIndex < 0)
-            currentChapterIndex = 0;
-
-        StoryChapterPanel currentChapter = GetCurrentChapter();
-
-        if (currentChapter == null || currentChapter.CutCount <= 0)
-        {
-            currentCutIndex = 0;
-            return;
-        }
-
-        if (currentCutIndex < 0)
-            currentCutIndex = 0;
-
-        if (currentCutIndex >= currentChapter.CutCount)
-            currentCutIndex = currentChapter.CutCount - 1;
-    }
-
-    private StoryChapterPanel GetCurrentChapter()
-    {
-        if (chapterPanels == null)
-            return null;
-
-        if (currentChapterIndex < 0 || currentChapterIndex >= chapterPanels.Length)
-            return null;
-
-        return chapterPanels[currentChapterIndex];
-    }
-
     public void ResetStory()
     {
         StorySave.ResetStoryProgress();
-
-        currentChapterIndex = 0;
-        currentCutIndex = 0;
-
-        RefreshView();
+        StartStory(0);
     }
 }
