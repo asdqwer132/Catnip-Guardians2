@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edc90614ba7134b47808661fe4744b2e, type: 3}
+  m_Name: 06 Hellhound SetData
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDataSet
+  icon: {fileID: 8488760408852037493, guid: 7eed22c4b4a27f94ea07820404873c9d, type: 3}
+  data:
+  - language: 0
+    dataName: Hellhound
+    description: 
+    detailDescription: 
+  dataNumbering: 
+  dataId: 06Hellhound
+  dataType: 0
+  requireUnlock: 0
+  animatorController: {fileID: 9100000, guid: a0cf4c46d27258040957fec0882cb162, type: 2}
+  statData: {fileID: 11400000, guid: 8fb9b8f1e591b3b488fb72efe9a3136d, type: 2}
+  patternData: {fileID: 11400000, guid: ffc7cb3525e708e45a31e74c9dca7f63, type: 2}
+  codexEntry: {fileID: 0}
+  codexEffects: []

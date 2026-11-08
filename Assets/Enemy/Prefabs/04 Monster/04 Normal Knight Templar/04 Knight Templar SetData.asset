@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edc90614ba7134b47808661fe4744b2e, type: 3}
+  m_Name: 04 Knight Templar SetData
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDataSet
+  icon: {fileID: 941554769194238170, guid: 783fe62e6a5dd284e9319299eb7d9634, type: 3}
+  data:
+  - language: 0
+    dataName: Knight Templar
+    description: 
+    detailDescription: 
+  dataNumbering: 
+  dataId: 04KnightTemplar
+  dataType: 0
+  requireUnlock: 0
+  animatorController: {fileID: 9100000, guid: b87e467b9eab14e4f8b462872995133e, type: 2}
+  statData: {fileID: 11400000, guid: f35b7f30b877a674581c1c35289baca3, type: 2}
+  patternData: {fileID: 11400000, guid: caaf4c5a55554c044b82c84981ba5f2f, type: 2}
+  codexEntry: {fileID: 0}
+  codexEffects: []

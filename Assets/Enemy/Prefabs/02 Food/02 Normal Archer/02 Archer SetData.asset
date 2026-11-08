@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edc90614ba7134b47808661fe4744b2e, type: 3}
+  m_Name: 02 Archer SetData
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDataSet
+  icon: {fileID: 5420657165879536120, guid: 93e3df0875bf7eb40b70da81f4dfbf2a, type: 3}
+  data:
+  - language: 0
+    dataName: Archer
+    description: 
+    detailDescription: 
+  dataNumbering: 
+  dataId: 02Archer
+  dataType: 0
+  requireUnlock: 0
+  animatorController: {fileID: 9100000, guid: 8f08472cf5973334c8931200f71d29b9, type: 2}
+  statData: {fileID: 11400000, guid: c70aa05d6149a6b47ac7ef24b06e032b, type: 2}
+  patternData: {fileID: 11400000, guid: d92871bcc30a27445a1f90a424240467, type: 2}
+  codexEntry: {fileID: 0}
+  codexEffects: []

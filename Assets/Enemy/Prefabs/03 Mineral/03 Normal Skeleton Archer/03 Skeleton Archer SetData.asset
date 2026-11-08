@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edc90614ba7134b47808661fe4744b2e, type: 3}
+  m_Name: 03 Skeleton Archer SetData
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDataSet
+  icon: {fileID: -6351682907161248583, guid: 3f5e481b6bf2575499f29665f31ec34f, type: 3}
+  data:
+  - language: 0
+    dataName: Skeleton Archer
+    description: 
+    detailDescription: 
+  dataNumbering: 
+  dataId: 03SkeletonArcher
+  dataType: 0
+  requireUnlock: 0
+  animatorController: {fileID: 9100000, guid: 615f1a81eded027468393beb5948b258, type: 2}
+  statData: {fileID: 11400000, guid: 5aa3d5a5058e2114e8cb320b2c568d6b, type: 2}
+  patternData: {fileID: 11400000, guid: 909801514679d3e49b6800afe11f70e9, type: 2}
+  codexEntry: {fileID: 0}
+  codexEffects: []

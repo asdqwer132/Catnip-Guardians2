@@ -169,7 +169,7 @@ public class EnemyPrefabBatchCreator : EditorWindow
 
         string templateStatPath = FindAssetPath<EnemyStatData>(
             templateFolderPath,
-            templateEnemyName
+            templateEnemyName + " StatData"
         );
 
         if (string.IsNullOrEmpty(templatePrefabPath))

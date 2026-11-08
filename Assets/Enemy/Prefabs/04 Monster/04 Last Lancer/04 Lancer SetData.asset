@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edc90614ba7134b47808661fe4744b2e, type: 3}
+  m_Name: 04 Lancer SetData
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDataSet
+  icon: {fileID: 3465079563596065642, guid: b525b9ee0d8a65745a3f7490fd73a92a, type: 3}
+  data:
+  - language: 0
+    dataName: Lancer
+    description: 
+    detailDescription: 
+  dataNumbering: 
+  dataId: 04Lancer
+  dataType: 0
+  requireUnlock: 0
+  animatorController: {fileID: 9100000, guid: 133fa4e168bed6e478652e57da141ba5, type: 2}
+  statData: {fileID: 11400000, guid: 99cf067d0bba3434094af12ca2a95772, type: 2}
+  patternData: {fileID: 11400000, guid: 8803ba3630419dc4594358b0a1725fb4, type: 2}
+  codexEntry: {fileID: 0}
+  codexEffects: []

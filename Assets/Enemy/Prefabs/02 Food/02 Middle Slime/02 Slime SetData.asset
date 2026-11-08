@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edc90614ba7134b47808661fe4744b2e, type: 3}
+  m_Name: 02 Slime SetData
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDataSet
+  icon: {fileID: -7854738478779454800, guid: 4a606fd14ec8cce4a8eb5a35311033e3, type: 3}
+  data:
+  - language: 0
+    dataName: Slime
+    description: 
+    detailDescription: 
+  dataNumbering: 
+  dataId: 02Slime
+  dataType: 0
+  requireUnlock: 0
+  animatorController: {fileID: 9100000, guid: 72d324685b9e8ad47b50b60db465c3a3, type: 2}
+  statData: {fileID: 11400000, guid: 0158cd529b75864469fedff4db44eb5b, type: 2}
+  patternData: {fileID: 11400000, guid: 3d61a7b1d5113ec408d5235e6c58b387, type: 2}
+  codexEntry: {fileID: 0}
+  codexEffects: []

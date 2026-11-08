@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edc90614ba7134b47808661fe4744b2e, type: 3}
+  m_Name: 03 Necromancer SetData
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDataSet
+  icon: {fileID: -3350093174063237959, guid: d2af67980c8dfb441b0cb4ef4dd34a9b, type: 3}
+  data:
+  - language: 0
+    dataName: Necromancer
+    description: 
+    detailDescription: 
+  dataNumbering: 
+  dataId: 03Necromancer
+  dataType: 0
+  requireUnlock: 0
+  animatorController: {fileID: 9100000, guid: d5be9d13cbd095d4aa52f9590856a7eb, type: 2}
+  statData: {fileID: 11400000, guid: 202eeb4c5c62d4d4498ae7c095d8b480, type: 2}
+  patternData: {fileID: 11400000, guid: be25aea8bcae6934791d2b16d8a61eed, type: 2}
+  codexEntry: {fileID: 0}
+  codexEffects: []

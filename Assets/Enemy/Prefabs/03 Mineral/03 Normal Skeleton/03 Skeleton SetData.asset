@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edc90614ba7134b47808661fe4744b2e, type: 3}
+  m_Name: 03 Skeleton SetData
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDataSet
+  icon: {fileID: 303854554312539980, guid: f3e69420d5333564981fcd88a9a0037a, type: 3}
+  data:
+  - language: 0
+    dataName: Skeleton
+    description: 
+    detailDescription: 
+  dataNumbering: 
+  dataId: 03Skeleton
+  dataType: 0
+  requireUnlock: 0
+  animatorController: {fileID: 9100000, guid: 30dcb7d81d9aef2448d3cf7302ebd008, type: 2}
+  statData: {fileID: 11400000, guid: f963095d700d8a04da4200c255f861ff, type: 2}
+  patternData: {fileID: 11400000, guid: 65fa51707dd6c0d429a14ded2d3bb8db, type: 2}
+  codexEntry: {fileID: 0}
+  codexEffects: []
