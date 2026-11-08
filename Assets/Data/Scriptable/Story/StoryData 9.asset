@@ -12,5 +12,68 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c1a70fcd7e8f8c42920e122a812509f, type: 3}
   m_Name: StoryData 9
   m_EditorClassIdentifier: Assembly-CSharp::StoryData
-  sprites: []
-  dialogues: []
+  sprites:
+  - {fileID: 4420961468335967216, guid: 73ee85fc72161b2428299bbf71d467ad, type: 3}
+  - {fileID: 1503611913175442684, guid: df7e09a29dde26f48bf929741976b480, type: 3}
+  - {fileID: 5164551253416771823, guid: 73e0d36bc19887f4da2e94128de29796, type: 3}
+  - {fileID: -9065140159861189487, guid: 02451f9906c502d48b60f140c53b32ac, type: 3}
+  - {fileID: -7640536364371218421, guid: 9e4424f6c2d38de4a99719222e4a1f81, type: 3}
+  - {fileID: -3973160797994227910, guid: d756116bbf2857e41ab7fbd192f83a33, type: 3}
+  - {fileID: -8921004657220950115, guid: 6c190d199045e704cacca83cd1de7874, type: 3}
+  dialogues:
+  - nextImage: 0
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 1: stars in the fog.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 1: stars in the fog."
+  - nextImage: 1
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 2: trade guide scrolls.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 2: trade guide scrolls."
+  - nextImage: 1
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 3: collect final payout.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 3: collect final payout."
+  - nextImage: 1
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 4: lunes cat spell.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 4: lunes cat spell."
+  - nextImage: 1
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 5: key for the counterspell.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 5: key for the counterspell."
+  - nextImage: 1
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 6: open the catnip chest.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 6: open the catnip chest."
+  - nextImage: 1
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 7: eight asleep.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 7: eight asleep."

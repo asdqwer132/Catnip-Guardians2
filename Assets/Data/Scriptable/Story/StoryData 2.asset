@@ -12,5 +12,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c1a70fcd7e8f8c42920e122a812509f, type: 3}
   m_Name: StoryData 2
   m_EditorClassIdentifier: Assembly-CSharp::StoryData
-  sprites: []
-  dialogues: []
+  sprites:
+  - {fileID: -8601889791981460492, guid: 577acb6b0e33ab14d8559f0cfff8bf0f, type: 3}
+  - {fileID: 4012241421315033362, guid: 4fb5e535fb0f21f47820a8ca4f9002a1, type: 3}
+  - {fileID: 5001214173743697840, guid: a21c8e6ac8bacda46bae538667e9c86e, type: 3}
+  - {fileID: -8670943121648922643, guid: 291c5d7ac9557774f82532cad7499999, type: 3}
+  dialogues:
+  - nextImage: 0
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 1: trade swords.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 1: trade swords."
+  - nextImage: 1
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 2: switch to bread.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 2: switch to bread."
+  - nextImage: 1
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 3: unfinished oven.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 3: unfinished oven."
+  - nextImage: 1
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 4: guard the oven.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 4: guard the oven."

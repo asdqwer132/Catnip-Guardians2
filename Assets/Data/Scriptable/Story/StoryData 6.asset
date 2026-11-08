@@ -12,5 +12,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c1a70fcd7e8f8c42920e122a812509f, type: 3}
   m_Name: StoryData 6
   m_EditorClassIdentifier: Assembly-CSharp::StoryData
-  sprites: []
-  dialogues: []
+  sprites:
+  - {fileID: 5465676260196508250, guid: a77b8ffe2d91fb94aa00878855bf6c0a, type: 3}
+  - {fileID: -6590899960607402449, guid: 2f2c03f217873374db23dddd3c2d013c, type: 3}
+  - {fileID: -4658881244732153591, guid: 056ef4b4693e28b4facc0e65b538925b, type: 3}
+  - {fileID: -3117484068076936332, guid: 4740f451e870def43a94cf94220388b7, type: 3}
+  - {fileID: -2045847134202036659, guid: 888263d3613889d4395a117461415ba4, type: 3}
+  dialogues:
+  - nextImage: 0
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 1: silver catch.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 1: silver catch."
+  - nextImage: 1
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 2: trade fish.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 2: trade fish."
+  - nextImage: 1
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 3: switch to herbs.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 3: switch to herbs."
+  - nextImage: 1
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 4: shelter the herbs.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 4: shelter the herbs."
+  - nextImage: 1
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 5: fit the glass.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 5: fit the glass."

@@ -16,9 +16,9 @@ public class StoryManager : MonoBehaviour, ISceneLocalizedUI
     [SerializeField] private string returnSceneName = GameSceneRoutes.General;
 
     [Header("Buttons")]
-    [SerializeField] private Button prevButton;
-    [SerializeField] private Button nextButton;
-    [SerializeField] private Button skipButton;
+    [SerializeField] private Button[] prevButtons;
+    [SerializeField] private Button[] nextButtons;
+    [SerializeField] private Button[] skipButtons;
 
     [Header("Index")]
     [SerializeField] private bool isTest = false;
@@ -33,14 +33,17 @@ public class StoryManager : MonoBehaviour, ISceneLocalizedUI
 
     private void Awake()
     {
-        if (prevButton != null)
-            prevButton.onClick.AddListener(PrevCut);
+        foreach (var btn in prevButtons)
+            if (btn != null)
+                btn.onClick.AddListener(PrevCut);
 
-        if (nextButton != null)
-            nextButton.onClick.AddListener(NextCut);
+        foreach (var btn in nextButtons)
+            if (btn != null)
+                btn.onClick.AddListener(NextCut);
 
-        if (skipButton != null)
-            skipButton.onClick.AddListener(SkipStory);
+        foreach (var btn in skipButtons)
+            if (btn != null)
+                btn.onClick.AddListener(SkipStory);
     }
 
     private void OnEnable()
@@ -213,11 +216,11 @@ public class StoryManager : MonoBehaviour, ISceneLocalizedUI
 
     private void RefreshButtons()
     {
-        if (prevButton != null)
-            prevButton.interactable = currentDialogueIndex > 0;
+        foreach (var btn in prevButtons)
+            btn.interactable = currentDialogueIndex > 0;
 
-        if (nextButton != null)
-            nextButton.interactable = true;
+        foreach (var btn in nextButtons)
+            btn.interactable = true;
     }
 
     private void MoveToReturnScene()

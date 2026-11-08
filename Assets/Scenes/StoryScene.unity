@@ -149,8 +149,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoryManager
   stories:
-  - sprites: []
-    dialogues: []
+  - {fileID: 11400000, guid: e30f484b03296d94d993d483ffed7c21, type: 2}
+  - {fileID: 11400000, guid: 77486340b37497742a64327554741bdb, type: 2}
+  - {fileID: 11400000, guid: d9a2581ef6ae5384e94603c83fedf0f1, type: 2}
+  - {fileID: 11400000, guid: a9c74f46222931048b161c773a2bb96d, type: 2}
+  - {fileID: 11400000, guid: cef01f7fe31c6de489ddd466a8828e6e, type: 2}
+  - {fileID: 11400000, guid: 074dac8a580fed24abb74345f43dfec0, type: 2}
+  - {fileID: 11400000, guid: 6f13a45d7809ee840a4d2de5e63dd51f, type: 2}
+  - {fileID: 11400000, guid: 3a327d608e447c44ba086db1fc588ab4, type: 2}
+  - {fileID: 11400000, guid: ae8186ac5b247d2419b5266d97a988b0, type: 2}
   cuts:
   - {fileID: 625046760}
   - {fileID: 526997648}
@@ -163,11 +170,15 @@ MonoBehaviour:
   dialogueText: {fileID: 983603956}
   speakerText: {fileID: 1943411081}
   returnSceneName: GameGeneralScene
-  prevButton: {fileID: 1744058785}
-  nextButton: {fileID: 839694974}
-  skipButton: {fileID: 50333558}
+  prevButtons:
+  - {fileID: 1744058785}
+  nextButtons:
+  - {fileID: 1652189172}
+  - {fileID: 839694974}
+  skipButtons:
+  - {fileID: 50333558}
   isTest: 1
-  testIndex: 0
+  testIndex: 2
 --- !u!4 &29701921
 Transform:
   m_ObjectHideFlags: 0
@@ -516,7 +527,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 711203741}
+  m_TargetGraphic: {fileID: 50333559}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -2466,7 +2477,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -3353,7 +3364,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -0.00012207031, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 300, y: 100}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &1652189172
@@ -3386,8 +3397,8 @@ MonoBehaviour:
     m_FadeDuration: 0.1
   m_SpriteState:
     m_HighlightedSprite: {fileID: 21300000, guid: 1132d32ae26c61f439ab3c028e52e079, type: 3}
-    m_PressedSprite: {fileID: 21300000, guid: db3b5b3169a7f1e47a30eeee39abe8a7, type: 3}
-    m_SelectedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 21300000, guid: 1132d32ae26c61f439ab3c028e52e079, type: 3}
+    m_SelectedSprite: {fileID: 21300000, guid: db3b5b3169a7f1e47a30eeee39abe8a7, type: 3}
     m_DisabledSprite: {fileID: 0}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
@@ -3396,7 +3407,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 711203741}
+  m_TargetGraphic: {fileID: 1652189173}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -3543,8 +3554,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1688684574}
-  - component: {fileID: 1688684576}
-  - component: {fileID: 1688684578}
   m_Layer: 5
   m_Name: ChapterImage
   m_TagString: Untagged
@@ -3579,30 +3588,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &1688684576
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1688684573}
-  m_CullTransparentMesh: 1
---- !u!114 &1688684578
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1688684573}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 82f9ce4edd56fda4cb9458ba7ee407a6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StoryChapterPanel
-  cutObjects:
-  - {fileID: 625046758}
-  - {fileID: 526997646}
-  - {fileID: 2143120282}
 --- !u!1 &1708868204
 GameObject:
   m_ObjectHideFlags: 0
@@ -3636,7 +3621,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -75.00014, y: 0}
+  m_AnchoredPosition: {x: -75, y: 0}
   m_SizeDelta: {x: -500.00015, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1744058781
@@ -4005,7 +3990,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 124.99988, y: 0}
+  m_AnchoredPosition: {x: 125, y: 0}
   m_SizeDelta: {x: 750, y: 100}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1943411081

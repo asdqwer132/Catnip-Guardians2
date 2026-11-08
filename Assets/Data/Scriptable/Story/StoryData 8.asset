@@ -12,5 +12,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c1a70fcd7e8f8c42920e122a812509f, type: 3}
   m_Name: StoryData 8
   m_EditorClassIdentifier: Assembly-CSharp::StoryData
-  sprites: []
-  dialogues: []
+  sprites:
+  - {fileID: 8231262810757418459, guid: 3e4f86ddcd1dff640bd8af897e1bacac, type: 3}
+  - {fileID: -8845622746230133041, guid: fce8bedc2336b214a9f65290b9471786, type: 3}
+  - {fileID: 282766504249943995, guid: bb89049a7dbf99e44ab9116eb9aa68ef, type: 3}
+  - {fileID: -5423628422704572862, guid: e917c96205021ef4f88aadacab561fd1, type: 3}
+  - {fileID: -999905893573225532, guid: 811eef65e18a36847838f589a810e159, type: 3}
+  dialogues:
+  - nextImage: 0
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 1: first lift.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 1: first lift."
+  - nextImage: 1
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 2: trade machine parts.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 2: trade machine parts."
+  - nextImage: 1
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 3: switch to guide scrolls.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 3: switch to guide scrolls."
+  - nextImage: 1
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 4: smeared last stroke.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 4: smeared last stroke."
+  - nextImage: 1
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 5: finish the scrolls.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 5: finish the scrolls."

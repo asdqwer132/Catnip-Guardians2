@@ -12,5 +12,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c1a70fcd7e8f8c42920e122a812509f, type: 3}
   m_Name: StoryData 4
   m_EditorClassIdentifier: Assembly-CSharp::StoryData
-  sprites: []
-  dialogues: []
+  sprites:
+  - {fileID: -7568637311315393400, guid: 308660d4c7bfbc94ca4c6913e83bcddd, type: 3}
+  - {fileID: 6153137791131425073, guid: 25c9807b97a77e7428f9463626809a31, type: 3}
+  - {fileID: 1905244558592257038, guid: 1db4424e8f976cc4eb9dbd7706cff940, type: 3}
+  - {fileID: -8205705246009586327, guid: e48a1934bc4e99b458b0a9b8e9027e51, type: 3}
+  - {fileID: 1004276775728783810, guid: f5ad600dbfdcb364499232bb6ea6c2aa, type: 3}
+  dialogues:
+  - nextImage: 0
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 1: new wheel rim.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 1: new wheel rim."
+  - nextImage: 1
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 2: trade ingots.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 2: trade ingots."
+  - nextImage: 1
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 3: switch to scale essence.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 3: switch to scale essence."
+  - nextImage: 1
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 4: rising marsh.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 4: rising marsh."
+  - nextImage: 1
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: 'Test dialogue 5: copper still.'
+    - languageType: 1
+      speaker: "\uB098\uB808\uC774\uC158"
+      dialogue: "\uD14C\uC2A4\uD2B8 \uB300\uC0AC 5: copper still."
