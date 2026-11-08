@@ -5,8 +5,7 @@ public class SettingUIButton : MonoBehaviour
     public bool isTimeStop = false;
     public void ResetTutorialProgress()
     {
-        if (TutorialProgressManager.instance != null) TutorialProgressManager.instance.ResetProgress();
-        else TutorialSave.ResetProgress();
+        TutorialCompletionHistory.ResetAll();
     }
     public void ResetStoryProgress() => StorySave.ResetStoryProgress();
     public void OpenSetting()

@@ -200,19 +200,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 28339673}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1966182217}
-        m_TargetAssemblyTypeName: TutorialSequencePlayer, Assembly-CSharp
-        m_MethodName: OnClickNext
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &28339673
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4696,7 +4684,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 944952280}
-  - component: {fileID: 944952281}
   m_Layer: 0
   m_Name: TutorialHighlightController
   m_TagString: Untagged
@@ -4719,22 +4706,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1966182216}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &944952281
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 944952279}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2b20ad8249b10b41a9c62c8f070691c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TutorialHighlightController
-  highlightRect: {fileID: 0}
-  targets: []
-  hideOnAwake: 1
-  followTarget: 1
 --- !u!1001 &958488021
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4922,11 +4893,6 @@ PrefabInstance:
       addedObject: {fileID: 72987334}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5dc0f9a52991e0e47a92109d3da95e3e, type: 3}
---- !u!1 &958488022 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 527063469259446504, guid: 5dc0f9a52991e0e47a92109d3da95e3e, type: 3}
-  m_PrefabInstance: {fileID: 958488021}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &958488023 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3024243414832313258, guid: 5dc0f9a52991e0e47a92109d3da95e3e, type: 3}
@@ -4937,6 +4903,90 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4674576048118641975, guid: 5dc0f9a52991e0e47a92109d3da95e3e, type: 3}
   m_PrefabInstance: {fileID: 958488021}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1033577709
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1033577711}
+  - component: {fileID: 1033577710}
+  m_Layer: 0
+  m_Name: Tutorial Canvas Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1033577710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1033577709}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7145816b36134797911fa77776864b9d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialCanvasController
+  tutorialCanvas: {fileID: 0}
+  previousButton: {fileID: 0}
+  nextButton: {fileID: 0}
+  skipButton: {fileID: 0}
+  completionScope: general
+  tutorials:
+  - id: first-enemy
+    triggerEvent: enemy.spawned
+    sourceScene: GameBattleScene
+    panelRoot: {fileID: 0}
+    pages: []
+    showOnce: 1
+    skipCountsAsCompleted: 1
+    requiredTutorialIds: []
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+    onSkipped:
+      m_PersistentCalls:
+        m_Calls: []
+  - id: first-item-drop
+    triggerEvent: merge.item.dropped
+    sourceScene: GameItemScene
+    panelRoot: {fileID: 0}
+    pages: []
+    showOnce: 1
+    skipCountsAsCompleted: 1
+    requiredTutorialIds: []
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+    onSkipped:
+      m_PersistentCalls:
+        m_Calls: []
+--- !u!4 &1033577711
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1033577709}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1038284375
 GameObject:
   m_ObjectHideFlags: 0
@@ -5540,7 +5590,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1179499951}
-  - component: {fileID: 1179499952}
   m_Layer: 0
   m_Name: TutorialDialogueController
   m_TagString: Untagged
@@ -5563,22 +5612,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1966182216}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1179499952
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1179499950}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2bda4f34541ae234dabfdfa6e038d102, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TutorialDialogueController
-  dialogueRoot: {fileID: 0}
-  speakerNameText: {fileID: 0}
-  dialogueText: {fileID: 0}
-  hideOnAwake: 1
 --- !u!1 &1202752445
 GameObject:
   m_ObjectHideFlags: 0
@@ -7854,11 +7887,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5dc0f9a52991e0e47a92109d3da95e3e, type: 3}
---- !u!1 &1759694972 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 527063469259446504, guid: 5dc0f9a52991e0e47a92109d3da95e3e, type: 3}
-  m_PrefabInstance: {fileID: 1759694971}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &1759694973 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4674576048118641975, guid: 5dc0f9a52991e0e47a92109d3da95e3e, type: 3}
@@ -9144,10 +9172,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1966182216}
-  - component: {fileID: 1966182220}
-  - component: {fileID: 1966182219}
-  - component: {fileID: 1966182218}
-  - component: {fileID: 1966182217}
   m_Layer: 0
   m_Name: TutorialManager
   m_TagString: Untagged
@@ -9172,74 +9196,6 @@ Transform:
   - {fileID: 944952280}
   m_Father: {fileID: 830786400}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1966182217
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1966182215}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc7edfd08eeee4e439e680d013446122, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TutorialSequencePlayer
-  executor: {fileID: 1966182218}
-  currentSequence: {fileID: 0}
-  currentStepIndex: -1
-  isPlaying: 0
-  waitingForInput: 0
---- !u!114 &1966182218
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1966182215}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b2149d2cfa0be34eb20642550c352f6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TutorialEventExecutor
-  progressManager: {fileID: 1966182220}
-  dialogueController: {fileID: 1179499952}
-  highlightController: {fileID: 944952281}
-  targetObjects:
-  - {fileID: 958488022}
-  - {fileID: 1759694972}
-  defaultSceneName: 
---- !u!114 &1966182219
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1966182215}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 184fb7e3066285d408d37285c50068de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TutorialEventManager
-  tutoCanvas: {fileID: 830786399}
-  sequences:
-  - {fileID: 11400000, guid: 38de65f7c6c9ddb45b190b12376d1217, type: 2}
-  - {fileID: 11400000, guid: ac693917c781de243a5b05e7c0c089da, type: 2}
-  invokeOnStart: 1
---- !u!114 &1966182220
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1966182215}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34013c2ff3d911d459b3aa6cbed42e16, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TutorialProgressManager
-  currentProgress: 0
-  loadOnAwake: 1
-  saveOnChange: 1
 --- !u!1001 &1969982015
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12400,3 +12356,4 @@ SceneRoots:
   - {fileID: 466438815}
   - {fileID: 851919016}
   - {fileID: 910010200001}
+  - {fileID: 1033577711}

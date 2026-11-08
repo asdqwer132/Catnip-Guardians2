@@ -122,13 +122,13 @@ public sealed class SaveDataInspectionTests
         var data = SaveDataInspection.ReadPreferences(new Preferences());
         var runtimeKeys = typeof(SettingManager).GetFields(BindingFlags.Static | BindingFlags.Public)
             .Where(f => f.IsLiteral && f.FieldType == typeof(string)).Select(f => (string)f.GetRawConstantValue())
-            .Concat(new[] { StorySave.StoryChapterProgressKey, TutorialSave.TutorialProgressKey });
+            .Concat(new[] { StorySave.StoryChapterProgressKey, TutorialCompletionHistory.SaveKey });
         Assert.That(data.Select(row => row.Key), Is.EquivalentTo(runtimeKeys));
         Assert.That(data.All(row => !row.HasKey && row.Value == row.DefaultValue), Is.True);
         Assert.That(data.Single(row => row.Key == SettingManager.MASTER_VOLUME).Value, Is.EqualTo("1"));
         Assert.That(data.Single(row => row.Key == SettingManager.SHOW_BUFF).Value, Is.EqualTo("On (1)"));
-        Assert.That(data.Single(row => row.Key == TutorialSave.TutorialProgressKey).Value,
-            Is.EqualTo(((int)TutorialProgress.FirstEnemyAttack).ToString(CultureInfo.InvariantCulture)));
+        Assert.That(data.Single(row => row.Key == TutorialCompletionHistory.SaveKey).Value,
+            Is.EqualTo("{}"));
     }
 
     [Test]

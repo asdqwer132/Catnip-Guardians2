@@ -292,6 +292,7 @@ internal sealed class MergeItemDropper
                 }
             }
             dropping = false;
+            if (committed) TutorialSignals.Raise(owner.gameObject.scene, TutorialSignals.ItemDropped);
         }
     }
 

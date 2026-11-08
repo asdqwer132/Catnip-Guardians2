@@ -5507,6 +5507,141 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 189400198}
   m_CullTransparentMesh: 1
+--- !u!1 &189908574
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 189908576}
+  - component: {fileID: 189908575}
+  m_Layer: 0
+  m_Name: Tutorial Canvas Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &189908575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 189908574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7145816b36134797911fa77776864b9d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialCanvasController
+  tutorialCanvas: {fileID: 0}
+  previousButton: {fileID: 0}
+  nextButton: {fileID: 0}
+  skipButton: {fileID: 0}
+  completionScope: upgrade
+  tutorials:
+  - id: panel.skill
+    triggerEvent:
+    sourceScene:
+    panelRoot: {fileID: 0}
+    pages: []
+    showOnce: 1
+    skipCountsAsCompleted: 1
+    requiredTutorialIds: []
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+    onSkipped:
+      m_PersistentCalls:
+        m_Calls: []
+  - id: panel.shop
+    triggerEvent:
+    sourceScene:
+    panelRoot: {fileID: 0}
+    pages: []
+    showOnce: 1
+    skipCountsAsCompleted: 1
+    requiredTutorialIds: []
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+    onSkipped:
+      m_PersistentCalls:
+        m_Calls: []
+  - id: panel.potion
+    triggerEvent:
+    sourceScene:
+    panelRoot: {fileID: 0}
+    pages: []
+    showOnce: 1
+    skipCountsAsCompleted: 1
+    requiredTutorialIds: []
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+    onSkipped:
+      m_PersistentCalls:
+        m_Calls: []
+  - id: panel.bag
+    triggerEvent:
+    sourceScene:
+    panelRoot: {fileID: 0}
+    pages: []
+    showOnce: 1
+    skipCountsAsCompleted: 1
+    requiredTutorialIds: []
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+    onSkipped:
+      m_PersistentCalls:
+        m_Calls: []
+  - id: panel.dictonary
+    triggerEvent:
+    sourceScene:
+    panelRoot: {fileID: 0}
+    pages: []
+    showOnce: 1
+    skipCountsAsCompleted: 1
+    requiredTutorialIds: []
+    onStarted:
+      m_PersistentCalls:
+        m_Calls: []
+    onCompleted:
+      m_PersistentCalls:
+        m_Calls: []
+    onSkipped:
+      m_PersistentCalls:
+        m_Calls: []
+--- !u!4 &189908576
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 189908574}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &190304387
 GameObject:
   m_ObjectHideFlags: 0
@@ -27183,7 +27318,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7688619647897200873, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
   m_PrefabInstance: {fileID: 1770166604}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1770166605}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
@@ -39045,11 +39180,19 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7611431930530473483, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1407858280}
   m_SourcePrefab: {fileID: 100100000, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
 --- !u!224 &1182865139 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2969261783221912670, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
+  m_PrefabInstance: {fileID: 1182865138}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1182865140 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7611431930530473483, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
   m_PrefabInstance: {fileID: 1182865138}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1187148488
@@ -39161,7 +39304,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7688619647897200873, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
   m_PrefabInstance: {fileID: 5807129043311341570}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 5807129043311341571}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
@@ -45384,12 +45527,28 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7688619647897200873, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
   m_PrefabInstance: {fileID: 1182865138}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1182865140}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Toggle
+--- !u!114 &1407858280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1182865140}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac3d21e1ef114c84b7d0473076aacb1c, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialTrigger
+  controller: {fileID: 189908575}
+  tutorialId: panel.dictonary
+  mode: 3
+  sourceToggle: {fileID: 1407858279}
 --- !u!1 &1412393351
 GameObject:
   m_ObjectHideFlags: 0
@@ -56275,8 +56434,32 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7611431930530473483, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1770166606}
   m_SourcePrefab: {fileID: 100100000, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
+--- !u!1 &1770166605 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7611431930530473483, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
+  m_PrefabInstance: {fileID: 1770166604}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1770166606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1770166605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac3d21e1ef114c84b7d0473076aacb1c, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialTrigger
+  controller: {fileID: 189908575}
+  tutorialId: panel.bag
+  mode: 3
+  sourceToggle: {fileID: 829188087}
 --- !u!1 &1772961188
 GameObject:
   m_ObjectHideFlags: 0
@@ -57881,8 +58064,16 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7611431930530473483, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1814000239}
   m_SourcePrefab: {fileID: 100100000, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
+--- !u!1 &1791704437 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7611431930530473483, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
+  m_PrefabInstance: {fileID: 1791704436}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1795549176
 GameObject:
   m_ObjectHideFlags: 0
@@ -58510,12 +58701,28 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7688619647897200873, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
   m_PrefabInstance: {fileID: 1791704436}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1791704437}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Toggle
+--- !u!114 &1814000239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1791704437}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac3d21e1ef114c84b7d0473076aacb1c, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialTrigger
+  controller: {fileID: 189908575}
+  tutorialId: panel.potion
+  mode: 3
+  sourceToggle: {fileID: 1814000238}
 --- !u!1 &1814641664
 GameObject:
   m_ObjectHideFlags: 0
@@ -65940,7 +66147,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7688619647897200873, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
   m_PrefabInstance: {fileID: 6421687421100055608}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 6421687421100055609}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
@@ -70338,8 +70545,32 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7611431930530473483, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5807129043311341572}
   m_SourcePrefab: {fileID: 100100000, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
+--- !u!1 &5807129043311341571 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7611431930530473483, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
+  m_PrefabInstance: {fileID: 5807129043311341570}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5807129043311341572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5807129043311341571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac3d21e1ef114c84b7d0473076aacb1c, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialTrigger
+  controller: {fileID: 189908575}
+  tutorialId: panel.shop
+  mode: 3
+  sourceToggle: {fileID: 1190691396}
 --- !u!1 &6014575583356970460
 GameObject:
   m_ObjectHideFlags: 0
@@ -70508,8 +70739,32 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7611431930530473483, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6421687421100055610}
   m_SourcePrefab: {fileID: 100100000, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
+--- !u!1 &6421687421100055609 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7611431930530473483, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
+  m_PrefabInstance: {fileID: 6421687421100055608}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6421687421100055610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6421687421100055609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac3d21e1ef114c84b7d0473076aacb1c, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialTrigger
+  controller: {fileID: 189908575}
+  tutorialId: panel.skill
+  mode: 3
+  sourceToggle: {fileID: 2141843252}
 --- !u!1 &6461996681815761446
 GameObject:
   m_ObjectHideFlags: 0
@@ -71618,3 +71873,4 @@ SceneRoots:
   - {fileID: 1945993584}
   - {fileID: 618159609}
   - {fileID: 1603326670}
+  - {fileID: 189908576}

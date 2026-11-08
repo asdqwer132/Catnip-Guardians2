@@ -248,6 +248,7 @@ public class EnemyManager : MonoBehaviour
             enemy.DisableAction();
 
         RefreshEnemyCount();
+        if (currentEnemies.Contains(enemy)) TutorialSignals.Raise(gameObject.scene, TutorialSignals.EnemySpawned);
     }
 
     private void Update()

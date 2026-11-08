@@ -153,8 +153,8 @@ def compile_files():
                    'Manager/Setting/Setting/SettingChangeType.cs', 'Manager/Setting/Setting/ISettingChangeListener.cs',
                    'Manager/Setting/Setting/SettingWindowController.cs', 'Manager/Setting/Setting/SettingUIButton.cs',
                    'Manager/Setting/Setting/SettingInjecter.cs', 'Manager/Setting/Setting/CursorChanger.cs',
-                   'Manager/Tutorial/Manager/TutorialEventExecutor.cs', 'Manager/Tutorial/Manager/TutorialProgress.cs', 'Manager/Tutorial/Manager/TutorialSave.cs',
-                   'Manager/Tutorial/Data/TutorialSequenceStep.cs')
+                   'Manager/Tutorial/TutorialCompletionHistory.cs', 'Manager/Tutorial/TutorialPanelSequence.cs',
+                   'Manager/Tutorial/TutorialCanvasController.cs', 'Manager/Tutorial/TutorialTrigger.cs', 'Manager/Tutorial/TutorialSignals.cs')
     files += [ROOT / 'Assets/Script' / name for name in scene_extra]
     return list(dict.fromkeys(files))
 

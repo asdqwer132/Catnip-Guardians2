@@ -7,7 +7,6 @@ public class GameManager : MonoBehaviour
     public InitManager initManager;
     public RoundManager roundManager;
     public GameStatisticsManager statisticsManager;
-    public TutorialEventManager tutorialEventManager;
 
     private void Awake()
     {
@@ -39,8 +38,6 @@ public class GameManager : MonoBehaviour
         if (initManager != null)
             initManager.ResetEntity();
 
-        if (tutorialEventManager != null)
-            tutorialEventManager.TryHandleProgressChanged(TutorialProgress.FirstItemEquip);
 
         if (roundManager != null)
             roundManager.GameOver();
@@ -68,8 +65,6 @@ public class GameManager : MonoBehaviour
             initManager.InitAll();
         }
 
-        if (tutorialEventManager != null)
-            tutorialEventManager.TryHandleProgressChanged(TutorialProgress.FirstEnemyAttack);
 
         SceneAudioChannel.PlayBgm(gameObject, "Ambient 7 ");
     }
