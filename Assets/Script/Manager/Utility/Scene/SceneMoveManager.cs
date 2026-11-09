@@ -126,7 +126,7 @@ public class SceneMoveManager : MonoBehaviour
             // Draw the loading UI before unloading or activating any content scene.
             yield return null;
             SettingWindowController.instance?.CloseSetting();
-            Time.timeScale = 1f;
+            GamePause.SetResumeTimeScale(1f);
             if (composeOnly != null)
             {
                 yield return composeOnly.LoadChildren(value => ReportProgress(value * 0.95f));

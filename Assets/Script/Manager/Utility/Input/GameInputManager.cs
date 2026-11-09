@@ -205,7 +205,8 @@ public class GameInputManager : MonoBehaviour
 
     public bool IsBlocked(GameInputBlockType targetBlock)
     {
-        return (blockType & targetBlock) != 0;
+        return (blockType & targetBlock) != 0 ||
+            ((targetBlock & GameInputBlockType.Gameplay) != 0 && GamePause.IsGameplayBlocked);
     }
 
     public void SetBlock(GameInputBlockType targetBlock, bool blocked)

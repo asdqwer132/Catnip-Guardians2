@@ -51,6 +51,9 @@ public class GameEndManager : MonoBehaviour
     }
 
 
+    private void OnEnable() { if (isGameEnded && pauseGameOnEnd) GamePause.Acquire(this); }
+    private void OnDisable() => GamePause.Release(this);
+
     public void EndGame(GameEndType endType)
     {
         if (isGameEnded)
@@ -65,7 +68,7 @@ public class GameEndManager : MonoBehaviour
         HideUpgradePanel();
 
         if (pauseGameOnEnd)
-            Time.timeScale = 0f;
+            GamePause.Acquire(this);
 
         SetCursorDefault();
 
@@ -91,7 +94,8 @@ public class GameEndManager : MonoBehaviour
         isGameEnded = false;
         currentEndType = GameEndType.None;
 
-        Time.timeScale = 1f;
+        GamePause.SetResumeTimeScale(1f);
+        GamePause.Release(this);
 
         HideResultPanel();
         HideUpgradePanel();
@@ -231,6 +235,7 @@ public class GameEndManager : MonoBehaviour
 
     private void OnDestroy()
     {
+        GamePause.Release(this);
         if (instance == this) instance = null;
     }
 }

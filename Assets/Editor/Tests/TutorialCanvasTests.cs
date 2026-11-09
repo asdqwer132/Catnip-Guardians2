@@ -59,6 +59,7 @@ public sealed class TutorialCanvasTests
         EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         yield return new EnterPlayMode();
         owned = new List<Object>();
+        Time.timeScale = 1f;
         hadHistory = PlayerPrefs.HasKey(TutorialCompletionHistory.SaveKey);
         savedHistory = PlayerPrefs.GetString(TutorialCompletionHistory.SaveKey);
         PlayerPrefs.DeleteKey(TutorialCompletionHistory.SaveKey);
@@ -70,6 +71,7 @@ public sealed class TutorialCanvasTests
         if (hadHistory) PlayerPrefs.SetString(TutorialCompletionHistory.SaveKey, savedHistory);
         else PlayerPrefs.DeleteKey(TutorialCompletionHistory.SaveKey);
         PlayerPrefs.Save();
+        Time.timeScale = 1f;
         yield return new ExitPlayMode();
     }
 
@@ -201,6 +203,114 @@ public sealed class TutorialCanvasTests
         controller.Skip(); manager.RegisterEnemy(enemy); Assert.That(controller.IsShowing, Is.False);
     }
 
+    [UnityTest]
+    public IEnumerator TutorialFreezesWorldTimeAndPhysicsWhileUiRemainsInteractive()
+    {
+        Time.timeScale = .5f;
+        var controller = Controller("general", "pause");
+        var body = Host("Falling item").AddComponent<Rigidbody2D>(); body.gravityScale = 1f;
+        controller.ShowTutorial("pause");
+        float scaled = Time.time, realtime = Time.realtimeSinceStartup;
+        Vector2 position = body.position;
+        Assert.That(Time.timeScale, Is.Zero);
+        var input = Host("Late input manager").AddComponent<GameInputManager>();
+        Assert.That(input.IsBlocked(GameInputBlockType.Gameplay), Is.True);
+        Assert.That(input.IsBlocked(GameInputBlockType.UI), Is.False);
+        controller.tutorialView.nextButton.onClick.Invoke();
+        Assert.That(controller.CurrentPageIndex, Is.EqualTo(1));
+        Assert.That(Time.timeScale, Is.Zero);
+        yield return Realtime(.1f);
+        Assert.That(Time.time, Is.EqualTo(scaled));
+        Assert.That(body.position, Is.EqualTo(position));
+        Assert.That(Time.realtimeSinceStartup, Is.GreaterThan(realtime));
+        controller.tutorialView.previousButton.onClick.Invoke();
+        Assert.That(Time.timeScale, Is.Zero);
+        controller.Skip();
+        Assert.That(Time.timeScale, Is.EqualTo(.5f));
+        Assert.That(input.IsBlocked(GameInputBlockType.Gameplay), Is.False);
+        controller.OpenReview(); Assert.That(Time.timeScale, Is.Zero);
+        controller.CloseReview(); Assert.That(Time.timeScale, Is.EqualTo(.5f));
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public void SettingsAndTutorialRestoreSpeedRegardlessOfCloseOrder(bool tutorialClosesFirst)
+    {
+        Time.timeScale = .5f;
+        var controller = Controller("general", "pause");
+        var host = Host("Settings", active: false);
+        var settings = host.AddComponent<SettingWindowController>(); settings.settingPanel = Host("Setting panel", host.transform);
+        host.SetActive(true);
+        controller.ShowTutorial("pause"); settings.OpenSetting(true);
+        if (tutorialClosesFirst)
+        {
+            controller.Cancel(); Assert.That(Time.timeScale, Is.Zero);
+            settings.CloseSetting();
+        }
+        else
+        {
+            settings.CloseSetting(); Assert.That(Time.timeScale, Is.Zero);
+            controller.Cancel();
+        }
+        Assert.That(Time.timeScale, Is.EqualTo(.5f));
+        Assert.That(GamePause.IsGameplayBlocked, Is.False);
+    }
+
+    [Test]
+    public void ClosingTutorialDoesNotResumeResultsOrResetTheirState()
+    {
+        var controller = Controller("general", "pause");
+        var end = Host("Result").AddComponent<GameEndManager>();
+        controller.ShowTutorial("pause"); end.WinGame();
+        controller.Next();
+        Assert.That(end.IsGameEnded, Is.True); Assert.That(end.CurrentEndType, Is.EqualTo(GameEndType.Win));
+        controller.Cancel(); Assert.That(Time.timeScale, Is.Zero);
+        controller.OpenReview(); end.ResetGameEnd();
+        Assert.That(Time.timeScale, Is.Zero, "Resetting results does not release the tutorial's pause.");
+        controller.CloseReview(); Assert.That(Time.timeScale, Is.EqualTo(1f));
+    }
+
+    [Test]
+    public void InputOnlySettingsAndExplicitInputFlagsRemainIndependentOfTutorialPause()
+    {
+        var controller = Controller("general", "pause");
+        var input = Host("Input").AddComponent<GameInputManager>();
+        var host = Host("Settings", active: false);
+        var settings = host.AddComponent<SettingWindowController>(); settings.settingPanel = Host("Setting panel", host.transform);
+        host.SetActive(true); settings.OpenSetting(false);
+        Assert.That(Time.timeScale, Is.EqualTo(1f));
+        Assert.That(input.IsBlocked(GameInputBlockType.Gameplay), Is.True);
+        controller.ShowTutorial("pause"); controller.Cancel();
+        Assert.That(Time.timeScale, Is.EqualTo(1f));
+        Assert.That(input.IsBlocked(GameInputBlockType.Gameplay), Is.True);
+        settings.CloseSetting(); Assert.That(input.IsBlocked(GameInputBlockType.Gameplay), Is.False);
+        input.BlockGameplayInput(true);
+        controller.ShowTutorial("pause"); controller.Cancel();
+        Assert.That(input.IsBlocked(GameInputBlockType.Gameplay), Is.True);
+    }
+
+    [UnityTest]
+    public IEnumerator VideoPlaybackAdvancesWhileWorldIsPaused()
+    {
+        var controller = Controller("general", "movie");
+        var view = controller.tutorialView;
+        var host = Host("Video", view.transform);
+        view.videoImage = host.AddComponent<RawImage>();
+        view.videoPlayer = host.AddComponent<UnityEngine.Video.VideoPlayer>();
+        view.videoPlayer.playOnAwake = false;
+        var page = controller.tutorials[0].data.pages[0];
+        page.mediaType = TutorialMediaType.Video;
+        page.video = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Video.VideoClip>("Assets/Editor/Tests/Fixtures/TutorialVideo.webm");
+        controller.ShowTutorial("movie");
+        float scaled = Time.time;
+        yield return Until(() => view.videoPlayer.time >= .1);
+        Assert.That(Time.timeScale, Is.Zero);
+        Assert.That(Time.time, Is.EqualTo(scaled));
+        Assert.That(view.videoPlayer.frame, Is.GreaterThanOrEqualTo(0));
+        controller.Cancel();
+        Assert.That(view.videoPlayer.isPlaying, Is.False);
+    }
+
     private static IEnumerator Until(Func<bool> condition)
     {
         float deadline = Time.realtimeSinceStartup + 4f;
@@ -265,7 +375,7 @@ public sealed class TutorialCanvasTests
             controller.Skip();
             yield return Until(() => controller.CurrentTutorialId == "shop");
         }
-        finally { Time.timeScale = 1f; }
+        finally { controller.Cancel(); Time.timeScale = 1f; }
     }
 
     [UnityTest]
@@ -429,6 +539,8 @@ public sealed class TutorialCanvasTests
         Assert.That(view.videoPlayer.renderMode, Is.EqualTo(UnityEngine.Video.VideoRenderMode.APIOnly));
         Assert.That(view.videoPlayer.targetTexture, Is.Null);
         Assert.That(view.videoPlayer.isLooping, Is.False);
+        Assert.That(Time.timeScale, Is.Zero);
+        Assert.That(view.videoPlayer.timeUpdateMode, Is.EqualTo(UnityEngine.Video.VideoTimeUpdateMode.UnscaledGameTime));
         Assert.That(view.videoImage.enabled, Is.False, "Old frames stay hidden until the first new decoded frame.");
         controller.Next();
         Assert.That(view.videoPlayer.clip, Is.Null); Assert.That(view.videoPlayer.isPlaying, Is.False);
@@ -511,6 +623,23 @@ public sealed class TutorialSceneWiringTests
         Assert.That(controller.SelectionSlots.All(slot => slot != null && slot.toggle != null && slot.label != null), Is.True);
         Assert.That(controller.tutorialView.videoPlayer, Is.Not.Null);
         Assert.That(controller.reviewView.videoPlayer, Is.Not.Null);
+    }
+
+    [TestCase("GameGeneralScene")]
+    [TestCase("UpgradeScene")]
+    public void TutorialNavigationContainsNoBattleResetCallbacks(string sceneName)
+    {
+        var scene = EditorSceneManager.OpenScene("Assets/Scenes/" + sceneName + ".unity", OpenSceneMode.Single);
+        var controller = scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<TutorialCanvasController>(true)).Single();
+        foreach (var view in new[] { controller.tutorialView, controller.reviewView })
+            foreach (var button in new[] { view.previousButton, view.nextButton, view.closeButton })
+                for (int i = 0; i < button.onClick.GetPersistentEventCount(); i++)
+                {
+                    string method = button.onClick.GetPersistentMethodName(i);
+                    Assert.That(method, Is.Not.EqualTo("RequestRetryGamge"));
+                    Assert.That(method, Is.Not.EqualTo("RetryGame"));
+                    Assert.That(button.onClick.GetPersistentTarget(i), Is.Not.InstanceOf<GameManager>());
+                }
     }
 
     [Test]

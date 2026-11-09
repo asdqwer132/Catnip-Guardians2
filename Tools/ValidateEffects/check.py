@@ -138,6 +138,7 @@ def compile_files():
              'Items/Upgrade/Inventory/Search/ISearchable.cs', 'Items/Upgrade/Skill/Reward/Unlock/IUnlockable.cs',
              'Items/Upgrade/Skill/Reward/Unlock/DataType.cs')
     files += [ROOT / 'Assets/Script' / name for name in extra]
+    files += [ROOT / 'Assets/Script/Manager/Utility/GamePause.cs']
     files += list((ROOT / 'Assets/Script/Manager/Utility/Scene').glob('*.cs'))
     files += list((ROOT / 'Assets/Script/Items/Merge').glob('*.cs'))
     files += [ROOT / 'Assets/Script/Items/Upgrade/Craft/Recipe/ItemRecipeData.cs']

@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void RetryGame()
     {
-        Time.timeScale = 1f;
+        GamePause.SetResumeTimeScale(1f);
 
         // Pay the finished battle before ResetRound clears its rewards.
         if (GameEndManager.instance != null && GameEndManager.instance.IsGameEnded)

@@ -71,7 +71,12 @@ public sealed class TutorialCanvasController : MonoBehaviour
         TutorialSignals.Raised -= HandleSignal;
         Cancel();
     }
-    private void OnDestroy() { ConnectButtons(tutorialView, false); ConnectButtons(reviewView, false); }
+    private void OnDestroy()
+    {
+        GamePause.Release(this);
+        ConnectButtons(tutorialView, false);
+        ConnectButtons(reviewView, false);
+    }
 
     public void ShowTutorial(string id) => RequestTutorial(id);
 
@@ -273,6 +278,8 @@ public sealed class TutorialCanvasController : MonoBehaviour
     }
     private void RefreshView()
     {
+        if (IsShowing) GamePause.Acquire(this);
+        else GamePause.Release(this);
         Display(tutorialView, !IsReviewing && current != null);
         Display(reviewView, IsReviewing);
         if (tutorialCanvas != null) tutorialCanvas.enabled = IsShowing;

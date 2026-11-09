@@ -6,8 +6,6 @@ public class SettingWindowController : MonoBehaviour
     public GameObject settingPanel;
     public bool pauseWhenToggled = true;
     public bool IsOpen => settingPanel != null && settingPanel.activeSelf;
-    private bool paused, blockedBeforeOpen;
-    private float previousTimeScale = 1f;
     private GameInputManager input;
     private void Awake()
     {
@@ -23,37 +21,26 @@ public class SettingWindowController : MonoBehaviour
         UnbindInput(); input = next;
         if (input == null) return;
         input.OnSettingPressed += ToggleSetting;
-        if (IsOpen) BlockGameplay();
     }
     public void OpenSetting(bool isTimeStop)
     {
         if (settingPanel == null || IsOpen) return;
         RefreshInput();
-        previousTimeScale = Time.timeScale; paused = isTimeStop;
-        if (paused) Time.timeScale = 0f;
-        BlockGameplay(); settingPanel.SetActive(true);
+        GamePause.Acquire(this, isTimeStop);
+        settingPanel.SetActive(true);
     }
     public void CloseSetting()
     {
-        if (!IsOpen) return;
-        settingPanel.SetActive(false);
-        if (paused) Time.timeScale = previousTimeScale;
-        paused = false;
-        if (input != null) input.BlockGameplayInput(blockedBeforeOpen);
+        if (settingPanel != null) settingPanel.SetActive(false);
+        GamePause.Release(this);
     }
     public void ToggleSetting() { if (IsOpen) CloseSetting(); else OpenSetting(pauseWhenToggled); }
-    private void BlockGameplay()
-    {
-        if (input == null) return;
-        blockedBeforeOpen = input.IsBlocked(GameInputBlockType.Gameplay); input.BlockGameplayInput(true);
-    }
     private void UnbindInput()
     {
         if (input == null) return;
         input.OnSettingPressed -= ToggleSetting;
-        if (IsOpen) input.BlockGameplayInput(blockedBeforeOpen);
         input = null;
     }
     private void OnDisable() { CloseSetting(); UnbindInput(); }
-    private void OnDestroy() { if (instance == this) instance = null; }
+    private void OnDestroy() { GamePause.Release(this); if (instance == this) instance = null; }
 }
