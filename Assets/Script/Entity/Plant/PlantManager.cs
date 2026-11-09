@@ -17,7 +17,9 @@ public class PlantManager : MonoBehaviour
     public void ResetSelectionOverrides() { skillPlantIndex = potionPlantIndex = -1; }
     public bool SetSkillPlantIndex(int index)
     {
+        Debug.Log(index + "/");
         if (!IsValidIndex(index)) return false;
+        Debug.Log(index + "/s");
         skillPlantIndex = index;
         return true;
     }

@@ -43,6 +43,7 @@ public class InitManager : MonoBehaviour
             session.LoadSkillItems(buffSkillManager);
             session.TryReadGeneralData(out data);
         }
+        Debug.Log(data.mainPlantIndex);
         if (data != null && data.mainPlantIndex >= 0)
             plantManager?.SetSkillPlantIndex(data.mainPlantIndex);
         if (buffSkillManager != null)

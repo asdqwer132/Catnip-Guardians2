@@ -27,7 +27,9 @@ MonoBehaviour:
   maxHP: 100
   nutrientsRequired: 10
   nutrientsPerSecond: 1
-  reward: []
+  reward:
+  - currencyType: 8
+    amount: 1
   spawnNormalEnemyCount: 1
   normalSpawnInterval: 1000
   normalEnemies:
