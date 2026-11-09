@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -20,6 +21,7 @@ public sealed class TutorialCanvasController : MonoBehaviour
     public TutorialPanelSequence[] tutorials = Array.Empty<TutorialPanelSequence>();
 
     private readonly Queue<string> pending = new Queue<string>();
+    private readonly Dictionary<string, Coroutine> scheduled = new Dictionary<string, Coroutine>();
     private TutorialPanelSequence current;
     private int pageIndex = -1;
     public bool IsShowing => current != null || IsReviewing;
@@ -56,6 +58,14 @@ public sealed class TutorialCanvasController : MonoBehaviour
         TutorialSignals.Raised += HandleSignal;
         TutorialSignals.ReplaySeen(HandleSignal);
     }
+    private void Start()
+    {
+        if (tutorials == null) return;
+        foreach (var tutorial in tutorials)
+            if (tutorial != null && (tutorial.startOnSceneEnter ||
+                (!string.IsNullOrEmpty(tutorial.afterTutorialId) && TutorialCompletionHistory.IsCompleted(Scope, tutorial.afterTutorialId))))
+                RequestTutorial(tutorial.id);
+    }
     private void OnDisable()
     {
         TutorialSignals.Raised -= HandleSignal;
@@ -63,7 +73,44 @@ public sealed class TutorialCanvasController : MonoBehaviour
     }
     private void OnDestroy() { ConnectButtons(tutorialView, false); ConnectButtons(reviewView, false); }
 
-    public void ShowTutorial(string id) => TryShowTutorial(id);
+    public void ShowTutorial(string id) => RequestTutorial(id);
+
+    public bool RequestTutorial(string id)
+    {
+        if (!isActiveAndEnabled || (!IsReviewing && id == CurrentTutorialId) || pending.Contains(id) ||
+            string.IsNullOrWhiteSpace(id) || scheduled.ContainsKey(id)) return false;
+        var tutorial = GetTutorial(id);
+        if (!CanAccept(tutorial)) return false;
+        float delay = EffectStatUtility.Safe(tutorial.delaySeconds, 0f, 86400f, 0f);
+        if (delay <= 0f && PrerequisitesComplete(tutorial)) return TryShowTutorial(id);
+        scheduled.Add(id, StartCoroutine(ShowAfterDelay(id, delay)));
+        return true;
+    }
+
+    private IEnumerator ShowAfterDelay(string id, float delay)
+    {
+        if (delay > 0f) yield return new WaitForSecondsRealtime(delay);
+        var tutorial = GetTutorial(id);
+        while (isActiveAndEnabled && CanAccept(tutorial) && !PrerequisitesComplete(tutorial)) yield return null;
+        scheduled.Remove(id);
+        if (CanAccept(tutorial)) TryShowTutorial(id);
+    }
+
+    public void CancelRequest(string id)
+    {
+        if (string.IsNullOrWhiteSpace(id)) return;
+        if (scheduled.TryGetValue(id, out var routine))
+        {
+            StopCoroutine(routine);
+            scheduled.Remove(id);
+        }
+        int count = pending.Count;
+        for (int i = 0; i < count; i++)
+        {
+            string next = pending.Dequeue();
+            if (next != id) pending.Enqueue(next);
+        }
+    }
     public bool TryShowTutorial(string id)
     {
         if (!isActiveAndEnabled || (!IsReviewing && id == CurrentTutorialId) || pending.Contains(id)) return false;
@@ -156,6 +203,8 @@ public sealed class TutorialCanvasController : MonoBehaviour
     }
     public void Cancel()
     {
+        foreach (var routine in scheduled.Values) StopCoroutine(routine);
+        scheduled.Clear();
         pending.Clear();
         current = null;
         IsReviewing = false;
@@ -170,6 +219,9 @@ public sealed class TutorialCanvasController : MonoBehaviour
         pageIndex = -1;
         RefreshView();
         if (skipped) finished.onSkipped?.Invoke(); else finished.onCompleted?.Invoke();
+        if (tutorials != null)
+            foreach (var tutorial in tutorials)
+                if (tutorial != null && tutorial.afterTutorialId == finished.id) RequestTutorial(tutorial.id);
         PlayPending();
     }
     private void PlayPending()
@@ -190,21 +242,25 @@ public sealed class TutorialCanvasController : MonoBehaviour
     }
     private bool IsValid(TutorialPanelSequence tutorial) => tutorial != null && !string.IsNullOrWhiteSpace(tutorial.id)
         && tutorial.data != null && tutorial.data.HasPages && GetTutorial(tutorial.id) == tutorial;
-    private bool CanShow(TutorialPanelSequence tutorial)
+    private bool CanAccept(TutorialPanelSequence tutorial)
     {
         if (tutorialCanvas == null || tutorialView == null || !IsValid(tutorial)) return false;
-        if (tutorial.showOnce && TutorialCompletionHistory.IsCompleted(Scope, tutorial.id)) return false;
+        return !tutorial.showOnce || !TutorialCompletionHistory.IsCompleted(Scope, tutorial.id);
+    }
+    private bool PrerequisitesComplete(TutorialPanelSequence tutorial)
+    {
         if (tutorial.requiredTutorialIds != null)
             foreach (string required in tutorial.requiredTutorialIds)
                 if (!TutorialCompletionHistory.IsCompleted(Scope, required)) return false;
         return true;
     }
+    private bool CanShow(TutorialPanelSequence tutorial) => CanAccept(tutorial) && PrerequisitesComplete(tutorial);
     private void HandleSignal(Scene source, string eventId)
     {
         if (tutorials == null) return;
         foreach (var tutorial in tutorials)
             if (tutorial != null && tutorial.triggerEvent == eventId &&
-                (string.IsNullOrEmpty(tutorial.sourceScene) || tutorial.sourceScene == source.name)) TryShowTutorial(tutorial.id);
+                (string.IsNullOrEmpty(tutorial.sourceScene) || tutorial.sourceScene == source.name)) RequestTutorial(tutorial.id);
     }
     private TutorialSelectionToggle GetSelectionSlot(int index)
     {

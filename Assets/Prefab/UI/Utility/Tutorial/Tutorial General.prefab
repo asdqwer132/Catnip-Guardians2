@@ -18,7 +18,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.size
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.data[0].id
@@ -29,6 +29,14 @@ PrefabInstance:
       value: first-item-drop
       objectReference: {fileID: 0}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[2].id
+      value: first-item-throw
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[3].id
+      value: victory-defeat
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.data[0].data
       value:
       objectReference: {fileID: 11400000, guid: fa96ea13e69ae5f539edbc62f3bc8b3f, type: 2}
@@ -36,6 +44,14 @@ PrefabInstance:
       propertyPath: tutorials.Array.data[1].data
       value:
       objectReference: {fileID: 11400000, guid: 8de0a9814c3dd98568a1a80a0418eb9f, type: 2}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[2].data
+      value:
+      objectReference: {fileID: 11400000, guid: 9d063b0273a950126ae0cd1157533279, type: 2}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[3].data
+      value:
+      objectReference: {fileID: 11400000, guid: a4cb6e1487513624cb91ef9ec824201b, type: 2}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.data[0].showOnce
       value: 1
@@ -45,20 +61,56 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[2].showOnce
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[3].showOnce
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.data[0].sourceScene
       value: GameBattleScene
       objectReference: {fileID: 0}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.data[1].sourceScene
-      value: GameItemScene
+      value:
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[0].delaySeconds
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.data[0].triggerEvent
-      value: enemy.spawned
+      value: enemy.attacked-plant
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[1].delaySeconds
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.data[1].triggerEvent
-      value: merge.item.dropped
+      value:
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[2].delaySeconds
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[3].delaySeconds
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[1].afterTutorialId
+      value: first-enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[2].afterTutorialId
+      value: first-item-drop
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[3].afterTutorialId
+      value: first-item-throw
       objectReference: {fileID: 0}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.data[0].skipCountsAsCompleted
@@ -66,6 +118,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.data[1].skipCountsAsCompleted
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[2].skipCountsAsCompleted
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[3].skipCountsAsCompleted
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3142006075827831615, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}

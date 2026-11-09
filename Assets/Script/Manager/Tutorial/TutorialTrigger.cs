@@ -25,12 +25,15 @@ public sealed class TutorialTrigger : MonoBehaviour
     private void OnDisable()
     {
         if (sourceToggle != null) sourceToggle.onValueChanged.RemoveListener(TriggerWhenSelected);
+        if (controller != null) controller.CancelRequest(tutorialId);
     }
     public void Trigger() { if (controller != null) controller.ShowTutorial(tutorialId); }
     public void TriggerWhenSelected(bool selected)
     {
         // Ignore ToggleGroup initialization before the first user-input frame.
-        if (hasStarted && selected && mode == TutorialTriggerMode.ToggleSelected) Trigger();
+        if (!hasStarted || mode != TutorialTriggerMode.ToggleSelected) return;
+        if (selected) Trigger();
+        else if (controller != null) controller.CancelRequest(tutorialId);
     }
     public void TriggerIf(bool condition) { if (condition) Trigger(); }
 }

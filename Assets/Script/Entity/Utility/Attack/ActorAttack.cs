@@ -244,6 +244,7 @@ public class ActorAttack : MonoBehaviour
     {
         if (IsTimeStopped || isAttackStopped || target == null || !target.HasTarget) return;
         if (checkRange && !IsTargetAtAttackDistance(range, tolerance)) return;
+        if (enemyOwner != null) enemyOwner.NotifyPlantAttack();
         target.DamageTarget(Mathf.Max(0f, actionDamage));
     }
     #endregion
@@ -270,6 +271,7 @@ public class ActorAttack : MonoBehaviour
         if (defaultPhase != DefaultAttackPhase.Animating || isActionAttackPlaying ||
             defaultDamageApplied || !CanUseDefaultAttack() || !IsDefaultAttackPositionValid()) return;
         defaultDamageApplied = true;
+        if (enemyOwner != null) enemyOwner.NotifyPlantAttack();
         if (enemyOwner != null && enemyOwner.UsesAttackSlots)
         {
             string category = slotAttackSoundCategory;

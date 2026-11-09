@@ -132,11 +132,20 @@ public class EnemySlotBattleTests
     [UnityTest]
     public IEnumerator EnemyDescendsWithoutChasingAndAttacksAtItsSlotWithoutRangeOrPlantDamage()
     {
-        int attacks = 0;
+        int attacks = 0, tutorialAttacks = 0;
         slots.onSlotAttack.AddListener(_ => attacks++);
+        System.Action<UnityEngine.SceneManagement.Scene, string> onAttack = (scene, eventId) =>
+        {
+            if (eventId == TutorialSignals.EnemyAttackedPlant && scene == slots.gameObject.scene) tutorialAttacks++;
+        };
+        TutorialSignals.Raised += onAttack;
         var enemy = Spawn();
+        Assert.That(tutorialAttacks, Is.Zero, "Spawning is not a strike.");
         float initialHp = plant.health.Hp;
-        yield return WaitForGameSeconds(.5f);
+        try { yield return WaitForGameSeconds(.5f); }
+        finally { TutorialSignals.Raised -= onAttack; }
+        Assert.That(tutorialAttacks, Is.GreaterThan(0));
+        Assert.That(tutorialAttacks, Is.EqualTo(attacks), "The animation hit/fallback reports once per slot strike.");
         Assert.That(enemy.transform.position.x, Is.EqualTo(3f).Within(.0001f));
         Assert.That(enemy.IsAtAttackSlot, Is.True, $"y={enemy.transform.position.y}, state={enemy.BehaviorState}, speed={enemy.mover.speed}, active={enemy.isActiveAndEnabled}, stopped={enemy.IsFullyStopped}, timeStop={enemy.IsTimeStopped}, velocity={enemy.mover.FinalVelocity}");
         Assert.That(enemy.transform.position.y, Is.InRange(.85f, 1.15f));

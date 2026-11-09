@@ -15,11 +15,11 @@ MonoBehaviour:
   icon: {fileID: 0}
   data:
   - language: 0
-    dataName: Enemies
+    dataName: Navigation
     description:
     detailDescription:
   - language: 1
-    dataName: "\uC801 \uB4F1\uC7A5"
+    dataName: "\uB0B4\uBE44\uAC8C\uC774\uC158"
     description:
     detailDescription:
   dataNumbering:
@@ -29,13 +29,15 @@ MonoBehaviour:
   pages:
   - data:
     - language: 0
-      dataName: Enemies
-      description: Defeat enemies before their number reaches the field limit.
+      dataName: Battle information
+      description: Check growth, field population and the resources earned in this
+        battle in the navigation bar.
       detailDescription:
     - language: 1
-      dataName: "\uC801 \uB4F1\uC7A5"
-      description: "\uD544\uB4DC\uC758 \uC801 \uC218\uAC00 \uCD5C\uB300\uCE58\uC5D0
-        \uB3C4\uB2EC\uD558\uAE30 \uC804\uC5D0 \uC801\uC744 \uCC98\uCE58\uD558\uC138\uC694."
+      dataName: "\uC804\uD22C \uC815\uBCF4"
+      description: "\uB0B4\uBE44\uAC8C\uC774\uC158\uC5D0\uC11C \uC2DD\uBB3C \uC131\uC7A5\uB3C4,
+        \uD544\uB4DC\uC758 \uC801 \uC218\uC640 \uC774\uBC88 \uC804\uD22C\uC5D0\uC11C
+        \uD68D\uB4DD\uD55C \uC7AC\uD654\uB97C \uD655\uC778\uD558\uC138\uC694."
       detailDescription:
     mediaType: 0
     sprite: {fileID: 21300000, guid: 88b6bdba1fceb3c44bd88ed0afebc0bc, type: 3}

@@ -38,46 +38,54 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.size
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.data[0].id
-      value: panel.skill
+      value: scene.introduction
       objectReference: {fileID: 0}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.data[1].id
-      value: panel.shop
+      value: panel.skill
       objectReference: {fileID: 0}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.data[2].id
-      value: panel.potion
+      value: panel.shop
       objectReference: {fileID: 0}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.data[3].id
-      value: panel.bag
+      value: panel.potion
       objectReference: {fileID: 0}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.data[4].id
+      value: panel.bag
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[5].id
       value: panel.dictonary
       objectReference: {fileID: 0}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.data[0].data
       value:
-      objectReference: {fileID: 11400000, guid: 3ebde60af178412d5ad6a7c05f870210, type: 2}
+      objectReference: {fileID: 11400000, guid: 68ec4d663559030db888a9a5c25ab1fb, type: 2}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.data[1].data
       value:
-      objectReference: {fileID: 11400000, guid: af1add94a45bd155daa4236796bb09f9, type: 2}
+      objectReference: {fileID: 11400000, guid: 3ebde60af178412d5ad6a7c05f870210, type: 2}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.data[2].data
       value:
-      objectReference: {fileID: 11400000, guid: d7089872368a6f5108b6ec0970b8a662, type: 2}
+      objectReference: {fileID: 11400000, guid: af1add94a45bd155daa4236796bb09f9, type: 2}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.data[3].data
       value:
-      objectReference: {fileID: 11400000, guid: 0651ca33749384096917db9e8ce73007, type: 2}
+      objectReference: {fileID: 11400000, guid: d7089872368a6f5108b6ec0970b8a662, type: 2}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.data[4].data
+      value:
+      objectReference: {fileID: 11400000, guid: 0651ca33749384096917db9e8ce73007, type: 2}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[5].data
       value:
       objectReference: {fileID: 11400000, guid: deed211fae24016028af8fff00fd5f0f, type: 2}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
@@ -101,6 +109,38 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[5].showOnce
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[0].delaySeconds
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[1].delaySeconds
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[2].delaySeconds
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[3].delaySeconds
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[4].delaySeconds
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[5].delaySeconds
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[0].startOnSceneEnter
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.data[0].skipCountsAsCompleted
       value: 1
       objectReference: {fileID: 0}
@@ -119,6 +159,50 @@ PrefabInstance:
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.data[4].skipCountsAsCompleted
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[5].skipCountsAsCompleted
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[1].requiredTutorialIds.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[2].requiredTutorialIds.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[3].requiredTutorialIds.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[4].requiredTutorialIds.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[5].requiredTutorialIds.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: 'tutorials.Array.data[1].requiredTutorialIds.Array.data[0]'
+      value: scene.introduction
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: 'tutorials.Array.data[2].requiredTutorialIds.Array.data[0]'
+      value: scene.introduction
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: 'tutorials.Array.data[3].requiredTutorialIds.Array.data[0]'
+      value: scene.introduction
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: 'tutorials.Array.data[4].requiredTutorialIds.Array.data[0]'
+      value: scene.introduction
+      objectReference: {fileID: 0}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: 'tutorials.Array.data[5].requiredTutorialIds.Array.data[0]'
+      value: scene.introduction
       objectReference: {fileID: 0}
     - target: {fileID: 2726890639862177558, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: m_AnchorMax.y

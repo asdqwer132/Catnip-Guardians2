@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 // Gameplay reports facts; the receiving scene decides which authored tutorial to show.
 public static class TutorialSignals
 {
+    public const string EnemyAttackedPlant = "enemy.attacked-plant";
     public const string EnemySpawned = "enemy.spawned";
     public const string ItemDropped = "merge.item.dropped";
     public static event Action<Scene, string> Raised;

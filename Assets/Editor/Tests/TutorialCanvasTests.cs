@@ -201,6 +201,118 @@ public sealed class TutorialCanvasTests
         controller.Skip(); manager.RegisterEnemy(enemy); Assert.That(controller.IsShowing, Is.False);
     }
 
+    private static IEnumerator Until(Func<bool> condition)
+    {
+        float deadline = Time.realtimeSinceStartup + 4f;
+        while (!condition() && Time.realtimeSinceStartup < deadline) yield return null;
+        Assert.That(condition(), Is.True, "Timed tutorial request did not become ready.");
+    }
+    private static IEnumerator Realtime(float seconds)
+    {
+        float until = Time.realtimeSinceStartup + seconds;
+        while (Time.realtimeSinceStartup < until) yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator GeneralSequenceWaitsForAttackAndStartsEachDelayAfterNormalClose()
+    {
+        var controller = Controller("general", "navigation", "feed", "throw", "result");
+        controller.tutorials[0].triggerEvent = TutorialSignals.EnemyAttackedPlant;
+        for (int i = 0; i < controller.tutorials.Length; i++)
+        {
+            controller.tutorials[i].delaySeconds = .06f;
+            if (i > 0) controller.tutorials[i].afterTutorialId = controller.tutorials[i - 1].id;
+        }
+        var scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+        TutorialSignals.Raise(scene, TutorialSignals.EnemySpawned);
+        TutorialSignals.Raise(scene, TutorialSignals.ItemDropped);
+        Assert.That(controller.IsShowing, Is.False);
+        float began = Time.realtimeSinceStartup;
+        TutorialSignals.Raise(scene, TutorialSignals.EnemyAttackedPlant);
+        TutorialSignals.Raise(scene, TutorialSignals.EnemyAttackedPlant);
+        Assert.That(controller.IsShowing, Is.False);
+        yield return Until(() => controller.CurrentTutorialId == "navigation");
+        Assert.That(Time.realtimeSinceStartup - began, Is.GreaterThanOrEqualTo(.05f));
+        yield return Realtime(.1f);
+        Assert.That(controller.CurrentTutorialId, Is.EqualTo("navigation"), "Reading time never starts the next step's delay.");
+        foreach (string next in new[] { "feed", "throw", "result" })
+        {
+            float closed = Time.realtimeSinceStartup;
+            controller.Skip();
+            Assert.That(controller.IsShowing, Is.False);
+            yield return Until(() => controller.CurrentTutorialId == next);
+            Assert.That(Time.realtimeSinceStartup - closed, Is.GreaterThanOrEqualTo(.05f));
+        }
+        controller.Skip(); yield return Realtime(.1f);
+        Assert.That(controller.IsShowing, Is.False);
+    }
+
+    [UnityTest]
+    public IEnumerator SceneArrivalAndPanelDelayUseRealtimeAndPanelWaitsForIntroduction()
+    {
+        var controller = Controller("upgrade", "intro", "shop");
+        controller.tutorials[0].startOnSceneEnter = true;
+        controller.tutorials[0].delaySeconds = .06f;
+        controller.tutorials[1].delaySeconds = .02f;
+        controller.tutorials[1].requiredTutorialIds = new[] { "intro" };
+        try
+        {
+            Time.timeScale = 0f;
+            Assert.That(controller.RequestTutorial("shop"), Is.True);
+            Assert.That(controller.RequestTutorial("shop"), Is.False);
+            yield return Until(() => controller.CurrentTutorialId == "intro");
+            Assert.That(TutorialCompletionHistory.HasSeen("upgrade", "shop"), Is.False);
+            controller.Skip();
+            yield return Until(() => controller.CurrentTutorialId == "shop");
+        }
+        finally { Time.timeScale = 1f; }
+    }
+
+    [UnityTest]
+    public IEnumerator ClosingPanelDuringDelayCancelsItsTutorialAndReopeningCanRequestIt()
+    {
+        var controller = Controller("upgrade", "shop"); controller.tutorials[0].delaySeconds = .08f;
+        var host = Host("Shop toggle", active: false); var toggle = host.AddComponent<Toggle>(); toggle.isOn = false;
+        var trigger = host.AddComponent<TutorialTrigger>(); trigger.controller = controller; trigger.tutorialId = "shop";
+        trigger.mode = TutorialTriggerMode.ToggleSelected; trigger.sourceToggle = toggle;
+        host.SetActive(true); yield return null;
+        toggle.isOn = true; toggle.isOn = false;
+        yield return Realtime(.12f);
+        Assert.That(controller.IsShowing, Is.False);
+        Assert.That(TutorialCompletionHistory.HasSeen("upgrade", "shop"), Is.False);
+        toggle.isOn = true;
+        yield return Until(() => controller.CurrentTutorialId == "shop");
+    }
+
+    [UnityTest]
+    public IEnumerator ReviewDoesNotAdvanceSequenceAndDisablingCancelsPendingDelay()
+    {
+        var controller = Controller("general", "first", "second");
+        controller.tutorials[1].afterTutorialId = "first"; controller.tutorials[1].delaySeconds = .06f;
+        controller.ShowTutorial("first"); controller.Cancel();
+        controller.OpenReview(); controller.Next(); controller.Next(); controller.CloseReview();
+        yield return Realtime(.1f);
+        Assert.That(controller.IsShowing, Is.False);
+        Assert.That(TutorialCompletionHistory.HasSeen("general", "second"), Is.False);
+        controller.ShowTutorial("first"); controller.Skip();
+        controller.enabled = false;
+        yield return Realtime(.1f);
+        Assert.That(controller.IsShowing, Is.False);
+        Assert.That(TutorialCompletionHistory.HasSeen("general", "second"), Is.False);
+    }
+
+    [UnityTest]
+    public IEnumerator ReenteringSceneResumesTheFirstUnfinishedSequenceStep()
+    {
+        TutorialCompletionHistory.Complete("general", "first");
+        var controller = Controller("general", "first", "second", "third");
+        controller.tutorials[1].afterTutorialId = "first"; controller.tutorials[1].delaySeconds = .02f;
+        controller.tutorials[2].afterTutorialId = "second"; controller.tutorials[2].delaySeconds = .02f;
+        yield return Until(() => controller.CurrentTutorialId == "second");
+        controller.Next(); controller.Next();
+        yield return Until(() => controller.CurrentTutorialId == "third");
+    }
+
     [Test]
     public void ReviewListsSeenTutorialsIncludingCancelledOnesWithoutCompletingThem()
     {
@@ -361,8 +473,16 @@ public sealed class TutorialSceneWiringTests
         var controller = roots.SelectMany(root => root.GetComponentsInChildren<TutorialCanvasController>(true)).Single();
         var triggers = roots.SelectMany(root => root.GetComponentsInChildren<TutorialTrigger>(true)).ToArray();
         Assert.That(controller.completionScope, Is.EqualTo("upgrade"));
+        var intro = controller.tutorials.Single(tutorial => tutorial.startOnSceneEnter);
+        Assert.That(intro.id, Is.EqualTo("scene.introduction"));
+        Assert.That(intro.delaySeconds, Is.EqualTo(3f));
+        foreach (var panel in controller.tutorials.Where(tutorial => tutorial.id.StartsWith("panel.")))
+        {
+            CollectionAssert.Contains(panel.requiredTutorialIds, intro.id);
+            Assert.That(panel.delaySeconds, Is.EqualTo(3f));
+        }
         Assert.That(triggers.Length, Is.EqualTo(5));
-        Assert.That(controller.tutorials.Select(tutorial => tutorial.id).Distinct().Count(), Is.EqualTo(5));
+        Assert.That(controller.tutorials.Select(tutorial => tutorial.id).Distinct().Count(), Is.EqualTo(6));
         foreach (var trigger in triggers)
         {
             Assert.That(trigger.controller, Is.SameAs(controller));
@@ -401,8 +521,15 @@ public sealed class TutorialSceneWiringTests
         var controller = roots.SelectMany(root => root.GetComponentsInChildren<TutorialCanvasController>(true)).Single();
         var general = roots.SelectMany(root => root.GetComponentsInChildren<GameGeneralSceneController>(true)).Single();
         Assert.That(controller.completionScope, Is.EqualTo("general"));
-        Assert.That(controller.tutorials.Single(tutorial => tutorial.triggerEvent == TutorialSignals.EnemySpawned).sourceScene, Is.EqualTo(general.battleScene));
-        Assert.That(controller.tutorials.Single(tutorial => tutorial.triggerEvent == TutorialSignals.ItemDropped).sourceScene, Is.EqualTo(general.itemScene));
+        Assert.That(controller.tutorials.Length, Is.EqualTo(4));
+        Assert.That(controller.tutorials[0].triggerEvent, Is.EqualTo(TutorialSignals.EnemyAttackedPlant));
+        Assert.That(controller.tutorials[0].sourceScene, Is.EqualTo(general.battleScene));
+        for (int i = 1; i < controller.tutorials.Length; i++)
+        {
+            Assert.That(controller.tutorials[i].triggerEvent, Is.Empty);
+            Assert.That(controller.tutorials[i].afterTutorialId, Is.EqualTo(controller.tutorials[i - 1].id));
+        }
+        Assert.That(controller.tutorials.All(tutorial => tutorial.delaySeconds == 3f), Is.True);
         Assert.That(controller.tutorialCanvas, Is.Not.Null);
     }
 }

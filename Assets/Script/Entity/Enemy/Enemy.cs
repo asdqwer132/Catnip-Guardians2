@@ -296,6 +296,13 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     public void NotifySlotAttack() => attackSlots?.NotifyAttack(this);
 
+    public void NotifyPlantAttack()
+    {
+        if (!(actorTarget != null && actorTarget.TargetDamageable is Plant)) return;
+        TutorialSignals.Raise(attackSlots != null ? attackSlots.gameObject.scene : gameObject.scene,
+            TutorialSignals.EnemyAttackedPlant);
+    }
+
     private void TickDefaultAI(Transform targetTransform)
     {
         if (attack == null)
