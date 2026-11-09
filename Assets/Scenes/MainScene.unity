@@ -725,10 +725,10 @@ MonoBehaviour:
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName:
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument:
+          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &429304469
@@ -779,7 +779,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e66edf2ca8f04fc1abc364ed1dc9521e, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneCoreLoader
   coreScene: CoreScene
   loadOnStart: 1
@@ -1018,19 +1018,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 568258541}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2029201971}
-        m_TargetAssemblyTypeName: PrologueStartManager, Assembly-CSharp
-        m_MethodName: StartGame
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument:
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &568258541
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1577,19 +1565,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1198603262}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 910000300001}
-        m_TargetAssemblyTypeName: SceneMoveManager, Assembly-CSharp
-        m_MethodName: GoGameScene
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: GameGeneralScene
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1198603262
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1925,19 +1901,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1625247226}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2029201971}
-        m_TargetAssemblyTypeName: PrologueStartManager, Assembly-CSharp
-        m_MethodName: ExitGame
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument:
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1625247226
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2992,6 +2956,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 836e1934e158c0a4b9f3f5b3ded1eda8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PrologueStartManager
+  continueBtn: {fileID: 1198603261}
+  newGameBtn: {fileID: 568258540}
+  exitBtn: {fileID: 1625247225}
+  moveManagerRoot: {fileID: 910000300001}
 --- !u!4 &2029201972
 Transform:
   m_ObjectHideFlags: 0
