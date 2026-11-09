@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using UnityEditor.SceneManagement;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -38,12 +39,15 @@ public class NewGameResetTests
         var scene = EditorSceneManager.OpenScene("Assets/Scenes/MainScene.unity", OpenSceneMode.Single);
         try
         {
-            var callbacks = scene.GetRootGameObjects()
-                .SelectMany(root => root.GetComponentsInChildren<Button>(true))
-                .Where(button => Enumerable.Range(0, button.onClick.GetPersistentEventCount())
-                    .Any(i => button.onClick.GetPersistentTarget(i) is PrologueStartManager
-                        && button.onClick.GetPersistentMethodName(i) == nameof(PrologueStartManager.StartGame)));
-            Assert.That(callbacks.Count(), Is.EqualTo(1));
+            var manager = scene.GetRootGameObjects()
+                .SelectMany(root => root.GetComponentsInChildren<PrologueStartManager>(true)).Single();
+            var data = new SerializedObject(manager);
+            var newGame = data.FindProperty("newGameBtn").objectReferenceValue as Button;
+            var continueGame = data.FindProperty("continueBtn").objectReferenceValue as Button;
+            Assert.That(newGame, Is.Not.Null);
+            Assert.That(continueGame, Is.Not.Null);
+            Assert.That(newGame, Is.Not.SameAs(continueGame));
+            Assert.That(data.FindProperty("moveManagerRoot").objectReferenceValue, Is.Not.Null);
         }
         finally { EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single); }
     }
