@@ -13,6 +13,8 @@ public sealed class CoreSceneBootstrap : MonoBehaviour
     {
         // 설정/재화 등 코어 매니저들의 Start가 완료된 후 화면을 엽니다.
         yield return null;
+        // A dependency loaded by Main/other standalone scenes must not redirect them.
+        if (onlyWhenCoreIsActive && SceneManager.GetActiveScene() != gameObject.scene) yield break;
         string editorTarget = "";
 #if UNITY_EDITOR
         editorTarget = UnityEditor.SessionState.GetString("Catnip.SceneToPlay", "");
