@@ -17,6 +17,8 @@ public sealed class CurrencyUI : MonoBehaviour, ISceneLocalizedUI
     public Image icon;
     public TextMeshProUGUI requiredAmountText;
     public bool hideWhenZero = true;
+    [Tooltip("Hide currencies that have never been obtained, independently of Hide When Zero.")]
+    public bool hideWhenUndiscovered;
 
     private Scene registeredScene;
     private int amount;
@@ -46,12 +48,14 @@ public sealed class CurrencyUI : MonoBehaviour, ISceneLocalizedUI
     private void RefreshVisibility()
     {
         if (textObj != null)
-            textObj.SetActive(!hideWhenZero || amount > 0 || requiredAmount > 0 || type == CurrencyType.CurrencyMain);
+            textObj.SetActive((!hideWhenUndiscovered || (CurrencyManager.instance != null && CurrencyManager.instance.IsDiscovered(type)))
+                && (!hideWhenZero || amount > 0 || requiredAmount > 0 || type == CurrencyType.CurrencyMain));
     }
 
     public void SetCurrencyData(CurrencyData data)
     {
         currencyData = data;
+        RefreshVisibility();
         RefreshPresentation();
     }
 

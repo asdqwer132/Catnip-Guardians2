@@ -26,6 +26,7 @@ public class CurrencyManager : MonoBehaviour
 {
     public static CurrencyManager instance;
     public static event Action InstanceChanged;
+    public static event Action DiscoveryChanged;
 
     [Header("UI Groups")]
     public CurrencyUIGroup[] uiGroups;
@@ -51,10 +52,21 @@ public class CurrencyManager : MonoBehaviour
     private sealed class WalletSave
     {
         public List<Cost> balances = new List<Cost>();
+        public List<CurrencyType> discovered = new List<CurrencyType>();
     }
 
     private Dictionary<CurrencyType, int> currencies =
         new Dictionary<CurrencyType, int>();
+    private readonly HashSet<CurrencyType> discovered = new HashSet<CurrencyType>();
+    public bool IsDiscovered(CurrencyType type) => discovered.Contains(type);
+
+    public void MarkDiscovered(CurrencyType type)
+    {
+        if (!discovered.Add(type)) return;
+        SaveCurrencies();
+        DiscoveryChanged?.Invoke();
+    }
+
     private readonly HashSet<CurrencyUIGroup> registeredGroups = new HashSet<CurrencyUIGroup>();
 
     private void Awake()
@@ -95,6 +107,7 @@ public class CurrencyManager : MonoBehaviour
     private void InitCurrencies()
     {
         currencies.Clear();
+        discovered.Clear();
 
         foreach (CurrencyType type in Enum.GetValues(typeof(CurrencyType)))
             currencies[type] = 0;
@@ -111,6 +124,7 @@ public class CurrencyManager : MonoBehaviour
             try
             {
                 var saved = JsonUtility.FromJson<WalletSave>(PlayerPrefs.GetString(SaveKey));
+                if (saved?.discovered != null) discovered.UnionWith(saved.discovered);
                 if (saved?.balances != null)
                     foreach (var entry in saved.balances)
                         if (entry != null && currencies.ContainsKey(entry.currencyType))
@@ -122,7 +136,10 @@ public class CurrencyManager : MonoBehaviour
             }
         }
 
+        foreach (var entry in currencies)
+            if (entry.Value > 0) discovered.Add(entry.Key);
         SaveCurrencies();
+        DiscoveryChanged?.Invoke();
     }
 
     public void ResetToInitialAmounts()
@@ -135,6 +152,7 @@ public class CurrencyManager : MonoBehaviour
     private void SaveCurrencies()
     {
         var saved = new WalletSave();
+        saved.discovered.AddRange(discovered);
         foreach (CurrencyType type in Enum.GetValues(typeof(CurrencyType)))
             saved.balances.Add(new Cost { currencyType = type, amount = GetCurrency(type) });
         PlayerPrefs.SetString(SaveKey, JsonUtility.ToJson(saved));
@@ -187,8 +205,10 @@ public class CurrencyManager : MonoBehaviour
             currencies[type] = 0;
 
         currencies[type] += amount;
+        bool firstDiscovery = discovered.Add(type);
         SaveCurrencies();
 
+        if (firstDiscovery) DiscoveryChanged?.Invoke();
         UpdateUI(type);
     }
 

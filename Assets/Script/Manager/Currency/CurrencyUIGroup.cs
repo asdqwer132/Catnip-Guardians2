@@ -20,6 +20,7 @@ public class CurrencyUIGroup : MonoBehaviour
     {
         RefreshPresentation();
         CurrencyManager.InstanceChanged += BindManager;
+        CurrencyManager.DiscoveryChanged += RefreshPresentation;
         GameStatisticsManager.InstanceChanged += BindManager;
         BindManager();
     }
@@ -38,6 +39,7 @@ public class CurrencyUIGroup : MonoBehaviour
     private void OnDisable()
     {
         CurrencyManager.InstanceChanged -= BindManager;
+        CurrencyManager.DiscoveryChanged -= RefreshPresentation;
         GameStatisticsManager.InstanceChanged -= BindManager;
         if (boundManager != null) boundManager.UnregisterUI(this);
         if (boundStatistics != null) boundStatistics.OnChanged -= RefreshRoundUI;

@@ -165,6 +165,7 @@ public class GameStatisticsManager : MonoBehaviour
         }
 
         currency.amount = (int)Math.Min(int.MaxValue, (long)currency.amount + amount);
+        CurrencyManager.instance?.MarkDiscovered(currencyType);
 
         OnChanged?.Invoke();
     }
