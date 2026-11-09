@@ -49402,7 +49402,25 @@ MonoBehaviour:
   - {fileID: 1818313515}
   - {fileID: 1703771232}
   autoFindUIGroupsInChildren: 1
-  defaultStartAmount: 10000
+  initialAmounts:
+  - currencyType: 0
+    amount: 10000
+  - currencyType: 1
+    amount: 10000
+  - currencyType: 2
+    amount: 10000
+  - currencyType: 3
+    amount: 10000
+  - currencyType: 4
+    amount: 10000
+  - currencyType: 5
+    amount: 10000
+  - currencyType: 6
+    amount: 10000
+  - currencyType: 7
+    amount: 10000
+  - currencyType: 8
+    amount: 10000
 --- !u!4 &1603326670
 Transform:
   m_ObjectHideFlags: 0

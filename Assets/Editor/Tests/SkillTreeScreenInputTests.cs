@@ -54,7 +54,7 @@ public sealed class SkillTreeScreenInputTests : SkillTreeLayoutFixture
         var image = button.GetComponent<Image>();
         var sprites = button.spriteState;
         var walletHost = Host("Wallet"); walletHost.SetActive(false);
-        var wallet = walletHost.AddComponent<CurrencyManager>(); wallet.defaultStartAmount = 0;
+        var wallet = walletHost.AddComponent<CurrencyManager>(); wallet.initialAmounts = new Cost[0];
         walletHost.SetActive(true);
         var manager = Host("Manager").AddComponent<SkillTreeManager>();
         var data = Data("Screen input skill");

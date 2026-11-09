@@ -29,7 +29,7 @@ public sealed class SkillTreeHoverTests : SkillTreeLayoutFixture
     public IEnumerator AuthoredNodeTriggersKeepInformationOnExitAndRestoreMapOnSuccessfulUnlock()
     {
         var walletHost = Host("Wallet"); walletHost.SetActive(false);
-        walletHost.AddComponent<CurrencyManager>().defaultStartAmount = 0;
+        walletHost.AddComponent<CurrencyManager>().initialAmounts = new Cost[0];
         walletHost.SetActive(true);
         var manager = Host("Manager").AddComponent<SkillTreeManager>();
         var root = Host("Skill panel"); root.SetActive(false);

@@ -31,8 +31,27 @@ public class CurrencyManager : MonoBehaviour
     public CurrencyUIGroup[] uiGroups;
     public bool autoFindUIGroupsInChildren = true;
 
-    [Header("Start Value")]
-    public int defaultStartAmount = 11110;
+    public const string SaveKey = "CurrencyWallet";
+
+    [Header("Initial Amounts (used only when no saved balance exists)")]
+    public Cost[] initialAmounts =
+    {
+        new Cost { currencyType = CurrencyType.CurrencyMain, amount = 11110 },
+        new Cost { currencyType = CurrencyType.CurrencySub1, amount = 11110 },
+        new Cost { currencyType = CurrencyType.CurrencySub2, amount = 11110 },
+        new Cost { currencyType = CurrencyType.CurrencySub3, amount = 11110 },
+        new Cost { currencyType = CurrencyType.CurrencySub4, amount = 11110 },
+        new Cost { currencyType = CurrencyType.CurrencySub5, amount = 11110 },
+        new Cost { currencyType = CurrencyType.CurrencySub6, amount = 11110 },
+        new Cost { currencyType = CurrencyType.CurrencySub7, amount = 11110 },
+        new Cost { currencyType = CurrencyType.CurrencySub8, amount = 11110 }
+    };
+
+    [Serializable]
+    private sealed class WalletSave
+    {
+        public List<Cost> balances = new List<Cost>();
+    }
 
     private Dictionary<CurrencyType, int> currencies =
         new Dictionary<CurrencyType, int>();
@@ -78,10 +97,41 @@ public class CurrencyManager : MonoBehaviour
         currencies.Clear();
 
         foreach (CurrencyType type in Enum.GetValues(typeof(CurrencyType)))
-        {
+            currencies[type] = 0;
 
-            currencies[type] = defaultStartAmount;
+        if (initialAmounts != null)
+            foreach (var entry in initialAmounts)
+                if (entry != null && currencies.ContainsKey(entry.currencyType))
+                    currencies[entry.currencyType] = Mathf.Max(0, entry.amount);
+
+        // Apply saved entries after defaults: zero is a saved value too.
+        // New currency types without an entry keep their configured initial amount.
+        if (PlayerPrefs.HasKey(SaveKey))
+        {
+            try
+            {
+                var saved = JsonUtility.FromJson<WalletSave>(PlayerPrefs.GetString(SaveKey));
+                if (saved?.balances != null)
+                    foreach (var entry in saved.balances)
+                        if (entry != null && currencies.ContainsKey(entry.currencyType))
+                            currencies[entry.currencyType] = Mathf.Max(0, entry.amount);
+            }
+            catch (ArgumentException)
+            {
+                Debug.LogWarning("Currency save is invalid. Using configured initial amounts.", this);
+            }
         }
+
+        SaveCurrencies();
+    }
+
+    private void SaveCurrencies()
+    {
+        var saved = new WalletSave();
+        foreach (CurrencyType type in Enum.GetValues(typeof(CurrencyType)))
+            saved.balances.Add(new Cost { currencyType = type, amount = GetCurrency(type) });
+        PlayerPrefs.SetString(SaveKey, JsonUtility.ToJson(saved));
+        PlayerPrefs.Save();
     }
 
     private void InitUIGroups()
@@ -130,6 +180,7 @@ public class CurrencyManager : MonoBehaviour
             currencies[type] = 0;
 
         currencies[type] += amount;
+        SaveCurrencies();
 
         UpdateUI(type);
     }
@@ -154,6 +205,7 @@ public class CurrencyManager : MonoBehaviour
             return false;
 
         currencies[type] -= amount;
+        SaveCurrencies();
 
         UpdateUI(type);
 

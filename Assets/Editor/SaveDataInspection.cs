@@ -115,7 +115,8 @@ internal static class SaveDataInspection
         new Preference("Settings", "Show health bar", SettingManager.SHOW_HEALTH_BAR, SavePreferenceKind.Boolean, 1),
         new Preference("Settings", "Show buffs", SettingManager.SHOW_BUFF, SavePreferenceKind.Boolean, 1),
         new Preference("Story", "Chapter progress", StorySave.StoryChapterProgressKey, SavePreferenceKind.Integer, 0),
-        new Preference("Tutorial", "Seen and completed tutorial IDs", TutorialCompletionHistory.SaveKey, SavePreferenceKind.String, "{}")
+        new Preference("Tutorial", "Seen and completed tutorial IDs", TutorialCompletionHistory.SaveKey, SavePreferenceKind.String, "{}"),
+        new Preference("Currency", "Saved wallet balances", CurrencyManager.SaveKey, SavePreferenceKind.String, "{}")
     };
 
     [Serializable] private sealed class Discoveries

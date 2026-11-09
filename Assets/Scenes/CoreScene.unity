@@ -426,7 +426,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CurrencyManager
   uiGroups: []
   autoFindUIGroupsInChildren: 1
-  defaultStartAmount: 12345
+  initialAmounts:
+  - currencyType: 0
+    amount: 12345
+  - currencyType: 1
+    amount: 12345
+  - currencyType: 2
+    amount: 12345
+  - currencyType: 3
+    amount: 12345
+  - currencyType: 4
+    amount: 12345
+  - currencyType: 5
+    amount: 12345
+  - currencyType: 6
+    amount: 12345
+  - currencyType: 7
+    amount: 12345
+  - currencyType: 8
+    amount: 12345
 --- !u!4 &1207828510
 Transform:
   m_ObjectHideFlags: 0
