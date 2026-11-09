@@ -36,12 +36,17 @@ public partial class SkillTreeNodePlacer : MonoBehaviour
     public float nodeHalfSize = 40f;
     public bool useReadableName = true;
 
-    [Header("Node Data")]
-    public List<SkillNodeData> nodeDatas = new List<SkillNodeData>();
-    [Tooltip("Initial grid coordinates. Once placed, Saved Node Layout stores the freely edited positions.")]
-    public List<Vector2Int> nodePositions = new List<Vector2Int>();
-
-    [Header("Saved Node Layout (UI Units)")]
+    [Header("Tree Layout")]
+    public SkillTreeLayoutData layout;
     public bool autoRememberPositions = true;
-    public List<SkillNodePlacement> nodeLayout = new List<SkillNodePlacement>();
+
+    [SerializeField, HideInInspector, UnityEngine.Serialization.FormerlySerializedAs("nodeDatas")]
+    private List<SkillNodeData> legacyNodes = new List<SkillNodeData>();
+    [SerializeField, HideInInspector, UnityEngine.Serialization.FormerlySerializedAs("nodePositions")]
+    private List<Vector2Int> legacyGrid = new List<Vector2Int>();
+    [SerializeField, HideInInspector, UnityEngine.Serialization.FormerlySerializedAs("nodeLayout")]
+    private List<SkillNodePlacement> legacyLayout = new List<SkillNodePlacement>();
+    public List<SkillNodeData> nodeDatas => layout != null ? layout.nodeDatas : legacyNodes;
+    public List<Vector2Int> nodePositions => legacyGrid;
+    public List<SkillNodePlacement> nodeLayout => layout != null ? layout.nodeLayout : legacyLayout;
 }

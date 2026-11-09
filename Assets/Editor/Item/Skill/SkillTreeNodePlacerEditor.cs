@@ -12,6 +12,8 @@ public class SkillTreeNodePlacerEditor : Editor
         if (DrawDefaultInspector()) placer.ApplySavedLayout();
 
         GUILayout.Space(12);
+        if (placer.layout != null && GUILayout.Button("Open Layout Graph")) SkillTreeGraphWindow.Open(placer.layout);
+        if (placer.layout == null && GUILayout.Button("Save Legacy Layout As Asset")) placer.SaveLegacyLayout();
 
         if (GUILayout.Button("Generate Skill Tree"))
         {

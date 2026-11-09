@@ -8,6 +8,7 @@ using UnityEngine;
 public partial class SkillTreeNodePlacer
 {
     public bool IsApplyingLayout { get; private set; }
+    private int appliedLayoutRevision = -1;
     private Dictionary<SkillNodeData, SkillNodeUI> Views()
     {
         var result = new Dictionary<SkillNodeData, SkillNodeUI>();
@@ -25,10 +26,30 @@ public partial class SkillTreeNodePlacer
     }
     private bool CanEdit => !EditorApplication.isPlayingOrWillChangePlaymode && !EditorUtility.IsPersistent(this);
 
+    [ContextMenu("Save Legacy Layout As Asset")]
+    public void SaveLegacyLayout()
+    {
+        if (layout != null) return;
+        string path = EditorUtility.SaveFilePanelInProject("Save skill tree layout", name + " Layout", "asset", "");
+        if (string.IsNullOrEmpty(path)) return;
+        var data = ScriptableObject.CreateInstance<SkillTreeLayoutData>();
+        data.nodeDatas.AddRange(nodeDatas);
+        for (int i = 0; i < nodeDatas.Count; i++)
+        {
+            var old = nodeLayout.Find(entry => entry != null && entry.node == nodeDatas[i]);
+            data.nodeLayout.Add(new SkillNodePlacement { node = nodeDatas[i], position = old != null ? old.position : GridPosition(i) });
+        }
+        AssetDatabase.CreateAsset(data, path);
+        Undo.RecordObject(this, "Assign tree layout"); layout = data; Dirty(this);
+        AssetDatabase.SaveAssets();
+    }
+
     [ContextMenu("Remember Node Positions")]
     public void CaptureNodePositions()
     {
         if (!CanEdit || nodeArea == null) return;
+        if (layout != null && appliedLayoutRevision != layout.revision)
+        { ApplySavedLayout(); return; }
         var views = Views();
         bool changed = false;
         foreach (var pair in views)
@@ -37,11 +58,15 @@ public partial class SkillTreeNodePlacer
             Vector2 position = Position(pair.Value);
             var saved = nodeLayout.Find(entry => entry != null && entry.node == pair.Key);
             if (saved != null && !Different(saved.position, position)) continue;
-            if (!changed) { Undo.RegisterCompleteObjectUndo(this, "Remember skill node positions"); changed = true; }
+            if (!changed) { Undo.RegisterCompleteObjectUndo(layout != null ? (UnityEngine.Object)layout : this, "Remember skill node positions"); changed = true; }
             if (saved == null) nodeLayout.Add(new SkillNodePlacement { node = pair.Key, position = position });
             else saved.position = position;
         }
-        if (changed) Dirty(this);
+        if (changed)
+        {
+            if (layout != null) appliedLayoutRevision = ++layout.revision;
+            Dirty(layout != null ? (UnityEngine.Object)layout : this);
+        }
         RefreshConnections();
     }
 
@@ -60,6 +85,7 @@ public partial class SkillTreeNodePlacer
                 Dirty(pair.Value.transform);
             }
             RefreshConnections();
+            if (layout != null) appliedLayoutRevision = layout.revision;
         }
         finally { IsApplyingLayout = false; }
     }
@@ -68,11 +94,11 @@ public partial class SkillTreeNodePlacer
     public void ApplyGridPositions()
     {
         if (!CanEdit || nodeDatas == null) return;
-        Undo.RegisterCompleteObjectUndo(this, "Apply initial skill grid");
+        Undo.RegisterCompleteObjectUndo(layout != null ? (UnityEngine.Object)layout : this, "Apply initial skill grid");
         nodeLayout.Clear();
         for (int i = 0; i < nodeDatas.Count; i++)
             if (nodeDatas[i] != null) nodeLayout.Add(new SkillNodePlacement { node = nodeDatas[i], position = GridPosition(i) });
-        Dirty(this); ApplySavedLayout();
+        Dirty(layout != null ? (UnityEngine.Object)layout : this); ApplySavedLayout();
     }
     private Vector2 GridPosition(int index)
     {
@@ -87,7 +113,7 @@ public partial class SkillTreeNodePlacer
             horizontalLinePrefab == null || verticalLinePrefab == null || nodeDatas == null) return;
         Undo.IncrementCurrentGroup(); int group = Undo.GetCurrentGroup();
         Undo.SetCurrentGroupName("Generate skill tree");
-        if (autoRememberPositions) CaptureNodePositions();
+        if (layout == null && autoRememberPositions) CaptureNodePositions();
         var views = Views();
         for (int i = 0; i < nodeDatas.Count; i++)
         {
@@ -107,6 +133,7 @@ public partial class SkillTreeNodePlacer
             Undo.RegisterCreatedObjectUndo(view.gameObject, "Create skill node");
             views.Add(data, view);
         }
+        ApplySavedLayout();
         CaptureNodePositions();
         RebuildConnections();
         // Only nodes removed from the configured list are removed; existing configured nodes keep their overrides.
