@@ -9,6 +9,7 @@ public class StoryManager : MonoBehaviour, ISceneLocalizedUI
 
     [Header("Cuts")]
     [SerializeField] private Image[] cuts;
+    [SerializeField] private TMP_Text pageText;
     [SerializeField] private TMP_Text dialogueText;
     [SerializeField] private TMP_Text speakerText;
 
@@ -195,6 +196,8 @@ public class StoryManager : MonoBehaviour, ISceneLocalizedUI
 
         if (dialogueText != null)
             dialogueText.text = data?.dialogue ?? "";
+        if (pageText != null)
+            pageText.text = (currentDialogueIndex + 1) +" / " + dialogues.Length;
 
         if (speakerText != null)
             speakerText.text = data?.speaker ?? "";
