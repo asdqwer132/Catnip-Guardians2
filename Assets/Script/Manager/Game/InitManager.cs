@@ -28,6 +28,7 @@ public class InitManager : MonoBehaviour
         ApplyStartingEffects();
 
         plantManager?.SetPlants();
+        Debug.Log($"[SkillTransfer][Battle APPLIED] index={plantManager?.CurrentPlantIndex}, plant={plantManager?.CurrentPlant?.dataId ?? "none"}", this);
         if (enemyManager != null && plantManager != null) enemyManager.Init(plantManager.CurrentPlant);
         itemUseManager?.Init();
         buffUIManager?.Init();
@@ -43,7 +44,7 @@ public class InitManager : MonoBehaviour
             session.LoadSkillItems(buffSkillManager);
             session.TryReadGeneralData(out data);
         }
-        Debug.Log(data.mainPlantIndex);
+        Debug.Log("[SkillTransfer][Battle RECEIVE] " + GameSessionSkillDiagnostics.Describe(data), this);
         if (data != null && data.mainPlantIndex >= 0)
             plantManager?.SetSkillPlantIndex(data.mainPlantIndex);
         if (buffSkillManager != null)

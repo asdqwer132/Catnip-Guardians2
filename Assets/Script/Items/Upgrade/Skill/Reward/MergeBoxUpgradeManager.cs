@@ -127,6 +127,12 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
         RebuildLevels();
         store.Write(JsonUtility.ToJson(progress));
     }
+    public List<SkillNodeData> CaptureUnlockedNodes()
+    {
+        Initialize();
+        return skillNodes.FindAll(node => node != null && skillTree != null && skillTree.IsUnlocked(node));
+    }
+
     public List<MergeBoxLevelSnapshot> CaptureLevels()
     {
         Initialize();

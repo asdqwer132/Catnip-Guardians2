@@ -85,6 +85,7 @@ public class UpgradeManager : MonoBehaviour
         {
             data.boxLevels = mergeBoxUpgrades.CaptureLevels();
             data.mainPlantIndex = mergeBoxUpgrades.MainPlantIndex;
+            data.unlockedSkillNodes = mergeBoxUpgrades.CaptureUnlockedNodes();
         }
         if (potionEquipment != null) data.potionSlots = potionEquipment.CaptureSlots();
         var inventory = materialInventory != null ? materialInventory : InventoryManager.instance;
@@ -99,6 +100,8 @@ public class UpgradeManager : MonoBehaviour
                     data.skillItems.Add(new SkillItemSnapshot(item));
             }
         }
+        Debug.Log("[SkillTransfer][Upgrade SEND] " + GameSessionSkillDiagnostics.Describe(data), this);
+        if (mergeBoxUpgrades == null) Debug.LogWarning("[SkillTransfer] UpgradeManager.mergeBoxUpgrades is missing.", this);
         session.SaveUpgradeToGeneral(data);
 
         var loader = sceneMoveManager != null ? sceneMoveManager : SceneMoveManager.instance;
