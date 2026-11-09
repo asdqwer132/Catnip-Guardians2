@@ -112,6 +112,7 @@ public class GameEndManager : MonoBehaviour
         GameStatisticsManager.Instance?.Confirm();
         SetCursorDefault();
         var loader = moveManager != null ? moveManager : SceneMoveManager.instance;
+        if (StoryProgressManager.Instance != null && StoryProgressManager.Instance.Confirm(StoryProgressManager.BattleResult, GameSceneRoutes.Upgrade)) return;
         if (loader != null) loader.GoUpgradeScene();
     }
 

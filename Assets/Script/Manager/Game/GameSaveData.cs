@@ -28,6 +28,7 @@ public static class GameSaveData
         PlayerPrefs.DeleteAll();
         PlayerPrefs.Save();
         // Core services survive scene changes: deleting files alone leaves their old values alive.
+        StoryProgressManager.Instance?.ReloadProgress();
         CodexDiscoveryHistory.Current.Reload();
         GameSession.Instance?.ClearAll();
         SceneDataCarrier.Clear();

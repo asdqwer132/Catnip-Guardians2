@@ -10,6 +10,8 @@ public class PotionCraftManager : ItemRecipeManager
     public static PotionCraftManager instance;
     public CraftSuccessEffectUI craftSuccessEffectUI;
     public PotionRecipeHistory recipeHistory;
+    [Header("Story Confirmation (optional authored button)")]
+    public UnityEngine.UI.Button storyConfirmButton;
     private bool preparingRecipe;
     private bool crafting;
 
@@ -117,10 +119,17 @@ public class PotionCraftManager : ItemRecipeManager
         }
     }
 
-    private void Awake() => instance = this;
+    private void Awake()
+    {
+        instance = this;
+        if (storyConfirmButton != null) storyConfirmButton.onClick.AddListener(ConfirmCraftResult);
+    }
+
+    public void ConfirmCraftResult() => StoryProgressManager.Instance?.ConfirmArea(StoryProgressManager.PotionResult);
 
     private void OnDestroy()
     {
+        if (storyConfirmButton != null) storyConfirmButton.onClick.RemoveListener(ConfirmCraftResult);
         if (instance == this)
             instance = null;
     }
@@ -147,7 +156,11 @@ public class PotionCraftManager : ItemRecipeManager
             currentMaterials.Clear();
             resultItem = craftedItem = output;
             InventoryManager.instance.AddItem(craftedItem, 1);
-            if (success && recipeHistory != null) recipeHistory.RecordCrafted(craftedItem);
+            if (success)
+            {
+                if (recipeHistory != null) recipeHistory.RecordCrafted(craftedItem);
+                StoryProgressManager.Instance?.Report(new StoryProgressEvent(StoryProgressEventKind.PotionCrafted, craftedItem));
+            }
             if (craftSuccessEffectUI != null) craftSuccessEffectUI.Play(craftedItem.icon);
             return true;
         }

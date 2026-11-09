@@ -136,6 +136,7 @@ public class SkillTreeManager : MonoBehaviour
 
         OnSkillUnlocked?.Invoke(node);
         OnSkillTreeChanged?.Invoke();
+        StoryProgressManager.Instance?.Report(new StoryProgressEvent(StoryProgressEventKind.SkillUnlocked, node));
 
         RefreshBroadcaster.Instance?.Broadcast(
             RefreshType.SkillTree |

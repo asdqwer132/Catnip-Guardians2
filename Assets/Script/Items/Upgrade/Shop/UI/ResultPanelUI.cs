@@ -34,6 +34,7 @@ public class ResultPanelUI : MonoBehaviour
     private CanvasGroup itemListCanvasGroup;
     private Vector2 itemListOriginPosition;
     private Coroutine effectRoutine;
+    private string storyConfirmationArea;
 
     private readonly List<GameObject> spawnedSlots = new List<GameObject>();
 
@@ -53,7 +54,7 @@ public class ResultPanelUI : MonoBehaviour
             panelCanvasGroup = GetComponent<CanvasGroup>();
 
         if (confirmButton != null)
-            confirmButton.onClick.AddListener(Hide);
+            confirmButton.onClick.AddListener(ConfirmResult);
 
         CacheListComponents();
 
@@ -64,7 +65,7 @@ public class ResultPanelUI : MonoBehaviour
     private void OnDestroy()
     {
         if (confirmButton != null)
-            confirmButton.onClick.RemoveListener(Hide);
+            confirmButton.onClick.RemoveListener(ConfirmResult);
     }
 
     private void CacheListComponents()
@@ -80,6 +81,20 @@ public class ResultPanelUI : MonoBehaviour
         itemListCanvasGroup = itemListParent.GetComponent<CanvasGroup>();
         if (itemListCanvasGroup == null)
             itemListCanvasGroup = itemListParent.gameObject.AddComponent<CanvasGroup>();
+    }
+
+    public void ConfirmResult()
+    {
+        string area = storyConfirmationArea;
+        storyConfirmationArea = null;
+        Hide();
+        if (!string.IsNullOrEmpty(area)) StoryProgressManager.Instance?.ConfirmArea(area);
+    }
+
+    public void ShowStoryResult(ItemData item, int count, string confirmationArea)
+    {
+        ShowResult(item, count);
+        storyConfirmationArea = confirmationArea;
     }
 
     public void ShowResult(ItemData itemData, int count = 1)
@@ -100,6 +115,7 @@ public class ResultPanelUI : MonoBehaviour
 
     public void ShowResults(List<ShopPurchaseResultEntry> results)
     {
+        storyConfirmationArea = null;
         if (panelRoot != null)
             panelRoot.SetActive(true);
 

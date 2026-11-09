@@ -29,20 +29,23 @@ public class StoryManager : MonoBehaviour, ISceneLocalizedUI
     private int currentDialogueIndex;
     private int currentCutIndex;
     private bool isPlaying;
+    private StoryData requestedStory;
+    private bool independentStory;
+    private string requestedReturnScene;
 
-    private StoryData CurrentStory => stories[currentStoryIndex];
+    private StoryData CurrentStory => requestedStory != null ? requestedStory : stories[currentStoryIndex];
 
     private void Awake()
     {
-        foreach (var btn in prevButtons)
+        foreach (var btn in (prevButtons ?? System.Array.Empty<Button>()))
             if (btn != null)
                 btn.onClick.AddListener(PrevCut);
 
-        foreach (var btn in nextButtons)
+        foreach (var btn in (nextButtons ?? System.Array.Empty<Button>()))
             if (btn != null)
                 btn.onClick.AddListener(NextCut);
 
-        foreach (var btn in skipButtons)
+        foreach (var btn in (skipButtons ?? System.Array.Empty<Button>()))
             if (btn != null)
                 btn.onClick.AddListener(SkipStory);
     }
@@ -61,6 +64,16 @@ public class StoryManager : MonoBehaviour, ISceneLocalizedUI
     {
         if (isPlaying) return;
 
+        if (StoryProgressManager.Instance != null && StoryProgressManager.Instance.PlayingStory != null)
+        {
+            requestedStory = StoryProgressManager.Instance.PlayingStory;
+            independentStory = true;
+            currentDialogueIndex = currentCutIndex = 0;
+            isPlaying = true;
+            RefreshView();
+            return;
+        }
+
         StartStory(isTest
             ? testIndex
             : StorySave.GetStoryChapterProgress());
@@ -77,6 +90,9 @@ public class StoryManager : MonoBehaviour, ISceneLocalizedUI
             return;
         }
 
+        requestedStory = null;
+        independentStory = false;
+        requestedReturnScene = null;
         currentStoryIndex = index;
         currentDialogueIndex = 0;
         currentCutIndex = 0;
@@ -121,12 +137,11 @@ public class StoryManager : MonoBehaviour, ISceneLocalizedUI
     {
         isPlaying = false;
 
-        StorySave.SetStoryChapterProgress(
-            Mathf.Max(
-                StorySave.GetStoryChapterProgress(),
-                currentStoryIndex + 1
-            )
-        );
+        if (independentStory)
+            requestedReturnScene = StoryProgressManager.Instance != null
+                ? StoryProgressManager.Instance.CompletePlayingStory() : returnSceneName;
+        else
+            StorySave.SetStoryChapterProgress(Mathf.Max(StorySave.GetStoryChapterProgress(), currentStoryIndex + 1));
 
         MoveToReturnScene();
     }
@@ -148,7 +163,7 @@ public class StoryManager : MonoBehaviour, ISceneLocalizedUI
         if (dialogues != null)
         {
             for (int i = 0;
-                 i <= currentDialogueIndex && i < dialogues.Length;
+                 i <= currentDialogueIndex && i < (dialogues?.Length ?? 0);
                  i++)
             {
                 if (dialogues[i] != null && dialogues[i].nextImage)
@@ -164,7 +179,7 @@ public class StoryManager : MonoBehaviour, ISceneLocalizedUI
             Mathf.Max(0, spriteCount - 1)
         );
 
-        for (int i = 0; i < cuts.Length; i++)
+        for (int i = 0; cuts != null && i < cuts.Length; i++)
         {
             if (cuts[i] == null) continue;
 
@@ -197,7 +212,7 @@ public class StoryManager : MonoBehaviour, ISceneLocalizedUI
         if (dialogueText != null)
             dialogueText.text = data?.dialogue ?? "";
         if (pageText != null)
-            pageText.text = (currentDialogueIndex + 1) +" / " + dialogues.Length;
+            pageText.text = (currentDialogueIndex + 1) +" / " + (dialogues?.Length ?? 0);
 
         if (speakerText != null)
             speakerText.text = data?.speaker ?? "";
@@ -219,17 +234,17 @@ public class StoryManager : MonoBehaviour, ISceneLocalizedUI
 
     private void RefreshButtons()
     {
-        foreach (var btn in prevButtons)
-            btn.interactable = currentDialogueIndex > 0;
+        foreach (var btn in (prevButtons ?? System.Array.Empty<Button>()))
+            if (btn != null) btn.interactable = currentDialogueIndex > 0;
 
-        foreach (var btn in nextButtons)
-            btn.interactable = true;
+        foreach (var btn in (nextButtons ?? System.Array.Empty<Button>()))
+            if (btn != null) btn.interactable = true;
     }
 
     private void MoveToReturnScene()
     {
         if (SceneMoveManager.instance != null)
-            SceneMoveManager.instance.LoadScene(returnSceneName);
+            SceneMoveManager.instance.LoadScene(string.IsNullOrWhiteSpace(requestedReturnScene) ? returnSceneName : requestedReturnScene);
         else
             Debug.LogWarning("SceneMoveManager가 없습니다.");
     }

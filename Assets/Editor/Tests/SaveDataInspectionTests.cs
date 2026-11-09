@@ -113,7 +113,7 @@ public sealed class SaveDataInspectionTests
         var data = SaveDataInspection.ReadJson(path);
         Assert.That(data.Error, Is.Not.Empty); Assert.That(data.Json, Is.EqualTo("{broken"));
         Assert.That(File.ReadAllText(path), Is.EqualTo("{broken"));
-        Assert.That(SaveDataInspection.ReadPreferences(new Preferences()).Count, Is.EqualTo(11));
+        Assert.That(SaveDataInspection.ReadPreferences(new Preferences()).Count, Is.EqualTo(12));
     }
 
     [Test]
@@ -122,7 +122,7 @@ public sealed class SaveDataInspectionTests
         var data = SaveDataInspection.ReadPreferences(new Preferences());
         var runtimeKeys = typeof(SettingManager).GetFields(BindingFlags.Static | BindingFlags.Public)
             .Where(f => f.IsLiteral && f.FieldType == typeof(string)).Select(f => (string)f.GetRawConstantValue())
-            .Concat(new[] { StorySave.StoryChapterProgressKey, TutorialCompletionHistory.SaveKey, CurrencyManager.SaveKey });
+            .Concat(new[] { StorySave.StoryChapterProgressKey, TutorialCompletionHistory.SaveKey, CurrencyManager.SaveKey, StoryProgressManager.SaveKey });
         Assert.That(data.Select(row => row.Key), Is.EquivalentTo(runtimeKeys));
         Assert.That(data.All(row => !row.HasKey && row.Value == row.DefaultValue), Is.True);
         Assert.That(data.Single(row => row.Key == SettingManager.MASTER_VOLUME).Value, Is.EqualTo("1"));

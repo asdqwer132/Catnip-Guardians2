@@ -198,6 +198,7 @@ public class ShopManager : MonoBehaviour
             if (!wallet.SpendCurrencies(costs)) return PurchaseFailed("재화가 부족합니다.");
             inventory.AddItem(resultItem, 1);
             button.MarkPurchased();
+            StoryProgressManager.Instance?.Report(new StoryProgressEvent(StoryProgressEventKind.ChestItemObtained, resultItem));
             //if (currentSelectedButton == button) ClearSelectedBox();
             ShowPurchaseResult(resultItem, 1);
             return true;
@@ -214,6 +215,6 @@ public class ShopManager : MonoBehaviour
     private void ShowPurchaseResult(ItemData resultItem, int count)
     {
         if (purchaseResultPanelUI != null)
-            purchaseResultPanelUI.ShowResult(resultItem, count);
+            purchaseResultPanelUI.ShowStoryResult(resultItem, count, StoryProgressManager.ChestResult);
     }
 }
