@@ -13,4 +13,12 @@ public class PrologueStartManager : MonoBehaviour
         }
         SceneMoveManager.instance.GoStoryScene();
     }
+    public void ExitGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+    }
 }

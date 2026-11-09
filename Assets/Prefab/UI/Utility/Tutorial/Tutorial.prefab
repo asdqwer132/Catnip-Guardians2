@@ -297,7 +297,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 337019175543825290}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
   m_Camera: {fileID: 0}
@@ -446,7 +446,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 124933d56cdad51848bcc211be74a404, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DataInfoUI
   icon: {fileID: 0}
   dataNameText: {fileID: 4292112986701467717}
@@ -836,10 +836,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 3543973658487709529}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0, y: -25}
+  m_SizeDelta: {x: 62.53, y: 50}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &122370003057044979
 CanvasRenderer:
@@ -1206,7 +1206,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 124933d56cdad51848bcc211be74a404, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DataInfoUI
   icon: {fileID: 0}
   dataNameText: {fileID: 6943660959916579934}
@@ -1720,7 +1720,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Skip
+  m_text: Cancel
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a1b0c2e5851feb40e99694907c5f47e9, type: 2}
   m_sharedMaterial: {fileID: -3747181013191543084, guid: a1b0c2e5851feb40e99694907c5f47e9, type: 2}
@@ -1809,7 +1809,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1321484901026904102
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1841,7 +1841,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 27825e11bea64f578e6ba4806cd6b20b, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TutorialPageView
   tutorialInfo: {fileID: 1039686466512133308}
   pageInfo: {fileID: 4397025829364850662}
@@ -1862,7 +1862,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 124933d56cdad51848bcc211be74a404, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DataInfoUI
   icon: {fileID: 6052949974140443575}
   dataNameText: {fileID: 8209290556445603154}
@@ -2059,10 +2059,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 3543973658487709529}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 97.53, y: -25}
+  m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8895444606969322586
 CanvasRenderer:
@@ -2199,7 +2199,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ToggleGroup
   m_AllowSwitchOff: 0
 --- !u!1 &3839774634299372985
@@ -2401,7 +2401,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 27825e11bea64f578e6ba4806cd6b20b, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TutorialPageView
   tutorialInfo: {fileID: 8396613399842840447}
   pageInfo: {fileID: 1072781134890609568}
@@ -2422,7 +2422,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 124933d56cdad51848bcc211be74a404, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DataInfoUI
   icon: {fileID: 5420063328678899873}
   dataNameText: {fileID: 1193812948133729533}
@@ -2468,7 +2468,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 50}
+  m_SizeDelta: {x: 122.53, y: 50}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &272232639184397141
 MonoBehaviour:
@@ -3068,7 +3068,7 @@ MonoBehaviour:
   - {fileID: 8862563679229787616}
   - {fileID: 1333823413459526878}
   - {fileID: 8396619285489778394}
-  completionScope:
+  completionScope: 
   tutorials: []
 --- !u!1 &6856808207231998294
 GameObject:
@@ -3314,8 +3314,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -15, y: 0}
-  m_SizeDelta: {x: 150, y: 50}
+  m_AnchoredPosition: {x: -10, y: 0}
+  m_SizeDelta: {x: 180, y: 50}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &8134730416218760818
 CanvasRenderer:
@@ -3431,10 +3431,10 @@ RectTransform:
   - {fileID: 4033960210125153197}
   m_Father: {fileID: 1807637114068429930}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 100}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0, y: -50}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &3855975510793409465
 MonoBehaviour:
@@ -3597,7 +3597,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -3014208199927654087, guid: 0a00574a03acef84fab52ccc1a835fc4, type: 3}
+  m_Sprite: {fileID: -3269669661362933063, guid: 70c5bb63940ea7d46b2a7fd5ec42e43c, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -4244,10 +4244,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1807637114068429930}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 100}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 225.055, y: -50}
+  m_SizeDelta: {x: 250.11, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4717738726628210150
 CanvasRenderer:
@@ -4588,7 +4588,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7108536434089689991, guid: 00dfff998e7bce0419654033f28e4c79, type: 3}
       propertyPath: m_Group
-      value:
+      value: 
       objectReference: {fileID: 5246833984494751208}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4610,7 +4610,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!224 &2909705743441512983 stripped
 RectTransform:
@@ -4632,7 +4632,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6f9e8a87460c4526b97304f3c06d964d, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TutorialSelectionToggle
   toggle: {fileID: 7775113996652996256}
   label: {fileID: 451326850493511488}
@@ -4645,7 +4645,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Toggle
 --- !u!1 &7960980928791231840 stripped
 GameObject:
@@ -4662,7 +4662,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 124933d56cdad51848bcc211be74a404, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DataInfoUI
   icon: {fileID: 0}
   dataNameText: {fileID: 871407589106362794}
@@ -4773,7 +4773,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7108536434089689991, guid: 00dfff998e7bce0419654033f28e4c79, type: 3}
       propertyPath: m_Group
-      value:
+      value: 
       objectReference: {fileID: 5246833984494751208}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4795,7 +4795,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!224 &3249669926039440109 stripped
 RectTransform:
@@ -4817,7 +4817,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 124933d56cdad51848bcc211be74a404, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DataInfoUI
   icon: {fileID: 0}
   dataNameText: {fileID: 679939039782283600}
@@ -4841,7 +4841,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6f9e8a87460c4526b97304f3c06d964d, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TutorialSelectionToggle
   toggle: {fileID: 7971015776457746010}
   label: {fileID: 4543088499182403183}
@@ -4854,7 +4854,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Toggle
 --- !u!1001 &1004085584066818755
 PrefabInstance:
@@ -4958,7 +4958,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7108536434089689991, guid: 00dfff998e7bce0419654033f28e4c79, type: 3}
       propertyPath: m_Group
-      value:
+      value: 
       objectReference: {fileID: 5246833984494751208}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4980,7 +4980,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!224 &3228583631256002035 stripped
 RectTransform:
@@ -5002,7 +5002,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 124933d56cdad51848bcc211be74a404, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DataInfoUI
   icon: {fileID: 0}
   dataNameText: {fileID: 628461966722793038}
@@ -5026,7 +5026,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6f9e8a87460c4526b97304f3c06d964d, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TutorialSelectionToggle
   toggle: {fileID: 8019119547106865476}
   label: {fileID: 4867503133225867354}
@@ -5039,7 +5039,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Toggle
 --- !u!1001 &2685419488301481339
 PrefabInstance:
@@ -5099,7 +5099,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8551487739303024711, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8551487739303024711, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_AnchorMin.x
@@ -5107,15 +5107,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8551487739303024711, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8551487739303024711, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 370
       objectReference: {fileID: 0}
     - target: {fileID: 8551487739303024711, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 8551487739303024711, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5147,11 +5147,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8551487739303024711, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 565
       objectReference: {fileID: 0}
     - target: {fileID: 8551487739303024711, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 8551487739303024711, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -5329,7 +5329,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1001 &6716653933165910904
 PrefabInstance:
@@ -5389,7 +5389,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8551487739303024711, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8551487739303024711, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_AnchorMin.x
@@ -5397,15 +5397,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8551487739303024711, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8551487739303024711, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 370
       objectReference: {fileID: 0}
     - target: {fileID: 8551487739303024711, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 8551487739303024711, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5437,11 +5437,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8551487739303024711, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 185
       objectReference: {fileID: 0}
     - target: {fileID: 8551487739303024711, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 8551487739303024711, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -5721,7 +5721,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1001 &8706877084712155625
 PrefabInstance:
@@ -5927,7 +5927,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7108536434089689991, guid: 00dfff998e7bce0419654033f28e4c79, type: 3}
       propertyPath: m_Group
-      value:
+      value: 
       objectReference: {fileID: 5246833984494751208}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5955,7 +5955,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 124933d56cdad51848bcc211be74a404, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DataInfoUI
   icon: {fileID: 0}
   dataNameText: {fileID: 8717419496750223456}
@@ -5979,7 +5979,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6f9e8a87460c4526b97304f3c06d964d, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TutorialSelectionToggle
   toggle: {fileID: 2236990156096954218}
   label: {fileID: 9043201474293266379}
@@ -5992,7 +5992,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Toggle
 --- !u!224 &6668981918607995869 stripped
 RectTransform:
@@ -6008,5 +6008,5 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
