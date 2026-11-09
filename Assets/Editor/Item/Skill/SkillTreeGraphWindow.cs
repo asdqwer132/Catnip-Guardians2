@@ -77,14 +77,43 @@ public sealed class SkillTreeGraphWindow : EditorWindow
     {
         public SkillNodeData data;
         public Port input, output;
-        public Card(SkillNodeData data)
+        private readonly Vector2Field positionField;
+        private readonly SkillTreeLayoutData layoutData;
+        public Card(SkillNodeData data, SkillTreeLayoutData layout)
         {
-            this.data = data; title = data.name;
+            this.data = data; layoutData = layout; title = data.name;
             input = InstantiatePort(Orientation.Horizontal, Direction.Input, Port.Capacity.Multi, typeof(SkillNodeData)); input.portName = "Requires";
             output = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(SkillNodeData)); output.portName = "Output";
             inputContainer.Add(input); outputContainer.Add(output);
             var button = new Button(() => { Selection.activeObject = data; EditorGUIUtility.PingObject(data); }) { text = "Inspect Node / Rewards" };
+            positionField = new Vector2Field("Position")
+            {
+                tooltip = "Layout coordinates: X increases right, Y increases up. Matches the scene UI placement."
+            };
+            positionField.style.width = 240;
+            positionField.RegisterValueChangedCallback(evt =>
+            {
+                if (!float.IsFinite(evt.newValue.x) || !float.IsFinite(evt.newValue.y))
+                {
+                    positionField.SetValueWithoutNotify(evt.previousValue);
+                    return;
+                }
+                SetLayoutPosition(evt.newValue);
+            });
+            extensionContainer.Add(positionField);
             extensionContainer.Add(button); RefreshExpandedState(); RefreshPorts();
+        }
+        public void SetLayoutPosition(Vector2 position)
+        {
+            SkillTreeGraphEditing.Move(layoutData, data, position);
+            var rect = GetPosition();
+            rect.position = new Vector2(position.x, -position.y);
+            SetPosition(rect);
+        }
+        public override void SetPosition(Rect position)
+        {
+            base.SetPosition(position);
+            positionField?.SetValueWithoutNotify(new Vector2(position.x, -position.y));
         }
     }
     private sealed class Canvas : GraphView
@@ -94,13 +123,17 @@ public sealed class SkillTreeGraphWindow : EditorWindow
         {
             this.data = data; SetupZoom(.15f, 2f);
             this.AddManipulator(new ContentDragger()); this.AddManipulator(new SelectionDragger()); this.AddManipulator(new RectangleSelector());
-            Insert(0, new GridBackground());
+            var coordinates = new IMGUIContainer(DrawCoordinates) { pickingMode = PickingMode.Ignore };
+            Insert(0, coordinates);
+            coordinates.StretchToParentSize();
+            viewTransformChanged += _ => coordinates.MarkDirtyRepaint();
+            RegisterCallback<GeometryChangedEvent>(_ => coordinates.MarkDirtyRepaint());
             if (data == null) return;
             var cards = new Dictionary<SkillNodeData, Card>();
             foreach (var node in data.nodeDatas)
             {
                 if (node == null || cards.ContainsKey(node)) continue;
-                var card = new Card(node); var saved = data.nodeLayout.Find(value => value != null && value.node == node);
+                var card = new Card(node, data); var saved = data.nodeLayout.Find(value => value != null && value.node == node);
                 var position = saved != null ? saved.position : Vector2.zero;
                 card.SetPosition(new Rect(position.x, -position.y, 220, 100)); AddElement(card); cards.Add(node, card);
             }
@@ -122,13 +155,50 @@ public sealed class SkillTreeGraphWindow : EditorWindow
                 DragAndDrop.AcceptDrag(); GetWindow<SkillTreeGraphWindow>().Rebuild();
             });
         }
+        private void DrawCoordinates()
+        {
+            if (Event.current.type != EventType.Repaint) return;
+            float width = contentRect.width, height = contentRect.height;
+            float zoom = contentViewContainer.resolvedStyle.scale.value.x;
+            if (width <= 0 || height <= 0 || zoom <= 0) return;
+            Vector2 origin = contentViewContainer.ChangeCoordinatesTo(this, Vector2.zero);
+            // Keep the labels legible when zoomed out. Values remain in saved layout units.
+            float step = 100;
+            while (step * zoom < 70) step *= 2;
+            float spacing = step * zoom;
+            var previousColor = Handles.color;
+            Handles.BeginGUI();
+            for (float x = Mathf.Ceil(-origin.x / spacing) * spacing + origin.x; x < width; x += spacing)
+            {
+                Handles.color = EditorGUIUtility.isProSkin ? new Color(1, 1, 1, .10f) : new Color(0, 0, 0, .12f);
+                Handles.DrawLine(new Vector3(x, 0), new Vector3(x, height));
+                GUI.Label(new Rect(x + 3, 2, 85, 20), Mathf.Round((x - origin.x) / zoom).ToString("0"), EditorStyles.miniLabel);
+            }
+            for (float y = Mathf.Ceil(-origin.y / spacing) * spacing + origin.y; y < height; y += spacing)
+            {
+                Handles.color = EditorGUIUtility.isProSkin ? new Color(1, 1, 1, .10f) : new Color(0, 0, 0, .12f);
+                Handles.DrawLine(new Vector3(0, y), new Vector3(width, y));
+                GUI.Label(new Rect(3, y + 3, 85, 20), Mathf.Round((origin.y - y) / zoom).ToString("0"), EditorStyles.miniLabel);
+            }
+            Handles.color = new Color(.45f, .75f, 1, .65f);
+            if (origin.x >= 0 && origin.x < width) Handles.DrawLine(new Vector3(origin.x, 0), new Vector3(origin.x, height));
+            if (origin.y >= 0 && origin.y < height) Handles.DrawLine(new Vector3(0, origin.y), new Vector3(width, origin.y));
+            Handles.EndGUI();
+            Handles.color = previousColor;
+            GUI.Label(new Rect(width - 130, 2, 128, 20), "X → / Y ↑   Grid: " + step.ToString("0"), EditorStyles.miniLabel);
+        }
         public override List<Port> GetCompatiblePorts(Port start, NodeAdapter adapter)
             => ports.Where(port => port.direction != start.direction && port.node != start.node).ToList();
         private GraphViewChange Changed(GraphViewChange change)
         {
             if (change.movedElements != null)
                 foreach (var element in change.movedElements)
-                    if (element is Card card) SkillTreeGraphEditing.Move(data, card.data, new Vector2(card.GetPosition().x, -card.GetPosition().y));
+                    if (element is Card card)
+                    {
+                        var rect = card.GetPosition();
+                        card.SetPosition(rect);
+                        SkillTreeGraphEditing.Move(data, card.data, new Vector2(rect.x, -rect.y));
+                    }
             if (change.elementsToRemove != null)
                 foreach (var element in change.elementsToRemove)
                 {

@@ -73,6 +73,27 @@ public class SkillGraphLayoutIntegrationTests : SkillTreeLayoutFixture
         rect.anchoredPosition = new Vector2(400, 300); placer.CaptureNodePositions();
         Assert.That(layout.nodeLayout.Single(n => n.node == node).position, Is.EqualTo(new Vector2(400, 300)));
     }
+    [Test] public void NodeCoordinatesUseSceneAxesAndNumericEditsUpdateSavedPlacement()
+    {
+        var layout = Asset<SkillTreeLayoutData>(); var node = Data("positioned");
+        SkillTreeGraphEditing.Add(layout, node, new Vector2(120, 340));
+        var canvasType = typeof(SkillTreeGraphWindow).GetNestedType("Canvas", System.Reflection.BindingFlags.NonPublic);
+        var graph = (UnityEditor.Experimental.GraphView.GraphView)Activator.CreateInstance(canvasType, new object[] { layout });
+        var card = graph.nodes.Single();
+        var field = UnityEngine.UIElements.UQueryExtensions.Q<UnityEngine.UIElements.Vector2Field>(card);
+        Assert.That(field.value, Is.EqualTo(new Vector2(120, 340)));
+        Assert.That(card.style.left.value.value, Is.EqualTo(120));
+        Assert.That(card.style.top.value.value, Is.EqualTo(-340));
+        // Detached fields have no panel to dispatch change events in batchmode.
+        // Invoke the same edit handler used by the Position field.
+        card.GetType().GetMethod("SetLayoutPosition").Invoke(card, new object[] { new Vector2(-250, 180) });
+        Assert.That(field.value, Is.EqualTo(new Vector2(-250, 180)));
+        Assert.That(layout.nodeLayout.Single().position, Is.EqualTo(new Vector2(-250, 180)));
+        Assert.That(card.style.left.value.value, Is.EqualTo(-250));
+        Assert.That(card.style.top.value.value, Is.EqualTo(-180));
+        card.SetPosition(new Rect(450, 90, 240, 100));
+        Assert.That(field.value, Is.EqualTo(new Vector2(450, -90)));
+    }
     [Test] public void GraphCanvasBuildsNodesPortsAndPrerequisiteEdges()
     {
         var layout = Asset<SkillTreeLayoutData>(); var a = Data("a"); var b = Data("b");
