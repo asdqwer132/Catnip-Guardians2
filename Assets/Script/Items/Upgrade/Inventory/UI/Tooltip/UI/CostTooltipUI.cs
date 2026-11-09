@@ -61,7 +61,10 @@ public class CostTooltipUI : ItemTooltipUI
             foreach (var item in extraBoxCosts)
             {
                 if (item != null && item.costPanel != null)
+                {
+                    Debug.Log(item.costPanel.name);
                     item.costPanel.SetActive(false);
+                }
             }
             if (costData.costs == null || costData.isUnlocked)
                 return;
