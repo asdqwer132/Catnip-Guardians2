@@ -106,6 +106,13 @@ public class SettingManager : MonoBehaviour
         setting.showBuff = PlayerPrefs.GetInt(SHOW_BUFF, 1) == 1;
     }
 
+    public void ReloadSettings()
+    {
+        Load();
+        ApplyAll();
+        BroadcastSettingChanged(SettingChangeType.All);
+    }
+
     public void Save()
     {
         PlayerPrefs.SetFloat(MASTER_VOLUME, setting.masterVolume);

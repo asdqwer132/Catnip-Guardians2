@@ -83,6 +83,22 @@ public class CurrencyPersistenceTests
         Assert.That(wallet.GetCurrency(CurrencyType.CurrencySub1), Is.EqualTo(3));
     }
 
+    [UnityTest]
+    public IEnumerator NewGameResetRestoresConfiguredBalancesInMemoryAndOnDisk()
+    {
+        var wallet = CreateWallet(100, 7);
+        wallet.AddCurrency(CurrencyType.CurrencyMain, 500);
+        wallet.SpendCurrency(CurrencyType.CurrencySub1, 7);
+        wallet.ResetToInitialAmounts();
+        Assert.That(wallet.GetCurrency(CurrencyType.CurrencyMain), Is.EqualTo(100));
+        Assert.That(wallet.GetCurrency(CurrencyType.CurrencySub1), Is.EqualTo(7));
+        Object.Destroy(wallet.gameObject);
+        yield return null;
+        wallet = CreateWallet(999, 999);
+        Assert.That(wallet.GetCurrency(CurrencyType.CurrencyMain), Is.EqualTo(100));
+        Assert.That(wallet.GetCurrency(CurrencyType.CurrencySub1), Is.EqualTo(7));
+    }
+
     [UnityTearDown]
     public IEnumerator TearDown()
     {

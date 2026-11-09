@@ -4,13 +4,13 @@ public class PrologueStartManager : MonoBehaviour
 {
     public void StartGame()
     {
-        StorySave.ResetStoryProgress();
-        TutorialCompletionHistory.ResetAll();
         if (SceneMoveManager.instance == null)
         {
             Debug.LogWarning("SceneMoveManager가 없습니다.");
             return;
         }
+        if (SceneMoveManager.instance.IsLoading) return;
+        if (!GameSaveData.ResetAll()) return;
         SceneMoveManager.instance.GoStoryScene();
     }
     public void ExitGame()

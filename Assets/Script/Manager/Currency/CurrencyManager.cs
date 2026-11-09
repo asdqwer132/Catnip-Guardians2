@@ -125,6 +125,13 @@ public class CurrencyManager : MonoBehaviour
         SaveCurrencies();
     }
 
+    public void ResetToInitialAmounts()
+    {
+        PlayerPrefs.DeleteKey(SaveKey);
+        InitCurrencies();
+        UpdateAllUI();
+    }
+
     private void SaveCurrencies()
     {
         var saved = new WalletSave();
