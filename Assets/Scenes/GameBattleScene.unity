@@ -18846,7 +18846,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fc8513b4bb82356489cfd5e2fd120157, type: 2}
   - {fileID: 11400000, guid: 294cca06f2e4d544cae5efb57f9f7be7, type: 2}
   - {fileID: 11400000, guid: 624e0ff64b534264c8db164d50de83a7, type: 2}
-  currentPlantIndex: 6
+  currentPlantIndex: 0
 --- !u!1 &1241620223
 GameObject:
   m_ObjectHideFlags: 0
@@ -20244,6 +20244,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 356a02d12a3a8ba4d969fb4f320d661d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GrowManager
+  growthCompletedEventId: plant.growth-completed
   startGrowValue: 0
   growValue: 0
   maxGrowValue: 100
