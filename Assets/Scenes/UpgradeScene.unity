@@ -45410,7 +45410,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac3d21e1ef114c84b7d0473076aacb1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TutorialTrigger
-  controller: {fileID: 0}
+  controller: {fileID: 2556461565603739118}
   tutorialId: panel.dictonary
   mode: 3
   sourceToggle: {fileID: 1407858279}
@@ -53318,13 +53318,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SettingUIButton, Assembly-CSharp
-        m_MethodName: OpenSetting
-        m_Mode: 1
+      - m_Target: {fileID: 2556461565603739118}
+        m_TargetAssemblyTypeName: TutorialCanvasController, Assembly-CSharp
+        m_MethodName: ToggleReview
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgumentAssemblyTypeName:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -56489,7 +56489,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac3d21e1ef114c84b7d0473076aacb1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TutorialTrigger
-  controller: {fileID: 0}
+  controller: {fileID: 2556461565603739118}
   tutorialId: panel.bag
   mode: 3
   sourceToggle: {fileID: 829188087}
@@ -58752,7 +58752,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac3d21e1ef114c84b7d0473076aacb1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TutorialTrigger
-  controller: {fileID: 0}
+  controller: {fileID: 2556461565603739118}
   tutorialId: panel.potion
   mode: 3
   sourceToggle: {fileID: 1814000238}
@@ -69131,6 +69131,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2727219868036314136, guid: 96b4ba26f6756b64aa623f775878ef60, type: 3}
   m_PrefabInstance: {fileID: 2556461565603739116}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2556461565603739118 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6625217729344337897, guid: 96b4ba26f6756b64aa623f775878ef60, type: 3}
+  m_PrefabInstance: {fileID: 2556461565603739116}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7145816b36134797911fa77776864b9d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialCanvasController
 --- !u!1 &2697190538765223141
 GameObject:
   m_ObjectHideFlags: 0
@@ -71011,7 +71022,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac3d21e1ef114c84b7d0473076aacb1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TutorialTrigger
-  controller: {fileID: 0}
+  controller: {fileID: 2556461565603739118}
   tutorialId: panel.shop
   mode: 3
   sourceToggle: {fileID: 1190691396}
@@ -71205,7 +71216,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac3d21e1ef114c84b7d0473076aacb1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TutorialTrigger
-  controller: {fileID: 0}
+  controller: {fileID: 2556461565603739118}
   tutorialId: panel.skill
   mode: 3
   sourceToggle: {fileID: 2141843252}

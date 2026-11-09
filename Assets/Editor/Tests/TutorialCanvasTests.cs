@@ -30,15 +30,26 @@ public sealed class TutorialCanvasTests
         var go = Host(scope, active: false);
         var canvas = go.AddComponent<Canvas>();
         var controller = go.AddComponent<TutorialCanvasController>(); controller.tutorialCanvas = canvas; controller.completionScope = scope;
-        controller.previousButton = Host("Previous", go.transform).AddComponent<Button>();
-        controller.nextButton = Host("Next", go.transform).AddComponent<Button>();
-        controller.skipButton = Host("Skip", go.transform).AddComponent<Button>();
+        TutorialPageView View(string name)
+        {
+            var root = Host(name, go.transform);
+            var view = root.AddComponent<TutorialPageView>();
+            view.previousButton = Host("Previous", root.transform).AddComponent<Button>();
+            view.nextButton = Host("Next", root.transform).AddComponent<Button>();
+            view.closeButton = Host("Skip", root.transform).AddComponent<Button>();
+            return view;
+        }
+        controller.tutorialView = View("Tutorial");
+        controller.reviewView = View("Review");
+        var selection = Host("Selection template", controller.reviewView.transform, false).AddComponent<TutorialSelectionToggle>();
+        selection.toggle = selection.gameObject.AddComponent<Toggle>();
+        controller.selectionTemplate = selection; controller.selectionParent = controller.reviewView.transform;
         var entries = new List<TutorialPanelSequence>();
         foreach (string id in ids)
         {
-            var root = Host(id, go.transform);
-            entries.Add(new TutorialPanelSequence { id = id, panelRoot = root,
-                pages = new[] { Host("Page 1", root.transform), Host("Page 2", root.transform) } });
+            var data = Asset<TutorialData>(); data.dataId = id;
+            data.pages = new[] { new TutorialPageData(), new TutorialPageData() };
+            entries.Add(new TutorialPanelSequence { id = id, data = data });
         }
         controller.tutorials = entries.ToArray(); go.SetActive(true); return controller;
     }
@@ -68,14 +79,14 @@ public sealed class TutorialCanvasTests
         var controller = Controller("upgrade", "shop");
         Assert.That(controller.tutorialCanvas.enabled, Is.False);
         Assert.That(controller.TryShowTutorial("shop"), Is.True);
-        Assert.That(controller.previousButton.interactable, Is.False);
-        Assert.That(controller.tutorials[0].pages[0].activeSelf, Is.True);
-        controller.nextButton.onClick.Invoke();
+        Assert.That(controller.tutorialView.previousButton.interactable, Is.False);
+        Assert.That(controller.tutorialView.CurrentPage, Is.Zero);
+        controller.tutorialView.nextButton.onClick.Invoke();
         Assert.That(controller.CurrentPageIndex, Is.EqualTo(1));
-        Assert.That(controller.tutorials[0].pages[0].activeSelf, Is.False);
+        Assert.That(controller.tutorialView.CurrentPage, Is.EqualTo(1));
         Assert.That(TutorialCompletionHistory.IsCompleted("upgrade", "shop"), Is.False);
-        controller.previousButton.onClick.Invoke(); Assert.That(controller.CurrentPageIndex, Is.Zero);
-        controller.nextButton.onClick.Invoke(); controller.nextButton.onClick.Invoke();
+        controller.tutorialView.previousButton.onClick.Invoke(); Assert.That(controller.CurrentPageIndex, Is.Zero);
+        controller.tutorialView.nextButton.onClick.Invoke(); controller.tutorialView.nextButton.onClick.Invoke();
         Assert.That(controller.IsShowing, Is.False);
         Assert.That(controller.tutorialCanvas.enabled, Is.False);
         Assert.That(TutorialCompletionHistory.IsCompleted("upgrade", "shop"), Is.True);
@@ -92,11 +103,11 @@ public sealed class TutorialCanvasTests
         Assert.That(controller.TryShowTutorial("drop"), Is.True);
         Assert.That(controller.TryShowTutorial("drop"), Is.False);
         Assert.That(controller.CurrentTutorialId, Is.EqualTo("enemy"));
-        controller.skipButton.onClick.Invoke();
+        controller.tutorialView.closeButton.onClick.Invoke();
         Assert.That(TutorialCompletionHistory.IsCompleted("general", "enemy"), Is.False);
         Assert.That(controller.CurrentTutorialId, Is.EqualTo("drop"));
-        Assert.That(controller.tutorials[0].panelRoot.activeSelf, Is.False);
-        controller.skipButton.onClick.Invoke();
+        Assert.That(controller.tutorialView.CurrentData, Is.SameAs(controller.tutorials[1].data));
+        controller.tutorialView.closeButton.onClick.Invoke();
         Assert.That(TutorialCompletionHistory.IsCompleted("general", "drop"), Is.True);
         Assert.That(controller.IsShowing, Is.False);
     }
@@ -120,7 +131,7 @@ public sealed class TutorialCanvasTests
     public void InvalidUiReferencesNeverConsumeOnceOnlyCompletion()
     {
         var controller = Controller("upgrade", "shop");
-        controller.tutorials[0].pages[0] = null;
+        controller.tutorials[0].data.pages[0] = null;
         Assert.That(controller.TryShowTutorial("shop"), Is.False);
         Assert.That(TutorialCompletionHistory.IsCompleted("upgrade", "shop"), Is.False);
         Assert.That(controller.TryShowTutorial("unknown"), Is.False);
@@ -191,6 +202,128 @@ public sealed class TutorialCanvasTests
     }
 
     [Test]
+    public void ReviewListsSeenTutorialsIncludingCancelledOnesWithoutCompletingThem()
+    {
+        var controller = Controller("upgrade", "seen", "hidden");
+        controller.ShowTutorial("seen"); controller.Cancel();
+        Assert.That(TutorialCompletionHistory.HasSeen("upgrade", "seen"), Is.True);
+        Assert.That(TutorialCompletionHistory.IsCompleted("upgrade", "seen"), Is.False);
+        controller.OpenReview();
+        Assert.That(controller.IsReviewing, Is.True);
+        Assert.That(controller.reviewView.gameObject.activeSelf, Is.True);
+        Assert.That(controller.tutorialView.gameObject.activeSelf, Is.False);
+        Assert.That(controller.SelectionSlots.Count(slot => slot.gameObject.activeSelf), Is.EqualTo(1));
+        Assert.That(controller.CurrentTutorialId, Is.EqualTo("seen"));
+        controller.SelectReviewTutorial("hidden"); Assert.That(controller.CurrentTutorialId, Is.EqualTo("seen"));
+        controller.reviewView.nextButton.onClick.Invoke();
+        Assert.That(controller.CurrentPageIndex, Is.EqualTo(1));
+        Assert.That(controller.reviewView.nextButton.interactable, Is.False);
+        controller.reviewView.closeButton.onClick.Invoke();
+        Assert.That(controller.IsShowing, Is.False);
+        Assert.That(TutorialCompletionHistory.IsCompleted("upgrade", "seen"), Is.False);
+    }
+
+    [Test]
+    public void ReviewToggleSwitchesSharedPageAndQueuesNewAutomaticTutorials()
+    {
+        var controller = Controller("upgrade", "one", "two", "later");
+        int starts = 0, finishes = 0;
+        controller.tutorials[0].onStarted.AddListener(() => starts++);
+        controller.tutorials[0].onCompleted.AddListener(() => finishes++);
+        controller.ShowTutorial("one"); controller.Next(); controller.Next();
+        controller.ShowTutorial("two"); controller.Skip();
+        controller.OpenReview();
+        Assert.That(controller.SelectionSlots.Count, Is.EqualTo(2));
+        controller.SelectionSlots[1].toggle.isOn = true;
+        Assert.That(controller.CurrentTutorialId, Is.EqualTo("two"));
+        Assert.That(controller.SelectionSlots[0].toggle.isOn, Is.False);
+        Assert.That(controller.reviewView.CurrentData, Is.SameAs(controller.tutorials[1].data));
+        Assert.That(starts, Is.EqualTo(1)); Assert.That(finishes, Is.EqualTo(1));
+        Assert.That(controller.TryShowTutorial("later"), Is.True);
+        Assert.That(controller.CurrentTutorialId, Is.EqualTo("two"));
+        controller.CloseReview(); Assert.That(controller.CurrentTutorialId, Is.EqualTo("later"));
+        Assert.That(controller.reviewView.gameObject.activeSelf, Is.False);
+        Assert.That(controller.tutorialView.gameObject.activeSelf, Is.True);
+    }
+
+    [Test]
+    public void EmptyReviewDoesNotExposeUnseenTutorialsAndOldCompletedSavesRemainReviewable()
+    {
+        var controller = Controller("upgrade", "old");
+        controller.OpenReview();
+        Assert.That(controller.IsReviewing, Is.True);
+        Assert.That(controller.CurrentTutorialId, Is.Null);
+        Assert.That(controller.SelectionSlots.Count, Is.Zero);
+        controller.CloseReview();
+        PlayerPrefs.SetString(TutorialCompletionHistory.SaveKey, "{\"completedTutorialIds\":[\"upgrade\\nold\"]}");
+        controller.OpenReview(); Assert.That(controller.CurrentTutorialId, Is.EqualTo("old"));
+    }
+
+    [Test]
+    public void SpritePagesReplaceImagesOnTheSameAuthoredViewAndClearWhenClosed()
+    {
+        var controller = Controller("general", "media");
+        var texture = new Texture2D(2, 2); owned.Add(texture);
+        var sprite = Sprite.Create(texture, new Rect(0, 0, 2, 2), Vector2.one * .5f); owned.Add(sprite);
+        var view = controller.tutorialView;
+        view.spriteImage = Host("Authored Sprite", view.transform).AddComponent<Image>();
+        view.pageCounter = Host("Counter", view.transform).AddComponent<TMPro.TextMeshProUGUI>();
+        controller.tutorials[0].data.pages[0].sprite = sprite;
+        controller.ShowTutorial("media");
+        Assert.That(view.spriteImage.sprite, Is.SameAs(sprite)); Assert.That(view.pageCounter.text, Is.EqualTo("1 / 2"));
+        controller.Next(); Assert.That(view.CurrentPage, Is.EqualTo(1));
+        Assert.That(view.spriteImage.gameObject.activeSelf, Is.False);
+        Assert.That(view.pageCounter.text, Is.EqualTo("2 / 2"));
+        controller.Cancel(); Assert.That(view.spriteImage.sprite, Is.Null);
+    }
+
+    [Test]
+    public void SharedViewUsesLocalizedTutorialAndPageDescriptions()
+    {
+        var controller = Controller("general", "localized");
+        var view = controller.tutorialView;
+        view.tutorialInfo = Host("Title", view.transform).AddComponent<DataInfoUI>();
+        view.tutorialInfo.dataNameText = view.tutorialInfo.gameObject.AddComponent<TMPro.TextMeshProUGUI>();
+        view.pageInfo = Host("Page title", view.transform).AddComponent<DataInfoUI>();
+        view.pageInfo.dataNameText = view.pageInfo.gameObject.AddComponent<TMPro.TextMeshProUGUI>();
+        view.pageInfo.descriptionText = Host("Description", view.transform).AddComponent<TMPro.TextMeshProUGUI>();
+        var data = controller.tutorials[0].data;
+        data.data = new[] { new Description { language = language.korean, dataName = "튜토리얼" } };
+        data.pages[0].data = new[] { new Description { language = language.korean, dataName = "첫 페이지", description = "사용 설명" } };
+        controller.ShowTutorial("localized");
+        ((ISceneLocalizedUI)view.tutorialInfo).ApplyLanguage(language.korean, null);
+        ((ISceneLocalizedUI)view.pageInfo).ApplyLanguage(language.korean, null);
+        Assert.That(view.tutorialInfo.dataNameText.text, Is.EqualTo("튜토리얼"));
+        Assert.That(view.pageInfo.dataNameText.text, Is.EqualTo("첫 페이지"));
+        Assert.That(view.pageInfo.descriptionText.text, Is.EqualTo("사용 설명"));
+    }
+
+    [Test]
+    public void VideoPagesUsePlayerTextureAndReleasePlaybackWhenSwitchingToSprite()
+    {
+        var controller = Controller("general", "video");
+        var view = controller.tutorialView;
+        view.spriteImage = Host("Authored Sprite", view.transform).AddComponent<Image>();
+        var videoHost = Host("Authored Video", view.transform);
+        view.videoImage = videoHost.AddComponent<RawImage>();
+        view.videoPlayer = videoHost.AddComponent<UnityEngine.Video.VideoPlayer>();
+        view.videoPlayer.playOnAwake = false;
+        var clip = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Video.VideoClip>("Assets/Editor/Tests/Fixtures/TutorialVideo.webm");
+        Assert.That(clip, Is.Not.Null);
+        var page = controller.tutorials[0].data.pages[0];
+        page.mediaType = TutorialMediaType.Video; page.video = clip; page.loopVideo = false;
+        controller.ShowTutorial("video");
+        Assert.That(view.videoPlayer.clip, Is.SameAs(clip));
+        Assert.That(view.videoPlayer.renderMode, Is.EqualTo(UnityEngine.Video.VideoRenderMode.APIOnly));
+        Assert.That(view.videoPlayer.targetTexture, Is.Null);
+        Assert.That(view.videoPlayer.isLooping, Is.False);
+        Assert.That(view.videoImage.enabled, Is.False, "Old frames stay hidden until the first new decoded frame.");
+        controller.Next();
+        Assert.That(view.videoPlayer.clip, Is.Null); Assert.That(view.videoPlayer.isPlaying, Is.False);
+        Assert.That(view.videoImage.texture, Is.Null); Assert.That(view.videoImage.gameObject.activeSelf, Is.False);
+    }
+
+    [Test]
     public void OnlySuccessfulItemDropsPublishTheFirstDropEvent()
     {
         var controller = Controller("general", "drop"); controller.tutorials[0].triggerEvent = TutorialSignals.ItemDropped;
@@ -237,8 +370,27 @@ public sealed class TutorialSceneWiringTests
             Assert.That(trigger.sourceToggle, Is.SameAs(trigger.GetComponent<Toggle>()));
             Assert.That(controller.tutorials.Any(tutorial => tutorial.id == trigger.tutorialId), Is.True);
         }
-        // The user will supply the new UI; no placeholder Canvas/pages are generated.
-        Assert.That(controller.tutorialCanvas, Is.Null);
+        Assert.That(controller.tutorialCanvas, Is.Not.Null);
+        Assert.That(controller.tutorialView, Is.Not.Null);
+        Assert.That(controller.reviewView, Is.Not.Null);
+        Assert.That(controller.tutorials.All(entry => entry.data != null && entry.data.HasPages), Is.True);
+    }
+
+    [TestCase("UpgradeScene", "TutorialFrame")]
+    [TestCase("GameGeneralScene", "Test")]
+    public void AuthoredHelpButtonOpensTheSameScenesReview(string sceneName, string buttonName)
+    {
+        var scene = EditorSceneManager.OpenScene("Assets/Scenes/" + sceneName + ".unity", OpenSceneMode.Single);
+        var roots = scene.GetRootGameObjects();
+        var controller = roots.SelectMany(root => root.GetComponentsInChildren<TutorialCanvasController>(true)).Single();
+        var button = roots.SelectMany(root => root.GetComponentsInChildren<Button>(true)).Single(b => b.name == buttonName &&
+            Enumerable.Range(0, b.onClick.GetPersistentEventCount()).Any(i => b.onClick.GetPersistentMethodName(i) == "ToggleReview"));
+        int index = Enumerable.Range(0, button.onClick.GetPersistentEventCount()).Single(i => button.onClick.GetPersistentMethodName(i) == "ToggleReview");
+        Assert.That(button.onClick.GetPersistentTarget(index), Is.SameAs(controller));
+        Assert.That(controller.selectionTemplate, Is.Not.Null);
+        Assert.That(controller.SelectionSlots.All(slot => slot != null && slot.toggle != null && slot.label != null), Is.True);
+        Assert.That(controller.tutorialView.videoPlayer, Is.Not.Null);
+        Assert.That(controller.reviewView.videoPlayer, Is.Not.Null);
     }
 
     [Test]
@@ -251,6 +403,6 @@ public sealed class TutorialSceneWiringTests
         Assert.That(controller.completionScope, Is.EqualTo("general"));
         Assert.That(controller.tutorials.Single(tutorial => tutorial.triggerEvent == TutorialSignals.EnemySpawned).sourceScene, Is.EqualTo(general.battleScene));
         Assert.That(controller.tutorials.Single(tutorial => tutorial.triggerEvent == TutorialSignals.ItemDropped).sourceScene, Is.EqualTo(general.itemScene));
-        Assert.That(controller.tutorialCanvas, Is.Null);
+        Assert.That(controller.tutorialCanvas, Is.Not.Null);
     }
 }

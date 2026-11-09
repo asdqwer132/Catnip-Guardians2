@@ -10,8 +10,7 @@ public sealed class TutorialPanelSequence
     public string triggerEvent;
     [Tooltip("Optional source scene name. Empty accepts the event from any loaded scene.")]
     public string sourceScene;
-    public GameObject panelRoot;
-    public GameObject[] pages;
+    public TutorialData data;
     public bool showOnce = true;
     public bool skipCountsAsCompleted = true;
     public string[] requiredTutorialIds;

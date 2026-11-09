@@ -29,6 +29,14 @@ PrefabInstance:
       value: first-item-drop
       objectReference: {fileID: 0}
     - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[0].data
+      value:
+      objectReference: {fileID: 11400000, guid: fa96ea13e69ae5f539edbc62f3bc8b3f, type: 2}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
+      propertyPath: tutorials.Array.data[1].data
+      value:
+      objectReference: {fileID: 11400000, guid: 8de0a9814c3dd98568a1a80a0418eb9f, type: 2}
+    - target: {fileID: 2274347660735350959, guid: 9410afffa90dc9542b8a2687d2c531de, type: 3}
       propertyPath: tutorials.Array.data[0].showOnce
       value: 1
       objectReference: {fileID: 0}

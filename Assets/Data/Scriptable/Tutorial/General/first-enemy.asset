@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39a8a70865124443bccfc5c433455546, type: 3}
+  m_Name: first-enemy
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialData
+  icon: {fileID: 0}
+  data:
+  - language: 0
+    dataName: Enemies
+    description:
+    detailDescription:
+  - language: 1
+    dataName: "\uC801 \uB4F1\uC7A5"
+    description:
+    detailDescription:
+  dataNumbering:
+  dataId: first-enemy
+  dataType: 0
+  requireUnlock: 0
+  pages:
+  - data:
+    - language: 0
+      dataName: Enemies
+      description: Defeat enemies before their number reaches the field limit.
+      detailDescription:
+    - language: 1
+      dataName: "\uC801 \uB4F1\uC7A5"
+      description: "\uD544\uB4DC\uC758 \uC801 \uC218\uAC00 \uCD5C\uB300\uCE58\uC5D0
+        \uB3C4\uB2EC\uD558\uAE30 \uC804\uC5D0 \uC801\uC744 \uCC98\uCE58\uD558\uC138\uC694."
+      detailDescription:
+    mediaType: 0
+    sprite: {fileID: 21300000, guid: 88b6bdba1fceb3c44bd88ed0afebc0bc, type: 3}
+    video: {fileID: 0}
+    loopVideo: 1

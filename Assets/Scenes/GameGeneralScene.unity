@@ -7842,13 +7842,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SubPlantManager, Assembly-CSharp
-        m_MethodName: ThrowAllItems
-        m_Mode: 1
+      - m_Target: {fileID: 2165692092185641882}
+        m_TargetAssemblyTypeName: TutorialCanvasController, Assembly-CSharp
+        m_MethodName: ToggleReview
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgumentAssemblyTypeName:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -11449,6 +11449,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e1234098f579a8e40b13a5567668e972, type: 3}
+--- !u!114 &2165692092185641882 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5548547768187197558, guid: e1234098f579a8e40b13a5567668e972, type: 3}
+  m_PrefabInstance: {fileID: 2165692092185641881}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7145816b36134797911fa77776864b9d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialCanvasController
 --- !u!4 &2526823650321471837 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3686458688271604615, guid: e1234098f579a8e40b13a5567668e972, type: 3}
