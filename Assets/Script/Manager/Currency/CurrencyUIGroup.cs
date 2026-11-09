@@ -59,7 +59,11 @@ public class CurrencyUIGroup : MonoBehaviour
         EnsureRows();
         if (currencyUIs == null) return;
         foreach (var ui in currencyUIs)
-            if (ui != null) ui.SetCurrencyData(currencyData != null ? currencyData : ui.currencyData);
+            if (ui != null)
+            {
+                ui.SetRequiredCostDisplay(source == CurrencyDisplaySource.RequiredCost);
+                ui.SetCurrencyData(currencyData != null ? currencyData : ui.currencyData);
+            }
     }
 
     private void RefreshRoundUI()
@@ -82,9 +86,10 @@ public class CurrencyUIGroup : MonoBehaviour
                 if (cost != null && cost.currencyType == ui.type) required += Math.Max(0, cost.amount);
             int amount = (int)Math.Min(int.MaxValue, required);
             ui.SetCurrencyData(currencyData != null ? currencyData : ui.currencyData);
+            ui.SetRequiredCostDisplay(true);
             ui.SetRequiredAmount(amount);
             ui.SetAmount(ui.requiredAmountText != null && CurrencyManager.instance != null ? CurrencyManager.instance.GetCurrency(ui.type) : amount);
-            ui.gameObject.SetActive(amount > 0);
+
         }
     }
 
@@ -94,6 +99,7 @@ public class CurrencyUIGroup : MonoBehaviour
         foreach (var ui in currencyUIs)
         {
             if (ui == null || ui.type != type) continue;
+            ui.SetRequiredCostDisplay(source == CurrencyDisplaySource.RequiredCost);
             ui.SetCurrencyData(currencyData != null ? currencyData : ui.currencyData);
             ui.SetAmount(amount);
         }

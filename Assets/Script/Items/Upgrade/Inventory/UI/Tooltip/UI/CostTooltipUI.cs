@@ -60,7 +60,7 @@ public class CostTooltipUI : ItemTooltipUI
         {
             foreach (var item in extraBoxCosts)
             {
-                if (item != null && item.costPanel != null)
+                if (item != null && item.costPanel != null && item.costPanel.GetComponentInChildren<CurrencyUI>(true) == null)
                     item.costPanel.SetActive(false);
             }
             if (costData.costs == null || costData.isUnlocked)
@@ -68,10 +68,10 @@ public class CostTooltipUI : ItemTooltipUI
 
             foreach (var cost in costData.costs)
             {
-                if (cost == null)
+                if (cost == null || cost.amount <= 0)
                     continue;
                 BoxCost boxCost = GetBoxCost(cost.currencyType);
-                if (boxCost == null)
+                if (boxCost == null || (boxCost.costPanel != null && boxCost.costPanel.GetComponentInChildren<CurrencyUI>(true) != null))
                     continue;
                 if (boxCost.costText != null)
                     boxCost.costText.text = cost.amount.ToString();

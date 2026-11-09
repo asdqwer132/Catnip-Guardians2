@@ -23,6 +23,13 @@ public sealed class CurrencyUI : MonoBehaviour, ISceneLocalizedUI
     private Scene registeredScene;
     private int amount;
     private int requiredAmount;
+    private bool displaysRequiredCost;
+
+    public void SetRequiredCostDisplay(bool enabled)
+    {
+        displaysRequiredCost = enabled;
+        RefreshVisibility();
+    }
 
     private void OnEnable()
     {
@@ -47,6 +54,13 @@ public sealed class CurrencyUI : MonoBehaviour, ISceneLocalizedUI
 
     private void RefreshVisibility()
     {
+        if (displaysRequiredCost)
+        {
+            bool visible = requiredAmount > 0;
+            if (textObj != null && textObj != gameObject) textObj.SetActive(visible);
+            gameObject.SetActive(visible);
+            return;
+        }
         if (textObj != null)
             textObj.SetActive((!hideWhenUndiscovered || (CurrencyManager.instance != null && CurrencyManager.instance.IsDiscovered(type)))
                 && (!hideWhenZero || amount > 0 || requiredAmount > 0 || type == CurrencyType.CurrencyMain));
