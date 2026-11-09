@@ -7,6 +7,8 @@ using UnityEngine;
 )]
 public class SkillNodeData : DefaultData
 {
+    public string ProgressKey => skillMap != null && !string.IsNullOrEmpty(skillMap.dataId)
+        ? skillMap.dataId + "\n" + dataId : dataId;
     [Header("Extra Data / Node Icon")]
     [Tooltip("Icon shown after unlocking. Empty uses the basic icon.")]
     public Sprite unlockedIcon;

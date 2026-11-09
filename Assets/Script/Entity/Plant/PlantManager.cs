@@ -20,7 +20,7 @@ public class PlantManager : MonoBehaviour
         Debug.Log(index + "/");
         if (!IsValidIndex(index)) return false;
         Debug.Log(index + "/s");
-        skillPlantIndex = index;
+        skillPlantIndex = Mathf.Max(skillPlantIndex, index);
         return true;
     }
     public bool SetPotionPlantIndex(int index)

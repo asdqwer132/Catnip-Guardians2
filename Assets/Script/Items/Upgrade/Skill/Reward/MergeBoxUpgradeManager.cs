@@ -21,7 +21,7 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
     private bool loaded, restoring, initialized;
     private int mainPlantIndex = -1;
     public int MainPlantIndex { get { Initialize(); return mainPlantIndex; } }
-    public void ApplyMainPlantIndex(int index) => mainPlantIndex = Math.Max(0, index);
+    public void ApplyMainPlantIndex(int index) => mainPlantIndex = Math.Max(mainPlantIndex, Math.Max(0, index));
 
     private void Awake() => Load();
     private void OnEnable()
@@ -58,10 +58,19 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
         Load();
         if (initialized || skillTree == null) return;
         skillTree.mergeBoxUpgrades = this;
+        // Old saves stored only node IDs. Preserve their original first-match interpretation,
+        // then use map-qualified identities for every subsequent purchase.
+        for (int i = 0; i < progress.unlockedSkillIds.Count; i++)
+        {
+            string key = progress.unlockedSkillIds[i];
+            if (skillNodes.Exists(node => node != null && node.ProgressKey == key)) continue;
+            var legacy = skillNodes.Find(node => node != null && node.dataId == key);
+            if (legacy != null) progress.unlockedSkillIds[i] = legacy.ProgressKey;
+        }
         restoring = true;
         try
         {
-            var unlocked = skillNodes.FindAll(node => node != null && progress.unlockedSkillIds.Contains(node.dataId));
+            var unlocked = skillNodes.FindAll(node => node != null && progress.unlockedSkillIds.Contains(node.ProgressKey));
             skillTree.RestoreUnlockedSkills(unlocked);
             RebuildLevels();
             initialized = true;
@@ -74,7 +83,7 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
         if (!skillNodes.Contains(node)) skillNodes.Add(node);
         // 새로 작성한 UI 노드도 이전 구매 ID가 있으면 복원합니다.
         Load();
-        if (!initialized || skillTree == null || skillTree.IsUnlocked(node.dataId) || !progress.unlockedSkillIds.Contains(node.dataId)) return;
+        if (!initialized || skillTree == null || skillTree.IsUnlocked(node) || !progress.unlockedSkillIds.Contains(node.ProgressKey)) return;
         restoring = true;
         try { skillTree.RestoreUnlockedSkills(new[] { node }); RebuildLevels(); }
         finally { restoring = false; }
@@ -95,8 +104,8 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
         mainPlantIndex = -1;
         foreach (string id in progress.unlockedSkillIds)
         {
-            var node = skillNodes.Find(value => value != null && value.dataId == id);
-            if (node == null || !skillTree.IsUnlocked(id) || node.rewards == null) continue;
+            var node = skillNodes.Find(value => value != null && value.ProgressKey == id);
+            if (node == null || !skillTree.IsUnlocked(node) || node.rewards == null) continue;
             foreach (var reward in node.rewards)
             {
                 if (reward is MergeBoxLevelSkillReward box) ApplyReward(box.series, box.level);
@@ -111,9 +120,9 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
         foreach (var node in skillNodes)
         {
             if (node == null || string.IsNullOrEmpty(node.dataId)) continue;
-            if (skillTree.IsUnlocked(node.dataId))
-            { if (!progress.unlockedSkillIds.Contains(node.dataId)) progress.unlockedSkillIds.Add(node.dataId); }
-            else progress.unlockedSkillIds.Remove(node.dataId);
+            if (skillTree.IsUnlocked(node))
+            { if (!progress.unlockedSkillIds.Contains(node.ProgressKey)) progress.unlockedSkillIds.Add(node.ProgressKey); }
+            else progress.unlockedSkillIds.Remove(node.ProgressKey);
         }
         RebuildLevels();
         store.Write(JsonUtility.ToJson(progress));

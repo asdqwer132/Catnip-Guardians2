@@ -76,12 +76,12 @@ public class MainPlantSelectionTests
     }
 
     [UnityTest]
-    public IEnumerator SkillRewardSelectionRestoresInPurchaseOrderEvenIfTheNodeListIsReordered()
+    public IEnumerator SkillSelectionUsesHighestRewardWithDuplicateNodeIdsAndRestoresAfterReordering()
     {
         Host("Wallet").AddComponent<CurrencyManager>();
         var map = Asset<SkillMapData>(); map.dataId = "map";
-        var a = Asset<SkillNodeData>(); a.dataId = "a"; a.skillMap = map; a.costs = System.Array.Empty<Cost>();
-        var b = Asset<SkillNodeData>(); b.dataId = "b"; b.skillMap = map; b.costs = System.Array.Empty<Cost>();
+        var a = Asset<SkillNodeData>(); a.dataId = "SkillNodeData 1"; a.skillMap = map; a.costs = System.Array.Empty<Cost>();
+        var b = Asset<SkillNodeData>(); b.dataId = "SkillNodeData 1"; b.skillMap = Asset<SkillMapData>(); b.skillMap.dataId = "another-map"; b.costs = System.Array.Empty<Cost>();
         var rewardA = Asset<MainPlantIndexSkillReward>(); rewardA.plantIndex = 5; a.rewards.Add(rewardA);
         var rewardB = Asset<MainPlantIndexSkillReward>(); rewardB.plantIndex = 1; b.rewards.Add(rewardB);
         var tree = Host("Tree").AddComponent<SkillTreeManager>();
@@ -89,12 +89,12 @@ public class MainPlantSelectionTests
         var store = new MemoryStore(); upgrades.SetSaveStore(store); upgrades.skillTree = tree;
         upgrades.skillNodes = new List<SkillNodeData> { a, b }; host.SetActive(true); upgrades.Initialize();
         Assert.That(tree.UnlockSkill(a), Is.True); Assert.That(tree.UnlockSkill(b), Is.True);
-        Assert.That(upgrades.MainPlantIndex, Is.EqualTo(1));
+        Assert.That(upgrades.MainPlantIndex, Is.EqualTo(5));
         host.SetActive(false);
         var otherTree = Host("Reloaded tree").AddComponent<SkillTreeManager>();
         var otherHost = Host("Reloaded upgrades", false); var other = otherHost.AddComponent<MergeBoxUpgradeManager>();
         other.SetSaveStore(store); other.skillTree = otherTree; other.skillNodes = new List<SkillNodeData> { b, a };
-        otherHost.SetActive(true); other.Initialize(); Assert.That(other.MainPlantIndex, Is.EqualTo(1));
+        otherHost.SetActive(true); other.Initialize(); Assert.That(other.MainPlantIndex, Is.EqualTo(5));
         yield return null;
     }
 

@@ -76,7 +76,7 @@ public class SkillTreeManager : MonoBehaviour, IStoryProgressSource
         RefreshContext();
         foreach (var node in nodes)
         {
-            if (node == null || string.IsNullOrEmpty(node.dataId) || !unlockedSkillIds.Add(node.dataId)) continue;
+            if (node == null || string.IsNullOrEmpty(node.dataId) || !unlockedSkillIds.Add(node.ProgressKey)) continue;
             AddUnlockedSkillToMap(node);
             ApplyRewards(node);
         }
@@ -101,7 +101,7 @@ public class SkillTreeManager : MonoBehaviour, IStoryProgressSource
             return false;
         }
 
-        if (IsUnlocked(node.dataId))
+        if (IsUnlocked(node))
             return false;
 
         if (!HasRequiredSkills(node))
@@ -119,7 +119,7 @@ public class SkillTreeManager : MonoBehaviour, IStoryProgressSource
         if (!CanUnlock(node))
         {
             string reason = node == null ? "Missing node" : string.IsNullOrEmpty(node.dataId) ? "Empty node ID" :
-                IsUnlocked(node.dataId) ? "Already unlocked" : !HasRequiredSkills(node) ? "Prerequisites not unlocked" :
+                IsUnlocked(node) ? "Already unlocked" : !HasRequiredSkills(node) ? "Prerequisites not unlocked" :
                 CurrencyManager.instance == null ? "Missing CurrencyManager" : "Insufficient currency";
             Debug.LogWarning("[SkillPurchase] Rejected: " + reason, this);
             if (debugLog)
@@ -138,7 +138,7 @@ public class SkillTreeManager : MonoBehaviour, IStoryProgressSource
         }
 
         // 전체 해금 목록에 등록
-        unlockedSkillIds.Add(node.dataId);
+        unlockedSkillIds.Add(node.ProgressKey);
 
         // 해당 스킬 맵의 해금 목록에도 등록
         AddUnlockedSkillToMap(node);
@@ -268,7 +268,7 @@ public class SkillTreeManager : MonoBehaviour, IStoryProgressSource
             hasValidRequiredSkill = true;
 
             // 하나라도 해금되어 있으면 통과
-            if (IsUnlocked(requiredSkill.dataId))
+            if (IsUnlocked(requiredSkill))
                 return true;
         }
 
@@ -296,12 +296,16 @@ public class SkillTreeManager : MonoBehaviour, IStoryProgressSource
     }
 
     // 전체 스킬 트리 기준 해금 여부
+    public bool IsUnlocked(SkillNodeData node) => node != null && unlockedSkillIds.Contains(node.ProgressKey);
+
     public bool IsUnlocked(string skillId)
     {
         if (string.IsNullOrEmpty(skillId))
             return false;
 
-        return unlockedSkillIds.Contains(skillId);
+        if (unlockedSkillIds.Contains(skillId)) return true;
+        foreach (var ids in unlockedSkillIdsByMap.Values) if (ids.Contains(skillId)) return true;
+        return false;
     }
 
     // 특정 스킬 맵 기준 해금 여부
@@ -409,7 +413,7 @@ public class SkillTreeManager : MonoBehaviour, IStoryProgressSource
         // 전체 해금 목록에서도 해당 맵의 스킬들을 제거
         foreach (string skillId in mapSkillIds)
         {
-            unlockedSkillIds.Remove(skillId);
+            unlockedSkillIds.Remove(mapId + "\n" + skillId);
         }
 
         unlockedSkillIdsByMap.Remove(mapId);
