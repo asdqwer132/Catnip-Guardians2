@@ -10,6 +10,7 @@ public class UpgradeManager : MonoBehaviour
     public ShopManager shopManager;
     public BuffSkillManager buffSkillManager;
     public MergeBoxUpgradeManager mergeBoxUpgrades;
+    public PotionEquipmentManager potionEquipment;
 
     [Header("UI")]
     public SkillTreeUI skillTreeUI;
@@ -28,7 +29,7 @@ public class UpgradeManager : MonoBehaviour
         UpgradeInit();
         UIInit();
         if (mergeBoxUpgrades != null)
-            RefreshBroadcaster.Instance?.Broadcast(RefreshType.SkillTree | RefreshType.Unlock | RefreshType.Shop | RefreshType.Inventory | RefreshType.Bag | RefreshType.Equipment);
+            RefreshBroadcaster.Instance?.Broadcast(RefreshType.SkillTree | RefreshType.Unlock | RefreshType.Shop | RefreshType.Inventory | RefreshType.Equipment);
 
         isInited = true;
     }
@@ -61,6 +62,8 @@ public class UpgradeManager : MonoBehaviour
     private void UIInit()
     {
         mergeBoxUpgrades?.Initialize();
+        if (potionEquipment != null && GameSession.Instance != null && GameSession.Instance.TryReadGeneralData(out var data))
+            potionEquipment.RestoreSlots(data.potionSlots);
         if (skillTreeUI != null)
             skillTreeUI.Init();
 
@@ -78,7 +81,12 @@ public class UpgradeManager : MonoBehaviour
     {
         var session = GameSession.GetOrCreate();
         var data = new UpgradeToGeneralData();
-        if (mergeBoxUpgrades != null) data.boxLevels = mergeBoxUpgrades.CaptureLevels();
+        if (mergeBoxUpgrades != null)
+        {
+            data.boxLevels = mergeBoxUpgrades.CaptureLevels();
+            data.mainPlantIndex = mergeBoxUpgrades.MainPlantIndex;
+        }
+        if (potionEquipment != null) data.potionSlots = potionEquipment.CaptureSlots();
         var inventory = materialInventory != null ? materialInventory : InventoryManager.instance;
         if (inventory != null)
             data.materialItems = GameSessionItemCopy.Copy(inventory.items);

@@ -20,7 +20,7 @@ public sealed class SummonGroupTests
     private SummonDefinition Kind(bool member = true)
     { var result=Asset<SummonDefinition>();if(member)result.summonGroup=group;return result; }
     private ItemEffectContext Context(GameObject actorOwner = null)
-        => new ItemEffectContext(actorOwner??owner,Asset<ItemData>(),origin,origin,null,buffManager:manager,direction:Vector3.right) {
+        => new ItemEffectContext(actorOwner??owner,Asset<ItemData>(),origin,origin,buffManager:manager,direction:Vector3.right) {
             allowItemUseReactions=false };
     private SummonActor Actor(SummonDefinition definition, GameObject actorOwner = null)
     {

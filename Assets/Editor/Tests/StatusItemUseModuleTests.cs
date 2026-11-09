@@ -25,7 +25,7 @@ public sealed class StatusItemUseModuleTests
         item.effectDatas = new ItemEffectData[] { effect }; return item;
     }
     private ItemEffectContext Context()
-        => new ItemEffectContext(player.gameObject, mineral, Vector3.zero, Vector3.right, null,
+        => new ItemEffectContext(player.gameObject, mineral, Vector3.zero, Vector3.right,
             buffManager: manager, direction: Vector3.right);
     private ActiveBuff Grant(BuffUseLimitType limit = BuffUseLimitType.Infinite, int uses = 2)
     {
@@ -35,7 +35,7 @@ public sealed class StatusItemUseModuleTests
         grant.Execute(Context()); return manager.Storage.activeBuffs.Find(buff => buff.specialStatusKey == key);
     }
     private void Use(ItemEffectContext parent = null)
-        => ItemEffectExecutor.ExecuteItem(mineral,Vector3.zero,Vector3.right,Vector3.right,player.gameObject,null,manager,parent);
+        => ItemEffectExecutor.ExecuteItem(mineral,Vector3.zero,Vector3.right,Vector3.right,player.gameObject,manager,parent);
 
     [SetUp]
     public void SetUp()

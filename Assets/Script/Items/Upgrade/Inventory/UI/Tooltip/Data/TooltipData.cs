@@ -65,13 +65,6 @@ public class SkillMapTooltipData : TooltipData
     public string completedNodesCount;
 }
 [Serializable]
-public class BagTooltipData : TooltipData
-{
-    public string bagType;
-    public string weight;
-    public string slots;
-}
-[Serializable]
 public class CostTooltipData : TooltipData
 {
     public Cost[] costs;

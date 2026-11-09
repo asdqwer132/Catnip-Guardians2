@@ -31,7 +31,7 @@ public sealed class AdditionalEnemyControlTests
         return enemy;
     }
     private ItemEffectContext Context(ItemEffectLifetime lifetime = null) =>
-        new ItemEffectContext(null, null, Vector3.zero, Vector3.zero, null) { lifetime = lifetime };
+        new ItemEffectContext(null, null, Vector3.zero, Vector3.zero) { lifetime = lifetime };
     private T Hold<T>(T handle) where T : IDisposable { handles.Add(handle); return handle; }
     private static void Set(object target, string name, object value) =>
         target.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(target, value);

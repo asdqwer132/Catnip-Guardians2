@@ -31,7 +31,7 @@ public class ItemUsePositionProvider : MonoBehaviour
     {
         if (mainCamera == null)
             mainCamera = Camera.main;
-        targetRangeIndicatorPrefab.gameObject.SetActive(false);
+        if (targetRangeIndicatorPrefab != null) targetRangeIndicatorPrefab.gameObject.SetActive(false);
     }
 
     public Vector3 GetUseStartPosition(GameObject owner)
@@ -139,8 +139,11 @@ public class ItemUsePositionProvider : MonoBehaviour
         hasSelectedPosition = true;
         PositionSelected?.Invoke(selectedPosition);
 
-        targetRangeIndicatorPrefab.gameObject.SetActive(true);
-        targetRangeIndicatorPrefab.transform.position = selectedPosition;
+        if (targetRangeIndicatorPrefab != null)
+        {
+            targetRangeIndicatorPrefab.gameObject.SetActive(true);
+            targetRangeIndicatorPrefab.transform.position = selectedPosition;
+        }
 
         return true;
     }

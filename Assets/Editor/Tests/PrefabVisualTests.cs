@@ -28,7 +28,7 @@ public sealed class PrefabVisualTests
     public void AreaCreationNeedsADefinitionAndHasNoSecondStatOrVisualConfiguration()
     {
         var effect = Asset<AreaEffectData>();
-        var context = new ItemEffectContext(null,Asset<ItemData>(),Vector3.zero,Vector3.zero,null);
+        var context = new ItemEffectContext(null,Asset<ItemData>(),Vector3.zero,Vector3.zero);
         Assert.That(effect.TryExecute(context), Is.False, "정의가 없으면 생성 성공이나 연출 완료로 취급하지 않습니다.");
         effect.areaDefinition = Asset<AreaDefinition>();
         Assert.That(effect.BaseStat, Is.SameAs(effect.areaDefinition.stat));
@@ -43,12 +43,12 @@ public sealed class PrefabVisualTests
         definition.stat.groundRadius = 3f; definition.scaleVisualByRadius = false;
         var effect = Asset<AreaEffectData>(); effect.areaDefinition = definition;
         var first = Host().AddComponent<ReactiveGroundArea>();
-        first.Init(effect,new ItemEffectContext(null,Asset<ItemData>(),Vector3.zero,Vector3.zero,null));
+        first.Init(effect,new ItemEffectContext(null,Asset<ItemData>(),Vector3.zero,Vector3.zero));
         Assert.That(first.ControlledRangeVisual, Is.Not.Null);
         Assert.That(first.ControlledRangeVisual.localScale, Is.EqualTo(Vector3.one));
         definition.scaleVisualByRadius = true;
         var second = Host().AddComponent<ReactiveGroundArea>();
-        second.Init(effect,new ItemEffectContext(null,Asset<ItemData>(),Vector3.zero,Vector3.zero,null));
+        second.Init(effect,new ItemEffectContext(null,Asset<ItemData>(),Vector3.zero,Vector3.zero));
         Assert.That(second.ControlledRangeVisual.localScale, Is.EqualTo(new Vector3(6f,6f,1f)));
         var runtimeAnimation = second.ControlledRangeVisual.GetComponent<PrefabVisualAnimator>();
         Assert.That(runtimeAnimation.Play(), Is.True); runtimeAnimation.Advance(0.1f);
@@ -64,7 +64,7 @@ public sealed class PrefabVisualTests
         var collider = root.AddComponent<CircleCollider2D>(); collider.radius = 2f;
         var damage = root.AddComponent<DamageArea>(); damage.rangeVisual = rangeRoot.transform;
         sprite.transform.localScale = Vector3.one;
-        damage.InitWithSnapshotAndDynamicBuff(new DamageAreaAttackStat { damageAreaRange = 2f, damageAreaLifeTime = 10f }, null, null, null, null);
+        damage.InitWithSnapshotAndDynamicBuff(new DamageAreaAttackStat { damageAreaRange = 2f, damageAreaLifeTime = 10f }, null, null, null);
         animation.loop.rotate = true; animation.loop.pulse = true; animation.loop.sway = true;
         Assert.That(animation.Play(), Is.True); animation.Advance(0.2f);
         Assert.That(collider.radius, Is.EqualTo(2f)); Assert.That(root.transform.localScale, Is.EqualTo(Vector3.one));
@@ -152,7 +152,7 @@ public sealed class PrefabVisualTests
         var definition = Asset<AreaDefinition>(); definition.stat.groundRadius = 2.5f; definition.stat.groundLifetime = 8f;
         var effect = Asset<AreaEffectData>(); effect.areaDefinition = definition;
         var area = Host().AddComponent<ReactiveGroundArea>(); area.transform.localScale = new Vector3(7f,7f,1f);
-        area.Init(effect,new ItemEffectContext(null,Asset<ItemData>(),Vector3.zero,Vector3.zero,null));
+        area.Init(effect,new ItemEffectContext(null,Asset<ItemData>(),Vector3.zero,Vector3.zero));
         var ranges = new List<PrefabVisualRange>(); area.CollectPrefabRanges(ranges);
         Assert.That(ranges.Count, Is.EqualTo(1)); Assert.That(ranges[0].radius, Is.EqualTo(2.5f), "실제 조회는 월드 반경을 사용하므로 Visual의 크기를 다시 곱하지 않습니다.");
         float remaining; Assert.That(area.TryGetVisualLifetime(out remaining), Is.True); Assert.That(remaining, Is.EqualTo(8f));
@@ -164,7 +164,7 @@ public sealed class PrefabVisualTests
         var effect = Asset<ReactiveGroundEffect>(); effect.areaDefinition = Asset<AreaDefinition>();
         effect.areaDefinition.stat.groundRadius = 3f;
         var source = Host().AddComponent<ReactiveGroundArea>();
-        source.Init(effect,new ItemEffectContext(null,Asset<ItemData>(),Vector3.zero,Vector3.zero,null));
+        source.Init(effect,new ItemEffectContext(null,Asset<ItemData>(),Vector3.zero,Vector3.zero));
         var child = new GameObject("Visual"); child.transform.SetParent(source.transform,false);
         var gizmo = child.AddComponent<PrefabRangeGizmo>(); var ranges = new List<PrefabVisualRange>(); gizmo.CollectRanges(ranges);
         Assert.That(ranges.Count, Is.EqualTo(1)); Assert.That(ranges[0].radius, Is.EqualTo(3f));

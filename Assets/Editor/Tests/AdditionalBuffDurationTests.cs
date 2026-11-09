@@ -74,7 +74,7 @@ public sealed class AdditionalBuffDurationTests
 
     private void Use(ItemData item)
         => ItemEffectExecutor.ExecuteItem(item, Vector3.zero, Vector3.zero, Vector3.right,
-            null, null, manager, triggerSpecialItems: false);
+            null, manager, triggerSpecialItems: false);
 
     private ActiveBuff ActiveFrom(ItemData item)
     {
@@ -99,7 +99,7 @@ public sealed class AdditionalBuffDurationTests
         Assert.That(granted.maxTime, Is.EqualTo(expected).Within(0.0001f));
         Assert.That(granted.remainTime, Is.EqualTo(expected).Within(0.0001f));
         Assert.That(((BuffEffect)food.effectDatas[0]).buffInfo.duration, Is.EqualTo(8f));
-        Assert.That(manager.GetBuffedStatForItem(new DamageAreaAttackStat { damageAreaPower = 5f }, food, null)
+        Assert.That(manager.GetBuffedStatForItem(new DamageAreaAttackStat { damageAreaPower = 5f }, food)
             .damageAreaPower, Is.EqualTo(5f), "지속시간 증가는 공격력을 변경하면 안 됩니다.");
     }
 
@@ -131,7 +131,7 @@ public sealed class AdditionalBuffDurationTests
     {
         ItemData booster = DurationBooster(0f, 0.5f);
         Use(booster);
-        Assert.That(manager.GetBuffedStatForItem(new BuffInfo { duration = 8f }, booster, null).duration,
+        Assert.That(manager.GetBuffedStatForItem(new BuffInfo { duration = 8f }, booster).duration,
             Is.EqualTo(8f), "Include Self가 꺼져 있으면 부여 아이템 자신은 제외합니다.");
 
         ItemData food = FoodWithEightSecondBuff();

@@ -26,7 +26,7 @@ public sealed class AdditionalHealthTests
         return health;
     }
     private ItemEffectContext Context(Health health)
-        => new ItemEffectContext(health.gameObject, null, Vector3.zero, Vector3.right, null);
+        => new ItemEffectContext(health.gameObject, null, Vector3.zero, Vector3.right);
 
     [SetUp]
     public void Setup()
@@ -77,7 +77,7 @@ public sealed class AdditionalHealthTests
             target = HealthTargetMode.AllAllies, useRadius = true,
             shape = HealthTargetShape.DirectionalRectangle, width = 0.4f, length = 5f
         };
-        ItemEffectContext context = new ItemEffectContext(null, null, Vector3.zero, Vector3.zero, null, direction: Vector3.right);
+        ItemEffectContext context = new ItemEffectContext(null, null, Vector3.zero, Vector3.zero, direction: Vector3.right);
         List<Health> targets = new List<Health>(); settings.Resolve(context, targets);
         Assert.That(targets, Does.Contain(inside));
         //Assert.That(targets, Does.Not.Contain(behind));

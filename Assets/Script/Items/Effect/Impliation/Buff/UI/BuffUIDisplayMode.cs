@@ -1,8 +1,7 @@
 public enum BuffUIDisplayMode
 {
     All,
-    Bag,
-    Item,
+    Item = 2,
     ItemSeries,
     Target,
     Group

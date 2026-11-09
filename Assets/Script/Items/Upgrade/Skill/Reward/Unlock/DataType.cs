@@ -7,8 +7,6 @@ public enum DataType
     ItemEffect = 10,
     ItemClass = 11,
     ItemCategory = 12,
-    Bag = 2,
-    BagSlot = 21,
     SkillLine = 6,
     Plant = 7,
 }

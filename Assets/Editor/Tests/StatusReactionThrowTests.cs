@@ -44,7 +44,7 @@ public sealed class StatusReactionThrowTests
         executor.showTargetRange = false; commonPrefab = Prefab(); executor.throwMoverPrefab = commonPrefab;
         record = Asset<CombatEffectRecordingEffect>(); var item = Asset<ItemData>();
         item.effectDatas = new ItemEffectData[] { record };
-        context = new ItemEffectContext(Host(),item,new Vector3(1f,2f,0f),new Vector3(5f,6f,0f),null,
+        context = new ItemEffectContext(Host(),item,new Vector3(1f,2f,0f),new Vector3(5f,6f,0f),
             buffManager:manager,direction:Vector3.right);
     }
     [TearDown]
@@ -98,7 +98,7 @@ public sealed class StatusReactionThrowTests
         var mover = Launch(module); mover.Tick(0.5f);
         Assert.That(mover.transform.position.y, Is.EqualTo(8f).Within(0.0001f)); Assert.That(record.calls.Count, Is.Zero);
         mover.Tick(0.5f); Assert.That(record.calls.Count, Is.EqualTo(1));
-        Assert.That(executor.Throw(context.sourceItemData,context.targetPosition,context.targetPosition,context.owner,null,0), Is.False);
+        Assert.That(executor.Throw(context.sourceItemData,context.targetPosition,context.targetPosition,context.owner), Is.False);
     }
     [Test]
     public void ParentCompletionWaitsForTheStateThrowToLand()

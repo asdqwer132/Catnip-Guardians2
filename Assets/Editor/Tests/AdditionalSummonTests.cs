@@ -25,7 +25,7 @@ public sealed class AdditionalSummonTests
         return result;
     }
     private ItemEffectContext Context(GameObject owner = null)
-        => new ItemEffectContext(owner, Asset<ItemData>(), Vector3.zero, Vector3.zero, null);
+        => new ItemEffectContext(owner, Asset<ItemData>(), Vector3.zero, Vector3.zero);
     private SummonActor Summon(SummonDefinition definition = null, GameObject owner = null)
     {
         SummonActor result = Host().AddComponent<SummonActor>();
@@ -169,15 +169,14 @@ public sealed class AdditionalSummonTests
 
         contact.baseStat.damage = 0f;
         target.ConfigureModules(new SummonBehaviourModule[] { contact });
-        target.Initialize(new ItemEffectContext(null, Asset<ItemData>(), Vector3.zero, Vector3.zero,
-            null, buffManager: manager), 100f);
+        target.Initialize(new ItemEffectContext(null, Asset<ItemData>(), Vector3.zero, Vector3.zero, buffManager: manager), 100f);
         SummonAuraModule aura = Asset<SummonAuraModule>();
         aura.buff = buff;
         aura.targets.definitions = new[] { turret };
         SummonActor first = Summon(), second = Summon();
-        ItemEffectContext firstSource = new ItemEffectContext(null, Asset<ItemData>(), Vector3.zero, Vector3.zero, null, buffManager: manager)
+        ItemEffectContext firstSource = new ItemEffectContext(null, Asset<ItemData>(), Vector3.zero, Vector3.zero, buffManager: manager)
         { lifetime = new ItemEffectLifetime() };
-        ItemEffectContext secondSource = new ItemEffectContext(null, Asset<ItemData>(), Vector3.zero, Vector3.zero, null, buffManager: manager)
+        ItemEffectContext secondSource = new ItemEffectContext(null, Asset<ItemData>(), Vector3.zero, Vector3.zero, buffManager: manager)
         { lifetime = new ItemEffectLifetime() };
         first.Initialize(firstSource, 100f);
         second.Initialize(secondSource, 100f);

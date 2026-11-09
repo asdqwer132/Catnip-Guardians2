@@ -1,30 +1,26 @@
+using System.Collections;
+using UnityEditor.SceneManagement;
+using UnityEngine.TestTools;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 
 public sealed class AdditionalExecutionTests
 {
+    [UnitySetUp] public IEnumerator EnterRuntime()
+    {
+        EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        yield return new EnterPlayMode();
+    }
+
     private readonly List<Object> owned = new List<Object>();
     private T Asset<T>() where T : ScriptableObject
     { T value = ScriptableObject.CreateInstance<T>(); owned.Add(value); return value; }
-    private ItemEffectContext Context() => new ItemEffectContext(null, null, Vector3.zero, Vector3.zero, null);
-    [TearDown] public void Cleanup()
-    { foreach (Object value in owned) if (value != null) Object.DestroyImmediate(value); owned.Clear(); }
-
-    [Test] public void ReadySlotDoesNotRestartPreparationOnNextUse()
-    {
-        ItemData item = Asset<ItemData>(); item.cooldown = 10f;
-        BagItemCooldownController controller = new BagItemCooldownController(); controller.Init(1);
-        controller.MakeSlotReady(0);
-        controller.StartPreparationCooldownIfNeeded(0, item);
-        Assert.That(controller.GetSlotCooldownRemain(0), Is.Zero);
+    private ItemEffectContext Context() => new ItemEffectContext(null, null, Vector3.zero, Vector3.zero);
+    [UnityTearDown] public IEnumerator Cleanup()
+    { foreach (Object value in owned) if (value != null) Object.DestroyImmediate(value); owned.Clear();
+        if (Application.isPlaying) yield return new ExitPlayMode();
     }
-    [TestCase(10f, CooldownOperation.ReduceSeconds, 3f, 7f)]
-    [TestCase(10f, CooldownOperation.ReduceFraction, 0.3f, 7f)]
-    [TestCase(10f, CooldownOperation.Ready, 0f, 0f)]
-    [TestCase(10f, CooldownOperation.ReduceSeconds, 30f, 0f)]
-    public void CooldownOperations(float remaining, CooldownOperation operation, float amount, float expected)
-    { Assert.That(BagItemCooldownController.ChangeRemaining(remaining, operation, amount), Is.EqualTo(expected).Within(0.0001f)); }
 
     [Test] public void ExecutionScaleDoesNotMutateAssetOrCachedSnapshot()
     {
@@ -37,7 +33,7 @@ public sealed class AdditionalExecutionTests
         Assert.That(second.damageAreaPower, Is.EqualTo(5f));
         Assert.That(stat.damageAreaPower, Is.EqualTo(10f));
         Assert.That(first.damageAreaRange, Is.EqualTo(2f));
-        Assert.That(first.damageAreaInterval, Is.EqualTo(stat.damageAreaInterval));
+        Assert.That(first.damageAreaInterval, Is.EqualTo(Mathf.Max(.01f, stat.damageAreaInterval)));
     }
     [Test] public void WeightedSelectionChoosesExactlyOneAtSeventyPercentBoundary()
     {
@@ -126,7 +122,7 @@ public sealed class AdditionalExecutionTests
         FloatFieldBuffModifier modifier = Asset<FloatFieldBuffModifier>();
         modifier.fieldName = "damageAreaPower"; modifier.addValue = 10f;
         buff.modifiers = new BuffModifier[] { modifier }; buff.Execute(context);
-        BuffItemUseToken parent = manager.BeginItemUse(item, null);
+        BuffItemUseToken parent = manager.BeginItemUse(item);
         context.consumeUseBuffs = false;
         context.GetSnapshotStat(Asset<DamageAreaAttackEffect>(), new DamageAreaAttackStat());
         manager.EndItemUse(parent);

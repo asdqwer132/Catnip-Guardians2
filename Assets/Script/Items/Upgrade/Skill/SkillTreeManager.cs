@@ -153,7 +153,6 @@ public class SkillTreeManager : MonoBehaviour, IStoryProgressSource
             RefreshType.Currency |
             RefreshType.Shop |
             RefreshType.Inventory |
-            RefreshType.Bag |
             RefreshType.Equipment
         );
 

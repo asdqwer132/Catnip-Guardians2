@@ -8,7 +8,6 @@ public class BuffTargetHandle
 
     [Header("Item Target")]
     public ItemData itemData;
-    public EquipmentBag bag;
     public ItemSeries itemSeries = ItemSeries.None;
 
     [Header("Object Target")]
@@ -24,15 +23,6 @@ public class BuffTargetHandle
         {
             kind = BuffTargetKind.Item,
             itemData = itemData
-        };
-    }
-
-    public static BuffTargetHandle Bag(EquipmentBag bag)
-    {
-        return new BuffTargetHandle
-        {
-            kind = BuffTargetKind.Bag,
-            bag = bag
         };
     }
 
@@ -52,9 +42,6 @@ public class BuffTargetHandle
             kind = BuffTargetKind.AllItems
         };
     }
-
-    public static BuffTargetHandle AllBags()
-        => new BuffTargetHandle { kind = BuffTargetKind.AllBags };
 
     public static BuffTargetHandle AllTargets()
         => new BuffTargetHandle { kind = BuffTargetKind.AllTargets };
@@ -100,26 +87,19 @@ public class BuffTargetHandle
         if (query.buffTarget != null)
             return MatchesTarget(query.buffTarget);
 
-        if (query.isBagQuery)
-            return MatchesBag(query.bag);
+        if (query.allItems)
+            return kind == BuffTargetKind.AllItems || kind == BuffTargetKind.AllTargets;
 
-        return MatchesItem(query.itemData, query.bag);
+        return MatchesItem(query.itemData);
     }
 
-    public bool MatchesBag(EquipmentBag targetBag)
-        => targetBag != null && (kind == BuffTargetKind.AllTargets || kind == BuffTargetKind.AllBags ||
-           (kind == BuffTargetKind.Bag && bag != null && bag == targetBag));
-
-    public bool MatchesItem(ItemData targetItemData, EquipmentBag targetBag)
+    public bool MatchesItem(ItemData targetItemData)
     {
         if (kind == BuffTargetKind.AllTargets)
-            return targetItemData != null || targetBag != null;
+            return targetItemData != null;
 
         if (kind == BuffTargetKind.AllItems)
             return true;
-
-        if (kind == BuffTargetKind.Bag)
-            return bag != null && bag == targetBag;
 
         if (targetItemData == null)
             return false;
@@ -176,7 +156,6 @@ public class BuffTargetHandle
             return false;
 
         return itemData == other.itemData
-            && bag == other.bag
             && itemSeries == other.itemSeries
             && targetObject == other.targetObject
             && NormalizeGroupName(targetGroup) == NormalizeGroupName(other.targetGroup);
@@ -184,11 +163,13 @@ public class BuffTargetHandle
 
     public IBuffTarget GetCachedTarget()
     {
+        if (targetObject == null)
+        {
+            cachedTarget = null;
+            return null;
+        }
         if (cachedTarget != null)
             return cachedTarget;
-
-        if (targetObject == null)
-            return null;
 
         cachedTarget = targetObject as IBuffTarget;
 
@@ -210,9 +191,6 @@ public class BuffTargetHandle
 
         if (kind == BuffTargetKind.Item)
             return itemData != null ? itemData.GetDataName() : "Null Item";
-
-        if (kind == BuffTargetKind.Bag)
-            return bag != null ? bag.name : "Null Bag";
 
         if (kind == BuffTargetKind.ItemSeries)
             return itemSeries.ToString();

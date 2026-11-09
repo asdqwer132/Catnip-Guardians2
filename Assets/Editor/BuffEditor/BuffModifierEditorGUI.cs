@@ -149,7 +149,7 @@ internal static class BuffModifierEditorGUI
             DrawStatField(selectedType, fieldName);
             if (selectedType == typeof(BuffInfo))
                 EditorGUILayout.HelpBox("BuffInfo.duration은 새로 부여하거나 재부여할 버프/특수 상태의 지속시간(초)입니다. " +
-                    "Target Resolver는 버프를 부여하는 아이템에 적용되는 All Items, SourceBag 등으로 지정하세요. " +
+                    "Target Resolver는 버프를 부여하는 아이템에 적용되는 All Items, SourceItem 등으로 지정하세요. " +
                     "Time 방식에 사용하며 이미 적용 중인 버프의 남은 시간은 변경하지 않습니다.", MessageType.Info);
             else if (selectedType == typeof(SummonSpawnStat))
                 EditorGUILayout.HelpBox("소환 생성 스탯: 수명·개수·배치입니다. All Items/Owner 등 아이템 대상에 적용하며 " +

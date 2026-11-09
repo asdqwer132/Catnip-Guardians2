@@ -17,7 +17,7 @@ public sealed class AdditionalItemCompletionTests
     }
     private void Run(ItemData item, ItemEffectContext parent = null, GameObject owner = null)
         => ItemEffectExecutor.ExecuteItem(item, Vector3.zero, new Vector3(3f, 4f), Vector3.right,
-            owner, null, null, parent, triggerSpecialItems: false);
+            owner, null, parent, triggerSpecialItems: false);
     [TearDown] public void Cleanup()
     {
         foreach (Object value in owned) if (value != null) Object.DestroyImmediate(value);
@@ -112,7 +112,7 @@ public sealed class AdditionalItemCompletionTests
         a.afterCompletionItems = new[] { b }; b.afterCompletionItems = new[] { c };
         int completions = 0;
         var outer = new ItemEffectLifetime(onCompleted: () => completions++, cancelOnChildFailure: true);
-        var parent = new ItemEffectContext(null, null, Vector3.zero, Vector3.zero, null) { lifetime = outer };
+        var parent = new ItemEffectContext(null, null, Vector3.zero, Vector3.zero) { lifetime = outer };
         Run(a, parent); outer.Close();
         Assert.That(completions, Is.Zero);
         holdB.Finish(); Assert.That(completions, Is.Zero);

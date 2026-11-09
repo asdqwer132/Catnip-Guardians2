@@ -11,11 +11,9 @@ public static class BuffSelectionUtility
             return target != null && buff.MatchesTarget(target);
         }
         if (selection.kind == BuffTargetKind.Item)
-            return buff.MatchesItem(selection.itemData, selection.bag);
-        if (selection.kind == BuffTargetKind.Bag)
-            return buff.MatchesBag(selection.bag);
+            return buff.MatchesItem(selection.itemData);
         if (buff.kind == BuffTargetKind.AllTargets)
-            return selection.kind == BuffTargetKind.AllItems || selection.kind == BuffTargetKind.AllBags ||
+            return selection.kind == BuffTargetKind.AllItems ||
                 (selection.kind == BuffTargetKind.Group && !string.IsNullOrEmpty(BuffTargetHandle.NormalizeGroupName(selection.targetGroup))) ||
                 (selection.kind == BuffTargetKind.ItemSeries && selection.itemSeries != ItemSeries.None);
         return false;

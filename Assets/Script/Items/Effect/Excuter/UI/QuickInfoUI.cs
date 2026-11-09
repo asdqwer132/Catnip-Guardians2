@@ -10,8 +10,7 @@ public class ObjectUIBinding
 public class QuickInfoUI : MonoBehaviour
 {
 
-    [Header("Manager")]
-    public BagSelectManager bagSelectManager;
+    [SerializeField] private int selectedIndex;
 
     [Header("Pannels")]
     public ObjectUIBinding[] pannels;
@@ -20,18 +19,6 @@ public class QuickInfoUI : MonoBehaviour
     public bool initClose = true;
 
     private bool isOpened;
-
-    private void OnEnable()
-    {
-        if (bagSelectManager != null)
-            bagSelectManager.OnBagSelected += HandleBagSelected;
-    }
-
-    private void OnDisable()
-    {
-        if (bagSelectManager != null)
-            bagSelectManager.OnBagSelected -= HandleBagSelected;
-    }
 
     private void Start()
     {
@@ -45,20 +32,14 @@ public class QuickInfoUI : MonoBehaviour
         RefreshPannels();
     }
 
-    private void HandleBagSelected(int bagIndex)
-    {
-        if (!isOpened)
-            return;
-
-        RefreshPannels();
-    }
+    public void SetIndex(int index) { selectedIndex = index; RefreshPannels(); }
 
     private void RefreshPannels()
     {
         if (pannels == null)
             return;
 
-        int currentBagIndex = GetCurrentBagIndex();
+
 
         for (int i = 0; i < pannels.Length; i++)
         {
@@ -67,15 +48,8 @@ public class QuickInfoUI : MonoBehaviour
             if (binding == null || binding.pannels == null)
                 continue;
 
-            binding.pannels.SetActive(isOpened && binding.index == currentBagIndex);
+            binding.pannels.SetActive(isOpened && binding.index == selectedIndex);
         }
     }
 
-    private int GetCurrentBagIndex()
-    {
-        if (bagSelectManager == null)
-            return -1;
-
-        return bagSelectManager.CurrentBagIndex;
-    }
 }

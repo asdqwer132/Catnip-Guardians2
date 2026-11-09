@@ -39205,7 +39205,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuffSkillManager
   itemEffectExecutor: {fileID: 0}
-  equipmentBagManager: {fileID: 0}
   registeredBuffItems: []
 --- !u!4 &1190752874
 Transform:
@@ -51136,6 +51135,7 @@ MonoBehaviour:
   unlockManager: {fileID: 1631567003}
   shopManager: {fileID: 642885257}
   buffSkillManager: {fileID: 1190752872}
+  potionEquipment: {fileID: 875675674}
   mergeBoxUpgrades: {fileID: 1482356635}
   skillTreeUI: {fileID: 1482356631}
   inventoryUIs:

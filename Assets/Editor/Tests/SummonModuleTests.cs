@@ -40,7 +40,7 @@ public sealed class SummonModuleTests
         owned.Clear(); before.Clear(); BuffManager.instance = previousManager;
     }
     private ItemEffectContext Context(ItemEffectLifetime lifetime = null)
-        => new ItemEffectContext(null, Asset<ItemData>(), origin, origin, null,
+        => new ItemEffectContext(null, Asset<ItemData>(), origin, origin,
             buffManager: manager, direction: Vector3.right) { lifetime = lifetime };
     private SummonActor Actor(params SummonBehaviourModule[] modules)
     {

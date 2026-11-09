@@ -15,7 +15,7 @@ public sealed class ItemCooldownStat : IGameStat<ItemCooldownStat>
     }
 
     // 준비 시간과 UI 조회는 아이템 사용이 아니므로 횟수 버프를 소비하지 않는다.
-    public static ItemCooldownStat Resolve(ItemData item, EquipmentBag bag, BuffManager manager)
+    public static ItemCooldownStat Resolve(ItemData item, BuffManager manager)
     {
         if (item == null)
             return new ItemCooldownStat();
@@ -23,7 +23,7 @@ public sealed class ItemCooldownStat : IGameStat<ItemCooldownStat>
         var stat = new ItemCooldownStat { cooldown = item.Cooldown };
         stat.Clamp();
         if (manager != null)
-            stat = manager.GetBuffedStatForItem(stat, item, bag, BuffCalculationMode.All, false) ?? stat;
+            stat = manager.GetBuffedStatForItem(stat, item, BuffCalculationMode.All, false) ?? stat;
         stat.Clamp();
         return stat;
     }

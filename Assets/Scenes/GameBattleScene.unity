@@ -563,8 +563,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 166470118}
-  - component: {fileID: 166470117}
-  - component: {fileID: 166470119}
   m_Layer: 0
   m_Name: BagUse (1)
   m_TagString: Untagged
@@ -572,22 +570,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &166470117
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 166470116}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7223e4b5c2a2afc4c9f51236e1915af6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BagItemUseManager
-  bag: {fileID: 166470119}
-  bagCooldown: 1
-  cooldownOwner: {fileID: 0}
-  throwExecutor: {fileID: 378844626}
 --- !u!4 &166470118
 Transform:
   m_ObjectHideFlags: 0
@@ -603,26 +585,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 378844624}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &166470119
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 166470116}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfe83a1927e885c43bb0c5992585d2a6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EquipmentBag
-  listenType: -1
-  bagData: {fileID: 0}
-  maxSlotCount: 12
-  openSlotCount: 4
-  currentSlotCount: 0
-  bagUI: {fileID: 0}
-  locks: []
-  equippedItems: []
 --- !u!1001 &176345783
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1334,8 +1296,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 332667246}
-  - component: {fileID: 332667245}
-  - component: {fileID: 332667247}
   m_Layer: 0
   m_Name: BagUse (2)
   m_TagString: Untagged
@@ -1343,22 +1303,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &332667245
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 332667244}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7223e4b5c2a2afc4c9f51236e1915af6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BagItemUseManager
-  bag: {fileID: 332667247}
-  bagCooldown: 1
-  cooldownOwner: {fileID: 0}
-  throwExecutor: {fileID: 378844626}
 --- !u!4 &332667246
 Transform:
   m_ObjectHideFlags: 0
@@ -1374,26 +1318,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 378844624}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &332667247
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 332667244}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfe83a1927e885c43bb0c5992585d2a6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EquipmentBag
-  listenType: -1
-  bagData: {fileID: 0}
-  maxSlotCount: 12
-  openSlotCount: 4
-  currentSlotCount: 0
-  bagUI: {fileID: 0}
-  locks: []
-  equippedItems: []
 --- !u!1 &358841938
 GameObject:
   m_ObjectHideFlags: 0
@@ -1557,14 +1481,12 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+  - component: {fileID: 910009300001}
   - component: {fileID: 378844624}
   - component: {fileID: 378844623}
-  - component: {fileID: 378844625}
-  - component: {fileID: 378844627}
   - component: {fileID: 378844628}
   - component: {fileID: 378844626}
   - component: {fileID: 378844629}
-  - component: {fileID: 378844630}
   - component: {fileID: 378844631}
   - component: {fileID: 990200000003}
   m_Layer: 0
@@ -1587,11 +1509,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemUseManager
   owner: {fileID: 0}
-  bagSelectManager: {fileID: 378844625}
-  bagCooldownManager: {fileID: 378844630}
   positionProvider: {fileID: 378844628}
-  cooldownUIController: {fileID: 378844627}
-  useResetCooldownKey: 1
+  itemController: {fileID: 910009300001}
 --- !u!4 &378844624
 Transform:
   m_ObjectHideFlags: 0
@@ -1612,26 +1531,6 @@ Transform:
   - {fileID: 2103385772}
   m_Father: {fileID: 129445879}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &378844625
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 378844622}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 642d2b20411e0a34db761480fd3967e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BagSelectManager
-  bagUseManagers:
-  - {fileID: 166470117}
-  - {fileID: 332667245}
-  - {fileID: 2078391367}
-  - {fileID: 907073006}
-  toggles: []
-  isTest: 1
-  currentBagIndex: 0
 --- !u!114 &378844626
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1650,35 +1549,6 @@ MonoBehaviour:
   showTargetRange: 1
   defaultTargetRangeRadius: 1
   itemEffectExecutor: {fileID: 378844629}
---- !u!114 &378844627
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 378844622}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed8743edc4e718b4eb0a9108ed44c115, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BagCooldownUIController
-  bindings:
-  - bagIndex: 0
-    cooldownUI: {fileID: 0}
-  - bagIndex: 1
-    cooldownUI: {fileID: 0}
-  - bagIndex: 2
-    cooldownUI: {fileID: 0}
-  - bagIndex: 3
-    cooldownUI: {fileID: 0}
-  - bagIndex: 0
-    cooldownUI: {fileID: 0}
-  - bagIndex: 1
-    cooldownUI: {fileID: 0}
-  - bagIndex: 2
-    cooldownUI: {fileID: 0}
-  - bagIndex: 3
-    cooldownUI: {fileID: 0}
 --- !u!114 &378844628
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1711,28 +1581,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemEffectExecutor
   buffManager: {fileID: 511510869}
---- !u!114 &378844630
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 378844622}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 089b4943b24be634888a115585570635, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BagCooldownManager
-  bagSelectManager: {fileID: 378844625}
-  searchRoot: {fileID: 378844624}
-  bagManagers:
-  - {fileID: 166470117}
-  - {fileID: 332667245}
-  - {fileID: 2078391367}
-  - {fileID: 907073006}
-  autoCollectOnInit: 1
-  tickCooldown: 1
-  refreshSelectionWhenCooldownReady: 1
 --- !u!114 &378844631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2200,7 +2048,6 @@ MonoBehaviour:
   slotPrefab: {fileID: 1722376472968725201, guid: c284b47c6cd0f4349869d2c29dda09db, type: 3}
   displayMode: 0
   refreshOnEnable: 1
-  targetBag: {fileID: 0}
   targetItemData: {fileID: 0}
   targetItemSeries: 0
   targetBuffTargetObject: {fileID: 0}
@@ -10387,7 +10234,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 906334115}
-  - component: {fileID: 906334116}
   m_Layer: 0
   m_Name: Tester
   m_TagString: Untagged
@@ -10410,135 +10256,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 129445879}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &906334116
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 906334114}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0bf1de6367470f24a83c88aa48aabe4c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ItemTester
-  itemss:
-  - name: "\uD65C \uC0AC\uC6A9\uBC95"
-    isUse: 0
-    item:
-    - {fileID: 11400000, guid: ce1c82f98da4f1e4d835d49018657ff8, type: 2}
-    - {fileID: 11400000, guid: f5c0a85f81b4a6341b823365aa908815, type: 2}
-    - {fileID: 11400000, guid: 70bf65ee269e06f42869590d93bd318d, type: 2}
-    - {fileID: 11400000, guid: ce1c82f98da4f1e4d835d49018657ff8, type: 2}
-    - {fileID: 11400000, guid: 93758f7537ed6684898dc8cab8237aaa, type: 2}
-    targetBagData: {fileID: 166470119}
-  - name: "\uBC00\uC5B4\uB0B4\uAE30"
-    isUse: 0
-    item:
-    - {fileID: 11400000, guid: 1b380765c9da64b42a642fbd1c40ac28, type: 2}
-    targetBagData: {fileID: 166470119}
-  - name: "\uC0BC\uC9C0\uCC3D \uC5F0\uC18D \uACF5\uACA9"
-    isUse: 0
-    item:
-    - {fileID: 11400000, guid: 189c991cd165b1944aa97b85d68ec2c9, type: 2}
-    targetBagData: {fileID: 166470119}
-  - name: "\uAC19\uC740 \uBC84\uD504 \uC911\uCCA9?"
-    isUse: 0
-    item:
-    - {fileID: 11400000, guid: ce1c82f98da4f1e4d835d49018657ff8, type: 2}
-    - {fileID: 11400000, guid: f36bd251139a9264181b78493cbb756e, type: 2}
-    targetBagData: {fileID: 166470119}
-  - name: "\uB370\uBBF8\uC9C0 \uC5D0\uB9AC\uC5B4 \uBC84\uD504"
-    isUse: 0
-    item:
-    - {fileID: 11400000, guid: 93758f7537ed6684898dc8cab8237aaa, type: 2}
-    - {fileID: 11400000, guid: d85269965fb9a6d47bd2a22cd1920033, type: 2}
-    - {fileID: 11400000, guid: 93758f7537ed6684898dc8cab8237aaa, type: 2}
-    targetBagData: {fileID: 166470119}
-  - name: "\uBC29\uC5B4 \uBC84\uD504"
-    isUse: 0
-    item:
-    - {fileID: 11400000, guid: 065f9f91662693d49a0cdf6c50a2ab32, type: 2}
-    targetBagData: {fileID: 166470119}
-  - name: "\uB79C\uB364 \uC544\uC774\uD15C \uC0AC\uC6A9"
-    isUse: 0
-    item:
-    - {fileID: 11400000, guid: b2cd35da06e0a484bbfce7108d4afc22, type: 2}
-    - {fileID: 11400000, guid: b2cd35da06e0a484bbfce7108d4afc22, type: 2}
-    - {fileID: 11400000, guid: b2cd35da06e0a484bbfce7108d4afc22, type: 2}
-    - {fileID: 11400000, guid: b2cd35da06e0a484bbfce7108d4afc22, type: 2}
-    - {fileID: 11400000, guid: b2cd35da06e0a484bbfce7108d4afc22, type: 2}
-    - {fileID: 11400000, guid: b2cd35da06e0a484bbfce7108d4afc22, type: 2}
-    - {fileID: 11400000, guid: b2cd35da06e0a484bbfce7108d4afc22, type: 2}
-    - {fileID: 11400000, guid: b2cd35da06e0a484bbfce7108d4afc22, type: 2}
-    - {fileID: 11400000, guid: b2cd35da06e0a484bbfce7108d4afc22, type: 2}
-    - {fileID: 11400000, guid: b2cd35da06e0a484bbfce7108d4afc22, type: 2}
-    targetBagData: {fileID: 166470119}
-  - name: "\uD55C \uC544\uC774\uD15C \uC5EC\uB7EC\uBC84\uD504"
-    isUse: 0
-    item:
-    - {fileID: 11400000, guid: 8345463df3ebae94a99a089d8b8e5ca5, type: 2}
-    - {fileID: 11400000, guid: 23eba5d66c9d92545acba74c7daad137, type: 2}
-    targetBagData: {fileID: 166470119}
-  - name: "\uBC84\uD504 \uC2DC\uAC04 \uC99D\uAC00"
-    isUse: 0
-    item:
-    - {fileID: 11400000, guid: d63cc0700a8105944b698a9dfae05f1d, type: 2}
-    - {fileID: 11400000, guid: 7cb6bbfff7cb8374681b00eceb99a8b2, type: 2}
-    - {fileID: 11400000, guid: d63cc0700a8105944b698a9dfae05f1d, type: 2}
-    targetBagData: {fileID: 166470119}
-  - name: " \uCFE8\uAC10\uC18C"
-    isUse: 0
-    item:
-    - {fileID: 11400000, guid: 388d14391e6ce764096bebc7e6df6afc, type: 2}
-    - {fileID: 11400000, guid: 7a316fcf4da1d5e4cbf333f3c6555113, type: 2}
-    targetBagData: {fileID: 166470119}
-  - name: "\uC774\uC18D \uAC10\uC18C"
-    isUse: 0
-    item:
-    - {fileID: 11400000, guid: 008a01da1bbfad245a54583112a921ee, type: 2}
-    targetBagData: {fileID: 166470119}
-  - name: "\uC18C\uD658"
-    isUse: 0
-    item:
-    - {fileID: 11400000, guid: 75665f6e9d24410408fe03daf1fa101c, type: 2}
-    targetBagData: {fileID: 166470119}
-  - name: "\uC7A5\uD310 \uC774\uD399\uD2B8"
-    isUse: 0
-    item:
-    - {fileID: 11400000, guid: 5865985a9d6396643b29abcc8a2482a0, type: 2}
-    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
-    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
-    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
-    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
-    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
-    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
-    targetBagData: {fileID: 166470119}
-  - name: "\uC0C1\uD0DC"
-    isUse: 0
-    item:
-    - {fileID: 11400000, guid: bdd1b8010bd91cc4ab6f91fc945e27ac, type: 2}
-    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
-    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
-    targetBagData: {fileID: 166470119}
-  - name: "\uC0C1\uD0DC2"
-    isUse: 0
-    item:
-    - {fileID: 11400000, guid: 5344d7d247f93f7458037fcbdd8dcf7a, type: 2}
-    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
-    - {fileID: 11400000, guid: 7e271b66198f7db4d89d4418e12aeef9, type: 2}
-    targetBagData: {fileID: 332667247}
-  - name: "\uBAAC\uC2A4\uD130 \uC18C\uD658"
-    isUse: 0
-    item:
-    - {fileID: 11400000, guid: 9b53c0445e2e6b24a988332167206f50, type: 2}
-    - {fileID: 11400000, guid: 3c7ce1913a61cae418c832fe08e96f67, type: 2}
-    - {fileID: 11400000, guid: 2a9ddfbe474f81947aef24b19ebe855f, type: 2}
-    targetBagData: {fileID: 166470119}
-  positionProvider: {fileID: 378844628}
-  testerDisplayer: {fileID: 1561321922}
-  testerDisplayerHp: {fileID: 1601921040}
-  isTest: 0
 --- !u!1 &907073005
 GameObject:
   m_ObjectHideFlags: 0
@@ -10548,8 +10265,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 907073007}
-  - component: {fileID: 907073006}
-  - component: {fileID: 907073008}
   m_Layer: 0
   m_Name: BagUse (4)
   m_TagString: Untagged
@@ -10557,22 +10272,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &907073006
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 907073005}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7223e4b5c2a2afc4c9f51236e1915af6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BagItemUseManager
-  bag: {fileID: 907073008}
-  bagCooldown: 1
-  cooldownOwner: {fileID: 0}
-  throwExecutor: {fileID: 378844626}
 --- !u!4 &907073007
 Transform:
   m_ObjectHideFlags: 0
@@ -10588,26 +10287,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 378844624}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &907073008
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 907073005}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfe83a1927e885c43bb0c5992585d2a6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EquipmentBag
-  listenType: -1
-  bagData: {fileID: 0}
-  maxSlotCount: 12
-  openSlotCount: 4
-  currentSlotCount: 0
-  bagUI: {fileID: 0}
-  locks: []
-  equippedItems: []
 --- !u!1001 &918056226
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19304,7 +18983,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1319898607}
-  - component: {fileID: 1319898608}
   m_Layer: 0
   m_Name: EquipmentBagManager
   m_TagString: Untagged
@@ -19327,28 +19005,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1318438115}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1319898608
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1319898606}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 750af0b3646f7ac46945cf403e155959, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameItemBagManager
-  bags:
-  - {fileID: 166470119}
-  - {fileID: 332667247}
-  - {fileID: 2078391369}
-  - {fileID: 907073008}
-  bagItemUseManagers:
-  - {fileID: 166470117}
-  - {fileID: 332667245}
-  - {fileID: 2078391367}
-  - {fileID: 907073006}
 --- !u!1 &1355081019
 GameObject:
   m_ObjectHideFlags: 0
@@ -19541,7 +19197,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuffSkillManager
   itemEffectExecutor: {fileID: 378844629}
-  equipmentBagManager: {fileID: 1319898608}
   registeredBuffItems: []
 --- !u!1001 &1461024610
 PrefabInstance:
@@ -19719,10 +19374,8 @@ MonoBehaviour:
   subPlantManager: {fileID: 0}
   enemyManager: {fileID: 197801883}
   statisticsManager: {fileID: 1143083051}
-  bagManager: {fileID: 1319898608}
-  selectedBagPreviewUI: {fileID: 1561321923}
   buffUIManager: {fileID: 511510868}
-  itemTester: {fileID: 906334116}
+  potionEffectExecutor: {fileID: 378844629}
   isInited: 0
 --- !u!1 &1499569408
 GameObject:
@@ -20060,10 +19713,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1561321922}
-  - component: {fileID: 1561321923}
-  - component: {fileID: 1561321926}
-  - component: {fileID: 1561321925}
-  - component: {fileID: 1561321924}
   - component: {fileID: 1561321927}
   - component: {fileID: 1561321928}
   m_Layer: 5
@@ -20094,66 +19743,6 @@ RectTransform:
   m_AnchoredPosition: {x: -429, y: 435}
   m_SizeDelta: {x: 400, y: 250}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &1561321923
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1561321921}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e964082794c016488b1e8e4339f5d0b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SelectedBagPreviewUI
-  bagSelectManager: {fileID: 378844625}
-  currentBagPreviewUI: {fileID: 1561321925}
-  nextItemPreviewUI: {fileID: 1561321924}
-  cooldownFillPreviewUI: {fileID: 1561321926}
-  bagCooldownUIController: {fileID: 378844627}
---- !u!114 &1561321924
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1561321921}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e179275210972d047bcdce214edbd27c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NextItemPreviewUI
-  nextItemIcon: {fileID: 1852585869}
-  itemReadyImage: {fileID: 1626555898}
---- !u!114 &1561321925
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1561321921}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02ef941072e27e846853d964699fe0ef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CurrentBagPreviewUI
-  currentBagIcon: {fileID: 0}
---- !u!114 &1561321926
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1561321921}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ddb694a0d15aa845ab74dda81a818c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CooldownFillPreviewUI
-  useSharedCooldownFill: 1
-  currentBagCooldownFill: {fileID: 0}
-  nextItemCooldownFill: {fileID: 0}
-  sharedCooldownFill: {fileID: 372742342}
 --- !u!114 &1561321927
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30071,8 +29660,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2078391368}
-  - component: {fileID: 2078391367}
-  - component: {fileID: 2078391369}
   m_Layer: 0
   m_Name: BagUse (3)
   m_TagString: Untagged
@@ -30080,22 +29667,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2078391367
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2078391366}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7223e4b5c2a2afc4c9f51236e1915af6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BagItemUseManager
-  bag: {fileID: 2078391369}
-  bagCooldown: 1
-  cooldownOwner: {fileID: 0}
-  throwExecutor: {fileID: 378844626}
 --- !u!4 &2078391368
 Transform:
   m_ObjectHideFlags: 0
@@ -30111,26 +29682,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 378844624}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2078391369
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2078391366}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfe83a1927e885c43bb0c5992585d2a6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EquipmentBag
-  listenType: -1
-  bagData: {fileID: 0}
-  maxSlotCount: 12
-  openSlotCount: 4
-  currentSlotCount: 0
-  bagUI: {fileID: 0}
-  locks: []
-  equippedItems: []
 --- !u!1 &2099259757
 GameObject:
   m_ObjectHideFlags: 0
@@ -48177,6 +47728,22 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8eaea84b4174b3344a9b2eb08d1c8c72, type: 3}
+--- !u!114 &910009300001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 378844622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c28e0e656b945e5a60a8ad33654352b, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ItemUseController
+  items: []
+  throwExecutor: {fileID: 378844626}
+  owner: {fileID: 0}
+  buffManager: {fileID: 511510869}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

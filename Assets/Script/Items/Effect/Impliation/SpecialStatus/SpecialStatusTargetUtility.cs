@@ -2,7 +2,7 @@ using UnityEngine;
 
 public enum SpecialStatusQueryTarget
 {
-    PlayerStatus, Owner, HitTarget, SourceItem, SourceBag, PlantHealth, SourceSummon
+    PlayerStatus, Owner, HitTarget, SourceItem, AllItems, PlantHealth, SourceSummon
 }
 
 public static class SpecialStatusTargetUtility
@@ -22,9 +22,9 @@ public static class SpecialStatusTargetUtility
                 return enemy != null && enemy.CanReceiveHitEffects && enemy.HitEffectLifeId == context.hitTargetLifeId
                     ? BuffQueryContext.ForTarget(enemy) : null;
             case SpecialStatusQueryTarget.SourceItem:
-                return context.sourceItemData != null ? BuffQueryContext.ForItem(context.sourceItemData, context.sourceBag) : null;
-            case SpecialStatusQueryTarget.SourceBag:
-                return context.sourceBag != null ? BuffQueryContext.ForBag(context.sourceBag) : null;
+                return context.sourceItemData != null ? BuffQueryContext.ForItem(context.sourceItemData) : null;
+            case SpecialStatusQueryTarget.AllItems:
+                return BuffQueryContext.ForAllItems();
             case SpecialStatusQueryTarget.PlantHealth:
                 Plant plant = PlantManager.instance != null ? PlantManager.instance.plant : null;
                 return plant != null && plant.health != null && !plant.IsDead
@@ -42,7 +42,7 @@ public static class SpecialStatusTargetUtility
         if (query == null) return null;
         if (query.buffTarget != null) return BuffTargetHandle.Target(query.buffTarget);
         if (query.itemData != null) return BuffTargetHandle.Item(query.itemData);
-        return query.bag != null ? BuffTargetHandle.Bag(query.bag) : null;
+        return query.allItems ? BuffTargetHandle.AllItems() : null;
     }
 
 }

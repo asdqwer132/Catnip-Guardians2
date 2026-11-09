@@ -143,7 +143,7 @@ public class GameInputManager : MonoBehaviour
         }
         if (Keyboard.current.qKey.wasPressedThisFrame)
         {
-            Log("Prev Bag");
+            Log("Player Range");
             OnPlayerRangePressed?.Invoke();
         }
     }

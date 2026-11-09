@@ -153,7 +153,7 @@ public class GameSession : MonoBehaviour
         foreach (SkillItemSnapshot item in generalData.skillItems)
         {
             if (item != null && item.itemData != null)
-                target.RegisterBuffItem(item.itemData, item.bagId);
+                target.RegisterBuffItem(item.itemData);
         }
     }
 

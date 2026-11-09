@@ -54,19 +54,6 @@ public class BuffQuery
 
     #region Target Queries
 
-    public List<ActiveBuff> GetBagBuffsAsList(
-        EquipmentBag bag,
-        bool visibleOnly = false
-    )
-    {
-        return GetBuffsByPredicate(
-            buff =>
-                buff.target != null &&
-                buff.target.MatchesBag(bag),
-            visibleOnly
-        );
-    }
-
     public List<ActiveBuff> GetItemBuffsAsList(
         ItemData itemData,
         bool visibleOnly = false

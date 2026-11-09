@@ -10,12 +10,11 @@ public sealed class MergeBoxLevelSnapshot
     public MergeBoxLevelSnapshot Copy() => new MergeBoxLevelSnapshot { series = series, level = Math.Max(1, level) };
 }
 
-/// <summary>스킬트리에서 등록한 실행 아이템과 선택적인 대상 가방 ID입니다. 가방 내용은 저장하지 않습니다.</summary>
+/// <summary>스킬트리에서 등록한 실행 아이템입니다.</summary>
 [Serializable]
 public sealed class SkillItemSnapshot
 {
     public ItemData itemData;
-    public string bagId;
 
     public SkillItemSnapshot() { }
 
@@ -25,13 +24,21 @@ public sealed class SkillItemSnapshot
             return;
 
         itemData = item.itemData;
-        bagId = item.bagId;
     }
 
     public SkillItemSnapshot Copy()
     {
-        return new SkillItemSnapshot { itemData = itemData, bagId = bagId };
+        return new SkillItemSnapshot { itemData = itemData };
     }
+}
+
+[Serializable]
+public sealed class PotionEquipmentSnapshot
+{
+    public int slotIndex;
+    public bool locked;
+    public ItemData potion;
+    public PotionEquipmentSnapshot Copy() => new PotionEquipmentSnapshot { slotIndex = slotIndex, locked = locked, potion = potion };
 }
 
 /// <summary>업그레이드 씬 → 제너럴 씬. 아이템 에셋·수량과 시리즈별 상자 레벨을 보관합니다.</summary>
@@ -40,11 +47,16 @@ public sealed class UpgradeToGeneralData
 {
     public List<InventoryItem> materialItems = new List<InventoryItem>();
     public List<SkillItemSnapshot> skillItems = new List<SkillItemSnapshot>();
+    public int mainPlantIndex = -1;
+    public List<PotionEquipmentSnapshot> potionSlots = new List<PotionEquipmentSnapshot>();
     public List<MergeBoxLevelSnapshot> boxLevels = new List<MergeBoxLevelSnapshot>();
 
     public UpgradeToGeneralData Copy()
     {
-        var copy = new UpgradeToGeneralData { materialItems = GameSessionItemCopy.Copy(materialItems) };
+        var copy = new UpgradeToGeneralData {
+            materialItems = GameSessionItemCopy.Copy(materialItems), mainPlantIndex = mainPlantIndex,
+            potionSlots = potionSlots != null ? potionSlots.ConvertAll(value => value?.Copy()) : new List<PotionEquipmentSnapshot>()
+        };
         if (boxLevels != null) foreach (var entry in boxLevels)
             if (entry != null && MergeBoxLevelSnapshot.IsBoxSeries(entry.series)) copy.boxLevels.Add(entry.Copy());
         if (skillItems != null)

@@ -21,7 +21,7 @@ public class BuffStorage
 
     // 상태 전용 효과는 부여 출처 대신 상태 키 + 대상 하나로 누적한다.
     // 수치 Modifier/표식처럼 별도 실행 상태를 가진 일반 버프와는 합치지 않는다.
-    public ActiveBuff RegisterSpecialStatus(SpecialStatusDefinition key, BuffInfo info, ItemData sourceItemData, EquipmentBag sourceBag,
+    public ActiveBuff RegisterSpecialStatus(SpecialStatusDefinition key, BuffInfo info, ItemData sourceItemData,
         ItemEffectData sourceEffectData, BuffTargetHandle target, bool showInUI)
     {
         if (key == null || info == null || target == null) return null;
@@ -32,7 +32,6 @@ public class BuffStorage
                 same.specialStatusKey != key || same.target == null ||
                 !same.target.SameTarget(target)) continue;
             same.sourceItemData = sourceItemData;
-            same.sourceBag = sourceBag;
             same.sourceEffectData = sourceEffectData;
             same.showInUI = showInUI;
             same.RegisterAgain(info);
@@ -40,7 +39,7 @@ public class BuffStorage
             return same;
         }
 
-        var created = new ActiveBuff(null, info, sourceItemData, sourceBag, sourceEffectData,
+        var created = new ActiveBuff(null, info, sourceItemData, sourceEffectData,
             target, true, showInUI) { specialStatusKey = key, isDirectStatus = true };
         AddNewBuff(created);
         return created;
@@ -50,14 +49,13 @@ public class BuffStorage
         BuffModifier[] modifiers,
         BuffInfo info,
         ItemData sourceItemData,
-        EquipmentBag sourceBag,
         ItemEffectData sourceEffectData,
         BuffTargetHandle target,
         bool includeSelf,
         bool showInUI
     )
     {
-        ActiveBuff same = FindSameBuff(sourceItemData, sourceBag, sourceEffectData, target);
+        ActiveBuff same = FindSameBuff(sourceItemData, sourceEffectData, target);
         if (same != null)
         {
             same.modifiers = modifiers;
@@ -68,7 +66,7 @@ public class BuffStorage
             return same;
         }
 
-        ActiveBuff buff = new ActiveBuff(modifiers, info, sourceItemData, sourceBag,
+        ActiveBuff buff = new ActiveBuff(modifiers, info, sourceItemData,
             sourceEffectData, target, includeSelf, showInUI);
         AddNewBuff(buff);
         return buff;
@@ -81,7 +79,6 @@ public class BuffStorage
 
         ActiveBuff same = FindSameBuff(
             newBuff.sourceItemData,
-            newBuff.sourceBag,
             newBuff.sourceEffectData,
             newBuff.target
         );
@@ -136,7 +133,6 @@ public class BuffStorage
 
     public ActiveBuff FindSameBuff(
         ItemData sourceItemData,
-        EquipmentBag sourceBag,
         ItemEffectData sourceEffectData,
         BuffTargetHandle target
     )
@@ -150,7 +146,6 @@ public class BuffStorage
 
             if (buff.IsSameBuff(
                 sourceItemData,
-                sourceBag,
                 sourceEffectData,
                 target))
             {

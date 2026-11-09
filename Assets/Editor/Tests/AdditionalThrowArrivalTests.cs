@@ -243,7 +243,7 @@ public sealed class AdditionalThrowArrivalTests
         thrower.itemEffectExecutor = Host().AddComponent<ItemEffectExecutor>();
         CombatEffectRecordingEffect effect = Asset<CombatEffectRecordingEffect>();
         ItemData item = Asset<ItemData>(); item.weight = 2f; item.effectDatas = new ItemEffectData[] { effect };
-        Assert.That(thrower.Throw(item, Vector3.zero, Vector3.right, null, null, 0, triggerSpecialItems: false), Is.True);
+        Assert.That(thrower.Throw(item, Vector3.zero, Vector3.right, null, triggerSpecialItems: false), Is.True);
         ItemThrowMover mover = ThrowMoverTestProbe.LastCreated;
         Assert.That(mover, Is.Not.Null); owned.Add(mover.gameObject);
         Assert.That(mover.MoveDuration, Is.EqualTo(1.4f).Within(0.00001f));

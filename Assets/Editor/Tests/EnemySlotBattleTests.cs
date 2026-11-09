@@ -336,7 +336,7 @@ public class EnemySlotBattleTests
         modifier.fieldName = "maxHp"; modifier.addValue = 4;
         var effect = Asset<BuffEffect>(); effect.includeSelf = true; effect.targetResolver = resolver;
         effect.buffInfo.useLimitType = BuffUseLimitType.Infinite; effect.modifiers = new BuffModifier[] { modifier };
-        effect.Execute(new ItemEffectContext(plant.gameObject, null, Vector3.zero, Vector3.right, null, buffManager: buffs));
+        effect.Execute(new ItemEffectContext(plant.gameObject, null, Vector3.zero, Vector3.right, buffManager: buffs));
         Assert.That(enemies.maxAliveEnemyCount, Is.EqualTo(11));
         Assert.That(slots.slots.Select(s => s.capacity), Is.EqualTo(new[] { 4, 4, 3 }));
         Assert.That(image.fillAmount, Is.EqualTo(2f / 11).Within(.0001f));

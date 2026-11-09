@@ -224,7 +224,7 @@ public sealed class Food1Weapon1BuffTests
         // 특수 아이템의 추가 공격은 이 시나리오와 무관하므로 비활성화합니다.
         ItemEffectExecutor.ExecuteItem(item,
             usePosition: Vector3.zero, targetPosition: Vector3.zero, direction: Vector3.right,
-            owner: null, sourceBag: null, manager: manager, triggerSpecialItems: false);
+            owner: null, manager: manager, triggerSpecialItems: false);
     }
 
     private DamageArea UseWeaponAndGetDamageArea()

@@ -68,10 +68,7 @@ public class SubPlantManager : ItemRecipeManager
                 item,
                 throwStartPos,
                 throwTargetPos,
-                gameObject,
-                null,
-                0
-            );
+                gameObject);
 
             Debug.Log($"[SubPlantManager] Throw Result: {result}");
         }
@@ -83,10 +80,7 @@ public class SubPlantManager : ItemRecipeManager
                 resultItem,
                 throwStartPos,
                 craftedTaget,
-                gameObject,
-                null,
-                0
-            );
+                gameObject);
     }
 
 }

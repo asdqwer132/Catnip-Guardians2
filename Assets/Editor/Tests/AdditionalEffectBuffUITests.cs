@@ -1,3 +1,6 @@
+using System.Collections;
+using UnityEditor.SceneManagement;
+using UnityEngine.TestTools;
 using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
@@ -20,8 +23,8 @@ public sealed class AdditionalEffectBuffUITests
     {
         Health health = Host().AddComponent<Health>(); health.Init(100f); return health;
     }
-    private ItemEffectContext Context(Health target, ItemData item = null, EquipmentBag bag = null)
-        => new ItemEffectContext(target.gameObject, item, Vector3.zero, Vector3.right, bag, buffManager: manager);
+    private ItemEffectContext Context(Health target, ItemData item = null)
+        => new ItemEffectContext(target.gameObject, item, Vector3.zero, Vector3.right, buffManager: manager);
     private RegenerationEffect Regeneration(bool visible = true)
     {
         var effect = Asset<RegenerationEffect>(); effect.targets.target = HealthTargetMode.Owner;
@@ -32,18 +35,22 @@ public sealed class AdditionalEffectBuffUITests
         var effect = Asset<ShieldEffect>(); effect.targets.target = HealthTargetMode.Owner;
         effect.buffUI.showInUI = visible; effect.buffUI.displayName = "보호막"; return effect;
     }
-    [SetUp] public void Setup()
+    [UnitySetUp] public IEnumerator Setup()
     {
+        EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        yield return new EnterPlayMode();
         previousManager = BuffManager.instance;
         manager = Host().AddComponent<BuffManager>();
         if (manager.Storage == null)
             typeof(BuffManager).GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(manager, null);
     }
-    [TearDown] public void Cleanup()
+    [UnityTearDown] public IEnumerator Cleanup()
     {
         for (int i = owned.Count - 1; i >= 0; i--)
             if (owned[i] != null) Object.DestroyImmediate(owned[i]);
         owned.Clear(); BuffManager.instance = previousManager;
+
+        if (Application.isPlaying) yield return new ExitPlayMode();
     }
 
     [Test]
@@ -102,11 +109,8 @@ public sealed class AdditionalEffectBuffUITests
     {
         Health target = Target(), otherTarget = Target(); target.buffTargetGroup = "Health/Ally";
         ItemData item = Asset<ItemData>(), otherItem = Asset<ItemData>(); item.series = ItemSeries.Food;
-        GameObject bagHost = Host(); bagHost.SetActive(false);
-        EquipmentBag bag = bagHost.AddComponent<EquipmentBag>();
-        Regeneration().Execute(Context(target, item, bag));
-        Assert.That(manager.GetVisibleBagBuffsAsList(bag).Count, Is.EqualTo(1));
-        Assert.That(manager.GetVisibleBagBuffsAsList(null), Is.Empty);
+        Regeneration().Execute(Context(target, item));
+        Assert.That(manager.GetAllVisibleBuffs().Count, Is.EqualTo(1));
         Assert.That(manager.GetVisibleItemBuffsAsList(item).Count, Is.EqualTo(1));
         Assert.That(manager.GetVisibleItemBuffsAsList(otherItem), Is.Empty);
         Assert.That(manager.GetVisibleItemSeriesBuffsAsList(ItemSeries.Food).Count, Is.EqualTo(1));
@@ -275,7 +279,7 @@ public sealed class AdditionalEffectBuffUITests
         effect.buffUI.buffIcon = null; effect.Execute(Context(target, item));
         Assert.That(manager.GetAllVisibleBuffs()[2].GetUIIcon(), Is.SameAs(icon));
         BuffEffect existing = Asset<BuffEffect>(); existing.buffIcon = icon;
-        ActiveBuff normal = new ActiveBuff(null, new BuffInfo(), null, null, existing, null, true, true);
+        ActiveBuff normal = new ActiveBuff(null, new BuffInfo(), null, existing, null, true, true);
         Assert.That(normal.GetUIIcon(), Is.SameAs(icon));
     }
 }

@@ -30,7 +30,7 @@ public sealed class AdditionalBuffTargetTests
         BuffManager.instance = previousManager;
     }
     private ItemEffectContext Context(ItemData item = null)
-        => new ItemEffectContext(null, item, Vector3.zero, Vector3.zero, null, buffManager: manager);
+        => new ItemEffectContext(null, item, Vector3.zero, Vector3.zero, buffManager: manager);
     private DamageArea Area(ItemData item = null, ItemEffectContext context = null)
     {
         GameObject host = Host();
@@ -38,7 +38,7 @@ public sealed class AdditionalBuffTargetTests
         DamageArea area = host.AddComponent<DamageArea>();
         if (context != null) area.BindLifetime(context);
         area.InitWithSnapshotAndDynamicBuff(new DamageAreaAttackStat { damageAreaPower = 10f,
-            damageAreaRange = 1f, damageAreaLifeTime = 60f }, item, null, manager, null);
+            damageAreaRange = 1f, damageAreaLifeTime = 60f }, item, manager, null);
         return area;
     }
     private BuffEffect Buff(BuffTargetResolver resolver, string field, float add, ItemData item = null)
@@ -144,7 +144,7 @@ public sealed class AdditionalBuffTargetTests
         BuffManager next = Host().AddComponent<BuffManager>();
         if (next.Storage == null)
             typeof(BuffManager).GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(next, null);
-        area.InitWithSnapshotAndDynamicBuff(new DamageAreaAttackStat { damageAreaPower = 7f }, null, null, next, null);
+        area.InitWithSnapshotAndDynamicBuff(new DamageAreaAttackStat { damageAreaPower = 7f }, null, next, null);
        // Assert.That(manager.GetRegisteredBuffTargetsUnsafe(), Does.Not.Contain(area));
         Assert.That(next.GetRegisteredBuffTargetsUnsafe(), Does.Contain(area));
         Assert.That(Damage(area), Is.EqualTo(7f));

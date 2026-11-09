@@ -20,7 +20,7 @@ public sealed class AdditionalAttackTests
         return enemy;
     }
     private ItemEffectContext Context()
-        => new ItemEffectContext(null, Asset<ItemData>(), Vector3.zero, Vector3.zero, null, direction: Vector3.right);
+        => new ItemEffectContext(null, Asset<ItemData>(), Vector3.zero, Vector3.zero, direction: Vector3.right);
     private ExecuteEffectOnHitData Followup(CombatEffectRecordingEffect effect, HitEffectApplyMode scope)
     {
         ExecuteEffectOnHitData followup = Asset<ExecuteEffectOnHitData>();
@@ -231,7 +231,7 @@ public sealed class AdditionalAttackTests
         DamageArea area = host.AddComponent<DamageArea>();
         area.damageApplyMode = DamageApplyMode.Periodic;
         area.InitWithSnapshotAndDynamicBuff(new DamageAreaAttackStat { damageAreaPower = 3f,
-            damageAreaRange = 5f, damageAreaInterval = 1f, damageAreaLifeTime = 20f }, null, null, null, null);
+            damageAreaRange = 5f, damageAreaInterval = 1f, damageAreaLifeTime = 20f }, null, null, null);
         area.InitHitEffects(null, HitEffectApplyMode.EveryHit, Context());
         MethodInfo enter = typeof(DamageArea).GetMethod("OnTriggerEnter2D", BindingFlags.NonPublic | BindingFlags.Instance);
         enter.Invoke(area, new object[] { first });

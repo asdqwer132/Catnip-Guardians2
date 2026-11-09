@@ -19,8 +19,6 @@ public class ItemThrowExecutor : MonoBehaviour
         Vector3 startPosition,
         Vector3 targetPosition,
         GameObject owner,
-        EquipmentBag currentBag,
-        int currentCycleId,
         ItemEffectContext parentContext = null,
         bool triggerSpecialItems = true,
         ItemThrowOptions options = null
@@ -63,8 +61,7 @@ public class ItemThrowExecutor : MonoBehaviour
 
         BuffManager manager = parentContext != null && parentContext.buffManager != null ? parentContext.buffManager :
             itemEffectExecutor.buffManager != null ? itemEffectExecutor.buffManager : BuffManager.instance;
-        ItemEffectContext flight = new ItemEffectContext(owner, inventoryItem, startPosition, targetPosition,
-            currentBag, buffManager: manager, direction: direction);
+        ItemEffectContext flight = new ItemEffectContext(owner, inventoryItem, startPosition, targetPosition, buffManager: manager, direction: direction);
         flight.InheritExecution(parentContext);
         ItemEffectLifetime flightScope = new ItemEffectLifetime(parentContext != null ? parentContext.lifetime : null,
             trackCompletion: parentContext != null && parentContext.lifetime != null && parentContext.lifetime.TracksCompletion);
@@ -85,7 +82,7 @@ public class ItemThrowExecutor : MonoBehaviour
                 {
                     if (flight.CanContinue)
                         ItemEffectExecutor.ExecuteItem(inventoryItem, startPosition, targetPosition, direction,
-                            owner, currentBag, manager, flight, triggerSpecialItems, isThrownItem: true);
+                            owner, manager, flight, triggerSpecialItems, isThrownItem: true);
                 }
                 finally { completion.Complete(); }
 

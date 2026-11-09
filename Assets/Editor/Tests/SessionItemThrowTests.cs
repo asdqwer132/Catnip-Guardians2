@@ -139,7 +139,7 @@ public class SessionItemThrowTests
     }
 
     [Test]
-    public void SelectionOnlyClickSkipsTheBagAndTurningItOffKeepsLegacyThrowing()
+    public void SelectionOnlyClickSkipsItemsAndDirectModeCanThrow()
     {
         var mouse = InputSystem.AddDevice<Mouse>();
         try
@@ -148,29 +148,22 @@ public class SessionItemThrowTests
             camera.orthographic = true;
             camera.transform.position = new Vector3(100f, 100f, -10f);
             provider.mainCamera = camera;
-            var bag = Host("Bag").AddComponent<EquipmentBag>();
-            bag.bagData = Asset<BagData>();
-            bag.currentSlotCount = bag.maxSlotCount = 1;
-            bag.equippedItems.Add(new InventoryItem(first, 1));
+            var controller = Host("Items").AddComponent<ItemUseController>();
+            controller.items.Add(new InventoryItem(first, 1));
+            controller.throwExecutor = thrower.throwExecutor;
             first.cooldown = 0f;
-            var bagUse = Host("Bag use").AddComponent<BagItemUseManager>();
-            bagUse.bag = bag;
-            bagUse.throwExecutor = thrower.throwExecutor;
-            bagUse.Init();
-            var selection = Host("Bag selection").AddComponent<BagSelectManager>();
-            selection.bagUseManagers = new[] { bagUse };
             var use = Host("Item use").AddComponent<ItemUseManager>();
             use.owner = use.gameObject;
             use.positionProvider = provider;
-            use.bagSelectManager = selection;
+            use.itemController = controller;
 
-            use.UseCurrentBagItem();
-            Assert.That(UncapturedMover(), Is.Null, "The click must not launch the bag's item.");
+            use.HandleUseInput();
+            Assert.That(UncapturedMover(), Is.Null, "The click must not launch the configured item.");
             provider.selectPositionOnly = false;
-            use.UseCurrentBagItem();
+            use.HandleUseInput();
             var mover = UncapturedMover();
             if (mover != null) owned.Add(mover.gameObject);
-            Assert.That(mover, Is.Not.Null, "Legacy mode still launches the current bag item.");
+            Assert.That(mover, Is.Not.Null, "Direct mode launches the first ready item.");
             Assert.That(mover.IsMoving, Is.True);
         }
         finally { InputSystem.RemoveDevice(mouse); }

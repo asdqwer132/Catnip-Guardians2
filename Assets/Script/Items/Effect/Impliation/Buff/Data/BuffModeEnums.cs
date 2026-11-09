@@ -42,14 +42,11 @@ public enum BuffCalculationMode
 
 public enum BuffTargetKind
 {
-    Item,
-    Bag,
-    ItemSeries,
-    AllItems,
-    Target,
-    Group,
-    AllBags,
-    // 기존 에셋의 0~6 저장값은 유지합니다.
+    Item = 0,
+    ItemSeries = 2,
+    AllItems = 3,
+    Target = 4,
+    Group = 5,
     AllTargets = 7
 }
 

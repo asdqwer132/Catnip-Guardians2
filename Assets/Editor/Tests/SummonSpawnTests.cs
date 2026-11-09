@@ -71,7 +71,7 @@ public sealed class SummonSpawnTests
     }
     private ItemEffectContext Context(ItemData source = null)
         => new ItemEffectContext(null, source != null ? source : Asset<ItemData>(),
-            Vector3.zero, new Vector3(10f, 20f, 9f), null, buffManager: manager, direction: Vector3.right);
+            Vector3.zero, new Vector3(10f, 20f, 9f), buffManager: manager, direction: Vector3.right);
     private List<SummonActor> Spawn(SummonSpawnEffect effect, ItemEffectContext context = null)
     {
         var actors = new List<SummonActor>();

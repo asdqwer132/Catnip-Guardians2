@@ -2,16 +2,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum CooldownOperation { ReduceSeconds, ReduceFraction, Ready }
-public enum CooldownBagSelection { SourceBag, AllBags }
 
 [CreateAssetMenu(fileName = "CooldownControlEffect", menuName = "04.Items/Effects/Direct Effects/Cooldown Control")]
 public sealed class CooldownControlEffect : ItemEffectData
 {
-    public CooldownBagSelection bags;
     public CooldownOperation operation;
     [Min(0f)] public float amount = 1f;
-    [Tooltip("가방 공통 쿨다운도 조작합니다. 특정 뼈/깃털 슬롯만 조작하려면 끕니다.")]
-    public bool affectBagCooldown;
     public ItemData[] items;
     public ItemTagDefinition tag;
     public bool filterSeries;
@@ -41,9 +37,6 @@ public sealed class CooldownControlEffect : ItemEffectData
     internal void Apply(ItemEffectContext context)
     {
         // 피해 이벤트 중 활성 목록이 바뀌어도 동일 실행에서 반복 적용하지 않는다.
-        BagItemUseManager[] managers = BagItemUseManager.ActiveManagers.ToArray();
-        foreach (BagItemUseManager manager in managers)
-            if (manager != null && (bags == CooldownBagSelection.AllBags ||
-                (context.sourceBag != null && manager.bag == context.sourceBag))) manager.ApplyCooldownControl(this);
+        ItemUseController.ApplyCooldownChange(this);
     }
 }

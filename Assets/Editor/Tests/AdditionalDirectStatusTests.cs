@@ -1,3 +1,6 @@
+using System.Collections;
+using UnityEditor.SceneManagement;
+using UnityEngine.TestTools;
 using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
@@ -13,7 +16,7 @@ public sealed class AdditionalDirectStatusTests
     private GameObject Host()
     { var host = new GameObject("Direct Status Test"); owned.Add(host); return host; }
     private ItemEffectContext Context(ItemData item = null)
-        => new ItemEffectContext(player.gameObject, item, Vector3.zero, Vector3.right, null, buffManager: manager);
+        => new ItemEffectContext(player.gameObject, item, Vector3.zero, Vector3.right, buffManager: manager);
     private GrantSpecialStatusEffect Effect(BuffUseLimitType limit)
     {
         var effect = Asset<GrantSpecialStatusEffect>(); effect.specialStatusKey = Asset<SpecialStatusDefinition>();
@@ -22,10 +25,12 @@ public sealed class AdditionalDirectStatusTests
         return effect;
     }
     private void Tick(float delta) => new BuffTicker(manager.Storage).Tick(delta);
-    private void Use(ItemData item) => manager.EndItemUse(manager.BeginItemUse(item, null));
+    private void Use(ItemData item) => manager.EndItemUse(manager.BeginItemUse(item));
 
-    [SetUp] public void Setup()
+    [UnitySetUp] public IEnumerator Setup()
     {
+        EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        yield return new EnterPlayMode();
         previousManager = BuffManager.instance; previousPlayer = StatusManager.Instance;
         manager = Host().AddComponent<BuffManager>();
         if (manager.Storage == null)
@@ -34,12 +39,14 @@ public sealed class AdditionalDirectStatusTests
         typeof(StatusManager).GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(player, null);
         manager.RegisterBuffTarget(player);
     }
-    [TearDown] public void Cleanup()
+    [UnityTearDown] public IEnumerator Cleanup()
     {
         for (int i = owned.Count - 1; i >= 0; i--)
             if (owned[i] != null) Object.DestroyImmediate(owned[i]);
         owned.Clear(); BuffManager.instance = previousManager;
         typeof(StatusManager).GetProperty("Instance").SetValue(null, previousPlayer);
+
+        if (Application.isPlaying) yield return new ExitPlayMode();
     }
 
     [Test] public void DirectStatusAddsRemainingTimeWithoutModifyingStatusStat()
@@ -76,7 +83,7 @@ public sealed class AdditionalDirectStatusTests
         effect.lifetimeSettings.useCountConsumeMode = BuffUseCountConsumeMode.SpecificItemsUsed;
         effect.lifetimeSettings.consumeItems = new[] { selected, selected };
         effect.Execute(Context(other)); Use(other);
-        manager.EndItemUse(manager.BeginItemUse(selected, null), false);
+        manager.EndItemUse(manager.BeginItemUse(selected), false);
         Assert.That(manager.Storage.activeBuffs[0].remainUseCount, Is.EqualTo(3));
         Use(selected);
         Assert.That(manager.Storage.activeBuffs[0].remainUseCount, Is.EqualTo(2));
@@ -85,19 +92,19 @@ public sealed class AdditionalDirectStatusTests
     [Test] public void ReapplicationDuringUseDoesNotImmediatelyConsumeTheAddedStatus()
     {
         var effect = Effect(BuffUseLimitType.UseCount); var item = Asset<ItemData>();
-        effect.Execute(Context(item)); BuffItemUseToken use = manager.BeginItemUse(item, null);
+        effect.Execute(Context(item)); BuffItemUseToken use = manager.BeginItemUse(item);
         effect.Execute(Context(item)); manager.EndItemUse(use);
         Assert.That(manager.Storage.activeBuffs[0].remainUseCount, Is.EqualTo(6));
     }
 
-    [Test] public void SameStatusFromDifferentItemsEffectsAndBagsSharesOneBudget()
+    [Test] public void SameStatusFromDifferentItemsAndEffectsSharesOneBudget()
     {
         var effect = Effect(BuffUseLimitType.Time);
         effect.lifetimeSettings.stackMode = BuffStackMode.Stack; effect.lifetimeSettings.maxStack = 5;
         var otherEffect = Effect(BuffUseLimitType.Time); otherEffect.specialStatusKey = effect.specialStatusKey;
         otherEffect.lifetimeSettings.stackMode = BuffStackMode.Stack; otherEffect.lifetimeSettings.maxStack = 5;
-        var first = Context(Asset<ItemData>()); first.sourceBag = Host().AddComponent<EquipmentBag>();
-        var second = Context(Asset<ItemData>()); second.sourceBag = Host().AddComponent<EquipmentBag>();
+        var first = Context(Asset<ItemData>());
+        var second = Context(Asset<ItemData>());
         effect.Execute(first); Tick(2f); otherEffect.Execute(second);
         Assert.That(manager.Storage.activeBuffs.Count, Is.EqualTo(1));
         Assert.That(manager.Storage.activeBuffs[0].remainTime, Is.EqualTo(8f));
@@ -110,7 +117,7 @@ public sealed class AdditionalDirectStatusTests
         var other = Host().AddComponent<AdditionalAreaStatusTarget>();
         Assert.That(manager.HasSpecialStatus(effect.specialStatusKey, BuffQueryContext.ForTarget(other)), Is.False);
         effect.target = SpecialStatusQueryTarget.Owner;
-        effect.Execute(new ItemEffectContext(other.gameObject, null, Vector3.zero, Vector3.right, null, buffManager: manager));
+        effect.Execute(new ItemEffectContext(other.gameObject, null, Vector3.zero, Vector3.right, buffManager: manager));
         var otherEffect = Effect(BuffUseLimitType.Time); otherEffect.Execute(Context());
         Assert.That(manager.Storage.activeBuffs.Count, Is.EqualTo(3));
         var statuses = new List<ActiveBuff>(); player.GetActiveSpecialStatuses(statuses);
@@ -149,7 +156,7 @@ public sealed class AdditionalDirectStatusTests
     {
         var effect = Effect(BuffUseLimitType.Time); effect.buffClassification = Asset<BuffClassificationDefinition>(); effect.buffClassification.harmful = true;
         int completed = 0; var context = Context();
-        context.lifetime = new ItemEffectLifetime(onCompleted: () => completed++);
+        context.lifetime = new ItemEffectLifetime(onCompleted: () => completed++, cancelOnChildFailure: true);
         effect.Execute(context); context.lifetime.Close();
         Assert.That(context.lifetime.IsFinished, Is.False);
         manager.Cleanse(BuffTargetHandle.Target(player), new BuffCleanseFilter());

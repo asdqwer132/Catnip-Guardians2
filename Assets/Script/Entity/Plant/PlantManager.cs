@@ -10,7 +10,24 @@ public class PlantManager : MonoBehaviour
     [Tooltip("Index in All Plants selected before battle. A battle grows only this plant.")]
     [SerializeField, Min(0)] private int currentPlantIndex = 0;
 
-    public int CurrentPlantIndex => currentPlantIndex;
+    private int skillPlantIndex = -1;
+    private int potionPlantIndex = -1;
+    public int CurrentPlantIndex => potionPlantIndex >= 0 ? potionPlantIndex : skillPlantIndex >= 0 ? skillPlantIndex : currentPlantIndex;
+
+    public void ResetSelectionOverrides() { skillPlantIndex = potionPlantIndex = -1; }
+    public bool SetSkillPlantIndex(int index)
+    {
+        if (!IsValidIndex(index)) return false;
+        skillPlantIndex = index;
+        return true;
+    }
+    public bool SetPotionPlantIndex(int index)
+    {
+        if (!IsValidIndex(index)) return false;
+        potionPlantIndex = index;
+        return true;
+    }
+    private bool IsValidIndex(int index) => allPlants != null && index >= 0 && index < allPlants.Length && allPlants[index] != null;
     public PlantData CurrentPlant { get; private set; }
 
     void Awake() { instance = this; }
@@ -31,13 +48,14 @@ public class PlantManager : MonoBehaviour
     public void SetPlants()
     {
         CurrentPlant = null;
-        if (allPlants == null || currentPlantIndex < 0 || currentPlantIndex >= allPlants.Length)
+        int selectedIndex = CurrentPlantIndex;
+        if (allPlants == null || selectedIndex < 0 || selectedIndex >= allPlants.Length)
         {
             Debug.LogWarning("Plant index is outside All Plants.", this);
             return;
         }
 
-        var data = allPlants[currentPlantIndex];
+        var data = allPlants[selectedIndex];
         if (data == null || !UnlockCheckUtility.CanUse(data))
         {
             Debug.LogWarning("Selected plant is missing or locked.", this);

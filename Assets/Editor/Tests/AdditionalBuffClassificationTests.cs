@@ -23,7 +23,7 @@ public sealed class AdditionalBuffClassificationTests
         return effect;
     }
     private ItemEffectContext Context(GameObject owner, ItemData item = null)
-        => new ItemEffectContext(owner, item, Vector3.zero, Vector3.right, null, buffManager: manager);
+        => new ItemEffectContext(owner, item, Vector3.zero, Vector3.right, buffManager: manager);
     private ContextSpecialStatusTargetResolver Targets(SpecialStatusQueryTarget target)
     {
         var resolver = Asset<ContextSpecialStatusTargetResolver>(); resolver.targets = new[] { target }; return resolver;
@@ -54,10 +54,10 @@ public sealed class AdditionalBuffClassificationTests
         harmful.targetResolver = beneficial.targetResolver = Targets(SpecialStatusQueryTarget.SourceItem);
         harmful.Execute(context); beneficial.Execute(context);
         var stat = new ItemCooldownStat { cooldown = 5f };
-        Assert.That(manager.GetBuffedStatForItem(stat, item, null).cooldown, Is.EqualTo(8f));
+        Assert.That(manager.GetBuffedStatForItem(stat, item).cooldown, Is.EqualTo(8f));
         CleanseBuffEffect cleanse = Asset<CleanseBuffEffect>(); cleanse.targetResolver = harmful.targetResolver;
         cleanse.Execute(context);
-        Assert.That(manager.GetBuffedStatForItem(stat, item, null).cooldown, Is.EqualTo(6f));
+        Assert.That(manager.GetBuffedStatForItem(stat, item).cooldown, Is.EqualTo(6f));
         Assert.That(manager.Storage.activeBuffs.Count, Is.EqualTo(1));
         Assert.That(manager.Storage.activeBuffs[0].sourceEffectData, Is.SameAs(beneficial));
     }

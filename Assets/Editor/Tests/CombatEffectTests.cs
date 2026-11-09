@@ -24,7 +24,7 @@ public sealed class CombatEffectTests
         return item;
     }
     private ItemEffectContext Context(ItemData item = null, GameObject owner = null)
-        => new ItemEffectContext(owner, item, Vector3.zero, Vector3.right, null, direction: Vector3.right);
+        => new ItemEffectContext(owner, item, Vector3.zero, Vector3.right, direction: Vector3.right);
 
     [TearDown]
     public void Cleanup()
@@ -255,9 +255,9 @@ public sealed class CombatEffectTests
         ItemData item = Item(incoming);
         Ground(defaults, specials, item);
         Assert.That(defaults.calls.Count, Is.EqualTo(1));
-        ItemEffectExecutor.ExecuteItem(item, Vector3.zero, Vector3.zero, Vector3.right, null, null, null, triggerSpecialItems: false);
+        ItemEffectExecutor.ExecuteItem(item, Vector3.zero, Vector3.zero, Vector3.right, null, null, triggerSpecialItems: false);
         Assert.That(specials.calls.Count, Is.EqualTo(0));
-        ItemEffectExecutor.ExecuteItem(item, Vector3.zero, Vector3.zero, Vector3.right, null, null, null, triggerSpecialItems: false, isThrownItem: true);
+        ItemEffectExecutor.ExecuteItem(item, Vector3.zero, Vector3.zero, Vector3.right, null, null, triggerSpecialItems: false, isThrownItem: true);
         Assert.That(specials.calls.Count, Is.EqualTo(1));
         Assert.That(incoming.calls.Count, Is.EqualTo(2));
     }
@@ -270,9 +270,9 @@ public sealed class CombatEffectTests
         CombatEffectRecordingEffect incoming = Asset<CombatEffectRecordingEffect>();
         ItemData item = Item(incoming), creator = Item(defaults);
         Ground(defaults, specials, creator, true, new[] { item });
-        ItemEffectExecutor.ExecuteItem(creator, Vector3.zero, Vector3.zero, Vector3.right, null, null, null, triggerSpecialItems: false, isThrownItem: true);
+        ItemEffectExecutor.ExecuteItem(creator, Vector3.zero, Vector3.zero, Vector3.right, null, null, triggerSpecialItems: false, isThrownItem: true);
         Assert.That(specials.calls.Count, Is.EqualTo(0));
-        ItemEffectExecutor.ExecuteItem(item, Vector3.zero, Vector3.zero, Vector3.right, null, null, null, triggerSpecialItems: false, isThrownItem: true);
+        ItemEffectExecutor.ExecuteItem(item, Vector3.zero, Vector3.zero, Vector3.right, null, null, triggerSpecialItems: false, isThrownItem: true);
         Assert.That(specials.calls.Count, Is.EqualTo(1));
         Assert.That(incoming.calls.Count, Is.EqualTo(0));
         Assert.That(specials.calls[0].sourceItemData, Is.SameAs(creator));
@@ -334,7 +334,7 @@ public sealed class CombatEffectTests
         try
         {
             ItemEffectExecutor.ExecuteItem(item, Vector3.zero, Vector3.zero, Vector3.right,
-                null, null, null, triggerSpecialItems: false, isThrownItem: true);
+                null, null, triggerSpecialItems: false, isThrownItem: true);
         }
         finally
         {
@@ -353,7 +353,7 @@ public sealed class CombatEffectTests
         ItemData catalyst = Asset<ItemData>();
         Ground(defaults, specials, Item(defaults), accepted: new[] { catalyst });
         ItemEffectExecutor.ExecuteItem(catalyst, Vector3.zero, Vector3.zero, Vector3.right,
-            null, null, null, triggerSpecialItems: false, isThrownItem: true);
+            null, null, triggerSpecialItems: false, isThrownItem: true);
         Assert.That(specials.calls.Count, Is.EqualTo(1));
     }
 

@@ -9,8 +9,6 @@ public class BuffSkillReward : SkillRewardData
     [Header("Buff Item")]
     public ItemData buffItemData;
 
-    [Header("Target Bag")]
-    public string bagId;
 
     public override void Apply(SkillApplyContext context)
     {
@@ -32,6 +30,6 @@ public class BuffSkillReward : SkillRewardData
             return;
         }
 
-        context.buffSkillManager.RegisterBuffItem(buffItemData, bagId);
+        context.buffSkillManager.RegisterBuffItem(buffItemData);
     }
 }

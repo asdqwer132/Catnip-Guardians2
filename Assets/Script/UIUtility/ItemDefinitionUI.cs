@@ -40,7 +40,6 @@ public class ItemDefinitionUI : DataInfoUI
             case ItemData item: series = item.series; grade = item.grade; break;
             case ItemBoxData box: series = box.itemSeries; grade = box.grade; break;
             case ItemTooltipData payload: series = payload.series; grade = payload.grade; break;
-            case BagTooltipData bag: alternateGradeLabel = bag.bagType; break;
             case SkillMapTooltipData map: alternateGradeLabel = map.totalNodesCount; break;
         }
     }

@@ -150,7 +150,7 @@ public sealed class BattleSessionItemThrower : MonoBehaviour
                 target = positionProvider.ClampPositionByPlayerRange(target);
 
             int before = revision;
-            if (!throwExecutor.Throw(item.itemData, start, target, throwOwner, null, 0, options: throwOptions))
+            if (!throwExecutor.Throw(item.itemData, start, target, throwOwner, options: throwOptions))
                 return;
             if (before != revision)
                 return;

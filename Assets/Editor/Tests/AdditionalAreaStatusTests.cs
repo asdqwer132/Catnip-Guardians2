@@ -1,3 +1,6 @@
+using System.Collections;
+using UnityEditor.SceneManagement;
+using UnityEngine.TestTools;
 using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
@@ -5,6 +8,12 @@ using UnityEngine;
 
 public sealed class AdditionalAreaStatusTests
 {
+    [UnitySetUp] public IEnumerator EnterRuntime()
+    {
+        EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        yield return new EnterPlayMode();
+    }
+
     private readonly List<Object> owned = new List<Object>();
     private T Asset<T>() where T : ScriptableObject
     {
@@ -26,7 +35,7 @@ public sealed class AdditionalAreaStatusTests
         return manager;
     }
     private ItemEffectContext Context(GameObject owner, BuffManager manager = null, ItemData item = null)
-        => new ItemEffectContext(owner, item, Vector3.zero, Vector3.zero, null, buffManager: manager, direction: Vector3.right);
+        => new ItemEffectContext(owner, item, Vector3.zero, Vector3.zero, buffManager: manager, direction: Vector3.right);
     private GrantSpecialStatusEffect Status(SpecialStatusDefinition key, BuffUseLimitType limit = BuffUseLimitType.Time,
         BuffClassificationDefinition classification = null)
     {
@@ -51,12 +60,13 @@ public sealed class AdditionalAreaStatusTests
         return area;
     }
 
-    [TearDown]
-    public void Cleanup()
+    [UnityTearDown] public IEnumerator Cleanup()
     {
         for (int i = owned.Count - 1; i >= 0; i--)
             if (owned[i] != null) Object.DestroyImmediate(owned[i]);
         owned.Clear();
+
+        if (Application.isPlaying) yield return new ExitPlayMode();
     }
 
     [Test]
@@ -106,11 +116,11 @@ public sealed class AdditionalAreaStatusTests
         ItemData item = Asset<ItemData>();
         GrantSpecialStatusEffect effect = Status(Asset<SpecialStatusDefinition>(), BuffUseLimitType.UseCount);
         effect.lifetimeSettings.useCountConsumeMode = BuffUseCountConsumeMode.AnyItemUsed;
-        BuffItemUseToken token = manager.BeginItemUse(item, null);
+        BuffItemUseToken token = manager.BeginItemUse(item);
         ActiveBuff buff = Register(manager, effect, Context(target.gameObject, manager, item), target);
         manager.EndItemUse(token);
         Assert.That(buff.remainUseCount, Is.EqualTo(1));
-        token = manager.BeginItemUse(item, null);
+        token = manager.BeginItemUse(item);
         manager.EndItemUse(token);
         Assert.That(manager.HasSpecialStatus(effect.specialStatusKey, BuffQueryContext.ForTarget(target)), Is.False);
     }

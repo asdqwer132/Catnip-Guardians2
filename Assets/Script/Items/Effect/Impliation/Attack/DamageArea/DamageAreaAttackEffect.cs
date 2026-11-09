@@ -72,7 +72,6 @@ public class DamageAreaAttackEffect : ItemEffectData
         damageArea.InitWithSnapshotAndDynamicBuff(
             snapshotAttackStat: snapshotStat,
             sourceItemData: context.sourceItemData,
-            sourceBag: context.sourceBag,
             buffManager: context.buffManager,
             owner: context.owner
         );

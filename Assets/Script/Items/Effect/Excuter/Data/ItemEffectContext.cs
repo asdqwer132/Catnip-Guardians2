@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+public enum ItemEffectOrigin { Item, Skill, Potion }
+
 public class ItemEffectContext
 {
     // 공유 ScriptableObject 대신 이번 아이템 실행 컨텍스트에 실행 경로를 보관한다.
@@ -8,6 +10,7 @@ public class ItemEffectContext
     private ItemEffectContext executionParent;
     private int generation = ItemEffectRuntime.Generation;
     public ItemEffectLifetime lifetime;
+    public ItemEffectOrigin origin;
     public ItemEffectPlan plan;
     public HitEffectUseState hitUseState = new HitEffectUseState();
     public Enemy hitTarget;
@@ -36,10 +39,9 @@ public class ItemEffectContext
 
     public ItemEffectContext Copy(Vector3 position, Vector3 attackDirection)
     {
-        return new ItemEffectContext(owner, sourceItemData, usePosition, position,
-            sourceBag, currentEffectData, buffManager, attackDirection, plan)
+        return new ItemEffectContext(owner, sourceItemData, usePosition, position, currentEffectData, buffManager, attackDirection, plan)
         {
-            lifetime = lifetime, plan = plan, executionParent = this, generation = generation,
+            origin = origin, lifetime = lifetime, plan = plan, executionParent = this, generation = generation,
             hitUseState = hitUseState, hitTarget = hitTarget, hitTargetLifeId = hitTargetLifeId,
             sourceSummon = sourceSummon, sourceSummonLifeId = sourceSummonLifeId,
             damageMultiplier = damageMultiplier, healingMultiplier = healingMultiplier,
@@ -55,6 +57,7 @@ public class ItemEffectContext
     public void InheritExecution(ItemEffectContext parent)
     {
         if (parent == null) return;
+        origin = parent.origin;
         lifetime = parent.lifetime;
         executionParent = parent;
         generation = parent.generation;
@@ -93,14 +96,13 @@ public class ItemEffectContext
         T snapshot = GetUnscaledSnapshotStat(effect, stat);
         if (snapshot == null) return null;
         T current = buffManager != null
-            ? buffManager.GetBuffedStatForItem(snapshot, sourceItemData, sourceBag, BuffCalculationMode.DynamicOnly)
+            ? buffManager.GetBuffedStatForItem(snapshot, sourceItemData, BuffCalculationMode.DynamicOnly)
             : BuffStatCloneUtility.Clone(snapshot);
         return EffectExecutionScaling.Apply(current, this);
     }
 
     public GameObject owner;
     public ItemData sourceItemData;
-    public EquipmentBag sourceBag;
     public ItemEffectData currentEffectData;
     public BuffManager buffManager;
     public Vector3 usePosition;
@@ -113,7 +115,6 @@ public class ItemEffectContext
         ItemData sourceItemData,
         Vector3 usePosition,
         Vector3 targetPosition,
-        EquipmentBag sourceBag,
         ItemEffectData currentEffectData = null,
         BuffManager buffManager = null,
         Vector3 direction = default(Vector3),
@@ -128,7 +129,6 @@ public class ItemEffectContext
         this.targetPosition = targetPosition;
         this.direction = direction;
 
-        this.sourceBag = sourceBag;
         this.currentEffectData = currentEffectData;
         this.buffManager = buffManager;
     }

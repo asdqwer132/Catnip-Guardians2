@@ -29,6 +29,27 @@ public sealed class PotionEquipmentManager : MonoBehaviour
     public ItemData GetPotion(int index) => ValidIndex(index) ? slots[index].potion : null;
     public int GetAvailableCount(ItemData item) => Inventory != null ? Inventory.GetItemAmount(item) : 0;
 
+    public System.Collections.Generic.List<PotionEquipmentSnapshot> CaptureSlots()
+    {
+        var result = new System.Collections.Generic.List<PotionEquipmentSnapshot>();
+        for (int i = 0; i < SlotCount; i++)
+            result.Add(new PotionEquipmentSnapshot { slotIndex = i, locked = IsLocked(i), potion = GetPotion(i) });
+        return result;
+    }
+
+    // These units were already reserved from inventory before battle. Never charge them again.
+    public void RestoreSlots(System.Collections.Generic.List<PotionEquipmentSnapshot> snapshots)
+    {
+        if (snapshots == null || snapshots.Count == 0) return;
+        foreach (var entry in snapshots)
+            if (entry != null && ValidIndex(entry.slotIndex))
+            {
+                slots[entry.slotIndex].locked = entry.locked;
+                slots[entry.slotIndex].potion = IsPotion(entry.potion) ? entry.potion : null;
+            }
+        Changed?.Invoke();
+    }
+
     public int FindFirstEmptySlot()
     {
         for (int i = 0; i < SlotCount; i++)

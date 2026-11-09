@@ -141,7 +141,7 @@ public abstract class ItemEffectData : ScriptableObject
         // Executor의 공유 컨텍스트가 다음 이펙트에서 바뀌어도 이번 연출은 영향을 받지 않는다.
         ItemEffectContext snapshot = new ItemEffectContext(
             context.owner, context.sourceItemData, context.usePosition,
-            context.targetPosition, context.sourceBag, this, context.buffManager,
+            context.targetPosition, this, context.buffManager,
             context.direction, context.plan
         );
 

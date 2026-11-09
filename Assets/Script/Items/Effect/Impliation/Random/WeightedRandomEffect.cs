@@ -38,7 +38,7 @@ public sealed class WeightedRandomEffect : ItemEffectData
             ItemEffectContext child = context.Copy(context.targetPosition, context.direction);
             if (entry.item != null)
                 ItemEffectExecutor.ExecuteItem(entry.item, child.usePosition, child.targetPosition, child.direction,
-                    child.owner, child.sourceBag, child.buffManager, child, triggerSpecialItems,
+                    child.owner, child.buffManager, child, triggerSpecialItems,
                     consumeUseBuffs: consumeUseBuffs);
             ItemEffectUtility.Execute(entry.effects, child);
         }

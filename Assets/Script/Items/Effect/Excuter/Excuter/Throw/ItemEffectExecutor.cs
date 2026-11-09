@@ -7,28 +7,29 @@ public class ItemEffectExecutor : MonoBehaviour
 
     public void JustExcuteItem(ItemData itemData)
     {
-        ExecuteItemEffect(itemData, Vector3.zero, Vector3.zero, Vector3.zero, gameObject, null, 0);
+        ExecuteItemEffect(itemData, Vector3.zero, Vector3.zero, Vector3.zero, gameObject);
     }
 
     public void ExecuteItemEffect(ItemData itemData, Vector3 usePosition, Vector3 targetPosition,
-        Vector3 direction, GameObject owner, EquipmentBag sourceBag, int currentCycleId)
+        Vector3 direction, GameObject owner, ItemEffectOrigin origin = ItemEffectOrigin.Item)
     {
-        ExecuteItem(itemData, usePosition, targetPosition, direction, owner, sourceBag,
-            buffManager != null ? buffManager : BuffManager.instance);
+        ExecuteItem(itemData, usePosition, targetPosition, direction, owner,
+            buffManager != null ? buffManager : BuffManager.instance, origin: origin);
     }
 
-    // 아이템 반복 사용과 소환수가 공통으로 호출한다. 인벤토리/가방 슬롯을 소비하지 않는다.
+    // 아이템 반복 사용과 소환수가 공통으로 호출한다. 인벤토리 수량을 소비하지 않는다.
     public static void ExecuteItem(ItemData itemData, Vector3 usePosition, Vector3 targetPosition,
-        Vector3 direction, GameObject owner, EquipmentBag sourceBag, BuffManager manager,
+        Vector3 direction, GameObject owner, BuffManager manager,
         ItemEffectContext parent = null, bool triggerSpecialItems = true, bool isThrownItem = false,
-        bool consumeUseBuffs = true)
+        bool consumeUseBuffs = true, ItemEffectOrigin origin = ItemEffectOrigin.Item)
     {
         // 자체 효과가 없는 아이템도 투척되었다면 장판 반응의 재료가 될 수 있다.
         if (itemData == null || (!isThrownItem && !CanExecuteItemEffect(itemData)) || (parent != null && !parent.CanContinue))
             return;
         usePosition.z = targetPosition.z = direction.z = 0f;
         ItemEffectContext context = new ItemEffectContext(owner, itemData, usePosition,
-            targetPosition, sourceBag, buffManager: manager, direction: direction);
+            targetPosition, buffManager: manager, direction: direction);
+        context.origin = origin;
         context.InheritExecution(parent);
         context.consumeUseBuffs = consumeUseBuffs && (parent == null || parent.consumeUseBuffs);
         EffectVisualData completionVisual = itemData.endVisualData;
@@ -59,14 +60,14 @@ public class ItemEffectExecutor : MonoBehaviour
                 {
                     if (!context.CanContinue) break;
                     if (!CanExecuteItemEffect(item) || !continuation.TryBeginCompletionItem(item)) continue;
-                    ExecuteItem(item, position, position, direction, owner, sourceBag, manager, continuation,
+                    ExecuteItem(item, position, position, direction, owner, manager, continuation,
                         completionTriggerSpecialItems, consumeUseBuffs: completionConsumeUseBuffs);
                 }
         }) : null, trackCompletion: completionVisual != null || hasCompletionItems ||
             (parent != null && parent.lifetime != null && parent.lifetime.TracksCompletion),
             cancelOnChildFailure: hasCompletionItems);
         context.lifetime = scope;
-        BuffItemUseToken token = manager != null && context.consumeUseBuffs ? manager.BeginItemUse(itemData, sourceBag) : default(BuffItemUseToken);
+        BuffItemUseToken token = manager != null && context.consumeUseBuffs ? manager.BeginItemUse(itemData) : default(BuffItemUseToken);
         bool succeeded = false;
         try
         {

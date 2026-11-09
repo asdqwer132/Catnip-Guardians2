@@ -91,15 +91,14 @@ public sealed class ItemDefinitionUITests
     }
 
     [Test]
-    public void BagAndMapPayloadsKeepTheirAlternateLabelsAndClearItemFrames()
+    public void MapPayloadKeepsItsAlternateLabelAndClearsItemFrames()
     {
         Definitions(); var ui = View<ItemTooltipUI>(); var anchor = (RectTransform)Host("Anchor").transform;
         var item = Asset<ItemData>(); item.series = ItemSeries.Weapon; item.grade = Grade.Rare;
         ui.Show(ItemTooltipData.FromItem(item, 1), anchor, this);
-        ui.Show(new BagTooltipData { bagType = "Equipment" }, anchor, this);
-        Assert.That(ui.gradeText.text, Is.EqualTo("Equipment")); Assert.That(ui.seriesIcon.enabled || ui.gradeIcon.enabled, Is.False);
         ui.Show(new SkillMapTooltipData { totalNodesCount = "12" }, anchor, this);
         Assert.That(ui.gradeText.text, Is.EqualTo("12"));
+        Assert.That(ui.seriesIcon.enabled || ui.gradeIcon.enabled, Is.False);
     }
 }
 

@@ -34,7 +34,6 @@ public class AttackObject<TStat> : AttackObjectBase, IDynamicBuffReceiver
 
     protected TStat snapshotAttackStat;
     protected ItemData sourceItemData;
-    protected EquipmentBag sourceBag;
     protected BuffManager buffManager;
 
     #region Init
@@ -42,7 +41,6 @@ public class AttackObject<TStat> : AttackObjectBase, IDynamicBuffReceiver
     public virtual void InitWithSnapshotAndDynamicBuff(
         TStat snapshotAttackStat,
         ItemData sourceItemData,
-        EquipmentBag sourceBag,
         BuffManager buffManager,
         GameObject owner
     )
@@ -53,7 +51,6 @@ public class AttackObject<TStat> : AttackObjectBase, IDynamicBuffReceiver
 
         this.snapshotAttackStat = snapshotAttackStat;
         this.sourceItemData = sourceItemData;
-        this.sourceBag = sourceBag;
         this.buffManager = buffManager;
         this.owner = owner;
 
@@ -98,7 +95,6 @@ public class AttackObject<TStat> : AttackObjectBase, IDynamicBuffReceiver
             TStat dynamicBuffedStat = buffManager.GetBuffedStatForItem(
                 snapshotAttackStat,
                 sourceItemData,
-                sourceBag,
                 BuffCalculationMode.DynamicOnly
             );
 

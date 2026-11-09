@@ -1,3 +1,6 @@
+using System.Collections;
+using UnityEditor.SceneManagement;
+using UnityEngine.TestTools;
 using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
@@ -22,21 +25,23 @@ public sealed class AllTargetsBuffTests
         return host;
     }
 
-    [SetUp]
-    public void SetUp()
+    [UnitySetUp] public IEnumerator SetUp()
     {
+        EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        yield return new EnterPlayMode();
         previousManager = BuffManager.instance;
         manager = Host("All Targets Test").AddComponent<BuffManager>();
         if (manager.Storage == null) manager.SendMessage("Awake", SendMessageOptions.RequireReceiver);
     }
 
-    [TearDown]
-    public void TearDown()
+    [UnityTearDown] public IEnumerator TearDown()
     {
         for (int i = owned.Count - 1; i >= 0; i--)
             if (owned[i] != null) Object.DestroyImmediate(owned[i]);
         owned.Clear();
         BuffManager.instance = previousManager;
+
+        if (Application.isPlaying) yield return new ExitPlayMode();
     }
 
     private FloatFieldBuffModifier Modifier(string type, string field, float add = 0f, float multiply = 0f)
@@ -61,7 +66,7 @@ public sealed class AllTargetsBuffTests
     }
 
     private ItemEffectContext Context(ItemData item, ItemEffectData effect)
-        => new ItemEffectContext(null, item, Vector3.zero, Vector3.zero, null, effect, manager);
+        => new ItemEffectContext(null, item, Vector3.zero, Vector3.zero, effect, manager);
 
     private ActiveBuff Grant(BuffEffect effect, ItemData source = null)
     {
@@ -92,29 +97,25 @@ public sealed class AllTargetsBuffTests
     }
 
     [Test]
-    public void UniversalRecordCoversItemsBagsExistingCustomGroupsAndLaterTargets()
+    public void UniversalRecordCoversItemsExistingCustomGroupsAndLaterTargets()
     {
         // 그룹 이름이 없는 대상도 전체 범위에 들어가야 합니다.
         var existing = new CustomTarget(manager, Host("Existing Target"), "");
         manager.RegisterBuffTarget(existing);
         BuffEffect effect = GlobalEffect(BuffApplyTiming.Dynamic,
             Modifier(nameof(ItemCooldownStat), nameof(ItemCooldownStat.cooldown), add: -1f),
-            Modifier(nameof(BagCooldownStat), nameof(BagCooldownStat.cooldown), add: -2f),
             Modifier(nameof(HealthStat), nameof(HealthStat.maxHp), add: 5f));
         Grant(effect);
 
         Assert.That(manager.Storage.activeBuffs.Count, Is.EqualTo(1), "대상마다 별도 버프를 만들지 않습니다.");
         Assert.That(existing.current.maxHp, Is.EqualTo(15f), "기존 대상도 변경 알림을 받아야 합니다.");
         ItemData item = Asset<ItemData>();
-        EquipmentBag bag = Host("Bag").AddComponent<EquipmentBag>();
-        Assert.That(manager.GetBuffedStatForItem(new ItemCooldownStat { cooldown = 5f }, item, bag).cooldown,
+        Assert.That(manager.GetBuffedStatForItem(new ItemCooldownStat { cooldown = 5f }, item).cooldown,
             Is.EqualTo(4f));
-        Assert.That(manager.GetBuffedStat(new BagCooldownStat { cooldown = 5f }, BuffQueryContext.ForBag(bag)).cooldown,
-            Is.EqualTo(3f));
         var future = new CustomTarget(manager, Host("Future Target"), "NewCustomGroup/Child");
         manager.RegisterBuffTarget(future);
         Assert.That(future.current.maxHp, Is.EqualTo(15f));
-        Assert.That(manager.GetBuffedStatForItem(new DamageAreaAttackStat { damageAreaPower = 5f }, item, bag)
+        Assert.That(manager.GetBuffedStatForItem(new DamageAreaAttackStat { damageAreaPower = 5f }, item)
             .damageAreaPower, Is.EqualTo(5f), "Modifier에서 선택하지 않은 스탯 타입은 바뀌지 않습니다.");
 
         manager.RemoveBuffHandle(manager.Storage.activeBuffs[0]);
@@ -131,7 +132,7 @@ public sealed class AllTargetsBuffTests
             new DamageAreaAttackStat { damageAreaPower = 5f, damageAreaLifeTime = 60f });
         DamageArea area = Host("Damage Area").AddComponent<DamageArea>();
         area.BindLifetime(context);
-        area.InitWithSnapshotAndDynamicBuff(snapshot, item, null, manager, null);
+        area.InitWithSnapshotAndDynamicBuff(snapshot, item, manager, null);
         return area;
     }
 
@@ -231,7 +232,7 @@ public sealed class AllTargetsBuffTests
         effect.buffInfo.maxUseCount = 1;
         Grant(effect);
         ItemData weapon = Asset<ItemData>();
-        BuffItemUseToken token = manager.BeginItemUse(weapon, null);
+        BuffItemUseToken token = manager.BeginItemUse(weapon);
         DamageArea lastAttack;
         try { lastAttack = Area(weapon); }
         finally { manager.EndItemUse(token); }
