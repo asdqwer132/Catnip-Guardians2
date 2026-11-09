@@ -10,6 +10,7 @@ public static class GameSaveData
         CodexDiscoveryHistory.SaveFileName,
         PotionRecipeHistory.SaveFileName,
         MergeDiscoveryHistory.SaveFileName,
+        UpgradeProgressSave.SaveFileName,
         MergeBoxUpgradeManager.SaveFileName
     };
 

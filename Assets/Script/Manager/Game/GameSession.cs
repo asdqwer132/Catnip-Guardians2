@@ -58,6 +58,7 @@ public class GameSession : MonoBehaviour
             transform.SetParent(null);
 
         DontDestroyOnLoad(gameObject);
+        ReloadUpgradeProgress();
         InstanceChanged?.Invoke();
     }
 
@@ -70,9 +71,44 @@ public class GameSession : MonoBehaviour
         InstanceChanged?.Invoke();
     }
 
+    public void CaptureUpgradeProgress(MergeBoxUpgradeManager mergeBoxUpgrades, PotionEquipmentManager potionEquipment,
+        InventoryManager materialInventory, BuffSkillManager buffSkillManager)
+    {
+        var data = new UpgradeToGeneralData();
+        if (mergeBoxUpgrades != null)
+        {
+            data.boxLevels = mergeBoxUpgrades.CaptureLevels();
+            data.mainPlantIndex = mergeBoxUpgrades.MainPlantIndex;
+            data.unlockedSkillNodes = mergeBoxUpgrades.CaptureUnlockedNodes();
+        }
+        if (potionEquipment != null) data.potionSlots = potionEquipment.CaptureSlots();
+        var inventory = materialInventory;
+        if (inventory != null)
+            data.materialItems = GameSessionItemCopy.Copy(inventory.items);
+
+        if (buffSkillManager != null)
+        {
+            foreach (RegisteredBuffSkillItem item in buffSkillManager.RegisteredBuffItems)
+            {
+                if (item != null && item.itemData != null)
+                    data.skillItems.Add(new SkillItemSnapshot(item));
+            }
+        }
+        SaveUpgradeToGeneral(data);
+    }
+
+    public void ReloadUpgradeProgress()
+    {
+        var data = UpgradeProgressSave.Read();
+        if (data == null) return;
+        UpgradeProgressSave.RefreshSkillValues(data);
+        SaveUpgradeToGeneral(data);
+    }
+
     public void SaveUpgradeToGeneral(UpgradeToGeneralData data)
     {
         generalData = (data ?? new UpgradeToGeneralData()).Copy();
+        UpgradeProgressSave.Write(generalData);
         startingMaterialItems = GameSessionItemCopy.Copy(generalData.materialItems);
         hasGeneralData = true;
         GameDataRevision++;
@@ -135,7 +171,7 @@ public class GameSession : MonoBehaviour
 
     public bool RestoreMaterialInventory(InventoryManager inventory)
     {
-        if (inventory == null || !TryReadGeneralData(out var data)) return false;
+        if (inventory == null || !TryReadGeneralData(out var data) || data.legacySkillsOnly) return false;
         inventory.items = consumeUpgradeInventoryMaterials ? data.materialItems : GameSessionItemCopy.Copy(startingMaterialItems);
         inventory.onInventoryChanged?.Invoke();
         return true;

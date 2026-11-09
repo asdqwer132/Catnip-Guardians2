@@ -28,7 +28,11 @@ public class PrologueStartManager : MonoBehaviour
     public void ContinueGame()
     {
         var manager = ReadyMoveManager();
-        if (manager != null && !manager.IsLoading) manager.GoGameScene();
+        if (manager != null && !manager.IsLoading)
+        {
+            GameSession.GetOrCreate().ReloadUpgradeProgress();
+            manager.GoGameScene();
+        }
     }
     private SceneMoveManager ReadyMoveManager()
     {

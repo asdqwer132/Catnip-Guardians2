@@ -32,6 +32,11 @@ public class UpgradeManager : MonoBehaviour
             RefreshBroadcaster.Instance?.Broadcast(RefreshType.SkillTree | RefreshType.Unlock | RefreshType.Shop | RefreshType.Inventory | RefreshType.Equipment);
 
         isInited = true;
+        var inventory = materialInventory != null ? materialInventory : InventoryManager.instance;
+        if (inventory != null) inventory.onInventoryChanged += CaptureProgress;
+        if (potionEquipment != null) potionEquipment.Changed += CaptureProgress;
+        if (mergeBoxUpgrades != null && mergeBoxUpgrades.skillTree != null) mergeBoxUpgrades.skillTree.OnSkillTreeChanged += CaptureProgress;
+        CaptureProgress();
     }
 
     private void UpgradeInit()
@@ -77,35 +82,22 @@ public class UpgradeManager : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        var inventory = materialInventory != null ? materialInventory : InventoryManager.instance;
+        if (inventory != null) inventory.onInventoryChanged -= CaptureProgress;
+        if (potionEquipment != null) potionEquipment.Changed -= CaptureProgress;
+        if (mergeBoxUpgrades != null && mergeBoxUpgrades.skillTree != null) mergeBoxUpgrades.skillTree.OnSkillTreeChanged -= CaptureProgress;
+    }
+
     public void GoGame()
     {
-        var session = GameSession.GetOrCreate();
-        var data = new UpgradeToGeneralData();
-        if (mergeBoxUpgrades != null)
-        {
-            data.boxLevels = mergeBoxUpgrades.CaptureLevels();
-            data.mainPlantIndex = mergeBoxUpgrades.MainPlantIndex;
-            data.unlockedSkillNodes = mergeBoxUpgrades.CaptureUnlockedNodes();
-        }
-        if (potionEquipment != null) data.potionSlots = potionEquipment.CaptureSlots();
-        var inventory = materialInventory != null ? materialInventory : InventoryManager.instance;
-        if (inventory != null)
-            data.materialItems = GameSessionItemCopy.Copy(inventory.items);
-
-        if (buffSkillManager != null)
-        {
-            foreach (RegisteredBuffSkillItem item in buffSkillManager.RegisteredBuffItems)
-            {
-                if (item != null && item.itemData != null)
-                    data.skillItems.Add(new SkillItemSnapshot(item));
-            }
-        }
-        Debug.Log("[SkillTransfer][Upgrade SEND] " + GameSessionSkillDiagnostics.Describe(data), this);
-        if (mergeBoxUpgrades == null) Debug.LogWarning("[SkillTransfer] UpgradeManager.mergeBoxUpgrades is missing.", this);
-        session.SaveUpgradeToGeneral(data);
-
+        CaptureProgress();
         var loader = sceneMoveManager != null ? sceneMoveManager : SceneMoveManager.instance;
-        if (loader != null)
-            loader.GoGameScene();
+        if (loader != null) loader.GoGameScene();
     }
+
+    private void CaptureProgress()
+        => GameSession.GetOrCreate().CaptureUpgradeProgress(
+            mergeBoxUpgrades, potionEquipment, materialInventory != null ? materialInventory : InventoryManager.instance, buffSkillManager);
 }
