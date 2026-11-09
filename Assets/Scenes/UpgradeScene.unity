@@ -25519,6 +25519,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3800411030276270325, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
+      propertyPath: m_VerticalScrollbarVisibility
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3890791558155099228, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -25917,18 +25921,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6689781443526843104, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6713353056468177945, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6713353056468177945, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6713353056468177945, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
-      propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7042855710034635571, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
@@ -28756,7 +28748,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000057490717}
+  m_AnchoredPosition: {x: 0, y: -0.000042022224}
   m_SizeDelta: {x: 0, y: 265.5}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1190655909
@@ -35207,47 +35199,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxUpgradeManager
   skillTree: {fileID: 1482356628}
-  skillNodes:
-  - {fileID: 11400000, guid: 558b2fd361caa684596ba332e2b6e924, type: 2}
-  - {fileID: 11400000, guid: 8bfa467fd6bcd284eae231f9c9d32fc5, type: 2}
-  - {fileID: 11400000, guid: 0a0aa4a620c8bd1419cac81bda7308af, type: 2}
-  - {fileID: 11400000, guid: 634dbfcca3653544a860ec1ba92c214e, type: 2}
-  - {fileID: 11400000, guid: 16a8c11c12c3670499524fedf335e714, type: 2}
-  - {fileID: 11400000, guid: 7210383bfaaaa3943968f409fb359fc1, type: 2}
-  - {fileID: 11400000, guid: 78419fa13b211804c96a0b19e2bc71ca, type: 2}
-  - {fileID: 11400000, guid: 696b322615d29654c9b5d5f94f1d0a5b, type: 2}
-  - {fileID: 11400000, guid: 0c938d36457d86f41a6d3e3ffa98cc2d, type: 2}
-  - {fileID: 11400000, guid: f06965de999b94142bd59ed068d3c57a, type: 2}
-  - {fileID: 11400000, guid: 0b61493140ea04a428941afa1b47d0e6, type: 2}
-  - {fileID: 11400000, guid: 24d55ffcd99b88b40bd58212236a2dbd, type: 2}
-  - {fileID: 11400000, guid: ab7da0baaa1bf4c4c9a04eae9f69336f, type: 2}
-  - {fileID: 11400000, guid: 1e496781f03952744ac0b44808446b2f, type: 2}
-  - {fileID: 11400000, guid: 8fbd870e32507b54f95d522ce647c4fe, type: 2}
-  - {fileID: 11400000, guid: 7573771c3d11a784f8f77a8a33663a89, type: 2}
-  - {fileID: 11400000, guid: f0f73e826a1c128478dc94878f719d03, type: 2}
-  - {fileID: 11400000, guid: d378606a1f8a7ee42b57852760d22964, type: 2}
-  - {fileID: 11400000, guid: 546ee5b86f485af4593d12d102f13ffb, type: 2}
-  - {fileID: 11400000, guid: 1aae92a88d2a18d498cd7fdbb9c6ed64, type: 2}
-  - {fileID: 11400000, guid: 3940fb393b8bdf64da597877df014e8f, type: 2}
-  - {fileID: 11400000, guid: bd779dddd852a7744baeed77b4d70889, type: 2}
-  - {fileID: 11400000, guid: 27c509503378fdd4d8f65de1a1717f83, type: 2}
-  - {fileID: 11400000, guid: 5c7e983bca2c14147aa344b0592bd6a0, type: 2}
-  - {fileID: 11400000, guid: 089ff397b4218db45a2ec0aa17908352, type: 2}
-  - {fileID: 11400000, guid: c5868c70229d1854c837b972c6c235de, type: 2}
-  - {fileID: 11400000, guid: 05444436ebc7ad04a98ff61853b07cde, type: 2}
-  - {fileID: 11400000, guid: 0f001038c7bfbc74b9cd457f1efdd241, type: 2}
-  - {fileID: 11400000, guid: 0d52c95c4cf1a1140a3867be023c3969, type: 2}
-  - {fileID: 11400000, guid: b33ad591b75890e4fb73fbbd1a14aa74, type: 2}
-  - {fileID: 11400000, guid: c2dd45ca0948d5848b4d413c86ec54f9, type: 2}
-  - {fileID: 11400000, guid: 35d4e7c1917a30247803cd8bc50e5de2, type: 2}
-  - {fileID: 11400000, guid: dd54ccbe8927f094fb230ccf91f108de, type: 2}
-  - {fileID: 11400000, guid: b233c800c83379142b305b45e509457c, type: 2}
-  - {fileID: 11400000, guid: 576056e78460ae542ba1fb712eb348e7, type: 2}
-  - {fileID: 11400000, guid: 275d2eaf31c1be94183028bed7b06a71, type: 2}
-  - {fileID: 11400000, guid: 137fdfc2fe9ef7c4d8090d532e5d8d2f, type: 2}
-  - {fileID: 11400000, guid: 4061310cb412f934ab17ce74c2049f4b, type: 2}
-  - {fileID: 11400000, guid: 27a1fa0761ea9f3459199d11a2a6f8f8, type: 2}
-  - {fileID: 11400000, guid: 311337a599da60d4ab0b6ac0f460db88, type: 2}
+  skillNodes: []
   progress:
     unlockedSkillIds: []
     boxLevels: []
@@ -52800,6 +52752,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6312331382516968768, guid: 8e0f713fffa31144c9e221ca12025807, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7420548512572236387, guid: 8e0f713fffa31144c9e221ca12025807, type: 3}
       propertyPath: m_AnchorMax.x
       value: 1
@@ -52814,7 +52770,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8120014244042900556, guid: 8e0f713fffa31144c9e221ca12025807, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: 0.000030517578
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -56317,6 +56273,10 @@ PrefabInstance:
     - target: {fileID: 218148014103819962, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_fontSize
       value: 52.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 448825821970692641, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1500972622437323764, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_fontSize

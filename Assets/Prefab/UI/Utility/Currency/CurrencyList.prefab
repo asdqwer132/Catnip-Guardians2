@@ -138,7 +138,7 @@ MonoBehaviour:
     m_Bottom: 0
   m_ChildAlignment: 3
   m_Spacing: 25
-  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
   m_ChildControlHeight: 1
@@ -1083,6 +1083,10 @@ PrefabInstance:
       propertyPath: currencyData
       value: 
       objectReference: {fileID: 11400000, guid: 36fe159e10d2d72d1975d58d4a970751, type: 2}
+    - target: {fileID: 3403018413917326352, guid: a09ca5779b5214444898d2490271cef8, type: 3}
+      propertyPath: hideWhenZero
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5596166240733367083, guid: a09ca5779b5214444898d2490271cef8, type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
