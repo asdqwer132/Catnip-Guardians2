@@ -27,6 +27,8 @@ public sealed class StoryProgressManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         ReloadProgress();
     }
+    private void OnEnable() { if (Instance == this) StoryProgressSources.Reported += Report; }
+    private void OnDisable() => StoryProgressSources.Reported -= Report;
     private void OnDestroy() { if (Instance == this) Instance = null; }
     private void Update() => TryStartReady(null);
     private void Save() { PlayerPrefs.SetString(SaveKey, tracker.ToJson()); PlayerPrefs.Save(); }
@@ -37,7 +39,7 @@ public sealed class StoryProgressManager : MonoBehaviour
     }
     public void Report(StoryProgressEvent fact) { if (tracker.Report(fact)) Save(); }
     public void MeetCondition(string ruleId) { if (tracker.MeetCondition(ruleId)) Save(); }
-    public void ReportCustomEvent(string eventId) => Report(new StoryProgressEvent(StoryProgressEventKind.Custom, eventId: eventId));
+    public void ReportCustomEvent(string eventId) => Report(new StoryProgressEvent(eventId));
 
     // Returns true when a story owns the next transition, so the caller must not load another scene.
     public bool Confirm(string area, string fallbackReturnScene = null)
@@ -47,6 +49,7 @@ public sealed class StoryProgressManager : MonoBehaviour
     }
     public void ConfirmArea(string area) => Confirm(area);
     public bool IsCompleted(string ruleId) => tracker.IsCompleted(ruleId);
+    public bool IsConditionMet(string ruleId) => tracker.IsConditionMet(ruleId);
 
     private bool TryStartReady(string fallbackReturnScene)
     {

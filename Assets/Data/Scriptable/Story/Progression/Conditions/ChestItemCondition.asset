@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd61e06deefc49c6b2529633b5b3f564, type: 3}
   m_Name: ChestItemCondition
   m_EditorClassIdentifier:
-  eventKind: 3
-  plant: {fileID: 0}
-  item: {fileID: 0}
-  skillMap: {fileID: 0}
-  skillNode: {fileID: 0}
-  eventId:
+  eventId: chest.item-obtained
+  comparisons:
+  - valueKey: item-id
+    comparison: 0
+    textValue:
+    numberValue: 0

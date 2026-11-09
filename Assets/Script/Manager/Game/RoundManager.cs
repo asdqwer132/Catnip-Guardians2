@@ -24,7 +24,6 @@ public class RoundManager : MonoBehaviour
                 if (reward != null)
                     GameStatisticsManager.Instance.AddCurrency(reward.currencyType, reward.amount);
 
-        StoryProgressManager.Instance?.Report(new StoryProgressEvent(StoryProgressEventKind.PlantGrown, plantManager.CurrentPlant));
         plantManager.PlayGrown();
         CompleteGame();
     }

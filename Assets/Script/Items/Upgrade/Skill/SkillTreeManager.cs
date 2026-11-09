@@ -2,8 +2,14 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SkillTreeManager : MonoBehaviour
+public class SkillTreeManager : MonoBehaviour, IStoryProgressSource
 {
+    [Header("Progress Events")]
+    public string progressEventId = StoryProgressEventIds.SkillUnlocked;
+    public event System.Action<StoryProgressEvent> ProgressReported;
+    private void OnEnable() => StoryProgressSources.Register(this);
+    private void OnDisable() => StoryProgressSources.Unregister(this);
+
     public static SkillTreeManager Instance { get; private set; }
     public static event Action InstanceChanged;
 
@@ -136,7 +142,10 @@ public class SkillTreeManager : MonoBehaviour
 
         OnSkillUnlocked?.Invoke(node);
         OnSkillTreeChanged?.Invoke();
-        StoryProgressManager.Instance?.Report(new StoryProgressEvent(StoryProgressEventKind.SkillUnlocked, node));
+        ProgressReported?.Invoke(new StoryProgressEvent(progressEventId,
+            StoryProgressValue.TextValue("node-id", node.dataId),
+            StoryProgressValue.TextValue("map-id", node.skillMap != null ? node.skillMap.dataId : null),
+            StoryProgressValue.NumberValue("unlocked-count", unlockedSkillIds.Count)));
 
         RefreshBroadcaster.Instance?.Broadcast(
             RefreshType.SkillTree |

@@ -5,8 +5,14 @@ using UnityEngine.Scripting.APIUpdating;
 
 [MovedFrom(true, sourceAssembly: "Assembly-CSharp", sourceClassName: "ItemCombinationManager")]
 [AddComponentMenu("Items/Crafting/Potion Craft Manager")]
-public class PotionCraftManager : ItemRecipeManager
+public class PotionCraftManager : ItemRecipeManager, IStoryProgressSource
 {
+    [Header("Progress Events")]
+    public string progressEventId = StoryProgressEventIds.PotionCrafted;
+    public event System.Action<StoryProgressEvent> ProgressReported;
+    private void OnEnable() => StoryProgressSources.Register(this);
+    private void OnDisable() => StoryProgressSources.Unregister(this);
+
     public static PotionCraftManager instance;
     public CraftSuccessEffectUI craftSuccessEffectUI;
     public PotionRecipeHistory recipeHistory;
@@ -159,7 +165,9 @@ public class PotionCraftManager : ItemRecipeManager
             if (success)
             {
                 if (recipeHistory != null) recipeHistory.RecordCrafted(craftedItem);
-                StoryProgressManager.Instance?.Report(new StoryProgressEvent(StoryProgressEventKind.PotionCrafted, craftedItem));
+                ProgressReported?.Invoke(new StoryProgressEvent(progressEventId,
+                    StoryProgressValue.TextValue("item-id", craftedItem.dataId),
+                    StoryProgressValue.NumberValue("amount", 1)));
             }
             if (craftSuccessEffectUI != null) craftSuccessEffectUI.Play(craftedItem.icon);
             return true;

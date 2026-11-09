@@ -32,8 +32,10 @@ public class StoryProgressionTests
             Assert.That(ids.Add(rule.id), Is.True);
             var condition = rule.condition as StoryEventCondition;
             Assert.That(condition, Is.Not.Null);
-            Assert.That(condition.eventKind, Is.EqualTo((StoryProgressEventKind)i));
-            Assert.That(condition.Matches(new StoryProgressEvent(condition.eventKind)), Is.False);
+            string[] events = { StoryProgressEventIds.PlantGrowthCompleted, StoryProgressEventIds.PotionCrafted,
+                StoryProgressEventIds.SkillUnlocked, StoryProgressEventIds.ChestItemObtained };
+            Assert.That(condition.eventId, Is.EqualTo(events[i]));
+            Assert.That(condition.Matches(new StoryProgressEvent(condition.eventId)), Is.False);
             Assert.That(rule.confirmationArea, Is.EqualTo(areas[i]));
             Assert.That(rule.startMode, Is.EqualTo(i == 2 ? StoryProgressStartMode.Delay : StoryProgressStartMode.Confirmation));
         }
@@ -58,14 +60,14 @@ public class StoryProgressionTests
     public void DelayStartsAtTheFirstMatchingFactAndDoesNotResetOnRepeatedEvents()
     {
         var rule = Rule("delayed", StoryProgressStartMode.Delay);
-        var condition = Asset<StoryEventCondition>(); condition.eventKind = StoryProgressEventKind.Custom; condition.eventId = "gate";
+        var condition = Asset<StoryEventCondition>(); condition.eventId = "gate";
         rule.condition = condition;
         var tracker = Tracker(rule);
-        tracker.Report(new StoryProgressEvent(StoryProgressEventKind.Custom, eventId: "wrong"));
+        tracker.Report(new StoryProgressEvent("wrong"));
         Assert.That(tracker.IsConditionMet(rule.id), Is.False);
-        now = 10; tracker.Report(new StoryProgressEvent(StoryProgressEventKind.Custom, eventId: "gate"));
+        now = 10; tracker.Report(new StoryProgressEvent("gate"));
         now = 14; Assert.That(tracker.NextReady(), Is.Null);
-        Assert.That(tracker.Report(new StoryProgressEvent(StoryProgressEventKind.Custom, eventId: "gate")), Is.False);
+        Assert.That(tracker.Report(new StoryProgressEvent("gate")), Is.False);
         now = 15; Assert.That(tracker.NextReady(), Is.SameAs(rule));
     }
 
@@ -97,29 +99,55 @@ public class StoryProgressionTests
         now = 105; Assert.That(reloaded.NextReady(), Is.SameAs(delay));
     }
 
-    [TestCase(StoryProgressEventKind.PlantGrown)]
-    [TestCase(StoryProgressEventKind.PotionCrafted)]
-    [TestCase(StoryProgressEventKind.ChestItemObtained)]
-    public void ConfiguredAssetAndEventKindMustBothMatch(StoryProgressEventKind kind)
+    [Test]
+    public void TextComparisonMatchesPayloadIdsWithoutKnowingTheDataAssetType()
     {
-        var condition = Asset<StoryEventCondition>(); condition.eventKind = kind;
-        Object target;
-        if (kind == StoryProgressEventKind.PlantGrown) { condition.plant = Asset<PlantData>(); target = condition.plant; }
-        else { condition.item = Asset<ItemData>(); target = condition.item; }
-        Assert.That(condition.Matches(new StoryProgressEvent(kind)), Is.False);
-        Assert.That(condition.Matches(new StoryProgressEvent(kind, target)), Is.True);
-        Assert.That(condition.Matches(new StoryProgressEvent(StoryProgressEventKind.Custom, target)), Is.False);
+        var condition = Asset<StoryEventCondition>(); condition.eventId = "example.finished";
+        condition.comparisons = new[] { new StoryEventComparison { valueKey = "subject-id", textValue = "Plant01" } };
+        Assert.That(condition.Matches(new StoryProgressEvent("example.finished", StoryProgressValue.TextValue("subject-id", "Plant01"))), Is.True);
+        Assert.That(condition.Matches(new StoryProgressEvent("example.finished", StoryProgressValue.TextValue("subject-id", "plant01"))), Is.False);
+        Assert.That(condition.Matches(new StoryProgressEvent("another.finished", StoryProgressValue.TextValue("subject-id", "Plant01"))), Is.False);
+        Assert.That(condition.Matches(new StoryProgressEvent("example.finished")), Is.False);
+    }
+
+    [TestCase(StoryComparisonOperator.NumberAtLeast, 10, true)]
+    [TestCase(StoryComparisonOperator.NumberAtLeast, 11, true)]
+    [TestCase(StoryComparisonOperator.NumberAtLeast, 9, false)]
+    [TestCase(StoryComparisonOperator.NumberAtMost, 10, true)]
+    [TestCase(StoryComparisonOperator.NumberAtMost, 9, true)]
+    [TestCase(StoryComparisonOperator.NumberAtMost, 11, false)]
+    public void NumericComparisonsIncludeTheBoundary(StoryComparisonOperator comparison, double actual, bool expected)
+    {
+        var test = new StoryEventComparison { valueKey = "count", comparison = comparison, numberValue = 10 };
+        Assert.That(test.Matches(new StoryProgressEvent("count.changed", StoryProgressValue.NumberValue("count", actual))), Is.EqualTo(expected));
+        Assert.That(test.Matches(new StoryProgressEvent("count.changed")), Is.False);
+        Assert.That(test.Matches(new StoryProgressEvent("count.changed", StoryProgressValue.TextValue("count", "10"))), Is.False);
+        Assert.That(test.Matches(new StoryProgressEvent("count.changed", StoryProgressValue.NumberValue("count", double.NaN))), Is.False);
     }
 
     [Test]
-    public void SkillConditionRequiresTheSpecifiedMapAndNode()
+    public void MultipleComparisonsRequireTheSameEventSnapshotToSatisfyAllFields()
     {
-        var condition = Asset<StoryEventCondition>(); condition.eventKind = StoryProgressEventKind.SkillUnlocked;
-        condition.skillMap = Asset<SkillMapData>(); condition.skillNode = Asset<SkillNodeData>();
-        Assert.That(condition.Matches(new StoryProgressEvent(StoryProgressEventKind.SkillUnlocked, condition.skillNode)), Is.False);
-        condition.skillNode.skillMap = condition.skillMap;
-        Assert.That(condition.Matches(new StoryProgressEvent(StoryProgressEventKind.SkillUnlocked, condition.skillNode)), Is.True);
-        Assert.That(condition.Matches(new StoryProgressEvent(StoryProgressEventKind.SkillUnlocked, Asset<SkillNodeData>())), Is.False);
+        var condition = Asset<StoryEventCondition>(); condition.eventId = "node.unlocked";
+        condition.comparisons = new[] {
+            new StoryEventComparison { valueKey = "map-id", textValue = "forest" },
+            new StoryEventComparison { valueKey = "node-id", textValue = "gate" },
+            new StoryEventComparison { valueKey = "count", comparison = StoryComparisonOperator.NumberAtLeast, numberValue = 3 }
+        };
+        Assert.That(condition.Matches(new StoryProgressEvent("node.unlocked", StoryProgressValue.TextValue("map-id", "forest"))), Is.False);
+        Assert.That(condition.Matches(new StoryProgressEvent("node.unlocked", StoryProgressValue.TextValue("node-id", "gate"))), Is.False);
+        Assert.That(condition.Matches(new StoryProgressEvent("node.unlocked", StoryProgressValue.TextValue("map-id", "forest"),
+            StoryProgressValue.TextValue("node-id", "gate"), StoryProgressValue.NumberValue("count", 3))), Is.True);
+    }
+
+    [Test]
+    public void EventSnapshotDoesNotChangeWhenThePublishersBufferChanges()
+    {
+        var buffer = new[] { StoryProgressValue.TextValue("id", "before") };
+        var fact = new StoryProgressEvent("committed", buffer);
+        buffer[0] = StoryProgressValue.TextValue("id", "after");
+        Assert.That(fact.TryGetText("id", out string value), Is.True);
+        Assert.That(value, Is.EqualTo("before"));
     }
 
     [Test]

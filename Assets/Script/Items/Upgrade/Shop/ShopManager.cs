@@ -1,8 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ShopManager : MonoBehaviour
+public class ShopManager : MonoBehaviour, IStoryProgressSource
 {
+    [Header("Progress Events")]
+    public string progressEventId = StoryProgressEventIds.ChestItemObtained;
+    public event System.Action<StoryProgressEvent> ProgressReported;
+    private void OnEnable() => StoryProgressSources.Register(this);
+    private void OnDisable() => StoryProgressSources.Unregister(this);
+
     public static ShopManager instance;
 
     [Header("Box Pool")]
@@ -198,7 +204,9 @@ public class ShopManager : MonoBehaviour
             if (!wallet.SpendCurrencies(costs)) return PurchaseFailed("재화가 부족합니다.");
             inventory.AddItem(resultItem, 1);
             button.MarkPurchased();
-            StoryProgressManager.Instance?.Report(new StoryProgressEvent(StoryProgressEventKind.ChestItemObtained, resultItem));
+            ProgressReported?.Invoke(new StoryProgressEvent(progressEventId,
+                StoryProgressValue.TextValue("item-id", resultItem.dataId),
+                StoryProgressValue.NumberValue("amount", 1)));
             //if (currentSelectedButton == button) ClearSelectedBox();
             ShowPurchaseResult(resultItem, 1);
             return true;

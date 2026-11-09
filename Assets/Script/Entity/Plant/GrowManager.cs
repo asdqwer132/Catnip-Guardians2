@@ -1,9 +1,16 @@
 using System;
 using UnityEngine;
 
-public class GrowManager : MonoBehaviour
+public class GrowManager : MonoBehaviour, IStoryProgressSource
 {
     public static GrowManager instance;
+    [Header("Progress Events")]
+    public string growthCompletedEventId = StoryProgressEventIds.PlantGrowthCompleted;
+    public event Action<StoryProgressEvent> ProgressReported;
+    private string currentPlantId;
+
+    private void OnEnable() => StoryProgressSources.Register(this);
+    private void OnDisable() => StoryProgressSources.Unregister(this);
 
     [Header("Growth Value")]
     [SerializeField] private float startGrowValue = 0f;
@@ -37,6 +44,7 @@ public class GrowManager : MonoBehaviour
 
     public void Init(PlantData data, PlantUI ui)
     {
+        currentPlantId = data != null ? data.dataId : null;
         maxGrowValue = data != null ? Mathf.Max(0f, data.nutrientsRequired) : 0f;
         nutrientsPerSecond = data != null ? Mathf.Max(0f, data.nutrientsPerSecond) : 0f;
 
@@ -168,6 +176,11 @@ public class GrowManager : MonoBehaviour
         growthCompleted = true;
         UpdateUI();
 
+        ProgressReported?.Invoke(new StoryProgressEvent(growthCompletedEventId,
+            StoryProgressValue.TextValue("plant-id", currentPlantId),
+            StoryProgressValue.NumberValue("growth", growValue),
+            StoryProgressValue.NumberValue("growth-percent", GrowProgressPercent),
+            StoryProgressValue.NumberValue("max-growth", maxGrowValue)));
         if (gameManager != null)
             gameManager.Victory();
     }

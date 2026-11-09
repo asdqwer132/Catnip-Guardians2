@@ -52,16 +52,31 @@ public class StoryProgressionPlaybackTests
         var selected = ScriptableObject.CreateInstance<StoryProgressRule>(); selected.id = "selected-later";
         selected.story = ScriptableObject.CreateInstance<StoryData>();
         selected.story.dialogues = new StoryData.DialogueData[0];
-        selected.confirmationArea = StoryProgressManager.PotionResult;
+        selected.confirmationArea = StoryProgressManager.BattleResult;
+        var condition = ScriptableObject.CreateInstance<StoryEventCondition>();
+        condition.eventId = StoryProgressEventIds.PlantGrowthCompleted;
+        condition.comparisons = new[] {
+            new StoryEventComparison { valueKey = "plant-id", textValue = "Plant01" },
+            new StoryEventComparison { valueKey = "growth", comparison = StoryComparisonOperator.NumberAtLeast, numberValue = 10 }
+        };
+        selected.condition = condition;
+        // Register the source before the subscriber to check scene-load order independence.
+        var growth = new GameObject("Growth publisher").AddComponent<GrowManager>();
+        var plant = ScriptableObject.CreateInstance<PlantData>(); plant.dataId = "Plant01";
+        plant.nutrientsRequired = 10; plant.nutrientsPerSecond = 0;
+        growth.Init(plant, null);
         selected.returnScene = "__ProgressReturn";
         var host = new GameObject("Persistent story progress"); host.SetActive(false);
         var progress = host.AddComponent<StoryProgressManager>();
         progress.rules = new[] { first, selected }; progress.sceneLoader = loader;
         progress.storyScene = "__ProgressStory"; progress.automaticScenes = new[] { source, "__ProgressReturn" };
         host.SetActive(true);
-        progress.MeetCondition(selected.id);
+        growth.StartGrowth(); growth.AddGrowth(9);
+        Assert.That(progress.IsConditionMet(selected.id), Is.False);
+        growth.AddGrowth(1);
+        Assert.That(progress.IsConditionMet(selected.id), Is.True);
         Assert.That(progress.IsPlayingStory, Is.False);
-        Assert.That(progress.Confirm(StoryProgressManager.PotionResult), Is.True);
+        Assert.That(progress.Confirm(StoryProgressManager.BattleResult), Is.True);
         float timeout = Time.realtimeSinceStartup + 15;
         while ((SceneManager.GetActiveScene().name != "__ProgressStory" || loader.IsLoading) && Time.realtimeSinceStartup < timeout) yield return null;
         Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo("__ProgressStory"));
@@ -76,7 +91,7 @@ public class StoryProgressionPlaybackTests
         Assert.That(progress.IsCompleted(selected.id), Is.True);
         Assert.That(progress.IsCompleted(first.id), Is.False);
         Assert.That(StorySave.GetStoryChapterProgress(), Is.EqualTo(1));
-        Assert.That(progress.Confirm(StoryProgressManager.PotionResult), Is.False);
+        Assert.That(progress.Confirm(StoryProgressManager.BattleResult), Is.False);
         yield return new ExitPlayMode();
     }
 
