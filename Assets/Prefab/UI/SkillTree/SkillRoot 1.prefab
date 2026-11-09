@@ -8,9 +8,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3190744577762700973, guid: 0ad114edf838127459965d6ac6b4b2c9, type: 3}
+      propertyPath: nodeDatas.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3190744577762700973, guid: 0ad114edf838127459965d6ac6b4b2c9, type: 3}
+      propertyPath: 'nodeDatas.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 02dd6e2df5388e3429c20107dad4ea00, type: 2}
     - target: {fileID: 3628101269313942303, guid: 0ad114edf838127459965d6ac6b4b2c9, type: 3}
       propertyPath: m_Name
-      value: SkillRoot Variant
+      value: SkillRoot 1
       objectReference: {fileID: 0}
     - target: {fileID: 4738256142927476752, guid: 0ad114edf838127459965d6ac6b4b2c9, type: 3}
       propertyPath: m_Pivot.x
