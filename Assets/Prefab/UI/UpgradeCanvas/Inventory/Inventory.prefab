@@ -303,13 +303,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd896b871a4ba59479c106217bb1d150, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventoryUI
-  searchFilter:
-    useCategory: 1
-    category: 0
-    useSeries: 1
-    series: 1
-    useGrade: 1
-    grade: 0
   categoryMask: ffffffff
   seriesMask: 00000000
   gradeMask: ffffffff
@@ -1088,7 +1081,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7847992530475677994, guid: 40754352b65d3834ebbe486c1a8937d2, type: 3}
+  m_Sprite: {fileID: 7847992530475677994, guid: aa44388e3c2d97640a53a86f57731b5b, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -1641,6 +1634,11 @@ MonoBehaviour:
   gradeIcon: {fileID: 438466699227073458}
   series: 0
   grade: -1
+  amountText: {fileID: 0}
+  categoryText: {fileID: 0}
+  weightText: {fileID: 0}
+  cooldownText: {fileID: 0}
+  effectDescriptions: {fileID: 0}
   useTooltip: 1
   offset: {x: 0, y: 0}
   clampToParent: 1
@@ -1648,10 +1646,6 @@ MonoBehaviour:
   removePannel: 1
   alternatePanels: []
   tooltipPanel: {fileID: 342736692659104325}
-  amountText: {fileID: 0}
-  categoryText: {fileID: 0}
-  weightText: {fileID: 0}
-  cooldownText: {fileID: 0}
 --- !u!1 &6521430352617230679
 GameObject:
   m_ObjectHideFlags: 0
@@ -1707,13 +1701,7 @@ MonoBehaviour:
   resetCategory: 1
   resetSeries: 1
   resetGrade: 1
-  filter:
-    useCategory: 1
-    category: 0
-    useSeries: 1
-    series: 0
-    useGrade: 1
-    grade: 0
+  gradeDropdownValues: ffffffff00000000010000000200000003000000
 --- !u!1 &7211810381943095276
 GameObject:
   m_ObjectHideFlags: 0

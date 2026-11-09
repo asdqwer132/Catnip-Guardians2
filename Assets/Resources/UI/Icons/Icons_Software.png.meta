@@ -1159,12 +1159,12 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Icons_Software_20
+      name: Icons_Software_exit
       rect:
         serializedVersion: 2
         x: 66
         y: 209
-        width: 9
+        width: 12
         height: 13
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -1176,28 +1176,6 @@ TextureImporter:
       bones: []
       spriteID: 7b175a50f1afde790800000000000000
       internalID: -7499062793356349001
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Icons_Software_21
-      rect:
-        serializedVersion: 2
-        x: 71
-        y: 213
-        width: 7
-        height: 7
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 74342f59c155b4f30800000000000000
-      internalID: 4560832628905886535
       vertices: []
       indices: 
       edges: []
@@ -1445,7 +1423,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Icons_Software_33
+      name: Icons_Software_Search
       rect:
         serializedVersion: 2
         x: 176
@@ -1599,13 +1577,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Icons_Software_40
+      name: Icons_Software_zoomin
       rect:
         serializedVersion: 2
-        x: 145
-        y: 178
-        width: 63
-        height: 30
+        x: 192
+        y: 192
+        width: 16
+        height: 16
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1621,7 +1599,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Icons_Software_41
+      name: Icons_Software_zoomout
       rect:
         serializedVersion: 2
         x: 208
@@ -4239,7 +4217,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Icons_Software_163
+      name: Icons_Software_newGame
       rect:
         serializedVersion: 2
         x: 177
@@ -4283,7 +4261,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Icons_Software_165
+      name: Icons_Software_Contiue
       rect:
         serializedVersion: 2
         x: 209
@@ -4635,7 +4613,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Icons_Software_181
+      name: Icons_Software_tutorial
       rect:
         serializedVersion: 2
         x: 241
@@ -5199,9 +5177,7 @@ TextureImporter:
       Icons_Software_160: 2366318104003129731
       Icons_Software_161: 4224357804677828997
       Icons_Software_162: 3908988620936339158
-      Icons_Software_163: 310372091992414230
       Icons_Software_164: -4142957829303021211
-      Icons_Software_165: 7895887965616269557
       Icons_Software_166: -4643121171309794998
       Icons_Software_167: -7532780707215720290
       Icons_Software_168: -8585444309625523349
@@ -5219,7 +5195,6 @@ TextureImporter:
       Icons_Software_179: -4400624787312438124
       Icons_Software_18: 6718973985183724715
       Icons_Software_180: 4239278611009239441
-      Icons_Software_181: 5968527533466899704
       Icons_Software_182: -8481756775636086123
       Icons_Software_183: 2263124184488681085
       Icons_Software_184: 5318323677926413282
@@ -5240,7 +5215,6 @@ TextureImporter:
       Icons_Software_198: -5469691964630442228
       Icons_Software_199: -4861402581280097858
       Icons_Software_2: -8567170458440610883
-      Icons_Software_20: -7499062793356349001
       Icons_Software_200: 1944868300727890992
       Icons_Software_201: 392290667445418864
       Icons_Software_202: 8438592732204539795
@@ -5257,7 +5231,6 @@ TextureImporter:
       Icons_Software_30: -666832924904502153
       Icons_Software_31: 439936906003553029
       Icons_Software_32: -8109713733328293196
-      Icons_Software_33: 4806441815073385067
       Icons_Software_34: 8694977956288054289
       Icons_Software_35: 6285178428142754515
       Icons_Software_36: -5354239460331643877
@@ -5265,8 +5238,6 @@ TextureImporter:
       Icons_Software_38: -7048646132159495429
       Icons_Software_39: 1692253622936797060
       Icons_Software_4: -4815258016023450321
-      Icons_Software_40: -6923257752790518605
-      Icons_Software_41: -708252264148132676
       Icons_Software_42: -6880505439372533390
       Icons_Software_43: -6202748699859782586
       Icons_Software_44: -8286217744963560477
@@ -5331,10 +5302,18 @@ TextureImporter:
       Icons_Software_99: 6410559583854760231
       Icons_Software_ALL: 310711032804562205
       Icons_Software_Cancel: -3269669661362933063
+      Icons_Software_Contiue: 7895887965616269557
       Icons_Software_Pin: -5703024977169655283
+      Icons_Software_Search: 4806441815073385067
       Icons_Software_Selected: -6204828248772577209
       Icons_Software_Setting: 819861329150914357
+      Icons_Software_exit: -7499062793356349001
+      Icons_Software_newGame: 310372091992414230
       Icons_Software_plus: -2971193889223359104
+      Icons_Software_tutorial: 5968527533466899704
+      Icons_Software_zoomin: -6923257752790518605
+      Icons_Software_zoomout: -708252264148132676
+      Z: -6923257752790518605
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
