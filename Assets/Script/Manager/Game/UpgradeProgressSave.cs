@@ -38,7 +38,23 @@ public static class UpgradeProgressSave
                 var entry = catalog.entries.Find(value => value.key == match.Groups[1].Value);
                 return ReferenceJson(entry?.asset);
             });
-            return JsonUtility.FromJson<UpgradeToGeneralData>(json);
+            var snapshot = JsonUtility.FromJson<UpgradeToGeneralData>(json);
+            // The purchase ledger is authoritative after correcting duplicated asset IDs.
+            // Older snapshots may contain several assets that formerly shared a single purchased key.
+            string ledgerPath = Path.Combine(directory ?? Application.persistentDataPath, MergeBoxUpgradeManager.SaveFileName);
+            if (snapshot?.unlockedSkillNodes != null && File.Exists(ledgerPath))
+            {
+                var ledger = JsonUtility.FromJson<LegacySkills>(File.ReadAllText(ledgerPath));
+                if (ledger?.unlockedSkillIds != null && snapshot.unlockedSkillNodes.RemoveAll(node => node == null ||
+                    (!ledger.unlockedSkillIds.Contains(node.ProgressKey) && !ledger.unlockedSkillIds.Contains(node.dataId))) > 0)
+                {
+                    snapshot.skillItems.Clear();
+                    snapshot.boxLevels.Clear();
+                    snapshot.mainPlantIndex = -1;
+                    RefreshSkillValues(snapshot);
+                }
+            }
+            return snapshot;
         }
         // Migration: older versions persisted unlock IDs but no equipment/inventory snapshot.
         path = Path.Combine(directory ?? Application.persistentDataPath, MergeBoxUpgradeManager.SaveFileName);

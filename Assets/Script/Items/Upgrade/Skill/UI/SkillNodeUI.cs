@@ -18,6 +18,9 @@ public class SkillNodeUI : MonoBehaviour
     [SerializeField] private bool hideUnavailableNodes;
 
     private SkillTreeUI ownerUI;
+    private CanvasGroup visibilityGroup;
+    private float visibleAlpha;
+    private bool visibleInteractable, visibleRaycasts;
     public event System.Action VisibilityChanged;
 
     public SkillNodeData SkillNodeData => skillNodeData;
@@ -144,7 +147,22 @@ public class SkillNodeUI : MonoBehaviour
     {
         bool changed = IsVisible != visible;
         IsVisible = visible;
-        if (nodeRootObject != null)
+        // Keep the controller alive, but hide every visual child (including hover/checkmark siblings).
+        if (Application.isPlaying)
+        {
+            if (visibilityGroup == null)
+            {
+                visibilityGroup = GetComponent<CanvasGroup>();
+                if (visibilityGroup == null) visibilityGroup = gameObject.AddComponent<CanvasGroup>();
+                visibleAlpha = visibilityGroup.alpha;
+                visibleInteractable = visibilityGroup.interactable;
+                visibleRaycasts = visibilityGroup.blocksRaycasts;
+            }
+            visibilityGroup.alpha = visible ? visibleAlpha : 0;
+            visibilityGroup.interactable = visible && visibleInteractable;
+            visibilityGroup.blocksRaycasts = visible && visibleRaycasts;
+        }
+        if (nodeRootObject != null && nodeRootObject != gameObject)
             nodeRootObject.SetActive(visible);
 
         if (button != null)
