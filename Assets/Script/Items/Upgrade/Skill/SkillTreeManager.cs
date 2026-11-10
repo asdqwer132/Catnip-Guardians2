@@ -253,7 +253,6 @@ public class SkillTreeManager : MonoBehaviour, IStoryProgressSource
         if (node.requiredSkills == null || node.requiredSkills.Count == 0)
             return true;
 
-        bool hasValidRequiredSkill = false;
 
         for (int i = 0; i < node.requiredSkills.Count; i++)
         {
@@ -265,16 +264,11 @@ public class SkillTreeManager : MonoBehaviour, IStoryProgressSource
             if (string.IsNullOrEmpty(requiredSkill.dataId))
                 continue;
 
-            hasValidRequiredSkill = true;
 
             // 하나라도 해금되어 있으면 통과
             if (IsUnlocked(requiredSkill))
                 return true;
         }
-
-        // 리스트는 있지만 유효한 요구 스킬이 없으면 시작 노드처럼 처리
-        if (!hasValidRequiredSkill)
-            return true;
 
         return false;
     }

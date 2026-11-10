@@ -4,7 +4,7 @@ using UnityEngine;
 [ExecuteAlways]
 public sealed class SkillTreeConnectionUI : MonoBehaviour
 {
-    [Tooltip("기존 규칙과 같이 출발 노드의 해금 상태를 사용합니다.")]
+    [Tooltip("출발 노드가 해금되면 길이 보이고, 도착 노드가 해금되면 해금 선으로 표시합니다.")]
     public SkillNodeUI from;
     public SkillNodeUI to;
     public SkillTreeLineUI horizontalLine;
@@ -18,10 +18,26 @@ public sealed class SkillTreeConnectionUI : MonoBehaviour
     private SkillNodeUI boundFrom, boundTo;
     private readonly System.Collections.Generic.List<SkillTreeLineUI> authoredSegments = new System.Collections.Generic.List<SkillTreeLineUI>();
     private bool capturedSegments;
+    private SkillTreeManager boundManager;
 
-    private void OnEnable() { if (Application.isPlaying) RefreshVisibility(); }
+    private void OnEnable()
+    {
+        if (!Application.isPlaying) return;
+        SkillTreeManager.InstanceChanged += BindManager;
+        BindManager();
+    }
+    private void BindManager()
+    {
+        if (boundManager != null) boundManager.OnSkillTreeChanged -= RefreshVisibility;
+        boundManager = SkillTreeManager.Instance;
+        if (boundManager != null) boundManager.OnSkillTreeChanged += RefreshVisibility;
+        RefreshVisibility();
+    }
     private void OnDisable()
     {
+        SkillTreeManager.InstanceChanged -= BindManager;
+        if (boundManager != null) boundManager.OnSkillTreeChanged -= RefreshVisibility;
+        boundManager = null;
         if (boundFrom != null) boundFrom.VisibilityChanged -= RefreshVisibility;
         if (boundTo != null) boundTo.VisibilityChanged -= RefreshVisibility;
         boundFrom = boundTo = null;
@@ -51,13 +67,22 @@ public sealed class SkillTreeConnectionUI : MonoBehaviour
                 if (line != null && line.gameObject.activeSelf) authoredSegments.Add(line);
             capturedSegments = true;
         }
-        bool visible = (from == null || from.IsVisible) && (to == null || to.IsVisible);
+        var manager = SkillTreeManager.Instance;
+        bool visible = manager != null && from != null && to != null && from.IsVisible && to.IsVisible &&
+            from.SkillNodeData != null && to.SkillNodeData != null && manager.IsUnlocked(from.SkillNodeData) &&
+            manager.HasRequiredSkills(to.SkillNodeData);
+        ApplyUnlockedState(manager != null && to != null && to.SkillNodeData != null && manager.IsUnlocked(to.SkillNodeData));
         foreach (var line in authoredSegments) if (line != null && line.gameObject.activeSelf != visible) line.gameObject.SetActive(visible);
     }
 
     public void SetUnlocked(bool unlocked)
     {
-        RefreshVisibility();
+        if (Application.isPlaying) { RefreshVisibility(); return; }
+        ApplyUnlockedState(unlocked);
+    }
+
+    private void ApplyUnlockedState(bool unlocked)
+    {
         this.unlocked = unlocked;
         if (curveLines != null) foreach (var line in curveLines) if (line != null) line.SetUnlocked(unlocked);
         if (horizontalLine != null) horizontalLine.SetUnlocked(unlocked);

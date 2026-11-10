@@ -133,8 +133,8 @@ public class SkillNodeUI : MonoBehaviour
             }
             else if (line.TryGetComponent<SkillTreeLineUI>(out var segment))
             {
-                line.SetActive(IsVisible);
-                segment.SetUnlocked(unlocked);
+                line.SetActive(IsVisible && unlocked);
+                segment.SetUnlocked(false);
             }
             else line.SetActive(IsVisible && unlocked);
         }
