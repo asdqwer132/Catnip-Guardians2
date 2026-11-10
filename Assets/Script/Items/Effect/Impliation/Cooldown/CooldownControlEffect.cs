@@ -3,7 +3,7 @@ using UnityEngine;
 
 public enum CooldownOperation { ReduceSeconds, ReduceFraction, Ready }
 
-[CreateAssetMenu(fileName = "CooldownControlEffect", menuName = "04.Items/Effects/Direct Effects/Cooldown Control")]
+[CreateAssetMenu(fileName = "CooldownControlEffect", menuName = "Items/Effects/Direct Effects/Cooldown Control")]
 public sealed class CooldownControlEffect : ItemEffectData
 {
     public CooldownOperation operation;

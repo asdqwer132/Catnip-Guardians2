@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "MergeRecipeBook", menuName = "04.Items/Merge/Recipe Book")]
+[CreateAssetMenu(fileName = "MergeRecipeBook", menuName = "Items/Merge/Recipe Book")]
 public sealed class MergeRecipeBook : ScriptableObject
 {
     public List<MergeItem> items = new List<MergeItem>();

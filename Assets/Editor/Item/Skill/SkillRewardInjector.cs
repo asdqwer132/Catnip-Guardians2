@@ -11,7 +11,7 @@ public sealed class SkillRewardInjector : EditorWindow
     private string root = "Assets/Data/Scriptable/SkillTree";
     private Vector2 scroll;
     private string report = "";
-    [MenuItem("Tools/Skills/Reward Injector")]
+    [MenuItem("Tools/Skill/Reward Injector")]
     public static void Open() => GetWindow<SkillRewardInjector>("Skill Rewards");
     public static List<Binding> Plan(string root)
     {

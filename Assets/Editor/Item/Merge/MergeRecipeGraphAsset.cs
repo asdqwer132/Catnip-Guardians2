@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-[CreateAssetMenu(fileName = "MergeRecipeGraph", menuName = "04.Items/Merge/Recipe Graph")]
+[CreateAssetMenu(fileName = "MergeRecipeGraph", menuName = "Items/Merge/Recipe Graph")]
 public sealed class MergeRecipeGraphAsset : ScriptableObject
 {
     public MergeRecipeBook recipeBook;

@@ -17,7 +17,7 @@ public class GameDebugWindow : EditorWindow
     private DebugCategory selectedCategory;
     private Vector2 scrollPosition;
 
-    [MenuItem("Tools/Game Debug")]
+    [MenuItem("Tools/Utility/Game Debug")]
     public static void Open()
     {
         GameDebugWindow window = GetWindow<GameDebugWindow>();

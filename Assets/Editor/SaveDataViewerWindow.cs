@@ -18,7 +18,7 @@ public sealed class SaveDataViewerWindow : EditorWindow
     [SerializeField] private SavePreferenceKind customKind;
     private Vector2 scroll;
 
-    [MenuItem("Tools/Save Data Viewer")]
+    [MenuItem("Tools/Save Data/Save Data Viewer")]
     public static void Open()
     {
         var window = GetWindow<SaveDataViewerWindow>("Save Data Viewer");

@@ -23,7 +23,7 @@ public class BoxAnimationClipGenerator : EditorWindow
     [Tooltip("일반적인 스프라이트시트처럼 위쪽 줄부터 0번으로 볼지")]
     [SerializeField] private bool topToBottom = true;
 
-    [MenuItem("Tools/Box/Create Box Animation Clips")]
+    [MenuItem("Tools/Item/Box/Create Box Animation Clips")]
     public static void Open()
     {
         GetWindow<BoxAnimationClipGenerator>("Box Clip Generator");

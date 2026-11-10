@@ -2,7 +2,7 @@
 
 [CreateAssetMenu(
     fileName = "DamageAreaAttackEffect",
-    menuName = "04.Items/Effects/Direct Effects/Attack/Damage"
+    menuName = "Items/Effects/Direct Effects/Attack/Damage"
 )]
 public class DamageAreaAttackEffect : ItemEffectData
 {

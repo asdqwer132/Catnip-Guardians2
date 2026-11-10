@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Display metadata shared by item and enemy codices. Reading it never executes effects.
-[CreateAssetMenu(fileName = "Codex Effect Description", menuName = "03.Upgrade/Codex/Effect Description")]
+[CreateAssetMenu(fileName = "Codex Effect Description", menuName = "Upgrade/Codex/Effect Description")]
 public sealed class CodexEffectDescription : DefaultData { }
 
 public static class CodexEffectUtility

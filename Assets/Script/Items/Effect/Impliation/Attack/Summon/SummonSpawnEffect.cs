@@ -5,7 +5,7 @@ using UnityEngine.Scripting.APIUpdating;
 
 // 생성 조건/배치만 소유합니다. 공격력과 행동 모듈은 프리팹의 SummonActor가 소유합니다.
 [MovedFrom(true, null, "Assembly-CSharp", "SummonAttackEffect")]
-[CreateAssetMenu(fileName = "SummonSpawnEffect", menuName = "04.Items/Effects/Direct Effects/Summon/Spawn")]
+[CreateAssetMenu(fileName = "SummonSpawnEffect", menuName = "Items/Effects/Direct Effects/Summon/Spawn")]
 public sealed class SummonSpawnEffect : ItemEffectData
 {
     [Header("Summon Creation")]

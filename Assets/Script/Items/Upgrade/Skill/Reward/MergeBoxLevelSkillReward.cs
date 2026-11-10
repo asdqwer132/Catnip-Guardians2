@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "MergeBoxLevelReward", menuName = "03.Upgrade/Skills/Rewards/Merge Box Level")]
+[CreateAssetMenu(fileName = "MergeBoxLevelReward", menuName = "Upgrade/Skills/Rewards/Merge Box Level")]
 public sealed class MergeBoxLevelSkillReward : SkillRewardData
 {
     public ItemSeries series = ItemSeries.Weapon;

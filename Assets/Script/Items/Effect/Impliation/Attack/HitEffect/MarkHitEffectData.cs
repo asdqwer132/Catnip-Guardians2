@@ -3,7 +3,7 @@ using UnityEngine.Serialization;
 
 public enum MarkReactionSource { MarkCreator, DamageSource }
 
-[CreateAssetMenu(fileName = "MarkHitEffect", menuName = "04.Items/Effects/Hit Effects/Configurable Mark")]
+[CreateAssetMenu(fileName = "MarkHitEffect", menuName = "Items/Effects/Hit Effects/Configurable Mark")]
 public sealed class MarkHitEffectData : HitEffectData
 {
     public SpecialStatusDefinition markKey;

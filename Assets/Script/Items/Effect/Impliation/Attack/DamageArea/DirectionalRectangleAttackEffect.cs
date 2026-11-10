@@ -2,7 +2,7 @@
 
 [CreateAssetMenu(
     fileName = "DirectionalRectangleAttackEffect",
-    menuName = "04.Items/Effects/Direct Effects/Attack/Damage Square"
+    menuName = "Items/Effects/Direct Effects/Attack/Damage Square"
 )]
 public class DirectionalRectangleAttackEffect : DamageAreaAttackEffect
 {

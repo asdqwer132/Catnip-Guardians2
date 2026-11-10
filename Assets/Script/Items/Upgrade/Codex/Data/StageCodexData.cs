@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 // A stage is item-shaped display data; merely selecting it never starts a stage or uses an item.
-[CreateAssetMenu(fileName = "Stage Codex", menuName = "03.Upgrade/Codex/Stage Item")]
+[CreateAssetMenu(fileName = "Stage Codex", menuName = "Upgrade/Codex/Stage Item")]
 public sealed class StageCodexData : ItemData
 {
     [Header("Extra Data")]

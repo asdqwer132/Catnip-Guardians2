@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "00.Game/Screen Background Profile", fileName = "GameScreenBackground")]
+[CreateAssetMenu(menuName = "Game/Screen Background Profile", fileName = "GameScreenBackground")]
 public sealed class GameScreenBackgroundProfile : ScriptableObject
 {
     public Texture2D backgroundTexture;

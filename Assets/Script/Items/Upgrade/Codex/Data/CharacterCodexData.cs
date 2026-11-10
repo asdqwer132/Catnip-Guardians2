@@ -30,7 +30,7 @@ public sealed class CharacterCodexPortrait : DefinedData
     public string GetDetailDescription(language selected) => Read(selected)?.detailDescription;
 }
 
-[CreateAssetMenu(fileName = "Character Codex", menuName = "03.Upgrade/Codex/Character")]
+[CreateAssetMenu(fileName = "Character Codex", menuName = "Upgrade/Codex/Character")]
 public sealed class CharacterCodexData : DefaultData
 {
     [Header("Extra Data")]

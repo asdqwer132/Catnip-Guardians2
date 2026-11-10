@@ -2,7 +2,7 @@
 
 [CreateAssetMenu(
     fileName = "BuffSkillReward",
-    menuName = "03.Upgrade/Skills/Rewards/Buff"
+    menuName = "Upgrade/Skills/Rewards/Buff"
 )]
 public class BuffSkillReward : SkillRewardData
 {

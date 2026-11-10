@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Map Codex", menuName = "03.Upgrade/Codex/Map")]
+[CreateAssetMenu(fileName = "Map Codex", menuName = "Upgrade/Codex/Map")]
 public sealed class MapCodexData : DefaultData
 {
     [Header("Extra Data")]

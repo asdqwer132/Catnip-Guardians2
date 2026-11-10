@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "ConditionalItemEffect", menuName = "04.Items/Effects/Use Effects/Branch")]
+[CreateAssetMenu(fileName = "ConditionalItemEffect", menuName = "Items/Effects/Use Effects/Branch")]
 public class ConditionalItemEffectData : ItemEffectData
 {
     [Header("Branches")]

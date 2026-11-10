@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Recipe", menuName = "03.Upgrade/Crafting/Recipe")]
+[CreateAssetMenu(fileName = "Recipe", menuName = "Upgrade/Crafting/Recipe")]
 public class ItemRecipeData : ScriptableObject, ISearchable
 {
     public int tier;

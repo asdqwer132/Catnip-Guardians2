@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SummonHealth", menuName = "04.Items/Effects/Direct Effects/Summon/Summon Modules/Health")]
+[CreateAssetMenu(fileName = "SummonHealth", menuName = "Items/Effects/Direct Effects/Summon/Summon Modules/Health")]
 public sealed class SummonHealthModule : SummonBehaviourModule
 {
     [Header("기본 스탯 · 체력")]

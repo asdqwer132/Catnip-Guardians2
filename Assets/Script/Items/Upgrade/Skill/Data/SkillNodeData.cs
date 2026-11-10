@@ -3,7 +3,7 @@ using UnityEngine;
 
 [CreateAssetMenu(
     fileName = "SkillNodeData",
-    menuName = "03.Upgrade/Skills/Node"
+    menuName = "Upgrade/Skills/Node"
 )]
 public class SkillNodeData : DefaultData
 {

@@ -14,7 +14,7 @@ public sealed class SkillTreeGraphWindow : EditorWindow
     private Canvas graph;
     [SerializeField] private float spacingScale = 1f;
     [SerializeField] private float maximumZoom = 10f;
-    [MenuItem("Tools/Skills/Tree Graph")]
+    [MenuItem("Tools/Skill/Tree Graph")]
     public static void Open() => GetWindow<SkillTreeGraphWindow>("Skill Tree Graph");
     public static void Open(SkillTreeLayoutData data)
     { var window = GetWindow<SkillTreeGraphWindow>("Skill Tree Graph"); window.layout = data; window.Rebuild(); }

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "EffectVisual", menuName = "04.Items/EffectVisual")]
+[CreateAssetMenu(fileName = "EffectVisual", menuName = "Items/EffectVisual")]
 public class EffectVisualData : ScriptableObject
 {
     [Header("Visual")]

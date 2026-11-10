@@ -16,7 +16,7 @@ public class ItemRecipeCsvImporter : EditorWindow
     [Header("Assets")]
     [SerializeField] private DefaultAsset itemDataFolder;
     [SerializeField] private DefaultAsset recipeOutputFolder;
-    [SerializeField] private string outputFolderPath = "Assets/04.Items/Recipes";
+    [SerializeField] private string outputFolderPath = "Assets/Items/Recipes";
 
     [Header("Options")]
     [SerializeField] private bool overwriteExisting = true;

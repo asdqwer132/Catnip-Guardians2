@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SummonGroupSustainedSpawn", menuName = "04.Items/Effects/Direct Effects/Summon/Group Reactions/Sustained Spawn")]
+[CreateAssetMenu(fileName = "SummonGroupSustainedSpawn", menuName = "Items/Effects/Direct Effects/Summon/Group Reactions/Sustained Spawn")]
 public sealed class SummonGroupSustainedSpawnModule : SummonGroupReactionModule
 {
     [Tooltip("여러 종류를 연결할 수 있습니다. 각 효과의 버프 적용된 소환 수/수명/배치를 그대로 사용합니다.")]

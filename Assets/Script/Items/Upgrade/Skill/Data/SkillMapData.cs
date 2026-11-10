@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 [CreateAssetMenu(
     fileName = "SkillMapData",
-    menuName = "03.Upgrade/Skills/Map"
+    menuName = "Upgrade/Skills/Map"
 )]
 public class SkillMapData : DefaultData
 {

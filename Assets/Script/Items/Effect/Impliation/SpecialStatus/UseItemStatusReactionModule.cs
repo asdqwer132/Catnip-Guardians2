@@ -5,7 +5,7 @@ public enum StatusReactionItemDelivery { ExecuteAtImpact, ThrowAtImpact }
 public enum StatusReactionThrowAnchor { ImpactPosition, OwnerPosition, OriginalUsePosition }
 public enum StatusReactionOffsetSpace { World, ForwardAndSide }
 
-[CreateAssetMenu(fileName = "UseItemStatusReaction", menuName = "04.Items/Effects/Direct Effects/Special Status/Item Use Modules/Use Item")]
+[CreateAssetMenu(fileName = "UseItemStatusReaction", menuName = "Items/Effects/Direct Effects/Special Status/Item Use Modules/Use Item")]
 public sealed class UseItemStatusReactionModule : SpecialStatusItemUseModule
 {
     [Header("추가 사용할 아이템")]

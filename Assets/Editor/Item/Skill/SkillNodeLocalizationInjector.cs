@@ -33,7 +33,7 @@ public class SkillNodeLocalizationInjector : EditorWindow
             BindingFlags.Instance | BindingFlags.NonPublic
         );
 
-    [MenuItem("Tools/Skill Tree/Localization Injector")]
+    [MenuItem("Tools/Skill/Localization Injector")]
     public static void OpenWindow()
     {
         SkillNodeLocalizationInjector window =

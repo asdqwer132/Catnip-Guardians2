@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "MainPlantIndexEffect", menuName = "04.Items/Effects/Direct Effects/Main Plant Index")]
+[CreateAssetMenu(fileName = "MainPlantIndexEffect", menuName = "Items/Effects/Direct Effects/Main Plant Index")]
 public sealed class MainPlantIndexEffect : ItemEffectData
 {
     [Min(0)] public int plantIndex;

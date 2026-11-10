@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ReactiveGroundEffect", menuName = "04.Items/Effects/Direct Effects/Area/Reactive Ground")]
+[CreateAssetMenu(fileName = "ReactiveGroundEffect", menuName = "Items/Effects/Direct Effects/Area/Reactive Ground")]
 public class ReactiveGroundEffect : ItemEffectData
 {
     [Tooltip("필수 설정입니다. 영역의 종류, 기본 스탯, 유지 비주얼, 생명주기 효과는 이 정의에서 관리합니다.")]

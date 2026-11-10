@@ -9,7 +9,7 @@ using UnityEngine;
 public static class EnemyPatternActionCsvImporter
 {
     private const string MenuPath = "Tools/Enemy/Enemy Pattern/Import Action Pattern CSV";
-    private const string DefaultOutputFolder = "Assets/04.Items/EnemyPatterns";
+    private const string DefaultOutputFolder = "Assets/Items/EnemyPatterns";
 
     [MenuItem(MenuPath)]
     public static void ImportCsv()

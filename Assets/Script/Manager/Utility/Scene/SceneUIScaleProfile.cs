@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // 배치 비율은 씬이 정하고, UI 한 단위의 화면 픽셀 크기는 이 공통 데이터가 정합니다.
-[CreateAssetMenu(menuName = "00.Game/Scene UI Scale Profile", fileName = "SceneUIScaleProfile")]
+[CreateAssetMenu(menuName = "Game/Scene UI Scale Profile", fileName = "SceneUIScaleProfile")]
 public sealed class SceneUIScaleProfile : ScriptableObject
 {
     public Vector2 referenceResolution = new Vector2(2400, 1440);

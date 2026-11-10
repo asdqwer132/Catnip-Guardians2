@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "AllTargetsBuffTarget", menuName = "04.Items/Effects/Direct Effects/Buff/BuffSetting/Targets/All Targets")]
+[CreateAssetMenu(fileName = "AllTargetsBuffTarget", menuName = "Items/Effects/Direct Effects/Buff/BuffSetting/Targets/All Targets")]
 public sealed class AllTargetsBuffTargetResolver : BuffTargetResolver
 {
     public override void ResolveTargets(BuffRegisterContext context, List<BuffTargetHandle> results)

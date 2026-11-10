@@ -24,7 +24,7 @@ public sealed class TutorialPageData : DefinedData
     public string GetDetailDescription(language selected) => Read(selected)?.detailDescription;
 }
 
-[CreateAssetMenu(fileName = "TutorialData", menuName = "02.Settings/Tutorial Data")]
+[CreateAssetMenu(fileName = "TutorialData", menuName = "Settings/Tutorial Data")]
 public sealed class TutorialData : DefaultData
 {
     public TutorialPageData[] pages = Array.Empty<TutorialPageData>();
