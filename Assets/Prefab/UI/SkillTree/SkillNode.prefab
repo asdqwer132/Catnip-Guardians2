@@ -264,7 +264,7 @@ MonoBehaviour:
   button: {fileID: 3337817293638885691}
   iconImage: {fileID: 4619919876040051837}
   lockImage: {fileID: 518841660289498790}
-  hideUnavailableNodes: 0
+  hideUnavailableNodes: 1
 --- !u!114 &6370626538912415708
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -294,6 +294,7 @@ MonoBehaviour:
   isPointer: 1
   autoDisable: 1
   startShow: 0
+  hideOnPointerExit: 1
   showOnSelection: 0
   tooltipUI: {fileID: 0}
   providerComponent: {fileID: 6370626538912415708}
