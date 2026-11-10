@@ -254,7 +254,7 @@ public partial class SkillTreeNodePlacer
     private static string NodeName(SkillNodeData data)
     {
         string name = data.GetDataName(language.english);
-        return !string.IsNullOrEmpty(name) ? name : !string.IsNullOrEmpty(data.dataId) ? data.dataId : data.name;
+        return !string.IsNullOrEmpty(data.dataId) ? data.dataId : data.name;
     }
 }
 #endif

@@ -24,4 +24,6 @@ public class SkillNodeData : DefaultData
 
     [Header("Extra Data / Rewards")]
     public List<SkillRewardData> rewards = new List<SkillRewardData>();
+
+
 }

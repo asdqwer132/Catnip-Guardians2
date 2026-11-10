@@ -161,10 +161,7 @@ MonoBehaviour:
   nodePrefab: {fileID: 3131203849903030181, guid: 450ee74ded8267444af19ddbf188a9de, type: 3}
   horizontalLinePrefab: {fileID: 5662509436171153464, guid: 221ee674334f7db429f58ec565dad9e1, type: 3}
   verticalLinePrefab: {fileID: 685175007539625096, guid: 63574d9cf0a5aff4aba897311538ac3d, type: 3}
-  startPosition: {x: 0, y: 0}
-  spacing: {x: 150, y: 150}
-  bendMode: 0
-  nodeHalfSize: 40
+  nodeSize: {x: 135, y: 135}
   lineShape: 1
   lineEndpoint: 1
   curveSegments: 20
@@ -173,7 +170,6 @@ MonoBehaviour:
   layout: {fileID: 11400000, guid: 408d675d29fe45969bd5174fb8df90e5, type: 2}
   autoRememberPositions: 1
   legacyNodes: []
-  legacyGrid: []
   legacyLayout: []
 --- !u!114 &5105288542810202445
 MonoBehaviour:
