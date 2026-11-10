@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// 선분은 배치기가 에디터에서 미리 만듭니다. 실행 중에는 생성하지 않고 위치와 표시만 갱신합니다.
+// 배치 시 계산한 선분을 사용합니다. 게임 중에는 해금과 표시 상태만 갱신합니다.
 [ExecuteAlways]
 public sealed class SkillTreeConnectionUI : MonoBehaviour
 {
@@ -15,10 +15,49 @@ public sealed class SkillTreeConnectionUI : MonoBehaviour
     public SkillTreeLineUI[] curveLines = System.Array.Empty<SkillTreeLineUI>();
     private bool unlocked;
 
-    private void LateUpdate() => RefreshGeometry();
+    private SkillNodeUI boundFrom, boundTo;
+    private readonly System.Collections.Generic.List<SkillTreeLineUI> authoredSegments = new System.Collections.Generic.List<SkillTreeLineUI>();
+    private bool capturedSegments;
+
+    private void OnEnable() { if (Application.isPlaying) RefreshVisibility(); }
+    private void OnDisable()
+    {
+        if (boundFrom != null) boundFrom.VisibilityChanged -= RefreshVisibility;
+        if (boundTo != null) boundTo.VisibilityChanged -= RefreshVisibility;
+        boundFrom = boundTo = null;
+    }
+
+    public void RefreshVisibility()
+    {
+        if (!Application.isPlaying) return;
+        if (boundFrom != from)
+        {
+            if (boundFrom != null) boundFrom.VisibilityChanged -= RefreshVisibility;
+            boundFrom = from;
+            if (boundFrom != null) boundFrom.VisibilityChanged += RefreshVisibility;
+        }
+        if (boundTo != to)
+        {
+            if (boundTo != null) boundTo.VisibilityChanged -= RefreshVisibility;
+            boundTo = to;
+            if (boundTo != null) boundTo.VisibilityChanged += RefreshVisibility;
+        }
+        if (!capturedSegments)
+        {
+            if (horizontalLine == null && verticalLine == null && (curveLines == null || curveLines.Length == 0)) return;
+            if (horizontalLine != null && horizontalLine.gameObject.activeSelf) authoredSegments.Add(horizontalLine);
+            if (verticalLine != null && verticalLine.gameObject.activeSelf) authoredSegments.Add(verticalLine);
+            if (curveLines != null) foreach (var line in curveLines)
+                if (line != null && line.gameObject.activeSelf) authoredSegments.Add(line);
+            capturedSegments = true;
+        }
+        bool visible = (from == null || from.IsVisible) && (to == null || to.IsVisible);
+        foreach (var line in authoredSegments) if (line != null && line.gameObject.activeSelf != visible) line.gameObject.SetActive(visible);
+    }
 
     public void SetUnlocked(bool unlocked)
     {
+        RefreshVisibility();
         this.unlocked = unlocked;
         if (curveLines != null) foreach (var line in curveLines) if (line != null) line.SetUnlocked(unlocked);
         if (horizontalLine != null) horizontalLine.SetUnlocked(unlocked);
@@ -27,16 +66,8 @@ public sealed class SkillTreeConnectionUI : MonoBehaviour
 
     public void RefreshGeometry()
     {
+        if (Application.isPlaying) { RefreshVisibility(); return; }
         if (shape != SkillLineShape.Curve && curveLines != null) foreach (var line in curveLines) Hide(line);
-        // Keep the controller active so a later unlock can reveal its segments again.
-        if (Application.isPlaying &&
-            ((from != null && !from.IsVisible) || (to != null && !to.IsVisible)))
-        {
-            Hide(horizontalLine);
-            Hide(verticalLine);
-            if (curveLines != null) foreach (var line in curveLines) Hide(line);
-            return;
-        }
         var space = transform as RectTransform;
         var startRect = from != null ? from.transform as RectTransform : null;
         var endRect = to != null ? to.transform as RectTransform : null;

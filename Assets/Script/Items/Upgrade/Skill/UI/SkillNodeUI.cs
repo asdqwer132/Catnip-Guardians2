@@ -18,6 +18,7 @@ public class SkillNodeUI : MonoBehaviour
     [SerializeField] private bool hideUnavailableNodes;
 
     private SkillTreeUI ownerUI;
+    public event System.Action VisibilityChanged;
 
     public SkillNodeData SkillNodeData => skillNodeData;
     public IReadOnlyList<GameObject> Lines => lines;
@@ -128,7 +129,7 @@ public class SkillNodeUI : MonoBehaviour
             if (line.TryGetComponent<SkillTreeConnectionUI>(out var connection))
             {
                 connection.SetUnlocked(unlocked);
-                connection.RefreshGeometry();
+                connection.RefreshVisibility();
             }
             else if (line.TryGetComponent<SkillTreeLineUI>(out var segment))
             {
@@ -141,6 +142,7 @@ public class SkillNodeUI : MonoBehaviour
 
     private void SetNodeVisible(bool visible)
     {
+        bool changed = IsVisible != visible;
         IsVisible = visible;
         if (nodeRootObject != null)
             nodeRootObject.SetActive(visible);
@@ -150,5 +152,6 @@ public class SkillNodeUI : MonoBehaviour
 
         if (lockImage != null)
             lockImage.gameObject.SetActive(false);
+        if (changed) VisibilityChanged?.Invoke();
     }
 }
