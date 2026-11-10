@@ -9,8 +9,6 @@ public sealed class SkillTreeConnectionUI : MonoBehaviour
     public SkillNodeUI to;
     public SkillTreeLineUI horizontalLine;
     public SkillTreeLineUI verticalLine;
-    public SkillLineBendMode bendMode;
-    public float nodeHalfSize = 40;
     public SkillLineShape shape;
     public SkillLineEndpoint endpoint;
     public float curveBend = .5f;
@@ -46,11 +44,13 @@ public sealed class SkillTreeConnectionUI : MonoBehaviour
         Vector2 start = space.InverseTransformPoint(startRect.TransformPoint(startRect.rect.center));
         Vector2 end = space.InverseTransformPoint(endRect.TransformPoint(endRect.rect.center));
         float sx = Mathf.Sign(end.x - start.x), sy = Mathf.Sign(end.y - start.y);
-        float half = endpoint == SkillLineEndpoint.NodeCenter ? 0 : Mathf.Max(0, nodeHalfSize);
-        float startX = Mathf.Abs(space.InverseTransformVector(startRect.TransformVector(Vector3.right * half)).x);
-        float startY = Mathf.Abs(space.InverseTransformVector(startRect.TransformVector(Vector3.up * half)).y);
-        float endX = Mathf.Abs(space.InverseTransformVector(endRect.TransformVector(Vector3.right * half)).x);
-        float endY = Mathf.Abs(space.InverseTransformVector(endRect.TransformVector(Vector3.up * half)).y);
+        bool horizontalFirst = Mathf.Abs(end.x - start.x) >= Mathf.Abs(end.y - start.y);
+        Vector2 startHalf = endpoint == SkillLineEndpoint.NodeCenter ? Vector2.zero : startRect.rect.size * .5f;
+        Vector2 endHalf = endpoint == SkillLineEndpoint.NodeCenter ? Vector2.zero : endRect.rect.size * .5f;
+        float startX = Mathf.Abs(space.InverseTransformVector(startRect.TransformVector(Vector3.right * startHalf.x)).x);
+        float startY = Mathf.Abs(space.InverseTransformVector(startRect.TransformVector(Vector3.up * startHalf.y)).y);
+        float endX = Mathf.Abs(space.InverseTransformVector(endRect.TransformVector(Vector3.right * endHalf.x)).x);
+        float endY = Mathf.Abs(space.InverseTransformVector(endRect.TransformVector(Vector3.up * endHalf.y)).y);
         if (shape != SkillLineShape.Elbow)
         {
             Hide(horizontalLine);
@@ -58,10 +58,10 @@ public sealed class SkillTreeConnectionUI : MonoBehaviour
             var delta = end - start;
             var tangent = shape == SkillLineShape.Straight || Mathf.Abs(delta.x) < .01f || Mathf.Abs(delta.y) < .01f
                 ? delta.normalized
-                : (bendMode == SkillLineBendMode.HorizontalThenVertical ? Vector2.right * sx : Vector2.up * sy);
+                : (horizontalFirst ? Vector2.right * sx : Vector2.up * sy);
             var endTangent = shape == SkillLineShape.Straight || Mathf.Abs(delta.x) < .01f || Mathf.Abs(delta.y) < .01f
                 ? delta.normalized
-                : (bendMode == SkillLineBendMode.HorizontalThenVertical ? Vector2.up * sy : Vector2.right * sx);
+                : (horizontalFirst ? Vector2.up * sy : Vector2.right * sx);
             start += EdgeOffset(tangent, startX, startY);
             end -= EdgeOffset(endTangent, endX, endY);
             if (Vector2.Dot(end - start, delta) <= 0) return;
@@ -95,7 +95,7 @@ public sealed class SkillTreeConnectionUI : MonoBehaviour
             SetSegment(verticalLine, space, start + Vector2.up * startY * sy, end - Vector2.up * endY * sy, false, sy);
             Hide(horizontalLine);
         }
-        else if (bendMode == SkillLineBendMode.HorizontalThenVertical)
+        else if (horizontalFirst)
         {
             var corner = new Vector2(end.x, start.y);
             SetSegment(horizontalLine, space, start + Vector2.right * startX * sx, corner, true, sx);

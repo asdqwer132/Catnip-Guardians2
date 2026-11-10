@@ -37,7 +37,7 @@ public partial class SkillTreeNodePlacer
         for (int i = 0; i < nodeDatas.Count; i++)
         {
             var old = nodeLayout.Find(entry => entry != null && entry.node == nodeDatas[i]);
-            data.nodeLayout.Add(new SkillNodePlacement { node = nodeDatas[i], position = old != null ? old.position : GridPosition(i) });
+            data.nodeLayout.Add(new SkillNodePlacement { node = nodeDatas[i], position = old != null ? old.position : Vector2.zero });
         }
         AssetDatabase.CreateAsset(data, path);
         Undo.RecordObject(this, "Assign tree layout"); layout = data; Dirty(this);
@@ -78,6 +78,15 @@ public partial class SkillTreeNodePlacer
         {
             foreach (var pair in Views())
             {
+                var rect = (RectTransform)pair.Value.transform;
+                Vector2 size = new Vector2(Mathf.Max(1, nodeSize.x), Mathf.Max(1, nodeSize.y));
+                if (Different(rect.rect.size, size))
+                {
+                    if (recordUndo) Undo.RecordObject(rect, "Resize skill node");
+                    rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
+                    rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);
+                    Dirty(rect);
+                }
                 var saved = nodeLayout.Find(entry => entry != null && entry.node == pair.Key);
                 if (saved == null || !Different(Position(pair.Value), saved.position)) continue;
                 if (recordUndo) Undo.RegisterCompleteObjectUndo(pair.Value.transform, "Position skill node");
@@ -88,22 +97,6 @@ public partial class SkillTreeNodePlacer
             if (layout != null) appliedLayoutRevision = layout.revision;
         }
         finally { IsApplyingLayout = false; }
-    }
-
-    [ContextMenu("Apply Initial Grid Positions")]
-    public void ApplyGridPositions()
-    {
-        if (!CanEdit || nodeDatas == null) return;
-        Undo.RegisterCompleteObjectUndo(layout != null ? (UnityEngine.Object)layout : this, "Apply initial skill grid");
-        nodeLayout.Clear();
-        for (int i = 0; i < nodeDatas.Count; i++)
-            if (nodeDatas[i] != null) nodeLayout.Add(new SkillNodePlacement { node = nodeDatas[i], position = GridPosition(i) });
-        Dirty(layout != null ? (UnityEngine.Object)layout : this); ApplySavedLayout();
-    }
-    private Vector2 GridPosition(int index)
-    {
-        var grid = nodePositions != null && index < nodePositions.Count ? nodePositions[index] : new Vector2Int(index, 0);
-        return startPosition + new Vector2(grid.x * spacing.x, grid.y * spacing.y);
     }
 
     [ContextMenu("Generate Skill Tree")]
@@ -127,7 +120,7 @@ public partial class SkillTreeNodePlacer
             rect.anchorMin = rect.anchorMax = new Vector2(.5f, .5f);
             rect.localScale = Vector3.one;
             var saved = nodeLayout.Find(entry => entry != null && entry.node == data);
-            rect.anchoredPosition = saved != null ? saved.position : GridPosition(i);
+            rect.anchoredPosition = saved != null ? saved.position : Vector2.zero;
             view.SetData(data, Array.Empty<GameObject>());
             Dirty(view); Dirty(rect);
             Undo.RegisterCreatedObjectUndo(view.gameObject, "Create skill node");
@@ -173,7 +166,7 @@ public partial class SkillTreeNodePlacer
                 var rect = (RectTransform)root.transform; rect.SetParent(lineArea, false);
                 rect.anchorMin = Vector2.zero; rect.anchorMax = Vector2.one; rect.offsetMin = rect.offsetMax = Vector2.zero;
                 var connection = root.AddComponent<SkillTreeConnectionUI>();
-                connection.from = source; connection.to = pair.Value; connection.bendMode = bendMode; connection.nodeHalfSize = nodeHalfSize;
+                connection.from = source; connection.to = pair.Value;
                 connection.horizontalLine = Segment(horizontalLinePrefab, rect);
                 connection.verticalLine = Segment(verticalLinePrefab, rect);
                 ConfigureConnection(connection); connection.SetUnlocked(false); connection.RefreshGeometry();
@@ -236,12 +229,9 @@ public partial class SkillTreeNodePlacer
         if (!CanEdit) return;
         int expected = lineShape == SkillLineShape.Curve ? Mathf.Clamp(curveSegments, 4, 64) : 0;
         if (expected > 0 && horizontalLinePrefab == null) return;
-        if (connection.bendMode == bendMode && connection.nodeHalfSize == nodeHalfSize &&
-            connection.shape == lineShape && connection.endpoint == lineEndpoint && connection.curveBend == curveBend &&
+        if (connection.shape == lineShape && connection.endpoint == lineEndpoint && connection.curveBend == curveBend &&
             connection.curveLines != null && connection.curveLines.Length == expected) return;
         Undo.RecordObject(connection, "Configure skill connection");
-        connection.bendMode = bendMode;
-        connection.nodeHalfSize = nodeHalfSize;
         connection.shape = lineShape;
         connection.endpoint = lineEndpoint;
         connection.curveBend = curveBend;

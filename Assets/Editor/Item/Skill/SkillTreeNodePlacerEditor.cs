@@ -25,7 +25,6 @@ public class SkillTreeNodePlacerEditor : Editor
             placer.ClearGeneratedObjects();
         }
 
-        if (GUILayout.Button("Apply Initial Grid Positions")) placer.ApplyGridPositions();
     }
 }
 #endif

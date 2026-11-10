@@ -49,7 +49,7 @@ public abstract class SkillTreeLayoutFixture
         var a = Data("A"); var b = Data("B"); var c = Data("C");
         b.requiredSkills.Add(a); c.requiredSkills.Add(b);
         placer.nodeDatas.AddRange(new[] { a, b, c });
-        placer.nodePositions.AddRange(new[] { Vector2Int.zero, Vector2Int.right, Vector2Int.right * 2 });
+        for (int i = 0; i < placer.nodeDatas.Count; i++) placer.nodeLayout.Add(new SkillNodePlacement { node = placer.nodeDatas[i], position = new Vector2(i * 180, 0) });
         return placer;
     }
     protected static SkillNodeUI View(SkillTreeNodePlacer placer, SkillNodeData data)
@@ -87,14 +87,17 @@ public sealed class SkillTreeLayoutTests : SkillTreeLayoutFixture
     [Test]
     public void FreeMovesAreRememberedAndRegenerationKeepsTheActualNodeAndItsPosition()
     {
-        var placer = Placer(); placer.Generate(); var data = placer.nodeDatas[1];
+        var placer = Placer(); placer.nodeSize = new Vector2(120, 60); placer.Generate(); var data = placer.nodeDatas[1];
         var node = View(placer, data); var rect = (RectTransform)node.transform;
+        Assert.That(rect.rect.size, Is.EqualTo(new Vector2(120, 60)));
         var connection = placer.lineArea.GetComponentInChildren<SkillTreeConnectionUI>(true);
         Selection.activeGameObject = node.gameObject;
         Undo.RecordObject(rect, "Move authored node"); rect.anchoredPosition = new Vector2(237.25f, -93.75f);
         Undo.FlushUndoRecordObjects(); SkillTreeLayoutRecorder.RememberSelection();
         Assert.That(placer.nodeLayout.Single(entry => entry.node == data).position, Is.EqualTo(rect.anchoredPosition));
+        placer.nodeSize = new Vector2(160, 90);
         placer.Generate();
+        Assert.That(rect.rect.size, Is.EqualTo(new Vector2(160, 90)));
         Assert.That(View(placer, data), Is.SameAs(node));
         Assert.That(placer.lineArea.GetComponentsInChildren<SkillTreeConnectionUI>(true).Contains(connection), Is.True);
         Assert.That(rect.anchoredPosition, Is.EqualTo(new Vector2(237.25f, -93.75f)));
@@ -124,19 +127,18 @@ public sealed class SkillTreeLayoutTests : SkillTreeLayoutFixture
         Assert.That(placer.nodeLayout.Single(entry => entry.node == data).position, Is.EqualTo(rect.anchoredPosition));
         Assert.That(placer.lineArea.GetComponentsInChildren<SkillTreeConnectionUI>(true).All(line => line.from != null && line.to != null), Is.True);
     }
-    [TestCase(SkillLineBendMode.HorizontalThenVertical)]
-    [TestCase(SkillLineBendMode.VerticalThenHorizontal)]
-    public void MovingAnAlignedNodeCreatesACornerWithNoGapAndKeepsBothLineStyles(SkillLineBendMode mode)
+    [Test]
+    public void MovingAnAlignedNodeCreatesACornerWithNoGapAndKeepsBothLineStyles()
     {
-        var placer = Placer(); placer.bendMode = mode; placer.Generate();
+        var placer = Placer(); placer.Generate();
         var connection = placer.lineArea.GetComponentsInChildren<SkillTreeConnectionUI>(true).First();
         var target = (RectTransform)connection.to.transform;
         target.anchoredPosition = ((RectTransform)connection.from.transform).anchoredPosition + new Vector2(250, -150);
         connection.RefreshGeometry();
         var h = (RectTransform)connection.horizontalLine.transform; var v = (RectTransform)connection.verticalLine.transform;
         Assert.That(h.gameObject.activeSelf && v.gameObject.activeSelf, Is.True);
-        Vector2 hCorner = h.anchoredPosition + Vector2.right * h.sizeDelta.x * (mode == SkillLineBendMode.HorizontalThenVertical ? .5f : -.5f);
-        Vector2 vCorner = v.anchoredPosition + Vector2.up * v.sizeDelta.y * (mode == SkillLineBendMode.HorizontalThenVertical ? .5f : -.5f);
+        Vector2 hCorner = h.anchoredPosition + Vector2.right * h.sizeDelta.x * .5f;
+        Vector2 vCorner = v.anchoredPosition + Vector2.up * v.sizeDelta.y * .5f;
         Assert.That(Vector2.Distance(hCorner, vCorner), Is.LessThan(.001f));
         connection.SetUnlocked(true);
         Assert.That(connection.horizontalLine.unlockedLine.activeSelf, Is.True);
@@ -151,9 +153,7 @@ public sealed class SkillTreeLayoutTests : SkillTreeLayoutFixture
         placer.ApplySavedLayout(); Undo.FlushUndoRecordObjects();
         foreach (var pair in expected)
             Assert.That(((RectTransform)View(placer, pair.Key).transform).anchoredPosition, Is.EqualTo(pair.Value));
-        placer.ApplyGridPositions(); Undo.FlushUndoRecordObjects();
-        for (int i = 0; i < placer.nodeDatas.Count; i++)
-            Assert.That(((RectTransform)View(placer, placer.nodeDatas[i]).transform).anchoredPosition, Is.EqualTo(new Vector2(i * 180, 0)));
+
     }
     [Test]
     public void PrefabSaveReloadAndClearGenerateRoundTripKeepFreePositions()
