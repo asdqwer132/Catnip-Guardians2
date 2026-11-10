@@ -13,6 +13,7 @@ public sealed class SkillTreeGraphWindow : EditorWindow
     private SkillTreeNodePlacer placer;
     private Canvas graph;
     [SerializeField] private float spacingScale = 1f;
+    [SerializeField] private float positionScale = 1f;
     [SerializeField] private float maximumZoom = 10f;
     [MenuItem("Tools/Skill/Tree Graph")]
     public static void Open() => GetWindow<SkillTreeGraphWindow>("Skill Tree Graph");
@@ -74,11 +75,32 @@ public sealed class SkillTreeGraphWindow : EditorWindow
         rootVisualElement.Add(inputs);
         rootVisualElement.Add(new Label("Drag node assets here. Connect a parent's Output to a child's Requires port. Existing unlock rules still apply (any connected prerequisite)."));
         var viewOptions = new Toolbar();
-        var spacing = new FloatField("Spacing Multiplier") { value = spacingScale, isDelayed = true };
+        var displaySpacing = new FloatField("Spacing Multiplier") { value = spacingScale, isDelayed = true };
+        displaySpacing.style.width = 280;
+        displaySpacing.tooltip = "Visual spacing only; saved node coordinates remain unchanged.";
+        displaySpacing.RegisterValueChangedCallback(evt => { if (float.IsFinite(evt.newValue)) spacingScale = Mathf.Clamp(evt.newValue, .1f, 20f); Rebuild(); });
+        viewOptions.Add(displaySpacing);
+        rootVisualElement.Add(viewOptions);
+        viewOptions = new Toolbar();
+        var spacing = new FloatField("Position Scale X / Y") { value = positionScale, isDelayed = true };
         spacing.style.width = 280;
-        spacing.tooltip = "Visual distance per saved coordinate. Higher values spread nodes apart without modifying saved scene positions.";
-        spacing.RegisterValueChangedCallback(evt => { if (float.IsFinite(evt.newValue)) spacingScale = Mathf.Clamp(evt.newValue, .1f, 20f); Rebuild(); });
+        spacing.tooltip = "Multiply saved X and Y coordinates around (0, 0). 0.5 halves all distances. Undo supported.";
+        spacing.RegisterValueChangedCallback(evt =>
+        {
+            if (float.IsFinite(evt.newValue) && evt.newValue > 0) positionScale = evt.newValue;
+            else spacing.SetValueWithoutNotify(positionScale);
+        });
         viewOptions.Add(spacing);
+        viewOptions.Add(new ToolbarButton(() =>
+        {
+            if (layout == null || !float.IsFinite(positionScale) || positionScale <= 0) return;
+            Undo.RecordObject(layout, "Scale skill node positions");
+            foreach (var entry in layout.nodeLayout)
+                if (entry != null) entry.position *= positionScale;
+            layout.revision++;
+            EditorUtility.SetDirty(layout);
+            Rebuild();
+        }) { text = "Apply Position Scale" });
         var zoomLimit = new FloatField("Maximum Zoom") { value = maximumZoom, isDelayed = true };
         zoomLimit.style.width = 250;
         zoomLimit.RegisterValueChangedCallback(evt => { if (float.IsFinite(evt.newValue)) maximumZoom = Mathf.Clamp(evt.newValue, 2f, 30f); Rebuild(); });
