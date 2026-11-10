@@ -284,6 +284,7 @@ public sealed class SkillTreeStateTests : SkillTreeLayoutFixture
         var manager = Host("Manager").AddComponent<SkillTreeManager>();
         var root = Host("Tree"); var tree = root.AddComponent<SkillTreeUI>();
         var a = Data("A"); var b = Data("B"); b.requiredSkills.Add(a);
+        a.costs = new[] { new Cost { currencyType = CurrencyType.CurrencyMain, amount = int.MaxValue } };
         var source = Host("A", root.transform).AddComponent<SkillNodeUI>();
         var target = Host("B", root.transform).AddComponent<SkillNodeUI>();
         target.GetComponent<RectTransform>().anchoredPosition = new Vector2(300, 200);
@@ -307,6 +308,7 @@ public sealed class SkillTreeStateTests : SkillTreeLayoutFixture
         Assert.That(connection.horizontalLine.gameObject.activeSelf, Is.False);
         Assert.That(connection.verticalLine.gameObject.activeSelf, Is.False);
 
+        a.costs = Array.Empty<Cost>();
         Assert.That(manager.UnlockSkill(a), Is.True);
         yield return null;
         Assert.That(target.IsVisible, Is.True);

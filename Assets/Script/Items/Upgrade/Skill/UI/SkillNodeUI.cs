@@ -80,16 +80,17 @@ public class SkillNodeUI : MonoBehaviour
 
         bool isUnlocked = false;
         bool canUnlock = false;
+        bool hasRequiredSkills = false;
 
         if (SkillTreeManager.Instance != null)
         {
             isUnlocked = SkillTreeManager.Instance.IsUnlocked(skillNodeData);
+            hasRequiredSkills = SkillTreeManager.Instance.HasRequiredSkills(skillNodeData);
             canUnlock = CurrencyManager.instance != null && SkillTreeManager.Instance.CanUnlock(skillNodeData);
         }
 
-        bool isCannotClick = !isUnlocked && !canUnlock;
         bool isCanClick = !isUnlocked && canUnlock;
-        SetNodeVisible(!hideUnavailableNodes || !isCannotClick);
+        SetNodeVisible(!hideUnavailableNodes || isUnlocked || hasRequiredSkills);
         SetLinesUnlocked(isUnlocked);
         if (!IsVisible) return;
 

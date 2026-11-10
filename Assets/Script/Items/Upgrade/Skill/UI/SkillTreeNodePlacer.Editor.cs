@@ -122,7 +122,7 @@ public partial class SkillTreeNodePlacer
             var view = PrefabUtility.IsPartOfPrefabAsset(nodePrefab)
                 ? (SkillNodeUI)PrefabUtility.InstantiatePrefab(nodePrefab, nodeArea)
                 : Instantiate(nodePrefab, nodeArea, false);
-            if (useReadableName) view.name = "Node_" + NodeName(data);
+            if (useReadableName) view.name = data.name;
             var rect = (RectTransform)view.transform;
             rect.anchorMin = rect.anchorMax = new Vector2(.5f, .5f);
             rect.localScale = Vector3.one;
@@ -185,6 +185,7 @@ public partial class SkillTreeNodePlacer
         foreach (var pair in views)
         {
             Undo.RegisterCompleteObjectUndo(pair.Value, "Assign skill connections");
+            if (useReadableName) pair.Value.name = pair.Key.name;
             pair.Value.SetData(pair.Key, lines[pair.Key].ToArray()); Dirty(pair.Value);
         }
         foreach (var old in previous) if (old != null) Undo.DestroyObjectImmediate(old);

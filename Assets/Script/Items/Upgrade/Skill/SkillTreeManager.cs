@@ -244,7 +244,7 @@ public class SkillTreeManager : MonoBehaviour, IStoryProgressSource
         return CurrencyManager.instance.SpendCurrencies(node.costs);
     }
 
-    private bool HasRequiredSkills(SkillNodeData node)
+    public bool HasRequiredSkills(SkillNodeData node)
     {
         if (node == null)
             return false;
