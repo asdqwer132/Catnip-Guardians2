@@ -7,6 +7,12 @@ public class Cost
 {
     public CurrencyType currencyType;
     public int amount = 1;
+
+    public Cost(CurrencyType currencyType, int amount)
+    {
+        this.currencyType = currencyType;
+        this.amount = amount;
+    }
 }
 
 public enum CurrencyType
@@ -35,18 +41,7 @@ public class CurrencyManager : MonoBehaviour
     public const string SaveKey = "CurrencyWallet";
 
     [Header("Initial Amounts (used only when no saved balance exists)")]
-    public Cost[] initialAmounts =
-    {
-        new Cost { currencyType = CurrencyType.CurrencyMain, amount = 11110 },
-        new Cost { currencyType = CurrencyType.CurrencySub1, amount = 11110 },
-        new Cost { currencyType = CurrencyType.CurrencySub2, amount = 11110 },
-        new Cost { currencyType = CurrencyType.CurrencySub3, amount = 11110 },
-        new Cost { currencyType = CurrencyType.CurrencySub4, amount = 11110 },
-        new Cost { currencyType = CurrencyType.CurrencySub5, amount = 11110 },
-        new Cost { currencyType = CurrencyType.CurrencySub6, amount = 11110 },
-        new Cost { currencyType = CurrencyType.CurrencySub7, amount = 11110 },
-        new Cost { currencyType = CurrencyType.CurrencySub8, amount = 11110 }
-    };
+    public Cost[] initialAmounts;
 
     [Serializable]
     private sealed class WalletSave
@@ -154,7 +149,7 @@ public class CurrencyManager : MonoBehaviour
         var saved = new WalletSave();
         saved.discovered.AddRange(discovered);
         foreach (CurrencyType type in Enum.GetValues(typeof(CurrencyType)))
-            saved.balances.Add(new Cost { currencyType = type, amount = GetCurrency(type) });
+            saved.balances.Add(new Cost (type, GetCurrency(type)));
         PlayerPrefs.SetString(SaveKey, JsonUtility.ToJson(saved));
         PlayerPrefs.Save();
     }
@@ -324,7 +319,22 @@ public class CurrencyManager : MonoBehaviour
 
         return true;
     }
+    public void SetCurrency(CurrencyType type, int amount)
+    {
+        if (!currencies.ContainsKey(type))
+            return;
 
+        currencies[type] = Mathf.Max(0, amount);
+
+        bool firstDiscovery = amount > 0 && discovered.Add(type);
+
+        SaveCurrencies();
+
+        if (firstDiscovery)
+            DiscoveryChanged?.Invoke();
+
+        UpdateUI(type);
+    }
     private void UpdateUI(CurrencyType type)
     {
         if (!currencies.ContainsKey(type))

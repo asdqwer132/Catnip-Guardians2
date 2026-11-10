@@ -187,7 +187,7 @@ public class ShopManager : MonoBehaviour, IStoryProgressSource
             {
                 if (cost == null || cost.amount <= 0) continue;
                 var combined = costs.Find(c => c.currencyType == cost.currencyType);
-                if (combined == null) costs.Add(new Cost { currencyType = cost.currencyType, amount = cost.amount });
+                if (combined == null) costs.Add(new Cost(cost.currencyType, cost.amount));
                 else
                 {
                     if ((long)combined.amount + cost.amount > int.MaxValue) return PurchaseFailed("가격이 올바르지 않습니다.");
