@@ -164,7 +164,7 @@ public partial class SkillTreeNodePlacer
                 if (existing.TryGetValue((source, pair.Value), out var retained))
                 {
                     previous.Remove(retained.gameObject);
-                    retained.bendMode = bendMode; retained.nodeHalfSize = nodeHalfSize; retained.RefreshGeometry();
+                    ConfigureConnection(retained); retained.RefreshGeometry();
                     Dirty(retained); lines[parent].Add(retained.gameObject);
                     continue;
                 }
@@ -176,7 +176,7 @@ public partial class SkillTreeNodePlacer
                 connection.from = source; connection.to = pair.Value; connection.bendMode = bendMode; connection.nodeHalfSize = nodeHalfSize;
                 connection.horizontalLine = Segment(horizontalLinePrefab, rect);
                 connection.verticalLine = Segment(verticalLinePrefab, rect);
-                connection.SetUnlocked(false); connection.RefreshGeometry();
+                ConfigureConnection(connection); connection.SetUnlocked(false); connection.RefreshGeometry();
                 Dirty(connection.horizontalLine.transform); Dirty(connection.verticalLine.transform);
                 Undo.RegisterCreatedObjectUndo(root, "Create skill connection");
                 lines[parent].Add(root);
@@ -229,8 +229,38 @@ public partial class SkillTreeNodePlacer
     {
         if (lineArea == null) return;
         foreach (var connection in lineArea.GetComponentsInChildren<SkillTreeConnectionUI>(true))
-        { connection.bendMode = bendMode; connection.nodeHalfSize = nodeHalfSize; connection.RefreshGeometry(); }
+        { ConfigureConnection(connection); connection.RefreshGeometry(); }
     }
+    private void ConfigureConnection(SkillTreeConnectionUI connection)
+    {
+        if (!CanEdit) return;
+        int expected = lineShape == SkillLineShape.Curve ? Mathf.Clamp(curveSegments, 4, 64) : 0;
+        if (expected > 0 && horizontalLinePrefab == null) return;
+        if (connection.bendMode == bendMode && connection.nodeHalfSize == nodeHalfSize &&
+            connection.shape == lineShape && connection.endpoint == lineEndpoint && connection.curveBend == curveBend &&
+            connection.curveLines != null && connection.curveLines.Length == expected) return;
+        Undo.RecordObject(connection, "Configure skill connection");
+        connection.bendMode = bendMode;
+        connection.nodeHalfSize = nodeHalfSize;
+        connection.shape = lineShape;
+        connection.endpoint = lineEndpoint;
+        connection.curveBend = curveBend;
+        int count = lineShape == SkillLineShape.Curve ? Mathf.Clamp(curveSegments, 4, 64) : 0;
+        var segments = connection.curveLines ?? Array.Empty<SkillTreeLineUI>();
+        if (segments.Length != count)
+        {
+            foreach (var segment in segments) if (segment != null) Undo.DestroyObjectImmediate(segment.gameObject);
+            segments = new SkillTreeLineUI[count];
+            for (int i = 0; i < count; i++)
+            {
+                segments[i] = Segment(horizontalLinePrefab, (RectTransform)connection.transform);
+                Undo.RegisterCreatedObjectUndo(segments[i].gameObject, "Create curve segment");
+            }
+            connection.curveLines = segments;
+        }
+        Dirty(connection);
+    }
+
     private static string NodeName(SkillNodeData data)
     {
         string name = data.GetDataName(language.english);

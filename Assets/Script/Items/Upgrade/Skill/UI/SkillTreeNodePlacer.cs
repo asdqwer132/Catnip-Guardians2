@@ -8,6 +8,9 @@ public enum SkillLineBendMode
     VerticalThenHorizontal
 }
 
+public enum SkillLineShape { Elbow, Straight, Curve }
+public enum SkillLineEndpoint { NodeEdge, NodeCenter }
+
 [Serializable]
 public sealed class SkillNodePlacement
 {
@@ -34,6 +37,10 @@ public partial class SkillTreeNodePlacer : MonoBehaviour
     [Header("Line")]
     public SkillLineBendMode bendMode = SkillLineBendMode.HorizontalThenVertical;
     public float nodeHalfSize = 40f;
+    public SkillLineShape lineShape = SkillLineShape.Elbow;
+    public SkillLineEndpoint lineEndpoint = SkillLineEndpoint.NodeEdge;
+    [Range(4, 64)] public int curveSegments = 20;
+    [Range(0f, 1f)] public float curveBend = .5f;
     public bool useReadableName = true;
 
     [Header("Tree Layout")]

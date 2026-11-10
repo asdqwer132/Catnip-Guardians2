@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// 두 선분은 에디터에서 미리 배치합니다. 실행 중에는 생성하지 않고 끝점/표시만 갱신합니다.
+// 선분은 배치기가 에디터에서 미리 만듭니다. 실행 중에는 생성하지 않고 위치와 표시만 갱신합니다.
 [ExecuteAlways]
 public sealed class SkillTreeConnectionUI : MonoBehaviour
 {
@@ -11,23 +11,32 @@ public sealed class SkillTreeConnectionUI : MonoBehaviour
     public SkillTreeLineUI verticalLine;
     public SkillLineBendMode bendMode;
     public float nodeHalfSize = 40;
+    public SkillLineShape shape;
+    public SkillLineEndpoint endpoint;
+    public float curveBend = .5f;
+    public SkillTreeLineUI[] curveLines = System.Array.Empty<SkillTreeLineUI>();
+    private bool unlocked;
 
     private void LateUpdate() => RefreshGeometry();
 
     public void SetUnlocked(bool unlocked)
     {
+        this.unlocked = unlocked;
+        if (curveLines != null) foreach (var line in curveLines) if (line != null) line.SetUnlocked(unlocked);
         if (horizontalLine != null) horizontalLine.SetUnlocked(unlocked);
         if (verticalLine != null) verticalLine.SetUnlocked(unlocked);
     }
 
     public void RefreshGeometry()
     {
+        if (shape != SkillLineShape.Curve && curveLines != null) foreach (var line in curveLines) Hide(line);
         // Keep the controller active so a later unlock can reveal its segments again.
         if (Application.isPlaying &&
             ((from != null && !from.IsVisible) || (to != null && !to.IsVisible)))
         {
             Hide(horizontalLine);
             Hide(verticalLine);
+            if (curveLines != null) foreach (var line in curveLines) Hide(line);
             return;
         }
         var space = transform as RectTransform;
@@ -37,11 +46,45 @@ public sealed class SkillTreeConnectionUI : MonoBehaviour
         Vector2 start = space.InverseTransformPoint(startRect.TransformPoint(startRect.rect.center));
         Vector2 end = space.InverseTransformPoint(endRect.TransformPoint(endRect.rect.center));
         float sx = Mathf.Sign(end.x - start.x), sy = Mathf.Sign(end.y - start.y);
-        float half = Mathf.Max(0, nodeHalfSize);
+        float half = endpoint == SkillLineEndpoint.NodeCenter ? 0 : Mathf.Max(0, nodeHalfSize);
         float startX = Mathf.Abs(space.InverseTransformVector(startRect.TransformVector(Vector3.right * half)).x);
         float startY = Mathf.Abs(space.InverseTransformVector(startRect.TransformVector(Vector3.up * half)).y);
         float endX = Mathf.Abs(space.InverseTransformVector(endRect.TransformVector(Vector3.right * half)).x);
         float endY = Mathf.Abs(space.InverseTransformVector(endRect.TransformVector(Vector3.up * half)).y);
+        if (shape != SkillLineShape.Elbow)
+        {
+            Hide(horizontalLine);
+            Hide(verticalLine);
+            var delta = end - start;
+            var tangent = shape == SkillLineShape.Straight || Mathf.Abs(delta.x) < .01f || Mathf.Abs(delta.y) < .01f
+                ? delta.normalized
+                : (bendMode == SkillLineBendMode.HorizontalThenVertical ? Vector2.right * sx : Vector2.up * sy);
+            var endTangent = shape == SkillLineShape.Straight || Mathf.Abs(delta.x) < .01f || Mathf.Abs(delta.y) < .01f
+                ? delta.normalized
+                : (bendMode == SkillLineBendMode.HorizontalThenVertical ? Vector2.up * sy : Vector2.right * sx);
+            start += EdgeOffset(tangent, startX, startY);
+            end -= EdgeOffset(endTangent, endX, endY);
+            if (Vector2.Dot(end - start, delta) <= 0) return;
+            if (shape == SkillLineShape.Straight)
+            {
+                SetAngledSegment(horizontalLine, space, start, end);
+                return;
+            }
+            int count = curveLines != null ? curveLines.Length : 0;
+            float reach = Vector2.Distance(start, end) * Mathf.Clamp01(curveBend);
+            Vector2 c1 = start + tangent * reach, c2 = end - endTangent * reach;
+            Vector2 previous = start;
+            for (int i = 0; i < count; i++)
+            {
+                float t = (i + 1f) / count, u = 1 - t;
+                Vector2 point = u * u * u * start + 3 * u * u * t * c1 + 3 * u * t * t * c2 + t * t * t * end;
+                var line = curveLines[i];
+                if (line != null) line.SetUnlocked(unlocked);
+                SetAngledSegment(line, space, previous, point);
+                previous = point;
+            }
+            return;
+        }
         if (Mathf.Abs(start.y - end.y) < .01f)
         {
             SetSegment(horizontalLine, space, start + Vector2.right * startX * sx, end - Vector2.right * endX * sx, true, sx);
@@ -64,6 +107,26 @@ public sealed class SkillTreeConnectionUI : MonoBehaviour
             SetSegment(verticalLine, space, start + Vector2.up * startY * sy, corner, false, sy);
             SetSegment(horizontalLine, space, corner, end - Vector2.right * endX * sx, true, sx);
         }
+    }
+
+    private static Vector2 EdgeOffset(Vector2 direction, float halfX, float halfY)
+    {
+        float denominator = Mathf.Max(halfX > 0 ? Mathf.Abs(direction.x) / halfX : 0,
+            halfY > 0 ? Mathf.Abs(direction.y) / halfY : 0);
+        return denominator > .0001f ? direction / denominator : Vector2.zero;
+    }
+
+    private static void SetAngledSegment(SkillTreeLineUI line, RectTransform space, Vector2 start, Vector2 end)
+    {
+        if (line == null || !(line.transform is RectTransform rect)) return;
+        var delta = end - start;
+        line.gameObject.SetActive(delta.sqrMagnitude > .0001f);
+        rect.anchorMin = rect.anchorMax = space.pivot;
+        rect.pivot = new Vector2(.5f, .5f);
+        rect.anchoredPosition = (start + end) * .5f;
+        rect.sizeDelta = new Vector2(delta.magnitude, rect.sizeDelta.y);
+        rect.localRotation = Quaternion.Euler(0, 0, Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg);
+        rect.localScale = Vector3.one;
     }
 
     private static void Hide(SkillTreeLineUI line) { if (line != null) line.gameObject.SetActive(false); }
