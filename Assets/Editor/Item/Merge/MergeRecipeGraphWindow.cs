@@ -18,6 +18,7 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
     private ItemData inspectedData;
     private ObjectField graphField, bookField;
     private FloatField horizontalGap, verticalGap;
+    private EnumField direction;
 
     [MenuItem("Tools/Item/Merge/Recipe Book Graph")]
     public static void Open() => GetWindow<MergeRecipeGraphWindow>("Merge Recipe Book Graph");
@@ -57,6 +58,13 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
         toolbar.Add(new ToolbarButton(() => canvas.FrameAll()) { text = "전체 보기" });
         rootVisualElement.Add(toolbar);
         var layout = new Toolbar();
+        direction = new EnumField("같은 깊이 배치", graph != null ? graph.arrangeDirection : MergeGraphArrangeDirection.Vertical);
+        direction.style.width = 280;
+        direction.RegisterValueChangedCallback(evt => Run(() =>
+        {
+            Undo.RecordObject(graph, "Set merge arrangement direction");
+            graph.arrangeDirection = (MergeGraphArrangeDirection)evt.newValue; EditorUtility.SetDirty(graph);
+        })); layout.Add(direction);
         horizontalGap = AddGapField(layout, "가로 간격", true);
         verticalGap = AddGapField(layout, "세로 간격", false);
         layout.Add(new ToolbarButton(() => Run(() => { MergeRecipeGraphEditing.Arrange(graph); Rebuild(); canvas.FrameAll(); }))
@@ -155,6 +163,7 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
         if (canvas == null) return;
         if (selected != null) selected = graph != null ? graph.items.Find(node => node.id == selected.id) : null;
         canvas.SetGraph(graph, selected);
+        direction?.SetValueWithoutNotify(graph != null ? graph.arrangeDirection : MergeGraphArrangeDirection.Vertical);
         selected = canvas.PrimarySelection;
         horizontalGap?.SetValueWithoutNotify(graph != null ? graph.nodeSpacing.x : 140);
         verticalGap?.SetValueWithoutNotify(graph != null ? graph.nodeSpacing.y : 45);
@@ -174,7 +183,7 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
         if (target is MergeRecipeGraphAsset)
         {
             var serialized = new SerializedObject(graph);
-            foreach (string field in new[] { "nodeSpacing" })
+            foreach (string field in new[] { "arrangeDirection", "nodeSpacing" })
                 inspector.Add(new PropertyField(serialized.FindProperty(field)));
             inspector.Bind(serialized);
         }
@@ -226,7 +235,7 @@ public sealed class MergeRecipeGraphAssetEditor : Editor
     {
         if (GUILayout.Button("레시피북 그래프 열기", GUILayout.Height(30))) MergeRecipeGraphWindow.Open((MergeRecipeGraphAsset)target);
         serializedObject.Update();
-        foreach (string field in new[] { "recipeBook", "nodeSpacing" }) EditorGUILayout.PropertyField(serializedObject.FindProperty(field));
+        foreach (string field in new[] { "recipeBook", "arrangeDirection", "nodeSpacing" }) EditorGUILayout.PropertyField(serializedObject.FindProperty(field));
         serializedObject.ApplyModifiedProperties();
         EditorGUILayout.LabelField("머지 아이템 " + ((MergeRecipeGraphAsset)target).items.Count);
     }

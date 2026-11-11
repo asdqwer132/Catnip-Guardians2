@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum MergeGraphArrangeDirection { Vertical, Horizontal }
+
 [CreateAssetMenu(fileName = "MergeRecipeGraph", menuName = "Items/Merge/Recipe Graph")]
 public sealed class MergeRecipeGraphAsset : ScriptableObject
 {
@@ -10,6 +12,7 @@ public sealed class MergeRecipeGraphAsset : ScriptableObject
     [SerializeField, HideInInspector] private int inputLayoutVersion;
     internal int InputLayoutVersion { get => inputLayoutVersion; set => inputLayoutVersion = value; }
     [Header("자동 정렬 · 노드 테두리 사이 간격")]
+    public MergeGraphArrangeDirection arrangeDirection;
     public Vector2 nodeSpacing = new Vector2(140, 45);
 
 }

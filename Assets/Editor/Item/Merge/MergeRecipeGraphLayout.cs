@@ -52,11 +52,23 @@ internal static class MergeRecipeGraphLayout
             }
 
         var gap = new Vector2(Gap(graph.nodeSpacing.x, 140), Gap(graph.nodeSpacing.y, 45));
+        bool horizontal = graph.arrangeDirection == MergeGraphArrangeDirection.Horizontal;
+        var depthY = new float[columns.Count];
+        for (int i = 1; i < columns.Count; i++)
+        {
+            float height = 0;
+            foreach (var node in columns[i - 1]) height = Mathf.Max(height, Height(node));
+            depthY[i] = depthY[i - 1] + height + gap.y;
+        }
         void PlaceColumn(int column)
         {
-            float y = 50;
+            float offset = 0;
             foreach (var node in columns[column])
-            { node.position = new Vector2(40 + column * (240 + gap.x), y); y += Height(node) + gap.y; }
+            {
+                node.position = horizontal ? new Vector2(40 + offset, 50 + depthY[column])
+                    : new Vector2(40 + column * (240 + gap.x), 50 + offset);
+                offset += horizontal ? 240 + gap.x : Height(node) + gap.y;
+            }
         }
         void PlaceAll() { for (int i = 0; i < columns.Count; i++) PlaceColumn(i); }
         List<MergeGraphItemNode>[] Snapshot() => columns.ConvertAll(rows => new List<MergeGraphItemNode>(rows)).ToArray();
@@ -92,9 +104,9 @@ internal static class MergeRecipeGraphLayout
                         else if (edge.source == node) { neighbor = edge.target; desired = edge.End.y - 59; }
                         else continue;
                         if (forward ? columnOf[neighbor] >= column : columnOf[neighbor] <= column) continue;
-                        sum += desired; count++;
+                        sum += horizontal ? neighbor.position.x : desired; count++;
                     }
-                    ranks[node] = count > 0 ? (float)(sum / count) : node.position.y;
+                    ranks[node] = count > 0 ? (float)(sum / count) : (horizontal ? node.position.x : node.position.y);
                     order[node] = i;
                 }
                 columns[column].Sort((a, b) =>
