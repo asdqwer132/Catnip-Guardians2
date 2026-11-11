@@ -120,11 +120,6 @@ public static class MergeRecipeGraphEditing
         node.ingredientNodeIds[slot] = source != null ? sourceNodeId : null;
         EditorUtility.SetDirty(graph);
     }
-    public static void SetTier(MergeRecipeGraphAsset graph, MergeGraphItemNode node, int tier)
-    {
-        Undo.RecordObject(graph, "Set merge node tier");
-        node.tier = Mathf.Max(0, tier); EditorUtility.SetDirty(graph);
-    }
     public static void RemoveItem(MergeRecipeGraphAsset graph, MergeGraphItemNode item)
     {
         Undo.RecordObject(graph, "Remove merge item node");
@@ -180,41 +175,14 @@ public static class MergeRecipeGraphEditing
                 graph.items.Add(node);
             }
             while (sources.Count < MergeGraphItemNode.DefaultInputCount) sources.Add(null);
-            node.ingredients = sources; node.tier = recipe.tier; node.generatedRecipe = recipe;
+            node.ingredients = sources; node.generatedRecipe = recipe;
             EditorUtility.SetDirty(graph);
         }
     }
     public static void Upgrade(MergeRecipeGraphAsset graph)
     {
-        bool changed = false;
-        // 별도 노드가 생겨도 순회가 깨지지 않도록 이전 노드만 복사합니다.
-        foreach (var node in graph.items.ToArray())
-        {
-            if (string.IsNullOrEmpty(node.id)) { node.id = Guid.NewGuid().ToString("N"); changed = true; }
-            if (node.item == null && node.LegacyData != null)
-            {
-                node.item = node.LegacyDefinition != null ? node.LegacyDefinition : Resolve(graph, node.LegacyData);
-                node.ClearLegacy(); changed = true;
-            }
-            if (node.LegacyInputs.Count == 0) continue;
-            bool first = true;
-            foreach (var pair in node.LegacyInputs)
-            {
-                if (pair.first == null && pair.second == null && pair.generatedRecipe == null) continue;
-                var target = first ? node : new MergeGraphItemNode { item = node.item, position = node.position + new Vector2(0, 220) };
-                if (!first) graph.items.Add(target);
-                target.ingredients = new List<MergeItem> { pair.first, pair.second };
-                target.tier = pair.tier; target.generatedRecipe = pair.generatedRecipe; first = false;
-            }
-            node.LegacyInputs.Clear(); changed = true;
-        }
-        if (graph.LegacyRecipes.Count > 0)
-        {
-            var recipes = new List<ItemRecipeData>();
-            foreach (var node in graph.LegacyRecipes) if (node.recipe != null) recipes.Add(node.recipe);
-            ImportRecipes(graph, recipes); graph.LegacyRecipes.Clear(); changed = true;
-        }
-        if (changed) EditorUtility.SetDirty(graph);
+        foreach (var node in graph.items)
+            if (string.IsNullOrEmpty(node.id)) { node.id = Guid.NewGuid().ToString("N"); EditorUtility.SetDirty(graph); }
         EnsureDefaultInputs(graph);
     }
     private static void EnsureDefaultInputs(MergeRecipeGraphAsset graph)
@@ -237,7 +205,6 @@ public static class MergeRecipeGraphEditing
         {
             if (node.item == null || node.item.item == null) { errors.Add("레시피 추출 전에 각 MergeItem에 기존 ItemData를 할당하세요."); continue; }
             definitions.Add(node.item);
-            if (node.tier < 0) errors.Add(node.item.name + ": 티어는 0 이상이어야 합니다.");
         }
         foreach (var node in graph.items)
         {
@@ -276,7 +243,7 @@ public static class MergeRecipeGraphEditing
                 usedRecipes.Add(recipe);
             }
             Undo.RecordObject(recipe, "Extract merge recipe");
-            recipe.resultItem = node.item.item; recipe.tier = node.tier;
+            recipe.resultItem = node.item.item;
             recipe.itemGrade = recipe.resultItem.grade; recipe.itemSeries = recipe.resultItem.series;
             var counts = new Dictionary<ItemData, int>();
             foreach (var source in node.ingredients)
@@ -292,7 +259,7 @@ public static class MergeRecipeGraphEditing
         EditorUtility.SetDirty(graph); Save(graph);
         return output;
     }
-    // 2단계: 추출한 레시피를 결과 노드의 티어별로 묶어 레시피북을 만듭니다.
+    // 연결에서 추출한 레시피를 순서대로 하나의 목록에 저장합니다.
     public static MergeRecipeBook Export(MergeRecipeGraphAsset graph)
     {
         var recipes = ExportRecipes(graph);
@@ -302,16 +269,11 @@ public static class MergeRecipeGraphEditing
             graph.recipeBook = ScriptableObject.CreateInstance<MergeRecipeBook>();
             AssetDatabase.CreateAsset(graph.recipeBook, AssetDatabase.GenerateUniqueAssetPath(Folder(graph) + "/" + SafeName(graph.name) + " Book.asset"));
         }
-        var tiers = new SortedDictionary<int, MergeSeries>();
-        foreach (var recipe in recipes)
-        {
-            if (!tiers.TryGetValue(recipe.tier, out var tier)) tiers.Add(recipe.tier, tier = new MergeSeries { tier = recipe.tier });
-            tier.itemRecipeDatas.Add(recipe);
-        }
-        Undo.RecordObject(graph.recipeBook, "Group merge recipes by tier");
+        Undo.RecordObject(graph.recipeBook, "Store connected merge recipes");
         graph.recipeBook.items = new List<MergeItem>();
         foreach (var node in graph.items) if (!graph.recipeBook.items.Contains(node.item)) graph.recipeBook.items.Add(node.item);
-        graph.recipeBook.tiers = new List<MergeSeries>(tiers.Values);
+        graph.recipeBook.Recipes.Clear();
+        graph.recipeBook.recipes.AddRange(recipes);
         EditorUtility.SetDirty(graph.recipeBook); EditorUtility.SetDirty(graph);
         AssetDatabase.SaveAssetIfDirty(graph.recipeBook); Save(graph);
         return graph.recipeBook;
@@ -327,16 +289,16 @@ public static class MergeRecipeGraphEditing
     {
         if (book == null) throw new InvalidOperationException("레시피북을 연결하세요.");
         var recipes = new List<ItemRecipeData>();
-        foreach (var tier in book.tiers) if (tier?.itemRecipeDatas != null) recipes.AddRange(tier.itemRecipeDatas);
+        recipes.AddRange(book.Recipes);
         foreach (var recipe in recipes) if (!MergeTree.TryGetIngredients(recipe, out _)) throw new InvalidOperationException("레시피의 결과와 재료 / 수량을 확인하세요.");
         Undo.RecordObject(graph, "Import merge recipe book");
         var old = graph.items;
-        graph.items = new List<MergeGraphItemNode>(); graph.recipeBook = book; graph.LegacyRecipes.Clear();
+        graph.items = new List<MergeGraphItemNode>(); graph.recipeBook = book;
         foreach (var item in book.items) if (item != null)
         {
             var node = AddItem(graph, item, new Vector2(40, graph.items.Count * 180));
             var previous = old.Find(value => value.item == item);
-            if (previous != null) { node.position = previous.position; node.tier = previous.tier; }
+            if (previous != null) { node.position = previous.position; }
         }
         ImportRecipes(graph, recipes);
         foreach (var node in graph.items)

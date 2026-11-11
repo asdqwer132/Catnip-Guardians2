@@ -12,7 +12,6 @@ internal static class MergeRecipeGraphClipboard
     {
         public string id, item;
         public Vector2 position;
-        public int tier;
         public List<string> ingredients = new List<string>();
         public List<string> sources = new List<string>();
     }
@@ -25,7 +24,7 @@ internal static class MergeRecipeGraphClipboard
         var payload = new Payload();
         foreach (var node in selection)
         {
-            var data = new Node { id = node.id, item = Id(node.item), position = node.position, tier = node.tier };
+            var data = new Node { id = node.id, item = Id(node.item), position = node.position };
             for (int i = 0; i < node.ingredients.Count; i++)
             {
                 data.ingredients.Add(Id(node.ingredients[i]));
@@ -52,7 +51,7 @@ internal static class MergeRecipeGraphClipboard
             if (item == null || data.ingredients == null) continue;
             var node = new MergeGraphItemNode
             {
-                item = item, tier = data.tier, position = data.position,
+                item = item, position = data.position,
                 ingredients = data.ingredients.ConvertAll(Resolve), ingredientNodeIds = new List<string>()
             };
             // 새 ID / 독립된 입력 목록을 갖고, 추출 에셋은 공유하지 않습니다. ItemData는 복제하지 않습니다.

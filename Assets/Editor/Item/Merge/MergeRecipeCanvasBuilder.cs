@@ -10,7 +10,6 @@ public static class MergeRecipeCanvasBuilder
     {
         public ItemData item;
         public ItemRecipeData recipe;
-        public int tier;
         public int depth;
         public MergeRecipeNodeUI view;
         public readonly List<Node> inputs = new List<Node>();
@@ -146,25 +145,18 @@ public static class MergeRecipeCanvasBuilder
     {
         var nodes = new List<Node>();
         var producer = new Dictionary<ItemData, Node>();
-        int firstTier = 0;
-        if (book.tiers != null) foreach (var tier in book.tiers)
+        foreach (var recipe in book.Recipes)
         {
-            if (tier?.itemRecipeDatas == null) continue;
-            firstTier = Mathf.Min(firstTier, tier.tier);
-            foreach (var recipe in tier.itemRecipeDatas)
-            {
-                if (!MergeTree.TryGetIngredients(recipe, out _)) continue;
-                var node = new Node { item = recipe.resultItem, recipe = recipe, tier = tier.tier };
-                nodes.Add(node);
-                // 같은 결과의 다른 레시피도 별도 노드로 남깁니다. 재료 연결은 북의 첫 결과 노드를 사용합니다.
-                if (!producer.ContainsKey(node.item)) producer.Add(node.item, node);
-            }
+            if (!MergeTree.TryGetIngredients(recipe, out _)) continue;
+            var node = new Node { item = recipe.resultItem, recipe = recipe };
+            nodes.Add(node);
+            if (!producer.ContainsKey(node.item)) producer.Add(node.item, node);
         }
         Node Material(ItemData item)
         {
             if (!producer.TryGetValue(item, out var node))
             {
-                node = new Node { item = item, tier = firstTier - 1 };
+                node = new Node { item = item };
                 producer.Add(item, node);
                 nodes.Add(node);
             }
@@ -194,11 +186,11 @@ public static class MergeRecipeCanvasBuilder
             depths[node] = depth;
             return depth;
         }
-        var ordered = new SortedDictionary<(int tier, int depth), List<Node>>();
+        var ordered = new SortedDictionary<int, List<Node>>();
         foreach (var node in nodes)
         {
             node.depth = Depth(node);
-            var key = (node.tier, node.depth);
+            var key = node.depth;
             if (!ordered.TryGetValue(key, out var column)) ordered.Add(key, column = new List<Node>());
             column.Add(node);
         }
@@ -206,7 +198,7 @@ public static class MergeRecipeCanvasBuilder
         var rows = new Dictionary<Node, int>();
         foreach (var column in columns)
             for (int i = 0; i < column.Count; i++) rows[column[i]] = i;
-        // Keep tier/depth columns; order each column near the average of its connected nodes.
+        // Keep connection-depth columns; order each column near the average of its connected nodes.
         for (int pass = 0; pass < 4; pass++) foreach (var column in columns)
         {
             var rank = new Dictionary<Node, float>();

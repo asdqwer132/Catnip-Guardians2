@@ -5,13 +5,20 @@ using UnityEngine;
 public sealed class MergeRecipeBook : ScriptableObject
 {
     public List<MergeItem> items = new List<MergeItem>();
-    public List<MergeSeries> tiers = new List<MergeSeries>();
+    public List<ItemRecipeData> recipes = new List<ItemRecipeData>();
+    public List<ItemRecipeData> Recipes => recipes;
 
     public bool TryGetRecipe(ItemData first, ItemData second, out ItemRecipeData recipe)
-        => MergeTree.TryGetRecipe(tiers, first, second, out recipe);
+    {
+        recipe = Recipes.Find(candidate => MergeTree.MatchesPair(candidate, first, second));
+        return recipe != null;
+    }
 
     public bool TryGetRecipe(IReadOnlyList<ItemData> ingredients, out ItemRecipeData recipe)
-        => MergeTree.TryGetRecipe(tiers, ingredients, out recipe);
+    {
+        recipe = Recipes.Find(candidate => MergeTree.MatchesIngredients(candidate, ingredients));
+        return recipe != null;
+    }
 
     public MergeItem GetDefinition(ItemData item)
     {

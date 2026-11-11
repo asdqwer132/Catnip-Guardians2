@@ -43,8 +43,7 @@ internal sealed class MergeItemCombiner
                 lives[contact.a] = contact.aLife; lives[contact.b] = contact.bLife;
             }
             var plans = new List<RecipePlan>();
-            if (owner.recipeBook?.tiers != null) foreach (var tier in owner.recipeBook.tiers)
-                if (tier?.itemRecipeDatas != null) foreach (var recipe in tier.itemRecipeDatas)
+            if (owner.recipeBook != null) foreach (var recipe in owner.recipeBook.Recipes)
                     if (MergeTree.TryGetIngredients(recipe, out var required)) plans.Add(new RecipePlan { recipe = recipe, required = required });
             foreach (var contact in pending)
             {

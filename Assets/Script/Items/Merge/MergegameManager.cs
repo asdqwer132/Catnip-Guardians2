@@ -7,12 +7,6 @@ public class MergegameManager : MonoBehaviour
     public ItemSeries itemSeries;
     public MergeRecipeBook recipeBook;
     public MergeDiscoveryHistory discoveryHistory;
-    [SerializeField, HideInInspector, FormerlySerializedAs("mergeRecipe")]
-    private List<MergeSeries> legacyMergeRecipes = new List<MergeSeries>();
-#if UNITY_EDITOR
-    public IReadOnlyList<MergeSeries> LegacyRecipes => legacyMergeRecipes;
-    public void ClearLegacyRecipes() => legacyMergeRecipes.Clear();
-#endif
     public List<MergeItem> mergeItems = new List<MergeItem>();
     public List<MergeItemMaterial> mergeMaterials = new List<MergeItemMaterial>();
     public MergeItemMaterial currentMaterial;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-// 티어 → 연결 깊이의 열은 유지하고, 열 안의 순서만 바꾸어 연결선 교차를 줄입니다.
+// 연결 깊이로 열을 나누고, 연결선 교차를 줄입니다.
 internal static class MergeRecipeGraphLayout
 {
     private sealed class Edge
@@ -11,7 +11,7 @@ internal static class MergeRecipeGraphLayout
         public MergeGraphItemNode source, target;
         public int slot;
         public Vector2 Start => source.position + new Vector2(240, 59);
-        public Vector2 End => target.position + new Vector2(0, 122 + slot * 30);
+        public Vector2 End => target.position + new Vector2(0, 92 + slot * 30);
     }
     private readonly struct Score : IComparable<Score>
     {
@@ -26,29 +26,23 @@ internal static class MergeRecipeGraphLayout
             return value != 0 ? value : span.CompareTo(other.span);
         }
     }
-    private static float Height(MergeGraphItemNode node) => 140 + (node.ingredients?.Count ?? 0) * 30;
+    private static float Height(MergeGraphItemNode node) => 110 + (node.ingredients?.Count ?? 0) * 30;
     private static float Gap(float value, float fallback) => float.IsNaN(value) || float.IsInfinity(value) ? fallback : Mathf.Max(0, value);
 
     public static void Arrange(MergeRecipeGraphAsset graph)
     {
         if (graph == null || graph.items == null || graph.items.Count == 0) return;
         var depths = ConnectionDepths(graph);
-        var tiers = new SortedDictionary<int, SortedDictionary<int, List<MergeGraphItemNode>>>();
+        var byDepth = new SortedDictionary<int, List<MergeGraphItemNode>>();
         foreach (var node in graph.items)
         {
             if (node == null) continue;
-            if (!tiers.TryGetValue(node.tier, out var tier))
-                tiers.Add(node.tier, tier = new SortedDictionary<int, List<MergeGraphItemNode>>());
-            if (!tier.TryGetValue(depths[node], out var rows)) tier.Add(depths[node], rows = new List<MergeGraphItemNode>());
+            if (!byDepth.TryGetValue(depths[node], out var rows)) byDepth.Add(depths[node], rows = new List<MergeGraphItemNode>());
             rows.Add(node);
         }
-        var columns = new List<List<MergeGraphItemNode>>();
+        var columns = new List<List<MergeGraphItemNode>>(byDepth.Values);
         var columnOf = new Dictionary<MergeGraphItemNode, int>();
-        foreach (var tier in tiers.Values) foreach (var rows in tier.Values)
-        {
-            foreach (var node in rows) columnOf[node] = columns.Count;
-            columns.Add(rows);
-        }
+        for (int i = 0; i < columns.Count; i++) foreach (var node in columns[i]) columnOf[node] = i;
         var edges = new List<Edge>();
         foreach (var node in graph.items)
             if (node?.ingredients != null) for (int i = 0; i < node.ingredients.Count; i++)
@@ -78,7 +72,7 @@ internal static class MergeRecipeGraphLayout
             bestScore = score; best = Snapshot();
         }
         // 좌우로 번갈아 순회하며 입력 포트 순서까지 고려해 연결된 높이에 가깝게 정렬합니다.
-        // Crossing reduction is a heuristic: fixed tiers and cycles can prevent a crossing-free layout.
+        // Crossing reduction is a heuristic: cycles can prevent a crossing-free layout.
         for (int pass = 0; pass < 8; pass++)
         {
             bool forward = pass % 2 == 0;

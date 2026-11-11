@@ -1,15 +1,6 @@
 using System;
 using System.Collections.Generic;
 
-[Serializable]
-public class MergeSeries
-{
-    public int tier;
-    public List<ItemRecipeData> itemRecipeDatas = new List<ItemRecipeData>();
-}
-
-
-
 // 사용자가 등록한 조합과 재고만 판정합니다. 같은 종류라는 이유로 자동 합성하지 않습니다.
 public static class MergeTree
 {
@@ -45,18 +36,6 @@ public static class MergeTree
         }
         return SameIngredients(required, supplied);
     }
-    public static bool TryGetRecipe(IList<MergeSeries> tiers, IReadOnlyList<ItemData> ingredients, out ItemRecipeData recipe)
-    {
-        recipe = null;
-        if (tiers == null) return false;
-        foreach (var tier in tiers)
-        {
-            if (tier?.itemRecipeDatas == null) continue;
-            foreach (var candidate in tier.itemRecipeDatas)
-                if (MatchesIngredients(candidate, ingredients)) { recipe = candidate; return true; }
-        }
-        return false;
-    }
     public static bool MatchesPair(ItemRecipeData recipe, ItemData first, ItemData second)
     {
         if (recipe == null || recipe.resultItem == null || recipe.materials == null || first == null || second == null) return false;
@@ -69,18 +48,6 @@ public static class MergeTree
                 if (count++ == 0) a = material.itemData; else b = material.itemData;
         }
         return count == 2 && ((a == first && b == second) || (a == second && b == first));
-    }
-    public static bool TryGetRecipe(IList<MergeSeries> tiers, ItemData first, ItemData second, out ItemRecipeData recipe)
-    {
-        recipe = null;
-        if (tiers == null) return false;
-        foreach (var tier in tiers)
-        {
-            if (tier?.itemRecipeDatas == null) continue;
-            foreach (var candidate in tier.itemRecipeDatas)
-                if (MatchesPair(candidate, first, second)) { recipe = candidate; return true; }
-        }
-        return false;
     }
     public static bool IsAvailable(MergeItemMaterial material)
         => material != null && material.mergeItem != null && material.mergeItem.item != null && material.IsAvailable();
