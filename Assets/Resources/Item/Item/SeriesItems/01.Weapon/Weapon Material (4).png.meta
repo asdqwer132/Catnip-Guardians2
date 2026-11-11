@@ -5,6 +5,12 @@ TextureImporter:
   - first:
       213: -2131542948074905439
     second: Weapon Material (4)_0
+  - first:
+      213: 7182916514697531667
+    second: Weapon Material (4)_1
+  - first:
+      213: 3869031837609518251
+    second: Weapon Material (4)_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -117,9 +123,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 9
-        y: 9
-        width: 142
-        height: 142
+        y: 89
+        width: 62
+        height: 62
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -130,6 +136,50 @@ TextureImporter:
       bones: []
       spriteID: 1a0a18c6bfc3b62e0800000000000000
       internalID: -2131542948074905439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Weapon Material (4)_1
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 49
+        width: 72
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 31155dd6388dea360800000000000000
+      internalID: 7182916514697531667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Weapon Material (4)_2
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 9
+        width: 62
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba4646115ff81b530800000000000000
+      internalID: 3869031837609518251
       vertices: []
       indices: 
       edges: []
@@ -149,6 +199,8 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       Weapon Material (4)_0: -2131542948074905439
+      Weapon Material (4)_1: 7182916514697531667
+      Weapon Material (4)_2: 3869031837609518251
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
