@@ -115,13 +115,13 @@ public class SkillTreeManager : MonoBehaviour, IStoryProgressSource
 
     public bool UnlockSkill(SkillNodeData node)
     {
-        Debug.Log($"[SkillPurchase] Attempt: node={node?.dataId ?? "none"}", this);
+      //  Debug.Log($"[SkillPurchase] Attempt: node={node?.dataId ?? "none"}", this);
         if (!CanUnlock(node))
         {
             string reason = node == null ? "Missing node" : string.IsNullOrEmpty(node.dataId) ? "Empty node ID" :
                 IsUnlocked(node) ? "Already unlocked" : !HasRequiredSkills(node) ? "Prerequisites not unlocked" :
                 CurrencyManager.instance == null ? "Missing CurrencyManager" : "Insufficient currency";
-            Debug.LogWarning("[SkillPurchase] Rejected: " + reason, this);
+         //   Debug.LogWarning("[SkillPurchase] Rejected: " + reason, this);
             if (debugLog)
                 Debug.Log("스킬 해금 실패: " + GetSkillName(node));
 
@@ -130,9 +130,9 @@ public class SkillTreeManager : MonoBehaviour, IStoryProgressSource
 
         if (!SpendCost(node))
         {
-            Debug.LogWarning("[SkillPurchase] Payment failed.", this);
+         //   Debug.LogWarning("[SkillPurchase] Payment failed.", this);
             if (debugLog)
-                Debug.Log("스킬 비용 소모 실패: " + GetSkillName(node));
+             //   Debug.Log("스킬 비용 소모 실패: " + GetSkillName(node));
 
             return false;
         }
@@ -145,7 +145,7 @@ public class SkillTreeManager : MonoBehaviour, IStoryProgressSource
 
         RefreshContext();
         ApplyRewards(node);
-        Debug.Log("[SkillPurchase] Success: " + node.dataId, this);
+    //    Debug.Log("[SkillPurchase] Success: " + node.dataId, this);
 
         OnSkillUnlocked?.Invoke(node);
         OnSkillTreeChanged?.Invoke();

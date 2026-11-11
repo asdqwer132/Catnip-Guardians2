@@ -35,7 +35,7 @@ public class CurrencyTester : MonoBehaviour
     {
         foreach (CurrencyType type in System.Enum.GetValues(typeof(CurrencyType)))
         {
-            CurrencyManager.instance.SetCurrency(type, 999999);
+            CurrencyManager.instance.SetCurrency(type, 0);
         }
     }
     private void SetCurrency()
