@@ -13,6 +13,8 @@ public sealed class MergeRecipeGraphAsset : ScriptableObject
     internal int InputLayoutVersion { get => inputLayoutVersion; set => inputLayoutVersion = value; }
     [Header("자동 정렬 · 노드 테두리 사이 간격")]
     public MergeGraphArrangeDirection arrangeDirection;
+    [Tooltip("입력 연결이 없는 시작 재료의 현재 위치를 유지하고, 그 위치에서 연결된 결과를 배치합니다.")]
+    public bool useInputPositions = true;
     public bool keepBranchRows = true;
     public Vector2 nodeSpacing = new Vector2(140, 45);
 

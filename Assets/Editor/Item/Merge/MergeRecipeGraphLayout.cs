@@ -33,6 +33,7 @@ internal static class MergeRecipeGraphLayout
     public static void Arrange(MergeRecipeGraphAsset graph)
     {
         if (graph == null || graph.items == null || graph.items.Count == 0) return;
+        if (graph.useInputPositions && ArrangeFromInputs(graph)) return;
         var depths = ConnectionDepths(graph);
         var byDepth = new SortedDictionary<int, List<MergeGraphItemNode>>();
         foreach (var node in graph.items)
@@ -172,6 +173,58 @@ internal static class MergeRecipeGraphLayout
             foreach (var pair in lanes) pair.Key.position = new Vector2(40 + depths[pair.Key] * (240 + gap.x), RowY(pair.Value));
         }
         EditorUtility.SetDirty(graph);
+    }
+
+    private static bool ArrangeFromInputs(MergeRecipeGraphAsset graph)
+    {
+        var inputs = new Dictionary<MergeGraphItemNode, List<MergeGraphItemNode>>();
+        foreach (var node in graph.items)
+        {
+            if (node == null) continue;
+            var parents = new List<MergeGraphItemNode>();
+            for (int slot = 0; slot < node.ingredients.Count; slot++)
+            {
+                var source = MergeRecipeGraphEditing.InputNode(graph, node, slot);
+                if (source != null && !parents.Contains(source)) parents.Add(source);
+            }
+            inputs[node] = parents;
+        }
+        var placed = new HashSet<MergeGraphItemNode>(inputs.Where(pair => pair.Value.Count == 0).Select(pair => pair.Key));
+        if (placed.Count == 0) return false; // Cyclic graphs keep the existing finite-depth layout fallback.
+        var depths = ConnectionDepths(graph);
+        var pending = inputs.Keys.Where(node => !placed.Contains(node)).OrderBy(node => depths[node]).ToList();
+        bool horizontal = graph.arrangeDirection == MergeGraphArrangeDirection.Horizontal;
+        float gapX = Gap(graph.nodeSpacing.x, 140), gapY = Gap(graph.nodeSpacing.y, 45);
+        Undo.RecordObject(graph, "Arrange merge results from authored input positions");
+        bool progress;
+        do
+        {
+            progress = false;
+            foreach (var node in pending.ToArray())
+            {
+                var parents = inputs[node];
+                if (parents.Any(parent => !placed.Contains(parent))) continue;
+                // Continue the deepest ingredient chain; other ingredients join it from their authored positions.
+                var main = parents.OrderByDescending(parent => depths[parent]).First();
+                Vector2 position = main.position;
+                if (horizontal) position.x = parents.Max(parent => parent.position.x + 240 + gapX);
+                else position.y = parents.Max(parent => parent.position.y + Height(parent) + gapY);
+                // Branches sharing an input stay separate. Authored input nodes are never displaced.
+                while (true)
+                {
+                    var bounds = new Rect(position, new Vector2(240, Height(node)));
+                    var overlap = placed.FirstOrDefault(other => bounds.Overlaps(new Rect(other.position, new Vector2(240, Height(other)))));
+                    if (overlap == null) break;
+                    if (horizontal) position.y = overlap.position.y + Height(overlap) + gapY;
+                    else position.x = overlap.position.x + 240 + gapX;
+                }
+                node.position = position;
+                placed.Add(node); pending.Remove(node); progress = true;
+            }
+        } while (progress && pending.Count > 0);
+        // Nodes in a cycle retain their authored positions; no connection or recipe is changed.
+        EditorUtility.SetDirty(graph);
+        return true;
     }
 
     private static Score Evaluate(List<Edge> edges, List<MergeGraphItemNode> nodes)
