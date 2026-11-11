@@ -13,6 +13,7 @@ public sealed class MergeRecipeGraphAsset : ScriptableObject
     internal int InputLayoutVersion { get => inputLayoutVersion; set => inputLayoutVersion = value; }
     [Header("자동 정렬 · 노드 테두리 사이 간격")]
     public MergeGraphArrangeDirection arrangeDirection;
+    public bool keepBranchRows = true;
     public Vector2 nodeSpacing = new Vector2(140, 45);
 
 }
@@ -24,6 +25,8 @@ public sealed class MergeGraphItemNode
     [HideInInspector] public string id = Guid.NewGuid().ToString("N");
     public MergeItem item;
     public Vector2 position;
+    public bool overrideRow;
+    [Min(0)] public int row;
     public bool overrideStartDepth;
     [Min(0)] public int startDepth;
     // 입력 하나가 재료 한 개입니다. 같은 아이템을 여러 입력에 연결하면 수량으로 합산합니다.

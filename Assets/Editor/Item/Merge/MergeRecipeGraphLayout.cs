@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -139,6 +140,36 @@ internal static class MergeRecipeGraphLayout
                     else { rows[i + 1] = rows[i]; rows[i] = a; PlaceColumn(c); }
                 }
             if (!improved) break;
+        }
+        if (graph.keepBranchRows && !horizontal)
+        {
+            var lanes = new Dictionary<MergeGraphItemNode, int>();
+            foreach (var column in columns)
+            {
+                var used = new HashSet<int>();
+                var ordered = column.OrderBy(node => node.overrideRow ? 0 : 1).ToList();
+                foreach (var node in ordered)
+                {
+                    int lane = node.overrideRow ? Mathf.Max(0, node.row) : -1;
+                    int parentDepth = -1;
+                    if (lane < 0) foreach (var edge in edges)
+                        if (edge.target == node && lanes.TryGetValue(edge.source, out int known) && depths[edge.source] > parentDepth)
+                        { lane = known; parentDepth = depths[edge.source]; }
+                    lane = Mathf.Max(0, lane);
+                    while (used.Contains(lane)) lane++;
+                    lanes[node] = lane; used.Add(lane);
+                }
+            }
+            var heights = new Dictionary<int, float>();
+            foreach (var pair in lanes)
+            { heights.TryGetValue(pair.Value, out float height); heights[pair.Value] = Mathf.Max(height, Height(pair.Key)); }
+            float RowY(int lane)
+            {
+                float y = 50;
+                for (int r = 0; r < lane; r++) y += (heights.TryGetValue(r, out float height) ? height : 110) + gap.y;
+                return y;
+            }
+            foreach (var pair in lanes) pair.Key.position = new Vector2(40 + depths[pair.Key] * (240 + gap.x), RowY(pair.Value));
         }
         EditorUtility.SetDirty(graph);
     }

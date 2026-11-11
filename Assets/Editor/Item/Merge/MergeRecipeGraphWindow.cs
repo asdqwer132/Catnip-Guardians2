@@ -183,7 +183,7 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
         if (target is MergeRecipeGraphAsset)
         {
             var serialized = new SerializedObject(graph);
-            foreach (string field in new[] { "arrangeDirection", "nodeSpacing" })
+            foreach (string field in new[] { "arrangeDirection", "keepBranchRows", "nodeSpacing" })
                 inspector.Add(new PropertyField(serialized.FindProperty(field)));
             inspector.Bind(serialized);
         }
@@ -205,14 +205,19 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
                 useDepth.RegisterValueChangedCallback(evt => Run(() =>
                 {
                     Undo.RecordObject(graph, "Override merge starting depth");
-                    selected.overrideStartDepth = evt.newValue; depth.SetEnabled(evt.newValue); EditorUtility.SetDirty(graph);
+                    EditSelection(node => node.overrideStartDepth = evt.newValue); depth.SetEnabled(evt.newValue); EditorUtility.SetDirty(graph);
                 }));
                 depth.RegisterValueChangedCallback(evt => Run(() =>
                 {
                     Undo.RecordObject(graph, "Set merge starting depth");
-                    selected.startDepth = Mathf.Max(0, evt.newValue); depth.SetValueWithoutNotify(selected.startDepth); EditorUtility.SetDirty(graph);
+                    EditSelection(node => node.startDepth = Mathf.Max(0, evt.newValue)); depth.SetValueWithoutNotify(selected.startDepth); EditorUtility.SetDirty(graph);
                 }));
                 inspector.Add(useDepth); inspector.Add(depth);
+                var pinRow = new Toggle("배치 행 지정 (선택 노드 전체)") { value = selected.overrideRow };
+                var row = new IntegerField("행 (0부터)") { value = selected.row, isDelayed = true };
+                pinRow.RegisterValueChangedCallback(evt => Run(() => EditSelection(node => node.overrideRow = evt.newValue)));
+                row.RegisterValueChangedCallback(evt => Run(() => EditSelection(node => node.row = Mathf.Max(0, evt.newValue))));
+                inspector.Add(pinRow); inspector.Add(row);
                 var position = new Vector2Field("Position X / Y") { value = selected.position };
                 position.RegisterValueChangedCallback(evt => Run(() =>
                 {
@@ -240,6 +245,14 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
         }
         if (selected != null && selected.item != null && selected.item.item != inspectedData) DrawInspector();
     }
+    private void EditSelection(Action<MergeGraphItemNode> edit)
+    {
+        Undo.RecordObject(graph, "Edit selected merge nodes");
+        var nodes = canvas.SelectedNodes;
+        if (nodes.Count == 0 && selected != null) nodes.Add(selected);
+        foreach (var node in nodes) edit(node);
+        EditorUtility.SetDirty(graph);
+    }
     private void SetStatus(string text) { if (status != null) status.text = text; }
 }
 
@@ -250,7 +263,7 @@ public sealed class MergeRecipeGraphAssetEditor : Editor
     {
         if (GUILayout.Button("레시피북 그래프 열기", GUILayout.Height(30))) MergeRecipeGraphWindow.Open((MergeRecipeGraphAsset)target);
         serializedObject.Update();
-        foreach (string field in new[] { "recipeBook", "arrangeDirection", "nodeSpacing" }) EditorGUILayout.PropertyField(serializedObject.FindProperty(field));
+        foreach (string field in new[] { "recipeBook", "arrangeDirection", "keepBranchRows", "nodeSpacing" }) EditorGUILayout.PropertyField(serializedObject.FindProperty(field));
         serializedObject.ApplyModifiedProperties();
         EditorGUILayout.LabelField("머지 아이템 " + ((MergeRecipeGraphAsset)target).items.Count);
     }

@@ -56,12 +56,13 @@ internal sealed class MergeRecipeGraphCanvas : GraphView
             icon.sprite = data.item != null && data.item.item != null ? data.item.item.icon : null;
         }
         public override void SetPosition(Rect rect) { base.SetPosition(rect); position?.SetValueWithoutNotify(rect.position); }
-        public override void OnSelected() { base.OnSelected(); onSelected(data); }
+        public override void OnSelected() { base.OnSelected(); onSelected(data); schedule.Execute(() => onSelected(data)); }
     }
     private readonly Action<MergeGraphItemNode> select;
     private readonly Action<Object[]> import;
     private MergeRecipeGraphAsset graph;
     public Vector2 Center => contentViewContainer.WorldToLocal(this.LocalToWorld(contentRect.center));
+    internal List<MergeGraphItemNode> SelectedNodes => selection.OfType<Card>().Select(card => card.data).ToList();
     internal int SelectionCount => selection.OfType<Card>().Count();
     internal MergeGraphItemNode PrimarySelection => selection.OfType<Card>().LastOrDefault()?.data;
 
@@ -70,6 +71,7 @@ internal sealed class MergeRecipeGraphCanvas : GraphView
         this.select = select; this.import = import;
         style.flexGrow = 1; style.minWidth = 300;
         SetupZoom(.05f, 10f);
+        RegisterCallback<PointerUpEvent>(_ => schedule.Execute(() => select(PrimarySelection)), TrickleDown.TrickleDown);
         this.AddManipulator(new ContentDragger()); this.AddManipulator(new SelectionDragger()); this.AddManipulator(new RectangleSelector());
         var grid = new GridBackground(); Insert(0, grid); grid.StretchToParentSize();
         this.AddManipulator(new ContextualMenuManipulator(evt =>
