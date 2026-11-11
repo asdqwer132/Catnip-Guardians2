@@ -24,6 +24,8 @@ public sealed class MergeGraphItemNode
     [HideInInspector] public string id = Guid.NewGuid().ToString("N");
     public MergeItem item;
     public Vector2 position;
+    public bool overrideStartDepth;
+    [Min(0)] public int startDepth;
     // 입력 하나가 재료 한 개입니다. 같은 아이템을 여러 입력에 연결하면 수량으로 합산합니다.
     public List<MergeItem> ingredients = new List<MergeItem>(new MergeItem[DefaultInputCount]);
     // 같은 MergeItem을 쓰는 복제 노드도 각각 다른 출력에 연결할 수 있습니다. 이전 그래프는 첫 출력을 사용합니다.

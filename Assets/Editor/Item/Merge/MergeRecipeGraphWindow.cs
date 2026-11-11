@@ -198,6 +198,21 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
                     var data = new Foldout { text = "ItemData / 아이콘 / 효과", value = false };
                     data.Add(new InspectorElement(item.item)); inspector.Add(data);
                 }
+                var useDepth = new Toggle("시작 깊이 지정") { value = selected.overrideStartDepth };
+                var depth = new IntegerField("시작 깊이 (0부터)") { value = selected.startDepth, isDelayed = true };
+                depth.tooltip = "자동 배치의 최소 시작 깊이. 연결된 다음 노드도 이 깊이 이후에 배치됩니다.";
+                depth.SetEnabled(selected.overrideStartDepth);
+                useDepth.RegisterValueChangedCallback(evt => Run(() =>
+                {
+                    Undo.RecordObject(graph, "Override merge starting depth");
+                    selected.overrideStartDepth = evt.newValue; depth.SetEnabled(evt.newValue); EditorUtility.SetDirty(graph);
+                }));
+                depth.RegisterValueChangedCallback(evt => Run(() =>
+                {
+                    Undo.RecordObject(graph, "Set merge starting depth");
+                    selected.startDepth = Mathf.Max(0, evt.newValue); depth.SetValueWithoutNotify(selected.startDepth); EditorUtility.SetDirty(graph);
+                }));
+                inspector.Add(useDepth); inspector.Add(depth);
                 var position = new Vector2Field("Position X / Y") { value = selected.position };
                 position.RegisterValueChangedCallback(evt => Run(() =>
                 {

@@ -41,6 +41,7 @@ internal static class MergeRecipeGraphLayout
             rows.Add(node);
         }
         var columns = new List<List<MergeGraphItemNode>>(byDepth.Values);
+        var columnDepths = new List<int>(byDepth.Keys);
         var columnOf = new Dictionary<MergeGraphItemNode, int>();
         for (int i = 0; i < columns.Count; i++) foreach (var node in columns[i]) columnOf[node] = i;
         var edges = new List<Edge>();
@@ -54,11 +55,14 @@ internal static class MergeRecipeGraphLayout
         var gap = new Vector2(Gap(graph.nodeSpacing.x, 140), Gap(graph.nodeSpacing.y, 45));
         bool horizontal = graph.arrangeDirection == MergeGraphArrangeDirection.Horizontal;
         var depthY = new float[columns.Count];
+        float firstHeight = 0;
+        foreach (var node in columns[0]) firstHeight = Mathf.Max(firstHeight, Height(node));
+        depthY[0] = columnDepths[0] * (firstHeight + gap.y);
         for (int i = 1; i < columns.Count; i++)
         {
             float height = 0;
             foreach (var node in columns[i - 1]) height = Mathf.Max(height, Height(node));
-            depthY[i] = depthY[i - 1] + height + gap.y;
+            depthY[i] = depthY[i - 1] + (height + gap.y) * (columnDepths[i] - columnDepths[i - 1]);
         }
         void PlaceColumn(int column)
         {
@@ -66,7 +70,7 @@ internal static class MergeRecipeGraphLayout
             foreach (var node in columns[column])
             {
                 node.position = horizontal ? new Vector2(40 + offset, 50 + depthY[column])
-                    : new Vector2(40 + column * (240 + gap.x), 50 + offset);
+                    : new Vector2(40 + columnDepths[column] * (240 + gap.x), 50 + offset);
                 offset += horizontal ? 240 + gap.x : Height(node) + gap.y;
             }
         }
@@ -224,6 +228,8 @@ internal static class MergeRecipeGraphLayout
             foreach (var node in groups[i])
                 foreach (var source in inputs[node])
                     if (components[source] != i) groupDepths[i] = Math.Max(groupDepths[i], groupDepths[components[source]] + 1);
+            foreach (var node in groups[i])
+                if (node.overrideStartDepth) groupDepths[i] = Math.Max(groupDepths[i], Math.Max(0, node.startDepth));
             foreach (var node in groups[i]) depths[node] = groupDepths[i];
         }
         return depths;
