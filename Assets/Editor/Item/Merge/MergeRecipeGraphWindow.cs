@@ -17,9 +17,8 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
     private MergeGraphItemNode selected;
     private ItemData inspectedData;
     private ObjectField graphField, bookField;
-    private FloatField horizontalGap, verticalGap;
-    private EnumField direction;
-    private Toggle fromInputs;
+    private EnumField mode;
+    private Vector2Field cellSize, cellGap;
 
     [MenuItem("Tools/Item/Merge/Recipe Book Graph")]
     public static void Open() => GetWindow<MergeRecipeGraphWindow>("Merge Recipe Book Graph");
@@ -40,7 +39,7 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
         string folder = Path.GetDirectoryName(AssetDatabase.GetAssetPath(book)).Replace('\\', '/');
         var graph = CreateInstance<MergeRecipeGraphAsset>();
         AssetDatabase.CreateAsset(graph, AssetDatabase.GenerateUniqueAssetPath(folder + "/" + book.name + " Graph.asset"));
-        MergeRecipeGraphEditing.ImportBook(graph, book); MergeRecipeGraphEditing.Arrange(graph); MergeRecipeGraphEditing.Save(graph);
+        MergeRecipeGraphEditing.ImportBook(graph, book); MergeRecipeGraphEditing.Save(graph);
         Open(graph);
     }
     private void OnEnable() => Undo.undoRedoPerformed += Rebuild;
@@ -59,23 +58,26 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
         toolbar.Add(new ToolbarButton(() => canvas.FrameAll()) { text = "전체 보기" });
         rootVisualElement.Add(toolbar);
         var layout = new Toolbar();
-        direction = new EnumField("배치 방향", graph != null ? graph.arrangeDirection : MergeGraphArrangeDirection.Vertical);
-        direction.style.width = 280;
-        direction.RegisterValueChangedCallback(evt => Run(() =>
+        mode = new EnumField("배치 모드", graph != null ? graph.placementMode : MergeGraphPlacementMode.Normal);
+        mode.style.width = 260;
+        mode.RegisterValueChangedCallback(evt => Run(() => { MergeRecipeGraphLayout.SetMode(graph, (MergeGraphPlacementMode)evt.newValue); Rebuild(); }));
+        layout.Add(mode);
+        var gridOptions = new Toolbar();
+        cellSize = new Vector2Field("격자 간격") { value = graph != null ? graph.gridCellSize : new Vector2(400, 360) };
+        cellGap = new Vector2Field("같은 셀 노드 간격") { value = graph != null ? graph.sameCellSpacing : new Vector2(20, 20) };
+        cellSize.style.width = cellGap.style.width = 270;
+        void UpdateGrid()
         {
-            Undo.RecordObject(graph, "Set merge arrangement direction");
-            graph.arrangeDirection = (MergeGraphArrangeDirection)evt.newValue; EditorUtility.SetDirty(graph);
-        })); layout.Add(direction);
-        fromInputs = new Toggle("시작 재료 위치 기준") { value = graph == null || graph.useInputPositions };
-        fromInputs.RegisterValueChangedCallback(evt => Run(() =>
-        {
-            Undo.RecordObject(graph, "Choose merge layout anchors"); graph.useInputPositions = evt.newValue; EditorUtility.SetDirty(graph);
-        })); layout.Add(fromInputs);
-        horizontalGap = AddGapField(layout, "가로 간격", true);
-        verticalGap = AddGapField(layout, "세로 간격", false);
-        layout.Add(new ToolbarButton(() => Run(() => { MergeRecipeGraphEditing.Arrange(graph); Rebuild(); canvas.FrameAll(); }))
-        { text = "자동 정렬", tooltip = "시작 재료 위치 기준: 입력 없는 노드는 고정하고 결과를 배치합니다. 해제하면 깊이/행 설정을 사용합니다." });
-        rootVisualElement.Add(layout);
+            if (!float.IsFinite(cellSize.value.x) || !float.IsFinite(cellSize.value.y) || !float.IsFinite(cellGap.value.x) || !float.IsFinite(cellGap.value.y)) return;
+            Undo.RecordObject(graph, "Change merge grid spacing");
+            graph.gridCellSize = Vector2.Max(Vector2.one, cellSize.value);
+            graph.sameCellSpacing = Vector2.Max(Vector2.one, cellGap.value);
+            MergeRecipeGraphLayout.Arrange(graph); Rebuild();
+        }
+        cellSize.RegisterValueChangedCallback(evt => Run(UpdateGrid)); cellGap.RegisterValueChangedCallback(evt => Run(UpdateGrid));
+        gridOptions.Add(cellSize); gridOptions.Add(cellGap);
+        layout.Add(new ToolbarButton(() => Run(() => { MergeRecipeGraphEditing.Arrange(graph); Rebuild(); })) { text = "격자 배치 적용" });
+        rootVisualElement.Add(layout); rootVisualElement.Add(gridOptions);
         var output = new Toolbar();
         bookField = new ObjectField("레시피북") { objectType = typeof(MergeRecipeBook), allowSceneObjects = false, value = graph != null ? graph.recipeBook : null };
         bookField.style.width = 370;
@@ -112,19 +114,6 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
         rootVisualElement.Add(status); Rebuild();
         SetStatus("Shift / Ctrl / Cmd + 클릭: 다중 선택 · 빈 곳 드래그: 영역 선택 · Ctrl / Cmd + C,V: 복사·붙여넣기 / D: 복제 · Delete: 삭제 · 가운데 버튼 이동 · 휠 확대 / 축소");
     }
-    private FloatField AddGapField(Toolbar toolbar, string label, bool horizontal)
-    {
-        var field = new FloatField(label) { tooltip = "노드 테두리 사이의 빈 간격입니다. 설정은 그래프별로 저장됩니다." };
-        field.style.width = 170; field.labelElement.style.minWidth = 65;
-        field.RegisterValueChangedCallback(evt => Run(() =>
-        {
-            float value = float.IsNaN(evt.newValue) || float.IsInfinity(evt.newValue) ? 0 : Mathf.Max(0, evt.newValue);
-            Undo.RecordObject(graph, "Change merge node spacing");
-            if (horizontal) graph.nodeSpacing.x = value; else graph.nodeSpacing.y = value;
-            field.SetValueWithoutNotify(value); EditorUtility.SetDirty(graph);
-        }));
-        toolbar.Add(field); return field;
-    }
     private void NewGraph()
     {
         string path = EditorUtility.SaveFilePanelInProject("머지 그래프 생성", "MergeRecipeGraph", "asset", "그래프 저장 위치");
@@ -146,7 +135,6 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
     });
     private void ImportAssets(Object[] assets) => Run(() =>
     {
-        bool empty = graph.items.Count == 0;
         var recipes = new List<ItemRecipeData>();
         var data = new List<ItemData>(); int count = 0;
         foreach (var asset in assets)
@@ -159,7 +147,7 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
         if (recipes.Count > 0) MergeRecipeGraphEditing.ImportRecipes(graph, recipes);
         int added = data.Count > 0 ? MergeRecipeGraphEditing.ImportItemData(graph, data, canvas.Center) : 0;
         count += added;
-        if (empty && data.Count == 0) MergeRecipeGraphEditing.Arrange(graph);
+        if (graph.placementMode == MergeGraphPlacementMode.Grid) MergeRecipeGraphEditing.Arrange(graph);
         Rebuild(); if (count > 0) canvas.FrameAll();
         SetStatus(data.Count > 0 ? $"ItemData에서 {added}개 노드를 추가했습니다. 이미 있는 항목은 유지합니다." :
             count > 0 ? "연결을 불러왔습니다." : "ItemData / MergeItem / 레시피 / 레시피북을 선택하거나 드래그하세요.");
@@ -169,12 +157,9 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
         if (canvas == null) return;
         if (selected != null) selected = graph != null ? graph.items.Find(node => node.id == selected.id) : null;
         canvas.SetGraph(graph, selected);
-        direction?.SetValueWithoutNotify(graph != null ? graph.arrangeDirection : MergeGraphArrangeDirection.Vertical);
-        fromInputs?.SetValueWithoutNotify(graph == null || graph.useInputPositions);
-        selected = canvas.PrimarySelection;
-        horizontalGap?.SetValueWithoutNotify(graph != null ? graph.nodeSpacing.x : 140);
-        verticalGap?.SetValueWithoutNotify(graph != null ? graph.nodeSpacing.y : 45);
-        horizontalGap?.SetEnabled(graph != null); verticalGap?.SetEnabled(graph != null);
+        mode?.SetValueWithoutNotify(graph != null ? graph.placementMode : MergeGraphPlacementMode.Normal);
+        cellSize?.SetValueWithoutNotify(graph != null ? graph.gridCellSize : new Vector2(400, 360));
+        cellGap?.SetValueWithoutNotify(graph != null ? graph.sameCellSpacing : new Vector2(20, 20));
         if (bookField != null) bookField.SetValueWithoutNotify(graph != null ? graph.recipeBook : null);
         DrawInspector();
     }
@@ -190,7 +175,7 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
         if (target is MergeRecipeGraphAsset)
         {
             var serialized = new SerializedObject(graph);
-            foreach (string field in new[] { "arrangeDirection", "useInputPositions", "keepBranchRows", "nodeSpacing" })
+            foreach (string field in new[] { "gridCellSize", "sameCellSpacing" })
                 inspector.Add(new PropertyField(serialized.FindProperty(field)));
             inspector.Bind(serialized);
         }
@@ -205,42 +190,28 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
                     var data = new Foldout { text = "ItemData / 아이콘 / 효과", value = false };
                     data.Add(new InspectorElement(item.item)); inspector.Add(data);
                 }
-                var useDepth = new Toggle("시작 깊이 지정") { value = selected.overrideStartDepth };
-                var depth = new IntegerField("시작 깊이 (0부터)") { value = selected.startDepth, isDelayed = true };
-                depth.tooltip = "자동 배치의 최소 시작 깊이. 연결된 다음 노드도 이 깊이 이후에 배치됩니다.";
-                depth.SetEnabled(selected.overrideStartDepth);
-                useDepth.RegisterValueChangedCallback(evt => Run(() =>
+                if (graph.placementMode == MergeGraphPlacementMode.Grid)
                 {
-                    Undo.RecordObject(graph, "Override merge starting depth");
-                    EditSelection(node => node.overrideStartDepth = evt.newValue); depth.SetEnabled(evt.newValue); EditorUtility.SetDirty(graph);
-                }));
-                depth.RegisterValueChangedCallback(evt => Run(() =>
-                {
-                    Undo.RecordObject(graph, "Set merge starting depth");
-                    EditSelection(node => node.startDepth = Mathf.Max(0, evt.newValue)); depth.SetValueWithoutNotify(selected.startDepth); EditorUtility.SetDirty(graph);
-                }));
-                inspector.Add(useDepth); inspector.Add(depth);
-                var pinRow = new Toggle("배치 행 지정 (선택 노드 전체)") { value = selected.overrideRow };
-                var row = new IntegerField("행 (0부터)") { value = selected.row, isDelayed = true };
-                pinRow.RegisterValueChangedCallback(evt => Run(() => EditSelection(node => node.overrideRow = evt.newValue)));
-                void ApplyRow()
-                {
-                    int value = Mathf.Max(0, row.value);
-                    EditSelection(node => { node.overrideRow = true; node.row = value; });
-                    pinRow.SetValueWithoutNotify(true);
-                    row.SetValueWithoutNotify(value);
+                    var coordinate = new Vector2IntField("격자 X / Y (선택 전체)") { value = selected.gridPosition };
+                    void ApplyCoordinate()
+                    {
+                        EditSelection(node => node.gridPosition = coordinate.value);
+                        MergeRecipeGraphLayout.Arrange(graph); Rebuild();
+                    }
+                    coordinate.RegisterValueChangedCallback(evt => Run(ApplyCoordinate));
+                    inspector.Add(coordinate);
+                    inspector.Add(new Button(() => Run(ApplyCoordinate)) { text = "좌표 적용 (선택 전체)" });
                 }
-                row.RegisterValueChangedCallback(evt => Run(ApplyRow));
-                inspector.Add(pinRow); inspector.Add(row);
-                inspector.Add(new Button(() => Run(ApplyRow)) { text = "행 적용 (선택 노드 전체)",
-                    tooltip = "입력값이 기존 값과 같아도 선택한 모든 노드에 행 지정과 행 번호를 적용합니다." });
-                var position = new Vector2Field("Position X / Y") { value = selected.position };
-                position.RegisterValueChangedCallback(evt => Run(() =>
+                else
                 {
-                    if (!float.IsFinite(evt.newValue.x) || !float.IsFinite(evt.newValue.y)) return;
-                    Undo.RecordObject(graph, "Set merge node position");
-                    selected.position = evt.newValue; EditorUtility.SetDirty(graph); Rebuild();
-                })); inspector.Add(position);
+                    var position = new Vector2Field("Position X / Y") { value = selected.position };
+                    position.RegisterValueChangedCallback(evt => Run(() =>
+                    {
+                        if (!float.IsFinite(evt.newValue.x) || !float.IsFinite(evt.newValue.y)) return;
+                        Vector2 delta = evt.newValue - selected.position;
+                        EditSelection(node => node.position += delta); Rebuild();
+                    })); inspector.Add(position);
+                }
                 if (selected.generatedRecipe != null)
                 {
                     var field = new ObjectField("추출된 레시피") { objectType = typeof(ItemRecipeData), value = selected.generatedRecipe, allowSceneObjects = false };
@@ -254,11 +225,6 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
     {
         if (canvas == null) return;
         canvas.RefreshPreviews();
-        if (graph != null)
-        {
-            horizontalGap?.SetValueWithoutNotify(graph.nodeSpacing.x);
-            verticalGap?.SetValueWithoutNotify(graph.nodeSpacing.y);
-        }
         if (selected != null && selected.item != null && selected.item.item != inspectedData) DrawInspector();
     }
     private void EditSelection(Action<MergeGraphItemNode> edit)
@@ -279,7 +245,7 @@ public sealed class MergeRecipeGraphAssetEditor : Editor
     {
         if (GUILayout.Button("레시피북 그래프 열기", GUILayout.Height(30))) MergeRecipeGraphWindow.Open((MergeRecipeGraphAsset)target);
         serializedObject.Update();
-        foreach (string field in new[] { "recipeBook", "arrangeDirection", "useInputPositions", "keepBranchRows", "nodeSpacing" }) EditorGUILayout.PropertyField(serializedObject.FindProperty(field));
+        foreach (string field in new[] { "recipeBook", "gridCellSize", "sameCellSpacing" }) EditorGUILayout.PropertyField(serializedObject.FindProperty(field));
         serializedObject.ApplyModifiedProperties();
         EditorGUILayout.LabelField("머지 아이템 " + ((MergeRecipeGraphAsset)target).items.Count);
     }

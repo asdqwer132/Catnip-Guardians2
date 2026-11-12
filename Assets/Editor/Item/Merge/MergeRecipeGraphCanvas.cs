@@ -38,14 +38,26 @@ internal sealed class MergeRecipeGraphCanvas : GraphView
             icon = new Image { scaleMode = ScaleMode.ScaleToFit }; icon.style.height = 32; icon.style.width = 32;
             titleContainer.Insert(0, icon);
             var details = new Foldout { text = "Position / Item", value = false };
-            position = new Vector2Field("Position"); position.style.flexDirection = FlexDirection.Column;
-            position.RegisterValueChangedCallback(evt =>
+            if (graph.placementMode == MergeGraphPlacementMode.Grid)
             {
-                if (!float.IsFinite(evt.newValue.x) || !float.IsFinite(evt.newValue.y)) return;
-                Undo.RecordObject(graph, "Position merge node"); data.position = evt.newValue;
-                EditorUtility.SetDirty(graph); var rect = GetPosition(); rect.position = evt.newValue; SetPosition(rect);
-            });
-            details.Add(position);
+                var coordinate = new Vector2IntField("Grid X / Y") { value = data.gridPosition };
+                coordinate.style.flexDirection = FlexDirection.Column;
+                coordinate.RegisterValueChangedCallback(evt =>
+                {
+                    Undo.RecordObject(graph, "Move merge node to cell"); data.gridPosition = evt.newValue;
+                    MergeRecipeGraphLayout.Arrange(graph); rebuild();
+                }); details.Add(coordinate);
+            }
+            else
+            {
+                position = new Vector2Field("Position"); position.style.flexDirection = FlexDirection.Column;
+                position.RegisterValueChangedCallback(evt =>
+                {
+                    if (!float.IsFinite(evt.newValue.x) || !float.IsFinite(evt.newValue.y)) return;
+                    Undo.RecordObject(graph, "Position merge node"); data.position = evt.newValue;
+                    EditorUtility.SetDirty(graph); var rect = GetPosition(); rect.position = evt.newValue; SetPosition(rect);
+                }); details.Add(position);
+            }
             details.Add(new Button(() => { Selection.activeObject = data.item; EditorGUIUtility.PingObject(data.item); }) { text = "Inspect Merge Item" });
             extensionContainer.Add(details);
             Refresh(); RefreshExpandedState(); RefreshPorts();
@@ -61,6 +73,7 @@ internal sealed class MergeRecipeGraphCanvas : GraphView
     private readonly Action<MergeGraphItemNode> select;
     private readonly Action<Object[]> import;
     private MergeRecipeGraphAsset graph;
+    private bool pendingGridSnap;
     public Vector2 Center => contentViewContainer.WorldToLocal(this.LocalToWorld(contentRect.center));
     internal List<MergeGraphItemNode> SelectedNodes => selection.OfType<Card>().Select(card => card.data).ToList();
     internal int SelectionCount => selection.OfType<Card>().Count();
@@ -71,9 +84,16 @@ internal sealed class MergeRecipeGraphCanvas : GraphView
         this.select = select; this.import = import;
         style.flexGrow = 1; style.minWidth = 300;
         SetupZoom(.05f, 10f);
-        RegisterCallback<PointerUpEvent>(_ => schedule.Execute(() => select(PrimarySelection)), TrickleDown.TrickleDown);
+        RegisterCallback<PointerUpEvent>(_ => schedule.Execute(() =>
+        {
+            if (pendingGridSnap && graph != null)
+            { pendingGridSnap = false; MergeRecipeGraphLayout.Arrange(graph); SetGraph(graph, PrimarySelection); }
+            select(PrimarySelection);
+        }), TrickleDown.TrickleDown);
         this.AddManipulator(new ContentDragger()); this.AddManipulator(new SelectionDragger()); this.AddManipulator(new RectangleSelector());
-        var grid = new GridBackground(); Insert(0, grid); grid.StretchToParentSize();
+        var grid = new IMGUIContainer(DrawGrid) { pickingMode = PickingMode.Ignore };
+        Insert(0, grid); grid.StretchToParentSize();
+        viewTransformChanged += _ => grid.MarkDirtyRepaint();
         this.AddManipulator(new ContextualMenuManipulator(evt =>
         {
             if (evt.target is Card || (evt.target as VisualElement)?.GetFirstAncestorOfType<Card>() != null) return;
@@ -104,6 +124,7 @@ internal sealed class MergeRecipeGraphCanvas : GraphView
         graph = value;
         if (graph == null) return;
         MergeRecipeGraphEditing.Upgrade(graph);
+        if (graph.placementMode == MergeGraphPlacementMode.Grid) MergeRecipeGraphLayout.Arrange(graph);
         var cards = new Dictionary<MergeGraphItemNode, Card>();
         foreach (var node in graph.items)
         {
@@ -120,6 +141,23 @@ internal sealed class MergeRecipeGraphCanvas : GraphView
             if (selectedIds.Contains(pair.Key.id) || pair.Key == selected) AddToSelection(pair.Value);
         graphViewChanged = Changed;
     }
+    private void DrawGrid()
+    {
+        if (Event.current.type != EventType.Repaint) return;
+        float zoom = contentViewContainer.resolvedStyle.scale.value.x;
+        if (zoom <= 0) return;
+        Vector2 origin = contentViewContainer.ChangeCoordinatesTo(this, Vector2.zero);
+        Vector2 pitch = graph != null && graph.placementMode == MergeGraphPlacementMode.Grid ? MergeRecipeGraphLayout.Pitch(graph) : new Vector2(100, 100);
+        float labelUnit = graph != null && graph.placementMode == MergeGraphPlacementMode.Grid ? 1 : 100;
+        Vector2 screen = pitch * zoom;
+        if (screen.x < 10 || screen.y < 10) return;
+        var old = Handles.color; Handles.BeginGUI(); Handles.color = new Color(.5f, .5f, .5f, .25f);
+        for (float x = Mathf.Ceil(-origin.x / screen.x) * screen.x + origin.x; x < contentRect.width; x += screen.x)
+        { Handles.DrawLine(new Vector3(x, 0), new Vector3(x, contentRect.height)); GUI.Label(new Rect(x + 3, 0, 60, 20), Mathf.Round((x - origin.x) / screen.x * labelUnit).ToString("0"), EditorStyles.miniLabel); }
+        for (float y = Mathf.Ceil(-origin.y / screen.y) * screen.y + origin.y; y < contentRect.height; y += screen.y)
+        { Handles.DrawLine(new Vector3(0, y), new Vector3(contentRect.width, y)); GUI.Label(new Rect(0, y + 3, 60, 20), Mathf.Round((y - origin.y) / screen.y * labelUnit).ToString("0"), EditorStyles.miniLabel); }
+        Handles.EndGUI(); Handles.color = old;
+    }
     public void RefreshPreviews() { foreach (var card in nodes.OfType<Card>()) card.Refresh(); }
     public override List<Port> GetCompatiblePorts(Port start, NodeAdapter adapter)
         => ports.Where(port => port.direction != start.direction && port.node != start.node).ToList();
@@ -129,7 +167,13 @@ internal sealed class MergeRecipeGraphCanvas : GraphView
         if (change.movedElements != null)
         {
             Undo.RecordObject(graph, "Move merge nodes");
-            foreach (var card in change.movedElements.OfType<Card>()) card.data.position = card.GetPosition().position;
+            Vector2 pitch = MergeRecipeGraphLayout.Pitch(graph);
+            foreach (var card in change.movedElements.OfType<Card>())
+            {
+                card.data.position = card.GetPosition().position;
+                if (graph.placementMode == MergeGraphPlacementMode.Grid)
+                { card.data.gridPosition = MergeRecipeGraphLayout.Nearest(card.data.position, pitch); pendingGridSnap = true; }
+            }
             EditorUtility.SetDirty(graph);
         }
         if (change.elementsToRemove != null)

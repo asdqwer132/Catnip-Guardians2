@@ -34,7 +34,7 @@ public static class MergeRecipeGraphEditing
         var existing = graph.items.Find(node => node.item == item);
         if (existing != null) return existing;
         Undo.RecordObject(graph, "Add merge item node");
-        var node = new MergeGraphItemNode { item = item, position = position };
+        var node = new MergeGraphItemNode { item = item, position = position, gridPosition = MergeRecipeGraphLayout.Nearest(position, MergeRecipeGraphLayout.Pitch(graph)) };
         graph.items.Add(node); EditorUtility.SetDirty(graph);
         return node;
     }
@@ -298,13 +298,13 @@ public static class MergeRecipeGraphEditing
         {
             var node = AddItem(graph, item, new Vector2(40, graph.items.Count * 180));
             var previous = old.Find(value => value.item == item);
-            if (previous != null) { node.position = previous.position; }
+            if (previous != null) { node.position = previous.position; node.gridPosition = previous.gridPosition; }
         }
         ImportRecipes(graph, recipes);
         foreach (var node in graph.items)
         {
             var previous = old.Find(value => value.item == node.item && value.generatedRecipe == node.generatedRecipe);
-            if (previous != null) node.position = previous.position;
+            if (previous != null) { node.position = previous.position; node.gridPosition = previous.gridPosition; }
         }
         EditorUtility.SetDirty(graph);
     }
