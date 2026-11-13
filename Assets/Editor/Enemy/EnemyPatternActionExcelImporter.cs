@@ -6,30 +6,28 @@ using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
-public static class EnemyPatternActionCsvImporter
+public static class EnemyPatternActionExcelImporter
 {
-    private const string MenuPath = "Tools/Enemy/Enemy Pattern/Import Action Pattern CSV";
     private const string DefaultOutputFolder = "Assets/Items/EnemyPatterns";
 
-    [MenuItem(MenuPath)]
-    public static void ImportCsv()
+    public static void ImportExcel()
     {
-        string csvPath = EditorUtility.OpenFilePanel("Enemy Pattern CSV", Application.dataPath, "csv");
+        string csvPath = EditorUtility.OpenFilePanel("Enemy Pattern Excel", Application.dataPath, "xlsx");
         if (string.IsNullOrEmpty(csvPath))
             return;
 
         EnsureFolder(DefaultOutputFolder);
 
-        List<List<string>> rows = ReadCsv(csvPath);
-        if (rows == null || rows.Count < 3)
+        List<List<string>> rows = ReadWorkbookRows(csvPath);
+        if (rows == null || rows.Count < 2)
         {
-            Debug.LogWarning("CSV 행이 부족합니다.");
+            Debug.LogWarning("Excel 행이 부족합니다.");
             return;
         }
 
         int createdCount = 0;
 
-        for (int i = 2; i < rows.Count; i++)
+        for (int i = 1; i < rows.Count; i++)
         {
             List<string> row = rows[i];
             if (row == null || row.Count < 13)
@@ -84,7 +82,7 @@ public static class EnemyPatternActionCsvImporter
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        Debug.Log($"Enemy Pattern Action CSV Import 완료: {createdCount}개 생성 / 경로: {DefaultOutputFolder}");
+        Debug.Log($"Enemy Pattern Action Excel Import 완료: {createdCount}개 생성 / 경로: {DefaultOutputFolder}");
     }
 
     private static EnemyPatternEntry CreateEntry(EnemyPatternSetData owner, string enemyName, string role, int index, string conditionText, string effectText)
@@ -428,74 +426,34 @@ public static class EnemyPatternActionCsvImporter
             Directory.CreateDirectory(fullPath);
     }
 
-    private static List<List<string>> ReadCsv(string path)
+    public static List<List<string>> ReadWorkbookRows(string path)
     {
-        string text = File.ReadAllText(path, Encoding.UTF8);
-        List<List<string>> rows = new List<List<string>>();
-        List<string> row = new List<string>();
-        StringBuilder cell = new StringBuilder();
-        bool inQuote = false;
-
-        for (int i = 0; i < text.Length; i++)
+        var sheets = ItemDataExcelTools.ItemDataXlsxReader.Read(path);
+        if (!sheets.TryGetValue("Patterns", out var sheet) || sheet.Rows.Count == 0) throw new System.IO.InvalidDataException("Missing Patterns sheet.");
+        string[] names = { "enemyId", "series", "enemyClass", "enemyName", "role", "condition1", "effect1", "condition2", "effect2", "condition3", "effect3", "condition4", "effect4" };
+        var header = new Dictionary<string, int>(System.StringComparer.OrdinalIgnoreCase);
+        foreach (var cell in sheet.Rows[0].Cells) header.Add(cell.Value.Text.Trim(), cell.Key);
+        foreach (string name in names) if (!header.ContainsKey(name)) throw new System.IO.InvalidDataException("Missing column: " + name);
+        var output = new List<List<string>> { new List<string>(names) };
+        foreach (var row in sheet.Rows)
         {
-            char c = text[i];
-
-            if (c == '"')
+            if (row == sheet.Rows[0] || row.IsEmpty) continue;
+            if (header.TryGetValue("enabled", out int enabled))
             {
-                if (inQuote && i + 1 < text.Length && text[i + 1] == '"')
-                {
-                    cell.Append('"');
-                    i++;
-                }
-                else
-                {
-                    inQuote = !inQuote;
-                }
-                continue;
+                string value = row.At(enabled).Text.Trim().ToLowerInvariant();
+                if (value == "false" || value == "0") continue;
+                if (value != "" && value != "true" && value != "1") throw new System.IO.InvalidDataException("Invalid enabled value.");
             }
-
-            if (c == ',' && !inQuote)
+            var values = new List<string>();
+            foreach (string name in names)
             {
-                row.Add(cell.ToString());
-                cell.Length = 0;
-                continue;
+                var cell = row.At(header[name]);
+                if (cell.HasFormula || cell.IsError) throw new System.IO.InvalidDataException("Use literal values: " + name);
+                values.Add(cell.Text);
             }
-
-            if ((c == '\n' || c == '\r') && !inQuote)
-            {
-                if (c == '\r' && i + 1 < text.Length && text[i + 1] == '\n')
-                    i++;
-
-                row.Add(cell.ToString());
-                cell.Length = 0;
-
-                bool hasValue = false;
-                for (int j = 0; j < row.Count; j++)
-                {
-                    if (!string.IsNullOrWhiteSpace(row[j]))
-                    {
-                        hasValue = true;
-                        break;
-                    }
-                }
-
-                if (hasValue)
-                    rows.Add(row);
-
-                row = new List<string>();
-                continue;
-            }
-
-            cell.Append(c);
+            output.Add(values);
         }
-
-        if (cell.Length > 0 || row.Count > 0)
-        {
-            row.Add(cell.ToString());
-            rows.Add(row);
-        }
-
-        return rows;
+        return output;
     }
 }
 #endif

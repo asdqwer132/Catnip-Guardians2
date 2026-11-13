@@ -35,6 +35,10 @@ public sealed class DataExcelManagerWindow : EditorWindow
     {
         if (modules == null || modules.Length == 0) return;
         selected = Mathf.Clamp(GUILayout.Toolbar(selected, modules.Select(module => module.Name).ToArray()), 0, modules.Length - 1);
-        using (new EditorGUI.DisabledScope(EditorApplication.isPlayingOrWillChangePlaymode)) modules[selected].DrawGUI();
+        using (new EditorGUI.DisabledScope(EditorApplication.isPlayingOrWillChangePlaymode))
+        {
+            try { modules[selected].DrawGUI(); }
+            catch (Exception error) { EditorGUILayout.HelpBox(error.Message, MessageType.Error); }
+        }
     }
 }

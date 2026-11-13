@@ -11,14 +11,15 @@ public sealed class MergeItemExcelImporterWindow : EditorWindow
     private Vector2 scroll;
     private string status;
 
-    [MenuItem("Tools/Item/Merge/Merge Item Excel Importer")]
-    public static void Open() => GetWindow<MergeItemExcelImporterWindow>("MergeItem Excel");
+    public static void Open() => DataExcelManagerWindow.Open();
 
     private string Folder(DefaultAsset asset) => asset != null ? AssetDatabase.GetAssetPath(asset) : "Assets";
     private MergeItemExcelPlan Read() => MergeItemExcelImport.Read(workbook, sheet, Folder(itemFolder), Folder(prefabFolder),
         outputFolder != null ? Folder(outputFolder) : newOutputFolder);
 
-    private void OnGUI()
+    private void OnGUI() => DrawUI();
+
+    public void DrawUI()
     {
         EditorGUILayout.HelpBox("필수 컬럼: itemData, prefab, radius  /  선택 컬럼: enabled, assetName, assetPath\nitemData는 에셋 경로 · GUID · dataId · 이름, prefab은 경로 · GUID · 이름을 사용합니다.", MessageType.Info);
         using (new EditorGUILayout.HorizontalScope())

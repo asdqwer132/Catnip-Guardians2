@@ -11,10 +11,11 @@ public sealed class StoryExcelImporterWindow : EditorWindow
     private string status;
     private Vector2 scroll;
 
-    [MenuItem("Tools/Story/Story Excel Importer")]
-    public static void Open() => GetWindow<StoryExcelImporterWindow>("Story Excel");
+    public static void Open() => DataExcelManagerWindow.Open();
 
-    private void OnGUI()
+    private void OnGUI() => DrawUI();
+
+    public void DrawUI()
     {
         using (new EditorGUILayout.HorizontalScope())
         {

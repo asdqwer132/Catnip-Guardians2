@@ -34,7 +34,6 @@ namespace ItemDataExcelTools
         private static readonly FieldInfo LanguageMapField = typeof(DefaultData).GetField(
             "languageDataMap", BindingFlags.Instance | BindingFlags.NonPublic);
 
-        [MenuItem("Tools/Item/Data/ItemData Excel Importer")]
         public static void Open()
         {
             var window = GetWindow<ItemDataExcelImporter>("ItemData Excel");
