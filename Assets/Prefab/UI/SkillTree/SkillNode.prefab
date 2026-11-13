@@ -110,7 +110,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 7.5, y: 7}
-  m_SizeDelta: {x: 60, y: 60}
+  m_SizeDelta: {x: 35, y: 35}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &4195395913852432432
 CanvasRenderer:
@@ -133,14 +133,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.8509804}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 190971951, guid: 89d6b9627a3a13b48948eca9d1c6f9f5, type: 3}
+  m_Sprite: {fileID: -2880076522414108370, guid: 8575e8ae32596244a9bae85c9d6afbab, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -341,6 +341,7 @@ MonoBehaviour:
   button: {fileID: 3337817293638885691}
   iconImage: {fileID: 4619919876040051837}
   lockImage: {fileID: 518841660289498790}
+  levelSelector: {fileID: 0}
   hideUnavailableNodes: 1
 --- !u!114 &6370626538912415708
 MonoBehaviour:
@@ -436,7 +437,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SkillLevelSelecter
   levelImage: {fileID: 3004575564391412152}
-  sprites: []
+  sprites:
+  - {fileID: -2880076522414108370, guid: 8575e8ae32596244a9bae85c9d6afbab, type: 3}
+  - {fileID: -2020565703576742965, guid: 8575e8ae32596244a9bae85c9d6afbab, type: 3}
+  - {fileID: 6590909379932829338, guid: 8575e8ae32596244a9bae85c9d6afbab, type: 3}
+  - {fileID: -8717534667766685097, guid: 8575e8ae32596244a9bae85c9d6afbab, type: 3}
+  - {fileID: -8075142501811138650, guid: 8575e8ae32596244a9bae85c9d6afbab, type: 3}
 --- !u!1 &8913983986458512368
 GameObject:
   m_ObjectHideFlags: 0
