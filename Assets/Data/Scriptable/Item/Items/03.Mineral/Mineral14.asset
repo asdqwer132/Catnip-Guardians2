@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Mineral14
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: c34c17e6ef1a6a04f96ef5ecd94f0e93, type: 3}
+  icon: {fileID: 21300000, guid: 41655ae2458cbdd43b811146799c9938, type: 3}
   data:
   - language: 1
     dataName: "\uBBF8\uC2A4\uB9B4\uC6D0\uC11D"
     description: "\uC2E0\uBE44\uD55C \uBBF8\uC2A4\uB9B4 \uAE08\uC18D\uC744 \uD488\uC740
       \uD76C\uADC0 \uAD11\uC11D"
+    detailDescription: 
   - language: 0
     dataName: Mithril Rough
     description: A rare ore containing mysterious mithril metal
+    detailDescription: 
   dataNumbering: 014
   dataId: Mineral14
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

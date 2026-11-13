@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Mineral24
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 7f6e6db94ccd6bd49984bf4ccf1342a9, type: 3}
+  icon: {fileID: 21300000, guid: 7b6b55853728a794e9f120fac72ccb15, type: 3}
   data:
   - language: 1
     dataName: "\uD751\uC694\uC8FC\uAD34"
     description: "\uAC80\uC740 \uD751\uC694\uC11D\uC744 \uB2E4\uB4EC\uC5B4 \uB9CC\uB4E0
       \uAC00\uACF5 \uC7AC\uB8CC"
+    detailDescription: 
   - language: 0
     dataName: obsidian ingot
     description: A processing material made by trimming obsidian
+    detailDescription: 
   dataNumbering: 024
   dataId: Mineral24
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

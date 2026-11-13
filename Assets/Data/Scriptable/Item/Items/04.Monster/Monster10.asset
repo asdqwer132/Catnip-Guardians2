@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Monster10
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 5d3ce0c2047374347a14ebe9c0a7d2de, type: 3}
+  icon: {fileID: 21300000, guid: fc9b54fa9c38674479b932c0e4bcbf4c, type: 3}
   data:
   - language: 1
     dataName: "\uC9D0\uC2B9\uBC1C\uD1B1"
     description: "\uC9D0\uC2B9\uC758 \uBC1C\uC5D0\uC11C \uC5BB\uC740 \uB2E8\uB2E8\uD558\uACE0
       \uAD7D\uC740 \uBC1C\uD1B1"
+    detailDescription: 
   - language: 0
     dataName: animal claw
     description: Hard, curved claws obtained from the beast's paws
+    detailDescription: 
   dataNumbering: 010
   dataId: Monster10
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

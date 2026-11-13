@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Mineral18
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 1228d3bba8bf6e047a4ed5e51c26eec7, type: 3}
+  icon: {fileID: 21300000, guid: 7df72e4aed1402340a7d24353175cd8b, type: 3}
   data:
   - language: 1
     dataName: "\uC2EC\uD64D\uC6D0\uC11D"
     description: "\uAE4A\uC740 \uC9C4\uD64D\uBE5B \uAE30\uC6B4\uC774 \uAE43\uB4E0
       \uAD11\uBB3C \uC870\uAC01"
+    detailDescription: 
   - language: 0
     dataName: Crimson Gemstone
     description: A mineral fragment imbued with a deep crimson aura
+    detailDescription: 
   dataNumbering: 018
   dataId: Mineral18
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

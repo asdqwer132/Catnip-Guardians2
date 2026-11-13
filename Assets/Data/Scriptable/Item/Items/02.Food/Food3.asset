@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Food3
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 07e0b61d44be19e419ea250929d7d4fb, type: 3}
+  icon: {fileID: 21300000, guid: 25ff8cb9a0a7f3d4ab58bb78f807b756, type: 3}
   data:
   - language: 1
     dataName: "\uB530\uB73B\uD55C \uC218\uD504"
     description: "\uB530\uB73B\uD55C \uAE40\uC774 \uD53C\uC5B4\uB098\uB294 \uBD80\uB4DC\uB7EC\uC6B4
       \uC218\uD504"
+    detailDescription: 
   - language: 0
     dataName: warm soup
     description: Soft soup with warm steam rising
+    detailDescription: 
   dataNumbering: 003
   dataId: Food3
   dataType: 1
@@ -34,6 +36,7 @@ MonoBehaviour:
   effectDatas:
   - {fileID: 11400000, guid: 7bda66b056df1684c92ec3bd15009fc1, type: 2}
   - {fileID: 11400000, guid: 4b1d4e4896de1a7409dd23bfe746c94f, type: 2}
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

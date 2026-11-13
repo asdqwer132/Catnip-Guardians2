@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Monster6
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 5e56355578cd4ec469dda8e74e7a9692, type: 3}
+  icon: {fileID: 21300000, guid: 08dc8b145d43574499955e53fd2f40c5, type: 3}
   data:
   - language: 1
     dataName: "\uAE43\uD1382"
     description: "\uAC00\uB290\uB2E4\uB780 \uAE43\uB300\uC5D0 \uC19C\uD138\uC774
       \uB2EC\uB9B0 \uC0C8\uC758 \uAE43"
+    detailDescription: 
   - language: 0
     dataName: Feather 2
     description: A bird's feather with fluff on a thin flagpole
+    detailDescription: 
   dataNumbering: 006
   dataId: Monster6
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

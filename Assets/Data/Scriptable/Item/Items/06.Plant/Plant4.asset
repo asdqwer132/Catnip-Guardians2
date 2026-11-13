@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Plant4
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 0e92d947462dccd418a8ed2ef7ebfaca, type: 3}
+  icon: {fileID: 21300000, guid: 6db6cf68e695767489582d761ea650fd, type: 3}
   data:
   - language: 1
     dataName: "\uB098\uBB47\uAC00\uC9C0"
     description: "\uB098\uBB34\uC5D0\uC11C \uAEBE\uC5B4 \uC5BB\uC740 \uAC00\uB290\uB2E4\uB780
       \uAC00\uC9C0"
+    detailDescription: 
   - language: 0
     dataName: tree branch
     description: A slender branch picked from a tree
+    detailDescription: 
   dataNumbering: 004
   dataId: Plant4
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

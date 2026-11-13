@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Machine3
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 08c3dd35771ee7e479b5af0916dd41c6, type: 3}
+  icon: {fileID: 4368528103486113460, guid: 19693fb8a1b3c5448a10e4efdcab5ca1, type: 3}
   data:
   - language: 1
     dataName: "\uD669\uB3D9\uAE30\uC5B4"
     description: "\uD669\uB3D9\uC73C\uB85C \uB9CC\uB4E0 \uAE08\uBE5B\uC758 \uC815\uAD50\uD55C
       \uAE30\uC5B4"
+    detailDescription: 
   - language: 0
     dataName: Brass Fish
     description: Exquisite gears made of brass with a golden glow
+    detailDescription: 
   dataNumbering: 003
   dataId: Machine3
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

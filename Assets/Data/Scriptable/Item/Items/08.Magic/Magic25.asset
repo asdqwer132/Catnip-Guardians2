@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Magic25
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: facaa8b3ee3b4ee46b6c784494b049d0, type: 3}
+  icon: {fileID: 21300000, guid: 45aad3bd803987440957bdbe068f1570, type: 3}
   data:
   - language: 1
     dataName: "\uB300\uB9C8\uBC95\uC0AC\uC758 \uBAA8\uC790"
     description: "\uC624\uB79C \uC9C0\uD61C\uC640 \uC704\uC5C4\uC774 \uAE43\uB4E0
       \uB9C8\uBC95 \uBAA8\uC790"
+    detailDescription: 
   - language: 0
     dataName: Archwizard's Hat
     description: A magical hat imbued with ancient wisdom and dignity
+    detailDescription: 
   dataNumbering: 025
   dataId: Magic25
   dataType: 1
@@ -33,6 +35,7 @@ MonoBehaviour:
   cooldown: 1
   effectDatas:
   - {fileID: 11400000, guid: ee20e30e77714c66900afcf65ea6c4d1, type: 2}
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

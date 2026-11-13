@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Fishing3
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: a83b9b6880dbf8b4fa2473d8831af0f5, type: 3}
+  icon: {fileID: 21300000, guid: 79f92c5db298da649943bc4b04c6c95e, type: 3}
   data:
   - language: 1
     dataName: "\uC740\uBE5B \uC0C1\uC5B4"
     description: "\uC740\uBE5B \uBE44\uB298\uACFC \uB0A0\uCE74\uB85C\uC6B4 \uC774\uBE68\uC744
       \uC9C0\uB2CC \uC0C1\uC5B4"
+    detailDescription: 
   - language: 0
     dataName: silver shark
     description: A shark with silvery scales and sharp teeth
+    detailDescription: 
   dataNumbering: 003
   dataId: Fishing3
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

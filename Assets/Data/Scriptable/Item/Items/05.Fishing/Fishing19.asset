@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Fishing19
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: d8a05f6ac4d5fb545b94dd2925a3acfa, type: 3}
+  icon: {fileID: 21300000, guid: cce0652d06568cd4c8b59a97e4e4857d, type: 3}
   data:
   - language: 1
     dataName: "\uBB38\uC5B4"
     description: "\uC5EC\uB35F \uAC1C\uC758 \uC720\uC5F0\uD55C \uD314\uC744 \uC9C0\uB2CC
       \uBC14\uB2E4 \uC0DD\uBB3C"
+    detailDescription: 
   - language: 0
     dataName: octopus
     description: A sea creature with eight flexible arms
+    detailDescription: 
   dataNumbering: 019
   dataId: Fishing19
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

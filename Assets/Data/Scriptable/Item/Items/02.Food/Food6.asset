@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Food6
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: b75c5376de6c1fc4085cb13d6e92a582, type: 3}
+  icon: {fileID: 21300000, guid: 0fec71b960208a248895d62e2a257f3a, type: 3}
   data:
   - language: 1
     dataName: "\uBE75"
     description: "\uBC00\uAC00\uB8E8 \uBC18\uC8FD\uC744 \uB178\uB987\uD558\uAC8C
       \uAD6C\uC6CC \uB0B8 \uBE75"
+    detailDescription: 
   - language: 0
     dataName: bread
     description: Bread baked with flour dough until golden brown
+    detailDescription: 
   dataNumbering: 006
   dataId: Food6
   dataType: 1
@@ -33,6 +35,7 @@ MonoBehaviour:
   cooldown: 1
   effectDatas:
   - {fileID: 11400000, guid: dd43e47a72cfa064d939892f4f49033c, type: 2}
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

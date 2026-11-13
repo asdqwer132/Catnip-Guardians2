@@ -12,26 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: PlantMaterial2
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: fa36cde94633a8140a7f7817898ed47d, type: 3}
+  icon: {fileID: 21300000, guid: a6a27bdd8c1161142a198377ee37faea, type: 3}
   data:
   - language: 1
     dataName: "\uC0BD"
     description: "\uD759\uC744 \uD30C\uACE0 \uC62E\uAE38 \uB54C \uC4F0\uB294 \uD2BC\uD2BC\uD55C
       \uB3C4\uAD6C"
+    detailDescription: 
   - language: 0
     dataName: shovel
     description: A sturdy tool used for digging and moving soil
+    detailDescription: 
   dataNumbering: 002
   dataId: PlantMaterial2
   dataType: 1
   requireUnlock: 0
   grade: 0
-  category: 0
+  category: 1
   series: 6
   tags: []
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

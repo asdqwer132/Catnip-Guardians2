@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Food7
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 1dbc106946a67d947a1445058d21b065, type: 3}
+  icon: {fileID: 21300000, guid: 3fb15879fe2d1a043ba04d37dada2ad0, type: 3}
   data:
   - language: 1
     dataName: "\uAFC0"
     description: "\uAF43\uC758 \uD5A5\uAE30\uC640 \uB2EC\uCF64\uD568\uC744 \uB2F4\uC740
       \uD669\uAE08\uBE5B \uAFC0"
+    detailDescription: 
   - language: 0
     dataName: honey
     description: Golden honey filled with floral fragrance and sweetness
+    detailDescription: 
   dataNumbering: 007
   dataId: Food7
   dataType: 1
@@ -33,6 +35,7 @@ MonoBehaviour:
   cooldown: 1
   effectDatas:
   - {fileID: 11400000, guid: 7c7d30efbf70a984abd15d780ac5b2a4, type: 2}
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

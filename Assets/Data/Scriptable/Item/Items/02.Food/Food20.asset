@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Food20
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 6afcd154baf2a0b439b8b62d7918c1ae, type: 3}
+  icon: {fileID: 21300000, guid: 12ebe178b15666b488808ed3801460f2, type: 3}
   data:
   - language: 1
     dataName: "\uC640\uC778"
     description: "\uD3EC\uB3C4\uB97C \uBC1C\uD6A8\uD574 \uB9CC\uB4E0 \uD5A5\uAE30\uB85C\uC6B4
       \uACFC\uC2E4\uC8FC"
+    detailDescription: 
   - language: 0
     dataName: Wine
     description: A fragrant fruit liquor made by fermenting grapes
+    detailDescription: 
   dataNumbering: 020
   dataId: Food20
   dataType: 1
@@ -34,6 +36,7 @@ MonoBehaviour:
   effectDatas:
   - {fileID: 11400000, guid: 9edeac2948b5e824abe90f8c24488e78, type: 2}
   - {fileID: 11400000, guid: d05628127ae900546967925e97ee096d, type: 2}
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Magic3
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: b45aa4afa0ee2f44cbd5d79133744797, type: 3}
+  icon: {fileID: 21300000, guid: 9e364ec346dea384cb0048d507a86f77, type: 3}
   data:
   - language: 1
     dataName: "\uBE57\uC790\uB8E8"
     description: "\uB9C8\uBC95\uC0AC\uC758 \uC190\uB54C\uAC00 \uBB3B\uC740 \uAE38\uCB49\uD55C
       \uBE57\uC790\uB8E8"
+    detailDescription: 
   - language: 0
     dataName: broom
     description: A long, slender broom stained by a wizard's hand
+    detailDescription: 
   dataNumbering: 003
   dataId: Magic3
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

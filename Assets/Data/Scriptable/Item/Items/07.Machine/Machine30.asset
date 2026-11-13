@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Machine30
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 868b6efa022bf45419993421b01d91ae, type: 3}
+  icon: {fileID: 1035748151571284178, guid: 34a76bd4378095f49b9903d47903545f, type: 3}
   data:
   - language: 1
     dataName: "\uC548\uD14C\uB098"
     description: "\uACF5\uC911\uC758 \uC2E0\uD638\uB97C \uC8FC\uACE0\uBC1B\uB294
       \uD1B5\uC2E0\uC6A9 \uBD80\uD488"
+    detailDescription: 
   - language: 0
     dataName: antenna
     description: Communication components for exchanging signals in the air
+    detailDescription: 
   dataNumbering: 030
   dataId: Machine30
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

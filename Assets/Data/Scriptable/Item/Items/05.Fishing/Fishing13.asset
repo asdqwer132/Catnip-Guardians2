@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Fishing13
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 621330c2cce60f049b5b5305c305af9b, type: 3}
+  icon: {fileID: 21300000, guid: eadcdf43e67f43944b485eee465d5d21, type: 3}
   data:
   - language: 1
     dataName: "\uD574\uCD08"
     description: "\uBC14\uB2F7\uC18D \uBB3C\uACB0\uC744 \uB530\uB77C \uD754\uB4E4\uB9AC\uB294
       \uC2DD\uBB3C"
+    detailDescription: 
   - language: 0
     dataName: seaweed
     description: Plants swaying with the waves underwater.
+    detailDescription: 
   dataNumbering: 013
   dataId: Fishing13
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

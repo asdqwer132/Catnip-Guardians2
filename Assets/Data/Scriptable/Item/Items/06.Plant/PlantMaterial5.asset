@@ -12,26 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: PlantMaterial5
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: bedcae23a2f828c46837c8fe812c435e, type: 3}
+  icon: {fileID: 21300000, guid: 3c5769567bb398244acaed68767957f1, type: 3}
   data:
   - language: 1
     dataName: "\uC528\uC557"
     description: "\uC0C8\uB85C\uC6B4 \uC2F9\uC774 \uC790\uB77C\uB0A0 \uAC00\uB2A5\uC131\uC744
       \uD488\uC740 \uC7AC\uB8CC"
+    detailDescription: 
   - language: 0
     dataName: seed
     description: Materials with the potential to sprout new shoots
+    detailDescription: 
   dataNumbering: 005
   dataId: PlantMaterial5
   dataType: 1
   requireUnlock: 0
   grade: 1
-  category: 0
+  category: 1
   series: 6
   tags: []
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Monster24
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 7f844cb43236c204fa48ab02d3b093bd, type: 3}
+  icon: {fileID: 21300000, guid: 561c72db73b25ce43b8d927a5a597924, type: 3}
   data:
   - language: 1
     dataName: "\uBF081"
     description: "\uB2E8\uB2E8\uD55C \uD770 \uBF08\uC5D0\uC11C \uB5A8\uC5B4\uC838
       \uB098\uC628 \uC870\uAC01"
+    detailDescription: 
   - language: 0
     dataName: Bone 1
     description: A fragment separated from hard white bone
+    detailDescription: 
   dataNumbering: 024
   dataId: Monster24
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

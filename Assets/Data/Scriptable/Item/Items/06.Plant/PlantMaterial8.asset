@@ -12,26 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: PlantMaterial8
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: c5ebba78914abe44eab4b2313e9a4b6f, type: 3}
+  icon: {fileID: 21300000, guid: 6c254df358ef4d2479c062fe14c87ea0, type: 3}
   data:
   - language: 1
     dataName: "\uBE44\uB8CC?"
     description: "\uC815\uCCB4\uAC00 \uAD81\uAE08\uD55C \uC218\uC0C1\uD55C \uC2DD\uBB3C
       \uC601\uC591 \uC7AC\uB8CC"
+    detailDescription: 
   - language: 0
     dataName: Fertilizer?
     description: Suspicious plant nutrient ingredients of curiosity
+    detailDescription: 
   dataNumbering: 008
   dataId: PlantMaterial8
   dataType: 1
   requireUnlock: 0
   grade: 2
-  category: 0
+  category: 1
   series: 6
   tags: []
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

@@ -12,27 +12,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: FoodMaterial1
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 18b328dfc9f168b419234311181cfa31, type: 3}
+  icon: {fileID: 21300000, guid: 3e774ee79ba5b9947b6bbd2aca4dc596, type: 3}
   data:
   - language: 1
     dataName: "\uB2EC\uAC40"
     description: "\uB2E8\uB2E8\uD55C \uAECD\uC9C8\uC5D0 \uC601\uC591\uC744 \uD488\uC740
       \uC2DD\uC7AC\uB8CC"
+    detailDescription: 
   - language: 0
     dataName: Egg
     description: Ingredients rich in nutrients in a hard shell
+    detailDescription: 
   dataNumbering: 001
   dataId: FoodMaterial1
   dataType: 1
   requireUnlock: 0
   grade: 0
-  category: 0
+  category: 1
   series: 2
   tags: []
   weight: 1
   cooldown: 1
   effectDatas:
   - {fileID: 11400000, guid: 860bd383df3ae8f46ad00f54a9dd029c, type: 2}
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

@@ -12,26 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: MonsterMaterial9
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 7721bf7536eb50f4eabf5ac7db850d2f, type: 3}
+  icon: {fileID: 21300000, guid: 3d025724e8329a54484208f47ca6baf1, type: 3}
   data:
   - language: 1
     dataName: "\uC11C\uB9BF\uBE5B \uAC08\uBB34\uB9AC\uCE7C"
     description: "\uC11C\uB298\uD55C \uC11C\uB9BF\uBE5B\uC774 \uAC10\uB3C4\uB294
       \uC815\uAD50\uD55C \uC190\uC9C8 \uCE7C"
+    detailDescription: 
   - language: 0
     dataName: Frosty Hook
     description: A finely crafted knife with a cool, frosty hue
+    detailDescription: 
   dataNumbering: 009
   dataId: MonsterMaterial9
   dataType: 1
   requireUnlock: 0
   grade: 2
-  category: 0
+  category: 1
   series: 4
   tags: []
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

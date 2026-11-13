@@ -1,0 +1,509 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 531f34eb3f8148c0ad41e2298a41c979, type: 3}
+  m_Name: MergeRecipeGraph4
+  m_EditorClassIdentifier: Assembly-CSharp-Editor::MergeRecipeGraphAsset
+  recipeBook: {fileID: 0}
+  items:
+  - id: 08fa1d2f3e9e42319aa0a9a55e44324b
+    item: {fileID: 11400000, guid: c2e50fbfbd922484aa4e55fea579bb94, type: 2}
+    position: {x: 0, y: 0}
+    gridPosition: {x: 0, y: 0}
+    ingredients:
+    - {fileID: 11400000, guid: 2dcaaad7716945f48b309fd3f6a90075, type: 2}
+    - {fileID: 11400000, guid: 2dcaaad7716945f48b309fd3f6a90075, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - e5186dec7a8843ea8bd546430e4b66d8
+    - e5186dec7a8843ea8bd546430e4b66d8
+    generatedRecipe: {fileID: 0}
+  - id: e582de7ae4344ea0baa61d04be3fd1fa
+    item: {fileID: 11400000, guid: f336bc0fc88e9d74ea3672e140ab466e, type: 2}
+    position: {x: 400, y: 0}
+    gridPosition: {x: 1, y: 0}
+    ingredients:
+    - {fileID: 11400000, guid: c2e50fbfbd922484aa4e55fea579bb94, type: 2}
+    - {fileID: 11400000, guid: c2e50fbfbd922484aa4e55fea579bb94, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - 08fa1d2f3e9e42319aa0a9a55e44324b
+    - 08fa1d2f3e9e42319aa0a9a55e44324b
+    generatedRecipe: {fileID: 0}
+  - id: 61360a113b2a4fe2bd1a2117254300b8
+    item: {fileID: 11400000, guid: 9fad2f35d623f094bb3f213a2a238ca7, type: 2}
+    position: {x: 800, y: 0}
+    gridPosition: {x: 2, y: 0}
+    ingredients:
+    - {fileID: 11400000, guid: f336bc0fc88e9d74ea3672e140ab466e, type: 2}
+    - {fileID: 11400000, guid: f336bc0fc88e9d74ea3672e140ab466e, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - e582de7ae4344ea0baa61d04be3fd1fa
+    - e582de7ae4344ea0baa61d04be3fd1fa
+    generatedRecipe: {fileID: 0}
+  - id: 5a26f6e998994f14a615bc2bd5d84259
+    item: {fileID: 11400000, guid: d444543d5b06f3a449b864725df77727, type: 2}
+    position: {x: 1200, y: 0}
+    gridPosition: {x: 3, y: 0}
+    ingredients:
+    - {fileID: 11400000, guid: 9fad2f35d623f094bb3f213a2a238ca7, type: 2}
+    - {fileID: 11400000, guid: 9fad2f35d623f094bb3f213a2a238ca7, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - 61360a113b2a4fe2bd1a2117254300b8
+    - 61360a113b2a4fe2bd1a2117254300b8
+    generatedRecipe: {fileID: 0}
+  - id: 2215936128214605994c0116f33c4d47
+    item: {fileID: 11400000, guid: af681400c494d7d4ebd99e1ba594e313, type: 2}
+    position: {x: 1600, y: 0}
+    gridPosition: {x: 4, y: 0}
+    ingredients:
+    - {fileID: 11400000, guid: d444543d5b06f3a449b864725df77727, type: 2}
+    - {fileID: 11400000, guid: d43675162d644b14bb511d57bd258c04, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - 5a26f6e998994f14a615bc2bd5d84259
+    - de1c4c1463244906a613c1e0af877981
+    generatedRecipe: {fileID: 0}
+  - id: c37f2589d64b43228abcdf55bf793cdb
+    item: {fileID: 11400000, guid: 75806654ead2651499cc187816afd4c9, type: 2}
+    position: {x: 2000, y: 0}
+    gridPosition: {x: 5, y: 0}
+    ingredients:
+    - {fileID: 11400000, guid: af681400c494d7d4ebd99e1ba594e313, type: 2}
+    - {fileID: 11400000, guid: af681400c494d7d4ebd99e1ba594e313, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - 2215936128214605994c0116f33c4d47
+    - 2215936128214605994c0116f33c4d47
+    generatedRecipe: {fileID: 0}
+  - id: b9a68e143f4e454a8b086767d2616116
+    item: {fileID: 11400000, guid: c49883c68c6fc5944a45826289123409, type: 2}
+    position: {x: 2400, y: 0}
+    gridPosition: {x: 6, y: 0}
+    ingredients:
+    - {fileID: 11400000, guid: 75806654ead2651499cc187816afd4c9, type: 2}
+    - {fileID: 11400000, guid: 75806654ead2651499cc187816afd4c9, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - c37f2589d64b43228abcdf55bf793cdb
+    - c37f2589d64b43228abcdf55bf793cdb
+    generatedRecipe: {fileID: 0}
+  - id: 30c572b715c04cb0b2215afd6bbe2cf9
+    item: {fileID: 11400000, guid: 692dbd3f2d03dac4ab41aa209287428d, type: 2}
+    position: {x: 2800, y: 0}
+    gridPosition: {x: 7, y: 0}
+    ingredients:
+    - {fileID: 11400000, guid: c49883c68c6fc5944a45826289123409, type: 2}
+    - {fileID: 11400000, guid: aa6de49e05e272643ba723aab504a01c, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - b9a68e143f4e454a8b086767d2616116
+    - 55606f3f11764b8cb9a9425e457f1935
+    generatedRecipe: {fileID: 0}
+  - id: ee7e3c5b157d4993ba1d5c13f1dcbd33
+    item: {fileID: 11400000, guid: 42fd67bd291a567468ada8a72ce5bc9c, type: 2}
+    position: {x: 3200, y: 0}
+    gridPosition: {x: 8, y: 0}
+    ingredients:
+    - {fileID: 11400000, guid: 692dbd3f2d03dac4ab41aa209287428d, type: 2}
+    - {fileID: 11400000, guid: 692dbd3f2d03dac4ab41aa209287428d, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - 30c572b715c04cb0b2215afd6bbe2cf9
+    - 30c572b715c04cb0b2215afd6bbe2cf9
+    generatedRecipe: {fileID: 0}
+  - id: 675c19c40a2544f28016f8f455466680
+    item: {fileID: 11400000, guid: 97a2f3ef164646c48bacb47ba981933d, type: 2}
+    position: {x: 3600, y: 0}
+    gridPosition: {x: 9, y: 0}
+    ingredients:
+    - {fileID: 11400000, guid: 42fd67bd291a567468ada8a72ce5bc9c, type: 2}
+    - {fileID: 11400000, guid: 42fd67bd291a567468ada8a72ce5bc9c, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - ee7e3c5b157d4993ba1d5c13f1dcbd33
+    - ee7e3c5b157d4993ba1d5c13f1dcbd33
+    generatedRecipe: {fileID: 0}
+  - id: 3f8172aabbb64e0b80c05864e2c76c3f
+    item: {fileID: 11400000, guid: a54de58b6b38e0a43920305abd65e9e9, type: 2}
+    position: {x: 0, y: 720}
+    gridPosition: {x: 0, y: 2}
+    ingredients:
+    - {fileID: 11400000, guid: a03916d98e0b2fc4599b62c7eb8024e4, type: 2}
+    - {fileID: 11400000, guid: a03916d98e0b2fc4599b62c7eb8024e4, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - 2aa74a2826ee4b298c3aac5b6ab1bb22
+    - 2aa74a2826ee4b298c3aac5b6ab1bb22
+    generatedRecipe: {fileID: 0}
+  - id: 0e5868a1e80142cd8a8457896b61c364
+    item: {fileID: 11400000, guid: 94cfd1b720e335e43bdc8baf83c81338, type: 2}
+    position: {x: 400, y: 720}
+    gridPosition: {x: 1, y: 2}
+    ingredients:
+    - {fileID: 11400000, guid: a54de58b6b38e0a43920305abd65e9e9, type: 2}
+    - {fileID: 11400000, guid: a54de58b6b38e0a43920305abd65e9e9, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - 3f8172aabbb64e0b80c05864e2c76c3f
+    - 3f8172aabbb64e0b80c05864e2c76c3f
+    generatedRecipe: {fileID: 0}
+  - id: f45c5c2818bb41f4bba97fdc6014a6a6
+    item: {fileID: 11400000, guid: cb330a18596902f4c8d7b03a0713f855, type: 2}
+    position: {x: 800, y: 720}
+    gridPosition: {x: 2, y: 2}
+    ingredients:
+    - {fileID: 11400000, guid: 94cfd1b720e335e43bdc8baf83c81338, type: 2}
+    - {fileID: 11400000, guid: 94cfd1b720e335e43bdc8baf83c81338, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - 0e5868a1e80142cd8a8457896b61c364
+    - 0e5868a1e80142cd8a8457896b61c364
+    generatedRecipe: {fileID: 0}
+  - id: 42857b835fbe414793604dd91b2be20e
+    item: {fileID: 11400000, guid: 361c979ce3222734eabf8cfe0e26fe64, type: 2}
+    position: {x: 1200, y: 720}
+    gridPosition: {x: 3, y: 2}
+    ingredients:
+    - {fileID: 11400000, guid: cb330a18596902f4c8d7b03a0713f855, type: 2}
+    - {fileID: 11400000, guid: cb330a18596902f4c8d7b03a0713f855, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - f45c5c2818bb41f4bba97fdc6014a6a6
+    - f45c5c2818bb41f4bba97fdc6014a6a6
+    generatedRecipe: {fileID: 0}
+  - id: c764579750f54e038841fa6f01e41b88
+    item: {fileID: 11400000, guid: 631f32175b565b146a5ee89ea3dca7f9, type: 2}
+    position: {x: 1600, y: 720}
+    gridPosition: {x: 4, y: 2}
+    ingredients:
+    - {fileID: 11400000, guid: 361c979ce3222734eabf8cfe0e26fe64, type: 2}
+    - {fileID: 11400000, guid: e350d00e87138404b82f1faf34e2a6f3, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - 42857b835fbe414793604dd91b2be20e
+    - 2ddc102612a14204b994106eebe0a273
+    generatedRecipe: {fileID: 0}
+  - id: d654954ed76440639d989a0bd01dc394
+    item: {fileID: 11400000, guid: 8e2c62b415c66eb469b0479f38d67dac, type: 2}
+    position: {x: 2000, y: 720}
+    gridPosition: {x: 5, y: 2}
+    ingredients:
+    - {fileID: 11400000, guid: 631f32175b565b146a5ee89ea3dca7f9, type: 2}
+    - {fileID: 11400000, guid: 631f32175b565b146a5ee89ea3dca7f9, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - c764579750f54e038841fa6f01e41b88
+    - c764579750f54e038841fa6f01e41b88
+    generatedRecipe: {fileID: 0}
+  - id: 5b65f718a1534031b630e7dc7f6e03a0
+    item: {fileID: 11400000, guid: f644cfb04bd9939469340b487e72e63f, type: 2}
+    position: {x: 2400, y: 720}
+    gridPosition: {x: 6, y: 2}
+    ingredients:
+    - {fileID: 11400000, guid: 8e2c62b415c66eb469b0479f38d67dac, type: 2}
+    - {fileID: 11400000, guid: 8e2c62b415c66eb469b0479f38d67dac, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - d654954ed76440639d989a0bd01dc394
+    - d654954ed76440639d989a0bd01dc394
+    generatedRecipe: {fileID: 0}
+  - id: f1fafc07a3d847ba96b01ad978e9f986
+    item: {fileID: 11400000, guid: 0ef872692f176fe429a1f6c4559fd9c0, type: 2}
+    position: {x: 2800, y: 720}
+    gridPosition: {x: 7, y: 2}
+    ingredients:
+    - {fileID: 11400000, guid: f644cfb04bd9939469340b487e72e63f, type: 2}
+    - {fileID: 11400000, guid: df47b66efb618d444805f501b2e45be3, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - 5b65f718a1534031b630e7dc7f6e03a0
+    - 7aa7a8412a0f44049a59c378f0930047
+    generatedRecipe: {fileID: 0}
+  - id: 69a84d5bcdd5484fa3cf11e2a0d4b61e
+    item: {fileID: 11400000, guid: c0b2714b4f6b2de42ac802e387ae9741, type: 2}
+    position: {x: 3200, y: 720}
+    gridPosition: {x: 8, y: 2}
+    ingredients:
+    - {fileID: 11400000, guid: 0ef872692f176fe429a1f6c4559fd9c0, type: 2}
+    - {fileID: 11400000, guid: 0ef872692f176fe429a1f6c4559fd9c0, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - f1fafc07a3d847ba96b01ad978e9f986
+    - f1fafc07a3d847ba96b01ad978e9f986
+    generatedRecipe: {fileID: 0}
+  - id: 9e4e8b57a64b40b68c6d1eea88e8dee6
+    item: {fileID: 11400000, guid: 4201ae1ee75a64945a145b0eb9a810a5, type: 2}
+    position: {x: 3600, y: 720}
+    gridPosition: {x: 9, y: 2}
+    ingredients:
+    - {fileID: 11400000, guid: c0b2714b4f6b2de42ac802e387ae9741, type: 2}
+    - {fileID: 11400000, guid: c0b2714b4f6b2de42ac802e387ae9741, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - 69a84d5bcdd5484fa3cf11e2a0d4b61e
+    - 69a84d5bcdd5484fa3cf11e2a0d4b61e
+    generatedRecipe: {fileID: 0}
+  - id: ed111ed2c24e4e48a40fa681f3ce2fe6
+    item: {fileID: 11400000, guid: 383caf6706eaa55489e776b94a293c7e, type: 2}
+    position: {x: 0, y: 1440}
+    gridPosition: {x: 0, y: 4}
+    ingredients:
+    - {fileID: 11400000, guid: e3a67af3f626b51438aac6f937e15bab, type: 2}
+    - {fileID: 11400000, guid: e3a67af3f626b51438aac6f937e15bab, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - fdcc1be125644e7fba0b01a2e08e6d64
+    - fdcc1be125644e7fba0b01a2e08e6d64
+    generatedRecipe: {fileID: 0}
+  - id: 999feeff526646f7b05acc1f505410af
+    item: {fileID: 11400000, guid: eff4b84a160559a4ca561ba1f9de31b3, type: 2}
+    position: {x: 400, y: 1440}
+    gridPosition: {x: 1, y: 4}
+    ingredients:
+    - {fileID: 11400000, guid: 383caf6706eaa55489e776b94a293c7e, type: 2}
+    - {fileID: 11400000, guid: 383caf6706eaa55489e776b94a293c7e, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - ed111ed2c24e4e48a40fa681f3ce2fe6
+    - ed111ed2c24e4e48a40fa681f3ce2fe6
+    generatedRecipe: {fileID: 0}
+  - id: 3c1ec57d60eb421e8bdd03bcf0300106
+    item: {fileID: 11400000, guid: 676b5e9b5a7c08f4888800e6fb6aae41, type: 2}
+    position: {x: 800, y: 1440}
+    gridPosition: {x: 2, y: 4}
+    ingredients:
+    - {fileID: 11400000, guid: eff4b84a160559a4ca561ba1f9de31b3, type: 2}
+    - {fileID: 11400000, guid: eff4b84a160559a4ca561ba1f9de31b3, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - 999feeff526646f7b05acc1f505410af
+    - 999feeff526646f7b05acc1f505410af
+    generatedRecipe: {fileID: 0}
+  - id: 01df38e77bc04d13b259177124200483
+    item: {fileID: 11400000, guid: 362ca67c1bc73a5489fd79d76ac2f55d, type: 2}
+    position: {x: 1200, y: 1440}
+    gridPosition: {x: 3, y: 4}
+    ingredients:
+    - {fileID: 11400000, guid: 676b5e9b5a7c08f4888800e6fb6aae41, type: 2}
+    - {fileID: 11400000, guid: 676b5e9b5a7c08f4888800e6fb6aae41, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - 3c1ec57d60eb421e8bdd03bcf0300106
+    - 3c1ec57d60eb421e8bdd03bcf0300106
+    generatedRecipe: {fileID: 0}
+  - id: aad3449492a04511bc93c14af3db137c
+    item: {fileID: 11400000, guid: 32e05a7bfec6f7a40959d7896371b209, type: 2}
+    position: {x: 1600, y: 1440}
+    gridPosition: {x: 4, y: 4}
+    ingredients:
+    - {fileID: 11400000, guid: 362ca67c1bc73a5489fd79d76ac2f55d, type: 2}
+    - {fileID: 11400000, guid: 7f8d07299b2b22144b58aa7613c32732, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - 01df38e77bc04d13b259177124200483
+    - ff8b542964054d6b9c334d196df8e2dc
+    generatedRecipe: {fileID: 0}
+  - id: b8a77fff7c814396876041dcb78fb5df
+    item: {fileID: 11400000, guid: ef2434f55d98f6141abf69290eb880a7, type: 2}
+    position: {x: 2000, y: 1440}
+    gridPosition: {x: 5, y: 4}
+    ingredients:
+    - {fileID: 11400000, guid: 32e05a7bfec6f7a40959d7896371b209, type: 2}
+    - {fileID: 11400000, guid: 32e05a7bfec6f7a40959d7896371b209, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - aad3449492a04511bc93c14af3db137c
+    - aad3449492a04511bc93c14af3db137c
+    generatedRecipe: {fileID: 0}
+  - id: 535369687bf94a9899086e0c6f390def
+    item: {fileID: 11400000, guid: 2cb43f3626ac98144a40e35e8639c9e7, type: 2}
+    position: {x: 2400, y: 1440}
+    gridPosition: {x: 6, y: 4}
+    ingredients:
+    - {fileID: 11400000, guid: ef2434f55d98f6141abf69290eb880a7, type: 2}
+    - {fileID: 11400000, guid: ef2434f55d98f6141abf69290eb880a7, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - b8a77fff7c814396876041dcb78fb5df
+    - b8a77fff7c814396876041dcb78fb5df
+    generatedRecipe: {fileID: 0}
+  - id: 6d9ee635741d464db048136583a00755
+    item: {fileID: 11400000, guid: 687929cee73b1654c82254cdfa4b15cf, type: 2}
+    position: {x: 2800, y: 1440}
+    gridPosition: {x: 7, y: 4}
+    ingredients:
+    - {fileID: 11400000, guid: 2cb43f3626ac98144a40e35e8639c9e7, type: 2}
+    - {fileID: 11400000, guid: c11f48f127709ef49aaba7c7ba380ca3, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - 535369687bf94a9899086e0c6f390def
+    - 22e6d43abf464338a94d7b4141ee3a3a
+    generatedRecipe: {fileID: 0}
+  - id: 52378fc73dca4a9ba6d12427abcf7858
+    item: {fileID: 11400000, guid: c5c105e4e9182184383a86ea2e4cf9f1, type: 2}
+    position: {x: 3200, y: 1440}
+    gridPosition: {x: 8, y: 4}
+    ingredients:
+    - {fileID: 11400000, guid: 687929cee73b1654c82254cdfa4b15cf, type: 2}
+    - {fileID: 11400000, guid: 687929cee73b1654c82254cdfa4b15cf, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - 6d9ee635741d464db048136583a00755
+    - 6d9ee635741d464db048136583a00755
+    generatedRecipe: {fileID: 0}
+  - id: 7ffafca2b82d47bc957afad2df805ae8
+    item: {fileID: 11400000, guid: d9db78aa2dc78ae4daf5dd26a7c5d5ee, type: 2}
+    position: {x: 3600, y: 1440}
+    gridPosition: {x: 9, y: 4}
+    ingredients:
+    - {fileID: 11400000, guid: c5c105e4e9182184383a86ea2e4cf9f1, type: 2}
+    - {fileID: 11400000, guid: c5c105e4e9182184383a86ea2e4cf9f1, type: 2}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds:
+    - 52378fc73dca4a9ba6d12427abcf7858
+    - 52378fc73dca4a9ba6d12427abcf7858
+    generatedRecipe: {fileID: 0}
+  - id: 2aa74a2826ee4b298c3aac5b6ab1bb22
+    item: {fileID: 11400000, guid: a03916d98e0b2fc4599b62c7eb8024e4, type: 2}
+    position: {x: -400, y: 720}
+    gridPosition: {x: -1, y: 2}
+    ingredients:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds: []
+    generatedRecipe: {fileID: 0}
+  - id: 2ddc102612a14204b994106eebe0a273
+    item: {fileID: 11400000, guid: e350d00e87138404b82f1faf34e2a6f3, type: 2}
+    position: {x: 1200, y: 1080}
+    gridPosition: {x: 3, y: 3}
+    ingredients:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds: []
+    generatedRecipe: {fileID: 0}
+  - id: 7aa7a8412a0f44049a59c378f0930047
+    item: {fileID: 11400000, guid: df47b66efb618d444805f501b2e45be3, type: 2}
+    position: {x: 2400, y: 1080}
+    gridPosition: {x: 6, y: 3}
+    ingredients:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds: []
+    generatedRecipe: {fileID: 0}
+  - id: e5186dec7a8843ea8bd546430e4b66d8
+    item: {fileID: 11400000, guid: 2dcaaad7716945f48b309fd3f6a90075, type: 2}
+    position: {x: -400, y: 0}
+    gridPosition: {x: -1, y: 0}
+    ingredients:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds: []
+    generatedRecipe: {fileID: 0}
+  - id: de1c4c1463244906a613c1e0af877981
+    item: {fileID: 11400000, guid: d43675162d644b14bb511d57bd258c04, type: 2}
+    position: {x: 1200, y: 360}
+    gridPosition: {x: 3, y: 1}
+    ingredients:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds: []
+    generatedRecipe: {fileID: 0}
+  - id: 55606f3f11764b8cb9a9425e457f1935
+    item: {fileID: 11400000, guid: aa6de49e05e272643ba723aab504a01c, type: 2}
+    position: {x: 2400, y: 360}
+    gridPosition: {x: 6, y: 1}
+    ingredients:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds: []
+    generatedRecipe: {fileID: 0}
+  - id: fdcc1be125644e7fba0b01a2e08e6d64
+    item: {fileID: 11400000, guid: e3a67af3f626b51438aac6f937e15bab, type: 2}
+    position: {x: -400, y: 1440}
+    gridPosition: {x: -1, y: 4}
+    ingredients:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds: []
+    generatedRecipe: {fileID: 0}
+  - id: ff8b542964054d6b9c334d196df8e2dc
+    item: {fileID: 11400000, guid: 7f8d07299b2b22144b58aa7613c32732, type: 2}
+    position: {x: 1200, y: 1800}
+    gridPosition: {x: 3, y: 5}
+    ingredients:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds: []
+    generatedRecipe: {fileID: 0}
+  - id: 22e6d43abf464338a94d7b4141ee3a3a
+    item: {fileID: 11400000, guid: c11f48f127709ef49aaba7c7ba380ca3, type: 2}
+    position: {x: 2400, y: 1800}
+    gridPosition: {x: 6, y: 5}
+    ingredients:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    ingredientNodeIds: []
+    generatedRecipe: {fileID: 0}
+  inputLayoutVersion: 1
+  placementMode: 1
+  gridCellSize: {x: 400, y: 360}
+  sameCellSpacing: {x: 20, y: 20}

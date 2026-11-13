@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Magic18
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 641da7e79560f714e8e720f6f55dd37f, type: 3}
+  icon: {fileID: 21300000, guid: d3630d402b2f6324f85656d2436eb474, type: 3}
   data:
   - language: 1
     dataName: "\uC2EC\uC5F0 \uD3EC\uC158"
     description: "\uAE4A\uC740 \uC2EC\uC5F0\uC758 \uC5B4\uB450\uC6B4 \uAE30\uC6B4\uC744
       \uB2F4\uC740 \uBB3C\uC57D"
+    detailDescription: 
   - language: 0
     dataName: Abyss Potion
     description: A potion containing the dark energy of the deep abyss.
+    detailDescription: 
   dataNumbering: 018
   dataId: Magic18
   dataType: 1
@@ -33,6 +35,7 @@ MonoBehaviour:
   cooldown: 1
   effectDatas:
   - {fileID: 11400000, guid: d889486232954d5e95447b26d5e565d3, type: 2}
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

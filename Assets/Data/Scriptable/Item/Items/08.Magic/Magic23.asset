@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Magic23
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 01008afde3eba274a9c03ee9c33573dd, type: 3}
+  icon: {fileID: 21300000, guid: 9af8cdc316a6d894c8800be340508a4b, type: 3}
   data:
   - language: 1
     dataName: "\uC0F7\uAC74"
     description: "\uC5EC\uB7EC \uD0C4\uD658\uC744 \uD55C \uBC88\uC5D0 \uBC1C\uC0AC\uD558\uB294
       \uC0B0\uD0C4\uCD1D"
+    detailDescription: 
   - language: 0
     dataName: shotgun
     description: A shotgun that fires multiple rounds at once
+    detailDescription: 
   dataNumbering: 023
   dataId: Magic23
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

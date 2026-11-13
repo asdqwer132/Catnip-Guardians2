@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Fishing24
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 3d96106c26a47244b9c25270556daa22, type: 3}
+  icon: {fileID: 21300000, guid: cb031aea1c47eb54ea8334ecebfb8b28, type: 3}
   data:
   - language: 1
     dataName: "\uD478\uB978 \uADC0\uC0C1\uC5B4"
     description: "\uB9DD\uCE58 \uBAA8\uC591 \uBA38\uB9AC\uAC00 \uB3CB\uBCF4\uC774\uB294
       \uD478\uB978 \uC0C1\uC5B4"
+    detailDescription: 
   - language: 0
     dataName: blue hammerhead
     description: Blue shark with a prominent hammer-shaped head
+    detailDescription: 
   dataNumbering: 024
   dataId: Fishing24
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

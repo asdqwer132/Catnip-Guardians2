@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Plant22
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 42a1b18c9b91d22439612124e078c6f3, type: 3}
+  icon: {fileID: 21300000, guid: b907cc5997951924bbe6518128ed6626, type: 3}
   data:
   - language: 1
     dataName: "\uB9CC\uAC1C\uAF432"
     description: "\uACB9\uACB9\uC758 \uAF43\uC78E\uC744 \uD658\uD558\uAC8C \uD3BC\uCE5C
       \uB9CC\uAC1C\uD55C \uAF43"
+    detailDescription: 
   - language: 0
     dataName: Mangae Flower 2
     description: A fully bloomed flower with layers of petals shining brightly
+    detailDescription: 
   dataNumbering: 022
   dataId: Plant22
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

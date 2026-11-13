@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Mineral8
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 823798ec63dbee64daef6b07c32d9cb2, type: 3}
+  icon: {fileID: 21300000, guid: f55f2a44f749ad448a6099e939ea8917, type: 3}
   data:
   - language: 1
     dataName: "\uC5FC\uD654\uC8FC\uAD34"
     description: "\uBD88\uAF43\uC758 \uAE30\uC6B4\uC744 \uC751\uCD95\uD55C \uB2E8\uB2E8\uD55C
       \uC7AC\uB8CC"
+    detailDescription: 
   - language: 0
     dataName: Chloride ingots
     description: A solid material condensed with the energy of flames
+    detailDescription: 
   dataNumbering: 008
   dataId: Mineral8
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

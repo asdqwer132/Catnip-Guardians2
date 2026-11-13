@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Fishing11
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: e4cfcaf284bb75b4f806e2dcf9428d28, type: 3}
+  icon: {fileID: 21300000, guid: 4f0352868e3f14849b541c46112d608a, type: 3}
   data:
   - language: 1
     dataName: "\uBD88\uAC00\uC0AC\uB9AC"
     description: "\uBCC4\uCC98\uB7FC \uAC08\uB77C\uC9C4 \uD314\uC744 \uC9C0\uB2CC
       \uBC14\uB2E4 \uC0DD\uBB3C"
+    detailDescription: 
   - language: 0
     dataName: starfish
     description: Sea creatures with star-like split arms
+    detailDescription: 
   dataNumbering: 011
   dataId: Fishing11
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

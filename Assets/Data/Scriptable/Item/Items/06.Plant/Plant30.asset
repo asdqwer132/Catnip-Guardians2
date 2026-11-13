@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Plant30
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: a3577c65ee476fb4d99bf2a43878eb3c, type: 3}
+  icon: {fileID: 21300000, guid: dd685759a4eaed644b45c404303ab5ec, type: 3}
   data:
   - language: 1
     dataName: "\uD669\uAE08\uB3C4\uD1A0\uB9AC"
     description: "\uB208\uBD80\uC2E0 \uD669\uAE08\uBE5B \uAECD\uC9C8\uC744 \uC9C0\uB2CC
       \uADC0\uD55C \uC5F4\uB9E4"
+    detailDescription: 
   - language: 0
     dataName: golden acorn
     description: A precious fruit with a dazzling golden shell
+    detailDescription: 
   dataNumbering: 030
   dataId: Plant30
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

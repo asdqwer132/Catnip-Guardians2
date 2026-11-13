@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Monster3
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 0d743cafea80e364c827fb9c174d5fa5, type: 3}
+  icon: {fileID: 21300000, guid: a8f623333f11adf44980ee65f18b26ba, type: 3}
   data:
   - language: 1
     dataName: "\uC2AC\uB77C\uC784\uC810\uC5613"
     description: "\uC9C8\uCC99\uD55C \uD45C\uBA74\uC5D0 \uC724\uAE30\uAC00 \uD750\uB974\uB294
       \uC810\uC561 \uC7AC\uB8CC"
+    detailDescription: 
   - language: 0
     dataName: Slime Mucus 3
     description: A slimy material with a glossy surface
+    detailDescription: 
   dataNumbering: 003
   dataId: Monster3
   dataType: 1
@@ -33,6 +35,7 @@ MonoBehaviour:
   cooldown: 1
   effectDatas:
   - {fileID: 11400000, guid: e2116631acfac2142ae2fdaa48befefe, type: 2}
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

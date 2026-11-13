@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Monster9
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: d0cd1126196702b40abe2d84e7f7c568, type: 3}
+  icon: {fileID: 21300000, guid: 40f70003a5300194fbae0d5b10b328df, type: 3}
   data:
   - language: 1
     dataName: "\uC9D0\uC2B9\uC1A1\uACF3\uB2C8"
     description: "\uC9D0\uC2B9\uC758 \uC785\uC5D0\uC11C \uC5BB\uC740 \uB0A0\uCE74\uB85C\uC6B4
       \uC1A1\uACF3\uB2C8"
+    detailDescription: 
   - language: 0
     dataName: beast fang
     description: Sharp fangs obtained from the beast's mouth
+    detailDescription: 
   dataNumbering: 009
   dataId: Monster9
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

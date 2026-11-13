@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Monster26
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 360fe6ba80b66e84ba9168b93c6f7cf4, type: 3}
+  icon: {fileID: 21300000, guid: 092e32865c35b3c43a7e55bcb8fa77f4, type: 3}
   data:
   - language: 1
     dataName: "\uBF083"
     description: "\uD45C\uBA74\uC5D0 \uC138\uC6D4\uC758 \uD754\uC801\uC774 \uB0A8\uC740
       \uBF08 \uC870\uAC01"
+    detailDescription: 
   - language: 0
     dataName: Bone 3
     description: Bone fragments bearing traces of time on the surface
+    detailDescription: 
   dataNumbering: 026
   dataId: Monster26
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Monster23
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 2807c8bb9058cc24981c9d52db6e9bff, type: 3}
+  icon: {fileID: 21300000, guid: 327efd8c259cd09488c8c7f1ddddf89b, type: 3}
   data:
   - language: 1
     dataName: "\uD669\uAE08\uAE43\uD138"
     description: "\uB208\uBD80\uC2E0 \uD669\uAE08\uBE5B\uC774 \uAC10\uB3C4\uB294
       \uD76C\uADC0\uD55C \uAE43\uD138"
+    detailDescription: 
   - language: 0
     dataName: Golden Feather
     description: Rare feathers shimmering with dazzling golden hues
+    detailDescription: 
   dataNumbering: 023
   dataId: Monster23
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

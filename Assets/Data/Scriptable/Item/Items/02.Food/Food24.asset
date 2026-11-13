@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Food24
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: edd4c23dda406d64caa97fd1c269cb26, type: 3}
+  icon: {fileID: 21300000, guid: 7453e2dd9a60b22458611c1a8bfd4593, type: 3}
   data:
   - language: 1
     dataName: "\uD584\uBC84\uAC70"
     description: "\uBE75 \uC0AC\uC774\uC5D0 \uACE0\uAE30\uC640 \uCC44\uC18C\uB97C
       \uB123\uC740 \uC74C\uC2DD"
+    detailDescription: 
   - language: 0
     dataName: hamburger
     description: Food with meat and vegetables between bread
+    detailDescription: 
   dataNumbering: 024
   dataId: Food24
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

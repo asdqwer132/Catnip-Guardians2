@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Machine8
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 8a854d3058a932d4dbd177f5bc72b676, type: 3}
+  icon: {fileID: -6428734292621873261, guid: db1a31a9fefbe3648beaf93985594e9b, type: 3}
   data:
   - language: 1
     dataName: "\uC804\uAD6C"
     description: "\uC804\uAE30\uB97C \uBC1B\uC544 \uC8FC\uBCC0\uC744 \uBC1D\uD788\uB294
       \uC870\uBA85 \uBD80\uD488"
+    detailDescription: 
   - language: 0
     dataName: Light bulb
     description: Lighting components that receive electricity to illuminate the surroundings
+    detailDescription: 
   dataNumbering: 008
   dataId: Machine8
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

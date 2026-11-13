@@ -12,26 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: FishingMaterial5
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 297eea7321bf155469710757edaf9482, type: 3}
+  icon: {fileID: 21300000, guid: ef7c59b246762a647921b40fdbd996e0, type: 3}
   data:
   - language: 1
     dataName: "\uC911\uAE09 \uCC0C"
     description: "\uBB3C\uACE0\uAE30\uC758 \uC785\uC9C8\uC744 \uC54C\uB824 \uC8FC\uB294
       \uB09A\uC2DC\uC6A9 \uCC0C"
+    detailDescription: 
   - language: 0
     dataName: Intermediate float
     description: Fishing floats that indicate fish bites
+    detailDescription: 
   dataNumbering: 005
   dataId: FishingMaterial5
   dataType: 1
   requireUnlock: 0
   grade: 1
-  category: 0
+  category: 1
   series: 5
   tags: []
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

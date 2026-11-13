@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Fishing16
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: e2e62f2049f554445a10f8a1a2307efd, type: 3}
+  icon: {fileID: 21300000, guid: a28fc0961308ea4408b7c69e7df90d74, type: 3}
   data:
   - language: 1
     dataName: "\uC804\uAE30\uBC40\uBC29\uC5B4"
     description: "\uCC0C\uB9BF\uD55C \uC804\uAE30\uB97C \uD488\uC740 \uAE38\uCB49\uD55C
       \uBC14\uB2E4 \uBB3C\uACE0\uAE30"
+    detailDescription: 
   - language: 0
     dataName: Electric Serpent Defense
     description: A long, slender sea fish with a sharp electric glow
+    detailDescription: 
   dataNumbering: 016
   dataId: Fishing16
   dataType: 1
@@ -33,6 +35,7 @@ MonoBehaviour:
   cooldown: 1
   effectDatas:
   - {fileID: 11400000, guid: 3c21eabe092448eb9e03eca2fae0b746, type: 2}
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

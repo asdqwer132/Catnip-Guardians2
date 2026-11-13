@@ -12,26 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: MonsterMaterial6
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: ca0de5785247faa41b148846634bb83c, type: 3}
+  icon: {fileID: 21300000, guid: 16df383bd3d91054a9d0215f60c3c4e3, type: 3}
   data:
   - language: 1
     dataName: "\uC2E4"
     description: "\uC12C\uC720\uB97C \uAC00\uB298\uAC8C \uAF2C\uC544 \uB9CC\uB4E0
       \uBC14\uB290\uC9C8 \uC7AC\uB8CC"
+    detailDescription: 
   - language: 0
     dataName: Thread
     description: Sewing material made by finely twisting fibers
+    detailDescription: 
   dataNumbering: 006
   dataId: MonsterMaterial6
   dataType: 1
   requireUnlock: 0
   grade: 1
-  category: 0
+  category: 1
   series: 4
   tags: []
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

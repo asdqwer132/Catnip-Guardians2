@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Machine28
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: de1ef7b49303d044a94f7c6a49fba824, type: 3}
+  icon: {fileID: -5671131178639040522, guid: f4ca48172bbcb4d4ab5e10d7a4aa9e75, type: 3}
   data:
   - language: 1
     dataName: "\uD478\uB978 \uCF54\uC5B4"
     description: "\uD478\uB978 \uC5D0\uB108\uC9C0\uAC00 \uC751\uCD95\uB41C \uAE30\uACC4\uC758
       \uD575\uC2EC \uBD80\uD488"
+    detailDescription: 
   - language: 0
     dataName: Blue Core
     description: Core components of machines condensed with blue energy
+    detailDescription: 
   dataNumbering: 028
   dataId: Machine28
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

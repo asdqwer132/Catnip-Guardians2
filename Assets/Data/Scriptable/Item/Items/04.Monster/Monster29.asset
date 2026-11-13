@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Monster29
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: d2d570b20ae99fe44bb28b40d5ddf3e2, type: 3}
+  icon: {fileID: 21300000, guid: 66c7e475946ea49459326b47a4c9bb5b, type: 3}
   data:
   - language: 1
     dataName: "\uC740\uC0C9\uC1A1\uACF3\uB2C8"
     description: "\uCC28\uAC00\uC6B4 \uC740\uBE5B \uC724\uAE30\uAC00 \uD750\uB974\uB294
       \uC1A1\uACF3\uB2C8"
+    detailDescription: 
   - language: 0
     dataName: silver fang
     description: Fangs with a cold silvery sheen
+    detailDescription: 
   dataNumbering: 029
   dataId: Monster29
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

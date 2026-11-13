@@ -12,26 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: MagicMaterial7
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 013f37735865684498270262d056fe3e, type: 3}
+  icon: {fileID: 21300000, guid: aafecca5cd08b984d9abc27f429b05fe, type: 3}
   data:
   - language: 1
     dataName: "\uACE0\uAE09 \uB9C8\uC815\uC11D"
     description: "\uAE4A\uACE0 \uC9D9\uC740 \uB9C8\uB825\uC774 \uC751\uCD95\uB41C
       \uACE0\uAE09 \uACB0\uC815\uC11D"
+    detailDescription: 
   - language: 0
     dataName: Advanced Magic Stone
     description: Premium crystalline stone condensed with deep and intense magic
+    detailDescription: 
   dataNumbering: 007
   dataId: MagicMaterial7
   dataType: 1
   requireUnlock: 0
   grade: 2
-  category: 0
+  category: 1
   series: 8
   tags: []
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

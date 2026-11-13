@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Plant16
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 8857e62995166654ea16977da01fe47a, type: 3}
+  icon: {fileID: 21300000, guid: 9aa1e113c1b77ba4197bada3df8e75a1, type: 3}
   data:
   - language: 1
     dataName: "\uAF432"
     description: "\uACE0\uC6B4 \uAF43\uC78E\uC774 \uACB9\uACB9\uC774 \uD3BC\uCCD0\uC9C4
       \uAF43\uC1A1\uC774"
+    detailDescription: 
   - language: 0
     dataName: Flower 2
     description: Beautiful petals spread out layer upon layer of flowers
+    detailDescription: 
   dataNumbering: 016
   dataId: Plant16
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

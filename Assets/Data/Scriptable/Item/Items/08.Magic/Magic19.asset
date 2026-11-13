@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Magic19
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 7a092b334eb3bda42abd91638cdc96f7, type: 3}
+  icon: {fileID: 21300000, guid: 20340ad0821771e4089da698ee0661f0, type: 3}
   data:
   - language: 1
     dataName: "\uB9C8\uBC95\uC0AC\uC758 \uC2A4\uD0DC\uD504"
     description: "\uC219\uB828\uB41C \uB9C8\uBC95\uC0AC\uC758 \uC190\uC5D0 \uC775\uC740
       \uC8FC\uBB38 \uC9C0\uD321\uC774"
+    detailDescription: 
   - language: 0
     dataName: Wizard's Staff
     description: A spell staff practiced by a skilled wizard
+    detailDescription: 
   dataNumbering: 019
   dataId: Magic19
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

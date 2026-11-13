@@ -12,26 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: MagicMaterial5
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 6b84827c9e79fb4479156d99c128be76, type: 3}
+  icon: {fileID: 21300000, guid: 3c3cb543f2337b74f8fce2eb7067c922, type: 3}
   data:
   - language: 1
     dataName: "\uD3EC\uC158\uBCD1"
     description: "\uB9C8\uBC95 \uBB3C\uC57D\uC744 \uB2F4\uC544 \uBCF4\uAD00\uD558\uB294
       \uC791\uC740 \uC720\uB9AC\uBCD1"
+    detailDescription: 
   - language: 0
     dataName: potion bottle
     description: A small glass jar for storing magical potions
+    detailDescription: 
   dataNumbering: 005
   dataId: MagicMaterial5
   dataType: 1
   requireUnlock: 0
   grade: 1
-  category: 0
+  category: 1
   series: 8
   tags: []
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

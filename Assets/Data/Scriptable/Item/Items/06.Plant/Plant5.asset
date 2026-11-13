@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Plant5
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 6164f5e81bc875f4b936a2bebe2703da, type: 3}
+  icon: {fileID: 21300000, guid: 2ba7a583ef554564cab567a75c56e6c4, type: 3}
   data:
   - language: 1
     dataName: "\uAF43\uBB49\uCE58"
     description: "\uD5A5\uAE0B\uD55C \uAF43\uC1A1\uC774\uB4E4\uC744 \uD55C\uB370
       \uBAA8\uC544 \uBB36\uC740 \uC7AC\uB8CC"
+    detailDescription: 
   - language: 0
     dataName: Flower Cluster
     description: Ingredients made by gathering and tying together fragrant flowers
+    detailDescription: 
   dataNumbering: 005
   dataId: Plant5
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

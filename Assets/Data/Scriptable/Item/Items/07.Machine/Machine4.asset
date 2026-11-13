@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Machine4
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: d1e874320c2bac44fa2bb4e3fd20f4b1, type: 3}
+  icon: {fileID: 7539480405303952217, guid: 53f89b276262c4243b7f298b5fff5bdd, type: 3}
   data:
   - language: 1
     dataName: "\uD1B1\uB2C8\uBC14\uD034"
     description: "\uB9DE\uBB3C\uB9B0 \uD1B1\uB2C8\uB85C \uD68C\uC804\uB825\uC744
       \uC804\uD558\uB294 \uBD80\uD488"
+    detailDescription: 
   - language: 0
     dataName: gear
     description: Parts that transmit rotational force through interlocking teeth
+    detailDescription: 
   dataNumbering: 004
   dataId: Machine4
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

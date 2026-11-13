@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Monster18
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 9f717d8cac9f38b49be5c003f80d8f70, type: 3}
+  icon: {fileID: 21300000, guid: 3483f8d359f8b064e91db371ddea5e9f, type: 3}
   data:
   - language: 1
     dataName: "\uBFD42"
     description: "\uB05D\uC774 \uBFB0\uC871\uD558\uAC8C \uBED7\uC740 \uC9C8\uAE34
       \uC9D0\uC2B9\uC758 \uBFD4"
+    detailDescription: 
   - language: 0
     dataName: Horn 2
     description: The tough horns of beasts with pointed ends
+    detailDescription: 
   dataNumbering: 018
   dataId: Monster18
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

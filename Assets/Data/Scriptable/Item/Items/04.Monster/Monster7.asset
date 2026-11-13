@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Monster7
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 1e74605d45cf2a4418a69aa5db6fc449, type: 3}
+  icon: {fileID: 21300000, guid: 943954fbf6739034a86c18c34edf572e, type: 3}
   data:
   - language: 1
     dataName: "\uAE43\uD1383"
     description: "\uACB0\uC744 \uB530\uB77C \uC740\uC740\uD55C \uC724\uAE30\uAC00
       \uD750\uB974\uB294 \uAE43\uD138"
+    detailDescription: 
   - language: 0
     dataName: Feather 3
     description: Feathers with a subtle sheen following the grain
+    detailDescription: 
   dataNumbering: 007
   dataId: Monster7
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

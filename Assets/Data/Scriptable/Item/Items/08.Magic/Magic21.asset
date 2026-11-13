@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Magic21
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: d3b17de9c5b5f0d4c8fc106a77c826ea, type: 3}
+  icon: {fileID: 21300000, guid: b56448c2bb3f4c349a7535b4987fe0d8, type: 3}
   data:
   - language: 1
     dataName: "\uB9C8\uBC95\uC0AC\uC758 \uB9DD\uD1A0"
     description: "\uC2E0\uBE44\uB85C\uC6B4 \uBB34\uB2AC\uAC00 \uC218\uB193\uC778
       \uB9C8\uBC95\uC0AC\uC758 \uB9DD\uD1A0"
+    detailDescription: 
   - language: 0
     dataName: Wizard's Cloak
     description: The Wizard's Cloak Embroidered with Mysterious Patterns
+    detailDescription: 
   dataNumbering: 021
   dataId: Magic21
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

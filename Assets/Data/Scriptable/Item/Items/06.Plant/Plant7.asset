@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Plant7
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 4bbb4991f1bd11c48a534e5f1a270690, type: 3}
+  icon: {fileID: 21300000, guid: 3ddfd3b23c5c1654f863ad5a9976c85f, type: 3}
   data:
   - language: 1
     dataName: "\uC791\uC740\uB098\uBB34"
     description: "\uAC00\uB290\uB2E4\uB780 \uC904\uAE30\uC5D0 \uC78E\uC774 \uB3CB\uC740
       \uC791\uC740 \uB098\uBB34"
+    detailDescription: 
   - language: 0
     dataName: small tree
     description: A small tree with leaves sprouting on a slender stem
+    detailDescription: 
   dataNumbering: 007
   dataId: Plant7
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

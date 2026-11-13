@@ -12,26 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: MineralMaterial5
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 49531b548a600a94aa5fdd759ea2072e, type: 3}
+  icon: {fileID: 21300000, guid: 81bc7284e0b773f4eb1788fbf41bdef4, type: 3}
   data:
   - language: 1
     dataName: "\uB098\uBB34\uD310\uC790"
     description: "\uD1B5\uB098\uBB34\uB97C \uD3C9\uD3C9\uD558\uAC8C \uC798\uB77C
       \uB9CC\uB4E0 \uBAA9\uC7AC"
+    detailDescription: 
   - language: 0
     dataName: wooden plank
     description: Lumber made by cutting logs flat.
+    detailDescription: 
   dataNumbering: 005
   dataId: MineralMaterial5
   dataType: 1
   requireUnlock: 0
   grade: 1
-  category: 0
+  category: 1
   series: 3
   tags: []
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

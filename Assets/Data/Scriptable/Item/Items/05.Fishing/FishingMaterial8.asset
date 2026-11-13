@@ -12,26 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: FishingMaterial8
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 5b21cf9c2bcf58a4392178f0dab1a7b2, type: 3}
+  icon: {fileID: 21300000, guid: 465c580cb9c2b9b4ba3edb64cd8aa284, type: 3}
   data:
   - language: 1
     dataName: "\uC0B0\uC18C\uD1B5"
     description: "\uBB3C\uC18D \uD638\uD761\uC5D0 \uD544\uC694\uD55C \uACF5\uAE30\uB97C
       \uB2F4\uC740 \uC7A5\uBE44"
+    detailDescription: 
   - language: 0
     dataName: Oxygen tank
     description: Equipment containing the air needed for underwater breathing
+    detailDescription: 
   dataNumbering: 008
   dataId: FishingMaterial8
   dataType: 1
   requireUnlock: 0
   grade: 2
-  category: 0
+  category: 1
   series: 5
   tags: []
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

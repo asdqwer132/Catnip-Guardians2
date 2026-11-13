@@ -12,27 +12,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: MineralMaterial7
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: c2b2fd902ce747e4b9a4f4993bf2c548, type: 3}
+  icon: {fileID: 21300000, guid: 6a99cb5efdb60fc4db68e6441867b327, type: 3}
   data:
   - language: 1
     dataName: "\uB300\uC7A5\uC7A5\uC774\uCD08\uC6D4\uB9DD\uCE58"
     description: "\uCD08\uC6D4\uC758 \uAE30\uC6B4\uC774 \uAE43\uB4E0 \uC804\uC124\uC758
       \uC791\uC5C5 \uB9DD\uCE58"
+    detailDescription: 
   - language: 0
     dataName: Blacksmith's Transcendent Hammer
     description: A legendary work hammer imbued with transcendent energy
+    detailDescription: 
   dataNumbering: 007
   dataId: MineralMaterial7
   dataType: 1
   requireUnlock: 0
   grade: 2
-  category: 0
+  category: 1
   series: 3
   tags: []
   weight: 1
   cooldown: 1
   effectDatas:
   - {fileID: 11400000, guid: 308759d3afab4289b3ab9580b60b7c6c, type: 2}
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

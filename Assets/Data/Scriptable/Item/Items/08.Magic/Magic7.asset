@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Magic7
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 3debd00071df80e478ce1b5ce2157f3d, type: 3}
+  icon: {fileID: 21300000, guid: 0ec237b39e8a65d4ab22dfcc69c889c9, type: 3}
   data:
   - language: 1
     dataName: "\uC18D\uC131 \uC2A4\uD0DC\uD5044"
     description: "\uD2B9\uC720\uC758 \uC18D\uC131 \uAE30\uC6B4\uC744 \uD488\uC740
       \uB9C8\uBC95 \uC2A4\uD0DC\uD504"
+    detailDescription: 
   - language: 0
     dataName: Attribute Staff 4
     description: Magic staff imbued with unique elemental energy
+    detailDescription: 
   dataNumbering: 007
   dataId: Magic7
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

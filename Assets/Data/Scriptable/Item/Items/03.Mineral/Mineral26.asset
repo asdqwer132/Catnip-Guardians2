@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Mineral26
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: f9767a4655c6f3b4db03346b2ac8861e, type: 3}
+  icon: {fileID: 21300000, guid: 4dfc3f77438f52443b7b02f02c5c65e5, type: 3}
   data:
   - language: 1
     dataName: "\uD1A0\uD30C\uC988"
     description: "\uB9D1\uC740 \uD669\uAE08\uBE5B\uC774 \uBC18\uC9DD\uC774\uB294
       \uADC0\uD55C \uBCF4\uC11D"
+    detailDescription: 
   - language: 0
     dataName: Topaz
     description: A precious gem sparkling with clear golden hue
+    detailDescription: 
   dataNumbering: 026
   dataId: Mineral26
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

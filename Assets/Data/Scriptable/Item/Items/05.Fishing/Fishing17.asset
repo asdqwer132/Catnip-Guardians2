@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Fishing17
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 12eabd5c179270b4ea597390d3e505e7, type: 3}
+  icon: {fileID: 21300000, guid: 31d733e0f63d94f4cb1646c2f1c9fe48, type: 3}
   data:
   - language: 1
     dataName: "\uBCF5\uC5B4"
     description: "\uB465\uAE00\uAC8C \uBAB8\uC744 \uBD80\uD480\uB9AC\uB294 \uB3C5\uD2B9\uD55C
       \uBB3C\uACE0\uAE30"
+    detailDescription: 
   - language: 0
     dataName: pufferfish
     description: A unique fish that inflats its body in a rounded shape
+    detailDescription: 
   dataNumbering: 017
   dataId: Fishing17
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

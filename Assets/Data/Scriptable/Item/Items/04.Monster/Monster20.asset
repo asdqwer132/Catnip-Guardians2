@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Monster20
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 1245ec2cc7eae8b438b7c708bf18eabf, type: 3}
+  icon: {fileID: 21300000, guid: b404b933a6fdb564786c0555b9725c87, type: 3}
   data:
   - language: 1
     dataName: "\uC0E5\uC2A4\uD540"
     description: "\uC0C1\uC5B4\uC5D0\uAC8C\uC11C \uC5BB\uC740 \uB2E8\uB2E8\uD55C
       \uC9C0\uB290\uB7EC\uBBF8 \uC7AC\uB8CC"
+    detailDescription: 
   - language: 0
     dataName: Shark spin
     description: Hard fin material obtained from sharks
+    detailDescription: 
   dataNumbering: 020
   dataId: Monster20
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

@@ -12,26 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: PlantMaterial6
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 53a7828b74d07b24ebf8d94b7de018e7, type: 3}
+  icon: {fileID: 21300000, guid: 321c5ff0968cbb3499b0adc6b0544d82, type: 3}
   data:
   - language: 1
     dataName: "\uACE4\uCDA9\uC7A1\uC774\uCC44"
     description: "\uB0A0\uC544\uB2E4\uB2C8\uB294 \uACE4\uCDA9\uC744 \uC7A1\uB294
       \uAC00\uBCBC\uC6B4 \uADF8\uBB3C\uCC44"
+    detailDescription: 
   - language: 0
     dataName: insect spittrap
     description: A lightweight net for catching flying insects
+    detailDescription: 
   dataNumbering: 006
   dataId: PlantMaterial6
   dataType: 1
   requireUnlock: 0
   grade: 1
-  category: 0
+  category: 1
   series: 6
   tags: []
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

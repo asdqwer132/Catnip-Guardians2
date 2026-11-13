@@ -12,27 +12,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: FoodMaterial4
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: d09ae6a6904668240b4e2146ff427076, type: 3}
+  icon: {fileID: 21300000, guid: 14b4f8af4077303498058fe7ce6dabd3, type: 3}
   data:
   - language: 1
     dataName: "\uD6C4\uB77C\uC774\uD32C"
     description: "\uC74C\uC2DD\uC744 \uAD7D\uACE0 \uBCF6\uB294 \uB113\uACE0 \uB0A9\uC791\uD55C
       \uD32C"
+    detailDescription: 
   - language: 0
     dataName: frying pan
     description: "A wide, flat pan for baking and saut\xE9ing food"
+    detailDescription: 
   dataNumbering: 004
   dataId: FoodMaterial4
   dataType: 1
   requireUnlock: 0
   grade: 1
-  category: 0
+  category: 1
   series: 2
   tags: []
   weight: 1
   cooldown: 1
   effectDatas:
   - {fileID: 11400000, guid: 860bd383df3ae8f46ad00f54a9dd029c, type: 2}
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

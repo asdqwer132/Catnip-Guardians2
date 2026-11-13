@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Magic14
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: e7dbb42b362b82040843ad1f34324f2e, type: 3}
+  icon: {fileID: 21300000, guid: 2f2a695f128764a49b13c02203a903af, type: 3}
   data:
   - language: 1
     dataName: "\uB77C\uC774\uD50C\uD0C4"
     description: "\uC18C\uCD1D\uC5D0 \uC7A5\uC804\uD558\uB294 \uAE38\uCB49\uD55C
       \uAE08\uC18D \uD0C4\uC57D"
+    detailDescription: 
   - language: 0
     dataName: rifle bullet
     description: Elongated metal ammunition loaded into a rifle
+    detailDescription: 
   dataNumbering: 014
   dataId: Magic14
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

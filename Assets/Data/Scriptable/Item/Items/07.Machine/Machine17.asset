@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Machine17
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: cf94ea7e8db0c3e4280de2b8e822a1cb, type: 3}
+  icon: {fileID: 7392747161526760847, guid: 116342d2749b710459b8869f0591416a, type: 3}
   data:
   - language: 1
     dataName: "\uC6A9\uC811 \uD1A0\uCE58"
     description: "\uB728\uAC70\uC6B4 \uBD88\uAF43\uC73C\uB85C \uAE08\uC18D\uC744
       \uC787\uB294 \uC791\uC5C5 \uB3C4\uAD6C"
+    detailDescription: 
   - language: 0
     dataName: welding torch
     description: A work tool that connects metal with a hot flame
+    detailDescription: 
   dataNumbering: 017
   dataId: Machine17
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Machine6
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 897c924cce27d8d40929619d17763176, type: 3}
+  icon: {fileID: 3658286256637822819, guid: 62f19b7d00b7e0f4f9083cb1bb34d28b, type: 3}
   data:
   - language: 1
     dataName: "\uC555\uB825\uC870\uC808\uBCA8\uBE0C"
     description: "\uD750\uB984\uACFC \uC555\uB825\uC744 \uC870\uC808\uD558\uB294
       \uAE30\uACC4\uC2DD \uBC38\uBE0C"
+    detailDescription: 
   - language: 0
     dataName: Pressure Regulation Valve
     description: Mechanical valves that regulate flow and pressure
+    detailDescription: 
   dataNumbering: 006
   dataId: Machine6
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

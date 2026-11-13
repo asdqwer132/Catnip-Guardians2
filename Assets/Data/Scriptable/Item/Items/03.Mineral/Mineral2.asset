@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Mineral2
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 7d748e5b0ee348348b2955175d20aa15, type: 3}
+  icon: {fileID: 21300000, guid: 75a6c0d3a021f6a40ba19fe0714f8ec2, type: 3}
   data:
   - language: 1
     dataName: "\uC5FC\uD654\uC6D0\uC11D"
     description: "\uBD88\uAF43\uC758 \uAE30\uC6B4\uC744 \uBA38\uAE08\uACE0 \uC788\uB294
       \uAC70\uCE5C \uAD11\uBB3C"
+    detailDescription: 
   - language: 0
     dataName: Chloride Ore
     description: A rough mineral imbued with the energy of flames
+    detailDescription: 
   dataNumbering: 002
   dataId: Mineral2
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

@@ -12,16 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Magic13
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 0794a39cd55351142bcd4bf7200fabe6, type: 3}
+  icon: {fileID: 21300000, guid: f0b7c5798573d4d4f9c4da83eda65ecf, type: 3}
   data:
   - language: 1
     dataName: "\uACAC\uC2B5 \uB9C8\uBC95\uC0AC\uC758 \uB9DD\uD1A0"
     description: "\uACAC\uC2B5 \uB9C8\uBC95\uC0AC\uAC00 \uCC98\uC74C \uAC78\uCE58\uB294
       \uC18C\uBC15\uD55C \uB9DD\uD1A0"
+    detailDescription: 
   - language: 0
     dataName: Apprentice Wizard's Cloak
     description: The humble cloak that the apprentice wizard wears for the first
       time
+    detailDescription: 
   dataNumbering: 013
   dataId: Magic13
   dataType: 1
@@ -33,6 +35,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

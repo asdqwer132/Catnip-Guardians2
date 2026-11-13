@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Food29
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 05cd5f0d6d109fa488f5cf20ec5541ad, type: 3}
+  icon: {fileID: 21300000, guid: 230c70fe8c7dc274fa5b717419abbf38, type: 3}
   data:
   - language: 1
     dataName: "\uD06C\uB9AC\uC2A4\uD0C8 \uC0AC\uACFC"
     description: "\uC218\uC815\uCC98\uB7FC \uB9D1\uACE0 \uBC18\uC9DD\uC774\uB294
       \uC2E0\uBE44\uD55C \uC0AC\uACFC"
+    detailDescription: 
   - language: 0
     dataName: Crystal apple
     description: A mysterious apple that is crystal-clear and sparkling
+    detailDescription: 
   dataNumbering: 029
   dataId: Food29
   dataType: 1
@@ -33,6 +35,7 @@ MonoBehaviour:
   cooldown: 1
   effectDatas:
   - {fileID: 11400000, guid: f5cb42bb2b275e649bfcc28b8337f1c6, type: 2}
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

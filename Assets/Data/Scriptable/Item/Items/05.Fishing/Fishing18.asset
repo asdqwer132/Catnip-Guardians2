@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Fishing18
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: ec2a804492358cc4cbf1840018a13c8a, type: 3}
+  icon: {fileID: 21300000, guid: 63a5f3099e01782479fac0a5286cb307, type: 3}
   data:
   - language: 1
     dataName: "\uACE0\uB798\uC0C1\uC5B4"
     description: "\uCEE4\uB2E4\uB780 \uBAB8\uC5D0 \uC810\uBB34\uB2AC\uAC00 \uD769\uC5B4\uC9C4
       \uBC14\uB2E4 \uC0C1\uC5B4"
+    detailDescription: 
   - language: 0
     dataName: whale shark
     description: A sea shark with a large body and scattered spots
+    detailDescription: 
   dataNumbering: 018
   dataId: Fishing18
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

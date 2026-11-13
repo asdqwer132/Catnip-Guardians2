@@ -12,26 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: MagicMaterial8
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: b47c4168c123c794aa955983fe5dc19f, type: 3}
+  icon: {fileID: 21300000, guid: 3ad52adbfe75c78499b586c2abd1c324, type: 3}
   data:
   - language: 1
     dataName: "\uB9C8\uBC95 \uC2A4\uD0DC\uD504"
     description: "\uC8FC\uBB38\uC758 \uB9C8\uB825\uC744 \uBAA8\uC544 \uB2E4\uB8E8\uB294
       \uB9C8\uBC95 \uC9C0\uD321\uC774"
+    detailDescription: 
   - language: 0
     dataName: Magic Staff
     description: A magic wand that gathers and wields the power of spells
+    detailDescription: 
   dataNumbering: 008
   dataId: MagicMaterial8
   dataType: 1
   requireUnlock: 0
   grade: 2
-  category: 0
+  category: 1
   series: 8
   tags: []
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

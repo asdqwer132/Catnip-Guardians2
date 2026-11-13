@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Monster1
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 767aff9e9b651e14aa591b451972060b, type: 3}
+  icon: {fileID: 21300000, guid: 2675cfdee3bf2414f873a97835d45c57, type: 3}
   data:
   - language: 1
     dataName: "\uC2AC\uB77C\uC784\uC810\uC5611"
     description: "\uC2AC\uB77C\uC784\uC774 \uB0A8\uAE34 \uBB3D\uACE0 \uB048\uC801\uD55C
       \uC810\uC561 \uC7AC\uB8CC"
+    detailDescription: 
   - language: 0
     dataName: Slime Mucus 1
     description: The thin, sticky slime material left behind by the slime
+    detailDescription: 
   dataNumbering: 001
   dataId: Monster1
   dataType: 1
@@ -33,6 +35,7 @@ MonoBehaviour:
   cooldown: 1
   effectDatas:
   - {fileID: 11400000, guid: 5e5e34a72d9436846a5aea6e73c3f57b, type: 2}
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

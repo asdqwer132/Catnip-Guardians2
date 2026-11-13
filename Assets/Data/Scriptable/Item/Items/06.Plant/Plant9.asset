@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Plant9
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: f48c2bd18a1d0f7468f474b29b9f9cdd, type: 3}
+  icon: {fileID: 21300000, guid: 4263061371251ee4c9800be86ac2a56a, type: 3}
   data:
   - language: 1
     dataName: "\uBD89\uC740\uBFCC\uB9AC"
     description: "\uB545\uC18D\uC5D0\uC11C \uC790\uB780 \uC9D9\uC740 \uBD89\uC740\uBE5B
       \uC2DD\uBB3C \uBFCC\uB9AC"
+    detailDescription: 
   - language: 0
     dataName: red root
     description: Deep red plant roots growing underground
+    detailDescription: 
   dataNumbering: 009
   dataId: Plant9
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

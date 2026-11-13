@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Plant18
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 37ac110c6722dfb4eaca9444fd4151c4, type: 3}
+  icon: {fileID: 21300000, guid: d38218b89e586d5418f7a3ae8ea6bb78, type: 3}
   data:
   - language: 1
     dataName: "\uAF434"
     description: "\uC791\uC740 \uAF43\uC78E\uC5D0 \uC774\uC2AC\uC744 \uBA38\uAE08\uC740
       \uAF43\uC1A1\uC774"
+    detailDescription: 
   - language: 0
     dataName: Flower 4
     description: A flower with dew on its small petals
+    detailDescription: 
   dataNumbering: 018
   dataId: Plant18
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

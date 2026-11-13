@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Machine9
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 703f2ebe4b6cbff43be356ddc36c65cc, type: 3}
+  icon: {fileID: 5786980532811379451, guid: ab3788d849296184db42259a1fe7b3ae, type: 3}
   data:
   - language: 1
     dataName: "\uC804\uC120"
     description: "\uC804\uAE30\uB97C \uC804\uB2EC\uD558\uB294 \uAC00\uB298\uACE0
       \uAE34 \uAE08\uC18D\uC120"
+    detailDescription: 
   - language: 0
     dataName: Front
     description: Thin, long metal wire that conducts electricity
+    detailDescription: 
   dataNumbering: 009
   dataId: Machine9
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

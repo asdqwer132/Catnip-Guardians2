@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Machine10
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 57465cccc6fce9e4489edf97571ea4b1, type: 3}
+  icon: {fileID: 194225459584976155, guid: e003eb37940242b43b540cfd07579cda, type: 3}
   data:
   - language: 1
     dataName: "\uAC74\uC804\uC9C0"
     description: "\uC791\uC740 \uAE30\uAE30\uC5D0 \uC804\uB825\uC744 \uACF5\uAE09\uD558\uB294
       \uC804\uC9C0"
+    detailDescription: 
   - language: 0
     dataName: Battery
     description: Batteries that supply power to small devices
+    detailDescription: 
   dataNumbering: 010
   dataId: Machine10
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Machine7
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 5f328f7daad0b90419174c2de7fe6740, type: 3}
+  icon: {fileID: -4617849163116699785, guid: 266366f8b3898b84aa5d8c7844b58643, type: 3}
   data:
   - language: 1
     dataName: "\uC18C\uD615\uC5F0\uB8CC\uD1B5"
     description: "\uAE30\uACC4\uC5D0 \uC4F8 \uC5F0\uB8CC\uB97C \uB2F4\uC740 \uC791\uC740
       \uBCF4\uAD00\uD1B5"
+    detailDescription: 
   - language: 0
     dataName: Small fuel tank
     description: A small storage container for fuel used in the machine
+    detailDescription: 
   dataNumbering: 007
   dataId: Machine7
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

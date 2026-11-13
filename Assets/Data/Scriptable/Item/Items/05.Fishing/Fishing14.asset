@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Fishing14
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: bc79638b8a8ba714980ca764e8c0aa89, type: 3}
+  icon: {fileID: 21300000, guid: 7028290b77d994548be5103064e4fbaa, type: 3}
   data:
   - language: 1
     dataName: "\uC0B0\uD638\uB3D4"
     description: "\uC0B0\uD638\uBE5B \uBAB8\uC774 \uB208\uAE38\uC744 \uB044\uB294
       \uBC14\uB2E4 \uBB3C\uACE0\uAE30"
+    detailDescription: 
   - language: 0
     dataName: Coral dome
     description: A sea fish with a coral body that catches the eye
+    detailDescription: 
   dataNumbering: 014
   dataId: Fishing14
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Mineral6
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 1d99d5354e038c346ac226d1f34964e5, type: 3}
+  icon: {fileID: 21300000, guid: 69d6b9b70c137af4b88566897874be63, type: 3}
   data:
   - language: 1
     dataName: "\uAE08\uC6D0\uC11D"
     description: "\uD669\uAE08\uBE5B \uAE08\uC18D\uC774 \uC11E\uC5EC \uC788\uB294
       \uADC0\uD55C \uAD11\uC11D"
+    detailDescription: 
   - language: 0
     dataName: gold stone
     description: Precious ore mixed with golden metals
+    detailDescription: 
   dataNumbering: 006
   dataId: Mineral6
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

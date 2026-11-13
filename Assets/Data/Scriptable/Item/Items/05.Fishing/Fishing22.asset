@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Fishing22
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 3d1f4fd34974d654798fde5a84b14a34, type: 3}
+  icon: {fileID: 21300000, guid: f18e0851bffdbe14595c5560c072d60c, type: 3}
   data:
   - language: 1
     dataName: "\uD654\uC0B4\uACE0\uAE30"
     description: "\uD654\uC0B4\uCC98\uB7FC \uAE38\uACE0 \uB0A0\uB835\uD55C \uBAB8\uC758
       \uBB3C\uACE0\uAE30"
+    detailDescription: 
   - language: 0
     dataName: Arrowmeat
     description: A fish with a long, sleek body like an arrow
+    detailDescription: 
   dataNumbering: 022
   dataId: Fishing22
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

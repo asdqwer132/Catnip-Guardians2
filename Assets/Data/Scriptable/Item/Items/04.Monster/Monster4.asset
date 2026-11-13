@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Monster4
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: b4d54b4cf99e8e34daec3ba74209de28, type: 3}
+  icon: {fileID: 21300000, guid: 1fb50de53d318ec45a49ffff55d5c76f, type: 3}
   data:
   - language: 1
     dataName: "\uC2AC\uB77C\uC784\uC810\uC5614"
     description: "\uAC78\uCB49\uD55C \uC2AC\uB77C\uC784 \uBAB8\uC5D0\uC11C \uC5BB\uC740
       \uC810\uC561 \uC7AC\uB8CC"
+    detailDescription: 
   - language: 0
     dataName: Slime Mucus 4
     description: Muslime material obtained from thick slime bodies
+    detailDescription: 
   dataNumbering: 004
   dataId: Monster4
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

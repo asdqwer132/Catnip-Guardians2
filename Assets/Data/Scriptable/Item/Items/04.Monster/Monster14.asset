@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Monster14
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: c47fb8663847fc14f98a8dab1dad9e4e, type: 3}
+  icon: {fileID: 21300000, guid: 1aa5154e4615e16408d8d788b41cbbfb, type: 3}
   data:
   - language: 1
     dataName: "\uC2A4\uCF08\uB808\uD1A4\uD5E4\uB4DC"
     description: "\uD145 \uBE48 \uB208\uAD6C\uBA4D\uC774 \uB0A8\uC740 \uC2A4\uCF08\uB808\uD1A4\uC758
       \uB450\uAC1C\uACE8"
+    detailDescription: 
   - language: 0
     dataName: skeleton head
     description: Skeleton skull with empty eye sockets
+    detailDescription: 
   dataNumbering: 014
   dataId: Monster14
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

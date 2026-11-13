@@ -12,26 +12,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: MagicMaterial9
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: 7239288404ced8942b699a722e0efc7c, type: 3}
+  icon: {fileID: 21300000, guid: 9a8356edc7650264eb65c300aad5ac45, type: 3}
   data:
   - language: 1
     dataName: "\uB9C8\uBC95\uC758 \uC815\uC11D 3"
     description: "\uAE4A\uC774 \uC788\uB294 \uB9C8\uBC95 \uC9C0\uC2DD\uC744 \uB2F4\uC740
       \uACE0\uAE09 \uAD50\uBCF8"
+    detailDescription: 
   - language: 0
     dataName: Magic Essentials 3
     description: An advanced manual filled with deep magical knowledge
+    detailDescription: 
   dataNumbering: 009
   dataId: MagicMaterial9
   dataType: 1
   requireUnlock: 0
   grade: 2
-  category: 0
+  category: 1
   series: 8
   tags: []
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

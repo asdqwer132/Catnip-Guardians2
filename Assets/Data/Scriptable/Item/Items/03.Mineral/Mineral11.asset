@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
   m_Name: Mineral11
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  icon: {fileID: 21300000, guid: c256a0484f6412e4d9d8b8d6ed380321, type: 3}
+  icon: {fileID: 21300000, guid: 8f072872b36fb4c4fb9f5ad4fc4b3fbb, type: 3}
   data:
   - language: 1
     dataName: "\uBC31\uAE08\uC8FC\uAD34"
     description: "\uBC31\uAE08 \uC6D0\uC11D\uC744 \uC815\uB828\uD55C \uC740\uBC31\uC0C9
       \uAE08\uC18D \uC7AC\uB8CC"
+    detailDescription: 
   - language: 0
     dataName: platinum bar
     description: Silvery metal material refined from platinum rough stones
+    detailDescription: 
   dataNumbering: 011
   dataId: Mineral11
   dataType: 1
@@ -32,6 +34,7 @@ MonoBehaviour:
   weight: 1
   cooldown: 1
   effectDatas: []
+  codexEffects: []
   endVisualData: {fileID: 0}
   endVisualAtOwner: 0
   afterCompletionItems: []

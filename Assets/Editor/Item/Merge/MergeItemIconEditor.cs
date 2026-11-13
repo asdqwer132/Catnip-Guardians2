@@ -8,6 +8,7 @@ public class MergeItemIconEditor : EditorWindow
     [SerializeField] private List<ItemData> datas = new();
 
     private SerializedObject serializedData;
+    private Vector2 dataScroll;
 
     [MenuItem("Tools/Item/Merge/Merge Item Icon Editor")]
     public static void Open()
@@ -27,8 +28,16 @@ public class MergeItemIconEditor : EditorWindow
         EditorGUILayout.PropertyField(
             serializedData.FindProperty("items"), true);
 
+        GUILayout.Space(10);
+
+        // Data 리스트 스크롤
+        dataScroll = EditorGUILayout.BeginScrollView(
+            dataScroll, GUILayout.Height(300));
+
         EditorGUILayout.PropertyField(
             serializedData.FindProperty("datas"), true);
+
+        EditorGUILayout.EndScrollView();
 
         serializedData.ApplyModifiedProperties();
 
