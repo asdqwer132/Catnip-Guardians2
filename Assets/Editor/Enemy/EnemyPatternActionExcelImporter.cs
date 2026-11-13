@@ -16,7 +16,14 @@ public static class EnemyPatternActionExcelImporter
         if (string.IsNullOrEmpty(csvPath))
             return;
 
-        EnsureFolder(DefaultOutputFolder);
+        ImportWorkbook(csvPath);
+    }
+
+    public static void ImportWorkbook(string csvPath, string outputFolder = DefaultOutputFolder)
+    {
+        if (string.IsNullOrWhiteSpace(outputFolder) || !outputFolder.StartsWith("Assets/", System.StringComparison.Ordinal) || outputFolder.Contains(".."))
+            throw new System.IO.InvalidDataException("Output folder must be inside Assets/.");
+        EnsureFolder(outputFolder);
 
         List<List<string>> rows = ReadWorkbookRows(csvPath);
         if (rows == null || rows.Count < 2)
@@ -49,7 +56,7 @@ public static class EnemyPatternActionExcelImporter
             data.showLog = false;
 
             string fileName = SanitizeFileName($"{enemyId}_{enemyName}_PatternSet.asset");
-            string assetPath = AssetDatabase.GenerateUniqueAssetPath($"{DefaultOutputFolder}/{fileName}");
+            string assetPath = AssetDatabase.GenerateUniqueAssetPath($"{outputFolder}/{fileName}");
             AssetDatabase.CreateAsset(data, assetPath);
 
             for (int patternIndex = 0; patternIndex < 4; patternIndex++)
@@ -82,7 +89,7 @@ public static class EnemyPatternActionExcelImporter
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        Debug.Log($"Enemy Pattern Action Excel Import 완료: {createdCount}개 생성 / 경로: {DefaultOutputFolder}");
+        Debug.Log($"Enemy Pattern Action Excel Import 완료: {createdCount}개 생성 / 경로: {outputFolder}");
     }
 
     private static EnemyPatternEntry CreateEntry(EnemyPatternSetData owner, string enemyName, string role, int index, string conditionText, string effectText)

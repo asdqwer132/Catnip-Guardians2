@@ -10,6 +10,7 @@ public sealed class StoryExcelImporterWindow : EditorWindow
     private List<StoryExcelImporter.Entry> preview;
     private string status;
     private Vector2 scroll;
+    private bool showSettings;
 
     public static void Open() => DataExcelManagerWindow.Open();
 
@@ -17,22 +18,13 @@ public sealed class StoryExcelImporterWindow : EditorWindow
 
     public void DrawUI()
     {
-        using (new EditorGUILayout.HorizontalScope())
+        DataExcelGUI.Workbook(ref workbook, "스토리 엑셀 선택");
+        if (DataExcelGUI.AdditionalSettings(ref showSettings))
         {
-            workbook = EditorGUILayout.TextField("Excel (.xlsx)", workbook);
-            if (GUILayout.Button("Browse", GUILayout.Width(65)))
-            {
-                string selected = EditorUtility.OpenFilePanel("Story Excel", Application.dataPath, "xlsx");
-                if (!string.IsNullOrEmpty(selected)) workbook = selected;
-            }
-        }
-        outputFolder = EditorGUILayout.TextField("Output Folder", outputFolder);
+        outputFolder = EditorGUILayout.TextField("출력 폴더", outputFolder);
         EditorGUILayout.LabelField("Sheets: english, korean. Sprite order: natural filename order.", EditorStyles.wordWrappedLabel);
-        using (new EditorGUILayout.HorizontalScope())
-        {
-            if (GUILayout.Button("Validate / Preview")) Run(false);
-            if (GUILayout.Button("Create / Update")) Run(true);
         }
+        DataExcelGUI.Actions(() => Run(false), () => Run(true));
         scroll = EditorGUILayout.BeginScrollView(scroll);
         if (!string.IsNullOrEmpty(status)) EditorGUILayout.LabelField(status, EditorStyles.wordWrappedLabel);
         if (preview != null)

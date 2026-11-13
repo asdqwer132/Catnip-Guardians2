@@ -30,7 +30,7 @@ public class SkillNodeTooltipProvider : CostTooltipProvider
         data = new CostTooltipData
         {
             sourceData = nodeData,
-            icon = nodeData.mapIcon == null ? nodeData.icon : nodeData.mapIcon,
+            icon = nodeData.icon,
             dataName = GetSkillName(nodeData),
             amountText = "",
             description = nodeData.GetDescription(),

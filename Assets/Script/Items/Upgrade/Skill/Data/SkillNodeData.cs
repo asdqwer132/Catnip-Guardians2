@@ -17,7 +17,6 @@ public class SkillNodeData : DefaultData
 
     [Header("Extra Data / Map")]
     public SkillMapData skillMap;
-    public Sprite mapIcon;
     [Header("Extra Data / Cost")]
     public Cost[] costs;
 

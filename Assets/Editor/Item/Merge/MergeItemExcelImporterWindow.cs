@@ -10,6 +10,7 @@ public sealed class MergeItemExcelImporterWindow : EditorWindow
     private MergeItemExcelPlan preview;
     private Vector2 scroll;
     private string status;
+    private bool showSettings;
 
     public static void Open() => DataExcelManagerWindow.Open();
 
@@ -22,27 +23,24 @@ public sealed class MergeItemExcelImporterWindow : EditorWindow
     public void DrawUI()
     {
         EditorGUILayout.HelpBox("필수 컬럼: itemData, prefab, radius  /  선택 컬럼: enabled, assetName, assetPath\nitemData는 에셋 경로 · GUID · dataId · 이름, prefab은 경로 · GUID · 이름을 사용합니다.", MessageType.Info);
-        using (new EditorGUILayout.HorizontalScope())
+        DataExcelGUI.Workbook(ref workbook, "머지 아이템 엑셀 선택");
+        if (DataExcelGUI.AdditionalSettings(ref showSettings))
         {
-            workbook = EditorGUILayout.TextField("Excel (.xlsx)", workbook);
-            if (GUILayout.Button("선택", GUILayout.Width(55))) workbook = EditorUtility.OpenFilePanel("머지 아이템 엑셀", Application.dataPath, "xlsx");
-        }
         sheet = EditorGUILayout.TextField("시트", sheet);
         itemFolder = (DefaultAsset)EditorGUILayout.ObjectField("ItemData 검색 폴더", itemFolder, typeof(DefaultAsset), false);
         prefabFolder = (DefaultAsset)EditorGUILayout.ObjectField("프리팹 검색 폴더", prefabFolder, typeof(DefaultAsset), false);
         outputFolder = (DefaultAsset)EditorGUILayout.ObjectField("MergeItem 출력 폴더", outputFolder, typeof(DefaultAsset), false);
         if (outputFolder == null) newOutputFolder = EditorGUILayout.TextField("새 출력 폴더", newOutputFolder);
-        using (new EditorGUILayout.HorizontalScope())
-        {
-            if (GUILayout.Button("검증 / 미리보기")) { preview = Read(); status = null; }
-            if (GUILayout.Button("생성 / 갱신"))
+        }
+        DataExcelGUI.Actions(
+            () => { preview = Read(); status = null; },
+            () =>
             {
-                preview = Read(); // 파일과 에셋이 바뀌었을 수 있으므로 적용 직전 다시 검증합니다.
+                preview = Read();
                 if (preview.errors.Count == 0)
                     try { MergeItemExcelImport.Apply(preview); status = preview.entries.Count + "개 생성 / 갱신 완료"; }
-                    catch (System.Exception exception) { status = exception.Message; }
-            }
-        }
+                    catch (System.Exception error) { status = error.Message; }
+            });
         scroll = EditorGUILayout.BeginScrollView(scroll);
         if (!string.IsNullOrEmpty(status)) EditorGUILayout.LabelField(status, EditorStyles.wordWrappedLabel);
         if (preview != null)

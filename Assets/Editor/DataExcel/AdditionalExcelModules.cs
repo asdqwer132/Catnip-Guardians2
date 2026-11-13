@@ -22,11 +22,18 @@ public sealed class MergeItemExcelManager : ExcelWindowModule<MergeItemExcelImpo
 }
 public sealed class EnemyPatternExcelManager : IDataExcelModule
 {
+    private string workbook = "Assets/Data/Excel/EnemyPatternsExample.xlsx", status = "";
+    private string outputFolder = "Assets/Items/EnemyPatterns";
+    private bool showSettings;
     public string Name => "Enemy Patterns";
     public void DrawGUI()
     {
-        EditorGUILayout.LabelField("Enemy action patterns / Excel (.xlsx)", EditorStyles.boldLabel);
-        if (GUILayout.Button("Choose Excel and import enemy patterns")) EnemyPatternActionExcelImporter.ImportExcel();
+        DataExcelGUI.Workbook(ref workbook, "적 패턴 엑셀 선택");
+        if (DataExcelGUI.AdditionalSettings(ref showSettings)) outputFolder = EditorGUILayout.TextField("출력 폴더", outputFolder);
+        DataExcelGUI.Actions(
+            () => status = (EnemyPatternActionExcelImporter.ReadWorkbookRows(workbook).Count - 1) + "개 패턴 검증 완료",
+            () => { EnemyPatternActionExcelImporter.ImportWorkbook(workbook, outputFolder); status = "적 패턴 적용 완료"; });
+        EditorGUILayout.LabelField(status, EditorStyles.wordWrappedLabel);
     }
     public void Dispose() { }
 }

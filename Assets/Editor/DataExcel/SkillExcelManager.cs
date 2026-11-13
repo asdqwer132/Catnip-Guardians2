@@ -15,11 +15,8 @@ public sealed class SkillExcelManager : IDataExcelModule
     public void Dispose() { }
     public void DrawGUI()
     {
-        file = EditorGUILayout.TextField("Workbook", file);
-        if (GUILayout.Button("Choose .xlsx"))
-        { string path = EditorUtility.OpenFilePanel("Skills", "", "xlsx"); if (!string.IsNullOrEmpty(path)) file = path; }
-        if (GUILayout.Button("Validate / Preview")) Run(false);
-        if (GUILayout.Button("Apply Skills")) Run(true);
+        DataExcelGUI.Workbook(ref file, "스킬 엑셀 선택");
+        DataExcelGUI.Actions(() => Run(false), () => Run(true));
         scroll = EditorGUILayout.BeginScrollView(scroll);
         EditorGUILayout.LabelField(message, EditorStyles.wordWrappedLabel); EditorGUILayout.EndScrollView();
     }
@@ -32,7 +29,7 @@ public sealed class SkillExcelManager : IDataExcelModule
             if (apply) SkillExcelImport.Apply(plan);
             message = (apply ? "Applied: " : "Validated: ") + plan.Count + "\n" + message;
         }
-        catch (Exception error) { message = error.Message; }
+        catch (Exception error) { message = error.Message; Debug.LogError("[SkillExcel][FAILED] file=" + file + "\n" + error); }
     }
 }
 
@@ -63,9 +60,11 @@ public static class SkillExcelImport
             foreach (var column in headers)
             {
                 var cell = row.At(column.Key);
-                if (cell.HasFormula || cell.IsError) throw new InvalidDataException(sheet.Name + " row " + row.Number + ": use literal values, not formulas/errors.");
+                if (cell.IsError || (cell.HasFormula && string.IsNullOrWhiteSpace(cell.Text))) throw new InvalidDataException(sheet.Name + " row " + row.Number + ": formula has no saved result or contains an error. Recalculate and save in Excel.");
+                if (cell.HasFormula) Debug.Log("[SkillExcel][FORMULA_CACHED] sheet=" + sheet.Name + " row=" + row.Number + " column=" + column.Value + " value=" + cell.Text);
                 if (!string.IsNullOrEmpty(column.Value)) data.Add(column.Value, cell.Text.Trim());
             }
+            data["__row"] = row.Number.ToString();
             result.Add(data);
         }
         return result;
@@ -87,14 +86,19 @@ public static class SkillExcelImport
     }
     public static List<Entry> Read(string workbook)
     {
+        Debug.Log("[SkillExcel][READ] file=" + Path.GetFullPath(workbook));
         var sheets = ItemDataXlsxReader.Read(workbook);
         if (!sheets.TryGetValue("Skills", out var sheet)) throw new InvalidDataException("Missing Skills sheet.");
         var plan = new List<Entry>(); var paths = new HashSet<string>(); var keys = new HashSet<string>();
-        foreach (var row in Rows(sheet))
+        var sourceRows = Rows(sheet);
+        foreach (var row in sourceRows)
         {
             if (Get(row, "enabled").Length > 0 && !new[] { "true", "false", "0", "1" }.Contains(Get(row, "enabled").ToLowerInvariant())) throw new InvalidDataException("Invalid enabled value.");
-            if (Get(row, "enabled").Equals("false", StringComparison.OrdinalIgnoreCase) || Get(row, "enabled") == "0") continue;
+            if (Get(row, "enabled").Equals("false", StringComparison.OrdinalIgnoreCase) || Get(row, "enabled") == "0") { Debug.Log("[SkillExcel][SKIP] row=" + Get(row, "__row") + " enabled=false"); continue; }
             var e = new Entry { path = Get(row, "assetPath").Replace('\\', '/'), id = Get(row, "dataId") };
+            Debug.Log("[SkillExcel][ROW] row=" + Get(row, "__row") + " id=" + e.id + " path=" + e.path);
+            if (!string.IsNullOrEmpty(e.path) && string.IsNullOrEmpty(Path.GetExtension(e.path)))
+            { e.path += ".asset"; Debug.LogWarning("[SkillExcel][PATH] Added .asset: " + e.path); }
             if (!e.path.StartsWith("Assets/", StringComparison.Ordinal) || !e.path.EndsWith(".asset", StringComparison.OrdinalIgnoreCase) || e.path.Count(c => c == '/') < 2 || e.path.Split('/').Any(p => p == ".." || p == ".") || string.IsNullOrEmpty(e.id)) throw new InvalidDataException("Each enabled skill needs an Assets/...asset path and dataId.");
             e.map = AssetDatabase.LoadAssetAtPath<SkillMapData>(Get(row, "mapPath"));
             if (e.map == null || string.IsNullOrEmpty(e.map.dataId)) throw new InvalidDataException("Missing map or map ID: " + e.path);
@@ -147,11 +151,19 @@ public static class SkillExcelImport
         if (sheets.TryGetValue("Descriptions", out var descriptions)) foreach (var row in Rows(descriptions))
         {
             var e = plan.Find(p => p.id == Get(row, "dataId") && p.map.dataId == Get(row, "mapId"));
-            if (e == null) continue;
+            if (e == null)
+            {
+                bool disabled = sourceRows.Any(r => Get(r, "dataId") == Get(row, "dataId") &&
+                    (Get(r, "enabled").Equals("false", StringComparison.OrdinalIgnoreCase) || Get(r, "enabled") == "0") &&
+                    AssetDatabase.LoadAssetAtPath<SkillMapData>(Get(r, "mapPath"))?.dataId == Get(row, "mapId"));
+                if (disabled) { Debug.Log("[SkillExcel][SKIP_DESCRIPTION] row=" + Get(row, "__row") + " disabled skill"); continue; }
+                throw new InvalidDataException("Descriptions row " + Get(row, "__row") + ": no Skills row matches mapId=" + Get(row, "mapId") + " dataId=" + Get(row, "dataId"));
+            }
             var lang = EnumValue<language>(Get(row, "language"));
             if (e.descriptions.Any(d => d.language == lang)) throw new InvalidDataException("Duplicate description language: " + e.id);
             e.descriptions.Add(new Description { language = lang, dataName = Get(row, "dataName"), description = Get(row, "description"), detailDescription = Get(row, "detailDescription") });
         }
+        Debug.Log("[SkillExcel][VALIDATED] rows=" + plan.Count);
         return plan;
     }
     private static SkillNodeData ResolveExisting(Entry entry, string id)
@@ -168,6 +180,7 @@ public static class SkillExcelImport
         Undo.IncrementCurrentGroup(); int group = Undo.GetCurrentGroup(); Undo.SetCurrentGroupName("Import skills from Excel");
         foreach (var e in plan)
         {
+            Debug.Log("[SkillExcel][" + (e.existing == null ? "CREATE" : "UPDATE") + "] " + e.path + " id=" + e.id + " level=" + e.level);
             if (e.existing == null)
             {
                 string folder = Path.GetDirectoryName(e.path).Replace('\\', '/');
@@ -189,7 +202,11 @@ public static class SkillExcelImport
             node.data = descriptions.ToArray();
             typeof(DefaultData).GetField("languageDataMap", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)?.SetValue(node, null);
             EditorUtility.SetDirty(node);
+            Debug.Log("[SkillExcel][WRITE] id=" + node.dataId + " icon=" + (node.icon != null ? node.icon.name : "none") +
+                " unlockedIcon=" + (node.unlockedIcon != null ? node.unlockedIcon.name : "none") + " costs=" + (node.costs?.Length ?? 0) +
+                " prerequisites=" + (node.requiredSkills?.Count ?? 0) + " rewards=" + (node.rewards?.Count ?? 0) + " descriptions=" + (node.data?.Length ?? 0));
         }
         AssetDatabase.SaveAssets(); Undo.CollapseUndoOperations(group);
+        Debug.Log("[SkillExcel][DONE] saved=" + plan.Count);
     }
 }

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 606bb820635defc49b80fccb1aeef576, type: 3}
+  m_Name: SkillNodeData 11
+  m_EditorClassIdentifier: Assembly-CSharp::SkillNodeData
+  icon: {fileID: -3164809056393425246, guid: e89465c4b6156ba4484c8aaeb75d4e27, type: 3}
+  data: []
+  dataNumbering: 
+  dataId: 01SkillNodeData11
+  dataType: 0
+  requireUnlock: 0
+  unlockedIcon: {fileID: 21300000, guid: ff0994586f8a6cc48be7c1c8beab053c, type: 3}
+  level: 1
+  skillMap: {fileID: 11400000, guid: 7e503782a7e32384f87ba0d00d7bf734, type: 2}
+  costs:
+  - currencyType: 0
+    amount: 10
+  requiredSkills:
+  - {fileID: 11400000, guid: 70403df8d778b85589258e4ad4a19b30, type: 2}
+  rewards: []

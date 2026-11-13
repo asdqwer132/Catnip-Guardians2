@@ -33,6 +33,7 @@ public class SkillNodeUI : MonoBehaviour
         this.skillNodeData = skillNodeData;
         this.lines = lines;
         ApplyLevel();
+        ApplyIcon();
     }
 
     public void Init(SkillTreeUI owner)
@@ -73,6 +74,21 @@ public class SkillNodeUI : MonoBehaviour
         if (success && ownerUI != null)
             ownerUI.RefreshAllNodes();
         Refresh();
+    }
+
+    public void ApplyIcon()
+    {
+        if (iconImage == null || skillNodeData == null) return;
+        bool unlocked = Application.isPlaying && SkillTreeManager.Instance != null && SkillTreeManager.Instance.IsUnlocked(skillNodeData);
+        var sprite = unlocked && skillNodeData.unlockedIcon != null ? skillNodeData.unlockedIcon : skillNodeData.icon;
+        iconImage.sprite = sprite; iconImage.enabled = sprite != null;
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+        {
+            UnityEditor.EditorUtility.SetDirty(iconImage);
+            if (UnityEditor.PrefabUtility.IsPartOfPrefabInstance(iconImage)) UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(iconImage);
+        }
+#endif
     }
 
     public void ApplyLevel()

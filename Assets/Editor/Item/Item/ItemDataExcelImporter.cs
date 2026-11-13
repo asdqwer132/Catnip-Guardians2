@@ -22,6 +22,7 @@ namespace ItemDataExcelTools
         [SerializeField] private bool replaceDescriptions;
         [SerializeField] private bool showEnums;
         private Vector2 scroll;
+        private bool showSettings;
         private Plan preview;
         private string status = "엑셀 파일을 선택하고 검증해 주세요.";
 
@@ -50,19 +51,14 @@ namespace ItemDataExcelTools
                 "Descriptions는 같은 dataId의 언어별 이름과 설명입니다. 엑셀을 저장한 뒤 가져오세요.", MessageType.Info);
 
             EditorGUI.BeginChangeCheck();
-            EditorGUILayout.BeginHorizontal();
-            workbookPath = EditorGUILayout.TextField("엑셀 파일 (.xlsx)", workbookPath);
-            if (GUILayout.Button("선택", GUILayout.Width(60)))
+            if (DataExcelGUI.Workbook(ref workbookPath, "아이템 엑셀 선택")) preview = null;
+            if (DataExcelGUI.AdditionalSettings(ref showSettings))
             {
-                string selected = EditorUtility.OpenFilePanel("ItemData 엑셀 선택", "", "xlsx");
-                if (!string.IsNullOrEmpty(selected)) workbookPath = selected;
-                preview = null;
-            }
-            EditorGUILayout.EndHorizontal();
-            outputFolder = EditorGUILayout.TextField("새 에셋 생성 폴더", outputFolder);
+            outputFolder = EditorGUILayout.TextField("출력 폴더", outputFolder);
             findMissingIcons = EditorGUILayout.Toggle("없는 아이콘을 ID로 검색", findMissingIcons);
             if (findMissingIcons) iconFolder = EditorGUILayout.TextField("아이콘 검색 폴더", iconFolder);
             replaceDescriptions = EditorGUILayout.Toggle("언어 데이터 전체 교체", replaceDescriptions);
+            }
             if (EditorGUI.EndChangeCheck()) preview = null;
 
             EditorGUILayout.LabelField(replaceDescriptions
@@ -85,13 +81,7 @@ namespace ItemDataExcelTools
             }
 
             EditorGUILayout.Space();
-            EditorGUILayout.BeginHorizontal();
-            using (new EditorGUI.DisabledScope(EditorApplication.isPlayingOrWillChangePlaymode))
-            {
-                if (GUILayout.Button("검증 및 미리보기", GUILayout.Height(30))) Validate();
-                if (GUILayout.Button("엑셀 적용 (생성 / 갱신)", GUILayout.Height(30))) Import();
-            }
-            EditorGUILayout.EndHorizontal();
+            DataExcelGUI.Actions(Validate, Import);
             EditorGUILayout.LabelField(status, EditorStyles.wordWrappedLabel);
 
             scroll = EditorGUILayout.BeginScrollView(scroll);
