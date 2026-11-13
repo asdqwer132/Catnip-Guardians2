@@ -13,6 +13,7 @@ public class SkillNodeUI : MonoBehaviour
     [SerializeField] private Button button;
     [SerializeField] private Image iconImage;
     [SerializeField] private Image lockImage;
+    [SerializeField] private SkillLevelSelecter levelSelector;
 
     [Header("Visibility")]
     [SerializeField] private bool hideUnavailableNodes;
@@ -31,6 +32,7 @@ public class SkillNodeUI : MonoBehaviour
     {
         this.skillNodeData = skillNodeData;
         this.lines = lines;
+        ApplyLevel();
     }
 
     public void Init(SkillTreeUI owner)
@@ -73,8 +75,15 @@ public class SkillNodeUI : MonoBehaviour
         Refresh();
     }
 
+    public void ApplyLevel()
+    {
+        if (levelSelector == null) levelSelector = GetComponentInChildren<SkillLevelSelecter>(true);
+        if (levelSelector != null && skillNodeData != null) levelSelector.SetNodeLevel(Mathf.Max(1, skillNodeData.level));
+    }
+
     public void Refresh()
     {
+        ApplyLevel();
         if (skillNodeData == null)
         {
             SetNodeVisible(false);

@@ -158,6 +158,13 @@ public sealed class SkillTreeGraphWindow : EditorWindow
             var details = new Foldout { text = "Position / Rewards", value = false };
             details.Add(positionField);
             details.Add(button);
+            var level = new IntegerField("Level") { value = data.level, isDelayed = true };
+            level.RegisterValueChangedCallback(evt =>
+            {
+                Undo.RecordObject(data, "Set skill node level"); data.level = Mathf.Max(1, evt.newValue);
+                level.SetValueWithoutNotify(data.level); EditorUtility.SetDirty(data);
+            });
+            details.Add(level);
             extensionContainer.Add(details); RefreshExpandedState(); RefreshPorts();
         }
         public void SetLayoutPosition(Vector2 position)

@@ -7,9 +7,12 @@ public class SkillLevelSelecter : MonoBehaviour
     [SerializeField] Sprite[] sprites;
 
 
+    public void SetNodeLevel(int level) => SetLevel(level - 1);
+
     public void SetLevel(int index)
     {
-        if (index == -1) {
+        if (levelImage == null) return;
+        if (index < 0 || sprites == null) {
             levelImage.gameObject.SetActive(false);
             return;
         }
@@ -21,5 +24,6 @@ public class SkillLevelSelecter : MonoBehaviour
         levelImage.gameObject.SetActive(true);
         
         levelImage.sprite = sprites[index];
+        levelImage.gameObject.SetActive(sprites[index] != null);
     }
 }

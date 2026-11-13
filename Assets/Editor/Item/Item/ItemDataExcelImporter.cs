@@ -41,7 +41,9 @@ namespace ItemDataExcelTools
             window.minSize = new Vector2(740, 460);
         }
 
-        private void OnGUI()
+        private void OnGUI() => DrawUI();
+
+        public void DrawUI()
         {
             EditorGUILayout.LabelField("ItemData 엑셀 가져오기", EditorStyles.boldLabel);
             EditorGUILayout.HelpBox(

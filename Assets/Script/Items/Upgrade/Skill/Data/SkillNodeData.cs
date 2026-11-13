@@ -12,6 +12,8 @@ public class SkillNodeData : DefaultData
     [Header("Extra Data / Node Icon")]
     [Tooltip("Icon shown after unlocking. Empty uses the basic icon.")]
     public Sprite unlockedIcon;
+    [Header("Node Level")]
+    [Min(1)] public int level = 1;
 
     [Header("Extra Data / Map")]
     public SkillMapData skillMap;
