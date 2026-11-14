@@ -4,11 +4,11 @@ public enum DataType
 {
     System = 0,
     Item = 1,
-    ItemEffect = 10,
-    ItemClass = 11,
-    ItemCategory = 12,
-    SkillLine = 6,
-    Plant = 7,
+    Skill = 2,
+    Map = 3,
+    Character = 4,
+    Enemy = 5,
+    Box = 6,
 }
 
 [Serializable]

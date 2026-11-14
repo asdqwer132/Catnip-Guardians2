@@ -13,4 +13,10 @@ public sealed class StageCodexData : ItemData
     public Cost[] entryCosts = Array.Empty<Cost>();
     public Cost[] currencyRewards = Array.Empty<Cost>();
     public InventoryItem[] itemRewards = Array.Empty<InventoryItem>();
+
+    private void OnValidate()
+    {
+        if (string.IsNullOrEmpty(dataId))
+            dataId = "Codex/Stage." + dataNumbering + "." + name;
+    }
 }
