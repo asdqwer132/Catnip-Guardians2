@@ -22,7 +22,6 @@ public class SkillLevelSelecter : MonoBehaviour
             return;
         }
         levelImage.gameObject.SetActive(true);
-        
         levelImage.sprite = sprites[index];
         levelImage.gameObject.SetActive(sprites[index] != null);
     }

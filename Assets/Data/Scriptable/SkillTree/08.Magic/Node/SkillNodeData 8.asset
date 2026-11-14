@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 606bb820635defc49b80fccb1aeef576, type: 3}
   m_Name: SkillNodeData 8
   m_EditorClassIdentifier: Assembly-CSharp::SkillNodeData
-  icon: {fileID: -280803191099311562, guid: 6572d574e950a224d93aff017fcc4193, type: 3}
+  icon: {fileID: 21300000, guid: 361f24e4b7cfb3549bb2c8d27a27db29, type: 3}
   data:
   - language: 0
     dataName: Maximum Range Increase
@@ -22,16 +22,11 @@ MonoBehaviour:
   dataId: 08SkillNodeData8
   dataType: 0
   requireUnlock: 0
-  unlockedIcon: {fileID: 21300000, guid: ff0994586f8a6cc48be7c1c8beab053c, type: 3}
+  unlockedIcon: {fileID: 21300000, guid: 386bef30cfce64a4b8a559d3ac69443d, type: 3}
+  level: 1
   skillMap: {fileID: 11400000, guid: 170a9fb23ab13774e93ccb9ab8e59744, type: 2}
-  mapIcon: {fileID: 0}
   costs:
   - currencyType: 0
     amount: 10
-  - currencyType: 1
-    amount: 1
-  requiredSkills:
-  - {fileID: 11400000, guid: 025a41203562e464c90237b8f67d8905, type: 2}
-  - {fileID: 11400000, guid: 025a41203562e464c90237b8f67d8905, type: 2}
-  rewards:
-  - {fileID: 11400000, guid: ff310bf736de381449ef413011f16808, type: 2}
+  requiredSkills: []
+  rewards: []

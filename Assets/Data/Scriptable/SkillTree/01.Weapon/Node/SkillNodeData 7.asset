@@ -12,18 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 606bb820635defc49b80fccb1aeef576, type: 3}
   m_Name: SkillNodeData 7
   m_EditorClassIdentifier: Assembly-CSharp::SkillNodeData
-  icon: {fileID: 7336298474659753992, guid: aaf32167123948742a5b00211e9a1c52, type: 3}
-  data: []
-  dataNumbering: 
+  icon: {fileID: 21300000, guid: aaf32167123948742a5b00211e9a1c52, type: 3}
+  data:
+  - language: 0
+    dataName: Maximum Range Increase
+    description: Increases the maximum item throw range.
+    detailDescription: 
+  dataNumbering: 01
   dataId: 01SkillNodeData7
   dataType: 0
   requireUnlock: 0
   unlockedIcon: {fileID: 21300000, guid: 6dfd2e6fe1e12744d93f26c21f34cf30, type: 3}
   level: 1
-  skillMap: {fileID: 11400000, guid: 7e503782a7e32384f87ba0d00d7bf734, type: 2}
+  skillMap: {fileID: 11400000, guid: d5de1aa9d85f30f4ca52d4b62c8ecee9, type: 2}
   costs:
   - currencyType: 0
     amount: 10
   requiredSkills:
-  - {fileID: 11400000, guid: dd6eefb2d82fdb79783dea22e274b732, type: 2}
+  - {fileID: 11400000, guid: 4bde5d9e0ad190b4d8710d39b58696c8, type: 2}
   rewards: []

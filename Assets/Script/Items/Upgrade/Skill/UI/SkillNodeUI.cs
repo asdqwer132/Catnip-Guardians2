@@ -81,7 +81,9 @@ public class SkillNodeUI : MonoBehaviour
         if (iconImage == null || skillNodeData == null) return;
         bool unlocked = Application.isPlaying && SkillTreeManager.Instance != null && SkillTreeManager.Instance.IsUnlocked(skillNodeData);
         var sprite = unlocked && skillNodeData.unlockedIcon != null ? skillNodeData.unlockedIcon : skillNodeData.icon;
-        iconImage.sprite = sprite; iconImage.enabled = sprite != null;
+
+        iconImage.sprite = sprite; 
+        iconImage.enabled = sprite != null;
 #if UNITY_EDITOR
         if (!Application.isPlaying)
         {
@@ -94,7 +96,11 @@ public class SkillNodeUI : MonoBehaviour
     public void ApplyLevel()
     {
         if (levelSelector == null) levelSelector = GetComponentInChildren<SkillLevelSelecter>(true);
-        if (levelSelector != null && skillNodeData != null) levelSelector.SetNodeLevel(Mathf.Max(1, skillNodeData.level));
+        if (levelSelector != null && skillNodeData != null) {
+
+            Debug.Log(name + "." + skillNodeData.level);
+            levelSelector.SetNodeLevel(Mathf.Max(1, skillNodeData.level));
+        }
     }
 
     public void Refresh()

@@ -33,6 +33,8 @@ public class MergeItemInjecter : MonoBehaviour
         var materials = new List<MergeItemMaterial>(mergeItems.Length);
         for (int i = 0; i < mergeItems.Length; i++)
             materials.Add(new MergeItemMaterial(mergeItems[i], slots[i], Mathf.Max(0, count), Mathf.Max(0, defaultCount)));
+
+
 #if UNITY_EDITOR
         if (!Application.isPlaying)
         {

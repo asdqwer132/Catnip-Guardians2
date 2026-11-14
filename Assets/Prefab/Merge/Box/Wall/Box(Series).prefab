@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3401685766570148374}
   - component: {fileID: 4783042846926521334}
   - component: {fileID: 7821177070210774819}
+  - component: {fileID: 7604912430957174622}
   m_Layer: 0
   m_Name: Box(Series)
   m_TagString: Untagged
@@ -124,6 +125,21 @@ MonoBehaviour:
     height: 3
     spawnOffset: {x: 0, y: 0}
     deadlineOffset: {x: 0, y: 0}
+--- !u!114 &7604912430957174622
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4804535939393210474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26a2815268735a143a0e7fcf19d1a717, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MergeSeriesSelector
+  boxRoot: {fileID: 4602517530497694814}
+  board: {fileID: 0}
+  levelManager: {fileID: 3401685766570148374}
 --- !u!1001 &1075379312154122293
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -15,11 +15,6 @@ public sealed class StoryExcelManager : ExcelWindowModule<StoryExcelImporterWind
     public override string Name => "Story";
     public override void DrawGUI() => Window.DrawUI();
 }
-public sealed class MergeItemExcelManager : ExcelWindowModule<MergeItemExcelImporterWindow>
-{
-    public override string Name => "Merge Items";
-    public override void DrawGUI() => Window.DrawUI();
-}
 public sealed class EnemyPatternExcelManager : IDataExcelModule
 {
     private string workbook = "Assets/Data/Excel/EnemyPatternsExample.xlsx", status = "";
