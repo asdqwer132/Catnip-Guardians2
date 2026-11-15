@@ -444,21 +444,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23e9ecf1c3f51d5449bc76bdb7654a43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SubPlantRecipeSlotUI
-  icon: {fileID: 2954698652241664229}
-  dataNameText: {fileID: 7480558608105997786}
-  descriptionText: {fileID: 0}
-  detailDescriptionText: {fileID: 0}
   dataSource: {fileID: 0}
-  hideEmptyDescription: 0
-  hideEmptyDetailDescription: 1
-  seriesText: {fileID: 0}
-  gradeText: {fileID: 0}
-  seriesIcon: {fileID: 0}
-  gradeIcon: {fileID: 0}
-  series: 0
-  grade: -1
   amountImage: {fileID: 0}
-  amountText: {fileID: 0}
   fillButton: {fileID: 47598240909426723}
   currentItem: {fileID: 0}
   recipeManager: {fileID: 0}
@@ -467,6 +454,20 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  modules:
+  - rid: 1000
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        icon: {fileID: 2954698652241664229}
+        dataNameText: {fileID: 7480558608105997786}
+        descriptionText: {fileID: 0}
+        detailDescriptionText: {fileID: 0}
+        hideEmptyDescription: 0
+        hideEmptyDetailDescription: 1
 --- !u!1 &9179744211486527854
 GameObject:
   m_ObjectHideFlags: 0

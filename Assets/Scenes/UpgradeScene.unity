@@ -17974,32 +17974,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
-  icon: {fileID: 2114892121}
-  dataNameText: {fileID: 1732028084}
-  descriptionText: {fileID: 861932282}
-  detailDescriptionText: {fileID: 0}
   dataSource: {fileID: 0}
-  hideEmptyDescription: 0
-  hideEmptyDetailDescription: 1
-  seriesText: {fileID: 0}
-  totalNodesText: {fileID: 832796368}
-  seriesIcon: {fileID: 0}
-  gradeIcon: {fileID: 0}
-  series: 0
-  grade: -1
-  completedNodesText: {fileID: 640543623}
-  categoryText: {fileID: 0}
-  weightText: {fileID: 0}
-  cooldownText: {fileID: 0}
-  effectDescriptions: {fileID: 0}
   useTooltip: 1
   offset: {x: 0, y: 20}
   clampToParent: 1
   positionAtAnchor: 0
   removePannel: 0
-  alternatePanels: []
   tooltipPanel: {fileID: 313675930}
   startHidden: 1
+  modules:
+  - rid: 1000
+  - rid: 1001
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        icon: {fileID: 2114892121}
+        dataNameText: {fileID: 1732028084}
+        descriptionText: {fileID: 861932282}
+        detailDescriptionText: {fileID: 0}
+        hideEmptyDescription: 0
+        hideEmptyDetailDescription: 1
+    - rid: 1001
+      type: {class: SkillMapInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        totalNodesText: {fileID: 832796368}
+        completedNodesText: {fileID: 640543623}
 --- !u!1001 &314719951
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20797,7 +20799,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4301095534886901092, guid: 504ef55bb9ae7cc4f9ea0255a5fa61bd, type: 3}
-      propertyPath: dataNameText
+      propertyPath: modules.Array.data[0].dataNameText
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4447847571182399361, guid: 504ef55bb9ae7cc4f9ea0255a5fa61bd, type: 3}
@@ -24778,42 +24780,51 @@ MonoBehaviour:
   m_GameObject: {fileID: 447093711}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
+  m_Script: {fileID: 11500000, guid: d760dc9856de41a180568f13260a61b0, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
-  icon: {fileID: 1554755341}
-  dataNameText: {fileID: 1791264742}
-  descriptionText: {fileID: 1210280522}
-  detailDescriptionText: {fileID: 1795549178}
+  m_EditorClassIdentifier: Assembly-CSharp::DataViewUI
   dataSource: {fileID: 0}
-  hideEmptyDescription: 0
-  hideEmptyDetailDescription: 1
-  seriesText: {fileID: 0}
-  gradeText: {fileID: 40579016}
-  seriesIcon: {fileID: 1234008347}
-  gradeIcon: {fileID: 2145714099}
-  series: 0
-  grade: -1
-  amountText: {fileID: 0}
-  categoryText: {fileID: 0}
-  weightText: {fileID: 0}
-  cooldownText: {fileID: 0}
-  effectDescriptions: {fileID: 1534268694}
-  portraitImage: {fileID: 0}
-  previewImage: {fileID: 0}
-  portraitDescription: {fileID: 0}
-  portraitPage: {fileID: 0}
-  previousPortrait: {fileID: 0}
-  nextPortrait: {fileID: 0}
-  alternatePanels:
-  - {fileID: 982824313}
-  - {fileID: 1798906564}
-  - {fileID: 560577844}
-  portraitInformation: {fileID: 0}
-  portraitContent: {fileID: 0}
-  portraitSlotPrefab: {fileID: 0}
-  portraitSelectionGroup: {fileID: 0}
-  childInventory: {fileID: 0}
+  modules:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        icon: {fileID: 1554755341}
+        dataNameText: {fileID: 1791264742}
+        descriptionText: {fileID: 1210280522}
+        detailDescriptionText: {fileID: 1795549178}
+        hideEmptyDescription: 0
+        hideEmptyDetailDescription: 1
+    - rid: 1001
+      type: {class: ClassificationModule, ns: , asm: Assembly-CSharp}
+      data:
+        seriesText: {fileID: 0}
+        gradeText: {fileID: 40579016}
+        seriesIcon: {fileID: 1234008347}
+        gradeIcon: {fileID: 2145714099}
+        series: 0
+        grade: -1
+    - rid: 1002
+      type: {class: ItemInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        amountText: {fileID: 0}
+        categoryText: {fileID: 0}
+        weightText: {fileID: 0}
+        cooldownText: {fileID: 0}
+        effectDescriptions: {fileID: 1534268694}
+    - rid: 1003
+      type: {class: PanelVisibilityModule, ns: , asm: Assembly-CSharp}
+      data:
+        alternatePanels:
+        - {fileID: 982824313}
+        - {fileID: 1798906564}
+        - {fileID: 560577844}
 --- !u!114 &447093714
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25470,7 +25481,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5704112146065660191, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
-      propertyPath: amountText
+      propertyPath: modules.Array.data[1].amountText
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7991120730881528602, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
@@ -29737,42 +29748,47 @@ MonoBehaviour:
   m_GameObject: {fileID: 560577844}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
+  m_Script: {fileID: 11500000, guid: d760dc9856de41a180568f13260a61b0, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
-  icon: {fileID: 0}
-  dataNameText: {fileID: 880594451}
-  descriptionText: {fileID: 405680768}
-  detailDescriptionText: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::DataViewUI
   dataSource: {fileID: 0}
-  hideEmptyDescription: 0
-  hideEmptyDetailDescription: 1
-  seriesText: {fileID: 0}
-  gradeText: {fileID: 0}
-  seriesIcon: {fileID: 0}
-  gradeIcon: {fileID: 0}
-  series: 0
-  grade: -1
-  amountText: {fileID: 0}
-  categoryText: {fileID: 0}
-  weightText: {fileID: 0}
-  cooldownText: {fileID: 0}
-  effectDescriptions: {fileID: 0}
-  portraitImage: {fileID: 0}
-  previewImage: {fileID: 1751380856}
-  portraitDescription: {fileID: 0}
-  portraitPage: {fileID: 0}
-  previousPortrait: {fileID: 0}
-  nextPortrait: {fileID: 0}
-  alternatePanels:
-  - {fileID: 982824313}
-  - {fileID: 447093711}
-  - {fileID: 1798906564}
-  portraitInformation: {fileID: 0}
-  portraitContent: {fileID: 0}
-  portraitSlotPrefab: {fileID: 0}
-  portraitSelectionGroup: {fileID: 0}
-  childInventory: {fileID: 297271356}
+  modules:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        icon: {fileID: 0}
+        dataNameText: {fileID: 880594451}
+        descriptionText: {fileID: 405680768}
+        detailDescriptionText: {fileID: 0}
+        hideEmptyDescription: 0
+        hideEmptyDetailDescription: 1
+    - rid: 1001
+      type: {class: CodexInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        portraitImage: {fileID: 0}
+        previewImage: {fileID: 1751380856}
+        portraitDescription: {fileID: 0}
+        portraitPage: {fileID: 0}
+        previousPortrait: {fileID: 0}
+        nextPortrait: {fileID: 0}
+        portraitInformation: {fileID: 0}
+        portraitContent: {fileID: 0}
+        portraitSlotPrefab: {fileID: 0}
+        portraitSelectionGroup: {fileID: 0}
+        childInventory: {fileID: 297271356}
+    - rid: 1002
+      type: {class: PanelVisibilityModule, ns: , asm: Assembly-CSharp}
+      data:
+        alternatePanels:
+        - {fileID: 982824313}
+        - {fileID: 447093711}
+        - {fileID: 1798906564}
 --- !u!114 &560577847
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31436,31 +31452,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9c38ced7a150de4ca2379c038e1b557, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CostTooltipUI
-  icon: {fileID: 305952077}
-  dataNameText: {fileID: 2044944248}
-  descriptionText: {fileID: 2099255473}
-  detailDescriptionText: {fileID: 0}
   dataSource: {fileID: 0}
-  hideEmptyDescription: 0
-  hideEmptyDetailDescription: 1
-  seriesText: {fileID: 0}
-  gradeText: {fileID: 0}
-  seriesIcon: {fileID: 0}
-  gradeIcon: {fileID: 0}
-  series: 0
-  grade: -1
-  amountText: {fileID: 0}
-  categoryText: {fileID: 0}
-  weightText: {fileID: 0}
-  cooldownText: {fileID: 0}
-  effectDescriptions: {fileID: 0}
   useTooltip: 1
   offset: {x: 0, y: 20}
   clampToParent: 1
   positionAtAnchor: 0
   removePannel: 1
-  alternatePanels:
-  - {fileID: 313675930}
   tooltipPanel: {fileID: 580940347}
   extraBoxCosts:
   - currencyType: 0
@@ -31494,6 +31491,26 @@ MonoBehaviour:
   unlockButtonPanel: {fileID: 1680466136}
   lockedStatusPanel: {fileID: 137956250}
   unlockedPanel: {fileID: 78098851}
+  modules:
+  - rid: 1000
+  - rid: 1001
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        icon: {fileID: 305952077}
+        dataNameText: {fileID: 2044944248}
+        descriptionText: {fileID: 2099255473}
+        detailDescriptionText: {fileID: 0}
+        hideEmptyDescription: 0
+        hideEmptyDetailDescription: 1
+    - rid: 1001
+      type: {class: PanelVisibilityModule, ns: , asm: Assembly-CSharp}
+      data:
+        alternatePanels:
+        - {fileID: 313675930}
 --- !u!1001 &590240922
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -38786,7 +38803,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4301095534886901092, guid: 504ef55bb9ae7cc4f9ea0255a5fa61bd, type: 3}
-      propertyPath: dataNameText
+      propertyPath: modules.Array.data[0].dataNameText
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4447847571182399361, guid: 504ef55bb9ae7cc4f9ea0255a5fa61bd, type: 3}
@@ -56215,42 +56232,51 @@ MonoBehaviour:
   m_GameObject: {fileID: 982824313}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
+  m_Script: {fileID: 11500000, guid: d760dc9856de41a180568f13260a61b0, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
-  icon: {fileID: 1601193417}
-  dataNameText: {fileID: 152878497}
-  descriptionText: {fileID: 1730052162}
-  detailDescriptionText: {fileID: 1340418934}
+  m_EditorClassIdentifier: Assembly-CSharp::DataViewUI
   dataSource: {fileID: 0}
-  hideEmptyDescription: 0
-  hideEmptyDetailDescription: 1
-  seriesText: {fileID: 0}
-  gradeText: {fileID: 1474692017}
-  seriesIcon: {fileID: 1370175587}
-  gradeIcon: {fileID: 1443557747}
-  series: 0
-  grade: -1
-  amountText: {fileID: 0}
-  categoryText: {fileID: 0}
-  weightText: {fileID: 0}
-  cooldownText: {fileID: 0}
-  effectDescriptions: {fileID: 438035151}
-  portraitImage: {fileID: 0}
-  previewImage: {fileID: 0}
-  portraitDescription: {fileID: 0}
-  portraitPage: {fileID: 0}
-  previousPortrait: {fileID: 0}
-  nextPortrait: {fileID: 0}
-  alternatePanels:
-  - {fileID: 447093711}
-  - {fileID: 1798906564}
-  - {fileID: 560577844}
-  portraitInformation: {fileID: 0}
-  portraitContent: {fileID: 0}
-  portraitSlotPrefab: {fileID: 0}
-  portraitSelectionGroup: {fileID: 0}
-  childInventory: {fileID: 0}
+  modules:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        icon: {fileID: 1601193417}
+        dataNameText: {fileID: 152878497}
+        descriptionText: {fileID: 1730052162}
+        detailDescriptionText: {fileID: 1340418934}
+        hideEmptyDescription: 0
+        hideEmptyDetailDescription: 1
+    - rid: 1001
+      type: {class: ClassificationModule, ns: , asm: Assembly-CSharp}
+      data:
+        seriesText: {fileID: 0}
+        gradeText: {fileID: 1474692017}
+        seriesIcon: {fileID: 1370175587}
+        gradeIcon: {fileID: 1443557747}
+        series: 0
+        grade: -1
+    - rid: 1002
+      type: {class: ItemInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        amountText: {fileID: 0}
+        categoryText: {fileID: 0}
+        weightText: {fileID: 0}
+        cooldownText: {fileID: 0}
+        effectDescriptions: {fileID: 438035151}
+    - rid: 1003
+      type: {class: PanelVisibilityModule, ns: , asm: Assembly-CSharp}
+      data:
+        alternatePanels:
+        - {fileID: 447093711}
+        - {fileID: 1798906564}
+        - {fileID: 560577844}
 --- !u!114 &982824316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -69000,19 +69026,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e7a0bc438595e143a46b9efc0632c6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopBoxInfoUI
-  icon: {fileID: 2091319642}
-  dataNameText: {fileID: 1442396784}
-  descriptionText: {fileID: 386101459}
-  detailDescriptionText: {fileID: 0}
   dataSource: {fileID: 0}
-  hideEmptyDescription: 1
-  hideEmptyDetailDescription: 1
-  seriesText: {fileID: 0}
-  gradeText: {fileID: 89937784}
-  seriesIcon: {fileID: 788367537}
-  gradeIcon: {fileID: 358870695}
-  series: 0
-  grade: -1
   pannel: {fileID: 1909771095}
   extraBoxCosts:
   - currencyType: 0
@@ -69046,6 +69060,30 @@ MonoBehaviour:
   rewardSlotPrefab: {fileID: 8678710326802670260, guid: 9cf4dd2f0e134134a9ae846ee070b50b, type: 3}
   buyButton: {fileID: 1223030481}
   shopManager: {fileID: 642885257}
+  modules:
+  - rid: 1000
+  - rid: 1001
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        icon: {fileID: 2091319642}
+        dataNameText: {fileID: 1442396784}
+        descriptionText: {fileID: 386101459}
+        detailDescriptionText: {fileID: 0}
+        hideEmptyDescription: 1
+        hideEmptyDetailDescription: 1
+    - rid: 1001
+      type: {class: ClassificationModule, ns: , asm: Assembly-CSharp}
+      data:
+        seriesText: {fileID: 0}
+        gradeText: {fileID: 89937784}
+        seriesIcon: {fileID: 788367537}
+        gradeIcon: {fileID: 358870695}
+        series: 0
+        grade: -1
 --- !u!114 &1224250595
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -85034,31 +85072,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6661afaac0104a51ac8e7e5e5e9cd9bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemMergeRecipeTooltipUI
-  icon: {fileID: 254856237}
-  dataNameText: {fileID: 1144811174}
-  descriptionText: {fileID: 1207598058}
-  detailDescriptionText: {fileID: 0}
   dataSource: {fileID: 0}
-  hideEmptyDescription: 0
-  hideEmptyDetailDescription: 1
-  seriesText: {fileID: 0}
-  gradeText: {fileID: 15268105}
-  seriesIcon: {fileID: 398627069}
-  gradeIcon: {fileID: 890167891}
-  series: 0
-  grade: -1
-  amountText: {fileID: 685690588}
-  categoryText: {fileID: 0}
-  weightText: {fileID: 0}
-  cooldownText: {fileID: 0}
-  effectDescriptions: {fileID: 0}
   useTooltip: 1
   offset: {x: 0, y: 20}
   clampToParent: 1
   positionAtAnchor: 0
   removePannel: 1
-  alternatePanels:
-  - {fileID: 705840045}
   tooltipPanel: {fileID: 1273676111}
   recipes:
   - {fileID: 11400000, guid: 374af2a005a773040afb728b8e9762df, type: 2}
@@ -85107,6 +85126,45 @@ MonoBehaviour:
   - {fileID: 4806742281300811581}
   - {fileID: 378787558}
   - {fileID: 717119953}
+  modules:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  - rid: 1003
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        icon: {fileID: 254856237}
+        dataNameText: {fileID: 1144811174}
+        descriptionText: {fileID: 1207598058}
+        detailDescriptionText: {fileID: 0}
+        hideEmptyDescription: 0
+        hideEmptyDetailDescription: 1
+    - rid: 1001
+      type: {class: ClassificationModule, ns: , asm: Assembly-CSharp}
+      data:
+        seriesText: {fileID: 0}
+        gradeText: {fileID: 15268105}
+        seriesIcon: {fileID: 398627069}
+        gradeIcon: {fileID: 890167891}
+        series: 0
+        grade: -1
+    - rid: 1002
+      type: {class: ItemInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        amountText: {fileID: 685690588}
+        categoryText: {fileID: 0}
+        weightText: {fileID: 0}
+        cooldownText: {fileID: 0}
+        effectDescriptions: {fileID: 0}
+    - rid: 1003
+      type: {class: PanelVisibilityModule, ns: , asm: Assembly-CSharp}
+      data:
+        alternatePanels:
+        - {fileID: 705840045}
 --- !u!1001 &1504865758
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -87696,32 +87754,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
-  icon: {fileID: 1263416206}
-  dataNameText: {fileID: 62072172}
-  descriptionText: {fileID: 853979632}
-  detailDescriptionText: {fileID: 0}
   dataSource: {fileID: 0}
-  hideEmptyDescription: 0
-  hideEmptyDetailDescription: 1
-  seriesText: {fileID: 0}
-  gradeText: {fileID: 0}
-  seriesIcon: {fileID: 0}
-  gradeIcon: {fileID: 0}
-  series: 0
-  grade: -1
-  amountText: {fileID: 0}
-  categoryText: {fileID: 0}
-  weightText: {fileID: 0}
-  cooldownText: {fileID: 0}
-  effectDescriptions: {fileID: 0}
   useTooltip: 1
   offset: {x: 0, y: 20}
   clampToParent: 1
   positionAtAnchor: 1
   removePannel: 1
-  alternatePanels: []
   tooltipPanel: {fileID: 0}
   startHidden: 1
+  modules:
+  - rid: 1000
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        icon: {fileID: 1263416206}
+        dataNameText: {fileID: 62072172}
+        descriptionText: {fileID: 853979632}
+        detailDescriptionText: {fileID: 0}
+        hideEmptyDescription: 0
+        hideEmptyDetailDescription: 1
 --- !u!1 &1565207184
 GameObject:
   m_ObjectHideFlags: 0
@@ -101173,22 +101227,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 1776001220}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
+  m_Script: {fileID: 11500000, guid: d760dc9856de41a180568f13260a61b0, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
-  icon: {fileID: 234908423}
-  dataNameText: {fileID: 26861988}
-  descriptionText: {fileID: 0}
-  detailDescriptionText: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::DataViewUI
   dataSource: {fileID: 0}
-  hideEmptyDescription: 0
-  hideEmptyDetailDescription: 1
-  seriesText: {fileID: 0}
-  gradeText: {fileID: 0}
-  seriesIcon: {fileID: 0}
-  gradeIcon: {fileID: 0}
-  series: 0
-  grade: -1
+  modules:
+  - rid: 1000
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        icon: {fileID: 234908423}
+        dataNameText: {fileID: 26861988}
+        descriptionText: {fileID: 0}
+        detailDescriptionText: {fileID: 0}
+        hideEmptyDescription: 0
+        hideEmptyDetailDescription: 1
 --- !u!1001 &1776535699
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -102723,42 +102779,47 @@ MonoBehaviour:
   m_GameObject: {fileID: 1798906564}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
+  m_Script: {fileID: 11500000, guid: d760dc9856de41a180568f13260a61b0, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
-  icon: {fileID: 0}
-  dataNameText: {fileID: 341242253}
-  descriptionText: {fileID: 0}
-  detailDescriptionText: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::DataViewUI
   dataSource: {fileID: 0}
-  hideEmptyDescription: 0
-  hideEmptyDetailDescription: 1
-  seriesText: {fileID: 0}
-  gradeText: {fileID: 0}
-  seriesIcon: {fileID: 0}
-  gradeIcon: {fileID: 0}
-  series: 0
-  grade: -1
-  amountText: {fileID: 0}
-  categoryText: {fileID: 0}
-  weightText: {fileID: 0}
-  cooldownText: {fileID: 0}
-  effectDescriptions: {fileID: 0}
-  portraitImage: {fileID: 816939383}
-  previewImage: {fileID: 0}
-  portraitDescription: {fileID: 753949719}
-  portraitPage: {fileID: 1225618344}
-  previousPortrait: {fileID: 6016688715215353647}
-  nextPortrait: {fileID: 184242704}
-  alternatePanels:
-  - {fileID: 982824313}
-  - {fileID: 447093711}
-  - {fileID: 560577844}
-  portraitInformation: {fileID: 0}
-  portraitContent: {fileID: 0}
-  portraitSlotPrefab: {fileID: 0}
-  portraitSelectionGroup: {fileID: 0}
-  childInventory: {fileID: 0}
+  modules:
+  - rid: 1000
+  - rid: 1001
+  - rid: 1002
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        icon: {fileID: 0}
+        dataNameText: {fileID: 341242253}
+        descriptionText: {fileID: 0}
+        detailDescriptionText: {fileID: 0}
+        hideEmptyDescription: 0
+        hideEmptyDetailDescription: 1
+    - rid: 1001
+      type: {class: CodexInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        portraitImage: {fileID: 816939383}
+        previewImage: {fileID: 0}
+        portraitDescription: {fileID: 753949719}
+        portraitPage: {fileID: 1225618344}
+        previousPortrait: {fileID: 6016688715215353647}
+        nextPortrait: {fileID: 184242704}
+        portraitInformation: {fileID: 0}
+        portraitContent: {fileID: 0}
+        portraitSlotPrefab: {fileID: 0}
+        portraitSelectionGroup: {fileID: 0}
+        childInventory: {fileID: 0}
+    - rid: 1002
+      type: {class: PanelVisibilityModule, ns: , asm: Assembly-CSharp}
+      data:
+        alternatePanels:
+        - {fileID: 982824313}
+        - {fileID: 447093711}
+        - {fileID: 560577844}
 --- !u!114 &1798906567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -105638,22 +105699,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 1859068378}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
+  m_Script: {fileID: 11500000, guid: d760dc9856de41a180568f13260a61b0, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
-  icon: {fileID: 986329587}
-  dataNameText: {fileID: 658471766}
-  descriptionText: {fileID: 34635026}
-  detailDescriptionText: {fileID: 389815432}
+  m_EditorClassIdentifier: Assembly-CSharp::DataViewUI
   dataSource: {fileID: 0}
-  hideEmptyDescription: 0
-  hideEmptyDetailDescription: 1
-  seriesText: {fileID: 0}
-  gradeText: {fileID: 2017389835}
-  seriesIcon: {fileID: 1399774348}
-  gradeIcon: {fileID: 960537940}
-  series: 0
-  grade: -1
+  modules:
+  - rid: 1000
+  - rid: 1001
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        icon: {fileID: 986329587}
+        dataNameText: {fileID: 658471766}
+        descriptionText: {fileID: 34635026}
+        detailDescriptionText: {fileID: 389815432}
+        hideEmptyDescription: 0
+        hideEmptyDetailDescription: 1
+    - rid: 1001
+      type: {class: ClassificationModule, ns: , asm: Assembly-CSharp}
+      data:
+        seriesText: {fileID: 0}
+        gradeText: {fileID: 2017389835}
+        seriesIcon: {fileID: 1399774348}
+        gradeIcon: {fileID: 960537940}
+        series: 0
+        grade: -1
 --- !u!1001 &1859871180
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -119369,22 +119442,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 2109920025}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
+  m_Script: {fileID: 11500000, guid: d760dc9856de41a180568f13260a61b0, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
-  icon: {fileID: 333306232}
-  dataNameText: {fileID: 989736249}
-  descriptionText: {fileID: 0}
-  detailDescriptionText: {fileID: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::DataViewUI
   dataSource: {fileID: 0}
-  hideEmptyDescription: 0
-  hideEmptyDetailDescription: 1
-  seriesText: {fileID: 0}
-  gradeText: {fileID: 0}
-  seriesIcon: {fileID: 0}
-  gradeIcon: {fileID: 0}
-  series: 0
-  grade: -1
+  modules:
+  - rid: 1000
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        icon: {fileID: 333306232}
+        dataNameText: {fileID: 989736249}
+        descriptionText: {fileID: 0}
+        detailDescriptionText: {fileID: 0}
+        hideEmptyDescription: 0
+        hideEmptyDetailDescription: 1
 --- !u!1001 &2110181403
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -125711,7 +125786,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4301095534886901092, guid: 504ef55bb9ae7cc4f9ea0255a5fa61bd, type: 3}
-      propertyPath: dataNameText
+      propertyPath: modules.Array.data[0].dataNameText
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4447847571182399361, guid: 504ef55bb9ae7cc4f9ea0255a5fa61bd, type: 3}

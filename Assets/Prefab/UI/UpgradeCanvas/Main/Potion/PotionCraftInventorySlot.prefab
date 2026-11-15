@@ -292,32 +292,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b217bf1b8b2852468f16a9b5d8f0a84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SubPlantInventorySlotUI
-  icon: {fileID: 1295650540954652643}
-  dataNameText: {fileID: 0}
-  descriptionText: {fileID: 0}
-  detailDescriptionText: {fileID: 0}
   dataSource: {fileID: 0}
-  hideEmptyDescription: 0
-  hideEmptyDetailDescription: 1
-  seriesText: {fileID: 0}
-  gradeText: {fileID: 0}
-  seriesIcon: {fileID: 0}
-  gradeIcon: {fileID: 0}
-  series: 0
-  grade: -1
   amountImage: {fileID: 0}
-  amountText: {fileID: 3999279684155034952}
   locked: {fileID: 0}
   ready: {fileID: 0}
   IsLocked: 0
-  categoryText: {fileID: 0}
-  weightText: {fileID: 0}
-  cooldownText: {fileID: 0}
   currentItem:
     itemData: {fileID: 0}
     amount: 0
   slotButton: {fileID: 0}
   slotToggle: {fileID: 2661863430750436515}
+  modules:
+  - rid: 1000
+  - rid: 1001
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        icon: {fileID: 1295650540954652643}
+        dataNameText: {fileID: 0}
+        descriptionText: {fileID: 0}
+        detailDescriptionText: {fileID: 0}
+        hideEmptyDescription: 0
+        hideEmptyDetailDescription: 1
+    - rid: 1001
+      type: {class: ItemInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        amountText: {fileID: 3999279684155034952}
+        categoryText: {fileID: 0}
+        weightText: {fileID: 0}
+        cooldownText: {fileID: 0}
 --- !u!114 &8721979109657547302
 MonoBehaviour:
   m_ObjectHideFlags: 0

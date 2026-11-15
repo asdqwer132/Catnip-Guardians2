@@ -1,6 +1,6 @@
 using TMPro;
 
-public sealed class PotionRecipeMaterialUI : TooltipUI
+public sealed class PotionRecipeMaterialUI : SlotUI
 {
     public TextMeshProUGUI requiredCount;
     public TextMeshProUGUI ownedCount;

@@ -14,7 +14,7 @@ public sealed class PotionRecipePanelUI : ItemSearchFilterTargetUI
     public GameObject recipeInfoPannel;
     public Transform recipeContent;
     public PotionRecipeSlotUI recipeSlotPrefab;
-    public TooltipUI details;
+    public DataViewUI details;
     public Transform materialsContent;
     public PotionRecipeMaterialUI materialSlotPrefab;
     public Button goToCraftingButton;

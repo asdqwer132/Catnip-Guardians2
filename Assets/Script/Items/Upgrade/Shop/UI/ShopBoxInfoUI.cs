@@ -9,7 +9,7 @@ public class BoxCost
     public GameObject costPanel;
     public TextMeshProUGUI costText;
 }
-public class ShopBoxInfoUI : TooltipUI
+public class ShopBoxInfoUI : DataViewUI
 {
     [Header("Basic Info UI")]
     public GameObject pannel;

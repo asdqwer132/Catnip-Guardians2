@@ -681,23 +681,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b20c9dba5abe53248b3aad3047922a55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopBoxButton
-  icon: {fileID: 8655282150185658067}
-  dataNameText: {fileID: 0}
-  descriptionText: {fileID: 0}
-  detailDescriptionText: {fileID: 0}
   dataSource: {fileID: 0}
-  hideEmptyDescription: 0
-  hideEmptyDetailDescription: 1
-  seriesText: {fileID: 0}
-  gradeText: {fileID: 3062450692926421914}
-  seriesIcon: {fileID: 2040038925151678873}
-  gradeIcon: {fileID: 4001674669153954984}
-  series: 0
-  grade: -1
   toggle: {fileID: 6296884574704379799}
   openAnimation: {fileID: 1327199142333781252}
   purchasedOverlay: {fileID: 0}
   uIControler: {fileID: 617396243369245802}
+  modules:
+  - rid: 1000
+  - rid: 1001
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        icon: {fileID: 8655282150185658067}
+        dataNameText: {fileID: 0}
+        descriptionText: {fileID: 0}
+        detailDescriptionText: {fileID: 0}
+        hideEmptyDescription: 0
+        hideEmptyDetailDescription: 1
+    - rid: 1001
+      type: {class: ClassificationModule, ns: , asm: Assembly-CSharp}
+      data:
+        seriesText: {fileID: 0}
+        gradeText: {fileID: 3062450692926421914}
+        seriesIcon: {fileID: 2040038925151678873}
+        gradeIcon: {fileID: 4001674669153954984}
+        series: 0
+        grade: -1
 --- !u!114 &6296884574704379799
 MonoBehaviour:
   m_ObjectHideFlags: 0

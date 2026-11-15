@@ -12,7 +12,7 @@ public partial class TooltipUI
     public bool positionAtAnchor = true;
     public bool removePannel = true;
     [Tooltip("Existing panels to hide while this information panel is visible.")]
-    public GameObject[] alternatePanels;
+
 
     public GameObject tooltipPanel;
 
@@ -44,9 +44,9 @@ public partial class TooltipUI
     }
 
     // A fixed panel uses the same renderer without an anchor or item-specific payload.
-    public void Show(DefaultData data)
+    public new void Show(DefaultData data)
     {
-        if (bindingCodexData) return;
+
         PrepareTooltipPanel();
         currentOwner = data;
         pinnedOwner = null;

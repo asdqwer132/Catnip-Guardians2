@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class RecipeSlotUI : TooltipUI
+public class RecipeSlotUI : SlotUI
 {
     [Header("Base Item UI")]
     public TextMeshProUGUI nameText { get => dataNameText; set => dataNameText = value; }

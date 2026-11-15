@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-public sealed class PotionRecipeSlotUI : TooltipUI
+public sealed class PotionRecipeSlotUI : SlotUI
 {
     public Toggle selectButton;
     [SerializeField] private GameObject pannel; //

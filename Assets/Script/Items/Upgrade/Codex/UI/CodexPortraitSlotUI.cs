@@ -1,10 +1,10 @@
 using UnityEngine.UI;
 
-public sealed class CodexPortraitSlotUI : TooltipUI
+public sealed class CodexPortraitSlotUI : SlotUI
 {
     public Toggle toggle;
     public Button button;
-    private TooltipUI owner;
+    private DataViewUI owner;
     private int index = -1;
     public CharacterCodexPortrait Portrait { get; private set; }
 
@@ -16,7 +16,7 @@ public sealed class CodexPortraitSlotUI : TooltipUI
         else if (button != null) button.onClick.AddListener(Select);
     }
 
-    public void Bind(CharacterCodexPortrait portrait, int portraitIndex, TooltipUI details)
+    public void Bind(CharacterCodexPortrait portrait, int portraitIndex, DataViewUI details)
     {
         owner = details; index = portraitIndex; Portrait = portrait;
         SetDefinedData(portrait, portrait?.stateId ?? "");

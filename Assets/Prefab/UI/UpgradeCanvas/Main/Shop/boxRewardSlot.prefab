@@ -245,24 +245,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e933edc57255269419775f1b043ccfca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopBoxRewardSlotUI
-  icon: {fileID: 2628549570234116901}
-  dataNameText: {fileID: 928287134991573114}
   amountImage: {fileID: 0}
-  amountText: {fileID: 8941645205345228192}
-  gradeText: {fileID: 0}
   locked: {fileID: 0}
   ready: {fileID: 0}
   IsLocked: 0
-  descriptionText: {fileID: 0}
-  detailDescriptionText: {fileID: 0}
-  categoryText: {fileID: 0}
-  seriesText: {fileID: 0}
-  weightText: {fileID: 0}
-  cooldownText: {fileID: 0}
   currentItem:
     itemData: {fileID: 0}
     amount: 0
   chanceText: {fileID: 8442328516135230654}
+  modules:
+  - rid: 1000
+  - rid: 1001
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        icon: {fileID: 2628549570234116901}
+        dataNameText: {fileID: 928287134991573114}
+        descriptionText: {fileID: 0}
+        detailDescriptionText: {fileID: 0}
+    - rid: 1001
+      type: {class: ItemInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        amountText: {fileID: 8941645205345228192}
+        categoryText: {fileID: 0}
+        weightText: {fileID: 0}
+        cooldownText: {fileID: 0}
 --- !u!1 &3604050622264048455
 GameObject:
   m_ObjectHideFlags: 0

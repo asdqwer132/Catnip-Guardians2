@@ -716,15 +716,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ce526dbad58464fb695da99b9ba1463, type: 3}
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::PotionRecipeMaterialUI
-  icon: {fileID: 2664287361154437094}
-  dataNameText: {fileID: 3802847275885340065}
-  descriptionText: {fileID: 0}
-  detailDescriptionText: {fileID: 0}
   dataSource: {fileID: 0}
-  hideEmptyDescription: 0
-  hideEmptyDetailDescription: 1
   requiredCount: {fileID: 4831509591160999525}
   ownedCount: {fileID: 6762466460523062230}
+  modules:
+  - rid: 1000
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000
+      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
+      data:
+        icon: {fileID: 2664287361154437094}
+        dataNameText: {fileID: 3802847275885340065}
+        descriptionText: {fileID: 0}
+        detailDescriptionText: {fileID: 0}
+        hideEmptyDescription: 0
+        hideEmptyDetailDescription: 1
 --- !u!1 &8677051578938234362
 GameObject:
   m_ObjectHideFlags: 0

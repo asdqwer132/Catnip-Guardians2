@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BaseItemSlotUI : TooltipUI
+public class BaseItemSlotUI : SlotUI
 {
     [Header("Base Item UI")]
     public GameObject amountImage;

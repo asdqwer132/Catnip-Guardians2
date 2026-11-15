@@ -4,20 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // All objects below are authored UI references or instances of authored slot prefabs.
-public partial class TooltipUI
+public partial class DataViewUI
 {
-    public Image portraitImage;
-    public Image previewImage;
-    public TMP_Text portraitDescription;
-    public TMP_Text portraitPage;
-    public Button previousPortrait;
-    public Button nextPortrait;
-    public TooltipUI portraitInformation;
-    public Transform portraitContent;
-    public CodexPortraitSlotUI portraitSlotPrefab;
-    public ToggleGroup portraitSelectionGroup;
-    public CodexInventoryUI childInventory;
-    private readonly List<CodexPortraitSlotUI> portraitSlots = new List<CodexPortraitSlotUI>();
+    private List<CodexPortraitSlotUI> portraitSlots => Module<CodexInformationModule>()?.Slots ?? EmptyPortraitSlots;
+    private static readonly List<CodexPortraitSlotUI> EmptyPortraitSlots = new List<CodexPortraitSlotUI>();
     public DefaultData SelectedData { get; private set; }
     public int SelectedPortrait { get; private set; } = -1;
 

@@ -12,7 +12,7 @@ public sealed class CodexInventoryUI : InventoryUI
         get => base.slotPrefab != null ? base.slotPrefab.GetComponent<CodexSlotUI>() : null;
         set => base.slotPrefab = value != null ? value.gameObject : null;
     }
-    public TooltipUI details;
+    public DataViewUI details;
     [Tooltip("Items require acquisition/crafting, enemies require a kill. Character and map visibility is unchanged.")]
     public bool discoveredOnly = true;
     private CodexDiscoveryHistory subscribedHistory;
@@ -40,8 +40,8 @@ public sealed class CodexInventoryUI : InventoryUI
     {
         if (!selected) return;
         Select(null);
-        if (details != null && details.alternatePanels != null)
-            foreach (var panel in details.alternatePanels)
+        if (details != null && details.AlternatePanels != null)
+            foreach (var panel in details.AlternatePanels)
                 if (panel != null) panel.SetActive(false);
     }
 
