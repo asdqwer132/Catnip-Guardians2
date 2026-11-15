@@ -1,11 +1,12 @@
 using UnityEngine;
 
-// 이동 영역은 상자 로컬 좌표, 제한선은 연결된 스프라이트의 가로 중심선입니다.
+// 이동 영역은 표시 오브젝트의 기준 위치에 대한 오프셋입니다. 드래그 중 기준은 움직이지 않습니다.
 [DisallowMultipleComponent]
 public sealed class MergeDropZone : MonoBehaviour
 {
-    [Header("투입구 이동 영역 · 상자 로컬 좌표")]
-    public Rect movementArea = new Rect(-1.8f, 1.9f, 3.6f, .6f);
+    [Header("투입구 이동 영역 · 표시 기준 왼쪽 아래 오프셋 X/Y, 폭/높이")]
+    public Transform movementReference;
+    public Rect movementArea = new Rect(-1.8f, -.3f, 3.6f, .6f);
 
     [Header("아이템 투입 제한선 · SpriteRenderer의 위치와 가로 크기")]
     public bool blockAboveLine = true;
@@ -17,7 +18,25 @@ public sealed class MergeDropZone : MonoBehaviour
     public SpriteRenderer spawnMarker;
     [Min(.01f)] public float markerSize = .35f;
 
+    private Transform capturedMarker;
+    private Vector3 markerOrigin;
+    private void OnEnable() => CaptureMovementOrigin();
     private void LateUpdate() => RefreshLine();
+
+    public void CaptureMovementOrigin()
+    {
+        capturedMarker = spawnMarker != null ? spawnMarker.transform : null;
+        markerOrigin = capturedMarker != null ? transform.InverseTransformPoint(capturedMarker.position) : Vector3.zero;
+    }
+    public Rect MovementBounds
+    {
+        get
+        {
+            if (capturedMarker != (spawnMarker != null ? spawnMarker.transform : null)) CaptureMovementOrigin();
+            Vector2 origin = movementReference != null ? (Vector2)transform.InverseTransformPoint(movementReference.position) : (Vector2)markerOrigin;
+            return new Rect(origin + movementArea.position, new Vector2(Mathf.Max(0, movementArea.width), Mathf.Max(0, movementArea.height)));
+        }
+    }
 
     private bool TryGetLine(out Vector2 start, out Vector2 end)
     {
@@ -53,9 +72,10 @@ public sealed class MergeDropZone : MonoBehaviour
 
     public Vector3 ConstrainPosition(Vector3 worldPosition, Vector3 lockedLocalPosition, bool moveX, bool moveY)
     {
+        Rect area = MovementBounds;
         Vector3 local = transform.InverseTransformPoint(worldPosition);
-        local.x = moveX ? Mathf.Clamp(local.x, movementArea.xMin, movementArea.xMax) : lockedLocalPosition.x;
-        local.y = moveY ? Mathf.Clamp(local.y, movementArea.yMin, movementArea.yMax) : lockedLocalPosition.y;
+        local.x = moveX ? Mathf.Clamp(local.x, area.xMin, area.xMax) : lockedLocalPosition.x;
+        local.y = moveY ? Mathf.Clamp(local.y, area.yMin, area.yMax) : lockedLocalPosition.y;
         local.z = lockedLocalPosition.z;
         return transform.TransformPoint(local);
     }
@@ -81,7 +101,8 @@ public sealed class MergeDropZone : MonoBehaviour
         var previous = Gizmos.matrix;
         Gizmos.matrix = transform.localToWorldMatrix;
         Gizmos.color = Color.cyan;
-        Gizmos.DrawWireCube(movementArea.center, new Vector3(movementArea.width, movementArea.height, 0f));
+        var area = MovementBounds;
+        Gizmos.DrawWireCube(area.center, new Vector3(area.width, area.height, 0f));
         Gizmos.matrix = Matrix4x4.identity;
         Gizmos.color = Color.red;
         if (TryGetLine(out var start, out var end)) Gizmos.DrawLine(start, end);

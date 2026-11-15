@@ -232,7 +232,8 @@ internal sealed class MergeItemDropper
         if (!MergegameManager.TryGetPrefab(material.mergeItem, out _))
             return owner.Reject("선택 재료의 MergeItem → Prefab에 활성 MergeItemObject가 있는 프리팹을 연결하세요.");
         float offset = UnityEngine.Random.Range(-owner.dropOffset, owner.dropOffset);
-        Vector3 position = owner.spawnPoint.position + new Vector3(offset * owner.dropOffset, 0f, 0f);
+        Vector3 inletPosition = owner.dropZone != null && owner.dropZone.spawnMarker != null ? owner.dropZone.spawnMarker.transform.position : owner.spawnPoint.position;
+        Vector3 position = inletPosition + new Vector3(offset * owner.dropOffset, 0f, 0f);
         if (IsBlocked(position, material.mergeItem.Radius)) return owner.Reject("투입 위치가 막혀 있습니다.");
         dropping = true;
         int before = owner.Revision;

@@ -71,12 +71,15 @@ public sealed class MergeSpawnPointDragger : MonoBehaviour
         target.dropZone != null && target.spawnPoint != null && (moveX || moveY) &&
         (GameInputManager.instance == null || !GameInputManager.instance.IsBlocked(GameInputBlockType.Gameplay));
 
+    private static Transform Handle(MergegameManager target) => target != null && target.dropZone != null && target.dropZone.spawnMarker != null
+        ? target.dropZone.spawnMarker.transform : target != null ? target.spawnPoint : null;
+
     private bool IsHandleAtWorld(Vector3 world)
     {
         var current = CurrentBoard;
         if (!CanDrag(current)) return false;
         var zone = current.dropZone;
-        Vector2 delta = zone.transform.InverseTransformPoint(world) - zone.transform.InverseTransformPoint(current.spawnPoint.position);
+        Vector2 delta = zone.transform.InverseTransformPoint(world) - zone.transform.InverseTransformPoint(Handle(current).position);
         return delta.sqrMagnitude <= grabRadius * grabRadius;
     }
 
@@ -87,9 +90,9 @@ public sealed class MergeSpawnPointDragger : MonoBehaviour
         if (IsDragging || !IsFinite(world) || !IsHandleAtWorld(world)) return false;
         draggingBoard = CurrentBoard;
         draggingZone = draggingBoard.dropZone;
-        draggingSpawnPoint = draggingBoard.spawnPoint;
+        draggingSpawnPoint = Handle(draggingBoard);
         var zone = draggingBoard.dropZone.transform;
-        lockedLocalPosition = zone.InverseTransformPoint(draggingBoard.spawnPoint.position);
+        lockedLocalPosition = zone.InverseTransformPoint(draggingSpawnPoint.position);
         pointerOffset = lockedLocalPosition - zone.InverseTransformPoint(world);
         selection?.CancelSelection();
         return true;
@@ -102,11 +105,11 @@ public sealed class MergeSpawnPointDragger : MonoBehaviour
         if (!CanContinueDrag()) { EndDrag(); return; }
         var zone = draggingBoard.dropZone;
         Vector3 target = zone.transform.TransformPoint(zone.transform.InverseTransformPoint(world) + pointerOffset);
-        draggingBoard.spawnPoint.position = zone.ConstrainPosition(target, lockedLocalPosition, moveX, moveY);
+        draggingSpawnPoint.position = zone.ConstrainPosition(target, lockedLocalPosition, moveX, moveY);
     }
 
     private bool CanContinueDrag() => CanDrag(draggingBoard) && CurrentBoard == draggingBoard &&
-        draggingBoard.dropZone == draggingZone && draggingBoard.spawnPoint == draggingSpawnPoint;
+        draggingBoard.dropZone == draggingZone && Handle(draggingBoard) == draggingSpawnPoint;
 
     public void EndDrag() { draggingBoard = null; draggingZone = null; draggingSpawnPoint = null; }
 
@@ -118,7 +121,7 @@ public sealed class MergeSpawnPointDragger : MonoBehaviour
         if (requireViewport && !inputCamera.pixelRect.Contains(screen)) return false;
         var presentation = SceneCameraPresentation.ForCamera(inputCamera);
         if (requireViewport && presentation != null && !presentation.ContainsScreenPoint(screen)) return false;
-        var plane = new Plane(Vector3.forward, current.spawnPoint != null ? current.spawnPoint.position : current.transform.position);
+        var plane = new Plane(Vector3.forward, current.spawnPoint != null ? Handle(current).position : current.transform.position);
         var ray = inputCamera.ScreenPointToRay(screen);
         if (!plane.Raycast(ray, out float distance)) return false;
         world = ray.GetPoint(distance);

@@ -9,10 +9,18 @@ public sealed class MergeBoxLevel
 }
 
 // 시리즈 루트 하나에 하나씩 둡니다. 작성된 박스의 활성 상태와 투입 참조만 전환합니다.
-[DisallowMultipleComponent, DefaultExecutionOrder(-300)]
+[ExecuteAlways, DisallowMultipleComponent, DefaultExecutionOrder(-300)]
 public sealed class MergeBoxLevelManager : MonoBehaviour
 {
-    [Tooltip("이 시리즈의 Box1, Box2 등을 연결합니다. 각 박스에는 자체 Spawn Point와 Drop Zone이 있어야 합니다.")]
+    [Header("시리즈 공용 투입구 · 최상위 상자 로컬 좌표")]
+    public Transform spawnPoint;
+    public Vector3 spawnPosition;
+    public MergeDropZone dropZone;
+    private Transform appliedSpawn;
+    private Vector3 appliedPosition;
+    private bool placed;
+
+    [Tooltip("이 시리즈의 Box1, Box2 등을 연결합니다. 공용 투입구가 설정되면 하위 박스의 투입구는 사용하지 않습니다.")]
     public MergeBoxLevel[] levels = Array.Empty<MergeBoxLevel>();
     [SerializeField, Min(1)] private int currentLevel = 1;
     [SerializeField] private MergegameManager board;
@@ -23,11 +31,46 @@ public sealed class MergeBoxLevelManager : MonoBehaviour
     public MergegameManager Board => board;
     public event Action<MergeBoxLevelManager> BoxChanged;
 
-    private void Awake() => TrySetLevel(currentLevel);
+    private void Awake() { ResolveSharedInlet(); ApplySpawnPosition(); if (Application.isPlaying) TrySetLevel(currentLevel); }
+    private void ResolveSharedInlet()
+    {
+        if (dropZone == null)
+        {
+            MergeDropZone candidate = null;
+            foreach (var zone in GetComponentsInChildren<MergeDropZone>(true))
+            {
+                bool insideLevel = false;
+                if (levels != null) foreach (var entry in levels)
+                    if (entry?.box != null && zone.transform.IsChildOf(entry.box.transform)) insideLevel = true;
+                if (insideLevel) continue;
+                if (candidate != null) return;
+                candidate = zone;
+            }
+            dropZone = candidate;
+        }
+        if (spawnPoint == null && dropZone != null && dropZone.spawnMarker != null)
+        {
+            spawnPoint = dropZone.spawnMarker.transform;
+            spawnPosition = transform.InverseTransformPoint(spawnPoint.position);
+        }
+    }
+    private void Update() => ApplySpawnPosition();
+
+    public void ApplySpawnPosition()
+    {
+        if (spawnPoint == null) return;
+        if (placed && appliedSpawn == spawnPoint && appliedPosition == spawnPosition) return;
+        spawnPoint.position = transform.TransformPoint(spawnPosition);
+        appliedSpawn = spawnPoint; appliedPosition = spawnPosition; placed = true;
+        var zone = dropZone != null ? dropZone : CurrentBox != null ? CurrentBox.dropZone : null;
+        zone?.CaptureMovementOrigin();
+    }
 
     public void BindBoard(MergegameManager value)
     {
         board = value;
+        ResolveSharedInlet();
+        ApplySpawnPosition();
         TrySetLevel(currentLevel);
     }
 
@@ -57,13 +100,13 @@ public sealed class MergeBoxLevelManager : MonoBehaviour
         if (board != null)
         {
             // 매니저를 끄거나 재시작하지 않아 재고, 토글, 투입 타이머는 그대로 남습니다.
-            board.spawnPoint = CurrentBox.spawnPoint;
-            board.dropZone = CurrentBox.dropZone;
+            board.spawnPoint = spawnPoint != null ? spawnPoint : CurrentBox.spawnPoint;
+            board.dropZone = dropZone != null ? dropZone : CurrentBox.dropZone;
         }
         foreach (var entry in levels)
             if (entry?.box != null && entry.box != CurrentBox) entry.box.gameObject.SetActive(false);
         CurrentBox.gameObject.SetActive(true);
-        CurrentBox.dropZone.RefreshLine();
+        (dropZone != null ? dropZone : CurrentBox.dropZone)?.RefreshLine();
         if (previous != CurrentBox) BoxChanged?.Invoke(this);
         return true;
     }
@@ -79,8 +122,8 @@ public sealed class MergeBoxLevelManager : MonoBehaviour
             var box = entry.box;
             // 다른 시리즈나 부모 루트를 끄지 않도록 이 루트 아래의 박스만 관리합니다.
             if (entry.minimumLevel < 1 || box.transform == transform || !box.transform.IsChildOf(transform) ||
-                box.spawnPoint == null || !box.spawnPoint.IsChildOf(box.transform) ||
-                box.dropZone == null || !box.dropZone.transform.IsChildOf(box.transform)) return false;
+                (spawnPoint == null && box.spawnPoint == null) ||
+                (dropZone == null && box.dropZone == null)) return false;
             for (int j = 0; j < i; j++)
             {
                 var other = levels[j];
