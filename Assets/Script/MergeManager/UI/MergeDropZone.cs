@@ -16,6 +16,7 @@ public sealed class MergeDropZone : MonoBehaviour
 
     [Header("투입구 표시")]
     public SpriteRenderer spawnMarker;
+    public SpriteRenderer ItemMarker;
     [Min(.01f)] public float markerSize = .35f;
 
     private Transform capturedMarker;
@@ -92,8 +93,8 @@ public sealed class MergeDropZone : MonoBehaviour
     {
         if (spawnMarker == null) return;
         var sprite = nextItem != null ? nextItem.icon : null;
-        if (spawnMarker.sprite != sprite) spawnMarker.sprite = sprite;
-        spawnMarker.enabled = sprite != null;
+        if (ItemMarker.sprite != sprite) ItemMarker.sprite = sprite;
+        ItemMarker.enabled = sprite != null;
         if (sprite == null) return;
         float scale = Mathf.Max(.01f, markerSize) / Mathf.Max(.0001f, sprite.bounds.size.x, sprite.bounds.size.y);
         spawnMarker.transform.localScale = new Vector3(scale, scale, 1f);
