@@ -21,7 +21,15 @@ public sealed class MergeDropZone : MonoBehaviour
     private Transform capturedMarker;
     private Vector3 markerOrigin;
     private void OnEnable() => CaptureMovementOrigin();
+    private void Start() => ResetMarkerPosition();
     private void LateUpdate() => RefreshLine();
+
+    public void ResetMarkerPosition()
+    {
+        if (spawnMarker != null && movementReference != null)
+            spawnMarker.transform.position = movementReference.position;
+        CaptureMovementOrigin();
+    }
 
     public void CaptureMovementOrigin()
     {

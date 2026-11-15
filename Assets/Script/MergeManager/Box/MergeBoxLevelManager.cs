@@ -63,7 +63,7 @@ public sealed class MergeBoxLevelManager : MonoBehaviour
         spawnPoint.position = transform.TransformPoint(spawnPosition);
         appliedSpawn = spawnPoint; appliedPosition = spawnPosition; placed = true;
         var zone = dropZone != null ? dropZone : CurrentBox != null ? CurrentBox.dropZone : null;
-        zone?.CaptureMovementOrigin();
+        zone?.ResetMarkerPosition();
     }
 
     public void BindBoard(MergegameManager value)
