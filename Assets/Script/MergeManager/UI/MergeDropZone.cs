@@ -4,6 +4,8 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public sealed class MergeDropZone : MonoBehaviour
 {
+    [Header("실제 스폰 위치 · 이 오브젝트의 현재 좌표 사용")]
+    public Transform spawnPoint;
     [Header("투입구 이동 영역 · 표시 기준 왼쪽 아래 오프셋 X/Y, 폭/높이")]
     public Transform movementReference;
     public Rect movementArea = new Rect(-1.8f, -.3f, 3.6f, .6f);
@@ -22,15 +24,8 @@ public sealed class MergeDropZone : MonoBehaviour
     private Transform capturedMarker;
     private Vector3 markerOrigin;
     private void OnEnable() => CaptureMovementOrigin();
-    private void Start() => ResetMarkerPosition();
+    private void Start() => CaptureMovementOrigin();
     private void LateUpdate() => RefreshLine();
-
-    public void ResetMarkerPosition()
-    {
-        if (spawnMarker != null && movementReference != null)
-            spawnMarker.transform.position = movementReference.position;
-        CaptureMovementOrigin();
-    }
 
     public void CaptureMovementOrigin()
     {

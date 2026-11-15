@@ -184,6 +184,26 @@ PrefabInstance:
       addedObject: {fileID: 9174066738479907247}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+--- !u!212 &329572504892012752 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 4986853658973993115, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+  m_PrefabInstance: {fileID: 4730535018979557451}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &996945235338633599 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5508994028847374644, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+  m_PrefabInstance: {fileID: 4730535018979557451}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &1851918365695638088 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 6347095215569762819, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+  m_PrefabInstance: {fileID: 4730535018979557451}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2689841850007016042 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7273876760615670305, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+  m_PrefabInstance: {fileID: 4730535018979557451}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &9113405232980704277 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4602517530497694814, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
@@ -237,6 +257,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4296902872261258052, guid: 1a6694b0db1a84544bf6ee22f8147815, type: 3}
+      propertyPath: ItemMarker
+      value:
+      objectReference: {fileID: 329572504892012752}
+    - target: {fileID: 4296902872261258052, guid: 1a6694b0db1a84544bf6ee22f8147815, type: 3}
+      propertyPath: spawnPoint
+      value:
+      objectReference: {fileID: 996945235338633599}
+    - target: {fileID: 4296902872261258052, guid: 1a6694b0db1a84544bf6ee22f8147815, type: 3}
+      propertyPath: spawnMarker
+      value:
+      objectReference: {fileID: 1851918365695638088}
+    - target: {fileID: 4296902872261258052, guid: 1a6694b0db1a84544bf6ee22f8147815, type: 3}
+      propertyPath: movementReference
+      value:
+      objectReference: {fileID: 2689841850007016042}
     - target: {fileID: 6630651493880657888, guid: 1a6694b0db1a84544bf6ee22f8147815, type: 3}
       propertyPath: m_Name
       value: Box5

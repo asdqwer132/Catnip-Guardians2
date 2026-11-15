@@ -42,6 +42,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7399232087317575506}
   - component: {fileID: 990400000002}
+  - component: {fileID: 8121431119392326480}
   m_Layer: 0
   m_Name: Box Origin
   m_TagString: Untagged
@@ -105,7 +106,6 @@ MonoBehaviour:
     units: {x: 1, y: 1}
     colliderUnits: {x: 0, y: 0}
   referenceSize: {x: 3, y: 3}
-  spawnPosition: {x: 0, y: -0.552557, z: 0}
   linePosition: {x: 0, y: -0.825284, z: 0}
   lineSize: {x: 2.4, y: 0.125}
   originalMovement:
@@ -115,7 +115,33 @@ MonoBehaviour:
     width: 4.32
     height: 0.28636366
   spawnPoint: {fileID: 0}
-  dropZone: {fileID: 0}
+  dropZone: {fileID: 8121431119392326480}
+--- !u!114 &8121431119392326480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1661963024455000052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eab48f75a4aa4b30b36ec70dd17b611e, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MergeDropZone
+  spawnPoint: {fileID: 0}
+  movementReference: {fileID: 0}
+  movementArea:
+    serializedVersion: 2
+    x: -2.25
+    y: -0.25
+    width: 4.5
+    height: 0.5
+  blockAboveLine: 1
+  lineSprite: {fileID: 2430695188549052537}
+  showWorldLine: 1
+  spawnMarker: {fileID: 0}
+  ItemMarker: {fileID: 0}
+  markerSize: 0.35
 --- !u!1 &3042624871765149905
 GameObject:
   m_ObjectHideFlags: 0

@@ -260,7 +260,6 @@ GameObject:
   - component: {fileID: 4783042846926521334}
   - component: {fileID: 7821177070210774819}
   - component: {fileID: 7604912430957174622}
-  - component: {fileID: 860727463673475070}
   m_Layer: 0
   m_Name: Box(Series)
   m_TagString: Untagged
@@ -297,8 +296,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxLevelManager
   spawnPoint: {fileID: 5508994028847374644}
-  spawnPosition: {x: 0, y: 0, z: 0}
-  dropZone: {fileID: 860727463673475070}
+  movementReference: {fileID: 7273876760615670305}
+  spawnMarker: {fileID: 6347095215569762819}
+  itemMarker: {fileID: 4986853658973993115}
   levels: []
   currentLevel: 1
   board: {fileID: 0}
@@ -388,28 +388,3 @@ MonoBehaviour:
   boxRoot: {fileID: 4602517530497694814}
   board: {fileID: 0}
   levelManager: {fileID: 3401685766570148374}
---- !u!114 &860727463673475070
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4804535939393210474}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eab48f75a4aa4b30b36ec70dd17b611e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MergeDropZone
-  movementReference: {fileID: 7273876760615670305}
-  movementArea:
-    serializedVersion: 2
-    x: -2.25
-    y: -0.25
-    width: 4.5
-    height: 0.5
-  blockAboveLine: 1
-  lineSprite: {fileID: 0}
-  showWorldLine: 1
-  spawnMarker: {fileID: 6347095215569762819}
-  ItemMarker: {fileID: 4986853658973993115}
-  markerSize: 0.35

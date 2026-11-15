@@ -189,6 +189,26 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4602517530497694814, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
   m_PrefabInstance: {fileID: 1403267911556961197}
   m_PrefabAsset: {fileID: 0}
+--- !u!212 &5434720788677880238 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 6347095215569762819, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+  m_PrefabInstance: {fileID: 1403267911556961197}
+  m_PrefabAsset: {fileID: 0}
+--- !u!212 &6218824848161827638 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 4986853658973993115, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+  m_PrefabInstance: {fileID: 1403267911556961197}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6848436105885037209 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5508994028847374644, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+  m_PrefabInstance: {fileID: 1403267911556961197}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8614094002510741900 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7273876760615670305, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+  m_PrefabInstance: {fileID: 1403267911556961197}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4877765902581735648
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -237,6 +257,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4296902872261258052, guid: 787cb52aa15acad4bb6636a6310a0ec4, type: 3}
+      propertyPath: ItemMarker
+      value:
+      objectReference: {fileID: 6218824848161827638}
+    - target: {fileID: 4296902872261258052, guid: 787cb52aa15acad4bb6636a6310a0ec4, type: 3}
+      propertyPath: spawnPoint
+      value:
+      objectReference: {fileID: 6848436105885037209}
+    - target: {fileID: 4296902872261258052, guid: 787cb52aa15acad4bb6636a6310a0ec4, type: 3}
+      propertyPath: spawnMarker
+      value:
+      objectReference: {fileID: 5434720788677880238}
+    - target: {fileID: 4296902872261258052, guid: 787cb52aa15acad4bb6636a6310a0ec4, type: 3}
+      propertyPath: movementReference
+      value:
+      objectReference: {fileID: 8614094002510741900}
     - target: {fileID: 6630651493880657888, guid: 787cb52aa15acad4bb6636a6310a0ec4, type: 3}
       propertyPath: m_Name
       value: Box7

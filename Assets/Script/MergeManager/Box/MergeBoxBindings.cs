@@ -5,7 +5,7 @@ public sealed class MergeBoxBindings : MonoBehaviour
 {
     public MergeBoxSpritePart[] visuals = System.Array.Empty<MergeBoxSpritePart>();
     [SerializeField, HideInInspector] private Vector2 referenceSize;
-    [SerializeField, HideInInspector] private Vector3 spawnPosition, linePosition;
+    [SerializeField, HideInInspector] private Vector3 linePosition;
     [SerializeField, HideInInspector] private Vector2 lineSize;
     [SerializeField, HideInInspector] private Rect originalMovement;
     public Transform spawnPoint;
@@ -17,7 +17,6 @@ public sealed class MergeBoxBindings : MonoBehaviour
     {
         referenceSize = Vector2.Max(Vector2.one * .01f, size);
         foreach (var part in visuals) part?.Capture(transform);
-        if (spawnPoint != null && spawnPoint.IsChildOf(transform)) spawnPosition = transform.InverseTransformPoint(spawnPoint.position);
         if (dropZone == null) return;
         originalMovement = dropZone.movementArea;
         if (dropZone.lineSprite == null) return;
@@ -48,8 +47,6 @@ public sealed class MergeBoxBindings : MonoBehaviour
             part?.Apply(transform, size - referenceSize, ratio);
             part?.ApplyBackgroundPadding(transform, backgroundPadding);
         }
-        if (spawnPoint != null && spawnPoint.IsChildOf(transform)) spawnPoint.position = transform.TransformPoint(ResizePoint(spawnPosition, ratio));
-        if (spawnPoint != null && spawnPoint.IsChildOf(transform)) spawnPoint.position += transform.TransformVector(spawnOffset);
         if (dropZone == null) return;
         // The inlet movement area is authored relative to its marker, independently of box resizing.
         if (dropZone.lineSprite != null)

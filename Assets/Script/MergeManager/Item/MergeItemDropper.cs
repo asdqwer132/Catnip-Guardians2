@@ -222,7 +222,7 @@ internal sealed class MergeItemDropper
     {
         if (!owner.isFeeding) return owner.Reject("투입이 중지되어 있습니다.");
         if (!owner.CanOperate || dropping) return owner.Reject("현재 생성할 수 없는 상태입니다.");
-        if (owner.objectPool == null || owner.spawnPoint == null) return owner.Reject("Object Pool / Spawn Point 연결을 확인하세요.");
+        if (owner.objectPool == null || owner.dropZone == null || owner.dropZone.spawnPoint == null) return owner.Reject("Object Pool / Spawn Point 연결을 확인하세요.");
         if (Time.time < nextDropAt) return owner.Reject("다음 생성까지 대기 중입니다.");
         if (owner.ActiveItemCount >= Mathf.Max(1, owner.maximumActiveItems)) return owner.Reject("최대 활성 아이템 개수에 도달했습니다.");
         if (owner.dropZone != null && owner.dropZone.IsBlocked(owner)) return owner.Reject("아이템이 투입 제한선을 넘었습니다.");
@@ -231,8 +231,7 @@ internal sealed class MergeItemDropper
         var material = owner.currentMaterial;
         if (!MergegameManager.TryGetPrefab(material.mergeItem, out _))
             return owner.Reject("선택 재료의 MergeItem → Prefab에 활성 MergeItemObject가 있는 프리팹을 연결하세요.");
-        float offset = UnityEngine.Random.Range(-owner.dropOffset, owner.dropOffset);
-        Vector3 position = owner.spawnPoint.position + new Vector3(offset * owner.dropOffset, 0f, 0f);
+        Vector3 position = owner.dropZone.spawnPoint.position;
         if (IsBlocked(position, material.mergeItem.Radius)) return owner.Reject("투입 위치가 막혀 있습니다.");
         dropping = true;
         int before = owner.Revision;

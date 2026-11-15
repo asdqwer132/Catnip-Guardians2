@@ -3461,8 +3461,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: W
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 9886cbe24c583d74aa72553cf28d006c, type: 2}
-  m_sharedMaterial: {fileID: -3747181013191543084, guid: 9886cbe24c583d74aa72553cf28d006c, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -21775,8 +21775,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: E
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 9886cbe24c583d74aa72553cf28d006c, type: 2}
-  m_sharedMaterial: {fileID: -3747181013191543084, guid: 9886cbe24c583d74aa72553cf28d006c, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -25352,8 +25352,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Q
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 9886cbe24c583d74aa72553cf28d006c, type: 2}
-  m_sharedMaterial: {fileID: -3747181013191543084, guid: 9886cbe24c583d74aa72553cf28d006c, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -30049,7 +30049,7 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 7008236455821842689, guid: b8e1f147f5d0f794ea2e9adf580dbe8d, type: 3}
-      insertIndex: 5
+      insertIndex: -1
       addedObject: {fileID: 5801270449362809115}
   m_SourcePrefab: {fileID: 100100000, guid: b8e1f147f5d0f794ea2e9adf580dbe8d, type: 3}
 --- !u!114 &5801270449362809111 stripped
@@ -30063,6 +30063,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26a2815268735a143a0e7fcf19d1a717, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeSeriesSelector
+--- !u!114 &5801270449362809112 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9054391711659464186, guid: b8e1f147f5d0f794ea2e9adf580dbe8d, type: 3}
+  m_PrefabInstance: {fileID: 5801270449362809110}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eab48f75a4aa4b30b36ec70dd17b611e, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MergeDropZone
 --- !u!114 &5801270449362809115
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30075,17 +30086,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53c3c29edb2295f44a582aece6756bd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxWeapon
---- !u!114 &5801270449362809117 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2890898672797318805, guid: b8e1f147f5d0f794ea2e9adf580dbe8d, type: 3}
-  m_PrefabInstance: {fileID: 5801270449362809110}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 842513027}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eab48f75a4aa4b30b36ec70dd17b611e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MergeDropZone
 --- !u!1001 &7436286436654593272
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -30509,7 +30509,7 @@ PrefabInstance:
     - target: {fileID: 7972414329389823318, guid: 469c58c6bc2a2f04790c00fe78187350, type: 3}
       propertyPath: dropZone
       value: 
-      objectReference: {fileID: 5801270449362809117}
+      objectReference: {fileID: 5801270449362809112}
     - target: {fileID: 7972414329389823318, guid: 469c58c6bc2a2f04790c00fe78187350, type: 3}
       propertyPath: objectPool
       value: 
