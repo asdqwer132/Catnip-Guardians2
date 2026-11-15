@@ -42,7 +42,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7399232087317575506}
   - component: {fileID: 990400000002}
-  - component: {fileID: 4811276694686574449}
   m_Layer: 0
   m_Name: Box 1
   m_TagString: Untagged
@@ -118,30 +117,7 @@ MonoBehaviour:
     width: 4.32
     height: 0.28636366
   spawnPoint: {fileID: 0}
-  dropZone: {fileID: 4811276694686574449}
---- !u!114 &4811276694686574449
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1661963024455000052}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eab48f75a4aa4b30b36ec70dd17b611e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MergeDropZone
-  movementArea:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 0
-    height: 0
-  blockAboveLine: 1
-  lineSprite: {fileID: 2430695188549052537}
-  showWorldLine: 1
-  spawnMarker: {fileID: 0}
-  markerSize: 0.35
+  dropZone: {fileID: 0}
 --- !u!1 &6454695567498117174
 GameObject:
   m_ObjectHideFlags: 0

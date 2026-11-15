@@ -136,6 +136,7 @@ GameObject:
   - component: {fileID: 4783042846926521334}
   - component: {fileID: 7821177070210774819}
   - component: {fileID: 7604912430957174622}
+  - component: {fileID: 860727463673475070}
   m_Layer: 0
   m_Name: Box(Series)
   m_TagString: Untagged
@@ -172,6 +173,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc9435bff86c48d39d393a567173c61f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxLevelManager
+  spawnPoint: {fileID: 8161298766213792716}
+  spawnPosition: {x: 0, y: 3.7440338, z: 0}
+  dropZone: {fileID: 860727463673475070}
   levels:
   - minimumLevel: 1
     box: {fileID: 1075378653009848375}
@@ -264,6 +268,30 @@ MonoBehaviour:
   boxRoot: {fileID: 4602517530497694814}
   board: {fileID: 0}
   levelManager: {fileID: 3401685766570148374}
+--- !u!114 &860727463673475070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4804535939393210474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eab48f75a4aa4b30b36ec70dd17b611e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MergeDropZone
+  movementReference: {fileID: 7273876760615670305}
+  movementArea:
+    serializedVersion: 2
+    x: -1.5
+    y: -0.25
+    width: 3
+    height: 0.5
+  blockAboveLine: 1
+  lineSprite: {fileID: 3411216872974561356}
+  showWorldLine: 1
+  spawnMarker: {fileID: 4986853658973993115}
+  markerSize: 0.35
 --- !u!1001 &1075379312154122293
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -275,7 +303,7 @@ PrefabInstance:
     - target: {fileID: 990400000002, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
       propertyPath: dropZone
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 860727463673475070}
     - target: {fileID: 990400000002, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
       propertyPath: lineSize.x
       value: 5
@@ -284,6 +312,10 @@ PrefabInstance:
       propertyPath: lineSize.y
       value: 0.025
       objectReference: {fileID: 0}
+    - target: {fileID: 990400000002, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
+      propertyPath: spawnPoint
+      value: 
+      objectReference: {fileID: 7273876760615670305}
     - target: {fileID: 990400000002, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
       propertyPath: linePosition.y
       value: -1.1725
@@ -468,8 +500,7 @@ PrefabInstance:
       propertyPath: m_SpriteTilingProperty.newSize.y
       value: 3
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 4811276694686574449, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -485,6 +516,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2ad2411312047828f3731d8f6f25d34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxBindings
+--- !u!212 &3411216872974561356 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 2430695188549052537, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
+  m_PrefabInstance: {fileID: 1075379312154122293}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7513087919045504871 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7399232087317575506, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}

@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 860727463673475070, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+      propertyPath: movementReference
+      value: 
+      objectReference: {fileID: 5124360217770984266}
     - target: {fileID: 1075378653009848375, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
       propertyPath: spawnPoint
       value: 
@@ -240,6 +244,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2ad2411312047828f3731d8f6f25d34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxBindings
+--- !u!4 &5124360217770984266 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7273876760615670305, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+  m_PrefabInstance: {fileID: 2589396165327147371}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5957598112113791655 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8161298766213792716, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}

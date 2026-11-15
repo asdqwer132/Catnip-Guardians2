@@ -3662,7 +3662,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 273910740}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -27766,7 +27766,7 @@ MonoBehaviour:
   selection: {fileID: 1595348420}
   inputCamera: {fileID: 1889333136}
   moveX: 1
-  moveY: 0
+  moveY: 1
   grabRadius: 0.3
 --- !u!114 &990400000005
 MonoBehaviour:
@@ -29559,10 +29559,6 @@ PrefabInstance:
       propertyPath: m_Size.x
       value: 5.625
       objectReference: {fileID: 0}
-    - target: {fileID: 3243683787986827612, guid: b8e1f147f5d0f794ea2e9adf580dbe8d, type: 3}
-      propertyPath: dropZone
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 3629289185586893754, guid: b8e1f147f5d0f794ea2e9adf580dbe8d, type: 3}
       propertyPath: m_Size.y
       value: 7
@@ -29693,7 +29689,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5957598112113791655, guid: b8e1f147f5d0f794ea2e9adf580dbe8d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.552557
+      value: 0.7440338
       objectReference: {fileID: 0}
     - target: {fileID: 6050293205911398041, guid: b8e1f147f5d0f794ea2e9adf580dbe8d, type: 3}
       propertyPath: m_LocalPosition.y
@@ -29861,11 +29857,8 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 7008236455821842689, guid: b8e1f147f5d0f794ea2e9adf580dbe8d, type: 3}
-      insertIndex: -1
+      insertIndex: 5
       addedObject: {fileID: 5801270449362809115}
-    - targetCorrespondingSourceObject: {fileID: 7008236455821842689, guid: b8e1f147f5d0f794ea2e9adf580dbe8d, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 5801270449362809116}
   m_SourcePrefab: {fileID: 100100000, guid: b8e1f147f5d0f794ea2e9adf580dbe8d, type: 3}
 --- !u!114 &5801270449362809111 stripped
 MonoBehaviour:
@@ -29878,16 +29871,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26a2815268735a143a0e7fcf19d1a717, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeSeriesSelector
---- !u!212 &5801270449362809112 stripped
-SpriteRenderer:
-  m_CorrespondingSourceObject: {fileID: 7411727536399657456, guid: b8e1f147f5d0f794ea2e9adf580dbe8d, type: 3}
-  m_PrefabInstance: {fileID: 5801270449362809110}
-  m_PrefabAsset: {fileID: 0}
---- !u!212 &5801270449362809113 stripped
-SpriteRenderer:
-  m_CorrespondingSourceObject: {fileID: 916607576242839847, guid: b8e1f147f5d0f794ea2e9adf580dbe8d, type: 3}
-  m_PrefabInstance: {fileID: 5801270449362809110}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &5801270449362809115
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29900,29 +29883,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53c3c29edb2295f44a582aece6756bd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxWeapon
---- !u!114 &5801270449362809116
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 842513027}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eab48f75a4aa4b30b36ec70dd17b611e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MergeDropZone
-  movementArea:
-    serializedVersion: 2
-    x: -3.7800002
-    y: -1.0230116
-    width: 7.5600004
-    height: 0.28636366
-  blockAboveLine: 1
-  lineSprite: {fileID: 5801270449362809113}
-  showWorldLine: 1
-  spawnMarker: {fileID: 5801270449362809112}
-  markerSize: 0.35
 --- !u!1001 &7436286436654593272
 PrefabInstance:
   m_ObjectHideFlags: 0
