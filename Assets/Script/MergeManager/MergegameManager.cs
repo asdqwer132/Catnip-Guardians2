@@ -71,6 +71,7 @@ public class MergegameManager : MonoBehaviour
     public void RefreshSessionMaterials(IReadOnlyList<InventoryItem> items) => Dropper.RefreshSessionMaterials(items);
     public void QueueContact(MergeItemObject a, MergeItemObject b) => Combiner.QueueContact(a, b);
     public void ProcessContacts() => Combiner.ProcessContacts();
+    public bool TryBake(FoodMergeItemObject food, MergeItem burningItem) => Combiner.TryBake(food, burningItem);
 
     public void RefreshUI()
     {

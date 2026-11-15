@@ -50,7 +50,7 @@ public sealed class GameItemSessionBridge : MonoBehaviour
         if (!session.TryReadGeneralData(out var data))
             return;
 
-        ApplyBoxLevels(data);
+        if (boxes != null && boxes.gameManager != null) boxes.gameManager.InitializeRound(data);
 
         appliedSession = session;
         appliedRevision = session.GameDataRevision;
@@ -69,19 +69,6 @@ public sealed class GameItemSessionBridge : MonoBehaviour
                     board.RefreshSessionMaterials(data.materialItems);
                 }
             }
-        }
-    }
-
-    private void ApplyBoxLevels(UpgradeToGeneralData data)
-    {
-        if (boxes == null) return;
-        foreach (var entry in boxes.boxes)
-        {
-            if (entry?.board == null) continue;
-            int level = 1;
-            if (data.boxLevels != null) foreach (var snapshot in data.boxLevels)
-                if (snapshot != null && snapshot.series == entry.board.itemSeries) level = Mathf.Max(level, snapshot.level);
-            boxes.SetBoxLevel(entry.board.itemSeries, level);
         }
     }
 

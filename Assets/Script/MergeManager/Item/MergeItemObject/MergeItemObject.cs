@@ -78,8 +78,10 @@ public class MergeItemObject : MonoBehaviour, IPoolable
     internal void Unreserve() => reserved = false;
     public void OnSpawnedFromPool() { Cache(); ClearPayload(); }
     public void OnReturnedToPool() { Cache(); ClearPayload(); }
+    protected virtual void ResetPoolState() { }
     private void ClearPayload()
     {
+        ResetPoolState();
         var previous = Owner;
         Owner = null; Definition = null; item = null; reserved = false;
         unchecked { LifeId++; }

@@ -3616,9 +3616,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76e5cbeb10d69ae4b90aed0986e9efb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeGimicManager
-  mergeBoxGimics:
-  - {fileID: 5801270449362809115}
-  skillButtons: []
+  boxes: {fileID: 990400000003}
+  startingSeriesIndex: 0
+  startingLevel: 1
+  useSessionLevels: 1
+  skillButtons:
+  - {fileID: 359576507}
+  - {fileID: 368368631}
+  - {fileID: 564766373}
 --- !u!1 &273910740
 GameObject:
   m_ObjectHideFlags: 0
@@ -27810,6 +27815,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f802db3ada0e41428b3030e966634fd9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxSceneController
+  gameManager: {fileID: 269577205}
   mainCamera: {fileID: 1889333137}
   root: {x: 0, y: -1.2, z: 0}
   autoPlacer: {fileID: 269577204}

@@ -42,7 +42,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3401685766570148374, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
       propertyPath: levels.Array.size
-      value: 5
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3401685766570148374, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+      propertyPath: levels.Array.data[0].box
+      value:
+      objectReference: {fileID: 942016750833788584}
+    - target: {fileID: 3401685766570148374, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+      propertyPath: levels.Array.data[0].minimumLevel
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3401685766570148374, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
       propertyPath: levels.Array.data[1].minimumLevel
@@ -326,6 +334,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ebf9141d2b91122488795e9d611d754d, type: 3}
+--- !u!114 &942016750833788584 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5410147037555628054, guid: ebf9141d2b91122488795e9d611d754d, type: 3}
+  m_PrefabInstance: {fileID: 5045723934688345790}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2ad2411312047828f3731d8f6f25d34, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MergeBoxBindings
 --- !u!4 &7763622714075947512 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3295489884448251718, guid: ebf9141d2b91122488795e9d611d754d, type: 3}

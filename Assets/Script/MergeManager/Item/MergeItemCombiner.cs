@@ -77,6 +77,13 @@ internal sealed class MergeItemCombiner
         foreach (int amount in remaining.Values) if (amount > 0) return null;
         return selected;
     }
+    public bool TryBake(FoodMergeItemObject food, MergeItem burningItem)
+    {
+        if (!Usable(food) || burningItem == null || owner.recipeBook == null) return false;
+        if (!owner.recipeBook.TryGetRecipe(food.item, burningItem.item, out var recipe)) return false;
+        return TryMerge(recipe, new List<MergeItemObject> { food });
+    }
+
     private bool TryMerge(ItemRecipeData recipe, List<MergeItemObject> ingredients)
     {
         var definition = owner.GetDefinitionAtMergeItem(recipe.resultItem);

@@ -14,6 +14,7 @@ public sealed class MergeBoxEntry
 [DefaultExecutionOrder(-100)]
 public sealed class MergeBoxSceneController : MonoBehaviour
 {
+    public MergeGimicManager gameManager;
     public Transform mainCamera;
     public Vector3 root;
     public ObjectAutoPlacer autoPlacer;
@@ -42,12 +43,6 @@ public sealed class MergeBoxSceneController : MonoBehaviour
         if (seriesDropdown != null) seriesDropdown.onValueChanged.AddListener(SelectBox);
     }
 
-    private void Start()
-    {
-        SelectBox(selectedIndex);
-
-    }
-
     private void OnDisable()
     {
         if (seriesDropdown != null) seriesDropdown.onValueChanged.RemoveListener(SelectBox);
@@ -70,22 +65,13 @@ public sealed class MergeBoxSceneController : MonoBehaviour
         return null;
     }
 
-    public bool SetBoxLevel(ItemSeries series, int level)
-    {
-        var manager = GetBoxManager(series);
-        return manager != null && manager.TrySetLevel(level);
-    }
+    public bool SetBoxLevel(ItemSeries series, int level) => gameManager != null && gameManager.SetBoxLevel(series, level);
+    public bool UpgradeBox(ItemSeries series) => SelectedBoard != null && SelectedBoard.itemSeries == series && gameManager != null && gameManager.UpgradeCurrentBox();
+    public void SetCurrentBoxLevel(int level) => gameManager?.SetCurrentBoxLevel(level);
+    public void UpgradeCurrentBox() => gameManager?.UpgradeCurrentBox();
+    public void SelectBox(int index) => gameManager?.SetBox(index);
 
-    public bool UpgradeBox(ItemSeries series)
-    {
-        var manager = GetBoxManager(series);
-        return manager != null && manager.TryUpgrade();
-    }
-
-    public void SetCurrentBoxLevel(int level) => SelectedBoxManager?.SetLevel(level);
-    public void UpgradeCurrentBox() => SelectedBoxManager?.Upgrade();
-
-    public void SelectBox(int index)
+    public void ShowBox(int index)
     {
         if (index < 0 || index >= boxes.Length || boxes[index]?.board == null || boxes[index].boxRoot == null) return;
         if (SelectedBoard != null) SelectedBoard.SetMaterialUIEnabled(false);

@@ -117,6 +117,18 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 7218784553746491251, guid: 0032eb3be03f9ad41833c9c4a3c3d91f, type: 3}
+    - target: {fileID: 3401685766570148374, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+      propertyPath: levels.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3401685766570148374, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+      propertyPath: levels.Array.data[0].box
+      value:
+      objectReference: {fileID: 6879606680704847442}
+    - target: {fileID: 3401685766570148374, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+      propertyPath: levels.Array.data[0].minimumLevel
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3411216872974561356, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
       propertyPath: m_Size.x
       value: 5
