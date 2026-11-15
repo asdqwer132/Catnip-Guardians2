@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 public class ShopBoxButton : SlotUI
 {
+    public ClassificationModule classification = new ClassificationModule();
+    protected override ClassificationModule Classification => classification;
+
     private ShopManager shopManager;
     private ItemBoxData boxData;
 

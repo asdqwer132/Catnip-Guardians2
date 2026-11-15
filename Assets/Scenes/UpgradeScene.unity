@@ -16620,6 +16620,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 453120efd3734007967d30fcfc491669, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CodexInventoryUI
+  categoryMask:
+  seriesMask:
+  gradeMask:
+  slotParent: {fileID: 297271353}
+  slotPrefab: {fileID: 1927300742811367988, guid: 3bfe6c744b7829385a16cf93b6898f2a, type: 3}
+  showItemCount: 1
+  tooltipUI: {fileID: 0}
+  showTooltipOnSelection: 0
+  selectionGroup: {fileID: 0}
+  materialSource: {fileID: 0}
+  entries: []
+  details: {fileID: 982824315}
+  discoveredOnly: 1
 --- !u!1001 &297833816
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17914,12 +17927,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 313675930}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
+  m_Script: {fileID: 11500000, guid: 5390a76a3e8242158d8446805d8524a7, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
-  modules:
-  - rid: 1000
-  - rid: 1001
+  m_EditorClassIdentifier: Assembly-CSharp::SkillMapTooltipUI
   dataSource: {fileID: 0}
   useTooltip: 1
   startHidden: 1
@@ -17928,23 +17938,16 @@ MonoBehaviour:
   positionAtAnchor: 0
   removePannel: 0
   tooltipPanel: {fileID: 313675930}
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 2114892121}
-        dataNameText: {fileID: 1732028084}
-        descriptionText: {fileID: 861932282}
-        detailDescriptionText: {fileID: 0}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
-    - rid: 1001
-      type: {class: SkillMapInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        totalNodesText: {fileID: 832796368}
-        completedNodesText: {fileID: 640543623}
+  basicInformation:
+    icon: {fileID: 2114892121}
+    dataNameText: {fileID: 1732028084}
+    descriptionText: {fileID: 861932282}
+    detailDescriptionText: {fileID: 0}
+    hideEmptyDescription: 0
+    hideEmptyDetailDescription: 1
+  skillMapInformation:
+    totalNodesText: {fileID: 832796368}
+    completedNodesText: {fileID: 640543623}
 --- !u!1001 &314719951
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20742,7 +20745,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4301095534886901092, guid: 504ef55bb9ae7cc4f9ea0255a5fa61bd, type: 3}
-      propertyPath: modules.Array.data[0].dataNameText
+      propertyPath: slotInformation.dataNameText
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4447847571182399361, guid: 504ef55bb9ae7cc4f9ea0255a5fa61bd, type: 3}
@@ -20861,8 +20864,7 @@ PrefabInstance:
       propertyPath: graphic
       value: 
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 3272868658715588977, guid: 504ef55bb9ae7cc4f9ea0255a5fa61bd, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -24708,51 +24710,35 @@ MonoBehaviour:
   m_GameObject: {fileID: 447093711}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d760dc9856de41a180568f13260a61b0, type: 3}
+  m_Script: {fileID: 11500000, guid: 0346bf91aa424b71b1978ed7058a8651, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DataViewUI
-  modules:
-  - rid: 1000
-  - rid: 1001
-  - rid: 1002
-  - rid: 1003
+  m_EditorClassIdentifier: Assembly-CSharp::ItemInfoPanelUI
   dataSource: {fileID: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 1554755341}
-        dataNameText: {fileID: 1791264742}
-        descriptionText: {fileID: 1210280522}
-        detailDescriptionText: {fileID: 1795549178}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
-    - rid: 1001
-      type: {class: ClassificationModule, ns: , asm: Assembly-CSharp}
-      data:
-        seriesText: {fileID: 0}
-        gradeText: {fileID: 40579016}
-        seriesIcon: {fileID: 1234008347}
-        gradeIcon: {fileID: 2145714099}
-        series: 0
-        grade: -1
-    - rid: 1002
-      type: {class: ItemInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        amountText: {fileID: 0}
-        categoryText: {fileID: 0}
-        weightText: {fileID: 0}
-        cooldownText: {fileID: 0}
-        effectDescriptions: {fileID: 1534268694}
-    - rid: 1003
-      type: {class: PanelVisibilityModule, ns: , asm: Assembly-CSharp}
-      data:
-        alternatePanels:
-        - {fileID: 982824313}
-        - {fileID: 1798906564}
-        - {fileID: 560577844}
+  basicInformation:
+    icon: {fileID: 1554755341}
+    dataNameText: {fileID: 1791264742}
+    descriptionText: {fileID: 1210280522}
+    detailDescriptionText: {fileID: 1795549178}
+    hideEmptyDescription: 0
+    hideEmptyDetailDescription: 1
+  classification:
+    seriesText: {fileID: 0}
+    gradeText: {fileID: 40579016}
+    seriesIcon: {fileID: 1234008347}
+    gradeIcon: {fileID: 2145714099}
+    series: 0
+    grade: -1
+  itemInformation:
+    amountText: {fileID: 0}
+    categoryText: {fileID: 0}
+    weightText: {fileID: 0}
+    cooldownText: {fileID: 0}
+    effectDescriptions: {fileID: 1534268694}
+  panelVisibility:
+    alternatePanels:
+    - {fileID: 982824313}
+    - {fileID: 1798906564}
+    - {fileID: 560577844}
 --- !u!114 &447093714
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25409,7 +25395,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5704112146065660191, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
-      propertyPath: modules.Array.data[1].amountText
+      propertyPath: slotInformation.amountText
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 7991120730881528602, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
@@ -29665,47 +29651,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 560577844}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d760dc9856de41a180568f13260a61b0, type: 3}
+  m_Script: {fileID: 11500000, guid: ed2646b823004b50a4a116743396ee30, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DataViewUI
-  modules:
-  - rid: 1000
-  - rid: 1001
-  - rid: 1002
+  m_EditorClassIdentifier: Assembly-CSharp::CodexDetailsUI
   dataSource: {fileID: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 0}
-        dataNameText: {fileID: 880594451}
-        descriptionText: {fileID: 405680768}
-        detailDescriptionText: {fileID: 0}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
-    - rid: 1001
-      type: {class: CodexInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        portraitImage: {fileID: 0}
-        previewImage: {fileID: 1751380856}
-        portraitDescription: {fileID: 0}
-        portraitPage: {fileID: 0}
-        previousPortrait: {fileID: 0}
-        nextPortrait: {fileID: 0}
-        portraitInformation: {fileID: 0}
-        portraitContent: {fileID: 0}
-        portraitSlotPrefab: {fileID: 0}
-        portraitSelectionGroup: {fileID: 0}
-        childInventory: {fileID: 297271356}
-    - rid: 1002
-      type: {class: PanelVisibilityModule, ns: , asm: Assembly-CSharp}
-      data:
-        alternatePanels:
-        - {fileID: 982824313}
-        - {fileID: 447093711}
-        - {fileID: 1798906564}
+  basicInformation:
+    icon: {fileID: 0}
+    dataNameText: {fileID: 880594451}
+    descriptionText: {fileID: 405680768}
+    detailDescriptionText: {fileID: 0}
+    hideEmptyDescription: 0
+    hideEmptyDetailDescription: 1
+  codexInformation:
+    portraitImage: {fileID: 0}
+    previewImage: {fileID: 1751380856}
+    portraitDescription: {fileID: 0}
+    portraitPage: {fileID: 0}
+    previousPortrait: {fileID: 0}
+    nextPortrait: {fileID: 0}
+    portraitInformation: {fileID: 0}
+    portraitContent: {fileID: 0}
+    portraitSlotPrefab: {fileID: 0}
+    portraitSelectionGroup: {fileID: 0}
+    childInventory: {fileID: 297271356}
+  panelVisibility:
+    alternatePanels:
+    - {fileID: 982824313}
+    - {fileID: 447093711}
+    - {fileID: 1798906564}
 --- !u!114 &560577847
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31369,9 +31342,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9c38ced7a150de4ca2379c038e1b557, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CostTooltipUI
-  modules:
-  - rid: 1000
-  - rid: 1001
   dataSource: {fileID: 0}
   useTooltip: 1
   startHidden: 0
@@ -31412,23 +31382,16 @@ MonoBehaviour:
   unlockButtonPanel: {fileID: 1680466136}
   lockedStatusPanel: {fileID: 137956250}
   unlockedPanel: {fileID: 78098851}
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 305952077}
-        dataNameText: {fileID: 2044944248}
-        descriptionText: {fileID: 2099255473}
-        detailDescriptionText: {fileID: 0}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
-    - rid: 1001
-      type: {class: PanelVisibilityModule, ns: , asm: Assembly-CSharp}
-      data:
-        alternatePanels:
-        - {fileID: 313675930}
+  basicInformation:
+    icon: {fileID: 305952077}
+    dataNameText: {fileID: 2044944248}
+    descriptionText: {fileID: 2099255473}
+    detailDescriptionText: {fileID: 0}
+    hideEmptyDescription: 0
+    hideEmptyDetailDescription: 1
+  panelVisibility:
+    alternatePanels:
+    - {fileID: 313675930}
 --- !u!1001 &590240922
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -35669,6 +35632,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df1c05663409424691ecf3d791482942, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PotionEquipmentPanelUI
+  manager: {fileID: 875675674}
+  inventoryView: {fileID: 1748633612}
+  equipmentSlots:
+  - {fileID: 45209825}
+  - {fileID: 1623956672}
+  - {fileID: 949045613}
+  - {fileID: 1759258625}
+  - {fileID: 236818602}
+  - {fileID: 1799780489}
+  - {fileID: 590247539}
+  - {fileID: 970439393}
+  selectedDetails: {fileID: 696343473}
+  notSelectedDetails: {fileID: 436525984}
+  equippedPotion: {fileID: 2109920027}
+  newPotion: {fileID: 1776001222}
+  replacementArrow: {fileID: 1678681785}
+  selectedConfirmArea: {fileID: 198964393}
+  notSelectedConfirmArea: {fileID: 2006647206}
+  unequipButton: {fileID: 1686352704}
+  replaceButton: {fileID: 1424370446}
+  clearButton: {fileID: 1063991687}
 --- !u!114 &644996530 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3275813019440117299, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
@@ -38684,7 +38668,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4301095534886901092, guid: 504ef55bb9ae7cc4f9ea0255a5fa61bd, type: 3}
-      propertyPath: modules.Array.data[0].dataNameText
+      propertyPath: slotInformation.dataNameText
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4447847571182399361, guid: 504ef55bb9ae7cc4f9ea0255a5fa61bd, type: 3}
@@ -38803,8 +38787,7 @@ PrefabInstance:
       propertyPath: graphic
       value: 
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 3272868658715588977, guid: 504ef55bb9ae7cc4f9ea0255a5fa61bd, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -39535,7 +39518,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec3bb6ae9b7aaec4193a8df9222b6181, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventorySearchUI
-  targetUI: {fileID: 0}
+  targetUI: {fileID: 1610368548}
   resetCategory: 1
   resetSeries: 1
   resetGrade: 1
@@ -56065,51 +56048,35 @@ MonoBehaviour:
   m_GameObject: {fileID: 982824313}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d760dc9856de41a180568f13260a61b0, type: 3}
+  m_Script: {fileID: 11500000, guid: 0346bf91aa424b71b1978ed7058a8651, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DataViewUI
-  modules:
-  - rid: 1000
-  - rid: 1001
-  - rid: 1002
-  - rid: 1003
+  m_EditorClassIdentifier: Assembly-CSharp::ItemInfoPanelUI
   dataSource: {fileID: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 1601193417}
-        dataNameText: {fileID: 152878497}
-        descriptionText: {fileID: 1730052162}
-        detailDescriptionText: {fileID: 1340418934}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
-    - rid: 1001
-      type: {class: ClassificationModule, ns: , asm: Assembly-CSharp}
-      data:
-        seriesText: {fileID: 0}
-        gradeText: {fileID: 1474692017}
-        seriesIcon: {fileID: 1370175587}
-        gradeIcon: {fileID: 1443557747}
-        series: 0
-        grade: -1
-    - rid: 1002
-      type: {class: ItemInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        amountText: {fileID: 0}
-        categoryText: {fileID: 0}
-        weightText: {fileID: 0}
-        cooldownText: {fileID: 0}
-        effectDescriptions: {fileID: 438035151}
-    - rid: 1003
-      type: {class: PanelVisibilityModule, ns: , asm: Assembly-CSharp}
-      data:
-        alternatePanels:
-        - {fileID: 447093711}
-        - {fileID: 1798906564}
-        - {fileID: 560577844}
+  basicInformation:
+    icon: {fileID: 1601193417}
+    dataNameText: {fileID: 152878497}
+    descriptionText: {fileID: 1730052162}
+    detailDescriptionText: {fileID: 1340418934}
+    hideEmptyDescription: 0
+    hideEmptyDetailDescription: 1
+  classification:
+    seriesText: {fileID: 0}
+    gradeText: {fileID: 1474692017}
+    seriesIcon: {fileID: 1370175587}
+    gradeIcon: {fileID: 1443557747}
+    series: 0
+    grade: -1
+  itemInformation:
+    amountText: {fileID: 0}
+    categoryText: {fileID: 0}
+    weightText: {fileID: 0}
+    cooldownText: {fileID: 0}
+    effectDescriptions: {fileID: 438035151}
+  panelVisibility:
+    alternatePanels:
+    - {fileID: 447093711}
+    - {fileID: 1798906564}
+    - {fileID: 560577844}
 --- !u!114 &982824316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68843,6 +68810,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e7a0bc438595e143a46b9efc0632c6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopBoxInfoUI
+  dataSource: {fileID: 0}
+  pannel: {fileID: 1909771095}
+  extraBoxCosts:
+  - currencyType: 0
+    costPanel: {fileID: 1764149138767654065}
+    costText: {fileID: 1413175815}
+  - currencyType: 1
+    costPanel: {fileID: 870550373}
+    costText: {fileID: 1302726882}
+  - currencyType: 2
+    costPanel: {fileID: 1108644807}
+    costText: {fileID: 534101526}
+  - currencyType: 3
+    costPanel: {fileID: 709360897}
+    costText: {fileID: 1867586622}
+  - currencyType: 4
+    costPanel: {fileID: 1514355588}
+    costText: {fileID: 1250128928}
+  - currencyType: 5
+    costPanel: {fileID: 2024879851}
+    costText: {fileID: 976601023}
+  - currencyType: 6
+    costPanel: {fileID: 2142433595}
+    costText: {fileID: 1500722325}
+  - currencyType: 7
+    costPanel: {fileID: 1303885927}
+    costText: {fileID: 172067224}
+  - currencyType: 8
+    costPanel: {fileID: 394705634}
+    costText: {fileID: 139700762}
+  itemListParent: {fileID: 1982050872}
+  rewardSlotPrefab: {fileID: 8678710326802670260, guid: 9cf4dd2f0e134134a9ae846ee070b50b, type: 3}
+  buyButton: {fileID: 1223030481}
+  shopManager: {fileID: 642885257}
+  basicInformation:
+    icon: {fileID: 2091319642}
+    dataNameText: {fileID: 1442396784}
+    descriptionText: {fileID: 386101459}
+    detailDescriptionText: {fileID: 0}
+    hideEmptyDescription: 1
+    hideEmptyDetailDescription: 1
+  classification:
+    seriesText: {fileID: 0}
+    gradeText: {fileID: 89937784}
+    seriesIcon: {fileID: 788367537}
+    gradeIcon: {fileID: 358870695}
+    series: 0
+    grade: -1
 --- !u!114 &1224250595
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -84771,11 +84786,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6661afaac0104a51ac8e7e5e5e9cd9bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemMergeRecipeTooltipUI
-  modules:
-  - rid: 1000
-  - rid: 1001
-  - rid: 1002
-  - rid: 1003
   dataSource: {fileID: 0}
   useTooltip: 1
   startHidden: 0
@@ -84828,43 +84838,32 @@ MonoBehaviour:
   recipeSlotPrefab: {fileID: 3272868658715588977, guid: 504ef55bb9ae7cc4f9ea0255a5fa61bd, type: 3}
   recipeScroll: {fileID: 1968612281}
   recipeSlots:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 254856237}
-        dataNameText: {fileID: 1144811174}
-        descriptionText: {fileID: 1207598058}
-        detailDescriptionText: {fileID: 0}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
-    - rid: 1001
-      type: {class: ClassificationModule, ns: , asm: Assembly-CSharp}
-      data:
-        seriesText: {fileID: 0}
-        gradeText: {fileID: 15268105}
-        seriesIcon: {fileID: 398627069}
-        gradeIcon: {fileID: 890167891}
-        series: 0
-        grade: -1
-    - rid: 1002
-      type: {class: ItemInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        amountText: {fileID: 685690588}
-        categoryText: {fileID: 0}
-        weightText: {fileID: 0}
-        cooldownText: {fileID: 0}
-        effectDescriptions: {fileID: 0}
-    - rid: 1003
-      type: {class: PanelVisibilityModule, ns: , asm: Assembly-CSharp}
-      data:
-        alternatePanels:
-        - {fileID: 705840045}
+  - {fileID: 4806742281300811581}
+  - {fileID: 378787558}
+  - {fileID: 717119953}
+  basicInformation:
+    icon: {fileID: 254856237}
+    dataNameText: {fileID: 1144811174}
+    descriptionText: {fileID: 1207598058}
+    detailDescriptionText: {fileID: 0}
+    hideEmptyDescription: 0
+    hideEmptyDetailDescription: 1
+  classification:
+    seriesText: {fileID: 0}
+    gradeText: {fileID: 15268105}
+    seriesIcon: {fileID: 398627069}
+    gradeIcon: {fileID: 890167891}
+    series: 0
+    grade: -1
+  itemInformation:
+    amountText: {fileID: 685690588}
+    categoryText: {fileID: 0}
+    weightText: {fileID: 0}
+    cooldownText: {fileID: 0}
+    effectDescriptions: {fileID: 0}
+  panelVisibility:
+    alternatePanels:
+    - {fileID: 705840045}
 --- !u!1001 &1504865758
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -87446,11 +87445,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1560849491}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
+  m_Script: {fileID: 11500000, guid: 184d5aebb276482ea9052bb161fdeaf1, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
-  modules:
-  - rid: 1000
+  m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipUI
   dataSource: {fileID: 0}
   useTooltip: 1
   startHidden: 1
@@ -87459,18 +87456,13 @@ MonoBehaviour:
   positionAtAnchor: 1
   removePannel: 1
   tooltipPanel: {fileID: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 1263416206}
-        dataNameText: {fileID: 62072172}
-        descriptionText: {fileID: 853979632}
-        detailDescriptionText: {fileID: 0}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
+  basicInformation:
+    icon: {fileID: 1263416206}
+    dataNameText: {fileID: 62072172}
+    descriptionText: {fileID: 853979632}
+    detailDescriptionText: {fileID: 0}
+    hideEmptyDescription: 0
+    hideEmptyDetailDescription: 1
 --- !u!1 &1565207184
 GameObject:
   m_ObjectHideFlags: 0
@@ -89518,6 +89510,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd1852df3e1f4342a039a60cf742a201, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PotionRecipePanelUI
+  categoryMask:
+  seriesMask:
+  gradeMask:
+  manager: {fileID: 875675672}
+  inventory: {fileID: 1979291818}
+  history: {fileID: 875675673}
+  recipeInfoPannel: {fileID: 1423955401}
+  recipeContent: {fileID: 61635389}
+  recipeSlotPrefab: {fileID: 7722800964799073410, guid: 60d707da406d9e541a9df049d81f80f8, type: 3}
+  details: {fileID: 1859068380}
+  materialsContent: {fileID: 5593500956363586240}
+  materialSlotPrefab: {fileID: 7771040421683614545, guid: 26e5d0d1b2a0e8f4b84ec0fd797fd4a3, type: 3}
+  goToCraftingButton: {fileID: 1974145219}
+  craftingTab: {fileID: 280589205}
+  craftingPanel: {fileID: 1610368547}
 --- !u!1001 &1611844486
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -100874,24 +100881,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 1776001220}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d760dc9856de41a180568f13260a61b0, type: 3}
+  m_Script: {fileID: 11500000, guid: 230b4eaf543445a8a98fa4e6b10338f3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DataViewUI
-  modules:
-  - rid: 1000
+  m_EditorClassIdentifier: Assembly-CSharp::DataInformationUI
   dataSource: {fileID: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 234908423}
-        dataNameText: {fileID: 26861988}
-        descriptionText: {fileID: 0}
-        detailDescriptionText: {fileID: 0}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
+  basicInformation:
+    icon: {fileID: 234908423}
+    dataNameText: {fileID: 26861988}
+    descriptionText: {fileID: 0}
+    detailDescriptionText: {fileID: 0}
+    hideEmptyDescription: 0
+    hideEmptyDetailDescription: 1
 --- !u!1001 &1776535699
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -102426,47 +102426,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 1798906564}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d760dc9856de41a180568f13260a61b0, type: 3}
+  m_Script: {fileID: 11500000, guid: ed2646b823004b50a4a116743396ee30, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DataViewUI
-  modules:
-  - rid: 1000
-  - rid: 1001
-  - rid: 1002
+  m_EditorClassIdentifier: Assembly-CSharp::CodexDetailsUI
   dataSource: {fileID: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 0}
-        dataNameText: {fileID: 341242253}
-        descriptionText: {fileID: 0}
-        detailDescriptionText: {fileID: 0}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
-    - rid: 1001
-      type: {class: CodexInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        portraitImage: {fileID: 816939383}
-        previewImage: {fileID: 0}
-        portraitDescription: {fileID: 753949719}
-        portraitPage: {fileID: 1225618344}
-        previousPortrait: {fileID: 6016688715215353647}
-        nextPortrait: {fileID: 184242704}
-        portraitInformation: {fileID: 0}
-        portraitContent: {fileID: 0}
-        portraitSlotPrefab: {fileID: 0}
-        portraitSelectionGroup: {fileID: 0}
-        childInventory: {fileID: 0}
-    - rid: 1002
-      type: {class: PanelVisibilityModule, ns: , asm: Assembly-CSharp}
-      data:
-        alternatePanels:
-        - {fileID: 982824313}
-        - {fileID: 447093711}
-        - {fileID: 560577844}
+  basicInformation:
+    icon: {fileID: 0}
+    dataNameText: {fileID: 341242253}
+    descriptionText: {fileID: 0}
+    detailDescriptionText: {fileID: 0}
+    hideEmptyDescription: 0
+    hideEmptyDetailDescription: 1
+  codexInformation:
+    portraitImage: {fileID: 816939383}
+    previewImage: {fileID: 0}
+    portraitDescription: {fileID: 753949719}
+    portraitPage: {fileID: 1225618344}
+    previousPortrait: {fileID: 6016688715215353647}
+    nextPortrait: {fileID: 184242704}
+    portraitInformation: {fileID: 0}
+    portraitContent: {fileID: 0}
+    portraitSlotPrefab: {fileID: 0}
+    portraitSelectionGroup: {fileID: 0}
+    childInventory: {fileID: 0}
+  panelVisibility:
+    alternatePanels:
+    - {fileID: 982824313}
+    - {fileID: 447093711}
+    - {fileID: 560577844}
 --- !u!114 &1798906567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -105335,34 +105322,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 1859068378}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d760dc9856de41a180568f13260a61b0, type: 3}
+  m_Script: {fileID: 11500000, guid: 0346bf91aa424b71b1978ed7058a8651, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DataViewUI
-  modules:
-  - rid: 1000
-  - rid: 1001
+  m_EditorClassIdentifier: Assembly-CSharp::ItemInfoPanelUI
   dataSource: {fileID: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 986329587}
-        dataNameText: {fileID: 658471766}
-        descriptionText: {fileID: 34635026}
-        detailDescriptionText: {fileID: 389815432}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
-    - rid: 1001
-      type: {class: ClassificationModule, ns: , asm: Assembly-CSharp}
-      data:
-        seriesText: {fileID: 0}
-        gradeText: {fileID: 2017389835}
-        seriesIcon: {fileID: 1399774348}
-        gradeIcon: {fileID: 960537940}
-        series: 0
-        grade: -1
+  basicInformation:
+    icon: {fileID: 986329587}
+    dataNameText: {fileID: 658471766}
+    descriptionText: {fileID: 34635026}
+    detailDescriptionText: {fileID: 389815432}
+    hideEmptyDescription: 0
+    hideEmptyDetailDescription: 1
+  classification:
+    seriesText: {fileID: 0}
+    gradeText: {fileID: 2017389835}
+    seriesIcon: {fileID: 1399774348}
+    gradeIcon: {fileID: 960537940}
+    series: 0
+    grade: -1
 --- !u!1001 &1859871180
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -119051,24 +119028,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 2109920025}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d760dc9856de41a180568f13260a61b0, type: 3}
+  m_Script: {fileID: 11500000, guid: 230b4eaf543445a8a98fa4e6b10338f3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DataViewUI
-  modules:
-  - rid: 1000
+  m_EditorClassIdentifier: Assembly-CSharp::DataInformationUI
   dataSource: {fileID: 0}
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 333306232}
-        dataNameText: {fileID: 989736249}
-        descriptionText: {fileID: 0}
-        detailDescriptionText: {fileID: 0}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
+  basicInformation:
+    icon: {fileID: 333306232}
+    dataNameText: {fileID: 989736249}
+    descriptionText: {fileID: 0}
+    detailDescriptionText: {fileID: 0}
+    hideEmptyDescription: 0
+    hideEmptyDetailDescription: 1
 --- !u!1001 &2110181403
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -125389,7 +125359,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4301095534886901092, guid: 504ef55bb9ae7cc4f9ea0255a5fa61bd, type: 3}
-      propertyPath: modules.Array.data[0].dataNameText
+      propertyPath: slotInformation.dataNameText
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4447847571182399361, guid: 504ef55bb9ae7cc4f9ea0255a5fa61bd, type: 3}
@@ -125508,8 +125478,7 @@ PrefabInstance:
       propertyPath: graphic
       value: 
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 3272868658715588977, guid: 504ef55bb9ae7cc4f9ea0255a5fa61bd, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -127187,3 +127156,357 @@ SceneRoots:
   - {fileID: 1945993584}
   - {fileID: 618159609}
   - {fileID: 1603326670}
+
+--- !u!114 &280589205 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7375501808880279224, guid: b496eab974f57d047b303d643874c859, type: 3}
+  m_PrefabInstance: {fileID: 280589203}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Toggle
+
+--- !u!114 &1974145219 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
+  m_PrefabInstance: {fileID: 1974145217}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+
+--- !u!114 &717119953 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3272868658715588977, guid: 504ef55bb9ae7cc4f9ea0255a5fa61bd, type: 3}
+  m_PrefabInstance: {fileID: 717119951}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 925e2182b53247caa3e3f72934633715, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MergeRecipeSlotUI
+
+--- !u!114 &378787558 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3272868658715588977, guid: 504ef55bb9ae7cc4f9ea0255a5fa61bd, type: 3}
+  m_PrefabInstance: {fileID: 378787556}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 925e2182b53247caa3e3f72934633715, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MergeRecipeSlotUI
+
+--- !u!114 &4806742281300811581 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3272868658715588977, guid: 504ef55bb9ae7cc4f9ea0255a5fa61bd, type: 3}
+  m_PrefabInstance: {fileID: 4806742281300811580}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 925e2182b53247caa3e3f72934633715, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MergeRecipeSlotUI
+
+--- !u!114 &139700762 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2726135497985066565, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
+  m_PrefabInstance: {fileID: 2965036515542615941}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+
+--- !u!1 &394705634 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5480629294890333365, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
+  m_PrefabInstance: {fileID: 2965036515542615941}
+  m_PrefabAsset: {fileID: 0}
+
+--- !u!114 &172067224 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6288281054105130697, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
+  m_PrefabInstance: {fileID: 2965036515542615941}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+
+--- !u!1 &1303885927 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4512115111803184185, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
+  m_PrefabInstance: {fileID: 2965036515542615941}
+  m_PrefabAsset: {fileID: 0}
+
+--- !u!114 &1500722325 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8448141037975274714, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
+  m_PrefabInstance: {fileID: 2965036515542615941}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+
+--- !u!1 &2142433595 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2082885172949726762, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
+  m_PrefabInstance: {fileID: 2965036515542615941}
+  m_PrefabAsset: {fileID: 0}
+
+--- !u!114 &976601023 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 50951000297507644, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
+  m_PrefabInstance: {fileID: 2965036515542615941}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+
+--- !u!1 &2024879851 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7597349571384916428, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
+  m_PrefabInstance: {fileID: 2965036515542615941}
+  m_PrefabAsset: {fileID: 0}
+
+--- !u!114 &1250128928 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 317061446993987948, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
+  m_PrefabInstance: {fileID: 2965036515542615941}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+
+--- !u!1 &1514355588 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7907295308504005532, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
+  m_PrefabInstance: {fileID: 2965036515542615941}
+  m_PrefabAsset: {fileID: 0}
+
+--- !u!114 &1867586622 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 925207507568975318, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
+  m_PrefabInstance: {fileID: 2965036515542615941}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+
+--- !u!1 &709360897 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7281416624775524134, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
+  m_PrefabInstance: {fileID: 2965036515542615941}
+  m_PrefabAsset: {fileID: 0}
+
+--- !u!114 &534101526 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2669037260525687971, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
+  m_PrefabInstance: {fileID: 2965036515542615941}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+
+--- !u!1 &1108644807 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5535035798968624723, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
+  m_PrefabInstance: {fileID: 2965036515542615941}
+  m_PrefabAsset: {fileID: 0}
+
+--- !u!114 &1302726882 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1978552091249406767, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
+  m_PrefabInstance: {fileID: 2965036515542615941}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+
+--- !u!1 &870550373 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8263837173329215967, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
+  m_PrefabInstance: {fileID: 2965036515542615941}
+  m_PrefabAsset: {fileID: 0}
+
+--- !u!114 &1413175815 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 672981701622717891, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
+  m_PrefabInstance: {fileID: 2965036515542615941}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+
+--- !u!1 &1764149138767654065 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6957181601125855027, guid: c1f625426c0a1eb45adc3db1899e5700, type: 3}
+  m_PrefabInstance: {fileID: 2965036515542615941}
+  m_PrefabAsset: {fileID: 0}
+
+--- !u!114 &1063991687 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
+  m_PrefabInstance: {fileID: 1063991685}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+
+--- !u!114 &1424370446 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
+  m_PrefabInstance: {fileID: 1424370444}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+
+--- !u!114 &1686352704 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
+  m_PrefabInstance: {fileID: 1686352702}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+
+--- !u!114 &970439393 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
+  m_PrefabInstance: {fileID: 970439391}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5035d55bb44a4b90a1efd646cfb2ebab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PotionEquipSlotUI
+
+--- !u!114 &590247539 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
+  m_PrefabInstance: {fileID: 590247537}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5035d55bb44a4b90a1efd646cfb2ebab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PotionEquipSlotUI
+
+--- !u!114 &1799780489 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
+  m_PrefabInstance: {fileID: 1799780487}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5035d55bb44a4b90a1efd646cfb2ebab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PotionEquipSlotUI
+
+--- !u!114 &236818602 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
+  m_PrefabInstance: {fileID: 236818600}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5035d55bb44a4b90a1efd646cfb2ebab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PotionEquipSlotUI
+
+--- !u!114 &1759258625 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
+  m_PrefabInstance: {fileID: 1759258623}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5035d55bb44a4b90a1efd646cfb2ebab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PotionEquipSlotUI
+
+--- !u!114 &949045613 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
+  m_PrefabInstance: {fileID: 949045611}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5035d55bb44a4b90a1efd646cfb2ebab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PotionEquipSlotUI
+
+--- !u!114 &1623956672 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
+  m_PrefabInstance: {fileID: 1623956670}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5035d55bb44a4b90a1efd646cfb2ebab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PotionEquipSlotUI
+
+--- !u!114 &45209825 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: 75c6f6a18dc29eb4fa740068de64b266, type: 3}
+  m_PrefabInstance: {fileID: 45209823}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5035d55bb44a4b90a1efd646cfb2ebab, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PotionEquipSlotUI

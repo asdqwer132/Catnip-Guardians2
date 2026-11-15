@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 public sealed class PotionRecipeSlotUI : SlotUI
 {
+    public ClassificationModule classification = new ClassificationModule();
+    protected override ClassificationModule Classification => classification;
+
     public Toggle selectButton;
     [SerializeField] private GameObject pannel; //
     public ItemRecipeData Recipe { get; private set; }

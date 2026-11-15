@@ -421,30 +421,16 @@ MonoBehaviour:
   dataSource: {fileID: 0}
   selectButton: {fileID: 4971523355643103374}
   pannel: {fileID: 0}
-  modules:
-  - rid: 1000
-  - rid: 1001
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 4193720873976004347}
-        dataNameText: {fileID: 1276895541410837548}
-        descriptionText: {fileID: 0}
-        detailDescriptionText: {fileID: 0}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
-    - rid: 1001
-      type: {class: ClassificationModule, ns: , asm: Assembly-CSharp}
-      data:
-        seriesText: {fileID: 0}
-        gradeText: {fileID: 3871241707770886260}
-        seriesIcon: {fileID: 2659838117263236513}
-        gradeIcon: {fileID: 8069723026828347034}
-        series: 0
-        grade: -1
+  classification:
+    seriesText: {fileID: 0}
+    gradeText: {fileID: 3871241707770886260}
+    seriesIcon: {fileID: 2659838117263236513}
+    gradeIcon: {fileID: 8069723026828347034}
+    series: 0
+    grade: -1
+  slotInformation:
+    icon: {fileID: 4193720873976004347}
+    dataNameText: {fileID: 1276895541410837548}
 --- !u!114 &4971523355643103374
 MonoBehaviour:
   m_ObjectHideFlags: 0

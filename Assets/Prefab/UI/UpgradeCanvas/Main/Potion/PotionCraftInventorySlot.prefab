@@ -302,28 +302,10 @@ MonoBehaviour:
     amount: 0
   slotButton: {fileID: 0}
   slotToggle: {fileID: 2661863430750436515}
-  modules:
-  - rid: 1000
-  - rid: 1001
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 1295650540954652643}
-        dataNameText: {fileID: 0}
-        descriptionText: {fileID: 0}
-        detailDescriptionText: {fileID: 0}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
-    - rid: 1001
-      type: {class: ItemInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        amountText: {fileID: 3999279684155034952}
-        categoryText: {fileID: 0}
-        weightText: {fileID: 0}
-        cooldownText: {fileID: 0}
+  slotInformation:
+    icon: {fileID: 1295650540954652643}
+    dataNameText: {fileID: 0}
+    amountText: {fileID: 3999279684155034952}
 --- !u!114 &8721979109657547302
 MonoBehaviour:
   m_ObjectHideFlags: 0

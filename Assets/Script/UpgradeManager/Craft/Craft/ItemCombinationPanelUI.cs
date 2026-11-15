@@ -22,11 +22,20 @@ public sealed class ItemCombinationPanelUI : MonoBehaviour
         }
         RefreshUI();
         if (combineButton != null)
-            combineButton.onClick.AddListener(manager.Combine);
+        {
+            bool wired = false;
+            for (int i = 0; i < combineButton.onClick.GetPersistentEventCount(); i++)
+                if ((combineButton.onClick.GetPersistentTarget(i) == this ||
+                     (manager != null && combineButton.onClick.GetPersistentTarget(i) == manager)) &&
+                    combineButton.onClick.GetPersistentMethodName(i) == nameof(Combine)) wired = true;
+            combineButton.onClick.RemoveListener(Combine);
+            if (!wired) combineButton.onClick.AddListener(Combine);
+        }
     }
 
     private void OnDisable()
     {
+        if (combineButton != null) combineButton.onClick.RemoveListener(Combine);
         if (manager != null)
         {
             manager.onMaterialChanged -= RefreshUI;

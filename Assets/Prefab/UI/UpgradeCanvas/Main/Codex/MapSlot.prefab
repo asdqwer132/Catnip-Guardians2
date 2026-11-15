@@ -431,20 +431,9 @@ MonoBehaviour:
     amount: 0
   slotButton: {fileID: 0}
   slotToggle: {fileID: 5436647493646884363}
-  modules:
-  - rid: 1000
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 7833381607381465268}
-        dataNameText: {fileID: 1672177661723416664}
-        descriptionText: {fileID: 0}
-        detailDescriptionText: {fileID: 0}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
+  slotInformation:
+    icon: {fileID: 7833381607381465268}
+    dataNameText: {fileID: 1672177661723416664}
 --- !u!1 &5783671247574753400
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 public class RecipeSlotUI : SlotUI
 {
+    public ClassificationModule classification = new ClassificationModule();
+    protected override ClassificationModule Classification => classification;
+
     [Header("Base Item UI")]
     public TextMeshProUGUI nameText { get => dataNameText; set => dataNameText = value; }
     public GameObject amountImage;

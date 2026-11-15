@@ -11,6 +11,11 @@ public class BoxCost
 }
 public class ShopBoxInfoUI : DataViewUI
 {
+    public BasicInformationModule basicInformation = new BasicInformationModule();
+    protected override BasicInformationModule BasicInformation => basicInformation;
+    public ClassificationModule classification = new ClassificationModule();
+    protected override ClassificationModule Classification => classification;
+
     [Header("Basic Info UI")]
     public GameObject pannel;
     public BoxCost[] extraBoxCosts;

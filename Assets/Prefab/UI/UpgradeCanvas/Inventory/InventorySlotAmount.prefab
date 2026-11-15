@@ -571,28 +571,10 @@ MonoBehaviour:
     amount: 0
   slotButton: {fileID: 0}
   slotToggle: {fileID: 3829523776502693878}
-  modules:
-  - rid: 1000
-  - rid: 1001
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 8649127330804061263}
-        dataNameText: {fileID: 7768991709228331066}
-        descriptionText: {fileID: 0}
-        detailDescriptionText: {fileID: 0}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
-    - rid: 1001
-      type: {class: ItemInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        amountText: {fileID: 149516099735279939}
-        categoryText: {fileID: 0}
-        weightText: {fileID: 0}
-        cooldownText: {fileID: 0}
+  slotInformation:
+    icon: {fileID: 8649127330804061263}
+    dataNameText: {fileID: 7768991709228331066}
+    amountText: {fileID: 149516099735279939}
 --- !u!1 &8520145447995529100
 GameObject:
   m_ObjectHideFlags: 0

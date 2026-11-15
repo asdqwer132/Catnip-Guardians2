@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class BaseItemSlotUI : SlotUI
 {
+    public ClassificationModule classification = new ClassificationModule();
+    protected override ClassificationModule Classification => classification;
+
     [Header("Base Item UI")]
     public GameObject amountImage;
     public GameObject locked;
@@ -35,13 +38,9 @@ public class BaseItemSlotUI : SlotUI
         // SetSlot으로 받은 인벤토리 참조는 보존하고, 표시 변경으로 원본 재고를 수정하지 않습니다.
         if (currentItem == null || currentItem.itemData != itemData || currentItem.amount != amount)
             currentItem = new InventoryItem(itemData, amount);
-        var data = ItemTooltipData.FromItem(itemData, amount);
-        SetDefinedData(data, data.dataName);
+        SetData(itemData);
         SetAmountVisible(showAmount);
         if (amountText != null) amountText.text = amount.ToString();
-        SetOptionalText(categoryText, data.CategoryText);
-        SetOptionalText(weightText, data.WeightText);
-        SetOptionalText(cooldownText, data.CooldownText);
         if (locked != null) locked.SetActive(false);
         if (ready != null) ready.SetActive(false);
         IsLocked = false;

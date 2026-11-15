@@ -253,26 +253,10 @@ MonoBehaviour:
     itemData: {fileID: 0}
     amount: 0
   chanceText: {fileID: 8442328516135230654}
-  modules:
-  - rid: 1000
-  - rid: 1001
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 2628549570234116901}
-        dataNameText: {fileID: 928287134991573114}
-        descriptionText: {fileID: 0}
-        detailDescriptionText: {fileID: 0}
-    - rid: 1001
-      type: {class: ItemInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        amountText: {fileID: 8941645205345228192}
-        categoryText: {fileID: 0}
-        weightText: {fileID: 0}
-        cooldownText: {fileID: 0}
+  slotInformation:
+    icon: {fileID: 2628549570234116901}
+    dataNameText: {fileID: 928287134991573114}
+    amountText: {fileID: 8941645205345228192}
 --- !u!1 &3604050622264048455
 GameObject:
   m_ObjectHideFlags: 0

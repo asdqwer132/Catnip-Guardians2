@@ -454,20 +454,9 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  modules:
-  - rid: 1000
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 2954698652241664229}
-        dataNameText: {fileID: 7480558608105997786}
-        descriptionText: {fileID: 0}
-        detailDescriptionText: {fileID: 0}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
+  slotInformation:
+    icon: {fileID: 2954698652241664229}
+    dataNameText: {fileID: 7480558608105997786}
 --- !u!1 &9179744211486527854
 GameObject:
   m_ObjectHideFlags: 0

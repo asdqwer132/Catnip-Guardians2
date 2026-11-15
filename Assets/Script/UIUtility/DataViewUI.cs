@@ -1,53 +1,50 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 /// <summary>Reusable data-to-UI binding. Does not create UI or perform gameplay actions.</summary>
 [AddComponentMenu("UI/Data View UI")]
 public partial class DataViewUI : MonoBehaviour, ISceneLocalizedUI
 {
-    [FormerlySerializedAs("nameText"), FormerlySerializedAs("titleText"), FormerlySerializedAs("boxNameText")]
-
-    [SerializeReference] public System.Collections.Generic.List<DataViewModule> modules = new System.Collections.Generic.List<DataViewModule>();
-    public T Module<T>() where T : DataViewModule => modules.Find(module => module is T) as T;
-    private T EnsureModule<T>() where T : DataViewModule, new()
-    {
-        var module = Module<T>();
-        if (module == null) { module = new T(); modules.Add(module); }
-        return module;
-    }
-    public Image icon { get => Module<BasicInformationModule>()?.icon ?? null; set => EnsureModule<BasicInformationModule>().icon = value; }
-    public TextMeshProUGUI dataNameText { get => Module<BasicInformationModule>()?.dataNameText ?? null; set => EnsureModule<BasicInformationModule>().dataNameText = value; }
-    public TextMeshProUGUI descriptionText { get => Module<BasicInformationModule>()?.descriptionText ?? null; set => EnsureModule<BasicInformationModule>().descriptionText = value; }
-    public TextMeshProUGUI detailDescriptionText { get => Module<BasicInformationModule>()?.detailDescriptionText ?? null; set => EnsureModule<BasicInformationModule>().detailDescriptionText = value; }
-    public bool hideEmptyDescription { get => Module<BasicInformationModule>()?.hideEmptyDescription ?? false; set => EnsureModule<BasicInformationModule>().hideEmptyDescription = value; }
-    public bool hideEmptyDetailDescription { get => Module<BasicInformationModule>()?.hideEmptyDetailDescription ?? false; set => EnsureModule<BasicInformationModule>().hideEmptyDetailDescription = value; }
-    public TextMeshProUGUI seriesText { get => Module<ClassificationModule>()?.seriesText ?? null; set => EnsureModule<ClassificationModule>().seriesText = value; }
-    public TextMeshProUGUI gradeText { get => Module<ClassificationModule>()?.gradeText ?? null; set => EnsureModule<ClassificationModule>().gradeText = value; }
-    public Image seriesIcon { get => Module<ClassificationModule>()?.seriesIcon ?? null; set => EnsureModule<ClassificationModule>().seriesIcon = value; }
-    public Image gradeIcon { get => Module<ClassificationModule>()?.gradeIcon ?? null; set => EnsureModule<ClassificationModule>().gradeIcon = value; }
-    public ItemSeries series { get => Module<ClassificationModule>()?.series ?? ItemSeries.None; set { var module = Module<ClassificationModule>(); if (module != null) module.series = value; } }
-    public Grade grade { get => Module<ClassificationModule>()?.grade ?? Grade.None; set { var module = Module<ClassificationModule>(); if (module != null) module.grade = value; } }
-    public TextMeshProUGUI amountText { get => Module<ItemInformationModule>()?.amountText ?? null; set => EnsureModule<ItemInformationModule>().amountText = value; }
-    public TextMeshProUGUI categoryText { get => Module<ItemInformationModule>()?.categoryText ?? null; set => EnsureModule<ItemInformationModule>().categoryText = value; }
-    public TextMeshProUGUI weightText { get => Module<ItemInformationModule>()?.weightText ?? null; set => EnsureModule<ItemInformationModule>().weightText = value; }
-    public TextMeshProUGUI cooldownText { get => Module<ItemInformationModule>()?.cooldownText ?? null; set => EnsureModule<ItemInformationModule>().cooldownText = value; }
-    public TMP_Text effectDescriptions { get => Module<ItemInformationModule>()?.effectDescriptions ?? null; set => EnsureModule<ItemInformationModule>().effectDescriptions = value; }
-    public TextMeshProUGUI totalNodesText { get => Module<SkillMapInformationModule>()?.totalNodesText ?? null; set => EnsureModule<SkillMapInformationModule>().totalNodesText = value; }
-    public TextMeshProUGUI completedNodesText { get => Module<SkillMapInformationModule>()?.completedNodesText ?? null; set => EnsureModule<SkillMapInformationModule>().completedNodesText = value; }
-    public Image portraitImage { get => Module<CodexInformationModule>()?.portraitImage ?? null; set => EnsureModule<CodexInformationModule>().portraitImage = value; }
-    public Image previewImage { get => Module<CodexInformationModule>()?.previewImage ?? null; set => EnsureModule<CodexInformationModule>().previewImage = value; }
-    public TMP_Text portraitDescription { get => Module<CodexInformationModule>()?.portraitDescription ?? null; set => EnsureModule<CodexInformationModule>().portraitDescription = value; }
-    public TMP_Text portraitPage { get => Module<CodexInformationModule>()?.portraitPage ?? null; set => EnsureModule<CodexInformationModule>().portraitPage = value; }
-    public Button previousPortrait { get => Module<CodexInformationModule>()?.previousPortrait ?? null; set => EnsureModule<CodexInformationModule>().previousPortrait = value; }
-    public Button nextPortrait { get => Module<CodexInformationModule>()?.nextPortrait ?? null; set => EnsureModule<CodexInformationModule>().nextPortrait = value; }
-    public DataViewUI portraitInformation { get => Module<CodexInformationModule>()?.portraitInformation ?? null; set => EnsureModule<CodexInformationModule>().portraitInformation = value; }
-    public Transform portraitContent { get => Module<CodexInformationModule>()?.portraitContent ?? null; set => EnsureModule<CodexInformationModule>().portraitContent = value; }
-    public CodexPortraitSlotUI portraitSlotPrefab { get => Module<CodexInformationModule>()?.portraitSlotPrefab ?? null; set => EnsureModule<CodexInformationModule>().portraitSlotPrefab = value; }
-    public ToggleGroup portraitSelectionGroup { get => Module<CodexInformationModule>()?.portraitSelectionGroup ?? null; set => EnsureModule<CodexInformationModule>().portraitSelectionGroup = value; }
-    public CodexInventoryUI childInventory { get => Module<CodexInformationModule>()?.childInventory ?? null; set => EnsureModule<CodexInformationModule>().childInventory = value; }
+    protected virtual BasicInformationModule BasicInformation => null;
+    protected virtual ClassificationModule Classification => null;
+    protected virtual ItemInformationModule ItemInformation => null;
+    protected virtual SkillMapInformationModule SkillMapInformation => null;
+    protected virtual CodexInformationModule CodexInformation => null;
+    protected virtual PanelVisibilityModule PanelVisibility => null;
+    protected virtual SlotInformationModule SlotInformation => null;
+    public Image icon { get => SlotInformation?.icon ?? BasicInformation?.icon ?? null; set { if (SlotInformation != null) SlotInformation.icon = value; else if (BasicInformation != null) BasicInformation.icon = value; } }
+    public TextMeshProUGUI dataNameText { get => SlotInformation?.dataNameText ?? BasicInformation?.dataNameText ?? null; set { if (SlotInformation != null) SlotInformation.dataNameText = value; else if (BasicInformation != null) BasicInformation.dataNameText = value; } }
+    public TextMeshProUGUI descriptionText { get => BasicInformation?.descriptionText ?? null; set { if (BasicInformation != null) BasicInformation.descriptionText = value; } }
+    public TextMeshProUGUI detailDescriptionText { get => BasicInformation?.detailDescriptionText ?? null; set { if (BasicInformation != null) BasicInformation.detailDescriptionText = value; } }
+    public bool hideEmptyDescription { get => BasicInformation?.hideEmptyDescription ?? false; set { if (BasicInformation != null) BasicInformation.hideEmptyDescription = value; } }
+    public bool hideEmptyDetailDescription { get => BasicInformation?.hideEmptyDetailDescription ?? false; set { if (BasicInformation != null) BasicInformation.hideEmptyDetailDescription = value; } }
+    public TextMeshProUGUI seriesText { get => Classification?.seriesText ?? null; set { if (Classification != null) Classification.seriesText = value; } }
+    public TextMeshProUGUI gradeText { get => Classification?.gradeText ?? null; set { if (Classification != null) Classification.gradeText = value; } }
+    public Image seriesIcon { get => Classification?.seriesIcon ?? null; set { if (Classification != null) Classification.seriesIcon = value; } }
+    public Image gradeIcon { get => Classification?.gradeIcon ?? null; set { if (Classification != null) Classification.gradeIcon = value; } }
+    public ItemSeries series { get => Classification?.series ?? ItemSeries.None; set { if (Classification != null) Classification.series = value; } }
+    public Grade grade { get => Classification?.grade ?? Grade.None; set { if (Classification != null) Classification.grade = value; } }
+    public TextMeshProUGUI amountText { get => SlotInformation?.amountText ?? ItemInformation?.amountText ?? null; set { if (SlotInformation != null) SlotInformation.amountText = value; else if (ItemInformation != null) ItemInformation.amountText = value; } }
+    public TextMeshProUGUI categoryText { get => ItemInformation?.categoryText ?? null; set { if (ItemInformation != null) ItemInformation.categoryText = value; } }
+    public TextMeshProUGUI weightText { get => ItemInformation?.weightText ?? null; set { if (ItemInformation != null) ItemInformation.weightText = value; } }
+    public TextMeshProUGUI cooldownText { get => ItemInformation?.cooldownText ?? null; set { if (ItemInformation != null) ItemInformation.cooldownText = value; } }
+    public TMP_Text effectDescriptions { get => ItemInformation?.effectDescriptions ?? null; set { if (ItemInformation != null) ItemInformation.effectDescriptions = value; } }
+    public TextMeshProUGUI totalNodesText { get => SkillMapInformation?.totalNodesText ?? null; set { if (SkillMapInformation != null) SkillMapInformation.totalNodesText = value; } }
+    public TextMeshProUGUI completedNodesText { get => SkillMapInformation?.completedNodesText ?? null; set { if (SkillMapInformation != null) SkillMapInformation.completedNodesText = value; } }
+    public Image portraitImage { get => CodexInformation?.portraitImage ?? null; set { if (CodexInformation != null) CodexInformation.portraitImage = value; } }
+    public Image previewImage { get => CodexInformation?.previewImage ?? null; set { if (CodexInformation != null) CodexInformation.previewImage = value; } }
+    public TMP_Text portraitDescription { get => CodexInformation?.portraitDescription ?? null; set { if (CodexInformation != null) CodexInformation.portraitDescription = value; } }
+    public TMP_Text portraitPage { get => CodexInformation?.portraitPage ?? null; set { if (CodexInformation != null) CodexInformation.portraitPage = value; } }
+    public Button previousPortrait { get => CodexInformation?.previousPortrait ?? null; set { if (CodexInformation != null) CodexInformation.previousPortrait = value; } }
+    public Button nextPortrait { get => CodexInformation?.nextPortrait ?? null; set { if (CodexInformation != null) CodexInformation.nextPortrait = value; } }
+    public DataViewUI portraitInformation { get => CodexInformation?.portraitInformation ?? null; set { if (CodexInformation != null) CodexInformation.portraitInformation = value; } }
+    public Transform portraitContent { get => CodexInformation?.portraitContent ?? null; set { if (CodexInformation != null) CodexInformation.portraitContent = value; } }
+    public CodexPortraitSlotUI portraitSlotPrefab { get => CodexInformation?.portraitSlotPrefab ?? null; set { if (CodexInformation != null) CodexInformation.portraitSlotPrefab = value; } }
+    public ToggleGroup portraitSelectionGroup { get => CodexInformation?.portraitSelectionGroup ?? null; set { if (CodexInformation != null) CodexInformation.portraitSelectionGroup = value; } }
+    public CodexInventoryUI childInventory { get => CodexInformation?.childInventory ?? null; set { if (CodexInformation != null) CodexInformation.childInventory = value; } }
+    public GameObject[] alternatePanels { get => PanelVisibility?.alternatePanels ?? null; set { if (PanelVisibility != null) PanelVisibility.alternatePanels = value; } }
 
     public DefaultData dataSource;
 
@@ -125,7 +122,6 @@ public partial class DataViewUI : MonoBehaviour, ISceneLocalizedUI
         ApplyLanguage(SceneLanguageMediator.GetLanguage(gameObject.scene));
     }
 
-    public GameObject[] alternatePanels { get => Module<PanelVisibilityModule>()?.alternatePanels; set => EnsureModule<PanelVisibilityModule>().alternatePanels = value; }
     public virtual GameObject[] AlternatePanels => alternatePanels;
     public void Show(DefaultData data) { if (bindingCodexData) return; SetData(data); gameObject.SetActive(data != null); if (data != null && AlternatePanels != null) foreach (var panel in AlternatePanels) if (panel != null && panel != gameObject) panel.SetActive(false); }
     public void ClearData() => SetData(null);
@@ -180,7 +176,7 @@ public partial class DataViewUI : MonoBehaviour, ISceneLocalizedUI
         else if (source is ItemBoxData box) { series = box.itemSeries; grade = box.grade; }
 
         SetOptionalText(amountText, payload?.amountText);
-        if (item == null && source is ItemData sourceItem) item = ItemTooltipData.FromItem(sourceItem, 0);
+        if (ItemInformation != null && item == null && source is ItemData sourceItem) item = ItemTooltipData.FromItem(sourceItem, 0);
         SetOptionalText(categoryText, item?.CategoryText);
         SetOptionalText(weightText, item?.WeightText);
         SetOptionalText(cooldownText, item?.CooldownText);

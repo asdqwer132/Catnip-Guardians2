@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class CostTooltipUI : TooltipUI
 {
+    public BasicInformationModule basicInformation = new BasicInformationModule();
+    protected override BasicInformationModule BasicInformation => basicInformation;
+
     protected override bool HideOnAwake => true;
 
     public BoxCost[] extraBoxCosts;

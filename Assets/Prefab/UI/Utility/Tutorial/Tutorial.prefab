@@ -445,24 +445,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 398715270467799136}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d760dc9856de41a180568f13260a61b0, type: 3}
+  m_Script: {fileID: 11500000, guid: 230b4eaf543445a8a98fa4e6b10338f3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DataViewUI
+  m_EditorClassIdentifier: Assembly-CSharp::DataInformationUI
   dataSource: {fileID: 0}
-  modules:
-  - rid: 1000
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 0}
-        dataNameText: {fileID: 4292112986701467717}
-        descriptionText: {fileID: 3747884560801579655}
-        detailDescriptionText: {fileID: 0}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
+  basicInformation:
+    icon: {fileID: 0}
+    dataNameText: {fileID: 4292112986701467717}
+    descriptionText: {fileID: 3747884560801579655}
+    detailDescriptionText: {fileID: 0}
+    hideEmptyDescription: 0
+    hideEmptyDetailDescription: 1
 --- !u!1 &498288880774537342
 GameObject:
   m_ObjectHideFlags: 0
@@ -1213,24 +1206,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 2027922411921054729}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d760dc9856de41a180568f13260a61b0, type: 3}
+  m_Script: {fileID: 11500000, guid: 230b4eaf543445a8a98fa4e6b10338f3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DataViewUI
+  m_EditorClassIdentifier: Assembly-CSharp::DataInformationUI
   dataSource: {fileID: 0}
-  modules:
-  - rid: 1000
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 0}
-        dataNameText: {fileID: 6943660959916579934}
-        descriptionText: {fileID: 1520378856463463234}
-        detailDescriptionText: {fileID: 0}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
+  basicInformation:
+    icon: {fileID: 0}
+    dataNameText: {fileID: 6943660959916579934}
+    descriptionText: {fileID: 1520378856463463234}
+    detailDescriptionText: {fileID: 0}
+    hideEmptyDescription: 0
+    hideEmptyDetailDescription: 1
 --- !u!1 &2095423594944438631
 GameObject:
   m_ObjectHideFlags: 0
@@ -1877,24 +1863,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 3357676815752116232}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d760dc9856de41a180568f13260a61b0, type: 3}
+  m_Script: {fileID: 11500000, guid: 230b4eaf543445a8a98fa4e6b10338f3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DataViewUI
+  m_EditorClassIdentifier: Assembly-CSharp::DataInformationUI
   dataSource: {fileID: 0}
-  modules:
-  - rid: 1000
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 6052949974140443575}
-        dataNameText: {fileID: 8209290556445603154}
-        descriptionText: {fileID: 0}
-        detailDescriptionText: {fileID: 0}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
+  basicInformation:
+    icon: {fileID: 6052949974140443575}
+    dataNameText: {fileID: 8209290556445603154}
+    descriptionText: {fileID: 0}
+    detailDescriptionText: {fileID: 0}
+    hideEmptyDescription: 0
+    hideEmptyDetailDescription: 1
 --- !u!1 &3520318819956222243
 GameObject:
   m_ObjectHideFlags: 0
@@ -2445,24 +2424,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 4409315462029353784}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d760dc9856de41a180568f13260a61b0, type: 3}
+  m_Script: {fileID: 11500000, guid: 230b4eaf543445a8a98fa4e6b10338f3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DataViewUI
+  m_EditorClassIdentifier: Assembly-CSharp::DataInformationUI
   dataSource: {fileID: 0}
-  modules:
-  - rid: 1000
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 5420063328678899873}
-        dataNameText: {fileID: 1193812948133729533}
-        descriptionText: {fileID: 0}
-        detailDescriptionText: {fileID: 0}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
+  basicInformation:
+    icon: {fileID: 5420063328678899873}
+    dataNameText: {fileID: 1193812948133729533}
+    descriptionText: {fileID: 0}
+    detailDescriptionText: {fileID: 0}
+    hideEmptyDescription: 0
+    hideEmptyDetailDescription: 1
 --- !u!1 &5887807648168869204
 GameObject:
   m_ObjectHideFlags: 0
@@ -4693,24 +4665,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 7960980928791231840}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d760dc9856de41a180568f13260a61b0, type: 3}
+  m_Script: {fileID: 11500000, guid: 230b4eaf543445a8a98fa4e6b10338f3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DataViewUI
+  m_EditorClassIdentifier: Assembly-CSharp::DataInformationUI
   dataSource: {fileID: 0}
-  modules:
-  - rid: 1000
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 0}
-        dataNameText: {fileID: 871407589106362794}
-        descriptionText: {fileID: 0}
-        detailDescriptionText: {fileID: 0}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
+  basicInformation:
+    icon: {fileID: 0}
+    dataNameText: {fileID: 871407589106362794}
+    descriptionText: {fileID: 0}
+    detailDescriptionText: {fileID: 0}
+    hideEmptyDescription: 0
+    hideEmptyDetailDescription: 1
 --- !u!1001 &880494016831612381
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4856,24 +4821,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 7711123090023234970}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d760dc9856de41a180568f13260a61b0, type: 3}
+  m_Script: {fileID: 11500000, guid: 230b4eaf543445a8a98fa4e6b10338f3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DataViewUI
+  m_EditorClassIdentifier: Assembly-CSharp::DataInformationUI
   dataSource: {fileID: 0}
-  modules:
-  - rid: 1000
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 0}
-        dataNameText: {fileID: 679939039782283600}
-        descriptionText: {fileID: 0}
-        detailDescriptionText: {fileID: 0}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
+  basicInformation:
+    icon: {fileID: 0}
+    dataNameText: {fileID: 679939039782283600}
+    descriptionText: {fileID: 0}
+    detailDescriptionText: {fileID: 0}
+    hideEmptyDescription: 0
+    hideEmptyDetailDescription: 1
 --- !u!1 &7893956148965517496 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7040485143345319269, guid: 00dfff998e7bce0419654033f28e4c79, type: 3}
@@ -5049,24 +5007,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 7697909295884266116}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d760dc9856de41a180568f13260a61b0, type: 3}
+  m_Script: {fileID: 11500000, guid: 230b4eaf543445a8a98fa4e6b10338f3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DataViewUI
+  m_EditorClassIdentifier: Assembly-CSharp::DataInformationUI
   dataSource: {fileID: 0}
-  modules:
-  - rid: 1000
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 0}
-        dataNameText: {fileID: 628461966722793038}
-        descriptionText: {fileID: 0}
-        detailDescriptionText: {fileID: 0}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
+  basicInformation:
+    icon: {fileID: 0}
+    dataNameText: {fileID: 628461966722793038}
+    descriptionText: {fileID: 0}
+    detailDescriptionText: {fileID: 0}
+    hideEmptyDescription: 0
+    hideEmptyDetailDescription: 1
 --- !u!1 &7808091026323144614 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7040485143345319269, guid: 00dfff998e7bce0419654033f28e4c79, type: 3}
@@ -6010,24 +5961,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 1915920677141841066}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d760dc9856de41a180568f13260a61b0, type: 3}
+  m_Script: {fileID: 11500000, guid: 230b4eaf543445a8a98fa4e6b10338f3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DataViewUI
+  m_EditorClassIdentifier: Assembly-CSharp::DataInformationUI
   dataSource: {fileID: 0}
-  modules:
-  - rid: 1000
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 0}
-        dataNameText: {fileID: 8717419496750223456}
-        descriptionText: {fileID: 0}
-        detailDescriptionText: {fileID: 0}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
+  basicInformation:
+    icon: {fileID: 0}
+    dataNameText: {fileID: 8717419496750223456}
+    descriptionText: {fileID: 0}
+    detailDescriptionText: {fileID: 0}
+    hideEmptyDescription: 0
+    hideEmptyDetailDescription: 1
 --- !u!1 &2024695029995508104 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7040485143345319269, guid: 00dfff998e7bce0419654033f28e4c79, type: 3}

@@ -13,7 +13,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5704112146065660191, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
-      propertyPath: modules.Array.data[1].amountText
+      propertyPath: slotInformation.amountText
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5950829455748439677, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
@@ -141,20 +141,9 @@ MonoBehaviour:
     amount: 0
   slotButton: {fileID: 0}
   slotToggle: {fileID: 5449147667703406871}
-  modules:
-  - rid: 1000
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 5408077776064725958}
-        dataNameText: {fileID: 0}
-        descriptionText: {fileID: 0}
-        detailDescriptionText: {fileID: 0}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
+  slotInformation:
+    icon: {fileID: 5408077776064725958}
+    dataNameText: {fileID: 0}
 --- !u!114 &5408077776064725958 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4047147333766088748, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}

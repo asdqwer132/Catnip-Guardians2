@@ -1,5 +1,8 @@
 using UnityEngine;
 
-// Receives trigger/provider payloads; slot rendering has no tooltip dependency.
 [AddComponentMenu("UI/Tooltip UI")]
-public partial class TooltipUI : DataViewUI { }
+public partial class TooltipUI : DataViewUI
+{
+    public PanelVisibilityModule panelVisibility = new PanelVisibilityModule();
+    protected override PanelVisibilityModule PanelVisibility => panelVisibility;
+}

@@ -67,3 +67,12 @@ public sealed class PanelVisibilityModule : DataViewModule
 {
     public GameObject[] alternatePanels;
 }
+
+// Direct slots carry only their icon, name and quantity, with no tooltip behaviour.
+[Serializable]
+public sealed class SlotInformationModule
+{
+    public Image icon;
+    public TextMeshProUGUI dataNameText;
+    public TextMeshProUGUI amountText;
+}

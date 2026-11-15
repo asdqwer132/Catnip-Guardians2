@@ -6,7 +6,7 @@ using UnityEngine.UI;
 // All objects below are authored UI references or instances of authored slot prefabs.
 public partial class DataViewUI
 {
-    private List<CodexPortraitSlotUI> portraitSlots => Module<CodexInformationModule>()?.Slots ?? EmptyPortraitSlots;
+    private List<CodexPortraitSlotUI> portraitSlots => CodexInformation?.Slots ?? EmptyPortraitSlots;
     private static readonly List<CodexPortraitSlotUI> EmptyPortraitSlots = new List<CodexPortraitSlotUI>();
     public DefaultData SelectedData { get; private set; }
     public int SelectedPortrait { get; private set; } = -1;

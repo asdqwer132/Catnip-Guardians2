@@ -175,20 +175,9 @@ MonoBehaviour:
     amount: 0
   slotButton: {fileID: 1477161703183880113}
   slotToggle: {fileID: 0}
-  modules:
-  - rid: 1000
-  references:
-    version: 2
-    RefIds:
-    - rid: 1000
-      type: {class: BasicInformationModule, ns: , asm: Assembly-CSharp}
-      data:
-        icon: {fileID: 1298663487242166642}
-        dataNameText: {fileID: 0}
-        descriptionText: {fileID: 0}
-        detailDescriptionText: {fileID: 0}
-        hideEmptyDescription: 0
-        hideEmptyDetailDescription: 1
+  slotInformation:
+    icon: {fileID: 1298663487242166642}
+    dataNameText: {fileID: 0}
 --- !u!114 &1477161703183880113
 MonoBehaviour:
   m_ObjectHideFlags: 0
