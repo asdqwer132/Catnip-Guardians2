@@ -1,19 +1,14 @@
 
 using UnityEngine;
 
-public class MergeBoxWeapon : IMergeBoxGimic
+public class MergeBoxWeapon : MergeBoxGimic
 {
-    public void GimicStart()
+    public override void GimicStart()
     {
         throw new System.NotImplementedException();
     }
 
-    public void Init()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void UseBoxSkill(int index)
+    public override void UseBoxSkill(int index)
     {
         throw new System.NotImplementedException();
     }
