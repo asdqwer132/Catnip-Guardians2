@@ -5,7 +5,7 @@ using UnityEngine;
 
 public sealed class StoryExcelImporterWindow : EditorWindow
 {
-    [SerializeField] private string workbook = "Assets/Data/Excel/StoryTest.xlsx";
+    [SerializeField] private string workbook = "Assets/Data/Excel/StoryData.xlsx";
     [SerializeField] private string outputFolder = "Assets/Data/Scriptable/Story/ExcelTest";
     private List<StoryExcelImporter.Entry> preview;
     private string status;
