@@ -88,6 +88,6 @@ public sealed class CurrencyUI : MonoBehaviour, ISceneLocalizedUI
     void ISceneLocalizedUI.ApplyLanguage(language selected, LocalizedTextTable table)
     {
         if (currencyData == null) return;
-        DataInfoUI.ApplyDefinition(nameText, icon, currencyData.GetData(type), selected, type.ToString(), false);
+        TooltipUI.ApplyDefinition(nameText, icon, currencyData.GetData(type), selected, type.ToString(), false);
     }
 }

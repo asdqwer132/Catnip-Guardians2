@@ -4,7 +4,7 @@ using UnityEngine.UI;
 public sealed class TutorialSelectionToggle : MonoBehaviour
 {
     public Toggle toggle;
-    public DataInfoUI label;
+    public TooltipUI label;
     private TutorialCanvasController controller;
     private string tutorialId;
     private void Awake() { if (toggle != null) toggle.onValueChanged.AddListener(OnSelected); }

@@ -1,11 +1,11 @@
 using System;
 using UnityEngine;
 
-// A stage is item-shaped display data; merely selecting it never starts a stage or uses an item.
-[CreateAssetMenu(fileName = "Stage Codex", menuName = "Upgrade/Codex/Stage Item")]
-public sealed class StageCodexData : ItemData
+// Stage information has no item effects, rarity or crafting behaviour.
+[CreateAssetMenu(fileName = "Stage Codex", menuName = "Upgrade/Codex/Stage")]
+public sealed class StageCodexData : DefaultData
 {
-    [Header("Extra Data")]
+    [Space(10)]
     public MapCodexData map;
     [Min(1)] public int stageNumber = 1;
     public Sprite preview;

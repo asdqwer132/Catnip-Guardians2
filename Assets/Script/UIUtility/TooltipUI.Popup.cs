@@ -1,9 +1,11 @@
 using UnityEngine;
 
-public class ItemTooltipUI : ItemDetailsUI
+public partial class TooltipUI
 {
-    [Header("Tooltip Option")]
     public bool useTooltip = true;
+    [Tooltip("Hide on startup for a hover tooltip; leave off for fixed information panels and inventory slots.")]
+    public bool startHidden;
+    protected virtual bool HideOnAwake => startHidden;
     public Vector2 offset = new Vector2(0f, 20f);
     public bool clampToParent = true;
     [Tooltip("Disable for an information panel already positioned by the scene layout.")]
@@ -12,7 +14,6 @@ public class ItemTooltipUI : ItemDetailsUI
     [Tooltip("Existing panels to hide while this information panel is visible.")]
     public GameObject[] alternatePanels;
 
-    [Header("Tooltip Objects")]
     public GameObject tooltipPanel;
 
     private object currentOwner;
@@ -29,19 +30,31 @@ public class ItemTooltipUI : ItemDetailsUI
 
     private void Awake()
     {
-        if (tooltipPanel == null)
-            tooltipPanel = gameObject;
+        if (HideOnAwake && currentOwner == null) Hide();
+    }
 
+    private void PrepareTooltipPanel()
+    {
+        if (tooltipPanel == null) tooltipPanel = gameObject;
         tooltipRect = tooltipPanel.GetComponent<RectTransform>();
-        parentRect = tooltipRect.parent as RectTransform;
-
+        parentRect = tooltipRect != null ? tooltipRect.parent as RectTransform : null;
         rootCanvas = tooltipPanel.GetComponentInParent<Canvas>();
+        uiCamera = rootCanvas != null && rootCanvas.renderMode != RenderMode.ScreenSpaceOverlay
+            ? rootCanvas.worldCamera : null;
+    }
 
-        if (rootCanvas != null && rootCanvas.renderMode != RenderMode.ScreenSpaceOverlay)
-            uiCamera = rootCanvas.worldCamera;
-
-        // Show may activate an authored panel before its first Awake.
-        if (currentOwner == null) Hide();
+    // A fixed panel uses the same renderer without an anchor or item-specific payload.
+    public void Show(DefaultData data)
+    {
+        if (bindingCodexData) return;
+        PrepareTooltipPanel();
+        currentOwner = data;
+        pinnedOwner = null;
+        currentAnchorRect = null;
+        SetData(data);
+        tooltipPanel.SetActive(data != null);
+        if (data != null) SetAlternatePanelsActive(false);
+        VisibilityChanged?.Invoke(data != null);
     }
 
     public void Show(ITooltipContentProvider provider)
@@ -73,6 +86,7 @@ public class ItemTooltipUI : ItemDetailsUI
         if (pinnedOwner != null && pinnedOwner != owner)
             return;
 
+        PrepareTooltipPanel();
         currentOwner = owner;
         currentAnchorRect = anchor;
 
@@ -91,6 +105,7 @@ public class ItemTooltipUI : ItemDetailsUI
     {
         pinnedOwner = null;
         if (!removePannel) return;
+        if (tooltipPanel == null) tooltipPanel = gameObject;
 
         currentOwner = null;
         currentAnchorRect = null;

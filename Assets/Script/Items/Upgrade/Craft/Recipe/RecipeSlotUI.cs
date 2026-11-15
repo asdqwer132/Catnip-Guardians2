@@ -2,12 +2,11 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class RecipeSlotUI : ItemDefinitionUI
+public class RecipeSlotUI : TooltipUI
 {
     [Header("Base Item UI")]
     public TextMeshProUGUI nameText { get => dataNameText; set => dataNameText = value; }
     public GameObject amountImage;
-    public TextMeshProUGUI amountText;
 
     [Header("Button")]
     public Button fillButton;

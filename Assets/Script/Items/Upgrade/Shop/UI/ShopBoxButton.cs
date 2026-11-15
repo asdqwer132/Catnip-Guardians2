@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ShopBoxButton : ItemDefinitionUI
+public class ShopBoxButton : TooltipUI
 {
     private ShopManager shopManager;
     private ItemBoxData boxData;

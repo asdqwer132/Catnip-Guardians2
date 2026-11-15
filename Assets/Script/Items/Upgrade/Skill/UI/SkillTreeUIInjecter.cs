@@ -7,7 +7,7 @@ public class SkillTreeUIInjecter : MonoBehaviour
     public Transform[] NodesParents;
 
     [Header("Setting")]
-    public ItemTooltipUI tooltipUI;
+    public TooltipUI tooltipUI;
     public Toggle infoToggel;
     public Toggle invenToggle;
 

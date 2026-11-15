@@ -13,7 +13,7 @@ public class InventoryUI : ItemSearchFilterTargetUI
     public bool showItemCount = true;
 
     [Header("Tooltip")]
-    public ItemTooltipUI tooltipUI;
+    public TooltipUI tooltipUI;
     [Tooltip("Pin item information when an inventory slot Toggle is selected. Disable to keep hover tooltips.")]
     public bool showTooltipOnSelection;
     public ToggleGroup selectionGroup;

@@ -1618,9 +1618,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 6230743224225982846}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2496adaf7d1069943a771ae27d7e6843, type: 3}
+  m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipUI
+  m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
   icon: {fileID: 3804130882100141709}
   dataNameText: {fileID: 3239612097855235006}
   descriptionText: {fileID: 6274272211972714199}
@@ -1646,6 +1646,7 @@ MonoBehaviour:
   removePannel: 1
   alternatePanels: []
   tooltipPanel: {fileID: 342736692659104325}
+  startHidden: 1
 --- !u!1 &6521430352617230679
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,8 +3,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>The selected inventory item's details and the merge recipes using it.</summary>
-public sealed class ItemMergeRecipeTooltipUI : ItemTooltipUI
+public sealed class ItemMergeRecipeTooltipUI : TooltipUI
 {
+    protected override bool HideOnAwake => true;
+
     [Header("Merge Recipes")]
     public ItemRecipeData[] recipes;
     public Transform recipeSlotParent;

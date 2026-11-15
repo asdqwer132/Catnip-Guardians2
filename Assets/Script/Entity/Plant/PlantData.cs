@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.Serialization;
 
 [System.Serializable]
@@ -28,7 +28,7 @@ public class SpecialEnemySpawnInfo : EnemySpawnData
 [CreateAssetMenu(menuName = "Entities/Plant/Plant Data")]
 public class PlantData : DefaultData
 {
-    [Header("Extra Data / Visual")]
+    [Space(10)]
     [Tooltip("Growth order: first is the seed, last is fully grown. Intermediate sprites change at equal progress intervals.")]
     public Sprite[] growthSprites = new Sprite[0];
 
@@ -39,16 +39,16 @@ public class PlantData : DefaultData
         return growthSprites[index];
     }
 
-    [Header("Extra Data / Battle And Growth")]
+    [Space(10)]
     [Min(1f)] public float maxHP = 100f;
     [FormerlySerializedAs("growTime")]
     [Min(0f)] public float nutrientsRequired = 60f;
     [Min(0f)] public float nutrientsPerSecond = 1f;
 
-    [Header("Extra Data / Reward")]
+    [Space(10)]
     public Cost[] reward;
 
-    [Header("Extra Data / Normal Enemy Spawn")]
+    [Space(10)]
     [Tooltip("Number of normal spawners to activate, starting from the first entry in Enemy Manager.")]
     [Min(0)]
     public int spawnNormalEnemyCount = 1;
@@ -56,10 +56,10 @@ public class PlantData : DefaultData
     [Min(.05f)] public float normalSpawnInterval = 1.5f;
     public EnemySpawnInfo[] normalEnemies;
 
-    [Header("Extra Data / Middle Boss Spawn")]
+    [Space(10)]
     public SpecialEnemySpawnSettings middleBossSpawnSettings = new SpecialEnemySpawnSettings();
     public SpecialEnemySpawnInfo[] middleBossEnemies = new SpecialEnemySpawnInfo[0];
-    [Header("Extra Data / Final Boss Spawn")]
+    [Space(10)]
     public SpecialEnemySpawnSettings bossSpawnSettings = new SpecialEnemySpawnSettings();
     public SpecialEnemySpawnInfo[] bossEnemies = new SpecialEnemySpawnInfo[0];
 }

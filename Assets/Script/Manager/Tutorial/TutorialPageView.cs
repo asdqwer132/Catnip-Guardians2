@@ -6,8 +6,8 @@ using UnityEngine.Video;
 // Both authored panels reuse this presenter. It owns no tutorial progress.
 public sealed class TutorialPageView : MonoBehaviour
 {
-    public DataInfoUI tutorialInfo;
-    public DataInfoUI pageInfo;
+    public TooltipUI tutorialInfo;
+    public TooltipUI pageInfo;
     public TMP_Text pageCounter;
     public Image spriteImage;
     public RawImage videoImage;

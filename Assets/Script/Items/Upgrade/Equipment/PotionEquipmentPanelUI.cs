@@ -9,8 +9,8 @@ public sealed class PotionEquipmentPanelUI : MonoBehaviour
     public PotionEquipSlotUI[] equipmentSlots;
     public GameObject selectedDetails;
     public GameObject notSelectedDetails;
-    public ItemDefinitionUI equippedPotion;
-    public ItemDefinitionUI newPotion;
+    public TooltipUI equippedPotion;
+    public TooltipUI newPotion;
     public GameObject replacementArrow;
     public GameObject selectedConfirmArea;
     public GameObject notSelectedConfirmArea;

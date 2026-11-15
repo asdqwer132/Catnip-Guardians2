@@ -19,8 +19,8 @@ public sealed class SkillTreeMapPanel : MonoBehaviour
     }
 
     public MapBinding[] maps = Array.Empty<MapBinding>();
-    public ItemTooltipUI mapInformation;
-    public ItemTooltipUI nodeInformation;
+    public TooltipUI mapInformation;
+    public TooltipUI nodeInformation;
     public Image progressFill;
 
     private UnityAction<bool>[] listeners;

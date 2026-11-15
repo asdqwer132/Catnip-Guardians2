@@ -17971,9 +17971,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 313675930}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2496adaf7d1069943a771ae27d7e6843, type: 3}
+  m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipUI
+  m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
   icon: {fileID: 2114892121}
   dataNameText: {fileID: 1732028084}
   descriptionText: {fileID: 861932282}
@@ -17982,12 +17982,12 @@ MonoBehaviour:
   hideEmptyDescription: 0
   hideEmptyDetailDescription: 1
   seriesText: {fileID: 0}
-  gradeText: {fileID: 832796368}
+  totalNodesText: {fileID: 832796368}
   seriesIcon: {fileID: 0}
   gradeIcon: {fileID: 0}
   series: 0
   grade: -1
-  amountText: {fileID: 640543623}
+  completedNodesText: {fileID: 640543623}
   categoryText: {fileID: 0}
   weightText: {fileID: 0}
   cooldownText: {fileID: 0}
@@ -17999,6 +17999,7 @@ MonoBehaviour:
   removePannel: 0
   alternatePanels: []
   tooltipPanel: {fileID: 313675930}
+  startHidden: 1
 --- !u!1001 &314719951
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22968,9 +22969,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2496adaf7d1069943a771ae27d7e6843, type: 3}
+  m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipUI
+  m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
 --- !u!1001 &410729778
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24777,9 +24778,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 447093711}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e184e0a65c324dd29277b59e5257a74b, type: 3}
+  m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CodexDetailsUI
+  m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
   icon: {fileID: 1554755341}
   dataNameText: {fileID: 1791264742}
   descriptionText: {fileID: 1210280522}
@@ -29736,9 +29737,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 560577844}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e184e0a65c324dd29277b59e5257a74b, type: 3}
+  m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CodexDetailsUI
+  m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
   icon: {fileID: 0}
   dataNameText: {fileID: 880594451}
   descriptionText: {fileID: 405680768}
@@ -56214,9 +56215,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 982824313}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e184e0a65c324dd29277b59e5257a74b, type: 3}
+  m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CodexDetailsUI
+  m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
   icon: {fileID: 1601193417}
   dataNameText: {fileID: 152878497}
   descriptionText: {fileID: 1730052162}
@@ -71146,7 +71147,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
-      value: ItemTooltipUI, Assembly-CSharp
+      value: TooltipUI, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
@@ -87692,9 +87693,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1560849491}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2496adaf7d1069943a771ae27d7e6843, type: 3}
+  m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipUI
+  m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
   icon: {fileID: 1263416206}
   dataNameText: {fileID: 62072172}
   descriptionText: {fileID: 853979632}
@@ -87720,6 +87721,7 @@ MonoBehaviour:
   removePannel: 1
   alternatePanels: []
   tooltipPanel: {fileID: 0}
+  startHidden: 1
 --- !u!1 &1565207184
 GameObject:
   m_ObjectHideFlags: 0
@@ -97945,9 +97947,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2496adaf7d1069943a771ae27d7e6843, type: 3}
+  m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipUI
+  m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
 --- !u!224 &1748633609 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7711879813726985792, guid: b63e1a8f67d497f4588fce12f71571fb, type: 3}
@@ -101171,9 +101173,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1776001220}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c6c7c8c4472a413aabb1ed6b7618812, type: 3}
+  m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ItemDefinitionUI
+  m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
   icon: {fileID: 234908423}
   dataNameText: {fileID: 26861988}
   descriptionText: {fileID: 0}
@@ -102721,9 +102723,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1798906564}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e184e0a65c324dd29277b59e5257a74b, type: 3}
+  m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CodexDetailsUI
+  m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
   icon: {fileID: 0}
   dataNameText: {fileID: 341242253}
   descriptionText: {fileID: 0}
@@ -105636,9 +105638,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1859068378}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c6c7c8c4472a413aabb1ed6b7618812, type: 3}
+  m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ItemDefinitionUI
+  m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
   icon: {fileID: 986329587}
   dataNameText: {fileID: 658471766}
   descriptionText: {fileID: 34635026}
@@ -119367,9 +119369,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 2109920025}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c6c7c8c4472a413aabb1ed6b7618812, type: 3}
+  m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ItemDefinitionUI
+  m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
   icon: {fileID: 333306232}
   dataNameText: {fileID: 989736249}
   descriptionText: {fileID: 0}

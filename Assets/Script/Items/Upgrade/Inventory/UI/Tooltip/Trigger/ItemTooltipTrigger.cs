@@ -11,7 +11,7 @@ public class ItemTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerE
     [Tooltip("Select a slot Toggle to pin its item information. Pointer hover is ignored in this mode.")]
     public bool showOnSelection;
     [Header("Tooltip")]
-    public ItemTooltipUI tooltipUI;
+    public TooltipUI tooltipUI;
 
     [Header("Provider")]
     [SerializeField] private TooltipProvider providerComponent;
@@ -28,7 +28,7 @@ public class ItemTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerE
             ShowTooltip();
     }
 
-    public void Init(ItemTooltipUI tooltipTrigger)
+    public void Init(TooltipUI tooltipTrigger)
     {
         tooltipUI = tooltipTrigger;
     }

@@ -2508,9 +2508,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 4431321988406191623}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2496adaf7d1069943a771ae27d7e6843, type: 3}
+  m_Script: {fileID: 11500000, guid: 1fa6d3570a4f4112b57c520fa827ee07, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipUI
+  m_EditorClassIdentifier: Assembly-CSharp::TooltipUI
   icon: {fileID: 6903385787447988724}
   dataNameText: {fileID: 5184300835626380487}
   descriptionText: {fileID: 4329522163460710830}
@@ -2535,6 +2535,7 @@ MonoBehaviour:
   categoryText: {fileID: 0}
   weightText: {fileID: 0}
   cooldownText: {fileID: 0}
+  startHidden: 1
 --- !u!1 &4480884538647244421
 GameObject:
   m_ObjectHideFlags: 0

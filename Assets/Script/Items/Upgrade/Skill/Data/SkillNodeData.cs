@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(
@@ -9,21 +9,21 @@ public class SkillNodeData : DefaultData
 {
     public string ProgressKey => skillMap != null && !string.IsNullOrEmpty(skillMap.dataId)
         ? skillMap.dataId + "\n" + dataId : dataId;
-    [Header("Extra Data / Node Icon")]
+    [Space(10)]
     [Tooltip("Icon shown after unlocking. Empty uses the basic icon.")]
     public Sprite unlockedIcon;
-    [Header("Node Level")]
+    [Space(10)]
     [Min(1)] public int level = 1;
 
-    [Header("Extra Data / Map")]
+    [Space(10)]
     public SkillMapData skillMap;
-    [Header("Extra Data / Cost")]
+    [Space(10)]
     public Cost[] costs;
 
-    [Header("Extra Data / Requirement")]
+    [Space(10)]
     public List<SkillNodeData> requiredSkills = new List<SkillNodeData>();
 
-    [Header("Extra Data / Rewards")]
+    [Space(10)]
     public List<SkillRewardData> rewards = new List<SkillRewardData>();
 
 

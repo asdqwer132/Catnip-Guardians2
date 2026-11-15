@@ -2,8 +2,10 @@ using System;
 using TMPro;
 using UnityEngine;
 
-public class CostTooltipUI : ItemTooltipUI
+public class CostTooltipUI : TooltipUI
 {
+    protected override bool HideOnAwake => true;
+
     public BoxCost[] extraBoxCosts;
     [Header("Unlock State Panels")]
     public GameObject needCurrencyPanel;

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 [System.Serializable]
 public class GachaItemInfo
@@ -10,15 +10,15 @@ public class GachaItemInfo
 [CreateAssetMenu(fileName = "Box", menuName = "Upgrade/Shop/Box")]
 public class ItemBoxData : DefaultData
 {
-    [Header("Extra Data / Price")]
+    [Space(10)]
     public Cost[] costs;
 
-    [Header("Extra Data / Gacha")]
+    [Space(10)]
     public ItemSeries itemSeries;
     public Grade grade;
     public GachaItemInfo[] gachaItems;
 
-    [Header("Extra Data / Box Animation")]
+    [Space(10)]
     public AnimationClip idleClip;
     [Tooltip("구매 성공 시 선택한 상점 슬롯 아이콘에서 한 번 재생할 클립입니다.")]
     public AnimationClip openClip;

@@ -1,20 +1,20 @@
-﻿using System;
+using System;
 using UnityEngine;
 [Serializable]
 
 [CreateAssetMenu(fileName = "EnemySetData", menuName = "Entities/Enemy/Enemy Set Data")]
 public class EnemyDataSet : DefaultData
 {
-    [Header("Extra Data / Animation")]
+    [Space(10)]
     public RuntimeAnimatorController animatorController;
-    [Header("Extra Data / Data")]
+    [Space(10)]
     public EnemyStatData statData;
     public EnemyPatternSetData patternData;
 
-    [Header("Extra Data / Codex Discovery")]
+    [Space(10)]
     [Tooltip("Optional display data recorded on defeat. Empty uses this enemy data set.")]
     public EnemyDataSet codexEntry;
 
-    [Header("Extra Data / Codex Effect Information")]
+    [Space(10)]
     public CodexEffectDescription[] codexEffects;
 }

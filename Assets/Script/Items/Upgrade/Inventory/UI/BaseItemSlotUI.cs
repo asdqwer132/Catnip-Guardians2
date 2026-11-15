@@ -1,20 +1,13 @@
 using UnityEngine;
-using TMPro;
 
-public class BaseItemSlotUI : ItemDefinitionUI
+public class BaseItemSlotUI : TooltipUI
 {
     [Header("Base Item UI")]
     public GameObject amountImage;
-    public TextMeshProUGUI amountText;
     public GameObject locked;
     [Tooltip("Shown when the slot is unlocked and has no item.")]
     public GameObject ready;
     public bool IsLocked = false;
-
-    [Header("Optional Item Info")]
-    public TextMeshProUGUI categoryText;
-    public TextMeshProUGUI weightText;
-    public TextMeshProUGUI cooldownText;
 
     [Header("Reference")]
     public InventoryItem currentItem;

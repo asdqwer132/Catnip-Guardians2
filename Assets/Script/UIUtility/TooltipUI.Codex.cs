@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // All objects below are authored UI references or instances of authored slot prefabs.
-public sealed class CodexDetailsUI : ItemDetailsUI
+public partial class TooltipUI
 {
     public Image portraitImage;
     public Image previewImage;
@@ -12,8 +12,7 @@ public sealed class CodexDetailsUI : ItemDetailsUI
     public TMP_Text portraitPage;
     public Button previousPortrait;
     public Button nextPortrait;
-    public GameObject[] alternatePanels;
-    public DataInfoUI portraitInformation;
+    public TooltipUI portraitInformation;
     public Transform portraitContent;
     public CodexPortraitSlotUI portraitSlotPrefab;
     public ToggleGroup portraitSelectionGroup;
@@ -22,61 +21,62 @@ public sealed class CodexDetailsUI : ItemDetailsUI
     public DefaultData SelectedData { get; private set; }
     public int SelectedPortrait { get; private set; } = -1;
 
-    protected override void OnEnable()
+    private void BindPortraitButtons()
     {
-        base.OnEnable();
         if (previousPortrait != null) previousPortrait.onClick.AddListener(PreviousPortrait);
         if (nextPortrait != null) nextPortrait.onClick.AddListener(NextPortrait);
     }
 
-    protected override void OnDisable()
+    private void UnbindPortraitButtons()
     {
         if (previousPortrait != null) previousPortrait.onClick.RemoveListener(PreviousPortrait);
         if (nextPortrait != null) nextPortrait.onClick.RemoveListener(NextPortrait);
-        base.OnDisable();
     }
 
-    public void Show(DefaultData entry)
+    private bool bindingCodexData;
+
+    private void BindCodexData(DefaultData entry)
     {
-        SelectedData = entry;
-        SelectedPortrait = -1;
-        if (entry != null && alternatePanels != null)
-            foreach (var panel in alternatePanels)
-                if (panel != null && panel != gameObject) panel.SetActive(false);
-        gameObject.SetActive(entry != null);
-        SetData(entry);
-        var character = entry as CharacterCodexData;
-        int count = character?.portraits?.Count ?? 0;
-        if (portraitContent != null && portraitSlotPrefab != null)
+        if (bindingCodexData) return;
+        bindingCodexData = true;
+        try
         {
-            while (portraitSlots.Count < count)
+            SelectedData = entry;
+            SelectedPortrait = -1;
+            var character = entry as CharacterCodexData;
+            int count = character?.portraits?.Count ?? 0;
+            if (portraitContent != null && portraitSlotPrefab != null)
             {
-                var slot = Instantiate(portraitSlotPrefab, portraitContent);
-                if (slot.toggle != null) slot.toggle.group = portraitSelectionGroup;
-                portraitSlots.Add(slot);
+                while (portraitSlots.Count < count)
+                {
+                    var slot = Instantiate(portraitSlotPrefab, portraitContent);
+                    if (slot.toggle != null) slot.toggle.group = portraitSelectionGroup;
+                    portraitSlots.Add(slot);
+                }
+                for (int i = 0; i < portraitSlots.Count; i++)
+                {
+                    bool active = i < count;
+                    portraitSlots[i].gameObject.SetActive(active);
+                    if (active) portraitSlots[i].Bind(character.GetPortrait(i), i, this);
+                    portraitSlots[i].ApplySelection(false);
+                }
             }
-            for (int i = 0; i < portraitSlots.Count; i++)
+            if (count > 0) SelectPortrait(0);
+            else
             {
-                bool active = i < count;
-                portraitSlots[i].gameObject.SetActive(active);
-                if (active) portraitSlots[i].Bind(character.GetPortrait(i), i, this);
-                portraitSlots[i].ApplySelection(false);
+                SetImage(portraitImage, null);
+                if (portraitInformation != null) portraitInformation.SetDefinedData(null);
             }
+            if (childInventory != null)
+            {
+                var map = entry as MapCodexData;
+                childInventory.SetEntries(map != null ? map.stages : null);
+                childInventory.Select(null);
+            }
+            ApplyPreview();
+            RefreshPortraitInformation(DisplayLanguage);
         }
-        if (count > 0) SelectPortrait(0);
-        else
-        {
-            SetImage(portraitImage, null);
-            if (portraitInformation != null) portraitInformation.SetDefinedData(null);
-        }
-        if (childInventory != null)
-        {
-            var map = entry as MapCodexData;
-            childInventory.SetEntries(map != null ? map.stages : null);
-            childInventory.Select(null);
-        }
-        ApplyPreview();
-        RefreshPortraitInformation(DisplayLanguage);
+        finally { bindingCodexData = false; }
     }
 
     public void SelectPortrait(int index)
@@ -107,15 +107,27 @@ public sealed class CodexDetailsUI : ItemDetailsUI
             string text = DefinedDataUtility.GetDetailDescription(portrait, selected);
             if (string.IsNullOrEmpty(text)) text = DefinedDataUtility.GetDescription(portrait, selected);
             portraitDescription.text = text ?? "";
+            portraitDescription.gameObject.SetActive(!string.IsNullOrEmpty(text));
         }
-        if (portraitPage != null) portraitPage.text = (SelectedPortrait >= 0 ? SelectedPortrait + 1 : 0) + " / " + count;
-        if (previousPortrait != null) previousPortrait.interactable = SelectedPortrait > 0;
-        if (nextPortrait != null) nextPortrait.interactable = SelectedPortrait >= 0 && SelectedPortrait + 1 < count;
+        if (portraitPage != null)
+        {
+            portraitPage.text = (SelectedPortrait >= 0 ? SelectedPortrait + 1 : 0) + " / " + count;
+            portraitPage.gameObject.SetActive(count > 0);
+        }
+        if (previousPortrait != null)
+        {
+            previousPortrait.gameObject.SetActive(count > 0);
+            previousPortrait.interactable = SelectedPortrait > 0;
+        }
+        if (nextPortrait != null)
+        {
+            nextPortrait.gameObject.SetActive(count > 0);
+            nextPortrait.interactable = SelectedPortrait >= 0 && SelectedPortrait + 1 < count;
+        }
     }
 
-    protected override void OnDataLanguageChanged(language selected)
+    private void RefreshCodexLanguage(language selected)
     {
-        base.OnDataLanguageChanged(selected);
         if (SelectedPortrait >= 0 && SelectedData is CharacterCodexData character)
             SetImage(portraitImage, character.GetPortrait(SelectedPortrait)?.sprite);
         ApplyPreview();

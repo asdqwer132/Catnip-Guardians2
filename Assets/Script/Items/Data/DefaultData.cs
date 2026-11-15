@@ -1,11 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using UnityEngine;
-
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 [Serializable]
 public class Description
@@ -22,17 +17,17 @@ public class Description
 
 public class DefaultData : ScriptableObject, IUnlockable, DefinedData
 {
-    [Header("Basic Data / Display")]
+    [Header("Basic Data")]
     public Sprite icon;
     public Sprite Icon => icon;
     public Description[] data;
 
-    [Header("Basic Data / Identity And Unlock")]
     public string dataNumbering;
     public string dataId;
     public DataType dataType;
-    public bool requireUnlock = false;
 
+    [Header("Extra Data")]
+    public bool requireUnlock = false;
 
     public bool RequireUnlock => requireUnlock;
     public DataType UnlockType => dataType;
