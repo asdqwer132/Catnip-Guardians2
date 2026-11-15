@@ -54,14 +54,69 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5345312633064728236, guid: bab29a3c7dae7e742b6e3042fcce1d3b, type: 3}
       propertyPath: m_Name
-      value: MergeItem1
+      value: MergeItem 2
       objectReference: {fileID: 0}
     - target: {fileID: 7034436028931445397, guid: bab29a3c7dae7e742b6e3042fcce1d3b, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: da6203978cf04eb45b6be066d81070cd, type: 3}
-    m_RemovedComponents: []
+      objectReference: {fileID: 1725555295, guid: 89d6b9627a3a13b48948eca9d1c6f9f5, type: 3}
+    m_RemovedComponents:
+    - {fileID: 7778514779858065204, guid: bab29a3c7dae7e742b6e3042fcce1d3b, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5345312633064728236, guid: bab29a3c7dae7e742b6e3042fcce1d3b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1527504547787885122}
   m_SourcePrefab: {fileID: 100100000, guid: bab29a3c7dae7e742b6e3042fcce1d3b, type: 3}
+--- !u!58 &375270119410458448 stripped
+CircleCollider2D:
+  m_CorrespondingSourceObject: {fileID: 3025356734030981627, guid: bab29a3c7dae7e742b6e3042fcce1d3b, type: 3}
+  m_PrefabInstance: {fileID: 3227114751968933547}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1238115685756215510 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4460719141247080061, guid: bab29a3c7dae7e742b6e3042fcce1d3b, type: 3}
+  m_PrefabInstance: {fileID: 3227114751968933547}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7414998941461958663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3e7630b991b882459d6cafd09e6e0ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PooledObject
+--- !u!212 &5572735633722238014 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 7034436028931445397, guid: bab29a3c7dae7e742b6e3042fcce1d3b, type: 3}
+  m_PrefabInstance: {fileID: 3227114751968933547}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7414998941461958663 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5345312633064728236, guid: bab29a3c7dae7e742b6e3042fcce1d3b, type: 3}
+  m_PrefabInstance: {fileID: 3227114751968933547}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1527504547787885122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7414998941461958663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08111f3aa8b8e824789e337f5f15116c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FoodMergeItemObject
+  item: {fileID: 0}
+  circleCollider: {fileID: 375270119410458448}
+  spriteRenderer: {fileID: 5572735633722238014}
+  visualSize: {fileID: 7414998941461958663}
+  useItemIcon: 1
+  fitIconToRadius: 1
+  body: {fileID: 7495384746311930483}
+  pooled: {fileID: 1238115685756215510}
+--- !u!50 &7495384746311930483 stripped
+Rigidbody2D:
+  m_CorrespondingSourceObject: {fileID: 4957890834646836440, guid: bab29a3c7dae7e742b6e3042fcce1d3b, type: 3}
+  m_PrefabInstance: {fileID: 3227114751968933547}
+  m_PrefabAsset: {fileID: 0}

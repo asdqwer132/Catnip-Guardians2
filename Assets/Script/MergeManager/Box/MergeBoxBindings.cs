@@ -8,6 +8,8 @@ public sealed class MergeBoxBindings : MonoBehaviour
     [SerializeField, HideInInspector] private Vector3 spawnPosition, linePosition;
     [SerializeField, HideInInspector] private Vector2 lineSize;
     [SerializeField, HideInInspector] private Rect originalMovement;
+    public Transform spawnPoint;
+    public MergeDropZone dropZone;
     public bool HasVisualLayout => referenceSize.x > 0 && referenceSize.y > 0;
 
     // Explicit capture keeps repeated edits relative to authored geometry, without cumulative scaling.
@@ -59,6 +61,4 @@ public sealed class MergeBoxBindings : MonoBehaviour
         dropZone.RefreshLine();
     }
 
-    public Transform spawnPoint;
-    public MergeDropZone dropZone;
 }

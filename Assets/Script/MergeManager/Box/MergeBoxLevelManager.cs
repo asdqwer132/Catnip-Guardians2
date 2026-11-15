@@ -22,7 +22,7 @@ public sealed class MergeBoxLevelManager : MonoBehaviour
 
     [Tooltip("이 시리즈의 Box1, Box2 등을 연결합니다. 공용 투입구가 설정되면 하위 박스의 투입구는 사용하지 않습니다.")]
     public MergeBoxLevel[] levels = Array.Empty<MergeBoxLevel>();
-    [SerializeField, Min(1)] private int currentLevel = 1;
+    [SerializeField] private int currentLevel = 1;
     [SerializeField] private MergegameManager board;
 
     public int CurrentLevel => currentLevel;
@@ -50,7 +50,7 @@ public sealed class MergeBoxLevelManager : MonoBehaviour
         }
         if (spawnPoint == null && dropZone != null && dropZone.spawnMarker != null)
         {
-            spawnPoint = dropZone.spawnMarker.transform;
+           //spawnPoint = dropZone.spawnMarker.transform;
             spawnPosition = transform.InverseTransformPoint(spawnPoint.position);
         }
     }
@@ -60,7 +60,7 @@ public sealed class MergeBoxLevelManager : MonoBehaviour
     {
         if (spawnPoint == null) return;
         if (placed && appliedSpawn == spawnPoint && appliedPosition == spawnPosition) return;
-        spawnPoint.position = transform.TransformPoint(spawnPosition);
+       // spawnPoint.position = transform.TransformPoint(spawnPosition);
         appliedSpawn = spawnPoint; appliedPosition = spawnPosition; placed = true;
         var zone = dropZone != null ? dropZone : CurrentBox != null ? CurrentBox.dropZone : null;
         zone?.ResetMarkerPosition();

@@ -122,6 +122,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8161298766213792716}
+  - {fileID: 5508994028847374644}
   m_Father: {fileID: 7273876760615670305}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &6347095215569762819
@@ -207,12 +208,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2086426740501953444}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.7790339, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -1.0714285, z: 0}
+  m_LocalScale: {x: 1.4285715, y: 1.4285715, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7273876760615670305}
+  m_Father: {fileID: 8547222953647285421}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3644016743864225931
 GameObject:
@@ -244,7 +245,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8547222953647285421}
-  - {fileID: 5508994028847374644}
   m_Father: {fileID: 4602517530497694814}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4804535939393210474
@@ -297,11 +297,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxLevelManager
   spawnPoint: {fileID: 5508994028847374644}
-  spawnPosition: {x: 0, y: 3.7440338, z: 0}
+  spawnPosition: {x: 0, y: 0, z: 0}
   dropZone: {fileID: 860727463673475070}
-  levels:
-  - minimumLevel: 1
-    box: {fileID: 0}
+  levels: []
   currentLevel: 1
   board: {fileID: 0}
 --- !u!114 &4783042846926521334
@@ -316,8 +314,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92af25d49357dd04b896e06f42bafeda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallSpriteInput
-  boxes:
-  - {fileID: 0}
+  boxes: []
   spriteSheetPath: Item/MergeBox/MergeBox (1)
   sheetNumber: 1
   sideSpriteName: SideWall
