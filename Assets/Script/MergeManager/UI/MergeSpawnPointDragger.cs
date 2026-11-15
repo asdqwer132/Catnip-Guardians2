@@ -48,8 +48,8 @@ public sealed class MergeSpawnPointDragger : MonoBehaviour
     {
         var current = CurrentBoard;
         var zone = current != null ? current.dropZone : null;
-        if (displayedZone != zone && displayedZone != null && displayedZone.spawnMarker != null)
-            displayedZone.spawnMarker.enabled = false;
+        if (displayedZone != zone && displayedZone != null)
+            displayedZone.SetMarkerVisibility(false);
         displayedZone = zone;
         if (zone != null) zone.RefreshMarker(current.NextDropItem);
     }
@@ -144,7 +144,7 @@ public sealed class MergeSpawnPointDragger : MonoBehaviour
     private void OnDisable()
     {
         EndDrag(); pointer?.Disable(); dragButton?.Disable();
-        if (displayedZone != null && displayedZone.spawnMarker != null) displayedZone.spawnMarker.enabled = false;
+        if (displayedZone != null) displayedZone.SetMarkerVisibility(false);
     }
     private void OnDestroy() { pointer?.Dispose(); dragButton?.Dispose(); }
 }

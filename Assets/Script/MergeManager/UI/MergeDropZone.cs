@@ -89,15 +89,23 @@ public sealed class MergeDropZone : MonoBehaviour
         return transform.TransformPoint(local);
     }
 
+    public void SetMarkerVisibility(bool visible)
+    {
+        if (spawnMarker != null) spawnMarker.enabled = visible && (ItemMarker != null || spawnMarker.sprite != null);
+        if (ItemMarker != null) ItemMarker.enabled = visible && ItemMarker.sprite != null;
+    }
+
     public void RefreshMarker(ItemData nextItem)
     {
-        if (spawnMarker == null) return;
+        var image = ItemMarker != null ? ItemMarker : spawnMarker;
+        if (image == null) return;
         var sprite = nextItem != null ? nextItem.icon : null;
-        if (ItemMarker.sprite != sprite) ItemMarker.sprite = sprite;
-        ItemMarker.enabled = sprite != null;
+        if (image.sprite != sprite) image.sprite = sprite;
+        image.enabled = sprite != null;
+        if (spawnMarker != null && ItemMarker != null) spawnMarker.enabled = true;
         if (sprite == null) return;
         float scale = Mathf.Max(.01f, markerSize) / Mathf.Max(.0001f, sprite.bounds.size.x, sprite.bounds.size.y);
-        spawnMarker.transform.localScale = new Vector3(scale, scale, 1f);
+        image.transform.localScale = new Vector3(scale, scale, 1f);
     }
 
     public void RefreshLine()
