@@ -3919,81 +3919,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f51d937758f24e478eb5355c1ba8e2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeUI
---- !u!1 &273910740
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 273910741}
-  - component: {fileID: 273910743}
-  - component: {fileID: 273910742}
-  m_Layer: 5
-  m_Name: Padding
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &273910741
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 273910740}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1007657234}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -100, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &273910742
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 273910740}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.101960786}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 88b6bdba1fceb3c44bd88ed0afebc0bc, type: 3}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &273910743
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 273910740}
-  m_CullTransparentMesh: 1
 --- !u!1001 &278042924
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13321,6 +13246,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1007657234}
   - component: {fileID: 1007657236}
+  - component: {fileID: 1007657237}
   m_Layer: 5
   m_Name: ItemDropArea
   m_TagString: Untagged
@@ -13339,8 +13265,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 273910741}
+  m_Children: []
   m_Father: {fileID: 1372983057}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
@@ -13356,6 +13281,36 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1007657233}
   m_CullTransparentMesh: 1
+--- !u!114 &1007657237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1007657233}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 28cf7475aee67f244843a75145704105, type: 3}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1.5
 --- !u!1 &1009928920
 GameObject:
   m_ObjectHideFlags: 0
@@ -14652,6 +14607,10 @@ PrefabInstance:
     - target: {fileID: 571631590117272643, guid: d1ec4d1c7903f7541aed1a0a76b43108, type: 3}
       propertyPath: m_Name
       value: Skill (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1451945486068931990, guid: d1ec4d1c7903f7541aed1a0a76b43108, type: 3}
+      propertyPath: shortcutKey
+      value: 37
       objectReference: {fileID: 0}
     - target: {fileID: 1671092180069750209, guid: d1ec4d1c7903f7541aed1a0a76b43108, type: 3}
       propertyPath: m_Pivot.x
@@ -19621,6 +19580,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Skill (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 1451945486068931990, guid: d1ec4d1c7903f7541aed1a0a76b43108, type: 3}
+      propertyPath: shortcutKey
+      value: 19
+      objectReference: {fileID: 0}
     - target: {fileID: 1671092180069750209, guid: d1ec4d1c7903f7541aed1a0a76b43108, type: 3}
       propertyPath: m_Pivot.x
       value: 1
@@ -24342,8 +24305,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -55}
+  m_SizeDelta: {x: 0, y: -110}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1857311047 stripped
 MonoBehaviour:
@@ -29763,6 +29726,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1112562331547514822, guid: 2b9aa46f7b6d8444b89fda0c76b57524, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 9060506117712288113, guid: ac396ce26faf7554d902f48e3d8b30d2, type: 3}
+    - target: {fileID: 1450937731915317121, guid: 2b9aa46f7b6d8444b89fda0c76b57524, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 1886498370, guid: ac396ce26faf7554d902f48e3d8b30d2, type: 3}
     - target: {fileID: 1740957822736969395, guid: 2b9aa46f7b6d8444b89fda0c76b57524, type: 3}
       propertyPath: m_Size.x
       value: 5
@@ -29818,34 +29789,6 @@ PrefabInstance:
     - target: {fileID: 8490182213038134933, guid: 2b9aa46f7b6d8444b89fda0c76b57524, type: 3}
       propertyPath: m_Name
       value: Box(2.Food)
-      objectReference: {fileID: 0}
-    - target: {fileID: 9033693348935232914, guid: 2b9aa46f7b6d8444b89fda0c76b57524, type: 3}
-      propertyPath: skills.Array.data[1].defaultSkillCool
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 9033693348935232914, guid: 2b9aa46f7b6d8444b89fda0c76b57524, type: 3}
-      propertyPath: skills.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9033693348935232914, guid: 2b9aa46f7b6d8444b89fda0c76b57524, type: 3}
-      propertyPath: skills.Array.data[1].id
-      value: Food.AutoBake
-      objectReference: {fileID: 0}
-    - target: {fileID: 9033693348935232914, guid: 2b9aa46f7b6d8444b89fda0c76b57524, type: 3}
-      propertyPath: skills.Array.data[1].type
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9033693348935232914, guid: 2b9aa46f7b6d8444b89fda0c76b57524, type: 3}
-      propertyPath: burnsBeforeDestroyed
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 9033693348935232914, guid: 2b9aa46f7b6d8444b89fda0c76b57524, type: 3}
-      propertyPath: skills.Array.data[0].skillImage
-      value: 
-      objectReference: {fileID: 21300000, guid: 4776bb62339b95b47878c02d800aa192, type: 3}
-    - target: {fileID: 9033693348935232914, guid: 2b9aa46f7b6d8444b89fda0c76b57524, type: 3}
-      propertyPath: skills.Array.data[0].defaultSkillCool
-      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -30527,10 +30470,6 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 2.124432
       objectReference: {fileID: 0}
-    - target: {fileID: 8042447028827418719, guid: b8e1f147f5d0f794ea2e9adf580dbe8d, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.75
-      objectReference: {fileID: 0}
     - target: {fileID: 8057322491680615290, guid: b8e1f147f5d0f794ea2e9adf580dbe8d, type: 3}
       propertyPath: m_Size.x
       value: 5.625
@@ -30886,6 +30825,10 @@ PrefabInstance:
     - target: {fileID: 571631590117272643, guid: d1ec4d1c7903f7541aed1a0a76b43108, type: 3}
       propertyPath: m_Name
       value: Skill (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1451945486068931990, guid: d1ec4d1c7903f7541aed1a0a76b43108, type: 3}
+      propertyPath: shortcutKey
+      value: 31
       objectReference: {fileID: 0}
     - target: {fileID: 1671092180069750209, guid: d1ec4d1c7903f7541aed1a0a76b43108, type: 3}
       propertyPath: m_Pivot.x
