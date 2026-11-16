@@ -1,8 +1,8 @@
 using UnityEngine;
 
 [AddComponentMenu("UI/Tooltip UI")]
-public partial class TooltipUI : DataViewUI
+public partial class TooltipUI : DataBindingUI
 {
     public PanelVisibilityModule panelVisibility = new PanelVisibilityModule();
-    protected override PanelVisibilityModule PanelVisibility => panelVisibility;
+    protected virtual PanelVisibilityModule PanelVisibility => panelVisibility;
 }

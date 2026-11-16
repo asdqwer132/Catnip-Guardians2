@@ -12,7 +12,7 @@ public sealed class CodexInventoryUI : InventoryUI
         get => base.slotPrefab != null ? base.slotPrefab.GetComponent<CodexSlotUI>() : null;
         set => base.slotPrefab = value != null ? value.gameObject : null;
     }
-    public DataViewUI details;
+    public TooltipUI details;
     [Tooltip("Items require acquisition/crafting, enemies require a kill. Character and map visibility is unchanged.")]
     public bool discoveredOnly = true;
     private CodexDiscoveryHistory subscribedHistory;

@@ -1,9 +1,7 @@
 using UnityEngine;
 
-public sealed class ItemTooltipUI : TooltipUI
+public class ItemTooltipUI : BasicTooltipUI
 {
-    public BasicInformationModule basicInformation = new BasicInformationModule();
-    protected override BasicInformationModule BasicInformation => basicInformation;
     public ClassificationModule classification = new ClassificationModule();
     protected override ClassificationModule Classification => classification;
     public ItemInformationModule itemInformation = new ItemInformationModule();

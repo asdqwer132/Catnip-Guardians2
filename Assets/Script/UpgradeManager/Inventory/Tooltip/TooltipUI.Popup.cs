@@ -44,9 +44,10 @@ public partial class TooltipUI
     }
 
     // A fixed panel uses the same renderer without an anchor or item-specific payload.
-    public new void Show(DefaultData data)
+    public override void Show(DefaultData data)
     {
 
+        if (bindingCodexData) return;
         PrepareTooltipPanel();
         currentOwner = data;
         pinnedOwner = null;

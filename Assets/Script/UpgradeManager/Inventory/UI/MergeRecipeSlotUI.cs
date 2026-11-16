@@ -5,15 +5,15 @@ using UnityEngine;
 public sealed class MergeRecipeSlotUI : MonoBehaviour
 {
     public InventorySlotUI resultSlot;
-    public DataViewUI selectedMaterial;
+    public DataBindingUI selectedMaterial;
     public Transform additionalMaterialParent;
-    public DataViewUI additionalMaterialTemplate;
-    [SerializeField] private List<DataViewUI> additionalMaterialSlots = new List<DataViewUI>();
+    public DataBindingUI additionalMaterialTemplate;
+    [SerializeField] private List<DataBindingUI> additionalMaterialSlots = new List<DataBindingUI>();
 
     private readonly List<InventoryItem> requiredMaterials = new List<InventoryItem>();
 
     public ItemRecipeData Recipe { get; private set; }
-    public IReadOnlyList<DataViewUI> AdditionalMaterialSlots => additionalMaterialSlots;
+    public IReadOnlyList<DataBindingUI> AdditionalMaterialSlots => additionalMaterialSlots;
 
     public bool Bind(ItemRecipeData recipe, ItemData selectedItem)
     {
@@ -59,7 +59,7 @@ public sealed class MergeRecipeSlotUI : MonoBehaviour
         }
     }
 
-    private DataViewUI GetAdditionalMaterial(int index)
+    private DataBindingUI GetAdditionalMaterial(int index)
     {
         if (index < additionalMaterialSlots.Count) return additionalMaterialSlots[index];
         if (additionalMaterialTemplate == null || additionalMaterialParent == null) return null;

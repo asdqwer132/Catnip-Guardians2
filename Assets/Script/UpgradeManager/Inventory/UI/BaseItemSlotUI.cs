@@ -58,9 +58,6 @@ public class BaseItemSlotUI : SlotUI
         ClearData();
         if (amountImage != null) amountImage.SetActive(false);
         if (amountText != null) amountText.text = "";
-        SetOptionalText(categoryText, null);
-        SetOptionalText(weightText, null);
-        SetOptionalText(cooldownText, null);
         if (locked != null) locked.SetActive(false);
         if (ready != null) ready.SetActive(true);
         IsLocked = false;

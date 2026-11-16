@@ -4,10 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [Serializable]
-public abstract class DataViewModule { }
+public abstract class UIInformationModule { }
 
 [Serializable]
-public sealed class BasicInformationModule : DataViewModule
+public sealed class BasicInformationModule : UIInformationModule
 {
     public Image icon;
     public TextMeshProUGUI dataNameText;
@@ -18,7 +18,7 @@ public sealed class BasicInformationModule : DataViewModule
 }
 
 [Serializable]
-public sealed class ClassificationModule : DataViewModule
+public sealed class ClassificationModule : UIInformationModule
 {
     public TextMeshProUGUI seriesText;
     public TextMeshProUGUI gradeText;
@@ -29,7 +29,7 @@ public sealed class ClassificationModule : DataViewModule
 }
 
 [Serializable]
-public sealed class ItemInformationModule : DataViewModule
+public sealed class ItemInformationModule : UIInformationModule
 {
     public TextMeshProUGUI amountText;
     public TextMeshProUGUI categoryText;
@@ -39,14 +39,14 @@ public sealed class ItemInformationModule : DataViewModule
 }
 
 [Serializable]
-public sealed class SkillMapInformationModule : DataViewModule
+public sealed class SkillMapInformationModule : UIInformationModule
 {
     public TextMeshProUGUI totalNodesText;
     public TextMeshProUGUI completedNodesText;
 }
 
 [Serializable]
-public sealed class CodexInformationModule : DataViewModule
+public sealed class CodexInformationModule : UIInformationModule
 {
     [NonSerialized] public readonly System.Collections.Generic.List<CodexPortraitSlotUI> Slots = new System.Collections.Generic.List<CodexPortraitSlotUI>();
     public Image portraitImage;
@@ -55,7 +55,7 @@ public sealed class CodexInformationModule : DataViewModule
     public TMP_Text portraitPage;
     public Button previousPortrait;
     public Button nextPortrait;
-    public DataViewUI portraitInformation;
+    public TooltipUI portraitInformation;
     public Transform portraitContent;
     public CodexPortraitSlotUI portraitSlotPrefab;
     public ToggleGroup portraitSelectionGroup;
@@ -63,7 +63,7 @@ public sealed class CodexInformationModule : DataViewModule
 }
 
 [System.Serializable]
-public sealed class PanelVisibilityModule : DataViewModule
+public sealed class PanelVisibilityModule : UIInformationModule
 {
     public GameObject[] alternatePanels;
 }

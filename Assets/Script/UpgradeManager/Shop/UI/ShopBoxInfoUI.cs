@@ -9,10 +9,8 @@ public class BoxCost
     public GameObject costPanel;
     public TextMeshProUGUI costText;
 }
-public class ShopBoxInfoUI : DataViewUI
+public class ShopBoxInfoUI : BasicTooltipUI
 {
-    public BasicInformationModule basicInformation = new BasicInformationModule();
-    protected override BasicInformationModule BasicInformation => basicInformation;
     public ClassificationModule classification = new ClassificationModule();
     protected override ClassificationModule Classification => classification;
 

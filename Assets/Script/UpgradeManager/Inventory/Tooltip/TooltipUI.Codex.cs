@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // All objects below are authored UI references or instances of authored slot prefabs.
-public partial class DataViewUI
+public partial class TooltipUI
 {
     private List<CodexPortraitSlotUI> portraitSlots => CodexInformation?.Slots ?? EmptyPortraitSlots;
     private static readonly List<CodexPortraitSlotUI> EmptyPortraitSlots = new List<CodexPortraitSlotUI>();

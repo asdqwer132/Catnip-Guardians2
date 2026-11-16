@@ -4,7 +4,7 @@ public sealed class CodexPortraitSlotUI : SlotUI
 {
     public Toggle toggle;
     public Button button;
-    private DataViewUI owner;
+    private TooltipUI owner;
     private int index = -1;
     public CharacterCodexPortrait Portrait { get; private set; }
 
@@ -16,7 +16,7 @@ public sealed class CodexPortraitSlotUI : SlotUI
         else if (button != null) button.onClick.AddListener(Select);
     }
 
-    public void Bind(CharacterCodexPortrait portrait, int portraitIndex, DataViewUI details)
+    public void Bind(CharacterCodexPortrait portrait, int portraitIndex, TooltipUI details)
     {
         owner = details; index = portraitIndex; Portrait = portrait;
         SetDefinedData(portrait, portrait?.stateId ?? "");

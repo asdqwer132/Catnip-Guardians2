@@ -2,10 +2,8 @@ using System;
 using TMPro;
 using UnityEngine;
 
-public class CostTooltipUI : TooltipUI
+public class CostTooltipUI : BasicTooltipUI
 {
-    public BasicInformationModule basicInformation = new BasicInformationModule();
-    protected override BasicInformationModule BasicInformation => basicInformation;
 
     protected override bool HideOnAwake => true;
 

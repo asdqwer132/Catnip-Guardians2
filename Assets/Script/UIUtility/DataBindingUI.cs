@@ -4,15 +4,10 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>Reusable data-to-UI binding. Does not create UI or perform gameplay actions.</summary>
-[AddComponentMenu("UI/Data View UI")]
-public partial class DataViewUI : MonoBehaviour, ISceneLocalizedUI
+public abstract class DataBindingUI : MonoBehaviour, ISceneLocalizedUI
 {
     protected virtual BasicInformationModule BasicInformation => null;
     protected virtual ClassificationModule Classification => null;
-    protected virtual ItemInformationModule ItemInformation => null;
-    protected virtual SkillMapInformationModule SkillMapInformation => null;
-    protected virtual CodexInformationModule CodexInformation => null;
-    protected virtual PanelVisibilityModule PanelVisibility => null;
     protected virtual SlotInformationModule SlotInformation => null;
     public Image icon { get => SlotInformation?.icon ?? BasicInformation?.icon ?? null; set { if (SlotInformation != null) SlotInformation.icon = value; else if (BasicInformation != null) BasicInformation.icon = value; } }
     public TextMeshProUGUI dataNameText { get => SlotInformation?.dataNameText ?? BasicInformation?.dataNameText ?? null; set { if (SlotInformation != null) SlotInformation.dataNameText = value; else if (BasicInformation != null) BasicInformation.dataNameText = value; } }
@@ -26,30 +21,9 @@ public partial class DataViewUI : MonoBehaviour, ISceneLocalizedUI
     public Image gradeIcon { get => Classification?.gradeIcon ?? null; set { if (Classification != null) Classification.gradeIcon = value; } }
     public ItemSeries series { get => Classification?.series ?? ItemSeries.None; set { if (Classification != null) Classification.series = value; } }
     public Grade grade { get => Classification?.grade ?? Grade.None; set { if (Classification != null) Classification.grade = value; } }
-    public TextMeshProUGUI amountText { get => SlotInformation?.amountText ?? ItemInformation?.amountText ?? null; set { if (SlotInformation != null) SlotInformation.amountText = value; else if (ItemInformation != null) ItemInformation.amountText = value; } }
-    public TextMeshProUGUI categoryText { get => ItemInformation?.categoryText ?? null; set { if (ItemInformation != null) ItemInformation.categoryText = value; } }
-    public TextMeshProUGUI weightText { get => ItemInformation?.weightText ?? null; set { if (ItemInformation != null) ItemInformation.weightText = value; } }
-    public TextMeshProUGUI cooldownText { get => ItemInformation?.cooldownText ?? null; set { if (ItemInformation != null) ItemInformation.cooldownText = value; } }
-    public TMP_Text effectDescriptions { get => ItemInformation?.effectDescriptions ?? null; set { if (ItemInformation != null) ItemInformation.effectDescriptions = value; } }
-    public TextMeshProUGUI totalNodesText { get => SkillMapInformation?.totalNodesText ?? null; set { if (SkillMapInformation != null) SkillMapInformation.totalNodesText = value; } }
-    public TextMeshProUGUI completedNodesText { get => SkillMapInformation?.completedNodesText ?? null; set { if (SkillMapInformation != null) SkillMapInformation.completedNodesText = value; } }
-    public Image portraitImage { get => CodexInformation?.portraitImage ?? null; set { if (CodexInformation != null) CodexInformation.portraitImage = value; } }
-    public Image previewImage { get => CodexInformation?.previewImage ?? null; set { if (CodexInformation != null) CodexInformation.previewImage = value; } }
-    public TMP_Text portraitDescription { get => CodexInformation?.portraitDescription ?? null; set { if (CodexInformation != null) CodexInformation.portraitDescription = value; } }
-    public TMP_Text portraitPage { get => CodexInformation?.portraitPage ?? null; set { if (CodexInformation != null) CodexInformation.portraitPage = value; } }
-    public Button previousPortrait { get => CodexInformation?.previousPortrait ?? null; set { if (CodexInformation != null) CodexInformation.previousPortrait = value; } }
-    public Button nextPortrait { get => CodexInformation?.nextPortrait ?? null; set { if (CodexInformation != null) CodexInformation.nextPortrait = value; } }
-    public DataViewUI portraitInformation { get => CodexInformation?.portraitInformation ?? null; set { if (CodexInformation != null) CodexInformation.portraitInformation = value; } }
-    public Transform portraitContent { get => CodexInformation?.portraitContent ?? null; set { if (CodexInformation != null) CodexInformation.portraitContent = value; } }
-    public CodexPortraitSlotUI portraitSlotPrefab { get => CodexInformation?.portraitSlotPrefab ?? null; set { if (CodexInformation != null) CodexInformation.portraitSlotPrefab = value; } }
-    public ToggleGroup portraitSelectionGroup { get => CodexInformation?.portraitSelectionGroup ?? null; set { if (CodexInformation != null) CodexInformation.portraitSelectionGroup = value; } }
-    public CodexInventoryUI childInventory { get => CodexInformation?.childInventory ?? null; set { if (CodexInformation != null) CodexInformation.childInventory = value; } }
-    public GameObject[] alternatePanels { get => PanelVisibility?.alternatePanels ?? null; set { if (PanelVisibility != null) PanelVisibility.alternatePanels = value; } }
+    public virtual TextMeshProUGUI amountText { get => SlotInformation?.amountText; set { if (SlotInformation != null) SlotInformation.amountText = value; } }
 
     public DefaultData dataSource;
-
-    // All fields are optional: wire only the information this authored UI displays.
-    private DefaultData effectSource;
 
     public void SetClassification(ItemSeries itemSeries, Grade itemGrade)
     {
@@ -67,23 +41,6 @@ public partial class DataViewUI : MonoBehaviour, ISceneLocalizedUI
             selected, grade != Grade.None ? grade.ToString() : "");
     }
 
-    private void ApplyEffectDescriptions(language selected)
-    {
-        if (effectDescriptions == null) return;
-        var text = new System.Text.StringBuilder();
-        foreach (var effect in CodexEffectUtility.GetDescriptions(effectSource))
-        {
-            if (text.Length > 0) text.Append("\n\n");
-            text.Append(DefinedDataUtility.GetName(effect, selected, effect.name));
-            string description = DefinedDataUtility.GetDescription(effect, selected);
-            string detail = DefinedDataUtility.GetDetailDescription(effect, selected);
-            if (!string.IsNullOrEmpty(description)) text.Append('\n').Append(description);
-            if (!string.IsNullOrEmpty(detail)) text.Append('\n').Append(detail);
-        }
-        effectDescriptions.text = text.ToString();
-        effectDescriptions.gameObject.SetActive(text.Length > 0);
-    }
-
     private DefinedData boundData;
     private string fallbackName;
     private bool hasBinding;
@@ -95,7 +52,6 @@ public partial class DataViewUI : MonoBehaviour, ISceneLocalizedUI
     protected virtual void OnEnable()
     {
         DefinedDataManager.DefinitionsChanged += RefreshData;
-        BindPortraitButtons();
         if (!hasBinding && dataSource != null) SetData(dataSource);
         registeredScene = gameObject.scene;
         SceneLanguageMediator.Register(this);
@@ -104,7 +60,6 @@ public partial class DataViewUI : MonoBehaviour, ISceneLocalizedUI
     protected virtual void OnDisable()
     {
         DefinedDataManager.DefinitionsChanged -= RefreshData;
-        UnbindPortraitButtons();
         SceneLanguageMediator.Unregister(this, registeredScene);
     }
 
@@ -122,8 +77,7 @@ public partial class DataViewUI : MonoBehaviour, ISceneLocalizedUI
         ApplyLanguage(SceneLanguageMediator.GetLanguage(gameObject.scene));
     }
 
-    public virtual GameObject[] AlternatePanels => alternatePanels;
-    public void Show(DefaultData data) { if (bindingCodexData) return; SetData(data); gameObject.SetActive(data != null); if (data != null && AlternatePanels != null) foreach (var panel in AlternatePanels) if (panel != null && panel != gameObject) panel.SetActive(false); }
+    public virtual void Show(DefaultData data) { SetData(data); gameObject.SetActive(data != null); }
     public void ClearData() => SetData(null);
 
     public void RefreshData()
@@ -160,8 +114,6 @@ public partial class DataViewUI : MonoBehaviour, ISceneLocalizedUI
     protected virtual void OnDataLanguageChanged(language selected)
     {
         ApplyClassification(selected);
-        ApplyEffectDescriptions(selected);
-        RefreshCodexLanguage(selected);
     }
 
     protected virtual void OnDataChanged(DefinedData data)
@@ -176,15 +128,7 @@ public partial class DataViewUI : MonoBehaviour, ISceneLocalizedUI
         else if (source is ItemBoxData box) { series = box.itemSeries; grade = box.grade; }
 
         SetOptionalText(amountText, payload?.amountText);
-        if (ItemInformation != null && item == null && source is ItemData sourceItem) item = ItemTooltipData.FromItem(sourceItem, 0);
-        SetOptionalText(categoryText, item?.CategoryText);
-        SetOptionalText(weightText, item?.WeightText);
-        SetOptionalText(cooldownText, item?.CooldownText);
-        var map = data as SkillMapTooltipData;
-        SetOptionalText(totalNodesText, map?.totalNodesCount);
-        SetOptionalText(completedNodesText, map?.completedNodesCount);
-        effectSource = source;
-        BindCodexData(source);
+
     }
 
     public static void ApplyDefinition(TextMeshProUGUI text, Image image, DefinedData data,

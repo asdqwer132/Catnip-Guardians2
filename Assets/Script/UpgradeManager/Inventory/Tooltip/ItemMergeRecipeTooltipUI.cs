@@ -3,14 +3,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>The selected inventory item's details and the merge recipes using it.</summary>
-public sealed class ItemMergeRecipeTooltipUI : TooltipUI
+public sealed class ItemMergeRecipeTooltipUI : ItemTooltipUI
 {
-    public BasicInformationModule basicInformation = new BasicInformationModule();
-    protected override BasicInformationModule BasicInformation => basicInformation;
-    public ClassificationModule classification = new ClassificationModule();
-    protected override ClassificationModule Classification => classification;
-    public ItemInformationModule itemInformation = new ItemInformationModule();
-    protected override ItemInformationModule ItemInformation => itemInformation;
 
     protected override bool HideOnAwake => true;
 
