@@ -3,20 +3,20 @@ using UnityEngine;
 // 스킬마다 별도 타깃 객체를 만들어 같은 버튼을 사용해도 버프가 섞이지 않습니다.
 public sealed class GimicSkillRuntime : ScriptableObject, IBuffTarget
 {
-    private GimicSkill definition;
+    private MergeBoxGimic.GimicSkill definition;
     private BuffManager manager;
     public Object BuffTargetObject => this;
     public string BuffTargetGroup => "MergeSkill/" + definition.id;
     public string BuffTargetDebugName => definition.id;
     public ItemCooldownStat Stat { get; private set; }
-    public void Initialize(GimicSkill skill)
+    public void Initialize(MergeBoxGimic.GimicSkill skill)
     {
         definition = skill;
         RefreshBuffedStat();
     }
     public void RefreshBuffedStat()
     {
-        var source = new ItemCooldownStat { cooldown = definition.cooldown };
+        var source = new ItemCooldownStat { cooldown = definition.defaultSkillCool };
         Stat = manager != null ? manager.GetBuffedStatForTarget(source, this, BuffCalculationMode.All, false) : source;
         Stat.Clamp();
     }

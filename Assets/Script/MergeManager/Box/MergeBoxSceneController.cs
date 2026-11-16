@@ -21,6 +21,7 @@ public sealed class MergeBoxSceneController : MonoBehaviour
     public TMP_Dropdown seriesDropdown;
     public MergeItemSelection selection;
     public MergeSeriesSelector[] boxes = Array.Empty<MergeSeriesSelector>();
+    [ReadOnly]
     [SerializeField] private int selectedIndex;
     public int SelectedIndex => selectedIndex;
     public MergegameManager SelectedBoard => selectedIndex >= 0 && selectedIndex < boxes.Length ? boxes[selectedIndex]?.board : null;

@@ -322,8 +322,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxFood
   skills:
   - id: Food.Bake
-    sprite: {fileID: 0}
-    cooldown: 10
+    skillImage: {fileID: 0}
+    defaultSkillCool: 10
   burningArea: {fileID: 226412660860691975}
   bakeInterval: 5
   burnsBeforeDestroyed: 3

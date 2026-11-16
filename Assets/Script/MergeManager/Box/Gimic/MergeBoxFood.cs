@@ -12,7 +12,7 @@ public sealed class MergeBoxFood : MergeBoxGimic
     private readonly HashSet<FoodMergeItemObject> baked = new HashSet<FoodMergeItemObject>();
     protected override void EnsureSkills()
     {
-        if (skills.Length == 0) skills = new[] { new GimicSkill { id = "Food.Bake", cooldown = skillCooldown } };
+        if (skills.Length == 0) skills = new[] { new GimicSkill { id = "Food.Bake", defaultSkillCool = skillCooldown } };
     }
     public override int SkillCount => skills.Length > 0 ? skills.Length : 1;
     public override float GetSkillCooldown(int index) => skills.Length > 0 ? base.GetSkillCooldown(index) : index == 0 ? skillCooldown : 0f;

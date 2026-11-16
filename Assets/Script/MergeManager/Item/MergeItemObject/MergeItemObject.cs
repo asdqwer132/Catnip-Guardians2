@@ -49,7 +49,7 @@ public class MergeItemObject : MonoBehaviour, IPoolable
         if (circleCollider == null) circleCollider = GetComponent<CircleCollider2D>();
         if (pooled == null) pooled = GetComponent<PooledObject>();
     }
-    public void Initialize(MergegameManager owner, MergeItem definition, uint serial, float mergeDelay)
+    public virtual void Initialize(MergegameManager owner, MergeItem definition, uint serial, float mergeDelay)
     {
         Cache();
         body.simulated = false;
