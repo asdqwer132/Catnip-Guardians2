@@ -55,11 +55,11 @@ public class MergegameManager : MonoBehaviour
         get { active.RemoveAll(piece => piece == null || !piece.IsLive); return active.Count; }
     }
 
-    private void OnEnable() => Dropper.Begin();
-    private void Start() { PrewarmItems(); RefreshUI(); }
-    private void Update() => Dropper.Tick();
-    private void LateUpdate() => Combiner.ProcessContacts();
-    private void OnDisable() { dropper?.End(); ClearItems(); }
+    protected virtual void OnEnable() => Dropper.Begin();
+    protected virtual void Start() { PrewarmItems(); RefreshUI(); }
+    protected virtual void Update() => Dropper.Tick();
+    protected virtual void LateUpdate() => Combiner.ProcessContacts();
+    protected virtual void OnDisable() { dropper?.End(); ClearItems(); }
 
     public void SetFeeding(bool value) => Dropper.SetFeeding(value);
     public void SetAutomaticDrop(bool value) => Dropper.SetAutomaticDrop(value);
@@ -71,7 +71,7 @@ public class MergegameManager : MonoBehaviour
     public void RefreshSessionMaterials(IReadOnlyList<InventoryItem> items) => Dropper.RefreshSessionMaterials(items);
     public void QueueContact(MergeItemObject a, MergeItemObject b) => Combiner.QueueContact(a, b);
     public void ProcessContacts() => Combiner.ProcessContacts();
-    public bool TryBake(FoodMergeItemObject food, MergeItem burningItem) => Combiner.TryBake(food, burningItem);
+    protected bool TryMergeWithIngredient(MergeItemObject food, MergeItem burningItem) => Combiner.TryBake(food, burningItem);
 
     public void RefreshUI()
     {

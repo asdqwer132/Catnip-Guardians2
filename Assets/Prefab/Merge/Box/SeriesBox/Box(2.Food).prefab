@@ -320,6 +320,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96268fab44bc45cea95c52f613a49b00, type: 3}
   m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxFood
+  skills:
+  - id: Food.Bake
+    sprite: {fileID: 0}
+    cooldown: 10
   burningArea: {fileID: 226412660860691975}
   bakeInterval: 5
   burnsBeforeDestroyed: 3

@@ -6,12 +6,16 @@ public sealed class MergeBoxFood : MergeBoxGimic
     public Collider2D burningArea;
     [Min(0.01f)] public float bakeInterval = 5f;
     [Min(1)] public int burnsBeforeDestroyed = 3;
-    [Min(0f)] public float skillCooldown = 10f;
+    [HideInInspector, Min(0f)] public float skillCooldown = 10f;
     private float nextBake;
     private readonly List<Collider2D> overlaps = new List<Collider2D>();
     private readonly HashSet<FoodMergeItemObject> baked = new HashSet<FoodMergeItemObject>();
-    public override int SkillCount => 1;
-    public override float GetSkillCooldown(int index) => index == 0 ? skillCooldown : 0f;
+    protected override void EnsureSkills()
+    {
+        if (skills.Length == 0) skills = new[] { new GimicSkill { id = "Food.Bake", cooldown = skillCooldown } };
+    }
+    public override int SkillCount => skills.Length > 0 ? skills.Length : 1;
+    public override float GetSkillCooldown(int index) => skills.Length > 0 ? base.GetSkillCooldown(index) : index == 0 ? skillCooldown : 0f;
     public override void GimicStart() => nextBake = Time.time + Mathf.Max(.01f, bakeInterval);
     private void Update()
     {

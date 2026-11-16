@@ -106,6 +106,7 @@ public class MergeGimicManager : MonoBehaviour
             bool visible = i < count;
             slot.gameObject.SetActive(visible);
             if (!visible || slot.button == null) continue;
+            if (slot.sprite != null) slot.sprite.sprite = currentBox.GetSkillSprite(i);
             int skillIndex = i; // 람다에서 반복문의 최종 인덱스를 참조하지 않도록 복사합니다.
             handlers[i] = () => UseSkill(skillIndex);
             slot.button.onClick.AddListener(handlers[i]);
@@ -128,21 +129,30 @@ public class MergeGimicManager : MonoBehaviour
     public void UseSkill(int index)
     {
         var board = boxes != null ? boxes.SelectedBoard : null;
-        if (currentBox == null || !currentBox.Running || board == null || !board.CanOperate || index < 0 || index >= readyAt.Length || Time.time < readyAt[index]) return;
-        readyAt[index] = Time.time + Mathf.Max(0f, currentBox.GetSkillCooldown(index));
+        if (currentBox == null || !currentBox.Running || board == null || !board.CanOperate || index < 0 || index >= readyAt.Length || readyAt[index] > 0f) return;
+        readyAt[index] = currentBox.GetSkillStat(index).cooldown > 0f ? 1f : 0f;
         currentBox.UseBoxSkill(index);
         RefreshSkills();
     }
-    private void Update() => RefreshSkills();
+    private void Update()
+    {
+        if (currentBox != null && currentBox.Running)
+            for (int i = 0; i < readyAt.Length; i++)
+            {
+                var stat = currentBox.GetSkillStat(i);
+                readyAt[i] = stat.cooldown <= 0f ? 0f : Mathf.Max(0f, readyAt[i] - Time.deltaTime * stat.cooldownRecoveryRate / stat.cooldown);
+            }
+        RefreshSkills();
+    }
     private void RefreshSkills()
     {
         for (int i = 0; i < skillButtons.Length && i < readyAt.Length; i++)
         {
             var slot = skillButtons[i];
             if (slot == null) continue;
-            float remaining = Mathf.Max(0f, readyAt[i] - Time.time);
+            float remaining = Mathf.Max(0f, readyAt[i]);
             if (slot.button != null) slot.button.interactable = remaining <= 0f && currentBox != null && currentBox.Running;
-            if (slot.Cool != null) slot.Cool.fillAmount = remaining / Mathf.Max(.001f, currentBox.GetSkillCooldown(i));
+            if (slot.Cool != null) slot.Cool.fillAmount = remaining;
         }
     }
 }
