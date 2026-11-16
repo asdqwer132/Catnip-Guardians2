@@ -1,7 +1,17 @@
+using System;
 using UnityEngine;
 
 public abstract class MergeBoxGimic : MonoBehaviour
 {
+    [Serializable]
+    public class GimicSkill
+    {
+        public Sprite skillImage;
+        public float defaultSkillCool = 10f;
+    }
+
+    public GimicSkill[] skills;
+
     protected MergegameManager Board { get; private set; }
     protected GimicData Data { get; private set; }
     public bool Running { get; private set; }

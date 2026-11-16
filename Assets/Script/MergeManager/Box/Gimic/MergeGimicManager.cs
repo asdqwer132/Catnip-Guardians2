@@ -11,7 +11,9 @@ public class MergeGimicManager : MonoBehaviour
     [Min(1)] public int startingLevel = 1;
     public bool useSessionLevels = true;
     [SerializeField] private CoolButton[] skillButtons = Array.Empty<CoolButton>();
-    private MergeBoxGimic currentBox;
+
+    [ReadOnly]
+    [SerializeField] private MergeBoxGimic currentBox;
     private UpgradeToGeneralData roundData;
     private UnityAction[] handlers;
     private float[] readyAt = Array.Empty<float>();
