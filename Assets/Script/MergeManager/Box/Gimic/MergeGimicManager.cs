@@ -1,6 +1,9 @@
 using System;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
+using TMPro;
 
 // 아이템 씬의 라운드 진입점: 시리즈/레벨 선택, 기믹 수명, 스킬 쿨타임을 관리합니다.
 [DefaultExecutionOrder(-90)]
@@ -16,7 +19,6 @@ public class MergeGimicManager : MonoBehaviour
     [SerializeField] private MergeBoxGimic currentBox;
     private UpgradeToGeneralData roundData;
     private UnityAction[] handlers;
-    private float[] readyAt = Array.Empty<float>();
     public MergeBoxGimic CurrentGimic => currentBox;
     public int SelectedIndex { get; private set; } = -1;
     public int SelectedLevel => boxes != null && boxes.SelectedBoxManager != null ? boxes.SelectedBoxManager.CurrentLevel : startingLevel;
@@ -100,7 +102,6 @@ public class MergeGimicManager : MonoBehaviour
         ClearSkills();
         handlers = new UnityAction[skillButtons.Length];
         int count = currentBox != null ? currentBox.SkillCount : 0;
-        readyAt = new float[count];
         for (int i = 0; i < skillButtons.Length; i++)
         {
             var slot = skillButtons[i];
@@ -110,8 +111,12 @@ public class MergeGimicManager : MonoBehaviour
             if (!visible || slot.button == null) continue;
             if (slot.sprite != null) slot.sprite.sprite = currentBox.GetSkillSprite(i);
             int skillIndex = i; // 람다에서 반복문의 최종 인덱스를 참조하지 않도록 복사합니다.
-            handlers[i] = () => UseSkill(skillIndex);
-            slot.button.onClick.AddListener(handlers[i]);
+            if (slot.shortcutText != null) slot.shortcutText.text = currentBox.IsActiveSkill(i) && slot.shortcutKey != Key.None ? slot.shortcutKey.ToString() : "";
+            if (currentBox.IsActiveSkill(i))
+            {
+                handlers[i] = () => UseSkill(skillIndex);
+                slot.button.onClick.AddListener(handlers[i]);
+            }
         }
         RefreshSkills();
     }
@@ -130,30 +135,49 @@ public class MergeGimicManager : MonoBehaviour
     }
     public void UseSkill(int index)
     {
-        var board = boxes != null ? boxes.SelectedBoard : null;
-        if (currentBox == null || !currentBox.Running || board == null || !board.CanOperate || index < 0 || index >= readyAt.Length || readyAt[index] > 0f) return;
-        readyAt[index] = currentBox.GetSkillStat(index).cooldown > 0f ? 1f : 0f;
-        currentBox.UseBoxSkill(index);
+        if (currentBox != null) currentBox.TryUseActiveSkill(index);
         RefreshSkills();
     }
     private void Update()
     {
-        if (currentBox != null && currentBox.Running)
-            for (int i = 0; i < readyAt.Length; i++)
-            {
-                var stat = currentBox.GetSkillStat(i);
-                readyAt[i] = stat.cooldown <= 0f ? 0f : Mathf.Max(0f, readyAt[i] - Time.deltaTime * stat.cooldownRecoveryRate / stat.cooldown);
-            }
+        currentBox?.TickSkills(Time.deltaTime);
         RefreshSkills();
+        if (Keyboard.current == null || IsTyping()) return;
+        for (int i = 0; i < skillButtons.Length; i++)
+        {
+            var slot = skillButtons[i];
+            if (slot == null || !slot.isActiveAndEnabled || slot.button == null || !slot.button.IsInteractable() || slot.shortcutKey == Key.None) continue;
+            if (Keyboard.current[slot.shortcutKey].wasPressedThisFrame)
+            { if (TryUseShortcut(slot.shortcutKey)) break; }
+        }
+    }
+    // 키보드와 추후 InputAction 입력이 같은 검증 경로를 사용합니다.
+    public bool TryUseShortcut(Key key)
+    {
+        if (key == Key.None || currentBox == null || IsTyping()) return false;
+        for (int i = 0; i < skillButtons.Length; i++)
+        {
+            var slot = skillButtons[i];
+            if (slot == null || !slot.isActiveAndEnabled || slot.shortcutKey != key || slot.button == null || !slot.button.IsInteractable()) continue;
+            if (!currentBox.TryUseActiveSkill(i)) continue;
+            RefreshSkills();
+            return true;
+        }
+        return false;
+    }
+    private static bool IsTyping()
+    {
+        var selected = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
+        return selected != null && (selected.GetComponent<TMP_InputField>() != null || selected.GetComponent<UnityEngine.UI.InputField>() != null);
     }
     private void RefreshSkills()
     {
-        for (int i = 0; i < skillButtons.Length && i < readyAt.Length; i++)
+        for (int i = 0; i < skillButtons.Length && currentBox != null && i < currentBox.SkillCount; i++)
         {
             var slot = skillButtons[i];
             if (slot == null) continue;
-            float remaining = Mathf.Max(0f, readyAt[i]);
-            if (slot.button != null) slot.button.interactable = remaining <= 0f && currentBox != null && currentBox.Running;
+            float remaining = currentBox.GetSkillProgress(i);
+            if (slot.button != null) slot.button.interactable = remaining <= 0f && currentBox.Running && currentBox.IsActiveSkill(i) && boxes != null && boxes.SelectedBoard != null && boxes.SelectedBoard.CanOperate;
             if (slot.Cool != null) slot.Cool.fillAmount = remaining;
         }
     }

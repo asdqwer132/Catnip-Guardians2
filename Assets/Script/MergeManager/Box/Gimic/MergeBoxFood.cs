@@ -4,29 +4,26 @@ using UnityEngine;
 public sealed class MergeBoxFood : MergeBoxGimic
 {
     public Collider2D burningArea;
-    [Min(0.01f)] public float bakeInterval = 5f;
+    [HideInInspector, Min(0.01f)] public float bakeInterval = 5f;
     [Min(1)] public int burnsBeforeDestroyed = 3;
     [HideInInspector, Min(0f)] public float skillCooldown = 10f;
-    private float nextBake;
     private readonly List<Collider2D> overlaps = new List<Collider2D>();
     private readonly HashSet<FoodMergeItemObject> baked = new HashSet<FoodMergeItemObject>();
     protected override void EnsureSkills()
     {
-        if (skills.Length == 0) skills = new[] { new GimicSkill { id = "Food.Bake", defaultSkillCool = skillCooldown } };
+        if (skills == null || skills.Length == 0)
+            skills = new[] { new GimicSkill { id = "Food.Bake", type = GimicSkillType.Active, defaultSkillCool = skillCooldown } };
+        // 기존 액티브 설정과 ID를 보존하면서 자동 굽기를 별도 패시브로 이관합니다.
+        if (!System.Array.Exists(skills, skill => skill != null && skill.type == GimicSkillType.Passive))
+        {
+            var list = new List<GimicSkill>(skills);
+            list.Add(new GimicSkill { id = "Food.AutoBake", type = GimicSkillType.Passive, defaultSkillCool = bakeInterval });
+            skills = list.ToArray();
+        }
     }
-    public override int SkillCount => skills.Length > 0 ? skills.Length : 1;
-    public override float GetSkillCooldown(int index) => skills.Length > 0 ? base.GetSkillCooldown(index) : index == 0 ? skillCooldown : 0f;
-    public override void GimicStart() => nextBake = Time.time + Mathf.Max(.01f, bakeInterval);
-    private void Update()
-    {
-        if (!Running || Board == null || !Board.CanOperate || Time.time < nextBake) return;
-        nextBake = Time.time + Mathf.Max(.01f, bakeInterval);
-        Bake();
-    }
-    public override void UseBoxSkill(int index)
-    {
-        if (index == 0) Bake();
-    }
+    protected override void OnActiveSkill(int index) => Bake();
+    protected override void OnPassiveSkill(int index) => Bake();
+
     public void Bake()
     {
         if (!Running || Board == null || !Board.CanOperate || burningArea == null || !burningArea.isActiveAndEnabled) return;

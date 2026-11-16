@@ -29820,11 +29820,19 @@ PrefabInstance:
       value: Box(2.Food)
       objectReference: {fileID: 0}
     - target: {fileID: 9033693348935232914, guid: 2b9aa46f7b6d8444b89fda0c76b57524, type: 3}
-      propertyPath: bakeInterval
+      propertyPath: skills.Array.data[1].defaultSkillCool
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 9033693348935232914, guid: 2b9aa46f7b6d8444b89fda0c76b57524, type: 3}
       propertyPath: skills.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9033693348935232914, guid: 2b9aa46f7b6d8444b89fda0c76b57524, type: 3}
+      propertyPath: skills.Array.data[1].id
+      value: Food.AutoBake
+      objectReference: {fileID: 0}
+    - target: {fileID: 9033693348935232914, guid: 2b9aa46f7b6d8444b89fda0c76b57524, type: 3}
+      propertyPath: skills.Array.data[1].type
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9033693348935232914, guid: 2b9aa46f7b6d8444b89fda0c76b57524, type: 3}
