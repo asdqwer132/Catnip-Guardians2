@@ -3,6 +3,7 @@ using UnityEngine;
 // 상자 프리팹 내부 참조입니다. 씬의 매니저가 이름 검색 없이 투입구를 연결합니다.
 public sealed class MergeBoxBindings : MonoBehaviour
 {
+    [Tooltip("벽, 배경, LeftDeco, RightDeco를 역할별로 연결합니다.")]
     public MergeBoxSpritePart[] visuals = System.Array.Empty<MergeBoxSpritePart>();
     [SerializeField, HideInInspector] private Vector2 referenceSize;
     [SerializeField, HideInInspector] private Vector3 linePosition;

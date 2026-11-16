@@ -13,6 +13,8 @@ public class WallSpriteInput : MonoBehaviour
     [SerializeField, Min(1)] private int sheetNumber = 1;
 
     [SerializeField] private string sideSpriteName = "SideWall";
+    [SerializeField] private string leftDecoSpriteName = "LeftDeco";
+    [SerializeField] private string rightDecoSpriteName = "RightDeco";
     [SerializeField] private string bottomSpriteName = "BottomWall";
     [SerializeField] private string backSpriteName = "Back";
 
@@ -42,6 +44,8 @@ public class WallSpriteInput : MonoBehaviour
         Sprite side = MatchSprite(sprites, sideSpriteName, path);
         Sprite bottom = MatchSprite(sprites, bottomSpriteName, path);
         Sprite back = MatchSprite(sprites, backSpriteName, path);
+        Sprite leftDeco = null, rightDeco = null;
+        bool leftDecoResolved = false, rightDecoResolved = false;
 
         if (boxes != null) foreach (var box in boxes)
         {
@@ -49,9 +53,15 @@ public class WallSpriteInput : MonoBehaviour
             foreach (var part in box.visuals)
             {
                 if (part == null || part.renderer == null) continue;
+                if (part.role == MergeBoxSpriteRole.LeftDeco && !leftDecoResolved)
+                { leftDeco = MatchSprite(sprites, leftDecoSpriteName, path); leftDecoResolved = true; }
+                if (part.role == MergeBoxSpriteRole.RightDeco && !rightDecoResolved)
+                { rightDeco = MatchSprite(sprites, rightDecoSpriteName, path); rightDecoResolved = true; }
                 Sprite selected = (part.role == MergeBoxSpriteRole.SideWall || part.role == MergeBoxSpriteRole.LeftWall || part.role == MergeBoxSpriteRole.RightWall) ? side :
                     part.role == MergeBoxSpriteRole.BottomWall ? bottom :
-                    part.role == MergeBoxSpriteRole.BackFrame ? back : null;
+                    part.role == MergeBoxSpriteRole.BackFrame ? back :
+                    part.role == MergeBoxSpriteRole.LeftDeco ? leftDeco :
+                    part.role == MergeBoxSpriteRole.RightDeco ? rightDeco : null;
                 if (selected != null) part.renderer.sprite = selected;
             }
         }

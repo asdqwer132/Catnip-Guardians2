@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public enum MergeBoxSpriteRole { SideWall, BottomWall, BackFrame, Fixed, LeftWall, RightWall }
+public enum MergeBoxSpriteRole { SideWall, BottomWall, BackFrame, Fixed, LeftWall, RightWall, LeftDeco, RightDeco }
 
 [Serializable]
 public sealed class MergeBoxSpritePart
@@ -39,10 +39,16 @@ public sealed class MergeBoxSpritePart
     public void Apply(Transform box, Vector2 delta, Vector2 ratio)
     {
         if (renderer == null) return;
-        Vector2 resize = role == MergeBoxSpriteRole.Fixed ? Vector2.zero : (role == MergeBoxSpriteRole.SideWall || role == MergeBoxSpriteRole.LeftWall || role == MergeBoxSpriteRole.RightWall) ? new Vector2(0, delta.y) :
+        bool decoration = role == MergeBoxSpriteRole.LeftDeco || role == MergeBoxSpriteRole.RightDeco;
+        Vector2 resize = role == MergeBoxSpriteRole.Fixed || decoration ? Vector2.zero : (role == MergeBoxSpriteRole.SideWall || role == MergeBoxSpriteRole.LeftWall || role == MergeBoxSpriteRole.RightWall) ? new Vector2(0, delta.y) :
             role == MergeBoxSpriteRole.BottomWall ? new Vector2(delta.x, 0) : delta;
         Vector2 positionRatio = role == MergeBoxSpriteRole.Fixed ? Vector2.one : new Vector2(ratio.x, 1);
         Place(box, renderer.transform, position, positionRatio);
+        if (decoration)
+        {
+            renderer.size = originalSize;
+            return;
+        }
         // Rebuild from the captured size so repeated edits never accumulate a shift.
         // Keep the visual's lower edge fixed, regardless of its Sprite Editor pivot.
         renderer.size = originalSize;
@@ -184,7 +190,9 @@ public sealed class MergeBoxVisualController : MonoBehaviour
         new MergeBoxPartAdjustment { role = MergeBoxSpriteRole.LeftWall },
         new MergeBoxPartAdjustment { role = MergeBoxSpriteRole.RightWall },
         new MergeBoxPartAdjustment { role = MergeBoxSpriteRole.BottomWall },
-        new MergeBoxPartAdjustment { role = MergeBoxSpriteRole.BackFrame }
+        new MergeBoxPartAdjustment { role = MergeBoxSpriteRole.BackFrame },
+        new MergeBoxPartAdjustment { role = MergeBoxSpriteRole.LeftDeco },
+        new MergeBoxPartAdjustment { role = MergeBoxSpriteRole.RightDeco }
     };
     [Header("Individual box sizes and drop positions")]
     public MergeBoxVisualSize[] boxes = Array.Empty<MergeBoxVisualSize>();
