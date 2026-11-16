@@ -19,7 +19,8 @@ public sealed class MergeBoxSpritePart
     [NonSerialized] private Bounds fittedBounds;
     [NonSerialized] private Matrix4x4 fittedVisualMatrix, fittedColliderMatrix;
     [NonSerialized] private Vector2 fittedSize, fittedOffset;
-    public bool ColliderNeedsFit => renderer != null && renderer.sprite != null && wallCollider != null &&
+    private bool IsDecoration => role == MergeBoxSpriteRole.LeftDeco || role == MergeBoxSpriteRole.RightDeco;
+    public bool ColliderNeedsFit => !IsDecoration && renderer != null && renderer.sprite != null && wallCollider != null &&
         (!colliderFitted || fittedSprite != renderer.sprite || fittedBounds != renderer.localBounds ||
          fittedVisualMatrix != renderer.transform.localToWorldMatrix || fittedColliderMatrix != wallCollider.transform.localToWorldMatrix ||
          fittedSize != wallCollider.size || fittedOffset != wallCollider.offset || wallCollider.autoTiling);
@@ -38,17 +39,12 @@ public sealed class MergeBoxSpritePart
         Mathf.Max(.0001f, box.InverseTransformVector(part.TransformVector(Vector3.up)).magnitude));
     public void Apply(Transform box, Vector2 delta, Vector2 ratio)
     {
-        if (renderer == null) return;
-        bool decoration = role == MergeBoxSpriteRole.LeftDeco || role == MergeBoxSpriteRole.RightDeco;
-        Vector2 resize = role == MergeBoxSpriteRole.Fixed || decoration ? Vector2.zero : (role == MergeBoxSpriteRole.SideWall || role == MergeBoxSpriteRole.LeftWall || role == MergeBoxSpriteRole.RightWall) ? new Vector2(0, delta.y) :
+        // Decoration transforms and sizes are authored directly; only WallSpriteInput changes their sprite.
+        if (IsDecoration || renderer == null) return;
+        Vector2 resize = role == MergeBoxSpriteRole.Fixed ? Vector2.zero : (role == MergeBoxSpriteRole.SideWall || role == MergeBoxSpriteRole.LeftWall || role == MergeBoxSpriteRole.RightWall) ? new Vector2(0, delta.y) :
             role == MergeBoxSpriteRole.BottomWall ? new Vector2(delta.x, 0) : delta;
         Vector2 positionRatio = role == MergeBoxSpriteRole.Fixed ? Vector2.one : new Vector2(ratio.x, 1);
         Place(box, renderer.transform, position, positionRatio);
-        if (decoration)
-        {
-            renderer.size = originalSize;
-            return;
-        }
         // Rebuild from the captured size so repeated edits never accumulate a shift.
         // Keep the visual's lower edge fixed, regardless of its Sprite Editor pivot.
         renderer.size = originalSize;
@@ -87,14 +83,14 @@ public sealed class MergeBoxSpritePart
     }
     public void ApplyAdjustment(Transform box, MergeBoxPartAdjustment adjustment)
     {
-        if (renderer == null) return;
+        if (IsDecoration || renderer == null) return;
         Vector3 offset = box.TransformVector(adjustment != null ? adjustment.positionOffset : Vector2.zero);
         renderer.transform.position += offset;
         FitCollider(box, adjustment != null ? adjustment.colliderPadding.Value : Vector4.zero);
     }
     public void FitCollider(Transform box, Vector4 padding)
     {
-        if (wallCollider == null || renderer == null || renderer.sprite == null) return;
+        if (IsDecoration || wallCollider == null || renderer == null || renderer.sprite == null) return;
         Transform colliderTransform = wallCollider.transform;
         // Match the Visual object's transform, preserving the visual when the collider
         // is on its parent. Padding is then measured from the current sprite bounds.
