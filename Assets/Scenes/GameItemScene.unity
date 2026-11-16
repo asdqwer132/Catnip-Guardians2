@@ -29820,8 +29820,16 @@ PrefabInstance:
       value: Box(2.Food)
       objectReference: {fileID: 0}
     - target: {fileID: 9033693348935232914, guid: 2b9aa46f7b6d8444b89fda0c76b57524, type: 3}
+      propertyPath: bakeInterval
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 9033693348935232914, guid: 2b9aa46f7b6d8444b89fda0c76b57524, type: 3}
       propertyPath: skills.Array.size
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9033693348935232914, guid: 2b9aa46f7b6d8444b89fda0c76b57524, type: 3}
+      propertyPath: burnsBeforeDestroyed
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 9033693348935232914, guid: 2b9aa46f7b6d8444b89fda0c76b57524, type: 3}
       propertyPath: skills.Array.data[0].skillImage
