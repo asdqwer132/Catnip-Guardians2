@@ -23,6 +23,7 @@ public class MergeGimicManager : MonoBehaviour
     public MergeBoxGimic CurrentGimic => currentBox;
     public int SelectedIndex { get; private set; } = -1;
     public int SelectedLevel => boxes != null && boxes.SelectedBoxManager != null ? boxes.SelectedBoxManager.CurrentLevel : startingLevel;
+    public int StartingSeriesIndex => startingSeriesIndex - 1;
 
     private void Awake()
     {
@@ -32,7 +33,7 @@ public class MergeGimicManager : MonoBehaviour
     {
         if (SelectedIndex >= 0) return;
         if (GameSession.Instance != null && GameSession.Instance.TryReadGeneralData(out var data)) roundData = data;
-        StartRound(startingSeriesIndex, ResolveLevel(startingSeriesIndex));
+        StartRound(StartingSeriesIndex, ResolveLevel(StartingSeriesIndex));
     }
     private void OnDisable() { currentBox?.GimicStop(); ClearSkills(); }
     private void OnEnable()
@@ -42,7 +43,7 @@ public class MergeGimicManager : MonoBehaviour
     public void InitializeRound(UpgradeToGeneralData data)
     {
         roundData = data;
-        int index = SelectedIndex >= 0 ? SelectedIndex : startingSeriesIndex;
+        int index = SelectedIndex >= 0 ? SelectedIndex : StartingSeriesIndex;
         StartRound(index, ResolveLevel(index));
     }
     private int ResolveLevel(int index)
