@@ -6,6 +6,9 @@ public enum MergeClawState { Idle, AwaitingItem, Lifting, MovingAlongRail }
 [DefaultExecutionOrder(-200)]
 public sealed class MachineMergeGameManager : MergegameManager
 {
+    public Collider2D LaserDragArea { get; set; }
+    public override bool CapturesSelectionPointer(Vector2 worldPosition) => ClawState != MergeClawState.Idle ||
+        (LaserDragArea != null && LaserDragArea.isActiveAndEnabled && LaserDragArea.OverlapPoint(worldPosition));
     public MergeClawState ClawState { get; private set; }
     private Transform claw;
     private Collider2D rail;

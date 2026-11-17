@@ -131,7 +131,7 @@ public sealed class MergeItemSelection : MonoBehaviour
     // 다른 입력/UI에서도 월드 좌표로 호출할 수 있습니다. 자동 생성 UI는 사용하지 않습니다.
     public bool TryBeginSelection(Vector2 worldPosition)
     {
-        if (!CanSelect || !IsInsideDragArea(worldPosition) || !gesture.TryBegin(worldPosition, Time.time)) return false;
+        if (!CanSelect || board.CapturesSelectionPointer(worldPosition) || !IsInsideDragArea(worldPosition) || !gesture.TryBegin(worldPosition, Time.time)) return false;
         LastRemovedCount = 0; LastUsedCount = 0;
         HideVisual();
         return true;
@@ -141,7 +141,7 @@ public sealed class MergeItemSelection : MonoBehaviour
     {
         if (!IsSelecting) return;
         // 표시용 사각형을 최대 크기로 줄이기 전에 실제 포인터 위치를 검사합니다.
-        if (!CanSelect || !IsInsideDragArea(worldPosition)) { CancelSelection(); return; }
+        if (!CanSelect || board.CapturesSelectionPointer(worldPosition) || !IsInsideDragArea(worldPosition)) { CancelSelection(); return; }
         gesture.Move(worldPosition, maximumDragWidth, maximumDragHeight, dragThreshold);
         RefreshVisual();
     }

@@ -28,6 +28,7 @@ public sealed class MergeBoxMachine : MergeBoxGimic
     protected override void EnsureSkills() => SetDefaultSkills(
         new GimicSkill { id = "Machine.Laser", type = GimicSkillType.Active, defaultSkillCool = 10f },
         new GimicSkill { id = "Machine.Claw", type = GimicSkillType.Active, defaultSkillCool = 10f });
+    public override void GimicStart() { if (Board is MachineMergeGameManager machine) machine.LaserDragArea = laserDragArea; }
     protected override bool CanUseActiveSkill(int index) => Board is MachineMergeGameManager machine &&
         machine.ClawState == MergeClawState.Idle && (index == 0 ? laserEmitter != null : clawVisual != null && clawRail != null);
     protected override void OnActiveSkill(int index)
@@ -95,7 +96,7 @@ public sealed class MergeBoxMachine : MergeBoxGimic
     public override void GimicStop()
     {
         EndLaserDrag();
-        if (Board is MachineMergeGameManager machine) machine.CancelClaw();
+        if (Board is MachineMergeGameManager machine) { machine.CancelClaw(); machine.LaserDragArea = null; }
         if (laserVisual != null) laserVisual.gameObject.SetActive(false);
         base.GimicStop();
     }

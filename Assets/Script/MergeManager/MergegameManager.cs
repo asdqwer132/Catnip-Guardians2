@@ -50,6 +50,7 @@ public partial class MergegameManager : MonoBehaviour
     public bool MaterialUIEnabled => displayMaterialUI;
     public virtual bool RetainSelectedItems => false;
     public bool SelectionSuppressed { get; set; }
+    public virtual bool CapturesSelectionPointer(Vector2 worldPosition) => false;
     public virtual bool ForceAutomaticFeeding => false;
     public bool UsesAutomaticFeeding => automaticDrop || ForceAutomaticFeeding;
     public bool IsFeedingEnabled => isFeeding || ForceAutomaticFeeding;
