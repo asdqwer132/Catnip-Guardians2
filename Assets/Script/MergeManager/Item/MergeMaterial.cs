@@ -1,38 +1,26 @@
 using System;
-using TMPro;
 using UnityEngine;
+
 [Serializable]
 public class MergeItemMaterial
 {
     public MergeItem mergeItem;
     public MergeUI mergeUI;
-    public int count;
-    public int defaultCount;
+    [Min(0)] public int count;
 
-    public MergeItemMaterial(MergeItem mergeItem, MergeUI mergeUI, int count, int defaultCount)
+    public MergeItemMaterial(MergeItem mergeItem, MergeUI mergeUI, int count)
     {
         this.mergeItem = mergeItem;
         this.mergeUI = mergeUI;
-        this.count = count;
-        this.defaultCount = defaultCount;
+        this.count = Mathf.Max(0, count);
     }
 
-    public void SetCountText() => mergeUI?.SetCount(count, defaultCount);
+    public void SetCountText() => mergeUI?.SetCount(count);
     public void SetActive() => mergeUI?.SetSlot(IsAvailable());
     public void UseCount()
     {
-        if(defaultCount > 0)
-        {
-            defaultCount--;
-            SetCountText();
-            return;
-        }
-        if(count > 0)
-        {
-            count--;
-            SetCountText();
-            return;
-        }
+        if (count > 0) count--;
+        SetCountText();
     }
-    public bool IsAvailable() => count > 0 || defaultCount > 0;
+    public bool IsAvailable() => count > 0;
 }

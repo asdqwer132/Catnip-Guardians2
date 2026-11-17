@@ -13,7 +13,6 @@ public class MergeItemInjecter : MonoBehaviour
 
     [Header("Settings")]
     [SerializeField, Min(0)] private int count = 10;
-    [SerializeField, Min(0)] private int defaultCount = 10;
 
     [ContextMenu("Inject")]
     public void Inject()
@@ -32,7 +31,7 @@ public class MergeItemInjecter : MonoBehaviour
         }
         var materials = new List<MergeItemMaterial>(mergeItems.Length);
         for (int i = 0; i < mergeItems.Length; i++)
-            materials.Add(new MergeItemMaterial(mergeItems[i], slots[i], Mathf.Max(0, count), Mathf.Max(0, defaultCount)));
+            materials.Add(new MergeItemMaterial(mergeItems[i], slots[i], Mathf.Max(0, count)));
 
 
 #if UNITY_EDITOR

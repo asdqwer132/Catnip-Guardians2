@@ -5,7 +5,6 @@ using UnityEngine.UI;
 public class MergeUI : MonoBehaviour
 {
     public TextMeshProUGUI countText;
-    public TextMeshProUGUI defaultCountText;
     public GameObject slotObj;
     public Toggle toggle;
     public void SetSlot(bool isActive)
@@ -18,12 +17,9 @@ public class MergeUI : MonoBehaviour
             if (!isActive) toggle.SetIsOnWithoutNotify(false);
         }
     }
-    public void SetCount(int c, int dc)
+    public void SetCount(int count)
     {
-
         if (countText != null)
-            countText.text = Mathf.Max(0, c).ToString();
-        if (defaultCountText != null)
-            defaultCountText.text = Mathf.Max(0, dc).ToString();
+            countText.text = Mathf.Max(0, count).ToString();
     }
 }

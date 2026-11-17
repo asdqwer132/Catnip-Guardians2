@@ -8,13 +8,12 @@ internal sealed class MergeItemDropper
 {
     private readonly MergegameManager owner;
     private readonly Collider2D[] overlap = new Collider2D[32];
-    private readonly Dictionary<MergeItemMaterial, int> roundBonuses = new Dictionary<MergeItemMaterial, int>();
     private readonly List<Toggle> observedToggles = new List<Toggle>();
     private readonly Dictionary<MergeItemMaterial, long> previewStock = new Dictionary<MergeItemMaterial, long>();
     private GameSession materialSession;
     private bool usesSessionMaterials, dropping;
     private float nextDropAt, nextAutomaticDropAt;
-    private int bonusRevision;
+    private int stockRevision;
     private bool hadSelectedMaterial;
     public MergeItemDropper(MergegameManager owner) => this.owner = owner;
     public void ResetCooldown() { nextDropAt = 0f; nextAutomaticDropAt = Time.time + AutomaticInterval; }
@@ -39,7 +38,7 @@ internal sealed class MergeItemDropper
         previewStock.Clear();
         foreach (var material in owner.mergeMaterials)
             if (CanFeedMaterial(material))
-                previewStock[material] = (long)Math.Max(0, material.count) + Math.Max(0, material.defaultCount);
+                previewStock[material] = Math.Max(0, material.count);
         var current = owner.currentMaterial;
         bool cycle = owner.UsesAutomaticFeeding && owner.cycleAutomaticMaterials;
         for (int i = 0; i < maximum && current != null; i++)
@@ -187,23 +186,14 @@ internal sealed class MergeItemDropper
 
     public void ResetRoundMaterials()
     {
-        bonusRevision++;
         owner.ClearItems();
-        if (owner.mergeMaterials == null) return;
-        foreach (var material in owner.mergeMaterials)
-        {
-            if (material == null) continue;
-            // 기본 수량의 설정값을 따로 기억해 재시도 때만 보너스를 다시 지급합니다.
-            if (!roundBonuses.TryGetValue(material, out int bonus))
-                roundBonuses.Add(material, bonus = Math.Max(0, material.defaultCount));
-            material.defaultCount = bonus;
-        }
         EnsureSelection();
         owner.RefreshUI();
     }
 
     public void RefreshSessionMaterials(IReadOnlyList<InventoryItem> items)
     {
+        stockRevision++;
         if (owner.mergeMaterials == null) return;
         foreach (var material in owner.mergeMaterials)
         {
@@ -237,9 +227,8 @@ internal sealed class MergeItemDropper
         int before = owner.Revision;
         bool committed = false;
         bool reserved = false;
-        bool usedBonus = material.defaultCount > 0;
         bool useSessionStock = usesSessionMaterials;
-        int reservedBonusRevision = bonusRevision;
+        int reservedStockRevision = stockRevision;
         var source = materialSession;
         int sourceRevision = source != null ? source.GameDataRevision : -1;
         int sourceRound = source != null ? source.RoundRevision : -1;
@@ -247,8 +236,7 @@ internal sealed class MergeItemDropper
         try
         {
             // 풀 콜백 전에 예약해 마지막 재료가 중복 투입되는 것을 막습니다.
-            if (usedBonus) material.defaultCount--;
-            else if (useSessionStock)
+            if (useSessionStock)
             {
                 if (source == null || !source.TryConsumeMaterial(material.mergeItem.item))
                     return owner.Reject("남은 본재고가 없습니다.");
@@ -276,17 +264,13 @@ internal sealed class MergeItemDropper
                 if (piece != null) piece.ReturnToPool();
                 if (reserved)
                 {
-                    if (usedBonus)
-                    {
-                        if (reservedBonusRevision == bonusRevision) material.defaultCount++;
-                    }
-                    else if (useSessionStock)
+                    if (useSessionStock)
                     {
                         source?.RefundMaterial(material.mergeItem.item, sourceRevision, sourceRound);
                         if (source != null && source.GameDataRevision == sourceRevision)
                             material.count = source.GetMaterialCount(material.mergeItem.item);
                     }
-                    else material.count++;
+                    else if (reservedStockRevision == stockRevision) material.count++;
                     owner.RefreshUI();
                 }
             }

@@ -125,7 +125,7 @@ public partial class MergegameManager : MonoBehaviour
                     return new MergeItemMaterial(
                         definition.mergeItem,
                         definition.mergeUI,
-                        0, definition.defaultCount);
+                        0);
         return null;
     }
 
