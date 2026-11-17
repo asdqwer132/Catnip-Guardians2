@@ -20,7 +20,7 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
     private IMergeBoxUpgradeSaveStore store;
     private bool loaded, restoring, initialized;
     private int mainPlantIndex = -1;
-    public int MainPlantIndex { get { Initialize(); return mainPlantIndex; } }
+    public int MainPlantIndex { get { Initialize(); if (skillTree != null) RebuildLevels(); return mainPlantIndex; } }
     public void ApplyMainPlantIndex(int index) => mainPlantIndex = Math.Max(mainPlantIndex, Math.Max(0, index));
 
     private void Awake() => Load();
@@ -80,10 +80,17 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
     public void RegisterNode(SkillNodeData node)
     {
         if (node == null) return;
+        // Scene nodes are authoritative. Replace stale catalog entries with the same ID
+        // instead of allowing Find() to select an unrelated older asset's rewards.
+        int replaced = skillNodes.RemoveAll(value => value != null && value != node && value.ProgressKey == node.ProgressKey);
         if (!skillNodes.Contains(node)) skillNodes.Add(node);
+        if (replaced > 0)
+            Debug.Log("[SkillTransfer] Replaced stale registered node with active node: " + node.name + " / " + node.ProgressKey, node);
         // 새로 작성한 UI 노드도 이전 구매 ID가 있으면 복원합니다.
         Load();
-        if (!initialized || skillTree == null || skillTree.IsUnlocked(node) || !progress.unlockedSkillIds.Contains(node.ProgressKey)) return;
+        if (!initialized || skillTree == null) return;
+        if (skillTree.IsUnlocked(node)) { RebuildLevels(); return; }
+        if (!progress.unlockedSkillIds.Contains(node.ProgressKey)) return;
         restoring = true;
         try { skillTree.RestoreUnlockedSkills(new[] { node }); RebuildLevels(); }
         finally { restoring = false; }
