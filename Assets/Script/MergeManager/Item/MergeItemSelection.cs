@@ -163,7 +163,7 @@ public sealed class MergeItemSelection : MonoBehaviour
             foreach (var entry in selected)
             {
                 var piece = entry.piece;
-                if (piece == null || piece.LifeId != entry.lifeId || piece.Owner != board || !piece.CanSelect) continue;
+                if (piece == null || piece.LifeId != entry.lifeId || piece.Owner != board || !piece.CanSelectWithPointer(dragged)) continue;
                 string name = board.GetItemDisplayName(piece.item);
                 Vector2 position = piece.Position;
                 ItemData item = piece.item;
@@ -219,7 +219,7 @@ public sealed class MergeItemSelection : MonoBehaviour
         float closest = float.PositiveInfinity;
         foreach (var piece in board.ActiveItems)
         {
-            if (piece == null || piece.Owner != board || !piece.CanSelect || piece.colider2d == null || !piece.colider2d.enabled) continue;
+            if (piece == null || piece.Owner != board || !piece.CanSelectWithPointer(dragged) || piece.colider2d == null || !piece.colider2d.enabled) continue;
             var bounds = piece.colider2d.bounds;
             if (dragged)
             {

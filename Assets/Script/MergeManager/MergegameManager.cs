@@ -18,6 +18,8 @@ public partial class MergegameManager : MonoBehaviour
 
     [Header("생성 옵션")]
     [Min(0f)] public float dropInterval = 0.5f;
+    [Tooltip("자동·수동 투입에 공통 적용되는 최소 간격입니다. 0이면 별도 시간 하한이 없습니다.")]
+    [Min(0f)] public float minimumDropInterval = .01f;
     [Min(1)] public int maximumActiveItems = 50;
     [Min(0)] public int prewarmCount = 4;
     [Min(0f)] public float resultMergeDelay = 0.1f;
@@ -212,6 +214,7 @@ public partial class MergegameManager : MonoBehaviour
 
     internal void Report(string message)
     {
+        if (lastMessage == message) return;
         lastMessage = message;
         if (logActions) Debug.Log("[MergeGame] " + message, this);
     }

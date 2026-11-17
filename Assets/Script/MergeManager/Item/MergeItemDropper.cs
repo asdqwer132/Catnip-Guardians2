@@ -13,10 +13,16 @@ internal sealed class MergeItemDropper
     private GameSession materialSession;
     private bool usesSessionMaterials, dropping;
     private float nextDropAt, nextAutomaticDropAt;
+    private float previousInterval = -1f;
     private int stockRevision;
     private bool hadSelectedMaterial;
     public MergeItemDropper(MergegameManager owner) => this.owner = owner;
-    public void ResetCooldown() { nextDropAt = 0f; nextAutomaticDropAt = Time.time + AutomaticInterval; }
+    public void ResetCooldown() { nextDropAt = 0f; RestartAutomaticTimer(); }
+    private void RestartAutomaticTimer()
+    {
+        previousInterval = AutomaticInterval;
+        nextAutomaticDropAt = Time.time + previousInterval;
+    }
     public float Interval => AutomaticInterval;
     public float Countdown
     {
@@ -73,7 +79,7 @@ internal sealed class MergeItemDropper
     public void Begin()
     {
         hadSelectedMaterial = false;
-        nextAutomaticDropAt = Time.time + AutomaticInterval;
+        RestartAutomaticTimer();
         RefreshMaterialSelection();
     }
 
@@ -103,6 +109,14 @@ internal sealed class MergeItemDropper
 
     private bool RefreshSelectionState()
     {
+        float interval = AutomaticInterval;
+        if (previousInterval >= 0f && !Mathf.Approximately(previousInterval, interval))
+        {
+            float change = interval - previousInterval;
+            if (nextDropAt > Time.time) nextDropAt += change;
+            if (nextAutomaticDropAt > Time.time) nextAutomaticDropAt += change;
+        }
+        previousInterval = interval;
         EnsureSelection();
         bool selected = false;
         if (owner.mergeMaterials != null)
@@ -110,12 +124,12 @@ internal sealed class MergeItemDropper
                 if (CanFeedMaterial(material))
                 { selected = true; break; }
         // 0개일 때는 초기값으로 정지, 0→1개일 때만 다시 시작합니다. 추가 선택은 시각을 바꾸지 않습니다.
-        if (!selected || !hadSelectedMaterial) nextAutomaticDropAt = Time.time + AutomaticInterval;
+        if (!selected || !hadSelectedMaterial) RestartAutomaticTimer();
         hadSelectedMaterial = selected;
         return selected;
     }
 
-    private float AutomaticInterval => Mathf.Max(.01f, EffectStatUtility.Safe(owner.dropInterval, 0f, 600f, .5f) / Mathf.Max(.01f, owner.FeedingSpeedMultiplier));
+    private float AutomaticInterval => Mathf.Max(EffectStatUtility.Safe(owner.minimumDropInterval, 0f, 600f, .01f), EffectStatUtility.Safe(owner.dropInterval, 0f, 600f, .5f) / Mathf.Max(.01f, owner.FeedingSpeedMultiplier));
 
     public void Tick()
     {
@@ -123,12 +137,11 @@ internal sealed class MergeItemDropper
         if (!owner.UsesAutomaticFeeding || !owner.IsFeedingEnabled || !owner.CanOperate ||
             (GameInputManager.instance != null && GameInputManager.instance.IsBlocked(GameInputBlockType.Gameplay)))
         {
-            nextAutomaticDropAt = Time.time + AutomaticInterval;
+            RestartAutomaticTimer();
             return;
         }
         if (Time.time < nextAutomaticDropAt) return;
-        // 막힌 투입구도 매 프레임 재시도하지 않고 다음 주기까지 기다립니다.
-        nextAutomaticDropAt = Time.time + AutomaticInterval;
+        // 준비된 투입은 막혀 있어도 유지합니다. 성공했을 때만 다음 주기를 시작합니다.
         EnsureSelection();
         var usedMaterial = owner.currentMaterial;
         if (TryDropCurrent() && owner.cycleAutomaticMaterials)
@@ -138,13 +151,13 @@ internal sealed class MergeItemDropper
     public void SetFeeding(bool value)
     {
         owner.isFeeding = value;
-        nextAutomaticDropAt = Time.time + AutomaticInterval;
+        RestartAutomaticTimer();
     }
 
     public void SetAutomaticDrop(bool value)
     {
         owner.automaticDrop = value;
-        nextAutomaticDropAt = Time.time + AutomaticInterval;
+        RestartAutomaticTimer();
     }
 
     private static bool CanFeedMaterial(MergeItemMaterial material)
@@ -213,6 +226,7 @@ internal sealed class MergeItemDropper
         if (!owner.IsFeedingEnabled) return owner.Reject("투입이 중지되어 있습니다.");
         if (!owner.CanOperate || dropping) return owner.Reject("현재 생성할 수 없는 상태입니다.");
         if (owner.objectPool == null || owner.dropZone == null || owner.dropZone.spawnPoint == null) return owner.Reject("Object Pool / Spawn Point 연결을 확인하세요.");
+        RefreshSelectionState();
         if (Time.time < nextDropAt) return owner.Reject("다음 생성까지 대기 중입니다.");
         if (owner.ActiveItemCount >= Mathf.Max(1, owner.maximumActiveItems)) return owner.Reject("최대 활성 아이템 개수에 도달했습니다.");
         if (owner.dropZone != null && owner.dropZone.IsBlocked(owner)) return owner.Reject("아이템이 투입 제한선을 넘었습니다.");
@@ -249,8 +263,8 @@ internal sealed class MergeItemDropper
             if (piece == null || !piece.IsLive || before != owner.Revision || !owner.CanOperate)
                 return owner.Reject("풀 생성이 취소되었거나 아이템이 비활성 상태입니다.");
             piece.SetSimulated(true);
-            nextDropAt = Time.time + EffectStatUtility.Safe(owner.dropInterval, 0f, 600f, 0.5f) / Mathf.Max(.01f, owner.FeedingSpeedMultiplier);
-            nextAutomaticDropAt = Time.time + AutomaticInterval;
+            nextDropAt = Time.time + AutomaticInterval;
+            RestartAutomaticTimer();
             committed = true;
             owner.RefreshUI();
             EnsureSelection();

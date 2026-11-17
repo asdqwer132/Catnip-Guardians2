@@ -4,6 +4,11 @@ using UnityEngine;
 public class MergeItemObject : MonoBehaviour, IPoolable
 {
     public ItemData item;
+    [Header("플레이어 선택")]
+    public bool allowDragSelection = true;
+    public bool allowClickSelection = true;
+    public bool CanSelectWithPointer(bool dragged) => CanSelect && (dragged ? allowDragSelection : allowClickSelection);
+
     public Collider2D colider2d;
     public SpriteRenderer spriteRenderer;
 
