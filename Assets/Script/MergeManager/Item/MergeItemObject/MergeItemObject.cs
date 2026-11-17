@@ -6,18 +6,17 @@ public class MergeItemObject : MonoBehaviour, IPoolable
     public ItemData item;
     public Collider2D colider2d;
     public SpriteRenderer spriteRenderer;
-    public GameObject visualSize;
 
     [Header("프리팹별 비주얼 옵션")]
     [Tooltip("켜면 ItemData의 아이콘을 적용합니다. 끄면 프리팹 SpriteRenderer에 지정한 스프라이트를 사용합니다.")]
     public bool useItemIcon = true;
 
-    [Tooltip("켜면 Visual Size의 크기를 표시 스프라이트와 MergeItem 반지름에 맞춥니다. 끄면 프리팹에 설정한 비주얼 크기를 유지합니다.")]
-    public bool fitIconToRadius = true;
-
     public Rigidbody2D body;
 
     [SerializeField] private PooledObject pooled;
+
+    private Vector3 prefabScale;
+    private bool hasPrefabScale;
 
     private bool reserved;
     private object heldBy;
@@ -80,6 +79,12 @@ public class MergeItemObject : MonoBehaviour, IPoolable
 
     private void Cache()
     {
+        if (!hasPrefabScale)
+        {
+            prefabScale = transform.localScale;
+            hasPrefabScale = true;
+        }
+
         if (body == null)
             body = GetComponent<Rigidbody2D>();
 
@@ -122,15 +127,7 @@ public class MergeItemObject : MonoBehaviour, IPoolable
         Velocity = Vector2.zero;
         body.angularVelocity = 0f;
 
-        // 콜라이더 종류별 크기 설정
-        if (colider2d is CircleCollider2D circle)
-        {
-            circle.radius = definition.Radius;
-        }
-        else if (colider2d is BoxCollider2D box)
-        {
-            box.size = Vector2.one * definition.Radius * 2f;
-        }
+        ApplyRadius(definition.Radius);
 
         if (colider2d != null)
             colider2d.enabled = true;
@@ -141,22 +138,39 @@ public class MergeItemObject : MonoBehaviour, IPoolable
                 spriteRenderer.sprite = item.icon;
 
             spriteRenderer.enabled = spriteRenderer.sprite != null;
-
-            // 물리 루트는 건드리지 않고 Visual 자식만 크기 조절
-            if (fitIconToRadius &&
-                visualSize != null &&
-                visualSize.transform != transform &&
-                spriteRenderer.sprite != null)
-            {
-                Vector3 size = spriteRenderer.sprite.bounds.size;
-
-                float scale = definition.Radius /
-                    Mathf.Max(0.0001f, size.x, size.y);
-
-                visualSize.transform.localScale =
-                    new Vector3(scale, scale, 1f);
-            }
         }
+    }
+
+    // 콜라이더의 원래 모양과 비주얼의 상대 크기를 유지한 채 전체를 조절합니다.
+    private void ApplyRadius(float radius)
+    {
+        // 풀에서 같은 인스턴스를 다시 써도 이전 아이템의 배율이 누적되지 않습니다.
+        transform.localScale = prefabScale;
+
+        float currentRadius;
+        if (colider2d is CircleCollider2D circle)
+        {
+            currentRadius = circle.radius * Mathf.Max(
+                circle.transform.TransformVector(Vector3.right).magnitude,
+                circle.transform.TransformVector(Vector3.up).magnitude);
+        }
+        else if (colider2d is BoxCollider2D box)
+        {
+            currentRadius = Mathf.Max(
+                box.transform.TransformVector(Vector3.right * box.size.x).magnitude,
+                box.transform.TransformVector(Vector3.up * box.size.y).magnitude) * 0.5f;
+        }
+        else if (colider2d is CapsuleCollider2D capsule)
+        {
+            currentRadius = Mathf.Max(
+                capsule.transform.TransformVector(Vector3.right * capsule.size.x).magnitude,
+                capsule.transform.TransformVector(Vector3.up * capsule.size.y).magnitude) * 0.5f;
+        }
+        else return;
+
+        if (currentRadius <= 0.0001f) return;
+        float scale = radius / currentRadius;
+        transform.localScale = new Vector3(prefabScale.x * scale, prefabScale.y * scale, prefabScale.z);
     }
 
     public void SetSimulated(bool value)
