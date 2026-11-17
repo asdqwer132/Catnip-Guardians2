@@ -54,22 +54,20 @@ public sealed class SceneCameraBinding : MonoBehaviour
     {
         if (!bindings.Contains(this)) bindings.Add(this);
         ApplyConfiguration(); Refresh();
-        ScenePixelPerfectLayout.Register(Camera, this);
     }
     private void OnDisable()
     {
-        ScenePixelPerfectLayout.Unregister(boundCamera, this);
         bindings.Remove(this);
         if (role == SceneCameraRole.Background && boundCamera != null) boundCamera.enabled = false;
         Refresh();
     }
-    private void LateUpdate() { ApplyConfiguration(); Refresh(); ScenePixelPerfectLayout.Prepare(Camera); }
+    private void LateUpdate() { ApplyConfiguration(); Refresh(); }
     public void SetComposed(bool value)
     {
         if (value && !composed)
         { standaloneViewport = Camera.rect; standaloneEnabled = Camera.enabled; }
         if (!value && composed)
-        { ScenePixelPerfectLayout.SetViewport(Camera, standaloneViewport); Camera.enabled = standaloneEnabled; }
+        { Camera.rect = standaloneViewport; Camera.enabled = standaloneEnabled; }
         composed = value; ApplyConfiguration(); Refresh();
     }
     private void ApplyConfiguration()
@@ -81,7 +79,7 @@ public sealed class SceneCameraBinding : MonoBehaviour
         string cameraTag = composed ? composedTag : standaloneTag;
         if (!string.IsNullOrEmpty(cameraTag) && !Camera.CompareTag(cameraTag)) Camera.tag = cameraTag;
         if (role == SceneCameraRole.Background)
-        { ScenePixelPerfectLayout.SetViewport(Camera, ValidBackgroundViewport(backgroundViewport) ? backgroundViewport : new Rect(0,0,1,1)); Camera.depth = backgroundDepth; }
+        { Camera.rect = ValidBackgroundViewport(backgroundViewport) ? backgroundViewport : new Rect(0,0,1,1); Camera.depth = backgroundDepth; }
     }
     private static bool ValidBackgroundViewport(Rect rect)
         => !float.IsNaN(rect.x) && !float.IsNaN(rect.y) && !float.IsNaN(rect.width) && !float.IsNaN(rect.height) &&
