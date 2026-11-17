@@ -80,7 +80,7 @@ public static class MergeGimmickUtility
             if (yield == null || yield.item == null) continue;
             int count = yield.RollCount();
             for (int i = 0; i < count; i++)
-                if (board.TrySpawnGimmickItem(yield.item, yield.Position(origin), out _)) emitted++;
+                if (board.QueueGimmickSpawn(yield.item, yield.Position(origin))) emitted++;
         }
         return emitted;
     }

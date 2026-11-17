@@ -7,7 +7,6 @@ using UnityEngine.UI;
 internal sealed class MergeItemDropper
 {
     private readonly MergegameManager owner;
-    private readonly Collider2D[] overlap = new Collider2D[32];
     private readonly List<Toggle> observedToggles = new List<Toggle>();
     private readonly Dictionary<MergeItemMaterial, long> previewStock = new Dictionary<MergeItemMaterial, long>();
     private GameSession materialSession;
@@ -236,7 +235,6 @@ internal sealed class MergeItemDropper
         if (!MergegameManager.TryGetPrefab(material.mergeItem, out _))
             return owner.Reject("선택 재료의 MergeItem → Prefab에 활성 MergeItemObject가 있는 프리팹을 연결하세요.");
         Vector3 position = owner.dropZone.spawnPoint.position;
-        if (IsBlocked(position, material.mergeItem.Radius)) return owner.Reject("투입 위치가 막혀 있습니다.");
         dropping = true;
         int before = owner.Revision;
         bool committed = false;
@@ -249,19 +247,20 @@ internal sealed class MergeItemDropper
         MergeItemObject piece = null;
         try
         {
-            // 풀 콜백 전에 예약해 마지막 재료가 중복 투입되는 것을 막습니다.
+            // Probe before reserving stock: a blocked last item must not switch its
+            // selection toggle off through session inventory change callbacks.
+            piece = owner.SpawnPiece(material.mergeItem, position);
+            if (piece == null || !piece.IsLive || before != owner.Revision || !owner.CanOperate) return false;
+            if (!owner.TryPlaceSpawn(piece, position, search: false)) return owner.Reject("투입 위치가 막혀 있습니다.");
             if (useSessionStock)
             {
                 if (source == null || !source.TryConsumeMaterial(material.mergeItem.item))
-                    return owner.Reject("남은 본재고가 없습니다.");
+                    return owner.Reject("남은 재고가 없습니다.");
                 material.count = source.GetMaterialCount(material.mergeItem.item);
             }
             else material.count--;
             reserved = true;
             if (before != owner.Revision || !owner.CanOperate) return false;
-            piece = owner.SpawnPiece(material.mergeItem, position);
-            if (piece == null || !piece.IsLive || before != owner.Revision || !owner.CanOperate)
-                return owner.Reject("풀 생성이 취소되었거나 아이템이 비활성 상태입니다.");
             piece.SetSimulated(true);
             nextDropAt = Time.time + AutomaticInterval;
             RestartAutomaticTimer();
@@ -293,12 +292,4 @@ internal sealed class MergeItemDropper
         }
     }
 
-    private bool IsBlocked(Vector2 position, float radius)
-    {
-        foreach (var piece in owner.ActiveItems)
-            if (piece != null && piece.IsLive && (piece.Position - position).sqrMagnitude < Mathf.Pow(piece.Definition.Radius + radius, 2f)) return true;
-        var filter = new ContactFilter2D { useTriggers = false, useLayerMask = false };
-        var physics = owner.gameObject.scene.GetPhysicsScene2D();
-        return !physics.IsValid() || physics.OverlapCircle(position, radius, filter, overlap) > 0;
-    }
 }

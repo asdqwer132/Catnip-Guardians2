@@ -55,7 +55,9 @@ public sealed class MachineMergeGameManager : MergegameManager
                 splitOutputs.Add(new MergeSpawnRequest(definition, position));
             }
         }
-        return TryReplaceGimmickItem(piece, piece.LifeId, splitOutputs);
+        int life = piece.LifeId;
+        return TryReplaceGimmickItem(piece, life, splitOutputs) ||
+            (piece.IsLive && piece.LifeId == life && QueueReplacement(piece, splitOutputs));
     }
     public bool BeginClaw(Transform clawVisual, Collider2D movementRail, float speed, float itemOffset)
     {

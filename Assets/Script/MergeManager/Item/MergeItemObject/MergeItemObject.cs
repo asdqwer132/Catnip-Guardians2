@@ -178,6 +178,8 @@ public class MergeItemObject : MonoBehaviour, IPoolable
         transform.localScale = new Vector3(prefabScale.x * scale, prefabScale.y * scale, prefabScale.z);
     }
 
+    public virtual void RemapPendingSpawns(Matrix4x4 change) { }
+
     public void SetSimulated(bool value)
     {
         Cache();

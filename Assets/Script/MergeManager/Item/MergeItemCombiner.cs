@@ -8,6 +8,9 @@ internal sealed class MergeItemCombiner
     private readonly List<Contact> contacts = new List<Contact>();
     private readonly HashSet<ulong> queued = new HashSet<ulong>();
     private bool processing;
+    private bool placementBlocked;
+    private sealed class PendingBake { public MergeItemObject food; public int life; public ItemRecipeData recipe; }
+    private readonly List<PendingBake> pendingBakes = new List<PendingBake>();
     private struct Contact { public MergeItemObject a, b; public int aLife, bLife; }
     private sealed class RecipePlan
     {
@@ -15,7 +18,8 @@ internal sealed class MergeItemCombiner
         public Dictionary<ItemData, int> required;
     }
     public MergeItemCombiner(MergegameManager owner) => this.owner = owner;
-    public void ClearPending() { contacts.Clear(); queued.Clear(); }
+    public void ClearContacts() { contacts.Clear(); queued.Clear(); }
+    public void ClearPending() { ClearContacts(); pendingBakes.Clear(); }
 
     public void QueueContact(MergeItemObject a, MergeItemObject b)
     {
@@ -24,15 +28,28 @@ internal sealed class MergeItemCombiner
         if (queued.Add(key)) contacts.Add(new Contact { a = a, b = b, aLife = a.LifeId, bLife = b.LifeId });
     }
     private bool Usable(MergeItemObject item) => owner.CanOperate && item != null && item.Owner == owner && item.CanMerge;
+    private static bool Touching(MergeItemObject a, MergeItemObject b)
+    {
+        if (a.colider2d == null || b.colider2d == null) return false;
+        var distance = a.colider2d.Distance(b.colider2d);
+        return distance.isValid && distance.distance <= Physics2D.defaultContactOffset * 2f;
+    }
     private bool Current(Contact contact)
-        => Usable(contact.a) && Usable(contact.b) && contact.a.LifeId == contact.aLife && contact.b.LifeId == contact.bLife;
+        => Usable(contact.a) && Usable(contact.b) && contact.a.LifeId == contact.aLife && contact.b.LifeId == contact.bLife && Touching(contact.a, contact.b);
 
     public void ProcessContacts()
     {
-        if (processing || contacts.Count == 0) return;
-        var pending = contacts.ToArray(); ClearPending(); processing = true;
+        if (processing || (contacts.Count == 0 && pendingBakes.Count == 0)) return;
+        var pending = contacts.ToArray(); contacts.Clear(); queued.Clear(); processing = true;
+        bool retryContacts = false;
         try
         {
+            foreach (var bake in pendingBakes.ToArray())
+            {
+                if (bake.food == null || !bake.food.IsLive || bake.food.LifeId != bake.life || bake.food.Owner != owner)
+                { pendingBakes.Remove(bake); continue; }
+                if (Usable(bake.food) && TryMerge(bake.recipe, new List<MergeItemObject> { bake.food })) pendingBakes.Remove(bake);
+            }
             var neighbors = new Dictionary<MergeItemObject, List<MergeItemObject>>();
             var lives = new Dictionary<MergeItemObject, int>();
             foreach (var contact in pending) if (Current(contact))
@@ -52,11 +69,19 @@ internal sealed class MergeItemCombiner
                 foreach (var plan in plans)
                 {
                     var selected = SelectIngredients(contact, plan.required, neighbors, lives);
-                    if (selected != null && TryMerge(plan.recipe, selected)) break;
+                    if (selected == null) continue;
+                    if (TryMerge(plan.recipe, selected)) break;
+                    retryContacts |= placementBlocked;
                 }
             }
         }
-        finally { processing = false; }
+        finally
+        {
+            processing = false;
+            if (retryContacts)
+                foreach (var contact in pending)
+                    if (Current(contact) && Touching(contact.a, contact.b)) QueueContact(contact.a, contact.b);
+        }
     }
     // 같은 접촉 묶음 안에서만 필요한 개수를 고릅니다. 멀리 떨어진 재료는 소비하지 않습니다.
     private List<MergeItemObject> SelectIngredients(Contact contact, Dictionary<ItemData, int> required,
@@ -81,13 +106,19 @@ internal sealed class MergeItemCombiner
     {
         if (!Usable(food) || burningItem == null || owner.recipeBook == null) return false;
         if (!owner.recipeBook.TryGetRecipe(food.item, burningItem.item, out var recipe)) return false;
-        return TryMerge(recipe, new List<MergeItemObject> { food });
+        foreach (var pending in pendingBakes) if (pending.food == food && pending.life == food.LifeId) return true;
+        if (TryMerge(recipe, new List<MergeItemObject> { food })) return true;
+        if (!placementBlocked) return false;
+        pendingBakes.Add(new PendingBake { food = food, life = food.LifeId, recipe = recipe });
+        return true; // accepted: do not burn away an input waiting for safe space.
     }
 
     private bool TryMerge(ItemRecipeData recipe, List<MergeItemObject> ingredients)
     {
+        placementBlocked = false;
         var definition = owner.GetDefinitionAtMergeItem(recipe.resultItem);
         if (owner.objectPool == null || !MergegameManager.TryGetPrefab(definition, out _)) return false;
+        if (!owner.SpawnRetryReady(ingredients[0])) { placementBlocked = true; return false; }
         var lives = new List<int>();
         int before = owner.Revision;
         MergeItemObject result = null;
@@ -103,6 +134,7 @@ internal sealed class MergeItemCombiner
             }
             result = owner.SpawnPiece(definition, position / ingredients.Count);
             if (result == null || !result.IsLive || before != owner.Revision || !owner.CanOperate) return false;
+            if (!owner.TryPlaceSpawn(result, position / ingredients.Count, ingredients)) { placementBlocked = true; owner.DelaySpawnRetry(ingredients[0]); return false; }
             for (int i = 0; i < ingredients.Count; i++)
                 if (ingredients[i] == null || ingredients[i].LifeId != lives[i] || !ingredients[i].IsLive) return false;
             foreach (var item in ingredients) item.ReturnToPool();

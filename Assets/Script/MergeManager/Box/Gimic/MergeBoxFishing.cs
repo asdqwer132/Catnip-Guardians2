@@ -39,7 +39,7 @@ public sealed class MergeBoxFishing : MergeBoxGimic
     protected override void OnPassiveSkill(int index) => BeginFishing();
     public void BeginFishing()
     {
-        if (!Running || Board == null || !Board.CanOperate || IsFishing) return;
+        if (!Running || Board == null || !Board.CanOperate || IsFishing || Board.PendingSpawnCount > 0) return;
         IsFishing = true; elapsed = 0f; NeedleValue = 0f; RefreshUI();
     }
     public void SubmitCatch()
