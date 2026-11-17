@@ -71,8 +71,9 @@ public sealed class UIWorldBoundsFitter : MonoBehaviour
         canvas = canvas.rootCanvas;
         Camera uiCamera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
         if (canvas.renderMode != RenderMode.ScreenSpaceOverlay && uiCamera == null) return false;
+        var viewport=SceneViewportCamera.For(worldCamera);
         if (canvas.targetDisplay != worldCamera.targetDisplay ||
-            (uiCamera != null ? uiCamera.targetTexture : null) != worldCamera.targetTexture) return false;
+            ((viewport==null || !viewport.IsReady) && (uiCamera != null ? uiCamera.targetTexture : null) != worldCamera.targetTexture)) return false;
         Rect area = frame.rect;
         if (area.width <= 0 || area.height <= 0 || frameOccupancy.width <= 0 || frameOccupancy.height <= 0) return false;
         var plane = new Plane(Vector3.forward, new Vector3(0, 0, worldRoot.position.z));
@@ -81,7 +82,7 @@ public sealed class UIWorldBoundsFitter : MonoBehaviour
             Vector2 uv = new Vector2(i % 2 == 0 ? frameOccupancy.xMin : frameOccupancy.xMax,
                 i < 2 ? frameOccupancy.yMin : frameOccupancy.yMax);
             Vector3 p = frame.TransformPoint(new Vector3(area.xMin + area.width * uv.x, area.yMin + area.height * uv.y, 0));
-            Ray ray = worldCamera.ScreenPointToRay(RectTransformUtility.WorldToScreenPoint(uiCamera, p));
+            Ray ray = SceneViewportInput.ScreenPointToRay(worldCamera,RectTransformUtility.WorldToScreenPoint(uiCamera, p));
             if (!plane.Raycast(ray, out float distance)) return false;
             corners[i] = ray.GetPoint(distance);
         }

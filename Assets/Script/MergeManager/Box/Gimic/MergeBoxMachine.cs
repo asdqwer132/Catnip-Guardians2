@@ -78,9 +78,9 @@ public sealed class MergeBoxMachine : MergeBoxGimic
     private bool TryWorld(Vector2 screen, out Vector2 world)
     {
         world = default;
-        if (!Application.isFocused || !inputCamera.pixelRect.Contains(screen)) return false;
+        if (!Application.isFocused || !SceneViewportInput.ScreenRect(inputCamera).Contains(screen)) return false;
         var plane = new Plane(Vector3.forward, Board.transform.position);
-        var ray = inputCamera.ScreenPointToRay(screen);
+        var ray = SceneViewportInput.ScreenPointToRay(inputCamera,screen);
         if (!plane.Raycast(ray, out float distance)) return false;
         world = ray.GetPoint(distance); return true;
     }

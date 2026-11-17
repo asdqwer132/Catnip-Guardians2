@@ -7943,7 +7943,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1882155588}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 73e86d7435264b8f91a61260bc8273d9, type: 3}
   m_Name: 
@@ -10098,6 +10098,7 @@ MonoBehaviour:
   autoLoadChildren: 1
   loadCoreScene: 1
   viewportSource: 1
+  screenProfile: {fileID: 11400000, guid: ecc077db3484c820a9892899c8b106eb, type: 2}
   battleArea: {fileID: 212590837}
   itemArea: {fileID: 1722984178}
   layout: 0
@@ -11612,9 +11613,9 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 2400, y: 600}
+  m_ReferenceResolution: {x: 2400, y: 1440}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 1
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96

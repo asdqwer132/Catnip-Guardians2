@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ca9bb12abb94985941e5932ded768ac, type: 3}
+  m_Name: GameScreenLayoutProfile
+  m_EditorClassIdentifier: Assembly-CSharp::GameScreenLayoutProfile
+  uiScale: {fileID: 11400000, guid: d69baea85927487387233eca83d0846f, type: 2}
+  pixelScaling: 0
+  worldPixelsPerUnit: 32
+  worldReferenceHeight: 320
+  navigation:
+    serializedVersion: 2
+    x: 0
+    y: 0.8888889
+    width: 1
+    height: 0.111111104
+  battle:
+    serializedVersion: 2
+    x: 0.005208315
+    y: 0.0069444207
+    width: 0.68906254
+    height: 0.87500006
+  item:
+    serializedVersion: 2
+    x: 0.6994792
+    y: 0.0069444207
+    width: 0.29531246
+    height: 0.87500006
+  savedNavigation:
+    canvasSize: {x: 1920, y: 1440}
+    position: {x: 0, y: 1280}
+    size: {x: 1920, y: 159.99998}
+    positionSlope: {x: 0, y: 1}
+    sizeSlope: {x: 1, y: 0}
+  savedBattle:
+    canvasSize: {x: 1920, y: 1440}
+    position: {x: 9.999965, y: 9.999966}
+    size: {x: 1323.0001, y: 1260.0001}
+    positionSlope: {x: 0, y: 0}
+    sizeSlope: {x: 0.7, y: 1}
+  savedItem:
+    canvasSize: {x: 1920, y: 1440}
+    position: {x: 1343.0001, y: 9.999966}
+    size: {x: 566.99994, y: 1260.0001}
+    positionSlope: {x: 0.7, y: 0}
+    sizeSlope: {x: 0.3, y: 1}

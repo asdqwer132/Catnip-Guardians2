@@ -105,12 +105,12 @@ public sealed class MergeItemSelection : MonoBehaviour
         world = default;
         if (!Application.isFocused || inputCamera == null || !inputCamera.isActiveAndEnabled) return false;
         Vector2 screen = positionInput.ReadValue<Vector2>();
-        if (!inputCamera.pixelRect.Contains(screen)) return false;
+        if (!SceneViewportInput.ScreenRect(inputCamera).Contains(screen)) return false;
         var presentation=SceneCameraPresentation.ForCamera(inputCamera);
         if(presentation!=null && !presentation.ContainsScreenPoint(screen)) return false;
         // 카메라는 마우스 좌표 변환만 담당합니다. 판정과 범위는 아이템 평면의 월드 값입니다.
         var plane = new Plane(Vector3.forward, new Vector3(0f, 0f, board != null ? board.transform.position.z : 0f));
-        Ray ray = inputCamera.ScreenPointToRay(screen);
+        Ray ray = SceneViewportInput.ScreenPointToRay(inputCamera,screen);
         if (!plane.Raycast(ray, out float distance)) return false;
         world = ray.GetPoint(distance);
         return true;
@@ -207,7 +207,7 @@ public sealed class MergeItemSelection : MonoBehaviour
             if (canvas.renderMode != RenderMode.ScreenSpaceOverlay && areaCamera == null) return false;
         }
         float z = board != null ? board.transform.position.z : 0f;
-        Vector3 screen = inputCamera.WorldToScreenPoint(new Vector3(worldPosition.x, worldPosition.y, z));
+        Vector3 screen = SceneViewportInput.WorldToScreenPoint(inputCamera,new Vector3(worldPosition.x, worldPosition.y, z));
         if (screen.z < 0f || !RectTransformUtility.ScreenPointToLocalPointInRectangle(dragAllowedArea, screen, areaCamera, out var local)) return false;
         return MergeItemSelectionGesture.ContainsAreaPoint(dragAllowedArea.rect, local);
     }

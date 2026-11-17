@@ -118,11 +118,11 @@ public sealed class MergeSpawnPointDragger : MonoBehaviour
         world = default;
         var current = CurrentBoard;
         if (!Application.isFocused || current == null || inputCamera == null || !inputCamera.isActiveAndEnabled) return false;
-        if (requireViewport && !inputCamera.pixelRect.Contains(screen)) return false;
+        if (requireViewport && !SceneViewportInput.ScreenRect(inputCamera).Contains(screen)) return false;
         var presentation = SceneCameraPresentation.ForCamera(inputCamera);
         if (requireViewport && presentation != null && !presentation.ContainsScreenPoint(screen)) return false;
         var plane = new Plane(Vector3.forward, current.spawnPoint != null ? Handle(current).position : current.transform.position);
-        var ray = inputCamera.ScreenPointToRay(screen);
+        var ray = SceneViewportInput.ScreenPointToRay(inputCamera,screen);
         if (!plane.Raycast(ray, out float distance)) return false;
         world = ray.GetPoint(distance);
         return true;

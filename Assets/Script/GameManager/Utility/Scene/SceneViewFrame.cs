@@ -48,6 +48,8 @@ public sealed class SceneViewFrame : MonoBehaviour
             var binding=SceneCameraBinding.InScene(scene,targetRole);
             if(binding!=null) camera=binding.Camera;
         }
+        var viewport=SceneViewportCamera.For(camera);
+        if(viewport!=null && viewport.IsReady) camera=viewport.DisplayCamera;
         var view=camera!=null?camera.GetComponent<SceneCameraPresentation>():null;
         if(view!=boundView)
         {

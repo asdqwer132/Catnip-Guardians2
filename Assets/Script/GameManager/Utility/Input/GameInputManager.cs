@@ -77,7 +77,7 @@ public class GameInputManager : MonoBehaviour
 
         if (mainCamera != null)
         {
-            MouseWorldPosition = mainCamera.ScreenToWorldPoint(MouseScreenPosition);
+            MouseWorldPosition = SceneViewportInput.ScreenToWorldPoint(mainCamera,MouseScreenPosition);
             MouseWorldPosition = new Vector3(MouseWorldPosition.x, MouseWorldPosition.y, 0f);
         }
 
@@ -92,7 +92,7 @@ public class GameInputManager : MonoBehaviour
         if (Mouse.current != null)
         {
             bool inside = !restrictPointerToGameplayCamera ||
-                (mainCamera != null && mainCamera.enabled && mainCamera.pixelRect.Contains(MouseScreenPosition) &&
+                (mainCamera != null && mainCamera.enabled && SceneViewportInput.ScreenRect(mainCamera).Contains(MouseScreenPosition) &&
                  (SceneCameraPresentation.ForCamera(mainCamera) == null || SceneCameraPresentation.ForCamera(mainCamera).ContainsScreenPoint(MouseScreenPosition)));
             if (inside && Mouse.current.leftButton.wasPressedThisFrame)
             {

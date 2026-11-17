@@ -19,6 +19,7 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     [Header("화면 영역 배치 방식")]
     [Tooltip("UI Regions는 직접 배치한 Overlay UI 영역을 읽어 카메라만 맞춥니다. 기존 비율/간격/패딩 설정은 Ratios에서만 사용합니다.")]
     public GameViewportSource viewportSource;
+    public GameScreenLayoutProfile screenProfile;
     [Tooltip("UI Regions: 제너럴 씬의 Screen Space Overlay Canvas 안에 직접 배치한 배틀 영역입니다.")]
     public RectTransform battleArea;
     [Tooltip("UI Regions: 제너럴 씬의 Screen Space Overlay Canvas 안에 직접 배치한 아이템 영역입니다.")]
@@ -163,7 +164,7 @@ public sealed class GameGeneralSceneController : MonoBehaviour
             foreach (var root in scene.GetRootGameObjects()) SetItemLayer(root.transform);
         }
         else { battle = scene; battleView = view; BattleCamera = view.Camera; }
-        if (fitSceneCanvases) ConnectCanvases(scene, view.Camera);
+        if (fitSceneCanvases && view.Camera.GetComponent<SceneViewportCamera>() == null) ConnectCanvases(scene, view.Camera);
         // sceneLoaded은 새 씬의 첫 렌더보다 먼저 옵니다. 다른 자식 씬을 기다리지 않습니다.
         Canvas.ForceUpdateCanvases();
         ApplyLayout();
@@ -363,9 +364,35 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     private static void ApplyCamera(Camera camera, Rect rect)
     {
         if (camera == null) return;
+        var viewport=camera.GetComponent<SceneViewportCamera>();
+        if(viewport!=null && viewport.isActiveAndEnabled && viewport.profile!=null && viewport.surface!=null) { viewport.SetComposition(rect); return; }
         bool visible = rect.width > 0 && rect.height > 0;
         if (camera.enabled != visible) camera.enabled = visible;
         if (visible && camera.rect != rect) camera.rect = rect;
+    }
+    [ContextMenu("Save UI Regions To Screen Profile")]
+    public void SaveUIRegions()
+    {
+        if(screenProfile==null || viewportSource!=GameViewportSource.UIRegions) return;
+#if UNITY_EDITOR
+        UnityEditor.Undo.RecordObject(screenProfile,"Save screen UI regions");
+#endif
+        navigationCanvas?.GetComponent<ViewportCanvasScaler>()?.RefreshScale();
+        Canvas.ForceUpdateCanvases();
+        screenProfile.navigation=ReadUIArea(navigationArea,null);
+        screenProfile.battle=ReadUIArea(battleArea,null);
+        screenProfile.item=ReadUIArea(itemArea,null);
+        var canvasRect=navigationCanvas!=null?navigationCanvas.transform as RectTransform:null;
+        if(canvasRect!=null)
+        {
+            screenProfile.Capture(GameScreenRegion.Navigation,navigationArea,screenProfile.navigation,canvasRect.rect.size);
+            screenProfile.Capture(GameScreenRegion.Battle,battleArea,screenProfile.battle,canvasRect.rect.size);
+            screenProfile.Capture(GameScreenRegion.Item,itemArea,screenProfile.item,canvasRect.rect.size);
+        }
+#if UNITY_EDITOR
+        UnityEditor.EditorUtility.SetDirty(screenProfile);
+        UnityEditor.AssetDatabase.SaveAssetIfDirty(screenProfile);
+#endif
     }
     private void LateUpdate() => ApplyLayout();
     private void OnEnable()
@@ -397,6 +424,8 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     }
     private void OnDestroy()
     {
+        if(BattleCamera!=null) BattleCamera.GetComponent<SceneViewportCamera>()?.ClearComposition();
+        if(ItemCamera!=null) ItemCamera.GetComponent<SceneViewportCamera>()?.ClearComposition();
         if (battleView != null) battleView.SetComposed(false);
         if (itemView != null) itemView.SetComposed(false);
         RestoreNavigation();

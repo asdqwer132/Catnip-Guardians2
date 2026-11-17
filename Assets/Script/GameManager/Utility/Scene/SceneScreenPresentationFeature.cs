@@ -67,6 +67,9 @@ public sealed class SceneScreenPresentationFeature : ScriptableRendererFeature
                 data.tint = profile.backgroundTexture != null ? profile.tint : profile.emptyColor;
                 data.empty = profile.emptyColor;
                 Rect rect = cameraData.camera.rect;
+                var viewport=SceneViewportCamera.For(cameraData.camera);
+                if(viewport!=null && viewport.IsReady)
+                { var p=viewport.ScreenRect;var size=new Vector2(Screen.width,Screen.height);rect=new Rect(p.x/size.x,p.y/size.y,p.width/size.x,p.height/size.y); }
                 data.viewport = new Vector4(rect.x, rect.y, rect.width, rect.height);
                 Vector2 scale = SceneScreenPresentationMath.BackgroundUvScale(new Vector2(data.texture.width, data.texture.height), view.OutputSize, profile.fit);
                 if (profile.fit == ScreenBackgroundFit.Tile) scale = profile.tileCount;

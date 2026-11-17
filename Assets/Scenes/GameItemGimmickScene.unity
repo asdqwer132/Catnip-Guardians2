@@ -17126,6 +17126,8 @@ GameObject:
   - component: {fileID: 1230442321}
   - component: {fileID: 1230442320}
   - component: {fileID: 1230442319}
+  - component: {fileID: 1230442324}
+  - component: {fileID: 1230442323}
   m_Layer: 5
   m_Name: MainUICanvas
   m_TagString: Untagged
@@ -17157,7 +17159,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1230442318}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 73e86d7435264b8f91a61260bc8273d9, type: 3}
   m_Name: 
@@ -26474,6 +26476,8 @@ GameObject:
   - component: {fileID: 1889333138}
   - component: {fileID: 910000400001}
   - component: {fileID: 910000990001}
+  - component: {fileID: 910000990003}
+  - component: {fileID: 910000990002}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -28213,7 +28217,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2061934962}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 73e86d7435264b8f91a61260bc8273d9, type: 3}
   m_Name: 
@@ -32896,3 +32900,82 @@ SceneRoots:
   - {fileID: 758099004}
   - {fileID: 910010200001}
   - {fileID: 794458667}
+--- !u!114 &1230442323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1230442318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5d0d0c5cd16450a9e3d8fe294371d15, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::SceneViewportSurface
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Texture: {fileID: 0}
+  m_UVRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+--- !u!222 &1230442324
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1230442318}
+  m_CullTransparentMesh: 1
+--- !u!114 &910000990002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1889333134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c88f5cead0c0b2a4eb05b5900433f8d1, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.PixelPerfectCamera
+  m_ComponentVersion: 1
+  m_AssetsPPU: 32
+  m_RefResolutionX: 157
+  m_RefResolutionY: 280
+  m_CropFrame: 0
+  m_GridSnapping: 0
+  m_FilterMode: 0
+  m_UpscaleRT: 0
+  m_PixelSnapping: 0
+  m_CropFrameX: 0
+  m_CropFrameY: 0
+  m_StretchFill: 0
+--- !u!114 &910000990003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1889333134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98dc5f51e3124c7f9ba071b26885628f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::SceneViewportCamera
+  profile: {fileID: 11400000, guid: ecc077db3484c820a9892899c8b106eb, type: 2}
+  region: 2
+  previewLayout: 1
+  uiRendererIndex: -1
+  surface: {fileID: 1230442323}
+  canvases:
+  - {fileID: 1230442321}
+  - {fileID: 2061934967}

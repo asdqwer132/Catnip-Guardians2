@@ -19,8 +19,16 @@ public sealed class SceneCameraPresentation : MonoBehaviour
     private Camera boundCamera;
     private readonly SceneMaskTextureCache maskCache=new SceneMaskTextureCache();
     public SceneViewFrame UIFrame { get; private set; }
-    public SceneViewShape EffectiveShape => UIFrame!=null && UIFrame.CanMask ? SceneViewShape.UIFrame :
-        shape==SceneViewShape.UIFrame?SceneViewShape.Rectangle:shape;
+    public SceneViewShape EffectiveShape
+    {
+        get
+        {
+            var viewport = SceneViewportCamera.For(boundCamera);
+            if (viewport != null && viewport.IsReady) return SceneViewShape.Rectangle;
+            if (UIFrame != null && UIFrame.CanMask) return SceneViewShape.UIFrame;
+            return shape == SceneViewShape.UIFrame ? SceneViewShape.Rectangle : shape;
+        }
+    }
     public void BindFrame(SceneViewFrame frame) => UIFrame=frame;
     public void UnbindFrame(SceneViewFrame frame) { if(UIFrame==frame) UIFrame=null; }
     private static readonly Dictionary<Camera, SceneCameraPresentation> entries = new Dictionary<Camera, SceneCameraPresentation>();
@@ -40,6 +48,8 @@ public sealed class SceneCameraPresentation : MonoBehaviour
         get
         {
             var camera = boundCamera != null ? boundCamera : GetComponent<Camera>();
+            var viewport=SceneViewportCamera.For(camera);
+            if(viewport!=null && viewport.IsReady) return new Vector2(Screen.width,Screen.height);
             if (camera.targetTexture != null) return new Vector2(camera.targetTexture.width, camera.targetTexture.height);
             if (camera.targetDisplay > 0 && camera.targetDisplay < Display.displays.Length)
             { var display = Display.displays[camera.targetDisplay]; return new Vector2(display.renderingWidth, display.renderingHeight); }
@@ -50,6 +60,9 @@ public sealed class SceneCameraPresentation : MonoBehaviour
         background != null ? background.referenceHeight : 1440, (boundCamera != null ? boundCamera : GetComponent<Camera>()).pixelRect.size);
     public bool ContainsScreenPoint(Vector2 point)
     {
+        var viewport=SceneViewportCamera.For(boundCamera);
+        if(viewport!=null && viewport.IsReady)
+        { var output=ForCamera(viewport.DisplayCamera);return output!=null ? output.ContainsScreenPoint(point) : viewport.ScreenRect.Contains(point); }
         Rect rect=(boundCamera != null ? boundCamera : GetComponent<Camera>()).pixelRect;
         if(!SceneScreenPresentationMath.Contains(rect,point,EffectiveShape,RadiusInPixels)) return false;
         if(EffectiveShape==SceneViewShape.UIFrame) return UIFrame.ContainsWindowPoint(point,this);

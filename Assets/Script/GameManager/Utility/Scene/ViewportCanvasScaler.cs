@@ -33,6 +33,7 @@ public sealed class ViewportCanvasScaler : CanvasScaler, ICanvasRaycastFilter
         layoutInitialized = false;
         base.OnDisable();
     }
+    public void RefreshScale() { if(isActiveAndEnabled) Handle(); }
     protected override void Handle()
     {
         if (targetCanvas == null) targetCanvas = GetComponent<Canvas>();
