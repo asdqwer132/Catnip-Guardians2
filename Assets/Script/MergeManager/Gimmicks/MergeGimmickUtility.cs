@@ -54,7 +54,7 @@ public static class MergeGimmickUtility
     }
     public static bool Touches(Collider2D area, MergeItemObject piece)
         => area != null && area.isActiveAndEnabled && piece != null && piece.IsLive &&
-           piece.circleCollider != null && piece.circleCollider.enabled && (area.IsTouching(piece.circleCollider) || area.Distance(piece.circleCollider).isOverlapped);
+           piece.colider2d != null && piece.colider2d.enabled && (area.IsTouching(piece.colider2d) || area.Distance(piece.colider2d).isOverlapped);
 
     public static T Choose<T>(IReadOnlyList<T> entries, Func<T, float> weight) where T : class
     {

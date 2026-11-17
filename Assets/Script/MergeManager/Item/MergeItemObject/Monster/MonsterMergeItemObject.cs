@@ -26,7 +26,7 @@ public sealed class MonsterMergeItemObject : MergeItemObject
         foreach (var other in candidates)
         {
             if (other == null || other == this || (!eatOtherMonsters && other is MonsterMergeItemObject) || !other.CanSelect) continue;
-            if ((circleCollider.IsTouching(other.circleCollider) || circleCollider.Distance(other.circleCollider).isOverlapped) && Owner.TryRemoveItem(other, other.LifeId))
+            if ((colider2d.IsTouching(other.colider2d) || colider2d.Distance(other.colider2d).isOverlapped) && Owner.TryRemoveItem(other, other.LifeId))
                 if (++eaten >= eatCountPerTick) break;
         }
     }

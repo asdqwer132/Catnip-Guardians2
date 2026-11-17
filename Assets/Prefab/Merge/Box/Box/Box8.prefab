@@ -54,7 +54,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1661963024455000052, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
       propertyPath: m_Name
-      value: Box1 Variant
+      value: Box8
       objectReference: {fileID: 0}
     - target: {fileID: 1756986791442559790, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
       propertyPath: m_LocalPosition.y
@@ -203,5 +203,37 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1661963024455000052, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7644826784790646970}
   m_SourcePrefab: {fileID: 100100000, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
+--- !u!1 &6630651493880657888 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1661963024455000052, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
+  m_PrefabInstance: {fileID: 5410148027951360020}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7644826784790646970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6630651493880657888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3472d9444ed40dbb3bd44ffba905d57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MergeBoxMagic
+  skills:
+  - id: Magic.UnlimitedUse
+    type: 0
+    skillImage: {fileID: 49922783, guid: 21f630a9222a2304585d155730bbf450, type: 3}
+    defaultSkillCool: 20
+  - id: Magic.RapidFeeding
+    type: 0
+    skillImage: {fileID: -567172568, guid: 21f630a9222a2304585d155730bbf450, type: 3}
+    defaultSkillCool: 20
+  unlimitedUseSeconds: 5
+  rapidFeedingSeconds: 5
+  feedingSpeedMultiplier: 3

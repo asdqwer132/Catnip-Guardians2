@@ -63,8 +63,8 @@ public sealed class MergeDropZone : MonoBehaviour
         Vector2 normal = new Vector2(-tangent.y, tangent.x);
         foreach (var piece in board.ActiveItems)
         {
-            if (piece == null || !piece.IsLive || piece.Owner != board || piece.circleCollider == null || !piece.circleCollider.enabled) continue;
-            var bounds = piece.circleCollider.bounds;
+            if (piece == null || !piece.IsLive || piece.Owner != board || piece.colider2d == null || !piece.colider2d.enabled) continue;
+            var bounds = piece.colider2d.bounds;
             float radius = Mathf.Max(bounds.extents.x, bounds.extents.y);
             Vector2 offset = (Vector2)bounds.center - start;
             float along = Vector2.Dot(offset, tangent);

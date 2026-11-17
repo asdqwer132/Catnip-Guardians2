@@ -219,15 +219,15 @@ public sealed class MergeItemSelection : MonoBehaviour
         float closest = float.PositiveInfinity;
         foreach (var piece in board.ActiveItems)
         {
-            if (piece == null || piece.Owner != board || !piece.CanSelect || piece.circleCollider == null || !piece.circleCollider.enabled) continue;
-            var bounds = piece.circleCollider.bounds;
+            if (piece == null || piece.Owner != board || !piece.CanSelect || piece.colider2d == null || !piece.colider2d.enabled) continue;
+            var bounds = piece.colider2d.bounds;
             if (dragged)
             {
                 // 콜라이더 일부만 영역에 걸쳐도 선택합니다. 루트/Visual 크기를 변경하지 않습니다.
                 if (MergeItemSelectionGesture.IntersectsCircle(gesture.Bounds, bounds.center, Mathf.Max(bounds.extents.x, bounds.extents.y)))
                     selected.Add(new Selection { piece = piece, lifeId = piece.LifeId });
             }
-            else if (piece.circleCollider.OverlapPoint(gesture.End))
+            else if (piece.colider2d.OverlapPoint(gesture.End))
             {
                 float distance = ((Vector2)bounds.center - gesture.End).sqrMagnitude;
                 if (distance <= closest) { closest = distance; clicked = piece; }

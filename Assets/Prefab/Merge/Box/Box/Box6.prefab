@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3665777814836915037}
   - component: {fileID: 1105848875918522370}
+  - component: {fileID: 7651787891173484675}
   m_Layer: 0
   m_Name: GrowingArea
   m_TagString: Untagged
@@ -91,6 +92,52 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!61 &7651787891173484675
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2929369772184452822}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0.3125, y: 0.3125, z: 0.3125, w: 0.3125}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
 --- !u!1001 &5410148027951360020
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -297,8 +344,225 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3007403580570720478, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3665777814836915037}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1661963024455000052, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5584017276045186857}
   m_SourcePrefab: {fileID: 100100000, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
+--- !u!1 &6630651493880657888 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1661963024455000052, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
+  m_PrefabInstance: {fileID: 5410148027951360020}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5584017276045186857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6630651493880657888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33a8a64f06d0437dbab1e594f95594db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MergeBoxPlant
+  skills:
+  - id: Plant.RootAndGrow
+    type: 1
+    skillImage: {fileID: -2140586765, guid: 21f630a9222a2304585d155730bbf450, type: 3}
+    defaultSkillCool: 0
+  groundArea: {fileID: 7651787891173484675}
+  growthRules:
+  - seed: {fileID: 11400000, guid: 4e76266561b2ff04f8f2bc784868a080, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 5ceb831f0b6d51c4697639d1e621ebbe, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 5ceb831f0b6d51c4697639d1e621ebbe, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 286e89b39022be048ba0d56114b590ff, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 286e89b39022be048ba0d56114b590ff, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: b39f3cf24f232824e96ef55599cb976a, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: b39f3cf24f232824e96ef55599cb976a, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: f556b06ad001d3b40be5b857da7bc62f, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: f556b06ad001d3b40be5b857da7bc62f, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 2e77a4bd9273cd24aa2d5b1e3b13d971, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 2e77a4bd9273cd24aa2d5b1e3b13d971, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 901187bda29668f4bb0651002f7da175, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 901187bda29668f4bb0651002f7da175, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 40f54dbc5f7b57c4a9244827dd4bc420, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 40f54dbc5f7b57c4a9244827dd4bc420, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 4c75740993197504aacef5198bbb0595, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 4c75740993197504aacef5198bbb0595, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 13fe908f34cd8e149bf03525eb22b6d2, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 13fe908f34cd8e149bf03525eb22b6d2, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 6eb5b113bb32c4c42b295a2d7d27e496, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 6eb5b113bb32c4c42b295a2d7d27e496, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 87f1c8644d85afc439455b984f14e9b3, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 87f1c8644d85afc439455b984f14e9b3, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 2d8b2c284e61da04485abb57bcf91a8c, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 2d8b2c284e61da04485abb57bcf91a8c, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: b7dca757de86e2f4cba87286fdae6b28, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: b7dca757de86e2f4cba87286fdae6b28, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 1fa2bed0f0157d9468e57b79bffb049e, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 1fa2bed0f0157d9468e57b79bffb049e, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 985d5c5a54ed9e342bd2c49a8e881c6e, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 985d5c5a54ed9e342bd2c49a8e881c6e, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 8f43c6b32bd147d43a86e6f2633d7e97, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 8f43c6b32bd147d43a86e6f2633d7e97, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: e613d44795e05664d8896b3708d10a5a, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: e613d44795e05664d8896b3708d10a5a, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 5af25395f4e47e748aa9785eef508111, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 5af25395f4e47e748aa9785eef508111, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 3bd2c7c06be598547bd987064a1e068c, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 3bd2c7c06be598547bd987064a1e068c, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: b4d8717662f7e114796b14f5f91876ba, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: b4d8717662f7e114796b14f5f91876ba, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 2cf710b3d87eca24e98a2a56d82641c7, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 2cf710b3d87eca24e98a2a56d82641c7, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: cb67a4bb10d1eff4a962f3e30c9e006a, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: cb67a4bb10d1eff4a962f3e30c9e006a, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 7e862d1c9cb3ff7429117d6bd6b6f8cb, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 7e862d1c9cb3ff7429117d6bd6b6f8cb, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 35d59d6e870cc9c4194ad7e6383cc716, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 35d59d6e870cc9c4194ad7e6383cc716, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 7d3c7278901c1c142b434d350cf4ca5a, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 7d3c7278901c1c142b434d350cf4ca5a, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 1f32dcbd1f004574ab6b1b3996d91cf5, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 1f32dcbd1f004574ab6b1b3996d91cf5, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 4758e5b64d09d0944839219f2ac9a89b, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 4758e5b64d09d0944839219f2ac9a89b, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 575c946ffef54f84f95817f10eea43ab, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 575c946ffef54f84f95817f10eea43ab, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: b77088658c40d454096dab34db705013, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: b77088658c40d454096dab34db705013, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: e5a61c6115d84f64ea0cf61b36295196, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: e5a61c6115d84f64ea0cf61b36295196, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 5b3fdd04d66206d4c9556f7589dbd85e, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 5b3fdd04d66206d4c9556f7589dbd85e, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 67bd1494e0f00cc489fc53f9f77f1ed9, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 67bd1494e0f00cc489fc53f9f77f1ed9, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 2e5c967d0371963479d0c7de669324d3, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 2e5c967d0371963479d0c7de669324d3, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 688e72507cf65d44bad44ec0dfb40693, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 688e72507cf65d44bad44ec0dfb40693, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 313767652498d1c48aaf44f60a3bb341, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 313767652498d1c48aaf44f60a3bb341, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 0bd50ca4ea05a1c43898ad29bd752001, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 0bd50ca4ea05a1c43898ad29bd752001, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 8a881a36668139b42b39565f8a52e940, type: 2}
+      weight: 1
+  - seed: {fileID: 11400000, guid: 8a881a36668139b42b39565f8a52e940, type: 2}
+    growthSeconds: 5
+    nextItems:
+    - item: {fileID: 11400000, guid: 2d168685045db4b4a86734d3520aa723, type: 2}
+      weight: 1
 --- !u!4 &7109149066440077514 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3007403580570720478, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}

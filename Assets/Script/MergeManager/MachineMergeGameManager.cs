@@ -70,7 +70,7 @@ public sealed class MachineMergeGameManager : MergegameManager
         MergeItemObject closest = null; float nearest = float.PositiveInfinity;
         foreach (var piece in ActiveItems)
         {
-            if (piece == null || !piece.CanSelect || piece.IsHeld || piece.circleCollider == null || !piece.circleCollider.OverlapPoint(world)) continue;
+            if (piece == null || !piece.CanSelect || piece.IsHeld || piece.colider2d == null || !piece.colider2d.OverlapPoint(world)) continue;
             float distance = (piece.Position - world).sqrMagnitude;
             if (distance < nearest) { closest = piece; nearest = distance; }
         }

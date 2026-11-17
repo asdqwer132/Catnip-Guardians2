@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7652187160888423312}
   - component: {fileID: 7549104953688759897}
+  - component: {fileID: 3518992359823785020}
   m_Layer: 0
   m_Name: MineralSpawnArea
   m_TagString: Untagged
@@ -91,6 +92,52 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!61 &3518992359823785020
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5176059611147027568}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0.3125, y: 0.3125, z: 0.3125, w: 0.3125}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
 --- !u!1001 &5410148027951360020
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -297,8 +344,42 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3007403580570720478, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7652187160888423312}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1661963024455000052, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7505815721173354579}
   m_SourcePrefab: {fileID: 100100000, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
+--- !u!1 &6630651493880657888 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1661963024455000052, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
+  m_PrefabInstance: {fileID: 5410148027951360020}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7505815721173354579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6630651493880657888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 049323a17af54103bec91a194625b1a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MergeBoxMineral
+  skills:
+  - id: Mineral.SpawnOre
+    type: 1
+    skillImage: {fileID: -277008349, guid: 21f630a9222a2304585d155730bbf450, type: 3}
+    defaultSkillCool: 8
+  oreSpawnArea: {fileID: 3518992359823785020}
+  ores:
+  - item: {fileID: 11400000, guid: 4ab1c4c39dca67f238a39d5e5eaad9b3, type: 2}
+    weight: 1
+  - item: {fileID: 11400000, guid: a7c86ea34c4dc56f6b2996f75b95f948, type: 2}
+    weight: 1
+  - item: {fileID: 11400000, guid: 5e451a354d75873e29b61e08abbfccf8, type: 2}
+    weight: 1
+  maximumOres: 3
 --- !u!4 &7109149066440077514 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3007403580570720478, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}

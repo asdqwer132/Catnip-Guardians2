@@ -1,46 +1,70 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D), typeof(CircleCollider2D), typeof(PooledObject))]
+[RequireComponent(typeof(Rigidbody2D), typeof(PooledObject))]
 public class MergeItemObject : MonoBehaviour, IPoolable
 {
     public ItemData item;
-    public CircleCollider2D circleCollider;
+    public Collider2D colider2d;
     public SpriteRenderer spriteRenderer;
     public GameObject visualSize;
+
     [Header("프리팹별 비주얼 옵션")]
     [Tooltip("켜면 ItemData의 아이콘을 적용합니다. 끄면 프리팹 SpriteRenderer에 지정한 스프라이트를 사용합니다.")]
     public bool useItemIcon = true;
+
     [Tooltip("켜면 Visual Size의 크기를 표시 스프라이트와 MergeItem 반지름에 맞춥니다. 끄면 프리팹에 설정한 비주얼 크기를 유지합니다.")]
     public bool fitIconToRadius = true;
+
     public Rigidbody2D body;
-    [SerializeField]private PooledObject pooled;
+
+    [SerializeField] private PooledObject pooled;
+
     private bool reserved;
     private object heldBy;
     private bool rootedHold;
     private RigidbodyType2D heldBodyType;
     private bool heldColliderEnabled, heldSimulated;
+
     public bool IsHeld => heldBy != null;
     public bool IsHeldBy(object holder) => holder != null && ReferenceEquals(heldBy, holder);
+
     private float unlockAt;
+
     public MergegameManager Owner { get; private set; }
     public MergeItem Definition { get; private set; }
     public int LifeId { get; private set; }
     public uint Serial { get; private set; }
+
     public int PoolSpawnId => pooled != null ? pooled.SpawnId : 0;
-    public bool IsLive => Owner != null && Definition != null && pooled != null && pooled.IsSpawned && isActiveAndEnabled;
-    public bool CanMerge => IsLive && !reserved && !IsHeld && Time.time >= unlockAt;
-    public bool CanSelect => IsLive && !reserved && (!IsHeld || rootedHold);
-    public Vector2 Position => body != null ? body.position : (Vector2)transform.position;
+
+    public bool IsLive =>
+        Owner != null &&
+        Definition != null &&
+        pooled != null &&
+        pooled.IsSpawned &&
+        isActiveAndEnabled;
+
+    public bool CanMerge =>
+        IsLive && !reserved && !IsHeld && Time.time >= unlockAt;
+
+    public bool CanSelect =>
+        IsLive && !reserved && (!IsHeld || rootedHold);
+
+    public Vector2 Position =>
+        body != null ? body.position : (Vector2)transform.position;
+
     public Vector2 Velocity
     {
-        get {
+        get
+        {
 #if UNITY_6000_0_OR_NEWER
             return body.linearVelocity;
 #else
             return body.velocity;
 #endif
         }
-        set {
+        set
+        {
 #if UNITY_6000_0_OR_NEWER
             body.linearVelocity = value;
 #else
@@ -48,88 +72,248 @@ public class MergeItemObject : MonoBehaviour, IPoolable
 #endif
         }
     }
-    private void Awake() => Cache();
-    private void Cache()
-    {
-        if (body == null) body = GetComponent<Rigidbody2D>();
-        if (circleCollider == null) circleCollider = GetComponent<CircleCollider2D>();
-        if (pooled == null) pooled = GetComponent<PooledObject>();
-    }
-    public virtual void Initialize(MergegameManager owner, MergeItem definition, uint serial, float mergeDelay)
+
+    private void Awake()
     {
         Cache();
+    }
+
+    private void Cache()
+    {
+        if (body == null)
+            body = GetComponent<Rigidbody2D>();
+
+        // CircleCollider2D / BoxCollider2D 모두 지원
+        if (colider2d == null)
+            colider2d = GetComponent<Collider2D>();
+
+        if (pooled == null)
+            pooled = GetComponent<PooledObject>();
+    }
+
+    public virtual void Initialize(
+        MergegameManager owner,
+        MergeItem definition,
+        uint serial,
+        float mergeDelay)
+    {
+        Cache();
+
         body.simulated = false;
-        Owner = owner; Definition = definition; item = definition.item; Serial = serial;
-        reserved = false; unlockAt = Time.time + EffectStatUtility.Safe(mergeDelay, 0f, 60f, 0.1f);
-        unchecked { LifeId++; }
+
+        Owner = owner;
+        Definition = definition;
+        item = definition.item;
+        Serial = serial;
+
+        reserved = false;
+
+        unlockAt = Time.time +
+            EffectStatUtility.Safe(mergeDelay, 0f, 60f, 0.1f);
+
+        unchecked
+        {
+            LifeId++;
+        }
+
         body.position = transform.position;
         body.rotation = transform.eulerAngles.z;
-        Velocity = Vector2.zero; body.angularVelocity = 0f;
-        circleCollider.radius = definition.Radius; circleCollider.enabled = true;
+
+        Velocity = Vector2.zero;
+        body.angularVelocity = 0f;
+
+        // 콜라이더 종류별 크기 설정
+        if (colider2d is CircleCollider2D circle)
+        {
+            circle.radius = definition.Radius;
+        }
+        else if (colider2d is BoxCollider2D box)
+        {
+            box.size = Vector2.one * definition.Radius * 2f;
+        }
+
+        if (colider2d != null)
+            colider2d.enabled = true;
+
         if (spriteRenderer != null)
         {
-            if (useItemIcon) spriteRenderer.sprite = item.icon;
+            if (useItemIcon)
+                spriteRenderer.sprite = item.icon;
+
             spriteRenderer.enabled = spriteRenderer.sprite != null;
-            // 물리 루트는 건드리지 않고 프리팹의 Visual 자식만 반지름에 맞춥니다.
-            if (fitIconToRadius && visualSize != null && visualSize.transform != transform && spriteRenderer.sprite != null)
+
+            // 물리 루트는 건드리지 않고 Visual 자식만 크기 조절
+            if (fitIconToRadius &&
+                visualSize != null &&
+                visualSize.transform != transform &&
+                spriteRenderer.sprite != null)
             {
                 Vector3 size = spriteRenderer.sprite.bounds.size;
-                float scale = definition.Radius / Mathf.Max(0.0001f, size.x, size.y);
-                visualSize.transform.localScale = new Vector3(scale, scale, 1f);
+
+                float scale = definition.Radius /
+                    Mathf.Max(0.0001f, size.x, size.y);
+
+                visualSize.transform.localScale =
+                    new Vector3(scale, scale, 1f);
             }
         }
     }
-    public void SetSimulated(bool value) { Cache(); body.simulated = value && IsLive; }
-    internal bool Reserve() { if (!CanMerge) return false; reserved = true; return true; }
+
+    public void SetSimulated(bool value)
+    {
+        Cache();
+        body.simulated = value && IsLive;
+    }
+
+    internal bool Reserve()
+    {
+        if (!CanMerge)
+            return false;
+
+        reserved = true;
+        return true;
+    }
+
     internal bool ReserveReplacement(object holder)
     {
-        if (IsHeldBy(holder) && IsLive && !reserved) { reserved = true; return true; }
+        if (IsHeldBy(holder) && IsLive && !reserved)
+        {
+            reserved = true;
+            return true;
+        }
+
         return Reserve();
     }
+
     public bool TryHold(object holder, bool rooted)
     {
-        if (holder == null || IsHeld || !CanSelect) return false;
-        Cache(); heldBy = holder; rootedHold = rooted; heldBodyType = body.bodyType;
-        heldColliderEnabled = circleCollider.enabled; heldSimulated = body.simulated;
-        Velocity = Vector2.zero; body.angularVelocity = 0f;
-        if (rooted) body.bodyType = RigidbodyType2D.Static;
-        else { body.simulated = false; circleCollider.enabled = false; }
+        if (holder == null || IsHeld || !CanSelect)
+            return false;
+
+        Cache();
+
+        heldBy = holder;
+        rootedHold = rooted;
+        heldBodyType = body.bodyType;
+
+        heldColliderEnabled = colider2d.enabled;
+        heldSimulated = body.simulated;
+
+        Velocity = Vector2.zero;
+        body.angularVelocity = 0f;
+
+        if (rooted)
+        {
+            body.bodyType = RigidbodyType2D.Static;
+        }
+        else
+        {
+            body.simulated = false;
+            colider2d.enabled = false;
+        }
+
         return true;
     }
+
     public bool ReleaseHold(object holder)
     {
-        if (heldBy == null || !ReferenceEquals(heldBy, holder)) return false;
-        body.bodyType = heldBodyType; body.simulated = heldSimulated;
-        circleCollider.enabled = heldColliderEnabled; heldBy = null;
+        if (heldBy == null || !ReferenceEquals(heldBy, holder))
+            return false;
+
+        body.bodyType = heldBodyType;
+        body.simulated = heldSimulated;
+
+        colider2d.enabled = heldColliderEnabled;
+        heldBy = null;
+
         return true;
     }
-    internal void Unreserve() => reserved = false;
-    public void OnSpawnedFromPool() { Cache(); ClearPayload(); }
-    public void OnReturnedToPool() { Cache(); ClearPayload(); }
-    protected virtual void ResetPoolState() { }
+
+    internal void Unreserve()
+    {
+        reserved = false;
+    }
+
+    public void OnSpawnedFromPool()
+    {
+        Cache();
+        ClearPayload();
+    }
+
+    public void OnReturnedToPool()
+    {
+        Cache();
+        ClearPayload();
+    }
+
+    protected virtual void ResetPoolState()
+    {
+    }
+
     private void ClearPayload()
     {
-        if (heldBy != null) ReleaseHold(heldBy);
+        if (heldBy != null)
+            ReleaseHold(heldBy);
+
         ResetPoolState();
+
         var previous = Owner;
-        Owner = null; Definition = null; item = null; reserved = false;
-        unchecked { LifeId++; }
-        body.simulated = false; Velocity = Vector2.zero; body.angularVelocity = 0f;
-        circleCollider.enabled = false;
-        if (spriteRenderer != null) spriteRenderer.enabled = false;
-        if (previous != null) previous.NotifyReturned(this);
+
+        Owner = null;
+        Definition = null;
+        item = null;
+        reserved = false;
+
+        unchecked
+        {
+            LifeId++;
+        }
+
+        body.simulated = false;
+
+        Velocity = Vector2.zero;
+        body.angularVelocity = 0f;
+
+        colider2d.enabled = false;
+
+        if (spriteRenderer != null)
+            spriteRenderer.enabled = false;
+
+        if (previous != null)
+            previous.NotifyReturned(this);
     }
-    protected virtual void OnCollisionEnter2D(Collision2D collision) => Contact(collision);
-    protected virtual void OnCollisionStay2D(Collision2D collision) => Contact(collision);
+
+    protected virtual void OnCollisionEnter2D(Collision2D collision)
+    {
+        Contact(collision);
+    }
+
+    protected virtual void OnCollisionStay2D(Collision2D collision)
+    {
+        Contact(collision);
+    }
+
     private void Contact(Collision2D collision)
     {
-        if (!IsLive || collision.collider == null) return;
-        var other = collision.collider.GetComponentInParent<MergeItemObject>();
-        if (other != null && other.Owner == Owner) Owner.QueueContact(this, other);
+        if (!IsLive || collision.collider == null)
+            return;
+
+        var other =
+            collision.collider.GetComponentInParent<MergeItemObject>();
+
+        if (other != null && other.Owner == Owner)
+            Owner.QueueContact(this, other);
     }
+
     public void ReturnToPool()
     {
-        if (pooled != null && pooled.OwnerPool != null) pooled.OwnerPool.Release(gameObject, pooled.SpawnId);
+        if (pooled != null && pooled.OwnerPool != null)
+            pooled.OwnerPool.Release(gameObject, pooled.SpawnId);
     }
-    private void OnDestroy() { if (Owner != null) Owner.NotifyReturned(this); }
+
+    private void OnDestroy()
+    {
+        if (Owner != null)
+            Owner.NotifyReturned(this);
+    }
 }
