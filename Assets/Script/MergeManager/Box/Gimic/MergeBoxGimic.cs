@@ -22,6 +22,8 @@ public abstract class MergeBoxGimic : MonoBehaviour
     private float[] remaining = Array.Empty<float>();
     private bool[] passiveTimerStarted = Array.Empty<bool>();
     public bool IsActiveSkill(int index) => index >= 0 && index < skills.Length && skills[index] != null && skills[index].type == GimicSkillType.Active;
+    public virtual float GetSkillDisplayProgress(int index) => GetSkillProgress(index);
+    public virtual Color? GetSkillDisplayColor(int index) => null;
     public float GetSkillProgress(int index) => index >= 0 && index < remaining.Length ? remaining[index] : 0f;
     protected GimicData Data { get; private set; }
     public bool Running { get; private set; }
@@ -52,8 +54,8 @@ public abstract class MergeBoxGimic : MonoBehaviour
         for (int i = 0; i < skills.Length; i++)
             if (!IsActiveSkill(i) && GetSkillStat(i).cooldown > 0f)
             { remaining[i] = 1f; passiveTimerStarted[i] = true; }
-        GimicStart();
         Running = true;
+        GimicStart();
     }
     protected virtual void EnsureSkills() { }
     public virtual void GimicStart() { }
@@ -71,9 +73,10 @@ public abstract class MergeBoxGimic : MonoBehaviour
     }
     // UI/키 입력은 반드시 이 진입점을 사용합니다. 패시브는 직접 사용할 수 없습니다.
     public void UseBoxSkill(int index) => TryUseActiveSkill(index);
+    public bool CanActivateSkill(int index) => Running && Board != null && Board.CanOperate && IsActiveSkill(index) && CanUseActiveSkill(index) && remaining[index] <= 0f;
     public bool TryUseActiveSkill(int index)
     {
-        if (!Running || Board == null || !Board.CanOperate || !IsActiveSkill(index) || remaining[index] > 0f) return false;
+        if (!CanActivateSkill(index)) return false;
         remaining[index] = GetSkillStat(index).cooldown > 0f ? 1f : 0f;
         OnActiveSkill(index);
         return true;
@@ -82,7 +85,8 @@ public abstract class MergeBoxGimic : MonoBehaviour
     public void TickSkills(float deltaTime)
     {
         if (!Running || Board == null || !Board.CanOperate || deltaTime <= 0f) return;
-        for (int i = 0; i < remaining.Length; i++)
+        TickGimic(deltaTime);
+        for (int i = 0; Running && i < remaining.Length; i++)
         {
             var stat = GetSkillStat(i);
             bool passive = !IsActiveSkill(i);
@@ -101,6 +105,9 @@ public abstract class MergeBoxGimic : MonoBehaviour
         }
     }
     // 새 상자는 발동 내용만 구현합니다. 쿨이 없는 지속/이벤트 패시브는 GimicStart 또는 자체 이벤트에서 처리합니다.
+    protected void SetDefaultSkills(params GimicSkill[] defaults) { if (skills == null || skills.Length == 0) skills = defaults; }
+    protected virtual bool CanUseActiveSkill(int index) => true;
+    protected virtual void TickGimic(float deltaTime) { }
     protected virtual void OnActiveSkill(int index) { }
     protected virtual void OnPassiveSkill(int index) { }
     public virtual float GetSkillCooldown(int index) => index >= 0 && index < runtimeSkills.Length ? GetSkillStat(index).cooldown : index >= 0 && index < skills.Length && skills[index] != null ? Mathf.Max(0f, skills[index].defaultSkillCool) : 0f;

@@ -67,7 +67,7 @@ public sealed class MergeSpawnPointDragger : MonoBehaviour
         DragTo(world);
     }
 
-    private bool CanDrag(MergegameManager target) => isActiveAndEnabled && target != null && target.CanOperate &&
+    private bool CanDrag(MergegameManager target) => isActiveAndEnabled && target != null && target.CanOperate && !target.SelectionSuppressed &&
         target.dropZone != null && target.spawnPoint != null && (moveX || moveY) &&
         (GameInputManager.instance == null || !GameInputManager.instance.IsBlocked(GameInputBlockType.Gameplay));
 

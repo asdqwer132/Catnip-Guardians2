@@ -1,0 +1,33 @@
+using UnityEngine;
+
+public sealed class MonsterMergeItemObject : MergeItemObject
+{
+    [Min(.01f)] public float eatInterval = 3f;
+    [Min(1)] public int eatCountPerTick = 1;
+    public bool eatOtherMonsters;
+    public MergeItemYield[] quarantineRewards = System.Array.Empty<MergeItemYield>();
+    private float nextEat;
+    private bool quarantined;
+    protected override void ResetPoolState() { nextEat = Time.time + Mathf.Max(.01f, eatInterval); quarantined = false; }
+    public void TickMonster(Collider2D quarantine)
+    {
+        if (!IsLive || Owner == null || !Owner.CanOperate || quarantined || IsHeld) return;
+        if (MergeGimmickUtility.Touches(quarantine, this))
+        {
+            quarantined = true;
+            // Return this monster before spawning rewards, freeing its capacity slot.
+            var board = Owner; Vector3 origin = transform.position; var rewards = quarantineRewards;
+            ReturnToPool(); MergeGimmickUtility.Emit(board, rewards, origin); return;
+        }
+        if (Time.time < nextEat) return;
+        nextEat = Time.time + Mathf.Max(.01f, eatInterval);
+        int eaten = 0;
+        var candidates = new System.Collections.Generic.List<MergeItemObject>(Owner.ActiveItems);
+        foreach (var other in candidates)
+        {
+            if (other == null || other == this || (!eatOtherMonsters && other is MonsterMergeItemObject) || !other.CanSelect) continue;
+            if ((circleCollider.IsTouching(other.circleCollider) || circleCollider.Distance(other.circleCollider).isOverlapped) && Owner.TryRemoveItem(other, other.LifeId))
+                if (++eaten >= eatCountPerTick) break;
+        }
+    }
+}

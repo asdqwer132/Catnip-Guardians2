@@ -19,6 +19,7 @@ public class MergeGimicManager : MonoBehaviour
     [SerializeField] private MergeBoxGimic currentBox;
     private UpgradeToGeneralData roundData;
     private UnityAction[] handlers;
+    private Color[] authoredSkillColors;
     public MergeBoxGimic CurrentGimic => currentBox;
     public int SelectedIndex { get; private set; } = -1;
     public int SelectedLevel => boxes != null && boxes.SelectedBoxManager != null ? boxes.SelectedBoxManager.CurrentLevel : startingLevel;
@@ -101,15 +102,17 @@ public class MergeGimicManager : MonoBehaviour
     {
         ClearSkills();
         handlers = new UnityAction[skillButtons.Length];
+        authoredSkillColors = new Color[skillButtons.Length];
         int count = currentBox != null ? currentBox.SkillCount : 0;
         for (int i = 0; i < skillButtons.Length; i++)
         {
             var slot = skillButtons[i];
             if (slot == null) continue;
+            authoredSkillColors[i] = slot.sprite != null ? slot.sprite.color : Color.white;
             bool visible = i < count;
             slot.gameObject.SetActive(visible);
             if (!visible || slot.button == null) continue;
-            if (slot.sprite != null) slot.sprite.sprite = currentBox.GetSkillSprite(i);
+            if (slot.sprite != null) { authoredSkillColors[i] = slot.sprite.color; slot.sprite.sprite = currentBox.GetSkillSprite(i); }
             int skillIndex = i; // 람다에서 반복문의 최종 인덱스를 참조하지 않도록 복사합니다.
             if (slot.shortcutText != null) slot.shortcutText.text = currentBox.IsActiveSkill(i) && slot.shortcutKey != Key.None ? slot.shortcutKey.ToString() : "";
             if (currentBox.IsActiveSkill(i))
@@ -129,6 +132,7 @@ public class MergeGimicManager : MonoBehaviour
             if (slot.button != null && handlers != null && i < handlers.Length && handlers[i] != null)
                 slot.button.onClick.RemoveListener(handlers[i]);
             if (slot.Cool != null) slot.Cool.fillAmount = 0f;
+            if (slot.sprite != null && authoredSkillColors != null && i < authoredSkillColors.Length) slot.sprite.color = authoredSkillColors[i];
             slot.gameObject.SetActive(false);
         }
         handlers = null;
@@ -176,9 +180,9 @@ public class MergeGimicManager : MonoBehaviour
         {
             var slot = skillButtons[i];
             if (slot == null) continue;
-            float remaining = currentBox.GetSkillProgress(i);
-            if (slot.button != null) slot.button.interactable = remaining <= 0f && currentBox.Running && currentBox.IsActiveSkill(i) && boxes != null && boxes.SelectedBoard != null && boxes.SelectedBoard.CanOperate;
-            if (slot.Cool != null) slot.Cool.fillAmount = remaining;
+            if (slot.button != null) slot.button.interactable = currentBox.CanActivateSkill(i);
+            if (slot.Cool != null) slot.Cool.fillAmount = currentBox.GetSkillDisplayProgress(i);
+            if (slot.sprite != null && authoredSkillColors != null) slot.sprite.color = currentBox.GetSkillDisplayColor(i) ?? authoredSkillColors[i];
         }
     }
 }

@@ -50,11 +50,12 @@ public sealed class MergeItemSelection : MonoBehaviour
     public bool IsDragging => gesture.IsActive && gesture.IsDrag;
     public Rect SelectionBounds => gesture.Bounds;
     public float CooldownRemaining => gesture.CooldownRemaining(Time.time);
+    public int LastUsedCount { get; private set; }
     public int LastRemovedCount { get; private set; }
     public string LastMessage { get; private set; }
     public IReadOnlyList<InventoryItem> SelectedItems => displayedItems;
     public event Action SelectionChanged;
-    private bool CanSelect => isActiveAndEnabled && !committing && board != null && board.CanOperate &&
+    private bool CanSelect => isActiveAndEnabled && !committing && board != null && board.CanOperate && !board.SelectionSuppressed &&
         (spawnPointDragger == null || !spawnPointDragger.IsDragging) &&
         (GameInputManager.instance == null || !GameInputManager.instance.IsBlocked(GameInputBlockType.Gameplay));
 
@@ -131,7 +132,7 @@ public sealed class MergeItemSelection : MonoBehaviour
     public bool TryBeginSelection(Vector2 worldPosition)
     {
         if (!CanSelect || !IsInsideDragArea(worldPosition) || !gesture.TryBegin(worldPosition, Time.time)) return false;
-        LastRemovedCount = 0;
+        LastRemovedCount = 0; LastUsedCount = 0;
         HideVisual();
         return true;
     }
@@ -155,7 +156,7 @@ public sealed class MergeItemSelection : MonoBehaviour
         gesture.Complete(Time.time, selected.Count > 0 ? (dragged ? dragCooldown : clickCooldown) : 0f);
         HideVisual();
         committing = true;
-        LastRemovedCount = 0;
+        LastRemovedCount = 0; LastUsedCount = 0;
         var transfer = new GameItemToBattleData();
         try
         {
@@ -166,14 +167,16 @@ public sealed class MergeItemSelection : MonoBehaviour
                 string name = board.GetItemDisplayName(piece.item);
                 Vector2 position = piece.Position;
                 ItemData item = piece.item;
-                if (!board.TryRemoveItem(piece, entry.lifeId)) continue;
+                bool retain = board.RetainSelectedItems;
+                if (!retain && !board.TryRemoveItem(piece, entry.lifeId)) continue;
                 transfer.items.Add(new InventoryItem(item, 1));
-                LastRemovedCount++;
+                LastUsedCount++;
+                if (!retain) LastRemovedCount++;
                 LastMessage = $"{(dragged ? "드래그" : "클릭")} 선택: {name}, 위치: {position}";
                 if (logSelections) Debug.Log("[MergeSelection] " + LastMessage, this);
             }
             if (GameSession.Instance != null) GameSession.Instance.SendItemsToBattle(transfer);
-            return LastRemovedCount;
+            return LastUsedCount;
         }
         finally
         {

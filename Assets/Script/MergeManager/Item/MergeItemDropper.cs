@@ -23,11 +23,11 @@ internal sealed class MergeItemDropper
     {
         get
         {
-            if (!RefreshSelectionState() || !owner.isFeeding) return AutomaticInterval;
-            return Mathf.Max(0f, (owner.automaticDrop ? Mathf.Max(nextDropAt, nextAutomaticDropAt) : nextDropAt) - Time.time);
+            if (!RefreshSelectionState() || !owner.IsFeedingEnabled) return AutomaticInterval;
+            return Mathf.Max(0f, (owner.UsesAutomaticFeeding ? Mathf.Max(nextDropAt, nextAutomaticDropAt) : nextDropAt) - Time.time);
         }
     }
-    public bool IsTimerRunning => owner.automaticDrop && owner.isFeeding && RefreshSelectionState();
+    public bool IsTimerRunning => owner.UsesAutomaticFeeding && owner.IsFeedingEnabled && RefreshSelectionState();
     public ItemData NextItem { get { RefreshSelectionState(); return owner.currentMaterial?.mergeItem?.item; } }
 
     // Forecast with virtual stock only: never advance the real selection or consume inventory.
@@ -41,7 +41,7 @@ internal sealed class MergeItemDropper
             if (CanFeedMaterial(material))
                 previewStock[material] = (long)Math.Max(0, material.count) + Math.Max(0, material.defaultCount);
         var current = owner.currentMaterial;
-        bool cycle = owner.automaticDrop && owner.cycleAutomaticMaterials;
+        bool cycle = owner.UsesAutomaticFeeding && owner.cycleAutomaticMaterials;
         for (int i = 0; i < maximum && current != null; i++)
         {
             if (!previewStock.TryGetValue(current, out long remaining) || remaining <= 0) break;
@@ -116,12 +116,12 @@ internal sealed class MergeItemDropper
         return selected;
     }
 
-    private float AutomaticInterval => Mathf.Max(.01f, EffectStatUtility.Safe(owner.dropInterval, 0f, 600f, .5f));
+    private float AutomaticInterval => Mathf.Max(.01f, EffectStatUtility.Safe(owner.dropInterval, 0f, 600f, .5f) / Mathf.Max(.01f, owner.FeedingSpeedMultiplier));
 
     public void Tick()
     {
         if (!RefreshSelectionState()) return;
-        if (!owner.automaticDrop || !owner.isFeeding || !owner.CanOperate ||
+        if (!owner.UsesAutomaticFeeding || !owner.IsFeedingEnabled || !owner.CanOperate ||
             (GameInputManager.instance != null && GameInputManager.instance.IsBlocked(GameInputBlockType.Gameplay)))
         {
             nextAutomaticDropAt = Time.time + AutomaticInterval;
@@ -220,7 +220,7 @@ internal sealed class MergeItemDropper
 
     public bool TryDropCurrent()
     {
-        if (!owner.isFeeding) return owner.Reject("투입이 중지되어 있습니다.");
+        if (!owner.IsFeedingEnabled) return owner.Reject("투입이 중지되어 있습니다.");
         if (!owner.CanOperate || dropping) return owner.Reject("현재 생성할 수 없는 상태입니다.");
         if (owner.objectPool == null || owner.dropZone == null || owner.dropZone.spawnPoint == null) return owner.Reject("Object Pool / Spawn Point 연결을 확인하세요.");
         if (Time.time < nextDropAt) return owner.Reject("다음 생성까지 대기 중입니다.");
@@ -261,7 +261,7 @@ internal sealed class MergeItemDropper
             if (piece == null || !piece.IsLive || before != owner.Revision || !owner.CanOperate)
                 return owner.Reject("풀 생성이 취소되었거나 아이템이 비활성 상태입니다.");
             piece.SetSimulated(true);
-            nextDropAt = Time.time + EffectStatUtility.Safe(owner.dropInterval, 0f, 600f, 0.5f);
+            nextDropAt = Time.time + EffectStatUtility.Safe(owner.dropInterval, 0f, 600f, 0.5f) / Mathf.Max(.01f, owner.FeedingSpeedMultiplier);
             nextAutomaticDropAt = Time.time + AutomaticInterval;
             committed = true;
             owner.RefreshUI();

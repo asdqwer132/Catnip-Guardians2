@@ -15,6 +15,12 @@ public class MergeItemObject : MonoBehaviour, IPoolable
     public Rigidbody2D body;
     [SerializeField]private PooledObject pooled;
     private bool reserved;
+    private object heldBy;
+    private bool rootedHold;
+    private RigidbodyType2D heldBodyType;
+    private bool heldColliderEnabled, heldSimulated;
+    public bool IsHeld => heldBy != null;
+    public bool IsHeldBy(object holder) => holder != null && ReferenceEquals(heldBy, holder);
     private float unlockAt;
     public MergegameManager Owner { get; private set; }
     public MergeItem Definition { get; private set; }
@@ -22,8 +28,8 @@ public class MergeItemObject : MonoBehaviour, IPoolable
     public uint Serial { get; private set; }
     public int PoolSpawnId => pooled != null ? pooled.SpawnId : 0;
     public bool IsLive => Owner != null && Definition != null && pooled != null && pooled.IsSpawned && isActiveAndEnabled;
-    public bool CanMerge => IsLive && !reserved && Time.time >= unlockAt;
-    public bool CanSelect => IsLive && !reserved;
+    public bool CanMerge => IsLive && !reserved && !IsHeld && Time.time >= unlockAt;
+    public bool CanSelect => IsLive && !reserved && (!IsHeld || rootedHold);
     public Vector2 Position => body != null ? body.position : (Vector2)transform.position;
     public Vector2 Velocity
     {
@@ -75,12 +81,35 @@ public class MergeItemObject : MonoBehaviour, IPoolable
     }
     public void SetSimulated(bool value) { Cache(); body.simulated = value && IsLive; }
     internal bool Reserve() { if (!CanMerge) return false; reserved = true; return true; }
+    internal bool ReserveReplacement(object holder)
+    {
+        if (IsHeldBy(holder) && IsLive && !reserved) { reserved = true; return true; }
+        return Reserve();
+    }
+    public bool TryHold(object holder, bool rooted)
+    {
+        if (holder == null || IsHeld || !CanSelect) return false;
+        Cache(); heldBy = holder; rootedHold = rooted; heldBodyType = body.bodyType;
+        heldColliderEnabled = circleCollider.enabled; heldSimulated = body.simulated;
+        Velocity = Vector2.zero; body.angularVelocity = 0f;
+        if (rooted) body.bodyType = RigidbodyType2D.Static;
+        else { body.simulated = false; circleCollider.enabled = false; }
+        return true;
+    }
+    public bool ReleaseHold(object holder)
+    {
+        if (heldBy == null || !ReferenceEquals(heldBy, holder)) return false;
+        body.bodyType = heldBodyType; body.simulated = heldSimulated;
+        circleCollider.enabled = heldColliderEnabled; heldBy = null;
+        return true;
+    }
     internal void Unreserve() => reserved = false;
     public void OnSpawnedFromPool() { Cache(); ClearPayload(); }
     public void OnReturnedToPool() { Cache(); ClearPayload(); }
     protected virtual void ResetPoolState() { }
     private void ClearPayload()
     {
+        if (heldBy != null) ReleaseHold(heldBy);
         ResetPoolState();
         var previous = Owner;
         Owner = null; Definition = null; item = null; reserved = false;
@@ -90,8 +119,8 @@ public class MergeItemObject : MonoBehaviour, IPoolable
         if (spriteRenderer != null) spriteRenderer.enabled = false;
         if (previous != null) previous.NotifyReturned(this);
     }
-    private void OnCollisionEnter2D(Collision2D collision) => Contact(collision);
-    private void OnCollisionStay2D(Collision2D collision) => Contact(collision);
+    protected virtual void OnCollisionEnter2D(Collision2D collision) => Contact(collision);
+    protected virtual void OnCollisionStay2D(Collision2D collision) => Contact(collision);
     private void Contact(Collision2D collision)
     {
         if (!IsLive || collision.collider == null) return;

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 [DefaultExecutionOrder(-200)]
-public class MergegameManager : MonoBehaviour
+public partial class MergegameManager : MonoBehaviour
 {
     public ItemSeries itemSeries;
     public MergeRecipeBook recipeBook;
@@ -48,6 +48,12 @@ public class MergegameManager : MonoBehaviour
     public bool IsDropTimerRunning => Dropper.IsTimerRunning;
     public float DropInterval => Dropper.Interval;
     public bool MaterialUIEnabled => displayMaterialUI;
+    public virtual bool RetainSelectedItems => false;
+    public bool SelectionSuppressed { get; set; }
+    public virtual bool ForceAutomaticFeeding => false;
+    public bool UsesAutomaticFeeding => automaticDrop || ForceAutomaticFeeding;
+    public bool IsFeedingEnabled => isFeeding || ForceAutomaticFeeding;
+    public virtual float FeedingSpeedMultiplier => 1f;
     public bool CanOperate => isActiveAndEnabled && !clearing && Time.timeScale > 0f;
     internal int Revision => revision;
     internal int ActiveItemCount
@@ -61,6 +67,7 @@ public class MergegameManager : MonoBehaviour
     protected virtual void LateUpdate() => Combiner.ProcessContacts();
     protected virtual void OnDisable() { dropper?.End(); ClearItems(); }
 
+    public void RefreshFeedingTiming() => Dropper.ResetCooldown();
     public void SetFeeding(bool value) => Dropper.SetFeeding(value);
     public void SetAutomaticDrop(bool value) => Dropper.SetAutomaticDrop(value);
     public bool TryDropCurrent() => Dropper.TryDropCurrent();
@@ -98,7 +105,7 @@ public class MergegameManager : MonoBehaviour
     internal static bool TryGetPrefab(MergeItem definition, out GameObject prefab)
     {
         prefab = definition != null ? definition.prefab : null;
-        if (prefab == null) return false;
+        if (prefab == null || definition.item == null) return false;
         var component = prefab.GetComponent<MergeItemObject>();
         return component != null && component.enabled;
     }
@@ -133,7 +140,7 @@ public class MergegameManager : MonoBehaviour
 
     internal MergeItemObject SpawnPiece(MergeItem definition, Vector3 position)
     {
-        if (!TryGetPrefab(definition, out var prefab)) return null;
+        if (objectPool == null || !TryGetPrefab(definition, out var prefab)) return null;
         var root = objectPool.Spawn(prefab, position, Quaternion.identity);
         if (root == null) return null;
         var piece = root.GetComponent<MergeItemObject>();
