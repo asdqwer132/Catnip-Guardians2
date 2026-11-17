@@ -368,18 +368,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxMineral
   skills:
   - id: Mineral.SpawnOre
-    type: 1
-    skillImage: {fileID: -277008349, guid: 21f630a9222a2304585d155730bbf450, type: 3}
-    defaultSkillCool: 8
+    type: 0
+    skillImage: {fileID: 593919604, guid: 21f630a9222a2304585d155730bbf450, type: 3}
+    defaultSkillCool: 10
   oreSpawnArea: {fileID: 3518992359823785020}
   ores:
-  - item: {fileID: 11400000, guid: 4ab1c4c39dca67f238a39d5e5eaad9b3, type: 2}
+  - item: {fileID: 11400000, guid: 1b4687eaf0bf6674a9dbc8abe0b22735, type: 2}
     weight: 1
-  - item: {fileID: 11400000, guid: a7c86ea34c4dc56f6b2996f75b95f948, type: 2}
+  - item: {fileID: 11400000, guid: f82e3808f3d6861489d5f979b9535877, type: 2}
     weight: 1
-  - item: {fileID: 11400000, guid: 5e451a354d75873e29b61e08abbfccf8, type: 2}
+  - item: {fileID: 11400000, guid: 314a9b683e6e6914c828f72d06cbe759, type: 2}
     weight: 1
-  maximumOres: 3
+  maximumOres: 1
 --- !u!4 &7109149066440077514 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3007403580570720478, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}

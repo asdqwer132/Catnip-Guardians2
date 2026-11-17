@@ -22458,6 +22458,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 825314292742803513, guid: 17f710cb8a268f94dbdfe4f539ace796, type: 3}
   m_PrefabInstance: {fileID: 1653410005}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1658855365 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2392660435973676221, guid: 318786952ec334e468db8139a39873e0, type: 3}
+  m_PrefabInstance: {fileID: 1849458122}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2ad2411312047828f3731d8f6f25d34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MergeBoxBindings
 --- !u!1 &1670134827
 GameObject:
   m_ObjectHideFlags: 0
@@ -24765,6 +24776,14 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: -6353280959002906696, guid: d3ad5a94cbfcaf04bb2267b6bafc164e, type: 3}
+    - target: {fileID: 2828543424308493381, guid: 318786952ec334e468db8139a39873e0, type: 3}
+      propertyPath: board
+      value: 
+      objectReference: {fileID: 978373114}
+    - target: {fileID: 2828543424308493381, guid: 318786952ec334e468db8139a39873e0, type: 3}
+      propertyPath: levels.Array.data[0].box
+      value: 
+      objectReference: {fileID: 1658855365}
     - target: {fileID: 3817562852456316638, guid: 318786952ec334e468db8139a39873e0, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -24817,6 +24836,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Box(3.Mineral)
       objectReference: {fileID: 0}
+    - target: {fileID: 7061123032833696013, guid: 318786952ec334e468db8139a39873e0, type: 3}
+      propertyPath: board
+      value: 
+      objectReference: {fileID: 978373114}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -29027,7 +29050,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeGimicManager
   boxes: {fileID: 990400000003}
-  startingSeriesIndex: 3
+  startingSeriesIndex: 4
   startingLevel: 1
   useSessionLevels: 1
   skillButtons:
