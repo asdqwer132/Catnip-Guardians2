@@ -10,6 +10,7 @@ public sealed class ViewportCanvasScaler : CanvasScaler, ICanvasRaycastFilter
     [Tooltip("같은 프로필을 연결하면 Overlay/Camera와 Viewport 비율에 관계없이 UI 픽셀 배율과 Reference PPU를 공유합니다.")]
     public SceneUIScaleProfile sharedScaleProfile;
     private Canvas targetCanvas;
+    private Camera pixelPerfectCamera;
     private Vector2 previousPixels;
     private Rect previousViewport;
     private Camera previousCamera;
@@ -31,11 +32,22 @@ public sealed class ViewportCanvasScaler : CanvasScaler, ICanvasRaycastFilter
     {
         Canvas.preWillRenderCanvases -= Handle;
         layoutInitialized = false;
+        ScenePixelPerfectLayout.Unregister(pixelPerfectCamera, this);
+        pixelPerfectCamera = null;
         base.OnDisable();
     }
     protected override void Handle()
     {
         if (targetCanvas == null) targetCanvas = GetComponent<Canvas>();
+        var layoutCamera = targetCanvas != null && targetCanvas.renderMode == RenderMode.ScreenSpaceCamera
+            ? targetCanvas.worldCamera : null;
+        if (pixelPerfectCamera != layoutCamera)
+        {
+            ScenePixelPerfectLayout.Unregister(pixelPerfectCamera, this);
+            pixelPerfectCamera = layoutCamera;
+            ScenePixelPerfectLayout.Register(pixelPerfectCamera, this);
+        }
+        ScenePixelPerfectLayout.Prepare(pixelPerfectCamera);
         if (sharedScaleProfile == null || targetCanvas == null || !targetCanvas.isRootCanvas ||
             targetCanvas.renderMode == RenderMode.WorldSpace)
         { base.Handle(); return; }

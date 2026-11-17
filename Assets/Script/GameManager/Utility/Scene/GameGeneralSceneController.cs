@@ -365,7 +365,7 @@ public sealed class GameGeneralSceneController : MonoBehaviour
         if (camera == null) return;
         bool visible = rect.width > 0 && rect.height > 0;
         if (camera.enabled != visible) camera.enabled = visible;
-        if (visible && camera.rect != rect) camera.rect = rect;
+        if (visible) ScenePixelPerfectLayout.SetViewport(camera, rect);
     }
     private void LateUpdate() => ApplyLayout();
     private void OnEnable()
