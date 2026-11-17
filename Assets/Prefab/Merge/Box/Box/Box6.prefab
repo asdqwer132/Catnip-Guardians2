@@ -371,7 +371,12 @@ MonoBehaviour:
     type: 1
     skillImage: {fileID: -2140586765, guid: 21f630a9222a2304585d155730bbf450, type: 3}
     defaultSkillCool: 0
+  - id: Plant.InstantGrowth
+    type: 0
+    skillImage: {fileID: -2140586765, guid: 21f630a9222a2304585d155730bbf450, type: 3}
+    defaultSkillCool: 10
   groundArea: {fileID: 7651787891173484675}
+  instantGrowthArea: {fileID: 7651787891173484675}
   growthRules:
   - seed: {fileID: 11400000, guid: 4e76266561b2ff04f8f2bc784868a080, type: 2}
     growthSeconds: 5
