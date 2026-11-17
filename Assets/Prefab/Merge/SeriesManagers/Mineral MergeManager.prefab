@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5093010132288736860}
   - component: {fileID: 5763765669095024634}
   m_Layer: 0
-  m_Name: MergeManager
+  m_Name: Mineral MergeManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -48,7 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MineralMergeGameManager
   itemSeries: 3
   recipeBook: {fileID: 11400000, guid: af010fe994ab4cf49286c47dc23d393d, type: 2}
-  legacyMergeRecipes: []
+  discoveryHistory: {fileID: 0}
   mergeItems:
   - {fileID: 11400000, guid: 09bac1e0f87a1364688029d864d7328d, type: 2}
   - {fileID: 11400000, guid: e3b4fcb4bd4337447b1cd33353fed100, type: 2}
@@ -83,11 +83,12 @@ MonoBehaviour:
     defaultCount: 0
   objectPool: {fileID: 0}
   spawnPoint: {fileID: 0}
+  dropZone: {fileID: 0}
   dropInterval: 2
   maximumActiveItems: 50
   prewarmCount: 4
   resultMergeDelay: 0.1
-  dropOffset: 0.02
+  dropOffset: 0.05
   automaticDrop: 1
   isFeeding: 1
   cycleAutomaticMaterials: 1
@@ -108,6 +109,7 @@ MonoBehaviour:
   board: {fileID: 7972414329389823318}
   inputCamera: {fileID: 0}
   dragVisual: {fileID: 0}
+  spawnPointDragger: {fileID: 0}
   dragAllowedArea: {fileID: 0}
   maximumDragWidth: 3
   maximumDragHeight: 3

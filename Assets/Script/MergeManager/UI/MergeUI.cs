@@ -24,6 +24,6 @@ public class MergeUI : MonoBehaviour
         if (countText != null)
             countText.text = Mathf.Max(0, c).ToString();
         if (defaultCountText != null)
-            defaultCountText.text = "(+" + Mathf.Max(0, dc) + ")";
+            defaultCountText.text = Mathf.Max(0, dc).ToString();
     }
 }
