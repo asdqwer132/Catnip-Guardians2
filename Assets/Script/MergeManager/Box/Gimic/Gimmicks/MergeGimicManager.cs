@@ -133,6 +133,7 @@ public class MergeGimicManager : MonoBehaviour
             if (slot.button != null && handlers != null && i < handlers.Length && handlers[i] != null)
                 slot.button.onClick.RemoveListener(handlers[i]);
             if (slot.Cool != null) slot.Cool.fillAmount = 0f;
+            if (slot.Duration != null) slot.Duration.fillAmount = 0f;
             if (slot.sprite != null && authoredSkillColors != null && i < authoredSkillColors.Length) slot.sprite.color = authoredSkillColors[i];
             slot.gameObject.SetActive(false);
         }
@@ -182,7 +183,8 @@ public class MergeGimicManager : MonoBehaviour
             var slot = skillButtons[i];
             if (slot == null) continue;
             if (slot.button != null) slot.button.interactable = currentBox.CanActivateSkill(i);
-            if (slot.Cool != null) slot.Cool.fillAmount = currentBox.GetSkillDisplayProgress(i);
+            if (slot.Cool != null) slot.Cool.fillAmount = slot.Duration!=null ? currentBox.GetSkillProgress(i) : currentBox.GetSkillDisplayProgress(i);
+            if (slot.Duration != null) slot.Duration.fillAmount=currentBox.GetSkillDurationProgress(i);
             if (slot.sprite != null && authoredSkillColors != null) slot.sprite.color = currentBox.GetSkillDisplayColor(i) ?? authoredSkillColors[i];
         }
     }

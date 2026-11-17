@@ -1,86 +1,59 @@
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
 
 public sealed class MergeBoxFishing : MergeBoxGimic
 {
-    [Header("Fish rewards")]
+    [Header("기존 미니게임 연결")]
+    public FishingMiniGame minigame;
+    public GameObject minigamePanel;
+    [Header("성공 보상")]
     public Collider2D fishDropArea;
     public WeightedMergeItem[] fish = System.Array.Empty<WeightedMergeItem>();
     [Min(1)] public int minimumFish = 6, maximumFish = 12;
-    [Header("Timing minigame · normalized 0..1")]
-    [Min(.01f)] public float needleSpeed = 1f;
-    [Min(.1f)] public float timeLimit = 5f;
-    public Vector2 successRange = new Vector2(.4f, .6f);
-    [Header("Authored UI · optional")]
-    public GameObject minigamePanel;
-    public Slider needle;
-    public RectTransform successIndicator;
-    public Button catchButton;
-    public UnityEvent<bool> fishingFinished = new UnityEvent<bool>();
+    [Header("대성공 보상 · 성공 보상을 대신합니다")]
+    public WeightedMergeItem[] perfectFish = System.Array.Empty<WeightedMergeItem>();
+    [Min(1)] public int minimumPerfectFish = 12, maximumPerfectFish = 24;
     public bool IsFishing { get; private set; }
-    public float NeedleValue { get; private set; }
-    public Color catchWindowColor = Color.green;
-    private float elapsed;
-    public bool IsInCatchWindow => NeedleValue >= Mathf.Clamp01(Mathf.Min(successRange.x, successRange.y)) && NeedleValue <= Mathf.Clamp01(Mathf.Max(successRange.x, successRange.y));
-    public override float GetSkillDisplayProgress(int index) => IsFishing && IsActiveSkill(index) ? NeedleValue : base.GetSkillDisplayProgress(index);
-    public override Color? GetSkillDisplayColor(int index) => IsFishing && IsActiveSkill(index) && IsInCatchWindow ? catchWindowColor : (Color?)null;
-    protected override void EnsureSkills() => SetDefaultSkills(
-        new GimicSkill { id = "Fishing.Begin", type = GimicSkillType.Passive, defaultSkillCool = 15f },
-        new GimicSkill { id = "Fishing.Catch", type = GimicSkillType.Active, defaultSkillCool = 0f });
-    public override void GimicStart()
+
+    protected override void EnsureSkills()
     {
-        IsFishing = false; elapsed = 0f; NeedleValue = 0f;
-        if (catchButton != null) catchButton.onClick.AddListener(SubmitCatch);
-        RefreshUI();
+        var old=skills!=null && skills.Length>0?skills[0]:null;
+        skills=new[] { new GimicSkill { id="Fishing.Begin",type=GimicSkillType.Active,
+            skillImage=old!=null?old.skillImage:null, defaultSkillCool=old!=null?old.defaultSkillCool:15f } };
     }
-    protected override bool CanUseActiveSkill(int index) => IsFishing;
-    protected override void OnActiveSkill(int index) => SubmitCatch();
-    protected override void OnPassiveSkill(int index) => BeginFishing();
-    public void BeginFishing()
+    protected override bool CanUseActiveSkill(int index) => minigame!=null && !IsFishing && Board.PendingSpawnCount==0;
+    protected override bool WaitForSkillCompletion(int index) => true;
+    protected override void OnActiveSkill(int index) => StartFishing();
+    public override void GimicStart() { IsFishing=false;minigame?.StopMiniGame();if(minigamePanel!=null) minigamePanel.SetActive(false); }
+    public void BeginFishing() => TryUseActiveSkill(0);
+    private void StartFishing()
     {
-        if (!Running || Board == null || !Board.CanOperate || IsFishing || Board.PendingSpawnCount > 0) return;
-        IsFishing = true; elapsed = 0f; NeedleValue = 0f; RefreshUI();
+        if(!Running || Board==null || !Board.CanOperate || IsFishing || minigame==null) return;
+        IsFishing=true;
+        if(minigamePanel!=null) minigamePanel.SetActive(true);
+        minigame.StartMiniGame();
     }
-    public void SubmitCatch()
+    // FishingMiniGame의 Inspector 이벤트에 연결합니다. 한 판에 한 번만 처리합니다.
+    public void OnFishingFailed() => Finish(0);
+    public void OnFishingSuccess() => Finish(1);
+    public void OnFishingPerfect() => Finish(2);
+    private void Finish(int result)
     {
-        if (!Running || Board == null || !Board.CanOperate || !IsFishing) return;
-        float min = Mathf.Clamp01(Mathf.Min(successRange.x, successRange.y));
-        float max = Mathf.Clamp01(Mathf.Max(successRange.x, successRange.y));
-        Finish(NeedleValue >= min && NeedleValue <= max);
-    }
-    protected override void TickGimic(float deltaTime)
-    {
-        if (!IsFishing) return;
-        elapsed += deltaTime;
-        NeedleValue = Mathf.PingPong(elapsed * Mathf.Max(.01f, needleSpeed), 1f);
-        RefreshUI();
-        if (elapsed >= Mathf.Max(.1f, timeLimit)) Finish(false);
-    }
-    private void Finish(bool success)
-    {
-        IsFishing = false;
-        if (success && Board is FishingMergeGameManager fishing)
-            fishing.DropFish(fish, Random.Range(Mathf.Max(1, minimumFish), Mathf.Max(minimumFish, maximumFish) + 1), fishDropArea);
-        RefreshUI(); fishingFinished.Invoke(success);
-    }
-    private void RefreshUI()
-    {
-        if (minigamePanel != null) minigamePanel.SetActive(IsFishing);
-        if (catchButton != null) catchButton.interactable = IsFishing;
-        if (needle != null) needle.normalizedValue = NeedleValue;
-        if (successIndicator != null)
-        {
-            var min = successIndicator.anchorMin; var max = successIndicator.anchorMax;
-            min.x = Mathf.Clamp01(Mathf.Min(successRange.x, successRange.y)); max.x = Mathf.Clamp01(Mathf.Max(successRange.x, successRange.y));
-            successIndicator.anchorMin = min; successIndicator.anchorMax = max;
-            var low = successIndicator.offsetMin; var high = successIndicator.offsetMax; low.x = high.x = 0f;
-            successIndicator.offsetMin = low; successIndicator.offsetMax = high;
-        }
+        if(!Running || Board==null || !Board.CanOperate || !IsFishing) return;
+        IsFishing=false;
+        minigame?.StopMiniGame();
+        if(minigamePanel!=null) minigamePanel.SetActive(false);
+        CompleteSkill(0);
+        if(result==0) { Debug.Log("[Fishing] 미니게임 실패",this);return; }
+        if(!(Board is FishingMergeGameManager fishing)) return;
+        bool perfect=result==2;
+        var rewards=perfect && perfectFish!=null && perfectFish.Length>0?perfectFish:fish;
+        int min=Mathf.Max(1,perfect?minimumPerfectFish:minimumFish);
+        int max=Mathf.Max(min,perfect?maximumPerfectFish:maximumFish);
+        fishing.DropFish(rewards,Random.Range(min,max+1),fishDropArea);
     }
     public override void GimicStop()
     {
-        if (catchButton != null) catchButton.onClick.RemoveListener(SubmitCatch);
-        IsFishing = false; RefreshUI(); base.GimicStop();
+        if(IsFishing) { minigame?.StopMiniGame();if(minigamePanel!=null) minigamePanel.SetActive(false); }
+        IsFishing=false;base.GimicStop();
     }
 }

@@ -8,6 +8,12 @@ public sealed class MergeBoxMagic : MergeBoxGimic
     protected override void EnsureSkills() => SetDefaultSkills(
         new GimicSkill { id = "Magic.UnlimitedUse", type = GimicSkillType.Active, defaultSkillCool = 20f },
         new GimicSkill { id = "Magic.RapidFeeding", type = GimicSkillType.Active, defaultSkillCool = 20f });
+    protected override float GetSkillDuration(int index) => index==0?unlimitedUseSeconds:rapidFeedingSeconds;
+    protected override void OnSkillDurationEnded(int index)
+    {
+        if(!(Board is MagicMergeGameManager magic)) return;
+        if(index==0) magic.ClearUnlimitedUse();else magic.ClearRapidFeeding();
+    }
     protected override void OnActiveSkill(int index)
     {
         if (!(Board is MagicMergeGameManager magic)) return;

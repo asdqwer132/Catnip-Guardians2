@@ -3074,7 +3074,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &362518329
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3159,13 +3159,49 @@ MonoBehaviour:
   stopAfterResult: 1
   onFail:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1093207734}
+        m_TargetAssemblyTypeName: MergeBoxFishing, Assembly-CSharp
+        m_MethodName: OnFishingFailed
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName:
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument:
+          m_BoolArgument: 0
+        m_CallState: 2
   onSuccess:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1093207734}
+        m_TargetAssemblyTypeName: MergeBoxFishing, Assembly-CSharp
+        m_MethodName: OnFishingSuccess
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName:
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument:
+          m_BoolArgument: 0
+        m_CallState: 2
   onPerfect:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1093207734}
+        m_TargetAssemblyTypeName: MergeBoxFishing, Assembly-CSharp
+        m_MethodName: OnFishingPerfect
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName:
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument:
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!4 &365986331 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 621884916204413601, guid: 2b9aa46f7b6d8444b89fda0c76b57524, type: 3}
@@ -3896,6 +3932,14 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: -2.4999993
       objectReference: {fileID: 0}
+    - target: {fileID: 2611650200027792674, guid: 604202b3f632c344f9c755559d68fcb9, type: 3}
+      propertyPath: minigame
+      value:
+      objectReference: {fileID: 362518332}
+    - target: {fileID: 2611650200027792674, guid: 604202b3f632c344f9c755559d68fcb9, type: 3}
+      propertyPath: minigamePanel
+      value:
+      objectReference: {fileID: 362518328}
     - target: {fileID: 2894740446808186645, guid: 604202b3f632c344f9c755559d68fcb9, type: 3}
       propertyPath: board
       value: 
@@ -6911,6 +6955,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f51d937758f24e478eb5355c1ba8e2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeUI
+--- !u!114 &1093207734 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2611650200027792674, guid: 604202b3f632c344f9c755559d68fcb9, type: 3}
+  m_PrefabInstance: {fileID: 713740044}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78705ae4bce646e4a5c92a3cb9a83055, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MergeBoxFishing
 --- !u!114 &1099647775 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6857989122350094758, guid: 17f710cb8a268f94dbdfe4f539ace796, type: 3}

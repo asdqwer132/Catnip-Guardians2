@@ -9,10 +9,14 @@ public sealed class MergeBoxMachine : MergeBoxGimic
     [Header("Horizontal laser · drag emitter vertically")]
     public Transform laserEmitter;
     public Collider2D laserDragArea;
-    [Min(.01f)] public float laserDistance = 8f;
+
     [Min(1)] public int splitMultiplier = 2;
     [Min(0f)] public float splitScatter = .25f;
-    public LineRenderer laserVisual;
+    public GameObject laserObject;
+    public Collider2D laserHitArea;
+    [Tooltip("드래그하는 동안 마우스의 목표 위치를 표시하는 월드 오브젝트입니다.")]
+    public Transform clawTarget;
+    private bool followingTarget;
     [Min(0f)] public float laserVisualSeconds = .15f;
     [Header("Claw rail above the box")]
     public Transform clawVisual;
@@ -30,50 +34,64 @@ public sealed class MergeBoxMachine : MergeBoxGimic
         new GimicSkill { id = "Machine.Claw", type = GimicSkillType.Active, defaultSkillCool = 10f });
     public override void GimicStart() { if (Board is MachineMergeGameManager machine) machine.LaserDragArea = laserDragArea; }
     protected override bool CanUseActiveSkill(int index) => Board is MachineMergeGameManager machine &&
-        machine.ClawState == MergeClawState.Idle && (index == 0 ? laserEmitter != null : clawVisual != null && clawRail != null);
+        machine.ClawState == MergeClawState.Idle && (index == 0 ? laserEmitter != null && laserHitArea!=null && laserObject!=null : clawVisual != null && clawRail != null);
+    protected override float GetSkillDuration(int index) => index==0?laserVisualSeconds:base.GetSkillDuration(index);
+    protected override bool WaitForSkillCompletion(int index) => index==1;
     protected override void OnActiveSkill(int index)
     {
         if (!(Board is MachineMergeGameManager machine)) return;
         if (index == 0)
         {
-            machine.FireLaser(laserEmitter.position, laserDistance, splitMultiplier, splitScatter);
-            laserRemaining = laserVisualSeconds;
-            if (laserVisual != null)
-            {
-                laserVisual.gameObject.SetActive(true); laserVisual.useWorldSpace = true; laserVisual.positionCount = 2;
-                laserVisual.SetPosition(0, laserEmitter.position); laserVisual.SetPosition(1, laserEmitter.position + Vector3.right * laserDistance);
-            }
+            laserObject.SetActive(true);
+            machine.FireLaser(laserHitArea,splitMultiplier,splitScatter);
+            laserRemaining=laserVisualSeconds;
         }
         else if (machine.BeginClaw(clawVisual, clawRail, clawSpeed, clawGripOffset))
-        { selection?.CancelSelection(); selection?.spawnPointDragger?.EndDrag(); }
+        { selection?.CancelSelection(); selection?.ActiveSpawnPointDragger?.EndDrag(); }
     }
     protected override void TickGimic(float deltaTime)
     {
         if (!(Board is MachineMergeGameManager machine)) return;
         laserRemaining -= deltaTime;
-        if (laserVisual != null && laserRemaining <= 0f) laserVisual.gameObject.SetActive(false);
+        if (laserObject != null && laserRemaining <= 0f) laserObject.SetActive(false);
         machine.TickClaw(deltaTime);
+        if(machine.ClawState==MergeClawState.Idle) { followingTarget=false;CompleteSkill(1); }
+        if(clawTarget!=null && !followingTarget) clawTarget.gameObject.SetActive(false);
         var mouse = Mouse.current;
-        if (Keyboard.current != null && Keyboard.current.xKey.wasPressedThisFrame) { EndLaserDrag(); machine.CancelClaw(); }
+        if (Keyboard.current != null && Keyboard.current.xKey.wasPressedThisFrame) { EndLaserDrag(); machine.CancelClaw();followingTarget=false;CompleteSkill(1);if(clawTarget!=null) clawTarget.gameObject.SetActive(false); }
         if (mouse == null || inputCamera == null) return;
         if (!TryWorld(mouse.position.ReadValue(), out var world))
-        { if (mouse.leftButton.wasReleasedThisFrame) { EndLaserDrag(); machine.RequestClawDrop(); } return; }
+        { if(clawTarget!=null) clawTarget.gameObject.SetActive(false); if (mouse.leftButton.wasReleasedThisFrame) { EndLaserDrag(); machine.RequestClawDrop();followingTarget=false; } return; }
         if (mouse.leftButton.wasPressedThisFrame && !IsOverUI(mouse.position.ReadValue()))
         {
-            if (machine.ClawState == MergeClawState.AwaitingItem) machine.TryGrab(world);
+            if (machine.ClawState == MergeClawState.AwaitingItem) TryGrabClawItem(world);
             else if (machine.ClawState == MergeClawState.Idle && laserDragArea != null && laserDragArea.OverlapPoint(world))
             {
                 draggingLaser = true; previousSuppression = Board.SelectionSuppressed; Board.SelectionSuppressed = true;
-                selection?.CancelSelection(); selection?.spawnPointDragger?.EndDrag();
+                selection?.CancelSelection(); selection?.ActiveSpawnPointDragger?.EndDrag();
             }
         }
+        UpdateClawTarget(world);
         if (draggingLaser && laserEmitter != null && laserDragArea != null)
         {
             Vector2 clamped = laserDragArea.ClosestPoint(new Vector2(laserEmitter.position.x, world.y));
             laserEmitter.position = new Vector3(laserEmitter.position.x, clamped.y, laserEmitter.position.z);
         }
         if (machine.ClawState != MergeClawState.Idle && machine.ClawState != MergeClawState.AwaitingItem) machine.SetClawDropX(world.x);
-        if (mouse.leftButton.wasReleasedThisFrame) { EndLaserDrag(); machine.RequestClawDrop(); }
+        if (mouse.leftButton.wasReleasedThisFrame) { EndLaserDrag(); machine.RequestClawDrop();followingTarget=false;if(clawTarget!=null) clawTarget.gameObject.SetActive(false); }
+    }
+    public bool TryGrabClawItem(Vector2 world)
+    {
+        followingTarget=Board is MachineMergeGameManager machine && machine.TryGrab(world);
+        if(followingTarget) UpdateClawTarget(world);
+        return followingTarget;
+    }
+    public void UpdateClawTarget(Vector2 world)
+    {
+        if(clawTarget==null) return;
+        bool visible=followingTarget && Board is MachineMergeGameManager machine && machine.ClawState!=MergeClawState.Idle;
+        clawTarget.gameObject.SetActive(visible);
+        if(visible) clawTarget.position=new Vector3(world.x,world.y,clawTarget.position.z);
     }
     private bool TryWorld(Vector2 screen, out Vector2 world)
     {
@@ -97,7 +115,8 @@ public sealed class MergeBoxMachine : MergeBoxGimic
     {
         EndLaserDrag();
         if (Board is MachineMergeGameManager machine) { machine.CancelClaw(); machine.LaserDragArea = null; }
-        if (laserVisual != null) laserVisual.gameObject.SetActive(false);
+        if (laserObject != null) laserObject.SetActive(false);
+        followingTarget=false;if(clawTarget!=null) clawTarget.gameObject.SetActive(false);
         base.GimicStop();
     }
 }
