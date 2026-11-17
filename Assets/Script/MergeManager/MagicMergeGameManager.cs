@@ -11,6 +11,8 @@ public sealed class MagicMergeGameManager : MergegameManager
         rapidUntil = Mathf.Max(Time.time, rapidUntil) + Mathf.Max(0f, seconds);
         rapidMultiplier = Mathf.Max(1f, multiplier); RefreshFeedingTiming();
     }
+    public void ClearUnlimitedUse() => retainUntil=0f;
+    public void ClearRapidFeeding() { rapidUntil=0f;rapidMultiplier=1f;RefreshFeedingTiming(); }
     public void ClearMagic() { retainUntil = rapidUntil = 0f; rapidMultiplier = 1f; RefreshFeedingTiming(); }
     protected override void OnDisable() { ClearMagic(); base.OnDisable(); }
     public override bool RetainSelectedItems => Time.time < retainUntil;

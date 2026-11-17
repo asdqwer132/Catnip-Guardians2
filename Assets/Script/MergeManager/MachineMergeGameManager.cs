@@ -16,23 +16,24 @@ public sealed class MachineMergeGameManager : MergegameManager
     private int grabbedLife;
     private float desiredX, clawSpeed, gripOffset;
     private bool dropRequested, previousSuppression;
-    private readonly RaycastHit2D[] laserHits = new RaycastHit2D[256];
+    private readonly List<Collider2D> laserHits = new List<Collider2D>();
     private readonly List<MergeSpawnRequest> splitOutputs = new List<MergeSpawnRequest>();
-    public int FireLaser(Vector2 origin, float distance, int multiplier = 2, float spread = .25f)
+    public int FireLaser(Collider2D area,int multiplier=2,float spread=.25f)
     {
-        if (!CanOperate || recipeBook == null || distance <= 0f) return 0;
-        var filter = new ContactFilter2D { useTriggers = false, useLayerMask = false };
-        int count = gameObject.scene.GetPhysicsScene2D().Raycast(origin, Vector2.right, distance, filter, laserHits);
-        var candidates = new Dictionary<MergeItemObject, int>();
-        for (int i = 0; i < count; i++)
+        if(!CanOperate || recipeBook==null || area==null || !area.isActiveAndEnabled) return 0;
+        Physics2D.SyncTransforms();laserHits.Clear();
+        area.Overlap(new ContactFilter2D { useTriggers=true,useLayerMask=false },laserHits);
+        var candidates=new Dictionary<MergeItemObject,int>();
+        foreach(var hit in laserHits)
         {
-            var piece = laserHits[i].collider.GetComponentInParent<MergeItemObject>();
-            if (piece != null && piece.Owner == this && piece.CanMerge) candidates[piece] = piece.LifeId;
+            var piece=hit!=null?hit.GetComponentInParent<MergeItemObject>():null;
+            if(piece!=null && piece.Owner==this && piece.CanMerge) candidates[piece]=piece.LifeId;
         }
-        int split = 0;
-        foreach (var candidate in candidates)
-            if (candidate.Key != null && candidate.Key.LifeId == candidate.Value && TrySplit(candidate.Key, multiplier, spread)) split++;
-        return split;
+        int count=0;
+        // Snapshot first: fragments created by this shot must not split again in the same shot.
+        foreach(var target in candidates)
+            if(target.Key!=null && target.Key.LifeId==target.Value && TrySplit(target.Key,multiplier,spread)) count++;
+        return count;
     }
     public bool TrySplit(MergeItemObject piece, int multiplier = 2, float spread = .25f)
     {

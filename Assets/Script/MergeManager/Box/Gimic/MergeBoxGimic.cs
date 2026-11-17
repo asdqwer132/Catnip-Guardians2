@@ -14,15 +14,21 @@ public abstract class MergeBoxGimic : MonoBehaviour
         public Sprite skillImage;
         [Tooltip("액티브는 사용 후 대기 시간, 패시브는 반복 발동 주기입니다. 0인 패시브는 타이머를 사용하지 않습니다.")]
         [Min(0f)] public float defaultSkillCool = 10f;
+        [Tooltip("액티브 효과가 유지되는 시간입니다. 효과 종료 후 쿨타임을 시작합니다.")]
+        [Min(0f)] public float duration;
     }
 
     protected MergegameManager Board { get; private set; }
     private GimicSkillRuntime[] runtimeSkills = System.Array.Empty<GimicSkillRuntime>();
     public ItemCooldownStat GetSkillStat(int index) => index >= 0 && index < runtimeSkills.Length ? runtimeSkills[index].Resolve() : new ItemCooldownStat();
     private float[] remaining = Array.Empty<float>();
+    private float[] durationRemaining = Array.Empty<float>(), durationTotal = Array.Empty<float>();
+    private bool[] active = Array.Empty<bool>();
     private bool[] passiveTimerStarted = Array.Empty<bool>();
     public bool IsActiveSkill(int index) => index >= 0 && index < skills.Length && skills[index] != null && skills[index].type == GimicSkillType.Active;
-    public virtual float GetSkillDisplayProgress(int index) => GetSkillProgress(index);
+    public bool IsSkillActive(int index) => index>=0 && index<active.Length && active[index];
+    public float GetSkillDurationProgress(int index) => !IsSkillActive(index) ? 0f : durationTotal[index]>0f ? durationRemaining[index]/durationTotal[index] : 1f;
+    public virtual float GetSkillDisplayProgress(int index) => IsSkillActive(index) ? GetSkillDurationProgress(index) : GetSkillProgress(index);
     public virtual Color? GetSkillDisplayColor(int index) => null;
     public float GetSkillProgress(int index) => index >= 0 && index < remaining.Length ? remaining[index] : 0f;
     protected GimicData Data { get; private set; }
@@ -50,6 +56,7 @@ public abstract class MergeBoxGimic : MonoBehaviour
             runtimeSkills[i].Initialize(skills[i]);
         }
         remaining = new float[skills.Length];
+        durationRemaining=new float[skills.Length];durationTotal=new float[skills.Length];active=new bool[skills.Length];
         passiveTimerStarted = new bool[skills.Length];
         for (int i = 0; i < skills.Length; i++)
             if (!IsActiveSkill(i) && GetSkillStat(i).cooldown > 0f)
@@ -63,6 +70,7 @@ public abstract class MergeBoxGimic : MonoBehaviour
     {
         Running = false;
         remaining = Array.Empty<float>();
+        durationRemaining=durationTotal=Array.Empty<float>();active=Array.Empty<bool>();
         passiveTimerStarted = Array.Empty<bool>();
         foreach (var skill in runtimeSkills) if (skill != null)
         {
@@ -73,11 +81,14 @@ public abstract class MergeBoxGimic : MonoBehaviour
     }
     // UI/키 입력은 반드시 이 진입점을 사용합니다. 패시브는 직접 사용할 수 없습니다.
     public void UseBoxSkill(int index) => TryUseActiveSkill(index);
-    public bool CanActivateSkill(int index) => Running && Board != null && Board.CanOperate && IsActiveSkill(index) && CanUseActiveSkill(index) && remaining[index] <= 0f;
+    public bool CanActivateSkill(int index) => Running && Board != null && Board.CanOperate && IsActiveSkill(index) && CanUseActiveSkill(index) && !IsSkillActive(index) && remaining[index] <= 0f;
     public bool TryUseActiveSkill(int index)
     {
         if (!CanActivateSkill(index)) return false;
-        remaining[index] = GetSkillStat(index).cooldown > 0f ? 1f : 0f;
+        float duration=EffectStatUtility.Safe(GetSkillDuration(index),0f,1000000f,0f);
+        active[index]=WaitForSkillCompletion(index) || duration>0f;
+        durationRemaining[index]=durationTotal[index]=duration;
+        remaining[index]=active[index]?0f:GetSkillStat(index).cooldown>0f?1f:0f;
         OnActiveSkill(index);
         return true;
     }
@@ -85,9 +96,19 @@ public abstract class MergeBoxGimic : MonoBehaviour
     public void TickSkills(float deltaTime)
     {
         if (!Running || Board == null || !Board.CanOperate || deltaTime <= 0f) return;
-        TickGimic(deltaTime);
         for (int i = 0; Running && i < remaining.Length; i++)
         {
+            float cooldownDelta=deltaTime;
+            if(IsSkillActive(i))
+            {
+                if(WaitForSkillCompletion(i)) continue;
+                cooldownDelta=Mathf.Max(0f,deltaTime-durationRemaining[i]);
+                durationRemaining[i]=Mathf.Max(0f,durationRemaining[i]-deltaTime);
+                if(durationRemaining[i]>0f) continue;
+                CompleteSkill(i);
+                OnSkillDurationEnded(i);
+                if(!Running) break;
+            }
             var stat = GetSkillStat(i);
             bool passive = !IsActiveSkill(i);
             if (stat.cooldown <= 0f)
@@ -95,7 +116,7 @@ public abstract class MergeBoxGimic : MonoBehaviour
             if (passive && !passiveTimerStarted[i])
             { remaining[i] = 1f; passiveTimerStarted[i] = true; }
             bool wasCooling = remaining[i] > 0f;
-            remaining[i] = Mathf.Max(0f, remaining[i] - deltaTime * stat.cooldownRecoveryRate / stat.cooldown);
+            remaining[i] = Mathf.Max(0f, remaining[i] - cooldownDelta * stat.cooldownRecoveryRate / stat.cooldown);
             if (passive && wasCooling && remaining[i] <= 0f)
             {
                 remaining[i] = 1f;
@@ -103,6 +124,17 @@ public abstract class MergeBoxGimic : MonoBehaviour
                 if (!Running) break;
             }
         }
+        if(Running) TickGimic(deltaTime);
+    }
+    protected virtual float GetSkillDuration(int index) => skills[index].duration;
+    protected virtual bool WaitForSkillCompletion(int index) => false;
+    protected virtual void OnSkillDurationEnded(int index) { }
+    // 외부 미니게임/비동기 동작도 같은 종료 진입점에서 쿨타임을 시작합니다.
+    protected void CompleteSkill(int index)
+    {
+        if(!Running || !IsSkillActive(index)) return;
+        active[index]=false;durationRemaining[index]=0f;
+        remaining[index]=GetSkillStat(index).cooldown>0f?1f:0f;
     }
     // 새 상자는 발동 내용만 구현합니다. 쿨이 없는 지속/이벤트 패시브는 GimicStart 또는 자체 이벤트에서 처리합니다.
     protected void SetDefaultSkills(params GimicSkill[] defaults) { if (skills == null || skills.Length == 0) skills = defaults; }
