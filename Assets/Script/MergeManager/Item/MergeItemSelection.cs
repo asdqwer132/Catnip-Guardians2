@@ -7,7 +7,8 @@ using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 [DisallowMultipleComponent]
-public sealed class MergeItemSelection : MonoBehaviour
+[BuffTargetGroups("MergeSelection", "MergeSelection/Weapon", "MergeSelection/Food", "MergeSelection/Mineral", "MergeSelection/Monster", "MergeSelection/Fishing", "MergeSelection/Plant", "MergeSelection/Machine", "MergeSelection/Magic")]
+public sealed class MergeItemSelection : MonoBehaviour, IBuffTarget
 {
     [Header("기존 씬 연결")]
     public MergegameManager board;
@@ -34,7 +35,44 @@ public sealed class MergeItemSelection : MonoBehaviour
     [Min(0f)] public float clickCooldown = .2f;
     public bool logSelections = true;
 
-    private readonly MergeItemSelectionGesture gesture = new MergeItemSelectionGesture();
+    private readonly MergeItemSelectionGesture localGesture = new MergeItemSelectionGesture();
+    // 하나의 입력기가 현재 상자의 설정을 읽습니다. 비활성 선택기도 설정/쿨타임을 보관합니다.
+    public MergeItemSelection Settings => board != null && board.TryGetComponent<MergeItemSelection>(out var settings) ? settings : this;
+    private MergeItemSelectionGesture gesture => Settings.localGesture;
+    private SpriteRenderer ActiveVisual => Settings.dragVisual;
+    private Camera ActiveCamera => Settings.inputCamera != null ? Settings.inputCamera : inputCamera;
+    public MergeSpawnPointDragger ActiveSpawnPointDragger => spawnPointDragger != null ? spawnPointDragger : Settings.spawnPointDragger;
+    private BuffManager buffManager;
+    public UnityEngine.Object BuffTargetObject => this;
+    public string BuffTargetGroup
+    {
+        get
+        {
+            var owner=GetComponent<MergegameManager>();
+            return "MergeSelection/" + (owner!=null?owner.itemSeries:board!=null?board.itemSeries:ItemSeries.None);
+        }
+    }
+    public string BuffTargetDebugName => BuffTargetGroup;
+    public MergeSelectionStat RuntimeStat { get; private set; }
+    public void RefreshBuffedStat()
+    {
+        var source=new MergeSelectionStat { selectionWidth=maximumDragWidth,selectionHeight=maximumDragHeight,
+            selectionDragThreshold=dragThreshold,selectionDragCooldown=dragCooldown,selectionClickCooldown=clickCooldown };
+        source.Clamp();
+        RuntimeStat=buffManager!=null?buffManager.GetBuffedStatForTarget(source,this,BuffCalculationMode.All,false):source;
+        RuntimeStat.Clamp();
+    }
+    public MergeSelectionStat ResolveStat()
+    {
+        if(buffManager!=BuffManager.instance)
+        {
+            if(buffManager!=null) buffManager.UnregisterBuffTarget(this);
+            buffManager=BuffManager.instance;
+            if(buffManager!=null) buffManager.RegisterBuffTarget(this);
+        }
+        RefreshBuffedStat();
+        return RuntimeStat;
+    }
     private readonly List<Selection> selected = new List<Selection>();
     private readonly List<InventoryItem> displayedItems = new List<InventoryItem>();
     private readonly List<RaycastResult> uiHits = new List<RaycastResult>();
@@ -56,8 +94,18 @@ public sealed class MergeItemSelection : MonoBehaviour
     public IReadOnlyList<InventoryItem> SelectedItems => displayedItems;
     public event Action SelectionChanged;
     private bool CanSelect => isActiveAndEnabled && !committing && board != null && board.CanOperate && !board.SelectionSuppressed &&
-        (spawnPointDragger == null || !spawnPointDragger.IsDragging) &&
+        (ActiveSpawnPointDragger == null || !ActiveSpawnPointDragger.IsDragging) &&
         (GameInputManager.instance == null || !GameInputManager.instance.IsBlocked(GameInputBlockType.Gameplay));
+
+    public void SetBoard(MergegameManager value)
+    {
+        if(board==value) return;
+        CancelSelection();
+        ActiveSpawnPointDragger?.EndDrag();
+        board=value;
+        BindVisual();
+        HideVisual();
+    }
 
     private void OnEnable()
     {
@@ -89,7 +137,7 @@ public sealed class MergeItemSelection : MonoBehaviour
     private void BeginPointer()
     {
         // 두 InputAction 콜백의 실행 순서와 관계없이 투입구 잡기와 아이템 선택을 분리합니다.
-        if (spawnPointDragger != null && spawnPointDragger.IsHandleAtScreen(positionInput.ReadValue<Vector2>())) return;
+        if (ActiveSpawnPointDragger != null && ActiveSpawnPointDragger.IsHandleAtScreen(positionInput.ReadValue<Vector2>())) return;
         if (TryPointerWorld(out var world) && !IsOverUI()) TryBeginSelection(world);
     }
 
@@ -103,14 +151,14 @@ public sealed class MergeItemSelection : MonoBehaviour
     private bool TryPointerWorld(out Vector2 world)
     {
         world = default;
-        if (!Application.isFocused || inputCamera == null || !inputCamera.isActiveAndEnabled) return false;
+        if (!Application.isFocused || ActiveCamera == null || !ActiveCamera.isActiveAndEnabled) return false;
         Vector2 screen = positionInput.ReadValue<Vector2>();
-        if (!SceneViewportInput.ScreenRect(inputCamera).Contains(screen)) return false;
-        var presentation=SceneCameraPresentation.ForCamera(inputCamera);
+        if (!SceneViewportInput.ScreenRect(ActiveCamera).Contains(screen)) return false;
+        var presentation=SceneCameraPresentation.ForCamera(ActiveCamera);
         if(presentation!=null && !presentation.ContainsScreenPoint(screen)) return false;
         // 카메라는 마우스 좌표 변환만 담당합니다. 판정과 범위는 아이템 평면의 월드 값입니다.
         var plane = new Plane(Vector3.forward, new Vector3(0f, 0f, board != null ? board.transform.position.z : 0f));
-        Ray ray = SceneViewportInput.ScreenPointToRay(inputCamera,screen);
+        Ray ray = SceneViewportInput.ScreenPointToRay(ActiveCamera,screen);
         if (!plane.Raycast(ray, out float distance)) return false;
         world = ray.GetPoint(distance);
         return true;
@@ -142,7 +190,8 @@ public sealed class MergeItemSelection : MonoBehaviour
         if (!IsSelecting) return;
         // 표시용 사각형을 최대 크기로 줄이기 전에 실제 포인터 위치를 검사합니다.
         if (!CanSelect || board.CapturesSelectionPointer(worldPosition) || !IsInsideDragArea(worldPosition)) { CancelSelection(); return; }
-        gesture.Move(worldPosition, maximumDragWidth, maximumDragHeight, dragThreshold);
+        var stat=Settings.ResolveStat();
+        gesture.Move(worldPosition, stat.selectionWidth, stat.selectionHeight, stat.selectionDragThreshold);
         RefreshVisual();
     }
 
@@ -153,7 +202,8 @@ public sealed class MergeItemSelection : MonoBehaviour
         if (!IsSelecting) return 0; // 영역 밖 mouse-up으로 취소됐으면 클릭 삭제로 이어지지 않습니다.
         bool dragged = gesture.IsDrag;
         CollectSelection(dragged);
-        gesture.Complete(Time.time, selected.Count > 0 ? (dragged ? dragCooldown : clickCooldown) : 0f);
+        var stat=Settings.ResolveStat();
+        gesture.Complete(Time.time, selected.Count > 0 ? (dragged ? stat.selectionDragCooldown : stat.selectionClickCooldown) : 0f);
         HideVisual();
         committing = true;
         LastRemovedCount = 0; LastUsedCount = 0;
@@ -195,10 +245,10 @@ public sealed class MergeItemSelection : MonoBehaviour
     {
         if (float.IsNaN(worldPosition.x) || float.IsInfinity(worldPosition.x) ||
             float.IsNaN(worldPosition.y) || float.IsInfinity(worldPosition.y)) return false;
-        if (dragAllowedArea == null) return true;
-        if (!dragAllowedArea.gameObject.activeInHierarchy || inputCamera == null) return false;
-        var canvas = dragAllowedArea.GetComponentInParent<Canvas>();
-        Camera areaCamera = inputCamera;
+        if (Settings.dragAllowedArea == null) return true;
+        if (!Settings.dragAllowedArea.gameObject.activeInHierarchy || ActiveCamera == null) return false;
+        var canvas = Settings.dragAllowedArea.GetComponentInParent<Canvas>();
+        Camera areaCamera = ActiveCamera;
         if (canvas != null)
         {
             canvas = canvas.rootCanvas;
@@ -207,9 +257,9 @@ public sealed class MergeItemSelection : MonoBehaviour
             if (canvas.renderMode != RenderMode.ScreenSpaceOverlay && areaCamera == null) return false;
         }
         float z = board != null ? board.transform.position.z : 0f;
-        Vector3 screen = SceneViewportInput.WorldToScreenPoint(inputCamera,new Vector3(worldPosition.x, worldPosition.y, z));
-        if (screen.z < 0f || !RectTransformUtility.ScreenPointToLocalPointInRectangle(dragAllowedArea, screen, areaCamera, out var local)) return false;
-        return MergeItemSelectionGesture.ContainsAreaPoint(dragAllowedArea.rect, local);
+        Vector3 screen = SceneViewportInput.WorldToScreenPoint(ActiveCamera,new Vector3(worldPosition.x, worldPosition.y, z));
+        if (screen.z < 0f || !RectTransformUtility.ScreenPointToLocalPointInRectangle(Settings.dragAllowedArea, screen, areaCamera, out var local)) return false;
+        return MergeItemSelectionGesture.ContainsAreaPoint(Settings.dragAllowedArea.rect, local);
     }
 
     private void CollectSelection(bool dragged)
@@ -248,16 +298,16 @@ public sealed class MergeItemSelection : MonoBehaviour
 
     private void RefreshVisual()
     {
-        if (dragVisual == null || dragVisual.sprite == null) return;
+        if (ActiveVisual == null || ActiveVisual.sprite == null) return;
         BindVisual();
-        if (dragVisual.enabled != IsDragging) dragVisual.enabled = IsDragging;
+        if (ActiveVisual.enabled != IsDragging) ActiveVisual.enabled = IsDragging;
         if (!IsDragging) return;
         Rect area = gesture.Bounds;
-        Transform visual = dragVisual.transform;
-        Sprite sprite = dragVisual.sprite;
+        Transform visual = ActiveVisual.transform;
+        Sprite sprite = ActiveVisual.sprite;
         if (visual.rotation != Quaternion.identity) visual.rotation = Quaternion.identity;
         Vector3 localCenter;
-        if (dragVisual.drawMode == SpriteDrawMode.Simple)
+        if (ActiveVisual.drawMode == SpriteDrawMode.Simple)
         {
             Vector3 parentScale = visual.parent != null ? visual.parent.lossyScale : Vector3.one;
             Vector3 spriteSize = sprite.bounds.size;
@@ -274,15 +324,15 @@ public sealed class MergeItemSelection : MonoBehaviour
             Vector2 size = new Vector2(area.width / Mathf.Max(.0001f, Mathf.Abs(scale.x)),
                 area.height / Mathf.Max(.0001f, Mathf.Abs(scale.y)));
             // 타일/테두리는 늘리지 않고 Renderer의 그리는 영역만 변경합니다.
-            if (dragVisual.size != size) dragVisual.size = size;
+            if (ActiveVisual.size != size) ActiveVisual.size = size;
             Vector2 pivot = sprite.pivot;
             Vector2 spritePixels = sprite.rect.size;
             localCenter = new Vector3((.5f - pivot.x / spritePixels.x) * size.x,
                 (.5f - pivot.y / spritePixels.y) * size.y, 0f);
         }
-        previousDrawMode = dragVisual.drawMode;
-        if (dragVisual.flipX) localCenter.x = -localCenter.x;
-        if (dragVisual.flipY) localCenter.y = -localCenter.y;
+        previousDrawMode = ActiveVisual.drawMode;
+        if (ActiveVisual.flipX) localCenter.x = -localCenter.x;
+        if (ActiveVisual.flipY) localCenter.y = -localCenter.y;
         Vector3 position = new Vector3(area.center.x, area.center.y, visualZ) - visual.TransformVector(localCenter);
         // 영역이 같으면 Transform/size 값을 다시 쓰지 않아 최대치에서도 표시가 안정됩니다.
         if (visual.position != position) visual.position = position;
@@ -290,8 +340,8 @@ public sealed class MergeItemSelection : MonoBehaviour
 
     private void BindVisual()
     {
-        if (boundVisual == dragVisual) return;
-        boundVisual = dragVisual;
+        if (boundVisual == ActiveVisual) return;
+        boundVisual = ActiveVisual;
         if (boundVisual == null) return;
         authoredVisualScale = boundVisual.transform.localScale;
         visualZ = boundVisual.transform.position.z;
@@ -300,7 +350,7 @@ public sealed class MergeItemSelection : MonoBehaviour
 
     private void HideVisual()
     {
-        if (dragVisual != null) dragVisual.enabled = false;
+        if (ActiveVisual != null) ActiveVisual.enabled = false;
     }
     private void OnApplicationFocus(bool focused) { if (!focused) CancelSelection(); }
     private void OnDisable()
@@ -308,5 +358,5 @@ public sealed class MergeItemSelection : MonoBehaviour
         CancelSelection();
         positionInput?.Disable(); selectInput?.Disable(); cancelInput?.Disable();
     }
-    private void OnDestroy() { positionInput?.Dispose(); selectInput?.Dispose(); cancelInput?.Dispose(); }
+    private void OnDestroy() { if(buffManager!=null) buffManager.UnregisterBuffTarget(this);positionInput?.Dispose(); selectInput?.Dispose(); cancelInput?.Dispose(); }
 }
