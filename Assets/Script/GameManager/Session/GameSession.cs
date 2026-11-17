@@ -9,17 +9,11 @@ public class GameSession : MonoBehaviour
     public static event Action InstanceChanged;
     public event Action GameDataChanged;
     public event Action BattleItemsAvailable;
-    public event Action MaterialsChanged;
     public event Action RoundStarted;
 
     [Header("Upgrade → General")]
     [SerializeField] private UpgradeToGeneralData generalData = new UpgradeToGeneralData();
     [SerializeField] private bool hasGeneralData;
-
-    [Header("Material Stock Policy")]
-    [Tooltip("When enabled, main materials consumed in battle are deducted from the returning upgrade inventory. Disabled uses a fresh copy each round and preserves upgrade stock.")]
-    public bool consumeUpgradeInventoryMaterials;
-    [SerializeField] private List<InventoryItem> startingMaterialItems = new List<InventoryItem>();
 
     [Header("Game Item → Battle")]
     [Tooltip("배틀 씬에서 아직 받지 않은 아이템 묶음입니다. 먼저 보낸 순서로 전달됩니다.")]
@@ -109,7 +103,6 @@ public class GameSession : MonoBehaviour
     {
         generalData = (data ?? new UpgradeToGeneralData()).Copy();
         UpgradeProgressSave.Write(generalData);
-        startingMaterialItems = GameSessionItemCopy.Copy(generalData.materialItems);
         hasGeneralData = true;
         GameDataRevision++;
         ClearBattleTransfers();
@@ -124,55 +117,15 @@ public class GameSession : MonoBehaviour
 
     public void BeginRound()
     {
-        if (!consumeUpgradeInventoryMaterials && hasGeneralData)
-            generalData.materialItems = GameSessionItemCopy.Copy(startingMaterialItems);
         RoundRevision++;
         RoundStarted?.Invoke();
     }
 
-    public int GetMaterialCount(ItemData item)
-    {
-        long count = 0;
-        if (item != null && hasGeneralData && generalData?.materialItems != null)
-            foreach (var entry in generalData.materialItems)
-                if (entry.itemData == item) count += entry.amount;
-        return (int)Math.Min(int.MaxValue, count);
-    }
-
-    // 본재고만 이곳에서 소비합니다. 씬이 내려가도 남은 수량은 세션에 유지됩니다.
-    public bool TryConsumeMaterial(ItemData item, int amount = 1)
-    {
-        if (item == null || amount <= 0 || GetMaterialCount(item) < amount)
-            return false;
-
-        int remaining = amount;
-        foreach (var entry in generalData.materialItems)
-        {
-            if (entry.itemData != item) continue;
-            int used = Math.Min(entry.amount, remaining);
-            entry.amount -= used;
-            remaining -= used;
-            if (remaining == 0) break;
-        }
-        generalData.materialItems.RemoveAll(entry => entry.amount <= 0);
-        MaterialsChanged?.Invoke();
-        return true;
-    }
-
-    internal void RefundMaterial(ItemData item, int revision, int roundRevision)
-    {
-        // 풀 콜백 도중 새 게임이 시작되었다면 이전 게임의 예약을 돌려주지 않습니다.
-        if (item == null || !hasGeneralData || (revision != GameDataRevision || (!consumeUpgradeInventoryMaterials && roundRevision != RoundRevision))) return;
-        var entry = generalData.materialItems.Find(value => value.itemData == item);
-        if (entry == null) generalData.materialItems.Add(new InventoryItem(item, 1));
-        else entry.amount++;
-        MaterialsChanged?.Invoke();
-    }
-
-    public bool RestoreMaterialInventory(InventoryManager inventory)
+    // 업그레이드 인벤토리의 저장 스냅샷입니다. 라운드의 소비 수량은 여기에 쓰지 않습니다.
+    public bool TryRestoreUpgradeInventory(InventoryManager inventory)
     {
         if (inventory == null || !TryReadGeneralData(out var data) || data.legacySkillsOnly) return false;
-        inventory.items = consumeUpgradeInventoryMaterials ? data.materialItems : GameSessionItemCopy.Copy(startingMaterialItems);
+        inventory.items = GameSessionItemCopy.Copy(data.materialItems);
         inventory.onInventoryChanged?.Invoke();
         return true;
     }
@@ -221,7 +174,6 @@ public class GameSession : MonoBehaviour
     public void ClearAll()
     {
         generalData = new UpgradeToGeneralData();
-        startingMaterialItems.Clear();
         hasGeneralData = false;
         GameDataRevision++;
         ClearBattleTransfers();

@@ -14,7 +14,7 @@ public sealed class MergeBoxEntry
 [DefaultExecutionOrder(-100)]
 public sealed class MergeBoxSceneController : MonoBehaviour
 {
-    public MergeGimicManager gameManager;
+    public MergeGeneralManager gameManager;
     public Transform mainCamera;
     public Vector3 root;
     public ObjectAutoPlacer autoPlacer;

@@ -86,9 +86,8 @@ public partial class MergegameManager : MonoBehaviour
     public bool TryDropCurrent() => Dropper.TryDropCurrent();
     public void GetUpcomingDropItems(List<ItemData> result, int maximum) => Dropper.GetUpcomingItems(result, maximum);
     public void SetAllMaterialsSelected(bool selected) => Dropper.SetAllMaterialsSelected(selected);
-    public void SetSessionMaterials(IReadOnlyList<InventoryItem> items, GameSession source = null) => Dropper.SetSessionMaterials(items, source);
-    public void ResetRoundMaterials() => Dropper.ResetRoundMaterials();
-    public void RefreshSessionMaterials(IReadOnlyList<InventoryItem> items) => Dropper.RefreshSessionMaterials(items);
+    public void SetMaterialStock(IReadOnlyList<InventoryItem> items) => Dropper.SetMaterialStock(items);
+    public void SetConfiguredMaterialCounts(IReadOnlyList<int> counts) => Dropper.SetConfiguredMaterialCounts(counts);
     public void QueueContact(MergeItemObject a, MergeItemObject b) => Combiner.QueueContact(a, b);
     public void ProcessContacts() => Combiner.ProcessContacts();
     protected bool TryMergeWithIngredient(MergeItemObject food, MergeItem burningItem) => Combiner.TryBake(food, burningItem);

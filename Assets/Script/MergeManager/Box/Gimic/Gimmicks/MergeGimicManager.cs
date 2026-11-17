@@ -5,100 +5,30 @@ using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
 using TMPro;
 
-// 아이템 씬의 라운드 진입점: 시리즈/레벨 선택, 기믹 수명, 스킬 쿨타임을 관리합니다.
+// 선택된 상자의 기믹 수명과 스킬 버튼만 관리합니다. 라운드/재고/상자 선택은 MergeGeneralManager가 담당합니다.
 [DefaultExecutionOrder(-90)]
 public class MergeGimicManager : MonoBehaviour
 {
-    public MergeBoxSceneController boxes;
-    [Min(0)] public int startingSeriesIndex;
-    [Min(1)] public int startingLevel = 1;
-    public bool useSessionLevels = true;
     [SerializeField] private CoolButton[] skillButtons = Array.Empty<CoolButton>();
-
-    [ReadOnly]
-    [SerializeField] private MergeBoxGimic currentBox;
-    private UpgradeToGeneralData roundData;
+    [ReadOnly, SerializeField] private MergeBoxGimic currentBox;
     private UnityAction[] handlers;
     private Color[] authoredSkillColors;
     public MergeBoxGimic CurrentGimic => currentBox;
-    public int SelectedIndex { get; private set; } = -1;
-    public int SelectedLevel => boxes != null && boxes.SelectedBoxManager != null ? boxes.SelectedBoxManager.CurrentLevel : startingLevel;
-    public int StartingSeriesIndex => startingSeriesIndex - 1;
 
-    private void Awake()
+    public void InitializeGimic(MergegameManager board, MergeBoxBindings box)
     {
-        if (boxes != null) boxes.gameManager = this;
-    }
-    private void Start()
-    {
-        if (SelectedIndex >= 0) return;
-        if (GameSession.Instance != null && GameSession.Instance.TryReadGeneralData(out var data)) roundData = data;
-        StartRound(StartingSeriesIndex, ResolveLevel(StartingSeriesIndex));
-    }
-    private void OnDisable() { currentBox?.GimicStop(); ClearSkills(); }
-    private void OnEnable()
-    {
-        if (SelectedIndex >= 0) StartRound(SelectedIndex, SelectedLevel);
-    }
-    public void InitializeRound(UpgradeToGeneralData data)
-    {
-        roundData = data;
-        int index = SelectedIndex >= 0 ? SelectedIndex : StartingSeriesIndex;
-        StartRound(index, ResolveLevel(index));
-    }
-    private int ResolveLevel(int index)
-    {
-        int level = Mathf.Max(1, startingLevel);
-        if (!useSessionLevels || roundData?.boxLevels == null || boxes == null || index < 0 || index >= boxes.boxes.Length) return level;
-        var board = boxes.boxes[index]?.board;
-        if (board == null) return level;
-        level = 1;
-        foreach (var snapshot in roundData.boxLevels)
-            if (snapshot != null && snapshot.series == board.itemSeries) level = Mathf.Max(level, snapshot.level);
-        return level;
-    }
-    public bool StartRound(int seriesIndex, int level)
-    {
-        if (boxes == null || seriesIndex < 0 || seriesIndex >= boxes.boxes.Length) return false;
-        var entry = boxes.boxes[seriesIndex];
-        if (entry == null || entry.board == null || entry.boxRoot == null || entry.levelManager == null) return false;
-        if (!entry.levelManager.TrySetLevel(level)) return false;
-        currentBox?.GimicStop(); ClearSkills();
-        SelectedIndex = seriesIndex;
-        foreach (var other in boxes.boxes)
-        {
-            if (other == null) continue;
-            bool selected = other == entry;
-            if (other.board != null) other.board.enabled = selected;
-            if (other.boxRoot != null) other.boxRoot.gameObject.SetActive(selected);
-        }
-        boxes.ShowBox(seriesIndex);
-        currentBox = entry.levelManager.CurrentBox.GetComponent<MergeBoxGimic>();
-        if (currentBox != null) currentBox.Initialize(entry.board);
+        StopGimic();
+        currentBox = box != null ? box.GetComponent<MergeBoxGimic>() : null;
+        if (currentBox != null && board != null) currentBox.Initialize(board);
         SetSkills();
-        return true;
     }
-    public void SetBox(int index) => StartRound(index, ResolveLevel(index));
-    public void SetCurrentBoxLevel(int level)
+
+    public void StopGimic()
     {
-        if (SelectedIndex >= 0) StartRound(SelectedIndex, level);
+        currentBox?.GimicStop();
+        ClearSkills();
     }
-    public bool SetBoxLevel(ItemSeries series, int level)
-    {
-        if (boxes == null) return false;
-        for (int i = 0; i < boxes.boxes.Length; i++)
-            if (boxes.boxes[i]?.board != null && boxes.boxes[i].board.itemSeries == series) return StartRound(i, level);
-        return false;
-    }
-    public bool UpgradeCurrentBox()
-    {
-        var manager = boxes != null ? boxes.SelectedBoxManager : null;
-        if (manager == null) return false;
-        int next = int.MaxValue;
-        foreach (var entry in manager.levels)
-            if (entry?.box != null && entry.minimumLevel > manager.CurrentLevel) next = Mathf.Min(next, entry.minimumLevel);
-        return next != int.MaxValue && StartRound(SelectedIndex, next);
-    }
+    private void OnDisable() => StopGimic();
     public void SetSkills()
     {
         ClearSkills();

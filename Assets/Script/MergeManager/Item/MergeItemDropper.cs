@@ -9,8 +9,7 @@ internal sealed class MergeItemDropper
     private readonly MergegameManager owner;
     private readonly List<Toggle> observedToggles = new List<Toggle>();
     private readonly Dictionary<MergeItemMaterial, long> previewStock = new Dictionary<MergeItemMaterial, long>();
-    private GameSession materialSession;
-    private bool usesSessionMaterials, dropping;
+    private bool sharedItemStock, dropping;
     private float nextDropAt, nextAutomaticDropAt;
     private float previousInterval = -1f;
     private int stockRevision;
@@ -51,6 +50,10 @@ internal sealed class MergeItemDropper
             if (!previewStock.TryGetValue(current, out long remaining) || remaining <= 0) break;
             result.Add(current.mergeItem.item);
             previewStock[current] = remaining - 1;
+            if (sharedItemStock)
+                foreach (var slot in owner.mergeMaterials)
+                    if (slot != null && slot != current && slot.mergeItem != null && slot.mergeItem.item == current.mergeItem.item && previewStock.ContainsKey(slot))
+                        previewStock[slot] = remaining - 1;
             if (!cycle && remaining > 1) continue;
             int start = owner.mergeMaterials.IndexOf(current);
             current = null;
@@ -186,38 +189,49 @@ internal sealed class MergeItemDropper
         owner.currentMaterial = NextFeedingMaterial(owner.currentMaterial);
     }
 
-    public void SetSessionMaterials(IReadOnlyList<InventoryItem> items, GameSession source = null)
+    // 가방에서 복사한 라운드 재고입니다. 같은 데이터의 중복 슬롯도 한 수량을 공유합니다.
+    public void SetMaterialStock(IReadOnlyList<InventoryItem> items)
     {
-        materialSession = source;
-        usesSessionMaterials = source != null;
-        // Apply incoming stock before refreshing availability, so the initial
-        // placeholder zero cannot disable a preselected material.
-        RefreshSessionMaterials(items);
-        ResetRoundMaterials();
+        stockRevision++;
+        sharedItemStock = true;
+        if (owner.mergeMaterials != null)
+            foreach (var material in owner.mergeMaterials)
+            {
+                if (material?.mergeItem == null) continue;
+                long count = 0;
+                if (items != null && material.mergeItem.item != null && material.mergeItem.item.series == owner.itemSeries)
+                    foreach (var item in items)
+                        if (item?.itemData == material.mergeItem.item) count += Math.Max(0, item.amount);
+                material.count = (int)Math.Min(int.MaxValue, count);
+            }
+        ResetBoard();
     }
 
-    public void ResetRoundMaterials()
+    // 디버그는 매니저에 작성한 슬롯별 수량을 그대로 사용합니다.
+    public void SetConfiguredMaterialCounts(IReadOnlyList<int> counts)
+    {
+        stockRevision++;
+        sharedItemStock = false;
+        if (owner.mergeMaterials != null)
+            for (int i = 0; i < owner.mergeMaterials.Count; i++)
+                if (owner.mergeMaterials[i] != null)
+                    owner.mergeMaterials[i].count = counts != null && i < counts.Count ? Math.Max(0, counts[i]) : 0;
+        ResetBoard();
+    }
+
+    private void ResetBoard()
     {
         owner.ClearItems();
         EnsureSelection();
         owner.RefreshUI();
     }
 
-    public void RefreshSessionMaterials(IReadOnlyList<InventoryItem> items)
+    private void SetRemaining(MergeItemMaterial material, int count)
     {
-        stockRevision++;
-        if (owner.mergeMaterials == null) return;
-        foreach (var material in owner.mergeMaterials)
-        {
-            if (material?.mergeItem == null) continue;
-            long count = 0;
-            if (items != null && material.mergeItem.item != null && material.mergeItem.item.series == owner.itemSeries)
-                foreach (var item in items)
-                    if (item?.itemData == material.mergeItem.item) count += Math.Max(0, item.amount);
-            material.count = (int)Math.Min(int.MaxValue, count);
-        }
-        EnsureSelection();
-        owner.RefreshUI();
+        material.count = Math.Max(0, count);
+        if (!sharedItemStock || owner.mergeMaterials == null) return;
+        foreach (var slot in owner.mergeMaterials)
+            if (slot?.mergeItem != null && slot.mergeItem.item == material.mergeItem.item) slot.count = material.count;
     }
 
     public bool TryDropCurrent()
@@ -239,26 +253,15 @@ internal sealed class MergeItemDropper
         int before = owner.Revision;
         bool committed = false;
         bool reserved = false;
-        bool useSessionStock = usesSessionMaterials;
         int reservedStockRevision = stockRevision;
-        var source = materialSession;
-        int sourceRevision = source != null ? source.GameDataRevision : -1;
-        int sourceRound = source != null ? source.RoundRevision : -1;
         MergeItemObject piece = null;
         try
         {
-            // Probe before reserving stock: a blocked last item must not switch its
-            // selection toggle off through session inventory change callbacks.
+            // 막힌 위치에서는 라운드 재고를 소비하거나 마지막 토글을 끄지 않습니다.
             piece = owner.SpawnPiece(material.mergeItem, position);
             if (piece == null || !piece.IsLive || before != owner.Revision || !owner.CanOperate) return false;
             if (!owner.TryPlaceSpawn(piece, position, search: false)) return owner.Reject("투입 위치가 막혀 있습니다.");
-            if (useSessionStock)
-            {
-                if (source == null || !source.TryConsumeMaterial(material.mergeItem.item))
-                    return owner.Reject("남은 재고가 없습니다.");
-                material.count = source.GetMaterialCount(material.mergeItem.item);
-            }
-            else material.count--;
+            SetRemaining(material, material.count - 1);
             reserved = true;
             if (before != owner.Revision || !owner.CanOperate) return false;
             piece.SetSimulated(true);
@@ -277,13 +280,7 @@ internal sealed class MergeItemDropper
                 if (piece != null) piece.ReturnToPool();
                 if (reserved)
                 {
-                    if (useSessionStock)
-                    {
-                        source?.RefundMaterial(material.mergeItem.item, sourceRevision, sourceRound);
-                        if (source != null && source.GameDataRevision == sourceRevision)
-                            material.count = source.GetMaterialCount(material.mergeItem.item);
-                    }
-                    else if (reservedStockRevision == stockRevision) material.count++;
+                    if (reservedStockRevision == stockRevision) SetRemaining(material, material.count + 1);
                     owner.RefreshUI();
                 }
             }

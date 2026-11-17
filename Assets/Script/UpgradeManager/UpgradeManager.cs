@@ -46,7 +46,7 @@ public class UpgradeManager : MonoBehaviour
 
 
         var inventory = materialInventory != null ? materialInventory : InventoryManager.instance;
-        bool restored = GameSession.Instance != null && GameSession.Instance.RestoreMaterialInventory(inventory);
+        bool restored = GameSession.Instance != null && GameSession.Instance.TryRestoreUpgradeInventory(inventory);
         if (!restored && itemInitManager != null)
             itemInitManager.ApplyDefaultInventoryItems();
 
