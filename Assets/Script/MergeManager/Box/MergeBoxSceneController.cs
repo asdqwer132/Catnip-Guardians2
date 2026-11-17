@@ -33,6 +33,8 @@ public sealed class MergeBoxSceneController : MonoBehaviour
         foreach (var entry in boxes)
         {
             if (entry?.board == null || entry.boxRoot == null) continue;
+            var settings=entry.board.GetComponent<MergeItemSelection>();
+            if(settings!=null && settings!=selection) settings.enabled=false;
             if (entry.levelManager == null) entry.levelManager = entry.boxRoot.GetComponent<MergeBoxLevelManager>();
             if (entry.levelManager != null)
             {
@@ -56,7 +58,7 @@ public sealed class MergeBoxSceneController : MonoBehaviour
     {
         if (value != SelectedBoxManager) return;
         selection?.CancelSelection();
-        if (selection != null) selection.spawnPointDragger?.EndDrag();
+        if (selection != null) selection.ActiveSpawnPointDragger?.EndDrag();
     }
 
     public MergeBoxLevelManager GetBoxManager(ItemSeries series)
@@ -77,7 +79,7 @@ public sealed class MergeBoxSceneController : MonoBehaviour
         if (index < 0 || index >= boxes.Length || boxes[index]?.board == null || boxes[index].boxRoot == null) return;
         if (SelectedBoard != null) SelectedBoard.SetMaterialUIEnabled(false);
         selection?.CancelSelection();
-        if (selection != null) selection.spawnPointDragger?.EndDrag();
+        if (selection != null) selection.ActiveSpawnPointDragger?.EndDrag();
         selectedIndex = index;
         var entry = boxes[index];
         entry.board.SetMaterialUIEnabled(true);
@@ -87,7 +89,7 @@ public sealed class MergeBoxSceneController : MonoBehaviour
             pos.z = mainCamera.transform.position.z;
             mainCamera.transform.position = pos;
         }
-        if (selection != null) selection.board = entry.board;
+        if (selection != null) selection.SetBoard(entry.board);
         if (seriesDropdown != null) seriesDropdown.SetValueWithoutNotify(index);
     }
 
