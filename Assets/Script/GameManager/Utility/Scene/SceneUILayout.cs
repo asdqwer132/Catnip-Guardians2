@@ -17,8 +17,15 @@ public static class SceneUILayout
         if (canvas == null) return false;
         canvas = canvas.rootCanvas;
         if (!canvas.isActiveAndEnabled || canvas.renderMode != RenderMode.ScreenSpaceOverlay) return false;
-        if (destination != null && (destination.targetDisplay != canvas.targetDisplay || destination.targetTexture != null))
-            return false;
+        if (destination != null)
+        {
+            // Viewport cameras intentionally render the world into a texture. Their
+            // display camera presents that texture inside this screen-space region.
+            var endpoint = SceneViewportCamera.For(destination);
+            var outputCamera = endpoint != null && endpoint.IsReady ? endpoint.DisplayCamera : destination;
+            if (outputCamera.targetDisplay != canvas.targetDisplay || outputCamera.targetTexture != null)
+                return false;
+        }
 
         Vector2 output = new Vector2(Screen.width, Screen.height);
         if (canvas.targetDisplay > 0)
