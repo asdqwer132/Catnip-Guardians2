@@ -5,6 +5,7 @@ using UnityEngine;
 public sealed class MergeItemCleanupLine : MonoBehaviour
 {
     private BoxCollider2D area;
+    [SerializeField] bool drawGizmo = false;
     private void Reset()
     {
         area = GetComponent<BoxCollider2D>();
@@ -27,6 +28,7 @@ public sealed class MergeItemCleanupLine : MonoBehaviour
     }
     private void OnDrawGizmos()
     {
+        if (!drawGizmo) return;
         if (area == null) area = GetComponent<BoxCollider2D>();
         var matrix = Gizmos.matrix;
         Gizmos.matrix = transform.localToWorldMatrix;
