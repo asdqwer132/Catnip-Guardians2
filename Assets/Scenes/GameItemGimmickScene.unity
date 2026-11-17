@@ -1653,6 +1653,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1306176999297461111, guid: 278ba89e27d9d754e82091fa1dcd96b0, type: 3}
+      propertyPath: board
+      value: 
+      objectReference: {fileID: 1415814231}
+    - target: {fileID: 1306176999297461111, guid: 278ba89e27d9d754e82091fa1dcd96b0, type: 3}
+      propertyPath: levels.Array.data[0].box
+      value: 
+      objectReference: {fileID: 106903660}
     - target: {fileID: 3939698044770998101, guid: 278ba89e27d9d754e82091fa1dcd96b0, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -1661,6 +1669,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 3639139755843216323, guid: 6ae548262a251404bb7c04c4953635d9, type: 3}
+    - target: {fileID: 6097695438664906303, guid: 278ba89e27d9d754e82091fa1dcd96b0, type: 3}
+      propertyPath: board
+      value: 
+      objectReference: {fileID: 1415814231}
     - target: {fileID: 7481571349313844023, guid: 278ba89e27d9d754e82091fa1dcd96b0, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -1702,6 +1714,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26a2815268735a143a0e7fcf19d1a717, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeSeriesSelector
+--- !u!114 &106903660 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6190449206554548070, guid: 278ba89e27d9d754e82091fa1dcd96b0, type: 3}
+  m_PrefabInstance: {fileID: 106903657}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2ad2411312047828f3731d8f6f25d34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MergeBoxBindings
 --- !u!4 &109968346 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5753382963874761464, guid: 9185adcce2c049d4914a0bd1f93373e7, type: 3}
@@ -3499,10 +3522,30 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 7218784553746491251, guid: 8d292dcadbbbbf744b732cfb7179c252, type: 3}
+    - target: {fileID: 4344952836625535419, guid: fadbf35b66156654ea0ddb3068227d0b, type: 3}
+      propertyPath: board
+      value: 
+      objectReference: {fileID: 1386396098}
+    - target: {fileID: 4344952836625535419, guid: fadbf35b66156654ea0ddb3068227d0b, type: 3}
+      propertyPath: levels.Array.data[0].box
+      value: 
+      objectReference: {fileID: 219598623}
     - target: {fileID: 5896420551109368775, guid: fadbf35b66156654ea0ddb3068227d0b, type: 3}
       propertyPath: m_Name
       value: Box(7.Machine)
       objectReference: {fileID: 0}
+    - target: {fileID: 8859560317289041139, guid: fadbf35b66156654ea0ddb3068227d0b, type: 3}
+      propertyPath: board
+      value: 
+      objectReference: {fileID: 1386396098}
+    - target: {fileID: 9091308791257838588, guid: fadbf35b66156654ea0ddb3068227d0b, type: 3}
+      propertyPath: selection
+      value: 
+      objectReference: {fileID: 1595348420}
+    - target: {fileID: 9091308791257838588, guid: fadbf35b66156654ea0ddb3068227d0b, type: 3}
+      propertyPath: inputCamera
+      value: 
+      objectReference: {fileID: 1889333136}
     - target: {fileID: 9180179611920997842, guid: fadbf35b66156654ea0ddb3068227d0b, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -3528,6 +3571,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26a2815268735a143a0e7fcf19d1a717, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeSeriesSelector
+--- !u!114 &219598623 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2027453301640764897, guid: fadbf35b66156654ea0ddb3068227d0b, type: 3}
+  m_PrefabInstance: {fileID: 219598620}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2ad2411312047828f3731d8f6f25d34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MergeBoxBindings
 --- !u!1001 &222295719
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9165,6 +9219,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Box(5.Fish)
       objectReference: {fileID: 0}
+    - target: {fileID: 2894740446808186645, guid: 604202b3f632c344f9c755559d68fcb9, type: 3}
+      propertyPath: board
+      value: 
+      objectReference: {fileID: 1822592317}
+    - target: {fileID: 7967724980894433885, guid: 604202b3f632c344f9c755559d68fcb9, type: 3}
+      propertyPath: board
+      value: 
+      objectReference: {fileID: 1822592317}
+    - target: {fileID: 7967724980894433885, guid: 604202b3f632c344f9c755559d68fcb9, type: 3}
+      propertyPath: levels.Array.data[0].box
+      value: 
+      objectReference: {fileID: 713740047}
     - target: {fileID: 9113405232980704277, guid: 604202b3f632c344f9c755559d68fcb9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 120
@@ -9226,6 +9292,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26a2815268735a143a0e7fcf19d1a717, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeSeriesSelector
+--- !u!114 &713740047 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4886621638898021781, guid: 604202b3f632c344f9c755559d68fcb9, type: 3}
+  m_PrefabInstance: {fileID: 713740044}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2ad2411312047828f3731d8f6f25d34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MergeBoxBindings
 --- !u!1 &730559116
 GameObject:
   m_ObjectHideFlags: 0
@@ -15348,6 +15425,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 269577203}
     m_Modifications:
+    - target: {fileID: 3107152245313332542, guid: d61d956962030c442afbac96bb376ffa, type: 3}
+      propertyPath: board
+      value: 
+      objectReference: {fileID: 1812931830}
+    - target: {fileID: 3107152245313332542, guid: d61d956962030c442afbac96bb376ffa, type: 3}
+      propertyPath: levels.Array.data[0].box
+      value: 
+      objectReference: {fileID: 1133327185}
     - target: {fileID: 4320228441175448438, guid: d61d956962030c442afbac96bb376ffa, type: 3}
       propertyPath: m_LocalPosition.x
       value: 150
@@ -15392,6 +15477,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Box(6.Plant)
       objectReference: {fileID: 0}
+    - target: {fileID: 7899865974079780982, guid: d61d956962030c442afbac96bb376ffa, type: 3}
+      propertyPath: board
+      value: 
+      objectReference: {fileID: 1812931830}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -15413,6 +15502,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26a2815268735a143a0e7fcf19d1a717, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeSeriesSelector
+--- !u!114 &1133327185 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3773537330817336365, guid: d61d956962030c442afbac96bb376ffa, type: 3}
+  m_PrefabInstance: {fileID: 1133327182}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2ad2411312047828f3731d8f6f25d34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MergeBoxBindings
 --- !u!1 &1135760702
 GameObject:
   m_ObjectHideFlags: 0
@@ -19140,6 +19240,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2179414529783594020, guid: 161f0bdcba2ace941b46d9fd6d073448, type: 3}
+      propertyPath: board
+      value: 
+      objectReference: {fileID: 2113464505}
+    - target: {fileID: 2179414529783594020, guid: 161f0bdcba2ace941b46d9fd6d073448, type: 3}
+      propertyPath: levels.Array.data[0].box
+      value: 
+      objectReference: {fileID: 1441347143}
+    - target: {fileID: 6377643845061861740, guid: 161f0bdcba2ace941b46d9fd6d073448, type: 3}
+      propertyPath: board
+      value: 
+      objectReference: {fileID: 2113464505}
     - target: {fileID: 8333560514178758232, guid: 161f0bdcba2ace941b46d9fd6d073448, type: 3}
       propertyPath: m_Name
       value: Box(4.Monster)
@@ -19165,6 +19277,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26a2815268735a143a0e7fcf19d1a717, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeSeriesSelector
+--- !u!114 &1441347143 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5866224552508760247, guid: 161f0bdcba2ace941b46d9fd6d073448, type: 3}
+  m_PrefabInstance: {fileID: 1441347140}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2ad2411312047828f3731d8f6f25d34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MergeBoxBindings
 --- !u!1001 &1455844738
 PrefabInstance:
   m_ObjectHideFlags: 0
