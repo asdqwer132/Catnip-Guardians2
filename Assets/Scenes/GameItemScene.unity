@@ -7271,7 +7271,7 @@ GameObject:
   - component: {fileID: 990400000005}
   - component: {fileID: 990400000006}
   m_Layer: 0
-  m_Name: MegerGeneralManager
+  m_Name: MergeGeneralManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14721,17 +14721,13 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3b00c24e4dfe48aa950f82cfc0c2f73b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameItemSessionBridge
-  boards:
-  - {fileID: 1595348419}
-  - {fileID: 1233293348}
-  - {fileID: 978373114}
-  - {fileID: 2113464505}
-  - {fileID: 1822592317}
-  - {fileID: 1812931830}
-  - {fileID: 1386396098}
-  - {fileID: 1415814231}
+  m_EditorClassIdentifier: Assembly-CSharp::MergeGeneralManager
   boxes: {fileID: 990400000003}
+  gimicManager: {fileID: 990400000006}
+  startingSeriesIndex: 7
+  startingLevel: 1
+  useSessionLevels: 1
+  debugMode: 0
 --- !u!114 &990400000003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14744,7 +14740,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f802db3ada0e41428b3030e966634fd9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxSceneController
-  gameManager: {fileID: 990400000006}
+  gameManager: {fileID: 990200000001}
   mainCamera: {fileID: 1889333137}
   root: {x: 0, y: -1.2, z: 0}
   autoPlacer: {fileID: 269577204}
@@ -14803,10 +14799,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76e5cbeb10d69ae4b90aed0986e9efb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeGimicManager
-  boxes: {fileID: 990400000003}
-  startingSeriesIndex: 7
-  startingLevel: 1
-  useSessionLevels: 1
   skillButtons:
   - {fileID: 359576507}
   - {fileID: 1012293590}
