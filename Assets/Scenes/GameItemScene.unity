@@ -4672,6 +4672,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92cd579df55149f0948dbcbd9ae30085, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeItemCleanupLine
+  useBoundary: 1
+  boundarySize: {x: 30, y: 20}
+  boundaryThickness: 0.1
   drawGizmo: 0
 --- !u!61 &794458666
 BoxCollider2D:
@@ -15243,7 +15246,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MergeGeneralManager
   boxes: {fileID: 990400000003}
   gimicManager: {fileID: 990400000006}
-  startingSeriesIndex: 7
+  startingSeriesIndex: 3
   startingLevel: 1
   useSessionLevels: 1
   debugMode: 1

@@ -9,15 +9,15 @@ public enum SpriteClipTimingMode { FrameInterval, TotalDuration }
 // 시트 하나당 클립 하나. 모든 슬라이스를 사용하며 프리팹/컨트롤러는 생성하지 않습니다.
 public sealed class SpriteSheetClipBatchWindow : EditorWindow
 {
-    [SerializeField] private string rootFolder = "Assets/Resources";
-    [SerializeField] private string outputFolder = "Assets/Animations/Generated";
+    [SerializeField] private string rootFolder = "Assets/Resources/Effects";
+    [SerializeField] private string outputFolder = "Assets/Animation/VisualEffect/Generated";
     [SerializeField] private SpriteClipTimingMode timingMode;
     [SerializeField] private float seconds = .1f;
     [SerializeField] private bool loop;
     [SerializeField] private bool overwriteExisting;
     private string result;
 
-    [MenuItem("Tools/Animation/Sprite Sheet Clips")]
+    [MenuItem("Tools/Utility/Animation/Sprite Sheet Clips")]
     private static void Open() => GetWindow<SpriteSheetClipBatchWindow>("Sprite Sheet Clips");
 
     private void OnGUI()

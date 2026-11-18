@@ -1,19 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &8821349861575103001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5345312633064728236}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a418ecfc71d4025be2f8c7a3e275093, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::MergeItemPresentation
-  bindings: []
-  modules: []
 --- !u!1 &910000600001
 GameObject:
   m_ObjectHideFlags: 0
@@ -324,11 +310,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeItemObject
   item: {fileID: 0}
-  circleCollider: {fileID: 3025356734030981627}
+  allowDragSelection: 1
+  allowClickSelection: 1
+  colider2d: {fileID: 0}
   spriteRenderer: {fileID: 7034436028931445397}
-  visualSize: {fileID: 5345312633064728236}
   useItemIcon: 1
-  fitIconToRadius: 1
   body: {fileID: 4957890834646836440}
   pooled: {fileID: 4460719141247080061}
 --- !u!210 &3107395689305939275
@@ -344,6 +330,31 @@ SortingGroup:
   m_SortingOrder: 0
   m_SortAtRoot: 0
   m_Sort3DAs2D: 0
+--- !u!114 &8821349861575103001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5345312633064728236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a418ecfc71d4025be2f8c7a3e275093, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MergeItemPresentation
+  bindings:
+  - trigger: 0
+    gimmickId: 
+    presentation:
+      anchor: {fileID: 0}
+      followTarget: 0
+      stopOnReset: 0
+      effects:
+      - {fileID: 11400000, guid: bd45a2dbbe28f3949b0066d3b3d72b46, type: 2}
+      onPlay:
+        m_PersistentCalls:
+          m_Calls: []
+  modules: []
 --- !u!1 &6139505127342006186
 GameObject:
   m_ObjectHideFlags: 0
