@@ -159,9 +159,25 @@ public static class DataWorkbookImport
                         entry.Values.Add(column.Value, value);
                     }
                 }
+                if (type == typeof(ItemBoxData)) ValidateBoxRewards(entry);
                 if (previous == null && (entry.Values.Count > 0 || entry.Descriptions.Count > 0)) plan.Entries.Add(entry);
             }
             catch (Exception error) { plan.Errors.Add(binding.Sheet + " " + row.Number + "행: " + error.Message); }
+        }
+    }
+
+    private static void ValidateBoxRewards(Entry entry)
+    {
+        foreach (var value in entry.Values)
+        {
+            if (value.Key.Name != "gachaItems" || value.Value == null) continue;
+            foreach (var reward in (GachaItemInfo[])value.Value)
+            {
+                if (reward == null || reward.itemData == null) throw new InvalidDataException("상자 보상에는 itemData 참조가 필요합니다.");
+                if (reward.amounts == null || reward.amounts.Length == 0) continue; // 빈 수량 목록은 1개 지급.
+                if (!reward.amounts.Any(a => a != null && a.count > 0 && a.weight > 0f))
+                    throw new InvalidDataException("상자 보상의 amounts에는 count 1 이상, weight 0 초과인 항목이 필요합니다.");
+            }
         }
     }
 

@@ -1,63 +1,62 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
+[Serializable]
+public sealed class GachaAmountChance
+{
+    [Min(1)] public int count = 1;
+    [Min(0f)] public float weight = 1f;
+}
+
+[Serializable]
 public class GachaItemInfo
 {
     public ItemData itemData;
-    public int weight = 1;
+    [Range(0f,1f)] public float probability = 1f;
+    public GachaAmountChance[] amounts = { new GachaAmountChance() };
+    public int RollAmount()
+    {
+        if (amounts == null || amounts.Length == 0) return 1;
+        double total = 0;
+        foreach (var entry in amounts) if (Valid(entry)) total += entry.weight;
+        if (total <= 0) return 0;
+        double roll = UnityEngine.Random.value * total;
+        int last = 0;
+        foreach (var entry in amounts)
+        {
+            if (!Valid(entry)) continue;
+            last = entry.count; roll -= entry.weight;
+            if (roll < 0) return entry.count;
+        }
+        return last;
+    }
+    private static bool Valid(GachaAmountChance value) => value != null && value.count > 0 && value.weight > 0 && !float.IsInfinity(value.weight);
 }
 
 [CreateAssetMenu(fileName = "Box", menuName = "Upgrade/Shop/Box")]
 public class ItemBoxData : DefaultData
 {
-    [Space(10)]
-    public Cost[] costs;
-
-    [Space(10)]
-    public ItemSeries itemSeries;
+    [Space(10)] public Cost[] costs;
+    [Space(10)] public ItemSeries itemSeries;
     public Grade grade;
     public GachaItemInfo[] gachaItems;
-
-    [Space(10)]
-    public AnimationClip idleClip;
-    [Tooltip("구매 성공 시 선택한 상점 슬롯 아이콘에서 한 번 재생할 클립입니다.")]
+    [Space(10), Tooltip("평상시에는 기본 아이콘을 사용하고 구매 성공 시에만 이 클립을 재생합니다.")]
     public AnimationClip openClip;
 
-    [Tooltip("상자 열기 Trigger 이름")]
-    public string openTriggerName = "Open";
-
-    public ItemData GetRandomItem()
+    public List<InventoryItem> RollRewards()
     {
-        if (gachaItems == null || gachaItems.Length == 0)
-            return null;
-
-        int totalWeight = 0;
-
-        foreach (var item in gachaItems)
+        var rewards = new List<InventoryItem>();
+        foreach (var entry in gachaItems ?? Array.Empty<GachaItemInfo>())
         {
-            if (item == null || item.itemData == null || item.weight <= 0)
-                continue;
-
-            totalWeight += item.weight;
+            if (entry == null || entry.itemData == null || !(entry.probability > 0f)) continue;
+            if (entry.probability < 1f && UnityEngine.Random.value >= entry.probability) continue;
+            int amount = entry.RollAmount();
+            if (amount <= 0) continue;
+            var existing = rewards.Find(r => r.itemData == entry.itemData);
+            if (existing == null) rewards.Add(new InventoryItem(entry.itemData, amount));
+            else existing.amount = checked(existing.amount + amount);
         }
-
-        if (totalWeight <= 0)
-            return null;
-
-        int randomValue = Random.Range(0, totalWeight);
-        int currentWeight = 0;
-
-        foreach (var item in gachaItems)
-        {
-            if (item == null || item.itemData == null || item.weight <= 0)
-                continue;
-
-            currentWeight += item.weight;
-
-            if (randomValue < currentWeight)
-                return item.itemData;
-        }
-
-        return null;
+        return rewards;
     }
 }

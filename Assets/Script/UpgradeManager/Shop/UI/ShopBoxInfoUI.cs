@@ -93,21 +93,13 @@ public class ShopBoxInfoUI : BasicTooltipUI
         if (boxData.gachaItems == null || rewardSlotPrefab == null || itemListParent == null)
             return;
 
-        int totalWeight = 0;
-
-        foreach (GachaItemInfo gachaItem in boxData.gachaItems)
-        {
-            if (gachaItem != null)
-                totalWeight += gachaItem.weight;
-        }
-
         foreach (GachaItemInfo gachaItem in boxData.gachaItems)
         {
             if (gachaItem == null || gachaItem.itemData == null)
                 continue;
 
             ShopBoxRewardSlotUI slot = Instantiate(rewardSlotPrefab, itemListParent);
-            slot.SetSlot(gachaItem, totalWeight);
+            slot.SetSlot(gachaItem);
         }
     }
 
@@ -126,7 +118,7 @@ public class ShopBoxInfoUI : BasicTooltipUI
     {
         if (shopManager == null)
         {
-            Debug.LogWarning("ShopManager∞° ø¨∞·µ«¡ˆ æ æ“Ω¿¥œ¥Ÿ.");
+            Debug.LogWarning("ShopManagerÍ∞Ä Ïó∞Í≤∞ÎêòÏßÄ ÏïäÏïòÏäµÎãàÎã§.");
             return;
         }
 

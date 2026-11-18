@@ -17,8 +17,6 @@ public class ShopPurchaseEffectPlayer : MonoBehaviour
     public RectTransform defaultEndPoint;
 
     [Header("Box Open Animation")]
-    public Animator defaultBoxOpenAnimator;
-    public string openTriggerName = "Open";
     public float delayAfterBoxOpen = 0.25f;
 
     [Header("Move")]
@@ -144,28 +142,13 @@ public class ShopPurchaseEffectPlayer : MonoBehaviour
 
     private void PlayBoxOpenAnimation(ShopBoxButton sourceButton)
     {
-        Animator animator = null;
-
-        if (sourceButton != null)
-            animator = sourceButton.GetComponentInChildren<Animator>();
-
-        if (animator == null)
-            animator = defaultBoxOpenAnimator;
-
-        if (animator == null)
-            return;
-
-        if (string.IsNullOrEmpty(openTriggerName))
-            return;
-
-        animator.ResetTrigger(openTriggerName);
-        animator.SetTrigger(openTriggerName);
+        if (sourceButton != null && sourceButton.openAnimation != null)
+            sourceButton.openAnimation.Play(sourceButton.BoxData);
     }
 
     private Image CreateFlyingImage(Sprite itemSprite)
     {
         Image image;
-
         if (flyingItemImagePrefab != null)
         {
             image = Instantiate(flyingItemImagePrefab, effectRoot);

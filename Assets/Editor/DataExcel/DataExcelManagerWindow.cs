@@ -61,6 +61,8 @@ public sealed class DataExcelManagerWindow : EditorWindow
             ? "ID로 하위 폴더를 검색합니다. 없으면 RootPath/Generated에 생성합니다."
             : "ID가 일치하는 기존 데이터만 갱신합니다. 없는 ID는 생성하지 않습니다.", EditorStyles.wordWrappedLabel);
         EditorGUILayout.LabelField("빈칸 / -: 기존 값 유지 · Null: 비우기 · 배열: ; 또는 JSON · 에셋: 경로 / ID", EditorStyles.wordWrappedLabel);
+        if (kind == DataWorkbookKind.Extra)
+            EditorGUILayout.LabelField("상자 ItemBoxData: costs · itemSeries · grade · openClip · gachaItems(JSON: itemData, probability, amounts[count/weight])", EditorStyles.wordWrappedMiniLabel);
         if (panel.bindings != null)
         {
             EditorGUILayout.Space();

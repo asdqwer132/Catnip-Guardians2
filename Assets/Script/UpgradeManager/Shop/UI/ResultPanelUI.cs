@@ -96,6 +96,11 @@ public class ResultPanelUI : MonoBehaviour
         ShowResult(item, count);
         storyConfirmationArea = confirmationArea;
     }
+    public void ShowStoryResults(List<ShopPurchaseResultEntry> results, string confirmationArea)
+    {
+        ShowResults(results);
+        storyConfirmationArea = confirmationArea;
+    }
 
     public void ShowResult(ItemData itemData, int count = 1)
     {

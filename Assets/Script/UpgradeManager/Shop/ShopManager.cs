@@ -195,20 +195,23 @@ public class ShopManager : MonoBehaviour, IStoryProgressSource
                 }
             }
         if (!wallet.HasCurrencies(costs)) return PurchaseFailed("재화가 부족합니다.");
-        ItemData resultItem = boxData.GetRandomItem();
-        if (resultItem == null) return PurchaseFailed("지급할 보상이 없습니다.");
+        if (boxData.gachaItems == null || !System.Array.Exists(boxData.gachaItems,r => r != null && r.itemData != null))
+            return PurchaseFailed("상자에 보상 데이터가 없습니다.");
+        var rewards = boxData.RollRewards();
 
         purchasing = true;
         try
         {
             if (!wallet.SpendCurrencies(costs)) return PurchaseFailed("재화가 부족합니다.");
-            inventory.AddItem(resultItem, 1);
+            foreach (var reward in rewards) inventory.AddItem(reward.itemData, reward.amount);
             button.MarkPurchased();
-            ProgressReported?.Invoke(new StoryProgressEvent(progressEventId,
-                StoryProgressValue.TextValue("item-id", resultItem.dataId),
-                StoryProgressValue.NumberValue("amount", 1)));
+            foreach (var reward in rewards)
+                ProgressReported?.Invoke(new StoryProgressEvent(progressEventId,
+                    StoryProgressValue.TextValue("item-id", reward.itemData.dataId),
+                    StoryProgressValue.NumberValue("amount", reward.amount)));
             //if (currentSelectedButton == button) ClearSelectedBox();
-            ShowPurchaseResult(resultItem, 1);
+            var results = rewards.ConvertAll(r => new ShopPurchaseResultEntry(r.itemData,r.amount));
+            if (purchaseResultPanelUI != null) purchaseResultPanelUI.ShowStoryResults(results, StoryProgressManager.ChestResult);
             return true;
         }
         finally { purchasing = false; }
@@ -220,9 +223,4 @@ public class ShopManager : MonoBehaviour, IStoryProgressSource
         return false;
     }
 
-    private void ShowPurchaseResult(ItemData resultItem, int count)
-    {
-        if (purchaseResultPanelUI != null)
-            purchaseResultPanelUI.ShowStoryResult(resultItem, count, StoryProgressManager.ChestResult);
-    }
 }
