@@ -324,6 +324,10 @@ PrefabInstance:
       propertyPath: m_Size.y
       value: 2.75
       objectReference: {fileID: 0}
+    - target: {fileID: 4482963995737655858, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: be1af96ca683a4945a960df92afb4d4e, type: 3}
     - target: {fileID: 4811276694686574449, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
       propertyPath: movementArea.x
       value: -3.7800002
@@ -452,6 +456,7 @@ MonoBehaviour:
     type: 1
     skillImage: {fileID: 2116521056, guid: 21f630a9222a2304585d155730bbf450, type: 3}
     defaultSkillCool: 10
+    duration: 0
   monsterSpawnArea: {fileID: 3235897971431471899}
   quarantineArea: {fileID: 1857289982226320039}
   monsters:

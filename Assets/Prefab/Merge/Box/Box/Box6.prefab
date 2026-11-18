@@ -246,6 +246,10 @@ PrefabInstance:
       propertyPath: m_Size.y
       value: 2.75
       objectReference: {fileID: 0}
+    - target: {fileID: 4482963995737655858, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 34a9ab7811fba0c429a0db7fb4e7b6f2, type: 3}
     - target: {fileID: 4811276694686574449, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
       propertyPath: movementArea.x
       value: -3.7800002
@@ -371,10 +375,12 @@ MonoBehaviour:
     type: 1
     skillImage: {fileID: -2140586765, guid: 21f630a9222a2304585d155730bbf450, type: 3}
     defaultSkillCool: 0
+    duration: 0
   - id: Plant.InstantGrowth
     type: 0
     skillImage: {fileID: -2140586765, guid: 21f630a9222a2304585d155730bbf450, type: 3}
     defaultSkillCool: 10
+    duration: 0
   groundArea: {fileID: 7651787891173484675}
   instantGrowthArea: {fileID: 7651787891173484675}
   growthRules:

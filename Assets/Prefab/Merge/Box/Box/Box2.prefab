@@ -250,7 +250,7 @@ SpriteRenderer:
   m_SortingLayer: -1
   m_SortingOrder: 10
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 641a751d75835c14b9537e8cc7581105, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9f38ad28ecef40d459fb72d593c963d4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -368,6 +368,10 @@ PrefabInstance:
       propertyPath: m_Size.y
       value: 2.75
       objectReference: {fileID: 0}
+    - target: {fileID: 4482963995737655858, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 77243c91d9192f24bb98e0d22f6652e3, type: 3}
     - target: {fileID: 4811276694686574449, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
       propertyPath: movementArea.x
       value: -3.7800002
@@ -499,10 +503,12 @@ MonoBehaviour:
     type: 0
     skillImage: {fileID: -1754716122, guid: 21f630a9222a2304585d155730bbf450, type: 3}
     defaultSkillCool: 10
+    duration: 0
   - id: Food.AutoBake
     type: 1
     skillImage: {fileID: -1604157463, guid: 21f630a9222a2304585d155730bbf450, type: 3}
     defaultSkillCool: 10
+    duration: 0
   burningArea: {fileID: 229655798967283828}
   bakeInterval: 5
   burnsBeforeDestroyed: 4

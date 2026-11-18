@@ -8,7 +8,6 @@ using UnityEngine.UI;
 public sealed class MergeSpawnPointDragger : MonoBehaviour
 {
     public MergeBoxSceneController boxes;
-    public MergegameManager board;
     public MergeItemSelection selection;
     public Camera inputCamera;
     public bool moveX = true;
@@ -23,7 +22,7 @@ public sealed class MergeSpawnPointDragger : MonoBehaviour
     private MergeDropZone displayedZone;
     private Vector3 lockedLocalPosition, pointerOffset;
     public bool IsDragging => draggingBoard != null;
-    public MergegameManager CurrentBoard => boxes != null ? boxes.SelectedBoard : board;
+    public MergegameManager CurrentBoard => boxes.SelectedBoard;
 
     private void OnEnable()
     {

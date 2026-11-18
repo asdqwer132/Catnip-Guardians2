@@ -108,6 +108,10 @@ PrefabInstance:
       propertyPath: m_Size.y
       value: 2.75
       objectReference: {fileID: 0}
+    - target: {fileID: 4482963995737655858, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 347c4fcae8748cf42a713f8a582ed4ed, type: 3}
     - target: {fileID: 4811276694686574449, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
       propertyPath: movementArea.x
       value: -3.7800002
@@ -230,10 +234,12 @@ MonoBehaviour:
     type: 0
     skillImage: {fileID: 49922783, guid: 21f630a9222a2304585d155730bbf450, type: 3}
     defaultSkillCool: 20
+    duration: 0
   - id: Magic.RapidFeeding
     type: 0
     skillImage: {fileID: -567172568, guid: 21f630a9222a2304585d155730bbf450, type: 3}
     defaultSkillCool: 20
+    duration: 0
   unlimitedUseSeconds: 5
   rapidFeedingSeconds: 5
   feedingSpeedMultiplier: 3

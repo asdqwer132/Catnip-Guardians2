@@ -28,6 +28,30 @@ PrefabInstance:
       propertyPath: m_Size.y
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 2093648573389461707, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+      propertyPath: m_SortingLayer
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2093648573389461707, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 1934815261
+      objectReference: {fileID: 0}
+    - target: {fileID: 2262263915750806517, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+      propertyPath: m_SortingLayer
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2262263915750806517, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 1934815261
+      objectReference: {fileID: 0}
+    - target: {fileID: 2366771476658706640, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+      propertyPath: m_SortingLayer
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2366771476658706640, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 1934815261
+      objectReference: {fileID: 0}
     - target: {fileID: 2382361942368026370, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.125
@@ -46,7 +70,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3401685766570148374, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
       propertyPath: levels.Array.data[0].box
-      value:
+      value: 
       objectReference: {fileID: 942016750833788584}
     - target: {fileID: 3401685766570148374, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
       propertyPath: levels.Array.data[0].minimumLevel
@@ -152,6 +176,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Box(1.Weapon)
       objectReference: {fileID: 0}
+    - target: {fileID: 4986853658973993115, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+      propertyPath: m_SortingLayer
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4986853658973993115, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 1934815261
+      objectReference: {fileID: 0}
     - target: {fileID: 5488081864590147396, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
       propertyPath: spawnMarker
       value: 
@@ -175,6 +207,14 @@ PrefabInstance:
     - target: {fileID: 6092467838414061291, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0.447443
+      objectReference: {fileID: 0}
+    - target: {fileID: 6347095215569762819, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+      propertyPath: m_SortingLayer
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6347095215569762819, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
+      propertyPath: m_SortingLayerID
+      value: 1934815261
       objectReference: {fileID: 0}
     - target: {fileID: 7259381860846921834, guid: 5918389caba25114fabe4db8a8b055b8, type: 3}
       propertyPath: m_LocalPosition.y
@@ -311,19 +351,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4296902872261258052, guid: ebf9141d2b91122488795e9d611d754d, type: 3}
       propertyPath: ItemMarker
-      value:
+      value: 
       objectReference: {fileID: 7411727536399657456}
     - target: {fileID: 4296902872261258052, guid: ebf9141d2b91122488795e9d611d754d, type: 3}
       propertyPath: spawnPoint
-      value:
+      value: 
       objectReference: {fileID: 8042447028827418719}
     - target: {fileID: 4296902872261258052, guid: ebf9141d2b91122488795e9d611d754d, type: 3}
       propertyPath: spawnMarker
-      value:
+      value: 
       objectReference: {fileID: 8933465384469179240}
     - target: {fileID: 4296902872261258052, guid: ebf9141d2b91122488795e9d611d754d, type: 3}
       propertyPath: movementReference
-      value:
+      value: 
       objectReference: {fileID: 5124360217770984266}
     - target: {fileID: 6630651493880657888, guid: ebf9141d2b91122488795e9d611d754d, type: 3}
       propertyPath: m_Name
@@ -343,7 +383,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f2ad2411312047828f3731d8f6f25d34, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxBindings
 --- !u!4 &7763622714075947512 stripped
 Transform:

@@ -108,6 +108,10 @@ PrefabInstance:
       propertyPath: m_Size.y
       value: 2.75
       objectReference: {fileID: 0}
+    - target: {fileID: 4482963995737655858, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 35a2405deb001a149a4d68536cc04e4f, type: 3}
     - target: {fileID: 4811276694686574449, guid: 7fe36b7664f7e7b4fa801fe0d009f584, type: 3}
       propertyPath: movementArea.x
       value: -3.7800002
@@ -225,3 +229,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53c3c29edb2295f44a582aece6756bd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxWeapon
+  skills: []

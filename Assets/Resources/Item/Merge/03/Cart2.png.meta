@@ -1,10 +1,19 @@
 fileFormatVersion: 2
-guid: 641a751d75835c14b9537e8cc7581105
+guid: dbefd9127e634e64f9cc94ca48643059
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4470860081421435007
-    second: grill-front-metal (1)_0
+      213: -2372038316265705789
+    second: 02-blue-crystal-3frames_0
+  - first:
+      213: -6123016381773767578
+    second: 02-blue-crystal-3frames_1
+  - first:
+      213: -8403524412981429359
+    second: 02-blue-crystal-3frames_2
+  - first:
+      213: 740651835184859920
+    second: 02-blue-crystal-3frames_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,13 +55,13 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 32
-  spriteBorder: {x: 48, y: 2, z: 48, w: 2}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
@@ -113,23 +122,67 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: grill-front-metal (1)_0
+      name: Cart2_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 128
-        height: 9
+        width: 64
+        height: 64
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 18fb66e817054f1c0800000000000000
-      internalID: -4470860081421435007
+      spriteID: e80bba314eac2c748ab23857e3efac1f
+      internalID: -2041404124
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cart2_1
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aaa890d1f2468e0488d6c04277701722
+      internalID: 426274394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Cart2_2
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 0
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80a60aab41c9f9247afab7dfa42fe0d2
+      internalID: 1895022373
       vertices: []
       indices: 
       edges: []
@@ -138,17 +191,21 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
-    internalID: 1537655665
+    spriteID: 1b5f1e91a9e818a4ba123bf9af216dbb
+    internalID: 0
     vertices: []
     indices: 
     edges: []
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      grill-front-metal (1)_0: -4470860081421435007
+      Cart2_0: -2041404124
+      Cart2_1: 426274394
+      Cart2_2: 1895022373
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

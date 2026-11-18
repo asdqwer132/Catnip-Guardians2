@@ -1,14 +1,15 @@
+
 using System;
 using UnityEngine;
 
 public class WallSpriteInput : MonoBehaviour
 {
     [SerializeField] private MergeBoxBindings[] boxes;
+
     [Header("Sprite Sheet (Resources)")]
     [Tooltip("Resources 기준 경로. (1)은 Sheet Number로 교체됩니다.")]
     [SerializeField]
-    private string spriteSheetPath =
-        "Item/MergeBox/MergeBox (1).png";
+    private string spriteSheetPath = "Item/MergeBox/MergeBox (1).png";
 
     [SerializeField, Min(1)] private int sheetNumber = 1;
 
@@ -16,7 +17,9 @@ public class WallSpriteInput : MonoBehaviour
     [SerializeField] private string leftDecoSpriteName = "LeftDeco";
     [SerializeField] private string rightDecoSpriteName = "RightDeco";
     [SerializeField] private string bottomSpriteName = "BottomWall";
-    [SerializeField] private string backSpriteName = "Back";
+
+    [Header("Separate Back Sprite")]
+    [SerializeField] private string backSpriteName = "MergeBox Back (1).png";
 
     [SerializeField] private bool applyOnAwake = true;
 
@@ -35,37 +38,81 @@ public class WallSpriteInput : MonoBehaviour
             return;
         }
 
-        string path = spriteSheetPath.Trim().Replace("(1)", $"({Mathf.Max(1, sheetNumber)})");
-        // Resources.LoadAll에는 확장자 없이 전달합니다.
+        int number = Mathf.Max(1, sheetNumber);
+
+        string path = spriteSheetPath.Trim()
+            .Replace("(1)", $"({number})");
+
         if (path.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
             path = path.Substring(0, path.Length - 4);
 
+        // 기본 스프라이트 시트
         Sprite[] sprites = Resources.LoadAll<Sprite>(path);
+
         Sprite side = MatchSprite(sprites, sideSpriteName, path);
         Sprite bottom = MatchSprite(sprites, bottomSpriteName, path);
-        Sprite back = MatchSprite(sprites, backSpriteName, path);
-        Sprite leftDeco = null, rightDeco = null;
-        bool leftDecoResolved = false, rightDecoResolved = false;
 
-        if (boxes != null) foreach (var box in boxes)
+        // BackFrame은 같은 폴더의 별도 파일에서 로드
+        int slashIndex = path.LastIndexOf('/');
+        string folder = slashIndex >= 0
+            ? path.Substring(0, slashIndex + 1)
+            : "";
+
+        string backPath = folder + backSpriteName.Trim()
+            .Replace("(1)", $"({number})");
+
+        if (backPath.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+            backPath = backPath.Substring(0, backPath.Length - 4);
+
+        Sprite back = Resources.Load<Sprite>(backPath);
+
+        if (back == null)
+            Debug.LogError($"Back 스프라이트를 찾지 못했습니다: {backPath}", this);
+
+        Sprite leftDeco = null;
+        Sprite rightDeco = null;
+        bool leftDecoResolved = false;
+        bool rightDecoResolved = false;
+
+        if (boxes != null)
         {
-            if (box == null || !box.transform.IsChildOf(transform)) continue;
-            foreach (var part in box.visuals)
+            foreach (var box in boxes)
             {
-                if (part == null || part.renderer == null) continue;
-                if (part.role == MergeBoxSpriteRole.LeftDeco && !leftDecoResolved)
-                { leftDeco = MatchSprite(sprites, leftDecoSpriteName, path); leftDecoResolved = true; }
-                if (part.role == MergeBoxSpriteRole.RightDeco && !rightDecoResolved)
-                { rightDeco = MatchSprite(sprites, rightDecoSpriteName, path); rightDecoResolved = true; }
-                Sprite selected = (part.role == MergeBoxSpriteRole.SideWall || part.role == MergeBoxSpriteRole.LeftWall || part.role == MergeBoxSpriteRole.RightWall) ? side :
-                    part.role == MergeBoxSpriteRole.BottomWall ? bottom :
-                    part.role == MergeBoxSpriteRole.BackFrame ? back :
-                    part.role == MergeBoxSpriteRole.LeftDeco ? leftDeco :
-                    part.role == MergeBoxSpriteRole.RightDeco ? rightDeco : null;
-                if (selected != null) part.renderer.sprite = selected;
+                if (box == null || !box.transform.IsChildOf(transform))
+                    continue;
+
+                foreach (var part in box.visuals)
+                {
+                    if (part == null || part.renderer == null)
+                        continue;
+
+                    if (part.role == MergeBoxSpriteRole.LeftDeco && !leftDecoResolved)
+                    {
+                        leftDeco = MatchSprite(sprites, leftDecoSpriteName, path);
+                        leftDecoResolved = true;
+                    }
+
+                    if (part.role == MergeBoxSpriteRole.RightDeco && !rightDecoResolved)
+                    {
+                        rightDeco = MatchSprite(sprites, rightDecoSpriteName, path);
+                        rightDecoResolved = true;
+                    }
+
+                    Sprite selected =
+                        (part.role == MergeBoxSpriteRole.SideWall ||
+                         part.role == MergeBoxSpriteRole.LeftWall ||
+                         part.role == MergeBoxSpriteRole.RightWall) ? side :
+                        part.role == MergeBoxSpriteRole.BottomWall ? bottom :
+                        part.role == MergeBoxSpriteRole.BackFrame ? back :
+                        part.role == MergeBoxSpriteRole.LeftDeco ? leftDeco :
+                        part.role == MergeBoxSpriteRole.RightDeco ? rightDeco :
+                        null;
+
+                    if (selected != null)
+                        part.renderer.sprite = selected;
+                }
             }
         }
-
     }
 
     private Sprite MatchSprite(Sprite[] sprites, string spriteName, string path)
@@ -80,7 +127,8 @@ public class WallSpriteInput : MonoBehaviour
 
             if (match != null)
             {
-                Debug.LogError($"'{path}'에 '{spriteName}' 스프라이트가 중복됩니다.", this);
+                Debug.LogError(
+                    $"'{path}'에 '{spriteName}' 스프라이트가 중복됩니다.", this);
                 return null;
             }
 
@@ -96,5 +144,4 @@ public class WallSpriteInput : MonoBehaviour
 
         return match;
     }
-
 }
