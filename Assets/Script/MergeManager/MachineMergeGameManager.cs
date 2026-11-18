@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum MergeClawState { Idle, AwaitingItem, Lifting, MovingAlongRail }
+public enum MergeClawState { Idle, AwaitingItem, Lifting, MovingAlongRail, ApproachingItem, Lowering, Retracting }
 
 [DefaultExecutionOrder(-200)]
 public sealed class MachineMergeGameManager : MergegameManager
@@ -16,6 +16,8 @@ public sealed class MachineMergeGameManager : MergegameManager
     private int grabbedLife;
     private float desiredX, clawSpeed, gripOffset;
     private bool dropRequested, previousSuppression;
+    private Vector3 pickupPosition;
+    public bool ClawHasItem => grabbed != null && (ClawState == MergeClawState.Lifting || ClawState == MergeClawState.MovingAlongRail);
     private readonly List<Collider2D> laserHits = new List<Collider2D>();
     private readonly List<MergeSpawnRequest> splitOutputs = new List<MergeSpawnRequest>();
     public int FireLaser(Collider2D area,int multiplier=2,float spread=.25f)
@@ -79,9 +81,9 @@ public sealed class MachineMergeGameManager : MergegameManager
         }
         if (closest == null || !closest.TryHold(this, false)) return false;
         grabbed = closest; grabbedLife = closest.LifeId;
-        claw.position = new Vector3(closest.transform.position.x, closest.transform.position.y + gripOffset, claw.position.z);
+        pickupPosition = closest.transform.position;
         desiredX = Mathf.Clamp(world.x, rail.bounds.min.x, rail.bounds.max.x);
-        ClawState = MergeClawState.Lifting; return true;
+        ClawState = MergeClawState.Retracting; return true;
     }
     public void SetClawDropX(float x)
     { if (rail != null) desiredX = Mathf.Clamp(x, rail.bounds.min.x, rail.bounds.max.x); }
@@ -92,12 +94,24 @@ public sealed class MachineMergeGameManager : MergegameManager
         if (grabbed == null || !grabbed.IsLive || grabbed.LifeId != grabbedLife || claw == null || rail == null)
         { CancelClaw(); return; }
         float top = rail.bounds.center.y;
-        Vector3 destination = new Vector3(ClawState == MergeClawState.Lifting ? claw.position.x : desiredX, top, claw.position.z);
+        Vector3 destination = ClawState == MergeClawState.Retracting
+            ? new Vector3(claw.position.x, top, claw.position.z)
+            : ClawState == MergeClawState.ApproachingItem
+            ? new Vector3(pickupPosition.x, top, claw.position.z)
+            : ClawState == MergeClawState.Lowering
+            ? new Vector3(pickupPosition.x, pickupPosition.y + gripOffset, claw.position.z)
+            : new Vector3(ClawState == MergeClawState.Lifting ? claw.position.x : desiredX, top, claw.position.z);
         claw.position = Vector3.MoveTowards(claw.position, destination, clawSpeed * deltaTime);
-        grabbed.transform.position = new Vector3(claw.position.x, claw.position.y - gripOffset, grabbed.transform.position.z);
-        grabbed.body.position = grabbed.transform.position;
+        if (ClawHasItem)
+        {
+            grabbed.transform.position = new Vector3(claw.position.x, claw.position.y - gripOffset, grabbed.transform.position.z);
+            grabbed.body.position = grabbed.transform.position;
+        }
         if ((claw.position - destination).sqrMagnitude > .0001f) return;
-        if (ClawState == MergeClawState.Lifting) ClawState = MergeClawState.MovingAlongRail;
+        if (ClawState == MergeClawState.Retracting) ClawState = MergeClawState.ApproachingItem;
+        else if (ClawState == MergeClawState.ApproachingItem) ClawState = MergeClawState.Lowering;
+        else if (ClawState == MergeClawState.Lowering) ClawState = MergeClawState.Lifting;
+        else if (ClawState == MergeClawState.Lifting) ClawState = MergeClawState.MovingAlongRail;
         else if (dropRequested) CancelClaw(); // Release restores physics; it falls vertically from the rail.
     }
     public void CancelClaw()

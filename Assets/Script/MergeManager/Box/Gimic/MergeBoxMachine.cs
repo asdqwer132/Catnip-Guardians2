@@ -20,6 +20,11 @@ public sealed class MergeBoxMachine : MergeBoxGimic
     [Min(0f)] public float laserVisualSeconds = .15f;
     [Header("Claw rail above the box")]
     public Transform clawVisual;
+    public Transform clawFrame;
+    public SpriteRenderer clawLine;
+    public SpriteRenderer clawRenderer;
+    public Sprite openClawSprite, grippingClawSprite;
+    private Vector3 initialClawPosition;
     public Collider2D clawRail;
     [Min(.01f)] public float clawSpeed = 5f;
     [Min(0f)] public float clawGripOffset = .3f;
@@ -32,7 +37,11 @@ public sealed class MergeBoxMachine : MergeBoxGimic
     protected override void EnsureSkills() => SetDefaultSkills(
         new GimicSkill { id = "Machine.Laser", type = GimicSkillType.Active, defaultSkillCool = 10f },
         new GimicSkill { id = "Machine.Claw", type = GimicSkillType.Active, defaultSkillCool = 10f });
-    public override void GimicStart() { if (Board is MachineMergeGameManager machine) machine.LaserDragArea = laserDragArea; }
+    public override void GimicStart()
+    {
+        if (Board is MachineMergeGameManager machine) machine.LaserDragArea = laserDragArea;
+        if (clawVisual != null) initialClawPosition = clawVisual.position;
+    }
     protected override bool CanUseActiveSkill(int index) => Board is MachineMergeGameManager machine &&
         machine.ClawState == MergeClawState.Idle && (index == 0 ? laserEmitter != null && laserHitArea!=null && laserObject!=null : clawVisual != null && clawRail != null);
     protected override float GetSkillDuration(int index) => index==0?laserVisualSeconds:base.GetSkillDuration(index);
@@ -55,6 +64,7 @@ public sealed class MergeBoxMachine : MergeBoxGimic
         laserRemaining -= deltaTime;
         if (laserObject != null && laserRemaining <= 0f) laserObject.SetActive(false);
         machine.TickClaw(deltaTime);
+        UpdateClawPresentation(machine);
         if(machine.ClawState==MergeClawState.Idle) { followingTarget=false;CompleteSkill(1); }
         if(clawTarget!=null && !followingTarget) clawTarget.gameObject.SetActive(false);
         var mouse = Mouse.current;
@@ -79,6 +89,36 @@ public sealed class MergeBoxMachine : MergeBoxGimic
         }
         if (machine.ClawState != MergeClawState.Idle && machine.ClawState != MergeClawState.AwaitingItem) machine.SetClawDropX(world.x);
         if (mouse.leftButton.wasReleasedThisFrame) { EndLaserDrag(); machine.RequestClawDrop();followingTarget=false;if(clawTarget!=null) clawTarget.gameObject.SetActive(false); }
+    }
+    private void UpdateClawPresentation(MachineMergeGameManager machine)
+    {
+        if (clawVisual == null) return;
+        Vector3 position = clawVisual.position;
+        if (clawFrame != null)
+        {
+            clawFrame.position = new Vector3(position.x, clawFrame.position.y, clawFrame.position.z);
+            clawVisual.position = position;
+        }
+        if (clawLine != null && clawFrame != null && clawLine.sprite != null)
+        {
+            var top = clawFrame.position;
+            var bottom = position;
+            var localTop = clawLine.transform.parent.InverseTransformPoint(top);
+            var localBottom = clawLine.transform.parent.InverseTransformPoint(bottom);
+            float height = Mathf.Abs(localTop.y - localBottom.y) / Mathf.Max(.0001f, Mathf.Abs(clawLine.transform.localScale.y));
+            clawLine.drawMode = SpriteDrawMode.Tiled;
+            clawLine.size = new Vector2(clawLine.size.x, height);
+            float pivot = clawLine.sprite.pivot.y / clawLine.sprite.rect.height;
+            var linePosition = clawLine.transform.localPosition;
+            linePosition.y = Mathf.Min(localTop.y, localBottom.y) + height * Mathf.Abs(clawLine.transform.localScale.y) * pivot;
+            clawLine.transform.localPosition = linePosition;
+            clawVisual.position = position;
+        }
+        if (clawRenderer != null)
+        {
+            var sprite = machine.ClawHasItem ? grippingClawSprite : openClawSprite;
+            if (sprite != null) clawRenderer.sprite = sprite;
+        }
     }
     public bool TryGrabClawItem(Vector2 world)
     {
@@ -115,6 +155,7 @@ public sealed class MergeBoxMachine : MergeBoxGimic
     {
         EndLaserDrag();
         if (Board is MachineMergeGameManager machine) { machine.CancelClaw(); machine.LaserDragArea = null; }
+        if (Running && clawVisual != null) clawVisual.position = initialClawPosition;
         if (laserObject != null) laserObject.SetActive(false);
         followingTarget=false;if(clawTarget!=null) clawTarget.gameObject.SetActive(false);
         base.GimicStop();
