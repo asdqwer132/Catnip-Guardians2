@@ -17,6 +17,9 @@ public class MergeItemObject : MonoBehaviour, IPoolable
     public bool useItemIcon = true;
 
     public Rigidbody2D body;
+    private MergeItemPresentation presentation;
+    public void PlayPresentation(MergeItemPresentationEvent trigger, string gimmickId = null)
+    { if (presentation == null) presentation = GetComponent<MergeItemPresentation>(); presentation?.Play(trigger, gimmickId); }
 
     [SerializeField] private PooledObject pooled;
 
@@ -144,6 +147,8 @@ public class MergeItemObject : MonoBehaviour, IPoolable
 
             spriteRenderer.enabled = spriteRenderer.sprite != null;
         }
+        if (presentation == null) presentation = GetComponent<MergeItemPresentation>();
+        presentation?.BeginLifetime();
     }
 
     // 콜라이더의 원래 모양과 비주얼의 상대 크기를 유지한 채 전체를 조절합니다.
@@ -273,6 +278,7 @@ public class MergeItemObject : MonoBehaviour, IPoolable
 
     private void ClearPayload()
     {
+        presentation?.EndLifetime();
         if (heldBy != null)
             ReleaseHold(heldBy);
 

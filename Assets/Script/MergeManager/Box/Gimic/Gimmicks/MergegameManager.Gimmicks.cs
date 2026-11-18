@@ -36,10 +36,12 @@ public partial class MergegameManager
             }
             foreach (var piece in spawned) if (piece == null || !piece.IsLive) return false;
             Vector3 center = input.transform.position;
+            input.PlayPresentation(MergeItemPresentationEvent.Gimmick, "Gimmick.Replace");
             input.ReturnToPool();
             foreach (var piece in spawned)
             {
                 bonusSpawn.Launch(piece, center);
+                piece.PlayPresentation(MergeItemPresentationEvent.Gimmick, "Gimmick.Result");
                 CodexDiscoveryHistory.Current.RecordItem(piece.item);
                 discoveryHistory?.RecordCrafted(piece.item);
             }

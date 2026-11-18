@@ -18,7 +18,10 @@ public sealed class MergeBoxFishing : MergeBoxGimic
     {
         var old=skills!=null && skills.Length>0?skills[0]:null;
         skills=new[] { new GimicSkill { id="Fishing.Begin",type=GimicSkillType.Active,
-            skillImage=old!=null?old.skillImage:null, defaultSkillCool=old!=null?old.defaultSkillCool:15f } };
+            skillImage=old!=null?old.skillImage:null, defaultSkillCool=old!=null?old.defaultSkillCool:15f,
+            enabled=old==null || old.enabled,
+            activationPresentation=old!=null?old.activationPresentation:new EffectPresentationCue(),
+            completionPresentation=old!=null?old.completionPresentation:new EffectPresentationCue() } };
     }
     protected override bool CanUseActiveSkill(int index) => minigame!=null && !IsFishing;
     protected override bool WaitForSkillCompletion(int index) => true;

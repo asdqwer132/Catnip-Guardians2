@@ -14,6 +14,22 @@ public class EffectVisualPool : MonoBehaviour
     private readonly Dictionary<ImpactVfxInstance, TemplateEntry> templates =
         new Dictionary<ImpactVfxInstance, TemplateEntry>();
     private ObjectPoolManager owner;
+    private ImpactVfxInstance animationTemplate;
+    private static ImpactVfxInstance fallbackAnimationTemplate;
+    public static ImpactVfxInstance GetAnimationTemplate()
+    {
+        var manager = ObjectPoolManager.instance;
+        var service = manager != null ? GetService(manager) : null;
+        var existing = service != null ? service.animationTemplate : fallbackAnimationTemplate;
+        if (existing != null) return existing;
+        var root = new GameObject("Shared clip effect template");
+        root.SetActive(false);
+        if (service != null) root.transform.SetParent(service.transform, false);
+        root.AddComponent<SpriteRenderer>(); root.AddComponent<Animator>(); root.AddComponent<EffectClipPlayer>();
+        var visual = root.AddComponent<ImpactVfxInstance>();
+        if (service != null) service.animationTemplate = visual; else fallbackAnimationTemplate = visual;
+        return visual;
+    }
     private Transform templatesParent;
 
     public static EffectVisualAnchor Spawn(

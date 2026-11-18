@@ -116,8 +116,10 @@ internal sealed class MergeItemCombiner
             if (result == null || !result.IsLive || before != owner.Revision || !owner.CanOperate) return false;
             for (int i = 0; i < ingredients.Count; i++)
                 if (ingredients[i] == null || ingredients[i].LifeId != lives[i] || !ingredients[i].IsLive) return false;
-            foreach (var item in ingredients) item.ReturnToPool();
+            foreach (var item in ingredients)
+            { item.PlayPresentation(MergeItemPresentationEvent.MergeConsumed); item.ReturnToPool(); }
             result.Velocity = momentum / Mathf.Max(.001f, mass); result.SetSimulated(true); committed = true;
+            result.PlayPresentation(MergeItemPresentationEvent.MergeCreated);
             CodexDiscoveryHistory.Current.RecordItem(recipe.resultItem);
             if (owner.discoveryHistory != null) owner.discoveryHistory.RecordCrafted(recipe.resultItem);
             owner.Report($"합성: {owner.GetItemDisplayName(recipe.resultItem)}");

@@ -34,6 +34,7 @@ public sealed class MineralMergeItemObject : MergeItemObject
             !System.Array.Exists(pickaxes, definition => definition != null && definition == pickaxe.Definition)) return false;
         nextHit = Time.time + Mathf.Max(.01f, hitInterval);
         pickaxe.ReturnToPool();
+        PlayPresentation(MergeItemPresentationEvent.Gimmick, "Mineral.Mine");
         int budget = RemainingResource;
         foreach (var reward in rewards)
         {

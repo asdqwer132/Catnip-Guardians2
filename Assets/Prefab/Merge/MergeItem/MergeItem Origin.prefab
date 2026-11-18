@@ -1,5 +1,19 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &8821349861575103001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5345312633064728236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a418ecfc71d4025be2f8c7a3e275093, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MergeItemPresentation
+  bindings: []
+  modules: []
 --- !u!1 &910000600001
 GameObject:
   m_ObjectHideFlags: 0
@@ -197,6 +211,7 @@ GameObject:
   - component: {fileID: 4460719141247080061}
   - component: {fileID: 7778514779858065204}
   - component: {fileID: 3107395689305939275}
+  - component: {fileID: 8821349861575103001}
   m_Layer: 0
   m_Name: MergeItem Origin
   m_TagString: Untagged

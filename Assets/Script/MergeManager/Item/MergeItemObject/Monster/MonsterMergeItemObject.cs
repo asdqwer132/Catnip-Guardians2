@@ -27,6 +27,7 @@ public sealed class MonsterMergeItemObject : MergeItemObject
         if (!quarantined && MergeGimmickUtility.Touches(quarantine, this))
         {
             quarantined = true;
+            PlayPresentation(MergeItemPresentationEvent.Gimmick, "Monster.Quarantine");
             MergeGimmickUtility.Emit(Owner, quarantineRewards, transform.position);
             ReturnToPool();
             return;
@@ -39,7 +40,10 @@ public sealed class MonsterMergeItemObject : MergeItemObject
         {
             if (other == null || other == this || (!eatOtherMonsters && other is MonsterMergeItemObject) || !other.CanSelect) continue;
             if ((colider2d.IsTouching(other.colider2d) || colider2d.Distance(other.colider2d).isOverlapped) && Owner.TryRemoveItem(other, other.LifeId))
+            {
+                PlayPresentation(MergeItemPresentationEvent.Gimmick, "Monster.Eat");
                 if (++eaten >= eatCountPerTick) break;
+            }
         }
     }
 }

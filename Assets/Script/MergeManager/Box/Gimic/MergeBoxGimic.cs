@@ -9,6 +9,8 @@ public abstract class MergeBoxGimic : MonoBehaviour
     public class GimicSkill
     {
         public string id;
+        public EffectPresentationCue activationPresentation = new EffectPresentationCue();
+        public EffectPresentationCue completionPresentation = new EffectPresentationCue();
         public bool enabled = true;
         [Tooltip("Active: 클릭/단축키로 발동. Passive: 직접 입력 없이 발동합니다.")]
         public GimicSkillType type;
@@ -70,6 +72,8 @@ public abstract class MergeBoxGimic : MonoBehaviour
     public virtual void GimicStart() { }
     public virtual void GimicStop()
     {
+        foreach (var skill in skills) if (skill != null)
+        { skill.activationPresentation?.Stop(); skill.completionPresentation?.Stop(); }
         Running = false;
         remaining = Array.Empty<float>();
         durationRemaining=durationTotal=Array.Empty<float>();active=Array.Empty<bool>();
@@ -91,7 +95,10 @@ public abstract class MergeBoxGimic : MonoBehaviour
         active[index]=WaitForSkillCompletion(index) || duration>0f;
         durationRemaining[index]=durationTotal[index]=duration;
         remaining[index]=active[index]?0f:GetSkillStat(index).cooldown>0f?1f:0f;
+        bool awaitsCompletion = active[index];
+        skills[index].activationPresentation?.Play(gameObject);
         OnActiveSkill(index);
+        if (Running && !awaitsCompletion) skills[index].completionPresentation?.Play(gameObject);
         return true;
     }
     // 게임 매니저가 한 번씩 호출합니다. 상자별 Update에서 타이머를 중복 실행하지 않습니다.
@@ -124,6 +131,7 @@ public abstract class MergeBoxGimic : MonoBehaviour
             {
                 remaining[i] = 1f;
                 OnPassiveSkill(i);
+                if (Running) skills[i].activationPresentation?.Play(gameObject);
                 if (!Running) break;
             }
         }
@@ -137,6 +145,8 @@ public abstract class MergeBoxGimic : MonoBehaviour
     {
         if(!Running || !IsSkillActive(index)) return;
         active[index]=false;durationRemaining[index]=0f;
+        skills[index].activationPresentation?.Stop();
+        skills[index].completionPresentation?.Play(gameObject);
         remaining[index]=GetSkillStat(index).cooldown>0f?1f:0f;
     }
     // 새 상자는 발동 내용만 구현합니다. 쿨이 없는 지속/이벤트 패시브는 GimicStart 또는 자체 이벤트에서 처리합니다.

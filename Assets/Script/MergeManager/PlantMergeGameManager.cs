@@ -32,6 +32,7 @@ public sealed class PlantMergeGameManager : MergegameManager
             rule.nextItems == null || rule.nextItems.Length == 0 || piece.IsHeld || !piece.TryHold(this, true)) return false;
         var state = new Growth { piece = piece, life = piece.LifeId, rule = rule };
         growing.Add(state);
+        piece.PlayPresentation(MergeItemPresentationEvent.Gimmick, "Plant.Root");
         RefreshProgress(state);
         return true;
     }
