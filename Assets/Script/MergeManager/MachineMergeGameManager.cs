@@ -22,19 +22,31 @@ public sealed class MachineMergeGameManager : MergegameManager
     private readonly List<MergeSpawnRequest> splitOutputs = new List<MergeSpawnRequest>();
     public int FireLaser(Collider2D area,int multiplier=2,float spread=.25f)
     {
-        if(!CanOperate || recipeBook==null || area==null || !area.isActiveAndEnabled) return 0;
+        if(!CanOperate || recipeBook==null || area==null || !area.isActiveAndEnabled)
+        {
+            Debug.Log("[Machine Laser] 발사 불가: 동작 상태, 레시피북 또는 판정 영역을 확인하세요.", this);
+            return 0;
+        }
         Physics2D.SyncTransforms();laserHits.Clear();
         area.Overlap(new ContactFilter2D { useTriggers=true,useLayerMask=false },laserHits);
+        Debug.Log($"[Machine Laser] 판정 콜라이더 {laserHits.Count}개 감지", this);
         var candidates=new Dictionary<MergeItemObject,int>();
         foreach(var hit in laserHits)
         {
             var piece=hit!=null?hit.GetComponentInParent<MergeItemObject>():null;
-            if(piece!=null && piece.Owner==this && piece.CanMerge) candidates[piece]=piece.LifeId;
+            bool valid=piece!=null && piece.Owner==this && piece.CanMerge;
+            Debug.Log($"[Machine Laser] 닿음: {(hit!=null?hit.name:"Null")} / 머지 아이템: {(piece!=null?piece.name:"없음")} / 분할 후보: {valid}", hit);
+            if(valid) candidates[piece]=piece.LifeId;
         }
         int count=0;
         // Snapshot first: fragments created by this shot must not split again in the same shot.
         foreach(var target in candidates)
-            if(target.Key!=null && target.Key.LifeId==target.Value && TrySplit(target.Key,multiplier,spread)) count++;
+        {
+            bool split=target.Key!=null && target.Key.LifeId==target.Value && TrySplit(target.Key,multiplier,spread);
+            Debug.Log($"[Machine Laser] 분할 {(split?"성공":"실패")}: {(target.Key!=null?target.Key.name:"Null")}", target.Key);
+            if(split) count++;
+        }
+        Debug.Log($"[Machine Laser] 처리 완료: 후보 {candidates.Count}개 / 분할 {count}개", this);
         return count;
     }
     public bool TrySplit(MergeItemObject piece, int multiplier = 2, float spread = .25f)
