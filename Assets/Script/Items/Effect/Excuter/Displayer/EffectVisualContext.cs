@@ -6,8 +6,9 @@ public sealed class EffectVisualContext
 {
     public readonly Vector3 position;
     public readonly Quaternion rotation;
-    public readonly Transform followTarget;
-    public readonly bool hasFollowTarget;
+    public Transform followTarget { get; private set; }
+    public bool hasFollowTarget { get; private set; }
+    public void DetachFollow() { followTarget = null; hasFollowTarget = false; }
     public readonly GameObject audioOwner;
 
     private readonly Func<Vector3, bool, Vector3> scaleResolver;

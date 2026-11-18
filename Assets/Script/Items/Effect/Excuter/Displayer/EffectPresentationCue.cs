@@ -9,10 +9,9 @@ public sealed class EffectPresentationCue
 {
     public Transform anchor;
     public bool followTarget;
-    public bool stopOnReset;
     public EffectVisualData[] effects = Array.Empty<EffectVisualData>();
     public UnityEvent onPlay = new UnityEvent();
-    private sealed class Playback { public EffectVisualAnchor anchor; public EffectVisualContext context; }
+    private sealed class Playback { public EffectVisualAnchor anchor; public EffectVisualContext context; public bool stopOnReset; }
     private readonly List<Playback> playing = new List<Playback>();
     public void Play(GameObject owner)
     {
@@ -26,15 +25,19 @@ public sealed class EffectPresentationCue
             var context = new EffectVisualContext(target.position, target.rotation,
                 followTarget: followTarget ? target : null, audioOwner: owner);
             var visual = effect.Play(context);
-            if (visual == null || (!followTarget && !stopOnReset && !effect.loopAnimation)) continue;
+            if (visual == null || (!followTarget && !effect.stopOnReset)) continue;
             var root = visual.GetComponentInParent<EffectVisualAnchor>();
-            if (root != null) playing.Add(new Playback { anchor = root, context = context });
+            if (root != null) playing.Add(new Playback { anchor = root, context = context, stopOnReset = effect.stopOnReset });
         }
     }
     public void Stop()
     {
         foreach (var playback in playing)
-            if (playback.anchor != null && playback.anchor.IsCurrentPlayback(playback.context)) playback.anchor.ReturnToPool();
+            if (playback.anchor != null && playback.anchor.IsCurrentPlayback(playback.context))
+            {
+                if (playback.stopOnReset) playback.anchor.ReturnToPool();
+                else playback.context.DetachFollow();
+            }
         playing.Clear();
     }
 }

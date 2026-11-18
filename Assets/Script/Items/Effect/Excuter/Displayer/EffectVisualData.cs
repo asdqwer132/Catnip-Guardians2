@@ -17,6 +17,8 @@ public class EffectVisualData : ScriptableObject
     public bool attachParticlesToFollowTarget = true;
 
     [Header("Lifetime")]
+    [Tooltip("연출을 요청한 아이템/스킬이 종료·초기화될 때 이 효과도 종료합니다. 반복 여부와 독립적인 옵션입니다.")]
+    public bool stopOnReset;
     public bool useAnimatorClipLifeTime = true;
     [Min(0.01f)] public float impactVfxLifeTime = 1f;
 
@@ -34,6 +36,12 @@ public class EffectVisualData : ScriptableObject
     [Header("Debug")]
     [Tooltip("출력되는 Target/VFX/Anchor ID로 각 재생의 대상과 루트가 따로 연결되는지 확인합니다.")]
     public bool debugLog;
+    private void OnValidate()
+    {
+        if (loopAnimation) useAnimatorClipLifeTime = false;
+        if (float.IsNaN(impactVfxLifeTime) || float.IsInfinity(impactVfxLifeTime)) impactVfxLifeTime = 1f;
+        impactVfxLifeTime = Mathf.Max(.01f, impactVfxLifeTime);
+    }
 
     public void Prewarm()
     {
@@ -42,6 +50,7 @@ public class EffectVisualData : ScriptableObject
 
     public ImpactVfxInstance Play(EffectVisualContext context)
     {
+        if (loopAnimation) useAnimatorClipLifeTime = false;
         if (context == null || !context.CanContinuePlayback) return null;
         bool hasClips = audioClips != null && audioClips.Length > 0;
         if (hasClips && context.audioOwner != null)
@@ -52,7 +61,7 @@ public class EffectVisualData : ScriptableObject
         }
         ImpactVfxInstance instance = PlayInternal(
             context, animationClip != null ? EffectVisualPool.GetAnimationTemplate() : impactVfxPrefab, impactBaseScale,
-            scaleImpactVfxByRadius, animationClip != null && useAnimatorClipLifeTime ? (loopAnimation ? float.MaxValue : Mathf.Max(.01f,animationClip.length)) : impactVfxLifeTime,
+            scaleImpactVfxByRadius, animationClip != null && useAnimatorClipLifeTime ? Mathf.Max(.01f,animationClip.length) : impactVfxLifeTime,
             animationClip == null && useAnimatorClipLifeTime, hasClips ? null : audioSource, prewarmCount, attachParticlesToFollowTarget
         );
         if (instance != null && animationClip != null)
