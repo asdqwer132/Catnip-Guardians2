@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum MergeClawState { Idle, AwaitingItem, Lifting, MovingAlongRail, ApproachingItem, Lowering, Retracting }
+public enum MergeClawState { Idle, AwaitingItem, Lifting, MovingAlongRail, ApproachingItem, Lowering, Retracting, Returning }
 
 [DefaultExecutionOrder(-200)]
 public sealed class MachineMergeGameManager : MergegameManager
@@ -17,6 +17,16 @@ public sealed class MachineMergeGameManager : MergegameManager
     private float desiredX, clawSpeed, gripOffset;
     private float clawTopY;
     private Transform cleanPoint;
+    private Vector3 returnFrom;
+    private float returnElapsed, returnDuration;
+    public void ParkClaw(Transform visual, Transform point, float duration)
+    {
+        if (visual == null || point == null) return;
+        claw = visual; cleanPoint = point;
+        returnFrom = claw.position; returnElapsed = 0f;
+        returnDuration = Mathf.Max(.01f, duration);
+        ClawState = MergeClawState.Returning;
+    }
     private bool dropRequested, previousSuppression;
     private Vector3 pickupPosition;
     public bool ClawHasItem => grabbed != null && (ClawState == MergeClawState.Lifting || ClawState == MergeClawState.MovingAlongRail);
@@ -81,7 +91,6 @@ public sealed class MachineMergeGameManager : MergegameManager
         claw = clawVisual; rail = movementRail; clawSpeed = Mathf.Max(.01f, speed); gripOffset = Mathf.Max(0f, itemOffset);
         clawTopY = handlePoint != null ? handlePoint.position.y : movementRail.bounds.center.y;
         cleanPoint = parkingPoint;
-        if (cleanPoint != null) claw.position = new Vector3(cleanPoint.position.x, claw.position.y, claw.position.z);
         previousSuppression = SelectionSuppressed; SelectionSuppressed = true;
         dropRequested = false; ClawState = MergeClawState.AwaitingItem; return true;
     }
@@ -108,6 +117,15 @@ public sealed class MachineMergeGameManager : MergegameManager
     public void TickClaw(float deltaTime)
     {
         if (!CanOperate || deltaTime <= 0f || ClawState == MergeClawState.Idle || ClawState == MergeClawState.AwaitingItem) return;
+        if (ClawState == MergeClawState.Returning)
+        {
+            if (claw == null || cleanPoint == null) { ClawState = MergeClawState.Idle; return; }
+            returnElapsed += deltaTime;
+            var target = new Vector3(cleanPoint.position.x, returnFrom.y, returnFrom.z);
+            claw.position = Vector3.Lerp(returnFrom, target, Mathf.Clamp01(returnElapsed / returnDuration));
+            if (returnElapsed >= returnDuration) ClawState = MergeClawState.Idle;
+            return;
+        }
         if (grabbed == null || !grabbed.IsLive || grabbed.LifeId != grabbedLife || claw == null || rail == null)
         { CancelClaw(); return; }
         float top = clawTopY;
@@ -137,7 +155,7 @@ public sealed class MachineMergeGameManager : MergegameManager
         grabbed = null;
         if (ClawState != MergeClawState.Idle) SelectionSuppressed = previousSuppression;
         ClawState = MergeClawState.Idle; dropRequested = false;
-        if (claw != null && cleanPoint != null) claw.position = new Vector3(cleanPoint.position.x, claw.position.y, claw.position.z);
+        if (claw != null && cleanPoint != null) ParkClaw(claw, cleanPoint, returnDuration);
     }
     protected override void OnDisable() { CancelClaw(); base.OnDisable(); }
 }
