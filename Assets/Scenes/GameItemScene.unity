@@ -938,6 +938,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f51d937758f24e478eb5355c1ba8e2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeUI
+--- !u!4 &95312193 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3338814637462989348, guid: 318786952ec334e468db8139a39873e0, type: 3}
+  m_PrefabInstance: {fileID: 1849458122}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &98648003 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9093728392469145966, guid: 17f710cb8a268f94dbdfe4f539ace796, type: 3}
@@ -8877,6 +8882,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1889333137}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &1492454474 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 4807899078796041696, guid: 318786952ec334e468db8139a39873e0, type: 3}
+  m_PrefabInstance: {fileID: 1849458122}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1495572497 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5908820381440389137, guid: 17f710cb8a268f94dbdfe4f539ace796, type: 3}
@@ -12596,8 +12606,68 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 147167766764424440, guid: 318786952ec334e468db8139a39873e0, type: 3}
+      propertyPath: cart
+      value: 
+      objectReference: {fileID: 95312193}
+    - target: {fileID: 147167766764424440, guid: 318786952ec334e468db8139a39873e0, type: 3}
+      propertyPath: cartEnd
+      value: 
+      objectReference: {fileID: 1876994287}
+    - target: {fileID: 147167766764424440, guid: 318786952ec334e468db8139a39873e0, type: 3}
+      propertyPath: cartStart
+      value: 
+      objectReference: {fileID: 876248064}
+    - target: {fileID: 147167766764424440, guid: 318786952ec334e468db8139a39873e0, type: 3}
+      propertyPath: cartRenderer
+      value: 
+      objectReference: {fileID: 1492454474}
+    - target: {fileID: 147167766764424440, guid: 318786952ec334e468db8139a39873e0, type: 3}
+      propertyPath: skills.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 147167766764424440, guid: 318786952ec334e468db8139a39873e0, type: 3}
+      propertyPath: emptyFrames.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 147167766764424440, guid: 318786952ec334e468db8139a39873e0, type: 3}
+      propertyPath: loadedFrames.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 147167766764424440, guid: 318786952ec334e468db8139a39873e0, type: 3}
+      propertyPath: skills.Array.data[1].id
+      value: Mineral.SpawnOre.Active
+      objectReference: {fileID: 0}
+    - target: {fileID: 147167766764424440, guid: 318786952ec334e468db8139a39873e0, type: 3}
+      propertyPath: pouringFrames.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 147167766764424440, guid: 318786952ec334e468db8139a39873e0, type: 3}
+      propertyPath: 'emptyFrames.Array.data[0]'
+      value: 
+      objectReference: {fileID: -247748394, guid: 4ad12900a7689d14486767d3a13f2ff4, type: 3}
+    - target: {fileID: 147167766764424440, guid: 318786952ec334e468db8139a39873e0, type: 3}
       propertyPath: skills.Array.data[0].type
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 147167766764424440, guid: 318786952ec334e468db8139a39873e0, type: 3}
+      propertyPath: 'loadedFrames.Array.data[0]'
+      value: 
+      objectReference: {fileID: -1785306679, guid: 4ad12900a7689d14486767d3a13f2ff4, type: 3}
+    - target: {fileID: 147167766764424440, guid: 318786952ec334e468db8139a39873e0, type: 3}
+      propertyPath: 'pouringFrames.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1281979171, guid: 4ad12900a7689d14486767d3a13f2ff4, type: 3}
+    - target: {fileID: 147167766764424440, guid: 318786952ec334e468db8139a39873e0, type: 3}
+      propertyPath: skills.Array.data[1].enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 147167766764424440, guid: 318786952ec334e468db8139a39873e0, type: 3}
+      propertyPath: skills.Array.data[1].skillImage
+      value: 
+      objectReference: {fileID: 593919604, guid: 21f630a9222a2304585d155730bbf450, type: 3}
+    - target: {fileID: 147167766764424440, guid: 318786952ec334e468db8139a39873e0, type: 3}
+      propertyPath: skills.Array.data[1].defaultSkillCool
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 392328524883956338, guid: 318786952ec334e468db8139a39873e0, type: 3}
       propertyPath: m_Sprite

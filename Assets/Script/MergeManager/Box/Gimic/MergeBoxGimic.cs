@@ -9,6 +9,7 @@ public abstract class MergeBoxGimic : MonoBehaviour
     public class GimicSkill
     {
         public string id;
+        public bool enabled = true;
         [Tooltip("Active: 클릭/단축키로 발동. Passive: 직접 입력 없이 발동합니다.")]
         public GimicSkillType type;
         public Sprite skillImage;
@@ -35,6 +36,7 @@ public abstract class MergeBoxGimic : MonoBehaviour
     public bool Running { get; private set; }
     public GimicSkill[] skills = System.Array.Empty<GimicSkill>();
     public virtual int SkillCount => skills.Length;
+    public bool IsSkillEnabled(int index) => index >= 0 && index < skills.Length && skills[index] != null && skills[index].enabled;
     public Sprite GetSkillSprite(int index) => index >= 0 && index < skills.Length ? skills[index]?.skillImage : null;
     public void Init(GimicData data) => Data = data;
     public void Initialize(MergegameManager board)
@@ -81,10 +83,10 @@ public abstract class MergeBoxGimic : MonoBehaviour
     }
     // UI/키 입력은 반드시 이 진입점을 사용합니다. 패시브는 직접 사용할 수 없습니다.
     public void UseBoxSkill(int index) => TryUseActiveSkill(index);
-    public bool CanActivateSkill(int index) => Running && Board != null && Board.CanOperate && IsActiveSkill(index) && CanUseActiveSkill(index) && !IsSkillActive(index) && remaining[index] <= 0f;
+    public bool CanActivateSkill(int index) => Running && Board != null && Board.CanOperate && IsSkillEnabled(index) && IsActiveSkill(index) && CanUseActiveSkill(index) && !IsSkillActive(index) && remaining[index] <= 0f;
     public bool TryUseActiveSkill(int index)
     {
-        if (!CanActivateSkill(index)) return false;
+        if (!IsSkillEnabled(index) || !CanActivateSkill(index)) return false;
         float duration=EffectStatUtility.Safe(GetSkillDuration(index),0f,1000000f,0f);
         active[index]=WaitForSkillCompletion(index) || duration>0f;
         durationRemaining[index]=durationTotal[index]=duration;
@@ -98,6 +100,7 @@ public abstract class MergeBoxGimic : MonoBehaviour
         if (!Running || Board == null || !Board.CanOperate || deltaTime <= 0f) return;
         for (int i = 0; Running && i < remaining.Length; i++)
         {
+            if (!IsSkillEnabled(i)) continue;
             float cooldownDelta=deltaTime;
             if(IsSkillActive(i))
             {

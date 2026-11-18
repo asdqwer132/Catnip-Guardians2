@@ -40,7 +40,7 @@ public class MergeGimicManager : MonoBehaviour
             var slot = skillButtons[i];
             if (slot == null) continue;
             authoredSkillColors[i] = slot.sprite != null ? slot.sprite.color : Color.white;
-            bool visible = i < count;
+            bool visible = i < count && currentBox.IsSkillEnabled(i);
             slot.gameObject.SetActive(visible);
             if (!visible || slot.button == null) continue;
             if (slot.sprite != null) { authoredSkillColors[i] = slot.sprite.color; slot.sprite.sprite = currentBox.GetSkillSprite(i); }
