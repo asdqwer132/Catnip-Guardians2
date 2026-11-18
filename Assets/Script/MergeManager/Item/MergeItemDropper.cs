@@ -242,7 +242,6 @@ internal sealed class MergeItemDropper
         RefreshSelectionState();
         if (Time.time < nextDropAt) return owner.Reject("다음 생성까지 대기 중입니다.");
         if (owner.ActiveItemCount >= Mathf.Max(1, owner.maximumActiveItems)) return owner.Reject("최대 활성 아이템 개수에 도달했습니다.");
-        if (owner.dropZone != null && owner.dropZone.IsBlocked(owner)) return owner.Reject("아이템이 투입 제한선을 넘었습니다.");
         EnsureSelection();
         if (!CanFeedMaterial(owner.currentMaterial)) return owner.Reject("토글이 켜진 사용 가능한 재료가 없습니다.");
         var material = owner.currentMaterial;
@@ -257,10 +256,9 @@ internal sealed class MergeItemDropper
         MergeItemObject piece = null;
         try
         {
-            // 막힌 위치에서는 라운드 재고를 소비하거나 마지막 토글을 끄지 않습니다.
+            // 지정된 투입 위치에 즉시 생성하고 라운드 재고만 소비합니다.
             piece = owner.SpawnPiece(material.mergeItem, position);
             if (piece == null || !piece.IsLive || before != owner.Revision || !owner.CanOperate) return false;
-            if (!owner.TryPlaceSpawn(piece, position, search: false)) return owner.Reject("투입 위치가 막혀 있습니다.");
             SetRemaining(material, material.count - 1);
             reserved = true;
             if (before != owner.Revision || !owner.CanOperate) return false;

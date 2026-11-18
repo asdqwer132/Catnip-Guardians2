@@ -66,7 +66,7 @@ public sealed class MergeBoxMineral : MergeBoxGimic
             elapsed += deltaTime; Animate(pouringFrames, deltaTime);
             if (elapsed >= pourSeconds && Board is MineralMergeGameManager mineral)
             {
-                if (!mineral.TrySpawnOre(ores, oreSpawnArea, maximumOres, deliveryPosition)) return;
+                mineral.TrySpawnOre(ores, oreSpawnArea, maximumOres, deliveryPosition);
                 phase = cart != null ? 3 : 0;
                 if (phase == 0 && activeRequest >= 0) { CompleteSkill(activeRequest); activeRequest = -1; }
             }

@@ -12,6 +12,8 @@ public sealed class MergeDropZone : MonoBehaviour
 
     [Header("아이템 투입 제한선 · SpriteRenderer의 위치와 가로 크기")]
     public bool blockAboveLine = true;
+    [Min(0f)] public float deadlineDestroyDelay = 2f;
+    private readonly System.Collections.Generic.Dictionary<MergeItemObject, (int life, float time)> deadlines = new System.Collections.Generic.Dictionary<MergeItemObject, (int, float)>();
     public SpriteRenderer lineSprite;
     [Tooltip("월드 제한선 표시 여부입니다. 끄더라도 투입 제한 판정은 유지합니다.")]
     public bool showWorldLine = true;
@@ -53,12 +55,12 @@ public sealed class MergeDropZone : MonoBehaviour
         return true;
     }
 
-    public bool IsBlocked(MergegameManager board)
+    public void TickDeadline(MergegameManager board)
     {
-        if (!blockAboveLine || board == null || !TryGetLine(out var start, out var end)) return false;
+        if (!blockAboveLine || board == null || !TryGetLine(out var start, out var end)) { deadlines.Clear(); return; }
         Vector2 direction = end - start;
         float length = direction.magnitude;
-        if (length < .0001f) return false;
+        if (length < .0001f) return;
         Vector2 tangent = direction / length;
         Vector2 normal = new Vector2(-tangent.y, tangent.x);
         foreach (var piece in board.ActiveItems)
@@ -69,9 +71,18 @@ public sealed class MergeDropZone : MonoBehaviour
             Vector2 offset = (Vector2)bounds.center - start;
             float along = Vector2.Dot(offset, tangent);
             // 원의 가장자리가 선에 닿거나 넘어가면 차단합니다. 다른 상자의 아이템/벽은 검사하지 않습니다.
-            if (along + radius >= 0f && along - radius <= length && Vector2.Dot(offset, normal) + radius >= 0f) return true;
+            if (along + radius >= 0f && along - radius <= length && Vector2.Dot(offset, normal) + radius >= 0f &&
+                (!deadlines.TryGetValue(piece, out var previous) || previous.life != piece.LifeId))
+                deadlines[piece] = (piece.LifeId, Time.time + deadlineDestroyDelay);
         }
-        return false;
+        foreach (var pair in new System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<MergeItemObject, (int life, float time)>>(deadlines))
+        {
+            var piece = pair.Key;
+            if (piece == null || !piece.IsLive || piece.LifeId != pair.Value.life || piece.Owner != board) { deadlines.Remove(piece); continue; }
+            if (Time.time < pair.Value.time) continue;
+            deadlines.Remove(piece);
+            piece.ReturnToPool();
+        }
     }
 
     public Vector3 ConstrainPosition(Vector3 worldPosition, Vector3 lockedLocalPosition, bool moveX, bool moveY)

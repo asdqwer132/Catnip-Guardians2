@@ -19,7 +19,7 @@ public partial class MergegameManager : MonoBehaviour
     [Header("생성 옵션")]
     [Min(0f)] public float dropInterval = 0.5f;
     [Tooltip("자동·수동 투입에 공통 적용되는 최소 간격입니다. 0이면 별도 시간 하한이 없습니다.")]
-    [Min(0f)] public float minimumDropInterval = .01f;
+    [Min(0f)] public float minimumDropInterval = .1f;
     [Min(1)] public int maximumActiveItems = 50;
     [Min(0)] public int prewarmCount = 4;
     [Min(0f)] public float resultMergeDelay = 0.1f;
@@ -31,20 +31,13 @@ public partial class MergegameManager : MonoBehaviour
     [Tooltip("자동 투입이 성공하면 다음 종류를 선택합니다. 소진된 종류는 건너뜁니다.")]
     public bool cycleAutomaticMaterials = true;
 
-    [Header("생성 공간 탐색 · 일반 투입은 지정 위치만 검사")]
-    [Min(0f)] public float spawnSearchRadius = 1.5f;
-    [Range(1, 256)] public int spawnSearchAttempts = 64;
-    [Min(0f)] public float spawnClearance = .005f;
-    [Min(.01f)] public float spawnRetryInterval = .05f;
 
     public bool logActions = true;
 
     [SerializeField] private string lastMessage;
     private readonly List<MergeItemObject> active = new List<MergeItemObject>();
-    private MergeSpawnPlacement placement;
-    private MergeSpawnPlacement Placement => placement ?? (placement = new MergeSpawnPlacement(this));
-    internal bool TryPlaceSpawn(MergeItemObject piece, Vector3 position, IReadOnlyList<MergeItemObject> inputs = null, bool search = true)
-        => Placement.TryPlace(piece, position, inputs, search);
+    [Header("보너스 아이템 생성")]
+    public MergeBonusSpawnSettings bonusSpawn = new MergeBonusSpawnSettings();
     private MergeItemDropper dropper;
     private MergeItemCombiner combiner;
     private MergeItemDropper Dropper => dropper ?? (dropper = new MergeItemDropper(this));
@@ -77,7 +70,7 @@ public partial class MergegameManager : MonoBehaviour
     protected virtual void OnEnable() => Dropper.Begin();
     protected virtual void Start() { PrewarmItems(); RefreshUI(); }
     protected virtual void Update() => Dropper.Tick();
-    protected virtual void LateUpdate() { ProcessDeferredSpawns(); Combiner.ProcessContacts(); }
+    protected virtual void LateUpdate() { if (CanOperate) dropZone?.TickDeadline(this); Combiner.ProcessContacts(); }
     protected virtual void OnDisable() { dropper?.End(); ClearItems(); }
 
     public void RefreshFeedingTiming() => Dropper.ResetCooldown();
@@ -179,7 +172,6 @@ public partial class MergegameManager : MonoBehaviour
     public void RemapLayout(Matrix4x4 change)
     {
         Combiner.ClearContacts();
-        RemapDeferredSpawns(change);
         foreach (var piece in active)
         {
             if (piece == null || !piece.IsLive) continue;
@@ -206,7 +198,7 @@ public partial class MergegameManager : MonoBehaviour
         clearing = true;
         try
         {
-            revision++; Combiner.ClearPending(); ClearDeferredSpawns();
+            revision++; Combiner.ClearPending();
             foreach (var piece in active.ToArray()) if (piece != null) piece.ReturnToPool();
             active.Clear(); dropper?.ResetCooldown();
         }

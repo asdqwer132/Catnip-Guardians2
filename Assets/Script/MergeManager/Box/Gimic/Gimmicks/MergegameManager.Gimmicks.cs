@@ -8,11 +8,11 @@ public partial class MergegameManager
         piece = null;
         if (!CanOperate || ActiveItemCount >= maximumActiveItems) return false;
         int before = Revision;
-        piece = SpawnPiece(definition, position);
+        piece = SpawnPiece(definition, bonusSpawn.Position(position));
         if (piece == null) return false;
         if (!piece.IsLive) { piece.ReturnToPool(); piece = null; return false; }
-        if (!TryPlaceSpawn(piece, position) || Revision != before || !CanOperate) { piece.ReturnToPool(); piece = null; return false; }
-        piece.SetSimulated(true);
+        if (Revision != before || !CanOperate) { piece.ReturnToPool(); piece = null; return false; }
+        bonusSpawn.Launch(piece, position);
         CodexDiscoveryHistory.Current.RecordItem(definition.item);
         return true;
     }
@@ -22,25 +22,24 @@ public partial class MergegameManager
         if (!CanOperate || input == null || input.Owner != this || input.LifeId != lifeId || !input.IsLive ||
             outputs == null || outputs.Count == 0 || ActiveItemCount - 1 + outputs.Count > maximumActiveItems) return false;
         foreach (var output in outputs) if (!TryGetPrefab(output.item, out _)) return false;
-        if (!SpawnRetryReady(input) || !input.ReserveReplacement(holder)) return false;
+        if (!input.ReserveReplacement(holder)) return false;
         int before = Revision;
         var spawned = new List<MergeItemObject>(); bool committed = false;
         try
         {
             foreach (var output in outputs)
             {
-                var piece = SpawnPiece(output.item, output.position);
+                var piece = SpawnPiece(output.item, bonusSpawn.Position(output.position));
                 if (piece == null) return false;
                 spawned.Add(piece);
-                if (!TryPlaceSpawn(piece, output.position, new[] { input })) { DelaySpawnRetry(input); return false; }
                 if (Revision != before || !CanOperate || input.LifeId != lifeId || !input.IsLive) return false;
             }
             foreach (var piece in spawned) if (piece == null || !piece.IsLive) return false;
-            Vector2 velocity = input.Velocity;
+            Vector3 center = input.transform.position;
             input.ReturnToPool();
             foreach (var piece in spawned)
             {
-                piece.Velocity = velocity; piece.SetSimulated(true);
+                bonusSpawn.Launch(piece, center);
                 CodexDiscoveryHistory.Current.RecordItem(piece.item);
                 discoveryHistory?.RecordCrafted(piece.item);
             }

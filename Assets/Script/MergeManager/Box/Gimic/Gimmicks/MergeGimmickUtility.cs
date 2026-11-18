@@ -3,13 +3,44 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
+public sealed class MergeBonusSpawnSettings
+{
+    public Vector2 scatter = new Vector2(.15f, .1f);
+    [Min(0f)] public float outwardSpeed = 1f;
+    [Min(0f)] public float upwardSpeed = 1f;
+    [Header("생성 중심 폭발 · 힘 0이면 비활성")]
+    [Min(0f)] public float explosionRadius = 1f;
+    [Min(0f)] public float explosionImpulse = 1f;
+    public bool explosionFalloff = true;
+    public Vector3 Position(Vector3 center) => center + new Vector3(
+        UnityEngine.Random.Range(-Mathf.Abs(scatter.x), Mathf.Abs(scatter.x)),
+        UnityEngine.Random.Range(-Mathf.Abs(scatter.y), Mathf.Abs(scatter.y)), 0);
+    public void Launch(MergeItemObject piece, Vector3 center)
+    {
+        Vector2 direction = (Vector2)(piece.transform.position - center);
+        if (direction.sqrMagnitude < .00001f) direction = UnityEngine.Random.insideUnitCircle;
+        piece.Velocity = direction.normalized * outwardSpeed + Vector2.up * upwardSpeed;
+        piece.SetSimulated(true);
+        if (explosionRadius <= 0f || explosionImpulse <= 0f || piece.Owner == null) return;
+        foreach (var other in piece.Owner.ActiveItems)
+        {
+            if (other == null || other == piece || !other.IsLive || other.IsHeld || other.body == null) continue;
+            Vector2 offset = other.transform.position - center;
+            float distance = offset.magnitude;
+            if (distance > explosionRadius) continue;
+            Vector2 outward = distance > .0001f ? offset / distance : UnityEngine.Random.insideUnitCircle.normalized;
+            float strength = explosionImpulse * (explosionFalloff ? 1f - distance / explosionRadius : 1f);
+            other.body.AddForce(outward * strength, ForceMode2D.Impulse);
+        }
+    }
+}
+
+[Serializable]
 public sealed class MergeItemYield
 {
     public MergeItem item;
     [Min(0)] public int minimumCount = 1, maximumCount = 1;
     [Range(0f, 1f)] public float probability = 1f;
-    public Vector2 offset;
-    public Vector2 scatter = new Vector2(.25f, .1f);
     [Min(0)] public int resourceCostPerItem;
     public int RollCount()
     {
@@ -17,9 +48,6 @@ public sealed class MergeItemYield
         int min = Mathf.Max(0, minimumCount), max = Mathf.Max(min, maximumCount);
         return UnityEngine.Random.Range(min, max == int.MaxValue ? max : max + 1);
     }
-    public Vector3 Position(Vector3 origin) => origin + (Vector3)(offset + new Vector2(
-        UnityEngine.Random.Range(-Mathf.Abs(scatter.x), Mathf.Abs(scatter.x)),
-        UnityEngine.Random.Range(-Mathf.Abs(scatter.y), Mathf.Abs(scatter.y))));
 }
 
 [Serializable]
@@ -80,7 +108,7 @@ public static class MergeGimmickUtility
             if (yield == null || yield.item == null) continue;
             int count = yield.RollCount();
             for (int i = 0; i < count; i++)
-                if (board.QueueGimmickSpawn(yield.item, yield.Position(origin))) emitted++;
+                if (board.TrySpawnGimmickItem(yield.item, origin, out _)) emitted++;
         }
         return emitted;
     }

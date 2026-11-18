@@ -9,8 +9,8 @@ public sealed class FishingMergeGameManager : MergegameManager
         for (int i = 0; i < Mathf.Max(0, count); i++)
         {
             var definition = MergeGimmickUtility.ChooseItem(fish);
-            if (definition == null || !MergeGimmickUtility.TryPoint(dropArea, out var position)) break;
-            if (QueueGimmickSpawn(definition, position)) spawned++;
+            if (definition == null || dropArea == null) break;
+            if (TrySpawnGimmickItem(definition, dropArea.bounds.center, out _)) spawned++;
         }
         return spawned;
     }

@@ -11,7 +11,6 @@ public sealed class MergeBoxMachine : MergeBoxGimic
     public Collider2D laserDragArea;
 
     [Min(1)] public int splitMultiplier = 2;
-    [Min(0f)] public float splitScatter = .25f;
     public GameObject laserObject;
     public Collider2D laserHitArea;
     [Tooltip("드래그하는 동안 마우스의 목표 위치를 표시하는 월드 오브젝트입니다.")]
@@ -23,6 +22,7 @@ public sealed class MergeBoxMachine : MergeBoxGimic
     public Transform clawFrame;
     [Tooltip("집게가 상승할 최대 Y 위치입니다.")]
     public Transform clawHandlePoint;
+    public Transform clawCleanPoint;
     public SpriteRenderer clawLine;
     public SpriteRenderer clawRenderer;
     public Sprite openClawSprite, grippingClawSprite;
@@ -43,6 +43,7 @@ public sealed class MergeBoxMachine : MergeBoxGimic
     {
         if (Board is MachineMergeGameManager machine) machine.LaserDragArea = laserDragArea;
         if (clawVisual != null) initialClawPosition = clawVisual.position;
+        ParkClaw();
     }
     protected override bool CanUseActiveSkill(int index) => Board is MachineMergeGameManager machine &&
         machine.ClawState == MergeClawState.Idle && (index == 0 ? laserEmitter != null && laserHitArea!=null && laserObject!=null : clawVisual != null && clawRail != null);
@@ -54,10 +55,10 @@ public sealed class MergeBoxMachine : MergeBoxGimic
         if (index == 0)
         {
             laserObject.SetActive(true);
-            machine.FireLaser(laserHitArea,splitMultiplier,splitScatter);
+            machine.FireLaser(laserHitArea,splitMultiplier);
             laserRemaining=laserVisualSeconds;
         }
-        else if (machine.BeginClaw(clawVisual, clawRail, clawHandlePoint, clawSpeed, clawGripOffset))
+        else if (machine.BeginClaw(clawVisual, clawRail, clawHandlePoint, clawCleanPoint, clawSpeed, clawGripOffset))
         { selection?.CancelSelection(); selection?.ActiveSpawnPointDragger?.EndDrag(); }
     }
     protected override void TickGimic(float deltaTime)
@@ -89,8 +90,13 @@ public sealed class MergeBoxMachine : MergeBoxGimic
             Vector2 clamped = laserDragArea.ClosestPoint(new Vector2(laserEmitter.position.x, world.y));
             laserEmitter.position = new Vector3(laserEmitter.position.x, clamped.y, laserEmitter.position.z);
         }
-        if (machine.ClawState != MergeClawState.Idle && machine.ClawState != MergeClawState.AwaitingItem) machine.SetClawDropX(world.x);
+        if (followingTarget && machine.ClawState != MergeClawState.Idle && machine.ClawState != MergeClawState.AwaitingItem) machine.SetClawDropX(world.x);
         if (mouse.leftButton.wasReleasedThisFrame) { EndLaserDrag(); machine.RequestClawDrop();followingTarget=false;if(clawTarget!=null) clawTarget.gameObject.SetActive(false); }
+    }
+    private void ParkClaw()
+    {
+        if (clawVisual != null && clawCleanPoint != null)
+            clawVisual.position = new Vector3(clawCleanPoint.position.x, clawVisual.position.y, clawVisual.position.z);
     }
     private void UpdateClawPresentation(MachineMergeGameManager machine)
     {
@@ -158,6 +164,7 @@ public sealed class MergeBoxMachine : MergeBoxGimic
         EndLaserDrag();
         if (Board is MachineMergeGameManager machine) { machine.CancelClaw(); machine.LaserDragArea = null; }
         if (Running && clawVisual != null) clawVisual.position = initialClawPosition;
+        ParkClaw();
         if (laserObject != null) laserObject.SetActive(false);
         followingTarget=false;if(clawTarget!=null) clawTarget.gameObject.SetActive(false);
         base.GimicStop();

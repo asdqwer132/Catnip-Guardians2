@@ -16,12 +16,13 @@ public sealed class MachineMergeGameManager : MergegameManager
     private int grabbedLife;
     private float desiredX, clawSpeed, gripOffset;
     private float clawTopY;
+    private Transform cleanPoint;
     private bool dropRequested, previousSuppression;
     private Vector3 pickupPosition;
     public bool ClawHasItem => grabbed != null && (ClawState == MergeClawState.Lifting || ClawState == MergeClawState.MovingAlongRail);
     private readonly List<Collider2D> laserHits = new List<Collider2D>();
     private readonly List<MergeSpawnRequest> splitOutputs = new List<MergeSpawnRequest>();
-    public int FireLaser(Collider2D area,int multiplier=2,float spread=.25f)
+    public int FireLaser(Collider2D area,int multiplier=2)
     {
         if(!CanOperate || recipeBook==null || area==null || !area.isActiveAndEnabled)
         {
@@ -43,14 +44,14 @@ public sealed class MachineMergeGameManager : MergegameManager
         // Snapshot first: fragments created by this shot must not split again in the same shot.
         foreach(var target in candidates)
         {
-            bool split=target.Key!=null && target.Key.LifeId==target.Value && TrySplit(target.Key,multiplier,spread);
+            bool split=target.Key!=null && target.Key.LifeId==target.Value && TrySplit(target.Key,multiplier);
             Debug.Log($"[Machine Laser] 분할 {(split?"성공":"실패")}: {(target.Key!=null?target.Key.name:"Null")}", target.Key);
             if(split) count++;
         }
         Debug.Log($"[Machine Laser] 처리 완료: 후보 {candidates.Count}개 / 분할 {count}개", this);
         return count;
     }
-    public bool TrySplit(MergeItemObject piece, int multiplier = 2, float spread = .25f)
+    public bool TrySplit(MergeItemObject piece, int multiplier = 2)
     {
         if (piece == null || piece.Owner != this || recipeBook == null || !piece.CanMerge) return false;
         ItemRecipeData recipe = null;
@@ -67,19 +68,20 @@ public sealed class MachineMergeGameManager : MergegameManager
             var definition = GetDefinitionAtMergeItem(material.itemData);
             for (int i = 0; i < material.amount * Mathf.Max(1, multiplier); i++)
             {
-                Vector3 position = piece.transform.position + (Vector3)Random.insideUnitCircle * Mathf.Max(0f, spread);
+                Vector3 position = piece.transform.position;
                 splitOutputs.Add(new MergeSpawnRequest(definition, position));
             }
         }
         int life = piece.LifeId;
-        return TryReplaceGimmickItem(piece, life, splitOutputs) ||
-            (piece.IsLive && piece.LifeId == life && QueueReplacement(piece, splitOutputs));
+        return TryReplaceGimmickItem(piece, life, splitOutputs);
     }
-    public bool BeginClaw(Transform clawVisual, Collider2D movementRail, Transform handlePoint, float speed, float itemOffset)
+    public bool BeginClaw(Transform clawVisual, Collider2D movementRail, Transform handlePoint, Transform parkingPoint, float speed, float itemOffset)
     {
         if (!CanOperate || ClawState != MergeClawState.Idle || clawVisual == null || movementRail == null) return false;
         claw = clawVisual; rail = movementRail; clawSpeed = Mathf.Max(.01f, speed); gripOffset = Mathf.Max(0f, itemOffset);
         clawTopY = handlePoint != null ? handlePoint.position.y : movementRail.bounds.center.y;
+        cleanPoint = parkingPoint;
+        if (cleanPoint != null) claw.position = new Vector3(cleanPoint.position.x, claw.position.y, claw.position.z);
         previousSuppression = SelectionSuppressed; SelectionSuppressed = true;
         dropRequested = false; ClawState = MergeClawState.AwaitingItem; return true;
     }
@@ -95,6 +97,7 @@ public sealed class MachineMergeGameManager : MergegameManager
         }
         if (closest == null || !closest.TryHold(this, false)) return false;
         grabbed = closest; grabbedLife = closest.LifeId;
+        dropRequested = false;
         pickupPosition = closest.transform.position;
         desiredX = Mathf.Clamp(world.x, rail.bounds.min.x, rail.bounds.max.x);
         ClawState = MergeClawState.Retracting; return true;
@@ -134,6 +137,7 @@ public sealed class MachineMergeGameManager : MergegameManager
         grabbed = null;
         if (ClawState != MergeClawState.Idle) SelectionSuppressed = previousSuppression;
         ClawState = MergeClawState.Idle; dropRequested = false;
+        if (claw != null && cleanPoint != null) claw.position = new Vector3(cleanPoint.position.x, claw.position.y, claw.position.z);
     }
     protected override void OnDisable() { CancelClaw(); base.OnDisable(); }
 }

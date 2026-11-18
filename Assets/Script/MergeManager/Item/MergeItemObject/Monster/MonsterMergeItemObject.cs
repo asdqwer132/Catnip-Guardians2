@@ -8,30 +8,15 @@ public sealed class MonsterMergeItemObject : MergeItemObject
     public MergeItemYield[] quarantineRewards = System.Array.Empty<MergeItemYield>();
     private float nextEat;
     private bool quarantined;
-    private readonly System.Collections.Generic.List<MergeSpawnRequest> pendingRewards = new System.Collections.Generic.List<MergeSpawnRequest>();
-    public override void RemapPendingSpawns(Matrix4x4 change)
-    {
-        for (int i = 0; i < pendingRewards.Count; i++)
-        { var request = pendingRewards[i]; request.position = change.MultiplyPoint3x4(request.position); pendingRewards[i] = request; }
-    }
-    protected override void ResetPoolState() { nextEat = Time.time + Mathf.Max(.01f, eatInterval); quarantined = false; pendingRewards.Clear(); }
+    protected override void ResetPoolState() { nextEat = Time.time + Mathf.Max(.01f, eatInterval); quarantined = false; }
     public void TickMonster(Collider2D quarantine)
     {
         if (!IsLive || Owner == null || !Owner.CanOperate || IsHeld) return;
         if (!quarantined && MergeGimmickUtility.Touches(quarantine, this))
         {
             quarantined = true;
-            foreach (var reward in quarantineRewards)
-            {
-                if (reward == null || reward.item == null) continue;
-                int count = reward.RollCount();
-                for (int i = 0; i < count; i++) pendingRewards.Add(new MergeSpawnRequest(reward.item, reward.Position(transform.position)));
-            }
-        }
-        if (quarantined)
-        {
-            if (pendingRewards.Count == 0) ReturnToPool();
-            else Owner.TryReplaceGimmickItem(this, LifeId, pendingRewards);
+            MergeGimmickUtility.Emit(Owner, quarantineRewards, transform.position);
+            ReturnToPool();
             return;
         }
         if (Time.time < nextEat) return;
