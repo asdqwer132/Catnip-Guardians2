@@ -21,6 +21,8 @@ public sealed class MergeBoxMachine : MergeBoxGimic
     [Header("Claw rail above the box")]
     public Transform clawVisual;
     public Transform clawFrame;
+    [Tooltip("집게가 상승할 최대 Y 위치입니다.")]
+    public Transform clawHandlePoint;
     public SpriteRenderer clawLine;
     public SpriteRenderer clawRenderer;
     public Sprite openClawSprite, grippingClawSprite;
@@ -55,7 +57,7 @@ public sealed class MergeBoxMachine : MergeBoxGimic
             machine.FireLaser(laserHitArea,splitMultiplier,splitScatter);
             laserRemaining=laserVisualSeconds;
         }
-        else if (machine.BeginClaw(clawVisual, clawRail, clawSpeed, clawGripOffset))
+        else if (machine.BeginClaw(clawVisual, clawRail, clawHandlePoint, clawSpeed, clawGripOffset))
         { selection?.CancelSelection(); selection?.ActiveSpawnPointDragger?.EndDrag(); }
     }
     protected override void TickGimic(float deltaTime)

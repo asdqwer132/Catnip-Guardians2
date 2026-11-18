@@ -15,6 +15,7 @@ public sealed class MachineMergeGameManager : MergegameManager
     private MergeItemObject grabbed;
     private int grabbedLife;
     private float desiredX, clawSpeed, gripOffset;
+    private float clawTopY;
     private bool dropRequested, previousSuppression;
     private Vector3 pickupPosition;
     public bool ClawHasItem => grabbed != null && (ClawState == MergeClawState.Lifting || ClawState == MergeClawState.MovingAlongRail);
@@ -74,10 +75,11 @@ public sealed class MachineMergeGameManager : MergegameManager
         return TryReplaceGimmickItem(piece, life, splitOutputs) ||
             (piece.IsLive && piece.LifeId == life && QueueReplacement(piece, splitOutputs));
     }
-    public bool BeginClaw(Transform clawVisual, Collider2D movementRail, float speed, float itemOffset)
+    public bool BeginClaw(Transform clawVisual, Collider2D movementRail, Transform handlePoint, float speed, float itemOffset)
     {
         if (!CanOperate || ClawState != MergeClawState.Idle || clawVisual == null || movementRail == null) return false;
         claw = clawVisual; rail = movementRail; clawSpeed = Mathf.Max(.01f, speed); gripOffset = Mathf.Max(0f, itemOffset);
+        clawTopY = handlePoint != null ? handlePoint.position.y : movementRail.bounds.center.y;
         previousSuppression = SelectionSuppressed; SelectionSuppressed = true;
         dropRequested = false; ClawState = MergeClawState.AwaitingItem; return true;
     }
@@ -105,7 +107,7 @@ public sealed class MachineMergeGameManager : MergegameManager
         if (!CanOperate || deltaTime <= 0f || ClawState == MergeClawState.Idle || ClawState == MergeClawState.AwaitingItem) return;
         if (grabbed == null || !grabbed.IsLive || grabbed.LifeId != grabbedLife || claw == null || rail == null)
         { CancelClaw(); return; }
-        float top = rail.bounds.center.y;
+        float top = clawTopY;
         Vector3 destination = ClawState == MergeClawState.Retracting
             ? new Vector3(claw.position.x, top, claw.position.z)
             : ClawState == MergeClawState.ApproachingItem
