@@ -2,6 +2,18 @@ using UnityEngine;
 
 public sealed class MonsterMergeItemObject : MergeItemObject
 {
+    public override void Initialize(MergegameManager owner, MergeItem definition, uint serial, float mergeDelay)
+    {
+        if (definition is MonsterMergeItem data)
+        {
+            eatInterval = data.eatInterval;
+            eatCountPerTick = data.eatCountPerTick;
+            eatOtherMonsters = data.eatOtherMonsters;
+            quarantineRewards = data.quarantineRewards;
+        }
+        base.Initialize(owner, definition, serial, mergeDelay);
+        ResetPoolState();
+    }
     [Min(.01f)] public float eatInterval = 3f;
     [Min(1)] public int eatCountPerTick = 1;
     public bool eatOtherMonsters;

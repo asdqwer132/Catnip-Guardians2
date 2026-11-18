@@ -3,6 +3,20 @@ using UnityEngine;
 // Harvestable ore uses the same lifecycle, physics and recipe pipeline as every merge item.
 public sealed class MineralMergeItemObject : MergeItemObject
 {
+    public override void Initialize(MergegameManager owner, MergeItem definition, uint serial, float mergeDelay)
+    {
+        if (definition is MineralMergeItem data)
+        {
+            totalResource = data.totalResource;
+            chargeOnPickaxeContact = data.chargeOnPickaxeContact;
+            contactCost = data.contactCost;
+            hitInterval = data.hitInterval;
+            pickaxes = data.pickaxes;
+            rewards = data.rewards;
+        }
+        base.Initialize(owner, definition, serial, mergeDelay);
+        ResetPoolState();
+    }
     [Min(1)] public int totalResource = 10;
     public bool chargeOnPickaxeContact = true;
     [Min(0)] public int contactCost = 1;

@@ -9,9 +9,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a9b633fc1e4abb4aa7405206bee8356, type: 3}
+  m_Script: {fileID: 11500000, guid: ff9ee70d0eb18362485c4fc1010538ae, type: 3}
   m_Name: Mineral Gimic MergeItem 3
-  m_EditorClassIdentifier: Assembly-CSharp::MergeItem
+  m_EditorClassIdentifier: Assembly-CSharp::MineralMergeItem
   item: {fileID: 11400000, guid: 06e25dcf2bf2a668688403379e97557a, type: 2}
-  prefab: {fileID: 3968049651182576712, guid: 542f9d063d96704ae91bcea7e1c04e12, type: 3}
+  prefab: {fileID: 8581789591284232572, guid: 70ce0708124ace6d289d8521978d3678, type: 3}
   radius: 0.5
+  totalResource: 1
+  chargeOnPickaxeContact: 1
+  contactCost: 1
+  hitInterval: 0.5
+  pickaxes:
+  - {fileID: 11400000, guid: a30b670f63b91774c84549c1a42b181b, type: 2}
+  - {fileID: 11400000, guid: d8732e27a9047184fb87ee6251cd5944, type: 2}
+  - {fileID: 11400000, guid: 4e82e09e8f823604296ba0b314d74207, type: 2}
+  - {fileID: 11400000, guid: af070495baf728d46948d3a7bc518155, type: 2}
+  rewards:
+  - item: {fileID: 11400000, guid: 1789b1c1e2895cc40ad023735bbf4e32, type: 2}
+    minimumCount: 1
+    maximumCount: 2
+    probability: 1
+    resourceCostPerItem: 1

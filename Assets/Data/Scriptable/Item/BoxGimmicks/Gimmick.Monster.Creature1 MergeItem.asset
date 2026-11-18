@@ -9,9 +9,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a9b633fc1e4abb4aa7405206bee8356, type: 3}
+  m_Script: {fileID: 11500000, guid: ead659dc7e8849b24b4b2f19a8571016, type: 3}
   m_Name: Gimmick.Monster.Creature1 MergeItem
-  m_EditorClassIdentifier: Assembly-CSharp::MergeItem
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterMergeItem
   item: {fileID: 11400000, guid: 3a6590ac11a5c2b63a8d0e30f49bb975, type: 2}
-  prefab: {fileID: 6095798928990781724, guid: 89ff8a4f4a887c7b4b4bd8549f63134c, type: 3}
+  prefab: {fileID: 8505337325015537218, guid: 3d4c1f079525a418186bc59983d7022d, type: 3}
   radius: 0.4
+  eatInterval: 3
+  eatCountPerTick: 1
+  eatOtherMonsters: 0
+  quarantineRewards:
+  - item: {fileID: 11400000, guid: c2e50fbfbd922484aa4e55fea579bb94, type: 2}
+    minimumCount: 2
+    maximumCount: 3
+    probability: 1
+    resourceCostPerItem: 0
