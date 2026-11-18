@@ -293,6 +293,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 5526124526229496135}
   - {fileID: 6313302599059354547}
   m_Father: {fileID: 193941146573201880}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -446,6 +447,37 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!1 &2999797469837724211
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5526124526229496135}
+  m_Layer: 0
+  m_Name: HandlePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5526124526229496135
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2999797469837724211}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.75, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7447861466550920433}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5345992282857472886
 GameObject:
   m_ObjectHideFlags: 0
@@ -1210,11 +1242,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxMachine
   skills:
   - id: Machine.Laser
+    enabled: 1
     type: 0
     skillImage: {fileID: -264987993, guid: 21f630a9222a2304585d155730bbf450, type: 3}
     defaultSkillCool: 10
     duration: 0
   - id: Machine.Claw
+    enabled: 1
     type: 0
     skillImage: {fileID: 483166603, guid: 21f630a9222a2304585d155730bbf450, type: 3}
     defaultSkillCool: 10
