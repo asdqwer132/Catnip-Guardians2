@@ -389,7 +389,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a3e7630b991b882459d6cafd09e6e0ed, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PooledObject
   poolGroup: 3
 --- !u!114 &5186603614968812474
@@ -402,14 +402,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: aa74979648dd4c3f8d5ecf6ab947cc6d, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeItemObject
   item: {fileID: 0}
-  circleCollider: {fileID: 7580188196415231760}
+  allowDragSelection: 0
+  allowClickSelection: 0
+  colider2d: {fileID: 0}
   spriteRenderer: {fileID: 7163014218746333248}
-  visualSize: {fileID: 8505337325015537218}
   useItemIcon: 1
-  fitIconToRadius: 1
   body: {fileID: 4793357526942592338}
   pooled: {fileID: 2375363161266615364}
   eatInterval: 3

@@ -120,6 +120,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Item
       objectReference: {fileID: 0}
+    - target: {fileID: 575855243891698685, guid: bab29a3c7dae7e742b6e3042fcce1d3b, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: bde17d7e7067e8744ad37b519130896c, type: 3}
     - target: {fileID: 3892587297050587785, guid: bab29a3c7dae7e742b6e3042fcce1d3b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 105
@@ -224,6 +228,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlantMergeItemObject
   item: {fileID: 0}
+  allowDragSelection: 1
+  allowClickSelection: 1
   colider2d: {fileID: 375270119410458448}
   spriteRenderer: {fileID: 5572735633722238014}
   useItemIcon: 1

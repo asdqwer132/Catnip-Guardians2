@@ -82,12 +82,12 @@ SpriteRenderer:
   m_SortingLayer: -1
   m_SortingOrder: 1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 68f7ff69d69832e4d9966408d1c08788, type: 3}
+  m_Sprite: {fileID: 21300000, guid: aa3d726d50f294d4eae4a98a330764e3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2, y: 2}
+  m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -369,11 +369,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeItemObject
   item: {fileID: 0}
+  allowDragSelection: 0
+  allowClickSelection: 0
   colider2d: {fileID: 7210517218707336557}
   spriteRenderer: {fileID: 2498161047446854607}
-  visualSize: {fileID: 8581789591284232572}
   useItemIcon: 1
-  fitIconToRadius: 1
   body: {fileID: 1047072957181205555}
   pooled: {fileID: 8304662556055161159}
   totalResource: 10
