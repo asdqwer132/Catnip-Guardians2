@@ -878,8 +878,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     protected override void OnDeathStarted()
     {
         if (recordsCodexDefeat && codexSourceData != null)
-            CodexDiscoveryHistory.Current.RecordEnemy(
-                codexSourceData.codexEntry != null ? codexSourceData.codexEntry : codexSourceData);
+            CodexDiscoveryHistory.Current.RecordEnemy(codexSourceData);
 
         ReleaseAttackSlot();
         if (EnemyManager.instance != null) EnemyManager.instance.RemoveEnemy(this);

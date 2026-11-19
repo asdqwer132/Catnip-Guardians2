@@ -59,7 +59,7 @@ public sealed class CodexInventoryUI : InventoryUI
         if (entries != null)
             foreach (var source in entries)
             {
-                var entry = source is EnemyDataSet enemy && enemy.codexEntry != null ? enemy.codexEntry : source;
+                var entry = source is EnemyDataSet enemy && enemy != null ? enemy : source;
                 if (entry != null && seen.Add(entry) && IsDiscovered(entry) && (!(entry is ItemData item) || IsItemDataVisible(item))) visible.Add(entry);
             }
     }

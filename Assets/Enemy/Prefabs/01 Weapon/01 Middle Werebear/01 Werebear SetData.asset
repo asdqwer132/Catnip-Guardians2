@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edc90614ba7134b47808661fe4744b2e, type: 3}
   m_Name: 01 Werebear SetData
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDataSet
-  icon: {fileID: -5004526510767300680, guid: 38d91ad36d20a6148904dc7b033d99b1, type: 3}
+  icon: {fileID: 4407900946912368253, guid: 0eb39166b9cdd7248b90667eb9d4cca5, type: 3}
   data:
   - language: 0
     dataName: Werebear
@@ -23,12 +23,14 @@ MonoBehaviour:
     description: "\uAC80\uC740 \uD138\uC758 \uACF0 \uC804\uC0AC."
     detailDescription: "\uB450\uAEBC\uC6B4 \uBAB8\uC9D1\uACFC \uCEE4\uB2E4\uB780
       \uC55E\uBC1C\uC774 \uB208\uC5D0 \uB748\uB2E4."
-  dataNumbering: 
+  dataNumbering: 01
   dataId: 01Werebear
-  dataType: 0
+  dataType: 5
+  grade: 0
+  series: 1
   requireUnlock: 0
   animatorController: {fileID: 9100000, guid: 984bf69f4176f4f429b36433bbe572c4, type: 2}
   statData: {fileID: 11400000, guid: eed63a12a3d0e1c46bbd38f92157dfc4, type: 2}
   patternData: {fileID: 11400000, guid: 1de7cc784bac6f04aac13d68b2551755, type: 2}
-  codexEntry: {fileID: 0}
-  codexEffects: []
+  codexEffects:
+  - {fileID: 0}

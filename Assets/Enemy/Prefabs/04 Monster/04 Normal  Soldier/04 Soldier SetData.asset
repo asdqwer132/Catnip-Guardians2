@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edc90614ba7134b47808661fe4744b2e, type: 3}
   m_Name: 04 Soldier SetData
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDataSet
-  icon: {fileID: -7978735674136817684, guid: 44f6a33cf3ad0d24a99da5e8b11fbc4e, type: 3}
+  icon: {fileID: -3868812660829053132, guid: 44ccf8e612060ee4e8efe9b583ede74d, type: 3}
   data:
   - language: 0
     dataName: Soldier
@@ -23,9 +23,11 @@ MonoBehaviour:
     description: "\uD22C\uAD6C\uB97C \uC4F4 \uBCF4\uBCD1."
     detailDescription: "\uAC04\uB2E8\uD55C \uAC11\uC637\uACFC \uC9E7\uC740 \uBB34\uC7A5\uC744
       \uAC16\uCD94\uACE0 \uC788\uB2E4."
-  dataNumbering: 
+  dataNumbering: 04
   dataId: 04Soldier
-  dataType: 0
+  dataType: 5
+  grade: 0
+  series: 1
   requireUnlock: 0
   animatorController: {fileID: 9100000, guid: be4978db70800934eb3781476c36405f, type: 2}
   statData: {fileID: 11400000, guid: 7413fe830adb0c14c99e7dc82e89f557, type: 2}
