@@ -12208,6 +12208,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+  - component: {fileID: 990890000000}
   - component: {fileID: 1746295222}
   - component: {fileID: 1746295224}
   - component: {fileID: 1746295223}
@@ -15230,7 +15231,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a15acdca42324dbcaaf6f9bcee0c3fa6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneLanguageMediator
-  translations: {fileID: 11400000, guid: dbcbaf0831a5432ca7b7b73c7ea79066, type: 2}
+  translations: {fileID: 11400000, guid: 933f49e8c0a14baaba059e165f4f9924, type: 2}
   standaloneLanguage: 1
 --- !u!114 &990200000001
 MonoBehaviour:
@@ -17762,6 +17763,23 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 10ed06c8720e447789f3715432e00c5e, type: 3}
+--- !u!114 &990890000000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746295221}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6e08452a43a4f16979a3dbb92718533, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: "Next"
+  tmpText: {fileID: 1746295223}
+  legacyText: {fileID: 0}
+  source: 0
+  dataSource: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

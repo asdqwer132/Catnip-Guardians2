@@ -215,6 +215,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+  - component: {fileID: 990890000000}
   - component: {fileID: 30121536}
   - component: {fileID: 30121538}
   - component: {fileID: 30121537}
@@ -352,6 +353,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+  - component: {fileID: 990890000001}
   - component: {fileID: 46079421}
   - component: {fileID: 46079423}
   - component: {fileID: 46079422}
@@ -4543,6 +4545,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+  - component: {fileID: 990890000002}
   - component: {fileID: 1943411080}
   - component: {fileID: 1943411082}
   - component: {fileID: 1943411081}
@@ -4755,6 +4758,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+  - component: {fileID: 990890000003}
   - component: {fileID: 2003514115}
   - component: {fileID: 2003514117}
   - component: {fileID: 2003514116}
@@ -5075,8 +5079,76 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a15acdca42324dbcaaf6f9bcee0c3fa6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneLanguageMediator
-  translations: {fileID: 11400000, guid: dbcbaf0831a5432ca7b7b73c7ea79066, type: 2}
+  translations: {fileID: 11400000, guid: bf3ea748f82749b4b458ab552440a4b4, type: 2}
   standaloneLanguage: 0
+--- !u!114 &990890000000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 30121535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6e08452a43a4f16979a3dbb92718533, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: "Next"
+  tmpText: {fileID: 30121537}
+  legacyText: {fileID: 0}
+  source: 0
+  dataSource: {fileID: 0}
+--- !u!114 &990890000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 46079420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6e08452a43a4f16979a3dbb92718533, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: "Skip"
+  tmpText: {fileID: 46079422}
+  legacyText: {fileID: 0}
+  source: 0
+  dataSource: {fileID: 0}
+--- !u!114 &990890000002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1943411079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6e08452a43a4f16979a3dbb92718533, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: "Story"
+  tmpText: {fileID: 1943411081}
+  legacyText: {fileID: 0}
+  source: 0
+  dataSource: {fileID: 0}
+--- !u!114 &990890000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2003514114}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6e08452a43a4f16979a3dbb92718533, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: "Prev"
+  tmpText: {fileID: 2003514116}
+  legacyText: {fileID: 0}
+  source: 0
+  dataSource: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
