@@ -23,15 +23,6 @@ public enum Grade
     Epic = 2,
     Legendary = 3,
 }
-public enum Category
-{
-    None = -1,
-    Item = 0,
-    ItemMaterial = 1,
-    Enemy = 2,
-    Character = 3,
-    Map = 4,
-}
 public enum Rarity
 {
     None = -1,
@@ -52,7 +43,6 @@ public class DefaultData : ScriptableObject, IUnlockable, DefinedData
     public string dataId;
     public DataType dataType;
     public Grade grade = Grade.None;
-    public Category category = Category.None;
     public Rarity rarity = Rarity.None;
 
     [Header("Extra Data")]

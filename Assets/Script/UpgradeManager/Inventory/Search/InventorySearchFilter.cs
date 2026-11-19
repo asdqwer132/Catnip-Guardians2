@@ -4,7 +4,7 @@ using System;
 public class InventorySearchFilter
 {
     public bool useCategory;
-    public Category category;
+    public DataType category;
 
     public bool useSeries;
     public ItemSeries series;
@@ -12,7 +12,7 @@ public class InventorySearchFilter
     public bool useGrade;
     public Grade grade;
 
-    private Category[] categoryMask;
+    private DataType[] categoryMask;
     private ItemSeries[] seriesMask;
     private Grade[] gradeMask;
 
@@ -25,7 +25,7 @@ public class InventorySearchFilter
         if (IsMasked(item))
             return false;
 
-        if (useCategory && item.GetItemCategory() != category)
+        if (useCategory && item.GetDataType() != category)
             return false;
 
         if (useSeries && item.GetItemSeries() != series)
@@ -42,7 +42,7 @@ public class InventorySearchFilter
         if (data == null)
             return true;
 
-        if (IsCategoryMasked(data.GetItemCategory()))
+        if (IsCategoryMasked(data.GetDataType()))
             return true;
 
         if (IsSeriesMasked(data.GetItemSeries()))
@@ -54,7 +54,7 @@ public class InventorySearchFilter
         return false;
     }
 
-    public bool IsCategoryMasked(Category value)
+    public bool IsCategoryMasked(DataType value)
     {
         if (categoryMask == null)
             return false;
@@ -97,7 +97,7 @@ public class InventorySearchFilter
     }
 
     public void SetMask(
-        Category[] categoryMask,
+        DataType[] categoryMask,
         ItemSeries[] seriesMask,
         Grade[] gradeMask
     )

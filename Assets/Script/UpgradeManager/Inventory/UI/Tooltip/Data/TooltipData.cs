@@ -25,13 +25,13 @@ public class ItemTooltipData : TooltipData
 {
     public int amount;
     public Grade grade;
-    public Category category;
+    public DataType dataType;
     public ItemSeries series;
     public float weight;
     public float cooldown;
 
     public string GradeText => grade == Grade.None ? "" : grade.ToString();
-    public string CategoryText => category == Category.None ? "" : category.ToString();
+    public string CategoryText => dataType == DataType.None ? "" : dataType.ToString();
     public string SeriesText => series == ItemSeries.None ? "" : series.ToString();
     public string WeightText => weight.ToString("0.##", CultureInfo.InvariantCulture);
     public string CooldownText => cooldown.ToString("0.##", CultureInfo.InvariantCulture);
@@ -50,7 +50,7 @@ public class ItemTooltipData : TooltipData
             amount = amount,
             amountText = $"x{amount}",
             grade = item.grade,
-            category = item.category,
+            dataType = item.dataType,
             series = item.series,
             weight = item.weight,
             cooldown = item.Cooldown

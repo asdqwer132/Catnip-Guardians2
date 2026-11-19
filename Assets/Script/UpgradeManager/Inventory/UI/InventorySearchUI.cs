@@ -17,13 +17,13 @@ public class InventorySearchUI : ItemSearchUIBase
 
     public void OnCategoryChanged(int value)
     {
-        if (value == (int)Category.None)
+        if (value == (int)DataType.None)
         {
             ResetCategoryFilter();
             return;
         }
-        if (Enum.IsDefined(typeof(Category), value))
-            ChangeCategoryFilter(true, (Category)value);
+        if (Enum.IsDefined(typeof(DataType), value))
+            ChangeCategoryFilter(true, (DataType)value);
     }
 
     public void OnSeriesChanged(int value)

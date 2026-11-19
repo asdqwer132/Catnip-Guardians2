@@ -4,7 +4,7 @@ using System;
 public class SearchFilter
 {
     public bool useCategory;
-    public Category category;
+    public DataType category;
 
     public bool useSeries;
     public ItemSeries series;
@@ -12,7 +12,7 @@ public class SearchFilter
     public bool useGrade;
     public Grade grade;
 
-    public Category[] categoryMask;
+    public DataType[] categoryMask;
     public ItemSeries[] seriesMask;
     public Grade[] gradeMask;
 
@@ -26,7 +26,7 @@ public class SearchFilter
         if (IsMasked(data))
             return false;
 
-        if (useCategory && data.category != category)
+        if (useCategory && data.dataType != category)
             return false;
 
         if (useSeries && data.series != series)
@@ -43,7 +43,7 @@ public class SearchFilter
         if (data == null)
             return true;
 
-        if (IsCategoryMasked(data.category))
+        if (IsCategoryMasked(data.dataType))
             return true;
 
         if (IsSeriesMasked(data.series))
@@ -55,7 +55,7 @@ public class SearchFilter
         return false;
     }
 
-    public bool IsCategoryMasked(Category value)
+    public bool IsCategoryMasked(DataType value)
     {
         if (categoryMask == null)
             return false;
@@ -98,7 +98,7 @@ public class SearchFilter
     }
 
     public void SetMask(
-        Category[] categoryMask,
+        DataType[] categoryMask,
         ItemSeries[] seriesMask,
         Grade[] gradeMask
     )

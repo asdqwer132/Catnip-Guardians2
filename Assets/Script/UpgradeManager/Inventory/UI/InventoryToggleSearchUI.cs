@@ -9,7 +9,7 @@ public class InventoryToggleSearchUI : ItemSearchUIBase
     public class CategoryToggleOption
     {
         public Toggle toggle;
-        public Category value;
+        public DataType value;
     }
 
     [Serializable]
@@ -29,7 +29,7 @@ public class InventoryToggleSearchUI : ItemSearchUIBase
     [Header("Reset Button")]
     [SerializeField] private Button resetButton;
 
-    [Header("Category Toggle")]
+    [Header("DataType Toggle")]
     [SerializeField] private ToggleGroup categoryToggleGroup;
     [SerializeField] private Toggle categoryAllToggle;
     [SerializeField] private CategoryToggleOption[] categoryOptions;
@@ -405,8 +405,8 @@ public class InventoryToggleSearchUI : ItemSearchUIBase
         if (!isOn)
             return;
 
-        ApplyCategoryToggleVisual(false, default(Category));
-        ChangeCategoryFilter(false, default(Category));
+        ApplyCategoryToggleVisual(false, default(DataType));
+        ChangeCategoryFilter(false, default(DataType));
     }
 
     private void OnSeriesAllChanged(bool isOn)
@@ -472,7 +472,7 @@ public class InventoryToggleSearchUI : ItemSearchUIBase
     private void ApplyCategoryToggleValue()
     {
         bool useValue = filter != null && filter.useCategory;
-        Category value = useValue ? filter.category : default(Category);
+        DataType value = useValue ? filter.category : default(DataType);
         ApplyCategoryToggleVisual(useValue, value);
     }
 
@@ -490,7 +490,7 @@ public class InventoryToggleSearchUI : ItemSearchUIBase
         ApplyGradeToggleVisual(useValue, value);
     }
 
-    private void ApplyCategoryToggleVisual(bool useValue, Category selectedValue)
+    private void ApplyCategoryToggleVisual(bool useValue, DataType selectedValue)
     {
         if (categoryAllToggle != null)
             categoryAllToggle.SetIsOnWithoutNotify(!useValue);
@@ -559,7 +559,7 @@ public class InventoryToggleSearchUI : ItemSearchUIBase
         }
     }
 
-    private bool HasUsableCategoryOption(Category value)
+    private bool HasUsableCategoryOption(DataType value)
     {
         if (categoryOptions == null)
             return false;

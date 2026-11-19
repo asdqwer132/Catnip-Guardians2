@@ -14,7 +14,7 @@ public class InventoryItem : ISearchable
 
 
     public Grade GetGrade() { return itemData.grade; }
-    public Category GetItemCategory() { return itemData.category; }
+    public DataType GetDataType() { return itemData.dataType; }
     public ItemSeries GetItemSeries() { return itemData.series; }
 
 }

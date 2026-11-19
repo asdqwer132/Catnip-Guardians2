@@ -165,7 +165,7 @@ public abstract class ItemSearchUIBase : MonoBehaviour
         ApplyFilter(true);
     }
 
-    protected void ChangeCategoryFilter(bool useCategory, Category category)
+    protected void ChangeCategoryFilter(bool useCategory, DataType category)
     {
         if (useCategory && IsCategoryMasked(category))
             useCategory = false;
@@ -204,7 +204,7 @@ public abstract class ItemSearchUIBase : MonoBehaviour
         ApplyFilter(true);
     }
 
-    protected bool IsCategoryMasked(Category value)
+    protected bool IsCategoryMasked(DataType value)
     {
         return targetUI != null && targetUI.IsCategoryMasked(value);
     }
