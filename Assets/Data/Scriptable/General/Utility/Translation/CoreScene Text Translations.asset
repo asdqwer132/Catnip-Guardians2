@@ -13,6 +13,10 @@ MonoBehaviour:
   m_Name: CoreScene Text Translations
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextTable
   id: Core
+  sharedGroups:
+  - {fileID: 11400000, guid: 29dd4ced60d94b4c987a06a0e5e1f2d2, type: 2}
+  - {fileID: 11400000, guid: 565dbbad296d4bf68f25f7c01a44558a, type: 2}
+  - {fileID: 11400000, guid: fbc922a56c4a474693421cc3a1141cd8, type: 2}
   entries:
   - key: General
     translations:
@@ -68,9 +72,3 @@ MonoBehaviour:
       text: Language
     - language: 1
       text: "\uC5B8\uC5B4"
-  - key: Setting
-    translations:
-    - language: 0
-      text: Setting
-    - language: 1
-      text: "\uC124\uC815"

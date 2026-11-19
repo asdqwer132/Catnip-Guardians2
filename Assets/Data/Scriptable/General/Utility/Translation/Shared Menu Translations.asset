@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47d3f35fa24e48a2b5c992adb0105125, type: 3}
+  m_Name: Shared Menu Translations
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextGroup
+  entries:
+  - key: Inventory
+    translations:
+    - language: 0
+      text: Inventory
+    - language: 1
+      text: "\uC778\uBCA4\uD1A0\uB9AC"
+  - key: Recipe
+    translations:
+    - language: 0
+      text: Recipe
+    - language: 1
+      text: "\uB808\uC2DC\uD53C"
+  - key: Skill
+    translations:
+    - language: 0
+      text: Skill
+    - language: 1
+      text: "\uC2A4\uD0AC"
+  - key: Shop
+    translations:
+    - language: 0
+      text: Shop
+    - language: 1
+      text: "\uC0C1\uC810"
+  - key: Potion
+    translations:
+    - language: 0
+      text: Potion
+    - language: 1
+      text: "\uD3EC\uC158"

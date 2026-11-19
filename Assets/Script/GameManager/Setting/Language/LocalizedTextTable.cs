@@ -19,14 +19,18 @@ public sealed class LocalizedTextEntry
 public sealed class LocalizedTextTable : ScriptableObject
 {
     public string id;
+    [Tooltip("공통 번역 묶음입니다. 같은 키는 씬 자체 항목이 우선하고, 묶음끼리는 배열 앞쪽부터 확인합니다.")]
+    public LocalizedTextGroup[] sharedGroups = Array.Empty<LocalizedTextGroup>();
     public LocalizedTextEntry[] entries = Array.Empty<LocalizedTextEntry>();
     private Dictionary<string, Dictionary<language, string>> lookup;
     private void OnEnable() => lookup = null;
     private void OnValidate() => lookup = null;
-    public void Rebuild()
+    public void Rebuild() => lookup = BuildLookup(entries);
+
+    internal static Dictionary<string, Dictionary<language, string>> BuildLookup(LocalizedTextEntry[] entries)
     {
-        lookup = new Dictionary<string, Dictionary<language, string>>(StringComparer.Ordinal);
-        if (entries == null) return;
+        var lookup = new Dictionary<string, Dictionary<language, string>>(StringComparer.Ordinal);
+        if (entries == null) return lookup;
         foreach (var entry in entries)
         {
             if (entry == null || string.IsNullOrWhiteSpace(entry.key) || entry.translations == null) continue;
@@ -34,12 +38,22 @@ public sealed class LocalizedTextTable : ScriptableObject
             foreach (var value in entry.translations)
                 if (value != null && !string.IsNullOrEmpty(value.text)) values[value.language] = value.text;
         }
+        return lookup;
     }
+
     public bool TryGetText(string key, language selected, out string text)
     {
         text = null;
         if (string.IsNullOrEmpty(key)) return false;
         if (lookup == null) Rebuild();
-        return lookup.TryGetValue(key, out var values) && values.TryGetValue(selected, out text);
+        if (lookup.TryGetValue(key, out var values) && values.TryGetValue(selected, out text))
+            return true;
+
+        if (sharedGroups != null)
+            foreach (var group in sharedGroups)
+                if (group != null && group.TryGetText(key, selected, out text))
+                    return true;
+
+        return false;
     }
 }
