@@ -9,7 +9,6 @@ public sealed class ShopSlotOpenAnimationUI : MonoBehaviour
 {
     public Image icon;
     public Animator targetAnimator;
-    private ItemBoxData currentBox;
     public bool useUnscaledTime = true;
     public bool IsPlaying { get; private set; }
     public AnimationClip PlayedClip { get; private set; }
@@ -31,7 +30,6 @@ public sealed class ShopSlotOpenAnimationUI : MonoBehaviour
         if (icon == null) icon = GetComponent<Image>();
         if (targetAnimator == null) targetAnimator = GetComponent<Animator>();
         StopPlayback();
-        currentBox = box;
         PlayedClip = null;
         if (icon == null) return;
         icon.sprite = box != null ? box.icon : null;
@@ -43,7 +41,6 @@ public sealed class ShopSlotOpenAnimationUI : MonoBehaviour
         if (icon == null) icon = GetComponent<Image>();
         if (targetAnimator == null) targetAnimator = GetComponent<Animator>();
         StopPlayback();
-        currentBox = box;
         PlayedClip = box != null ? box.openClip : null;
         if (PlayedClip == null || targetAnimator == null || !isActiveAndEnabled) return;
         targetAnimator.enabled = true;
@@ -61,7 +58,8 @@ public sealed class ShopSlotOpenAnimationUI : MonoBehaviour
         if (!IsPlaying || !graph.IsValid()) return;
         elapsed += useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
         SampleFrame(Mathf.Min(elapsed, PlayedClip.length));
-        if (elapsed >= PlayedClip.length) { StopPlayback(); RestoreIcon(); }
+        // Keep the manually evaluated graph on its last frame until the slot is reset.
+        if (elapsed >= PlayedClip.length) IsPlaying = false;
     }
 
     private void SampleFrame(float time)
@@ -78,12 +76,17 @@ public sealed class ShopSlotOpenAnimationUI : MonoBehaviour
         if (targetAnimator != null) targetAnimator.enabled = false;
     }
 
-    private void OnDisable() { StopPlayback(); RestoreIcon(); }
-    private void OnDestroy() => StopPlayback();
-    private void RestoreIcon()
+    private void OnDisable()
     {
-        if (icon == null) return;
-        icon.sprite = currentBox != null ? currentBox.icon : null;
-        icon.enabled = icon.sprite != null;
+        if (graph.IsValid()) graph.Stop();
     }
+
+    private void OnEnable()
+    {
+        if (!graph.IsValid()) return;
+        graph.Play();
+        SampleFrame(Mathf.Min(elapsed, PlayedClip.length));
+    }
+
+    private void OnDestroy() => StopPlayback();
 }
