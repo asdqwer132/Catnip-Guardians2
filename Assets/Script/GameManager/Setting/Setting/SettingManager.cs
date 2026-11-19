@@ -25,6 +25,10 @@ public class SettingManager : MonoBehaviour
     public const string SHOW_BUFF = "Setting_ShowBuff";
     public const string SHOW_HEALTH_BAR = "Setting_ShowHealthBar";
 
+    public const string WINDOW_MODE = "Setting_WindowMode";
+    public const string RESOLUTION = "Setting_Resolution";
+    public const string LANGUAGE = "Setting_Language";
+
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -37,6 +41,8 @@ public class SettingManager : MonoBehaviour
         if (gameObject.scene.name != GameSceneRoutes.Core) DontDestroyOnLoad(gameObject);
 
         Load();
+        LanguageManager.InstanceChanged += ApplyLanguage;
+        ApplyLanguage();
         InstanceChanged?.Invoke();
     }
 
@@ -104,6 +110,11 @@ public class SettingManager : MonoBehaviour
         setting.showDamagePopup = PlayerPrefs.GetInt(SHOW_DAMAGE_POPUP, 1) == 1;
         setting.showHealthBar = PlayerPrefs.GetInt(SHOW_HEALTH_BAR, 1) == 1;
         setting.showBuff = PlayerPrefs.GetInt(SHOW_BUFF, 1) == 1;
+        setting.windowModeIndex = Mathf.Max(0, PlayerPrefs.GetInt(WINDOW_MODE, 0));
+        setting.resolutionIndex = Mathf.Max(0, PlayerPrefs.GetInt(RESOLUTION, 0));
+        int savedLanguage = PlayerPrefs.GetInt(LANGUAGE, (int)language.english);
+        setting.selectedLanguage = System.Enum.IsDefined(typeof(language), savedLanguage)
+            ? (language)savedLanguage : language.english;
     }
 
     public void ReloadSettings()
@@ -126,6 +137,9 @@ public class SettingManager : MonoBehaviour
         PlayerPrefs.SetInt(SHOW_HEALTH_BAR, setting.showHealthBar ? 1 : 0);
 
         PlayerPrefs.SetInt(SHOW_BUFF, setting.showBuff ? 1 : 0);
+        PlayerPrefs.SetInt(WINDOW_MODE, setting.windowModeIndex);
+        PlayerPrefs.SetInt(RESOLUTION, setting.resolutionIndex);
+        PlayerPrefs.SetInt(LANGUAGE, (int)setting.selectedLanguage);
         PlayerPrefs.Save();
     }
 
@@ -133,6 +147,35 @@ public class SettingManager : MonoBehaviour
     {
         ApplyAudio();
         ApplyCursor();
+        ApplyLanguage();
+    }
+
+    public void SetWindowModeIndex(int index)
+    {
+        if (index < 0 || setting.windowModeIndex == index) return;
+        setting.windowModeIndex = index;
+        Save();
+    }
+
+    public void SetResolutionIndex(int index)
+    {
+        if (index < 0 || setting.resolutionIndex == index) return;
+        setting.resolutionIndex = index;
+        Save();
+    }
+
+    public void SetLanguage(int value)
+    {
+        if (!System.Enum.IsDefined(typeof(language), value)) return;
+        setting.selectedLanguage = (language)value;
+        ApplyLanguage();
+        Save();
+    }
+
+    private void ApplyLanguage()
+    {
+        if (LanguageManager.instance != null)
+            LanguageManager.instance.SetLanguage(setting.selectedLanguage);
     }
 
     public void SetMasterVolume(float value)
@@ -237,6 +280,7 @@ public class SettingManager : MonoBehaviour
     private void OnDestroy()
     {
         if (instance != this) return;
+        LanguageManager.InstanceChanged -= ApplyLanguage;
         instance = null;
         InstanceChanged?.Invoke();
     }

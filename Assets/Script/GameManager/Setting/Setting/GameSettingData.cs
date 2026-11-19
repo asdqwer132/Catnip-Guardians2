@@ -16,8 +16,11 @@ public class GameSettingData
     [Range(0, 2)] public int indicatorSpriteSize = 1;
 
     [Header("Display")]
-    public bool fullscreen = true;
+    public int windowModeIndex;
     public int resolutionIndex = 0;
+
+    [Header("Language")]
+    public language selectedLanguage = language.english;
 
     [Header("Gameplay")]
     public bool showDamagePopup = true;

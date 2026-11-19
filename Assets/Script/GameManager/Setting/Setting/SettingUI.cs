@@ -20,6 +20,13 @@ public class SettingUI : MonoBehaviour, ISettingChangeListener
     public Toggle showHealthBarToggle;
     public Toggle showBuffToggle;
 
+    [Header("Display Dropdowns")]
+    [SerializeField] private RectTransform windowModeDropdownRoot;
+    [SerializeField] private RectTransform resolutionDropdownRoot;
+    [SerializeField] private RectTransform languageDropdownRoot;
+    private TMP_Dropdown windowModeDropdown;
+    private TMP_Dropdown resolutionDropdown;
+
     [Header("Language")]
     [Tooltip("직접 만든 English(0), Korean(1) 드롭다운을 연결합니다. 항목은 코드로 생성하지 않습니다.")]
     public TMP_Dropdown languageDropdown;
@@ -28,6 +35,9 @@ public class SettingUI : MonoBehaviour, ISettingChangeListener
 
     private void Awake()
     {
+        windowModeDropdown = ResolveDropdown(windowModeDropdownRoot);
+        resolutionDropdown = ResolveDropdown(resolutionDropdownRoot);
+        if (languageDropdown == null) languageDropdown = ResolveDropdown(languageDropdownRoot);
         BindEvents();
     }
 
@@ -35,6 +45,7 @@ public class SettingUI : MonoBehaviour, ISettingChangeListener
     {
         LanguageManager.InstanceChanged += BindLanguageManager;
         BindLanguageManager();
+        Init();
     }
     private void OnDisable()
     {
@@ -55,7 +66,21 @@ public class SettingUI : MonoBehaviour, ISettingChangeListener
     }
     public void OnLanguageChanged(int value)
     {
-        if (LanguageManager.instance != null) LanguageManager.instance.SetLanguage(value);
+        if (SettingManager.instance != null) SettingManager.instance.SetLanguage(value);
+        else if (LanguageManager.instance != null) LanguageManager.instance.SetLanguage(value);
+    }
+
+    private static TMP_Dropdown ResolveDropdown(RectTransform root)
+        => root != null ? root.GetComponentInChildren<TMP_Dropdown>(true) : null;
+
+    private void OnWindowModeChanged(int value)
+    {
+        if (SettingManager.instance != null) SettingManager.instance.SetWindowModeIndex(value);
+    }
+
+    private void OnResolutionChanged(int value)
+    {
+        if (SettingManager.instance != null) SettingManager.instance.SetResolutionIndex(value);
     }
 
     private void Start()
@@ -83,6 +108,8 @@ public class SettingUI : MonoBehaviour, ISettingChangeListener
         if (showBuffToggle != null)
             showBuffToggle.onValueChanged.AddListener(OnShowBuffChanged);
 
+        if (windowModeDropdown != null) windowModeDropdown.onValueChanged.AddListener(OnWindowModeChanged);
+        if (resolutionDropdown != null) resolutionDropdown.onValueChanged.AddListener(OnResolutionChanged);
         if (languageDropdown != null) languageDropdown.onValueChanged.AddListener(OnLanguageChanged);
         isInitialized = true;
     }
@@ -127,7 +154,9 @@ public class SettingUI : MonoBehaviour, ISettingChangeListener
         if (setting == null)
             return;
 
-        RefreshLanguage(LanguageManager.CurrentLanguage);
+        RefreshLanguage(setting.selectedLanguage);
+        if (windowModeDropdown != null) windowModeDropdown.SetValueWithoutNotify(setting.windowModeIndex);
+        if (resolutionDropdown != null) resolutionDropdown.SetValueWithoutNotify(setting.resolutionIndex);
         SetSliderWithoutNotify(cursorScaleSlider, setting.cursorScale);
         SetSliderWithoutNotify(indicatorSpriteSizeSlider, setting.indicatorSpriteSize);
 

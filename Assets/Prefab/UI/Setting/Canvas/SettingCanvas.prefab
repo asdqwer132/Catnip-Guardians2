@@ -57,6 +57,9 @@ MonoBehaviour:
   showDamagePopupToggle: {fileID: 7399234859000760107}
   showHealthBarToggle: {fileID: 1265082544149692181}
   showBuffToggle: {fileID: 7862136185797861255}
+  windowModeDropdownRoot: {fileID: 3234149471850285220}
+  resolutionDropdownRoot: {fileID: 1580721073547694719}
+  languageDropdownRoot: {fileID: 3390588566868444364}
   languageDropdown: {fileID: 0}
 --- !u!114 &6894663403525800916
 MonoBehaviour:
@@ -1414,8 +1417,9 @@ MonoBehaviour:
     sfxVolume: 1
     cursorScale: 1
     indicatorSpriteSize: 1
-    fullscreen: 1
+    windowModeIndex: 0
     resolutionIndex: 0
+    selectedLanguage: 0
     showDamagePopup: 1
     screenShake: 1
     showHealthBar: 1
