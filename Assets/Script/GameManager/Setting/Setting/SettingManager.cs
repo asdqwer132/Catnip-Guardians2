@@ -168,13 +168,13 @@ public class SettingManager : MonoBehaviour
     {
         if (!System.Enum.IsDefined(typeof(language), value)) return;
         setting.selectedLanguage = (language)value;
-        ApplyLanguage();
+        if (LanguageManager.instance != null) LanguageManager.instance.SetLanguage(value);
         Save();
     }
 
     private void ApplyLanguage()
     {
-        if (LanguageManager.instance != null)
+        if (LanguageManager.instance != null && LanguageManager.instance.IsCoreAuthority)
             LanguageManager.instance.SetLanguage(setting.selectedLanguage);
     }
 

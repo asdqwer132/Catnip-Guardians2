@@ -154,7 +154,7 @@ public class SettingUI : MonoBehaviour, ISettingChangeListener
         if (setting == null)
             return;
 
-        RefreshLanguage(setting.selectedLanguage);
+        RefreshLanguage(LanguageManager.instance != null ? LanguageManager.CurrentLanguage : setting.selectedLanguage);
         if (windowModeDropdown != null) windowModeDropdown.SetValueWithoutNotify(setting.windowModeIndex);
         if (resolutionDropdown != null) resolutionDropdown.SetValueWithoutNotify(setting.resolutionIndex);
         SetSliderWithoutNotify(cursorScaleSlider, setting.cursorScale);
