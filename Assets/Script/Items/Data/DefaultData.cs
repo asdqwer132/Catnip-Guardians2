@@ -15,6 +15,32 @@ public class Description
     public string detailDescription;
 }
 
+public enum Grade
+{
+    None = -1,
+    Common = 0,
+    Rare = 1,
+    Epic = 2,
+    Legendary = 3,
+}
+public enum Category
+{
+    None = -1,
+    Item = 0,
+    ItemMaterial = 1,
+    Enemy = 2,
+    Character = 3,
+    Map = 4,
+}
+public enum Rarity
+{
+    None = -1,
+    Common = 0,
+    Rare = 1,
+    Epic = 2,
+    Legendary = 3,
+}
+
 public class DefaultData : ScriptableObject, IUnlockable, DefinedData
 {
     [Header("Basic Data")]
@@ -25,6 +51,9 @@ public class DefaultData : ScriptableObject, IUnlockable, DefinedData
     public string dataNumbering;
     public string dataId;
     public DataType dataType;
+    public Grade grade = Grade.None;
+    public Category category = Category.None;
+    public Rarity rarity = Rarity.None;
 
     [Header("Extra Data")]
     public bool requireUnlock = false;
