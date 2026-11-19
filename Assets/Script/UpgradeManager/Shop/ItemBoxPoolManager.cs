@@ -1,52 +1,75 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ItemBoxPoolManager : MonoBehaviour
 {
     [Header("All Box List")]
     public ItemBoxData[] allBoxList;
 
+    [Header("Series Selection")]
+    [Tooltip("Weapon, Food, Mineral, Monster, Fishing, Plant, Machine, Magic ìˆœì„œ. ë°°ì—´ì´ ë¹„ì–´ ìˆìœ¼ë©´ ì „ì²´ ì‚¬ìš©. ì—°ê²°ëœ í† ê¸€ì´ ëª¨ë‘ êº¼ì ¸ ìˆìœ¼ë©´ ì¶”ì²¨í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.")]
+    public Toggle[] seriesToggles;
+
     [Header("Option")]
     public bool allowDuplicate = false;
 
+    private readonly Dictionary<ItemSeries, List<ItemBoxData>> boxesBySeries = new Dictionary<ItemSeries, List<ItemBoxData>>();
+    private readonly List<ItemBoxData> cachedBoxes = new List<ItemBoxData>();
+    private bool cacheReady;
+
+    private void Awake() => RebuildCache();
+    private void OnValidate() => cacheReady = false;
+
+    /// <summary>Call after changing the box list or a box's series at runtime.</summary>
+    public void RebuildCache()
+    {
+        boxesBySeries.Clear();
+        cachedBoxes.Clear();
+        var seen = new HashSet<ItemBoxData>();
+        if (allBoxList != null)
+        {
+            foreach (var box in allBoxList)
+            {
+                if (box == null || !seen.Add(box)) continue;
+                cachedBoxes.Add(box);
+                if (!boxesBySeries.TryGetValue(box.itemSeries, out var seriesBoxes))
+                {
+                    seriesBoxes = new List<ItemBoxData>();
+                    boxesBySeries.Add(box.itemSeries, seriesBoxes);
+                }
+                seriesBoxes.Add(box);
+            }
+        }
+        cacheReady = true;
+    }
+
     public List<ItemBoxData> GetRandomBoxes(int count)
     {
-        List<ItemBoxData> result = new List<ItemBoxData>();
+        var result = new List<ItemBoxData>();
+        if (count <= 0) return result;
+        if (!cacheReady) RebuildCache();
 
-        if (allBoxList == null || allBoxList.Length == 0)
+        var availableBoxes = new List<ItemBoxData>();
+        if (seriesToggles == null || seriesToggles.Length == 0)
+            availableBoxes.AddRange(cachedBoxes);
+        else
         {
-            Debug.LogWarning("ÀüÃ¼ »óÀÚ ¸®½ºÆ®°¡ ºñ¾îÀÖ½À´Ï´Ù.");
-            return result;
+            // ItemSeries Weapon starts at 1; index 0 is the Weapon toggle.
+            for (int i = 0; i < seriesToggles.Length; i++)
+            {
+                if (seriesToggles[i] != null && seriesToggles[i].isOn &&
+                    boxesBySeries.TryGetValue((ItemSeries)(i + 1), out var seriesBoxes))
+                    availableBoxes.AddRange(seriesBoxes);
+            }
         }
 
-        List<ItemBoxData> availableBoxes = new List<ItemBoxData>();
-
-        for (int i = 0; i < allBoxList.Length; i++)
+        for (int i = 0; i < count && availableBoxes.Count > 0; i++)
         {
-            if (allBoxList[i] != null)
-                availableBoxes.Add(allBoxList[i]);
-        }
-
-        if (availableBoxes.Count == 0)
-        {
-            Debug.LogWarning("»ç¿ë °¡´ÉÇÑ »óÀÚ°¡ ¾ø½À´Ï´Ù.");
-            return result;
-        }
-
-        for (int i = 0; i < count; i++)
-        {
-            if (!allowDuplicate && availableBoxes.Count == 0)
-                break;
-
             int randomIndex = Random.Range(0, availableBoxes.Count);
-            ItemBoxData selectedBox = availableBoxes[randomIndex];
-
-            result.Add(selectedBox);
-
-            if (!allowDuplicate)
-                availableBoxes.RemoveAt(randomIndex);
+            result.Add(availableBoxes[randomIndex]);
+            if (!allowDuplicate) availableBoxes.RemoveAt(randomIndex);
         }
-
         return result;
     }
 }
