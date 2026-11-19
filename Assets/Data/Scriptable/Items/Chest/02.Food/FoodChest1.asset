@@ -13,7 +13,17 @@ MonoBehaviour:
   m_Name: FoodChest1
   m_EditorClassIdentifier: Assembly-CSharp::ItemBoxData
   icon: {fileID: -2128338265694890933, guid: 0f753beaa8e735642aa892c5f9cd79c5, type: 3}
-  data: []
+  data:
+  - language: 1
+    dataName: "\uAE08\uD14C \uC2DD\uB7C9 \uC0C1\uC790"
+    description: "\uAE08\uBE5B \uD14C\uB97C \uB450\uB978 \uC791\uC740 \uC2DD\uB7C9
+      \uC0C1\uC790."
+    detailDescription: "\uAC08\uC0C9 \uB098\uBB34\uD310\uACFC \uBC1D\uC740 \uAE08\uBE5B
+      \uC7A0\uAE08\uC7A5\uCE58\uAC00 \uC5B4\uC6B0\uB7EC\uC838 \uC788\uB2E4."
+  - language: 0
+    dataName: Gold-Trimmed Food Chest
+    description: A small food chest with golden trim.
+    detailDescription: Brown wooden panels are paired with a bright golden lock.
   dataNumbering: 02
   dataId: FoodChest1
   dataType: 6

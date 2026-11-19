@@ -15,10 +15,18 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: e3608ae341df44c0a830eb218d9f1224, type: 3}
   data:
   - language: 0
-    dataName: 07-machine
-    description:
-    detailDescription:
-  dataNumbering:
+    dataName: Rivet
+    description: Mechanic
+    detailDescription: A mechanic who takes old tools apart to examine their components.
+      There is always another part waiting for attention on Rivet's workbench.
+  - language: 1
+    dataName: "\uB9AC\uBCB3"
+    description: "\uAE30\uACC4\uACF5"
+    detailDescription: "\uB0A1\uC740 \uB3C4\uAD6C\uB97C \uBD84\uD574\uD574 \uBD80\uD488\uC744
+      \uC0B4\uD53C\uB294 \uAE30\uACC4\uACF5. \uC791\uC5C5\uB300 \uC704\uC5D0\uB294
+      \uB2E4\uC74C\uC5D0 \uC190\uBCFC \uBD80\uD488\uC774 \uB298 \uD558\uB098\uCBE4
+      \uB193\uC5EC \uC788\uB2E4."
+  dataNumbering: 
   dataId: Codex.Character.07-machine
   dataType: 0
   requireUnlock: 0
@@ -29,53 +37,53 @@ MonoBehaviour:
     data:
     - language: 0
       dataName: 07-machine_Representative
-      description:
-      detailDescription:
+      description: 
+      detailDescription: 
   - state: 1
     stateId: 07_machine_Portrait_Attack
     sprite: {fileID: 5949501233758388356, guid: 2a1af56db71e45d5927bce2dbfa7d01d, type: 3}
     data:
     - language: 0
       dataName: 07_machine_Portrait_Attack
-      description:
-      detailDescription:
+      description: 
+      detailDescription: 
   - state: 2
     stateId: 07_machine_Portrait_Happy
     sprite: {fileID: 370768944674631522, guid: 2a1af56db71e45d5927bce2dbfa7d01d, type: 3}
     data:
     - language: 0
       dataName: 07_machine_Portrait_Happy
-      description:
-      detailDescription:
+      description: 
+      detailDescription: 
   - state: 0
     stateId: 07_machine_Portrait_Idle
     sprite: {fileID: -2846788249436334185, guid: 2a1af56db71e45d5927bce2dbfa7d01d, type: 3}
     data:
     - language: 0
       dataName: 07_machine_Portrait_Idle
-      description:
-      detailDescription:
+      description: 
+      detailDescription: 
   - state: 2
     stateId: 07_machine_Portrait_Surprised
     sprite: {fileID: -5708376411862811127, guid: 2a1af56db71e45d5927bce2dbfa7d01d, type: 3}
     data:
     - language: 0
       dataName: 07_machine_Portrait_Surprised
-      description:
-      detailDescription:
+      description: 
+      detailDescription: 
   - state: 4
     stateId: 07_machine_Role_InspectGear
     sprite: {fileID: -4426505166854598864, guid: 2a1af56db71e45d5927bce2dbfa7d01d, type: 3}
     data:
     - language: 0
       dataName: 07_machine_Role_InspectGear
-      description:
-      detailDescription:
+      description: 
+      detailDescription: 
   - state: 4
     stateId: 07_machine_Role_TightenBolt
     sprite: {fileID: 5690078996082382879, guid: 2a1af56db71e45d5927bce2dbfa7d01d, type: 3}
     data:
     - language: 0
       dataName: 07_machine_Role_TightenBolt
-      description:
-      detailDescription:
+      description: 
+      detailDescription: 

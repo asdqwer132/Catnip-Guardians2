@@ -15,10 +15,18 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 5b018d0092754e72b61f7d5ff8459dbb, type: 3}
   data:
   - language: 0
-    dataName: 06-plant
-    description:
-    detailDescription:
-  dataNumbering:
+    dataName: Flora
+    description: Gardener
+    detailDescription: A gardener who plants seeds and tends leaves and flowers.
+      When walking through the garden, Flora first checks the places where new leaves
+      have sprouted.
+  - language: 1
+    dataName: "\uD50C\uB85C\uB77C"
+    description: "\uC815\uC6D0\uC0AC"
+    detailDescription: "\uC528\uC557\uC744 \uC2EC\uACE0 \uC78E\uACFC \uAF43\uC744
+      \uB3CC\uBCF4\uB294 \uC815\uC6D0\uC0AC. \uC815\uC6D0\uC744 \uB458\uB7EC\uBCFC
+      \uB54C\uBA74 \uC0C8\uC78E\uC774 \uB3CB\uC740 \uC790\uB9AC\uBD80\uD130 \uC0B4\uD540\uB2E4."
+  dataNumbering: 
   dataId: Codex.Character.06-plant
   dataType: 0
   requireUnlock: 0
@@ -29,53 +37,53 @@ MonoBehaviour:
     data:
     - language: 0
       dataName: 06-plant_Representative
-      description:
-      detailDescription:
+      description: 
+      detailDescription: 
   - state: 1
     stateId: 06_plant_Portrait_Attack
     sprite: {fileID: -2055221348334734367, guid: ad4b20f33d1e4059b4ff468282c4808b, type: 3}
     data:
     - language: 0
       dataName: 06_plant_Portrait_Attack
-      description:
-      detailDescription:
+      description: 
+      detailDescription: 
   - state: 2
     stateId: 06_plant_Portrait_Happy
     sprite: {fileID: 7208793663579291728, guid: ad4b20f33d1e4059b4ff468282c4808b, type: 3}
     data:
     - language: 0
       dataName: 06_plant_Portrait_Happy
-      description:
-      detailDescription:
+      description: 
+      detailDescription: 
   - state: 0
     stateId: 06_plant_Portrait_Idle
     sprite: {fileID: 4889317798402421523, guid: ad4b20f33d1e4059b4ff468282c4808b, type: 3}
     data:
     - language: 0
       dataName: 06_plant_Portrait_Idle
-      description:
-      detailDescription:
+      description: 
+      detailDescription: 
   - state: 2
     stateId: 06_plant_Portrait_Surprised
     sprite: {fileID: 5152140686794828035, guid: ad4b20f33d1e4059b4ff468282c4808b, type: 3}
     data:
     - language: 0
       dataName: 06_plant_Portrait_Surprised
-      description:
-      detailDescription:
+      description: 
+      detailDescription: 
   - state: 4
     stateId: 06_plant_Role_PruneLeaves
     sprite: {fileID: -2555412709999078976, guid: ad4b20f33d1e4059b4ff468282c4808b, type: 3}
     data:
     - language: 0
       dataName: 06_plant_Role_PruneLeaves
-      description:
-      detailDescription:
+      description: 
+      detailDescription: 
   - state: 4
     stateId: 06_plant_Role_WaterPlant
     sprite: {fileID: -7451311584919601317, guid: ad4b20f33d1e4059b4ff468282c4808b, type: 3}
     data:
     - language: 0
       dataName: 06_plant_Role_WaterPlant
-      description:
-      detailDescription:
+      description: 
+      detailDescription: 

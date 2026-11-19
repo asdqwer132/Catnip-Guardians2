@@ -12,8 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b981b44f6bdba44eb09234b25940801, type: 3}
   m_Name: WeaponChest1
   m_EditorClassIdentifier: Assembly-CSharp::ItemBoxData
-  icon: {fileID: -7174708675517456704, guid: 3b448df66f1f5074ba67db7c53745521, type: 3}
-  data: []
+  icon: {fileID: 2118951385950709744, guid: fe6d5036de28f3e42ac02bb58bc7ba38, type: 3}
+  data:
+  - language: 1
+    dataName: "\uCCA0\uD14C \uBB34\uAE30 \uC0C1\uC790"
+    description: "\uCCA0\uD14C\uB97C \uB450\uB978 \uC791\uC740 \uB098\uBB34 \uC0C1\uC790."
+    detailDescription: "\uAC08\uC0C9 \uB098\uBB34\uD310\uC744 \uD68C\uC0C9 \uAE08\uC18D
+      \uB760\uC640 \uC790\uBB3C\uC1E0\uB85C \uB2E8\uB2E8\uD788 \uBB36\uC5C8\uB2E4."
+  - language: 0
+    dataName: Iron-Banded Weapon Chest
+    description: A small wooden chest with iron bands.
+    detailDescription: Gray metal bands and a lock secure its brown wooden panels.
   dataNumbering: 01
   dataId: WeaponChest1
   dataType: 6

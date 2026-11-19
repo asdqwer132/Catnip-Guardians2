@@ -15,10 +15,17 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 4b39611f25724a54ab3e45f1704a36c3, type: 3}
   data:
   - language: 0
-    dataName: 08-magic
-    description:
-    detailDescription:
-  dataNumbering:
+    dataName: Rune
+    description: Mage
+    detailDescription: A mage who studies spells in grimoires and examines mana stones.
+      When an unfamiliar symbol appears, Rune turns the pages to find a similar record.
+  - language: 1
+    dataName: "\uB8E8\uB124"
+    description: "\uB9C8\uBC95\uC0AC"
+    detailDescription: "\uB9C8\uB3C4\uC11C\uC758 \uC8FC\uBB38\uACFC \uB9C8\uB825\uC11D\uC744
+      \uC0B4\uD53C\uB294 \uB9C8\uBC95\uC0AC. \uB0AF\uC120 \uBB38\uC591\uC744 \uBC1C\uACAC\uD558\uBA74
+      \uCC45\uC7A5\uC744 \uB118\uACA8 \uBE44\uC2B7\uD55C \uAE30\uB85D\uC744 \uCC3E\uC544\uBCF8\uB2E4."
+  dataNumbering: 
   dataId: Codex.Character.08-magic
   dataType: 0
   requireUnlock: 0
@@ -29,53 +36,53 @@ MonoBehaviour:
     data:
     - language: 0
       dataName: 08-magic_Representative
-      description:
-      detailDescription:
+      description: 
+      detailDescription: 
   - state: 1
     stateId: 08_magic_Portrait_Attack
     sprite: {fileID: -3578298494529719197, guid: ea53bd23ab2740b9bf94e7b990def051, type: 3}
     data:
     - language: 0
       dataName: 08_magic_Portrait_Attack
-      description:
-      detailDescription:
+      description: 
+      detailDescription: 
   - state: 2
     stateId: 08_magic_Portrait_Happy
     sprite: {fileID: -3152458617912497007, guid: ea53bd23ab2740b9bf94e7b990def051, type: 3}
     data:
     - language: 0
       dataName: 08_magic_Portrait_Happy
-      description:
-      detailDescription:
+      description: 
+      detailDescription: 
   - state: 0
     stateId: 08_magic_Portrait_Idle
     sprite: {fileID: -8973322826186768339, guid: ea53bd23ab2740b9bf94e7b990def051, type: 3}
     data:
     - language: 0
       dataName: 08_magic_Portrait_Idle
-      description:
-      detailDescription:
+      description: 
+      detailDescription: 
   - state: 2
     stateId: 08_magic_Portrait_Surprised
     sprite: {fileID: -6978363926820810985, guid: ea53bd23ab2740b9bf94e7b990def051, type: 3}
     data:
     - language: 0
       dataName: 08_magic_Portrait_Surprised
-      description:
-      detailDescription:
+      description: 
+      detailDescription: 
   - state: 4
     stateId: 08_magic_Role_InspectCrystal
     sprite: {fileID: -7492871190165661519, guid: ea53bd23ab2740b9bf94e7b990def051, type: 3}
     data:
     - language: 0
       dataName: 08_magic_Role_InspectCrystal
-      description:
-      detailDescription:
+      description: 
+      detailDescription: 
   - state: 4
     stateId: 08_magic_Role_ReadBestiary
     sprite: {fileID: 8046518227556192261, guid: ea53bd23ab2740b9bf94e7b990def051, type: 3}
     data:
     - language: 0
       dataName: 08_magic_Role_ReadBestiary
-      description:
-      detailDescription:
+      description: 
+      detailDescription: 

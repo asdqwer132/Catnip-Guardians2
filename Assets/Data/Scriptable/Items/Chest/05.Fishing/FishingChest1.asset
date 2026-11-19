@@ -13,7 +13,16 @@ MonoBehaviour:
   m_Name: FishingChest1
   m_EditorClassIdentifier: Assembly-CSharp::ItemBoxData
   icon: {fileID: 4732108575806507806, guid: b507333358aaa0a4ca13195e969583d9, type: 3}
-  data: []
+  data:
+  - language: 1
+    dataName: "\uD478\uB978 \uB09A\uC2DC \uC0C1\uC790"
+    description: "\uD478\uB978 \uB36E\uAC1C\uB97C \uB450\uB978 \uC791\uC740 \uC0C1\uC790."
+    detailDescription: "\uC740\uBE5B \uAE08\uC18D \uB760\uAC00 \uD478\uB978 \uB69C\uAED1\uACFC
+      \uBAB8\uD1B5\uC744 \uAC10\uC2FC\uB2E4."
+  - language: 0
+    dataName: Blue Fishing Chest
+    description: A small chest with a blue cover.
+    detailDescription: Silvery metal bands wrap its blue lid and body.
   dataNumbering: 05
   dataId: FishingChest1
   dataType: 6

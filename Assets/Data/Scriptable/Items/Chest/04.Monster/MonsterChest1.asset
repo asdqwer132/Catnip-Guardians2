@@ -13,7 +13,16 @@ MonoBehaviour:
   m_Name: MonsterChest1
   m_EditorClassIdentifier: Assembly-CSharp::ItemBoxData
   icon: {fileID: -7212694137195430180, guid: 7598b365c90f12c45b875f27f9c49669, type: 3}
-  data: []
+  data:
+  - language: 1
+    dataName: "\uD574\uACE8 \uC0AC\uB0E5 \uC0C1\uC790"
+    description: "\uD574\uACE8 \uC7A5\uC2DD\uC744 \uB2E8 \uC791\uC740 \uC0C1\uC790."
+    detailDescription: "\uC5B4\uB450\uC6B4 \uB098\uBB34\uD310 \uC55E\uC5D0 \uD770
+      \uD574\uACE8\uC774 \uB9E4\uB2EC\uB824 \uC788\uB2E4."
+  - language: 0
+    dataName: Skull Hunter's Chest
+    description: A small chest with a skull ornament.
+    detailDescription: A white skull hangs against its dark wooden front.
   dataNumbering: 04
   dataId: MonsterChest1
   dataType: 6

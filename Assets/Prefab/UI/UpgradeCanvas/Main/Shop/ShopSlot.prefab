@@ -543,7 +543,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -5281422124547630143, guid: 31e80fff5d20ac145855e3843a63282f, type: 3}
+  m_Sprite: {fileID: 2118951385950709744, guid: fe6d5036de28f3e42ac02bb58bc7ba38, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -682,10 +682,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopBoxButton
   dataSource: {fileID: 0}
-  toggle: {fileID: 6296884574704379799}
-  openAnimation: {fileID: 1327199142333781252}
-  purchasedOverlay: {fileID: 0}
-  uIControler: {fileID: 617396243369245802}
+  slotInformation:
+    icon: {fileID: 8655282150185658067}
+    dataNameText: {fileID: 0}
+    amountText: {fileID: 0}
   classification:
     seriesText: {fileID: 0}
     gradeText: {fileID: 3062450692926421914}
@@ -693,9 +693,10 @@ MonoBehaviour:
     gradeIcon: {fileID: 4001674669153954984}
     series: 0
     grade: -1
-  slotInformation:
-    icon: {fileID: 8655282150185658067}
-    dataNameText: {fileID: 0}
+  toggle: {fileID: 6296884574704379799}
+  openAnimation: {fileID: 1327199142333781252}
+  purchasedOverlay: {fileID: 0}
+  uIControler: {fileID: 617396243369245802}
 --- !u!114 &6296884574704379799
 MonoBehaviour:
   m_ObjectHideFlags: 0
