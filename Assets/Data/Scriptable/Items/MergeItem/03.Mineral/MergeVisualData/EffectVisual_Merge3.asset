@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: EffectVisual_Merge3
   m_EditorClassIdentifier: Assembly-CSharp::EffectVisualData
   animationClip: {fileID: 7400000, guid: 7cc2ad978ed8f34468293b4e68c03bf9, type: 2}
-  loopAnimation: 1
+  loopAnimation: 0
   sortingLayerName: Default
   sortingOrder: 0
   impactVfxPrefab: {fileID: 0}
   impactBaseScale: {x: 1, y: 1, z: 1}
   scaleImpactVfxByRadius: 1
   attachParticlesToFollowTarget: 1
+  stopOnReset: 0
   useAnimatorClipLifeTime: 1
   impactVfxLifeTime: 5
   audioSource: 

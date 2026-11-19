@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b981b44f6bdba44eb09234b25940801, type: 3}
+  m_Name: MonsterChest2
+  m_EditorClassIdentifier: Assembly-CSharp::ItemBoxData
+  icon: {fileID: 7364639507836100584, guid: b9d99f7f57a290148bbb5a7b3475273a, type: 3}
+  data: []
+  dataNumbering: 04
+  dataId: MonsterChest2
+  dataType: 6
+  requireUnlock: 0
+  costs:
+  - currencyType: 0
+    amount: 10
+  - currencyType: 1
+    amount: 10
+  itemSeries: 4
+  grade: 1
+  gachaItems:
+  - itemData: {fileID: 11400000, guid: 93758f7537ed6684898dc8cab8237aaa, type: 2}
+    probability: 0.75
+    amounts:
+    - count: 1
+      weight: 1
+    - count: 2
+      weight: 3
+  - itemData: {fileID: 11400000, guid: 9a41f7892b5c8e445987b81b88bacb9b, type: 2}
+    probability: 0.75
+    amounts:
+    - count: 1
+      weight: 1
+    - count: 2
+      weight: 3
+  openClip: {fileID: 7400000, guid: e7a6c9852bf37944e9127d61a7865e01, type: 2}

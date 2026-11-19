@@ -137,25 +137,62 @@ public static class DataWorkbookValue
         return Parse(type, node.Value);
     }
 
+
     private static UObject Reference(Type type, string locator)
     {
-        if (locator.StartsWith("guid:", StringComparison.OrdinalIgnoreCase)) locator = AssetDatabase.GUIDToAssetPath(locator.Substring(5));
+        if (locator.StartsWith("guid:", StringComparison.OrdinalIgnoreCase))
+            locator = AssetDatabase.GUIDToAssetPath(locator.Substring(5));
+
         if (locator.StartsWith("Assets/", StringComparison.Ordinal))
         {
             var parts = locator.Replace('\\', '/').Split('#');
-            var assets = AssetDatabase.LoadAllAssetsAtPath(parts[0]).Where(asset => type.IsInstanceOfType(asset)
-                && (parts.Length == 1 || asset.name == parts[1])).ToArray();
-            if (assets.Length != 1) throw new InvalidDataException(type.Name + " 참조가 없거나 여러 개입니다 (경로#서브에셋이름): " + locator);
+
+            var assets = AssetDatabase.LoadAllAssetsAtPath(parts[0])
+                .Where(asset => type.IsInstanceOfType(asset)
+                    && (parts.Length == 1 || asset.name == parts[1]))
+                .ToArray();
+
+            // Sprite 시트에서 # 지정이 없으면 첫 번째 Sprite 사용
+            if (type == typeof(Sprite) && parts.Length == 1 && assets.Length > 1)
+            {
+                var sprites = assets.OfType<Sprite>().ToArray();
+
+                Array.Sort(sprites, (a, b) =>
+                    EditorUtility.NaturalCompare(a.name, b.name));
+
+                return sprites[0];
+            }
+
+            if (assets.Length != 1)
+                throw new InvalidDataException(
+                    type.Name + " 참조가 없거나 여러 개입니다 (경로#서브에셋이름): " + locator);
+
             return assets[0];
         }
+
         if (typeof(DefaultData).IsAssignableFrom(type))
         {
             var assets = AssetDatabase.FindAssets("t:" + type.Name)
-                .SelectMany(guid => AssetDatabase.LoadAllAssetsAtPath(AssetDatabase.GUIDToAssetPath(guid))).OfType<DefaultData>()
-                .Where(asset => type.IsInstanceOfType(asset) && asset.dataId == locator).Distinct().ToArray();
-            if (assets.Length == 1) return assets[0];
-            throw new InvalidDataException(type.Name + " ID가 없거나 중복됩니다: " + locator + (assets.Length > 1 ? " (에셋 경로로 지정하세요)" : ""));
+                .SelectMany(guid =>
+                    AssetDatabase.LoadAllAssetsAtPath(
+                        AssetDatabase.GUIDToAssetPath(guid)))
+                .OfType<DefaultData>()
+                .Where(asset =>
+                    type.IsInstanceOfType(asset) &&
+                    asset.dataId == locator)
+                .Distinct()
+                .ToArray();
+
+            if (assets.Length == 1)
+                return assets[0];
+
+            throw new InvalidDataException(
+                type.Name + " ID가 없거나 중복됩니다: " + locator +
+                (assets.Length > 1 ? " (에셋 경로로 지정하세요)" : ""));
         }
-        throw new InvalidDataException(type.Name + "의 Assets/... 에셋 경로가 필요합니다: " + locator);
+
+        throw new InvalidDataException(
+            type.Name + "의 Assets/... 에셋 경로가 필요합니다: " + locator);
     }
+
 }

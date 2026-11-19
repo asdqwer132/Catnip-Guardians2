@@ -8,7 +8,7 @@ public enum DataType
     Map = 3,
     Character = 4,
     Enemy = 5,
-    Box = 6,
+    Chest = 6,
 }
 
 [Serializable]

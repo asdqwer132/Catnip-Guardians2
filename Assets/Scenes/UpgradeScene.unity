@@ -17427,7 +17427,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -220.0002, y: 0}
-  m_SizeDelta: {x: 305, y: 0}
+  m_SizeDelta: {x: 285, y: 0}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &305009640
 MonoBehaviour:
@@ -24776,6 +24776,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipUI
   dataSource: {fileID: 0}
+  useTooltip: 1
+  startHidden: 0
+  offset: {x: 0, y: 20}
+  clampToParent: 1
+  positionAtAnchor: 1
+  removePannel: 1
+  tooltipPanel: {fileID: 0}
+  panelVisibility:
+    alternatePanels: []
   basicInformation:
     icon: {fileID: 1554755341}
     dataNameText: {fileID: 1791264742}
@@ -29723,6 +29732,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CodexTooltipUI
   dataSource: {fileID: 0}
+  useTooltip: 1
+  startHidden: 0
+  offset: {x: 0, y: 20}
+  clampToParent: 1
+  positionAtAnchor: 1
+  removePannel: 1
+  tooltipPanel: {fileID: 0}
+  panelVisibility:
+    alternatePanels:
+    - {fileID: 982824313}
+    - {fileID: 447093711}
+    - {fileID: 1798906564}
   basicInformation:
     icon: {fileID: 0}
     dataNameText: {fileID: 880594451}
@@ -29755,11 +29776,6 @@ MonoBehaviour:
     portraitSlotPrefab: {fileID: 0}
     portraitSelectionGroup: {fileID: 0}
     childInventory: {fileID: 297271356}
-  panelVisibility:
-    alternatePanels:
-    - {fileID: 982824313}
-    - {fileID: 447093711}
-    - {fileID: 1798906564}
 --- !u!114 &560577847
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35579,9 +35595,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemBoxPoolManager
   allBoxList:
-  - {fileID: 11400000, guid: 705548d4ce2ec7d45ab57affcf4b01fc, type: 2}
-  - {fileID: 11400000, guid: ce619ab0bf3ffbb4eaea948b123af8ff, type: 2}
-  - {fileID: 11400000, guid: bf470ad5eea9b254f9f4362a28a49ab6, type: 2}
+  - {fileID: 11400000, guid: 50047ccd586f2374f83c3dfe20df8c15, type: 2}
+  - {fileID: 11400000, guid: 53fc34e2a046e8847b98315de2285033, type: 2}
+  - {fileID: 11400000, guid: 689d39b6b88978241b8436eceb70117b, type: 2}
+  - {fileID: 11400000, guid: fb366c706985051419abe673721ebe63, type: 2}
   allowDuplicate: 1
 --- !u!4 &642885260
 Transform:
@@ -43465,6 +43482,10 @@ PrefabInstance:
       propertyPath: shopManager
       value: 
       objectReference: {fileID: 642885257}
+    - target: {fileID: 1327199142333781252, guid: 26604c98dfdf550448ed91cf3bcea9b2, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2209072485260810749, guid: 26604c98dfdf550448ed91cf3bcea9b2, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
       value: 1
@@ -43929,6 +43950,10 @@ PrefabInstance:
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 8424641706891921576, guid: 26604c98dfdf550448ed91cf3bcea9b2, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: fbe71d2cf92f0f246b0df7cd4669a29f, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -50958,7 +50983,7 @@ GameObject:
   m_Component:
   - component: {fileID: 888519253}
   m_Layer: 5
-  m_Name: Padding
+  m_Name: MainAreaPadding
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -56198,6 +56223,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipUI
   dataSource: {fileID: 0}
+  useTooltip: 1
+  startHidden: 0
+  offset: {x: 0, y: 20}
+  clampToParent: 1
+  positionAtAnchor: 1
+  removePannel: 1
+  tooltipPanel: {fileID: 0}
+  panelVisibility:
+    alternatePanels: []
   basicInformation:
     icon: {fileID: 1601193417}
     dataNameText: {fileID: 152878497}
@@ -67050,7 +67084,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00065574294}
+  m_AnchoredPosition: {x: 0, y: 0.0006294053}
   m_SizeDelta: {x: 0, y: 265.5}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1190655909
@@ -68968,6 +69002,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopBoxInfoUI
   dataSource: {fileID: 0}
+  useTooltip: 1
+  startHidden: 0
+  offset: {x: 0, y: 20}
+  clampToParent: 1
+  positionAtAnchor: 1
+  removePannel: 1
+  tooltipPanel: {fileID: 0}
+  panelVisibility:
+    alternatePanels: []
   basicInformation:
     icon: {fileID: 2091319642}
     dataNameText: {fileID: 1442396784}
@@ -101155,6 +101198,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BasicTooltipUI
   dataSource: {fileID: 0}
+  useTooltip: 1
+  startHidden: 0
+  offset: {x: 0, y: 20}
+  clampToParent: 1
+  positionAtAnchor: 1
+  removePannel: 1
+  tooltipPanel: {fileID: 0}
+  panelVisibility:
+    alternatePanels: []
   basicInformation:
     icon: {fileID: 234908423}
     dataNameText: {fileID: 26861988}
@@ -102700,6 +102752,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CodexTooltipUI
   dataSource: {fileID: 0}
+  useTooltip: 1
+  startHidden: 0
+  offset: {x: 0, y: 20}
+  clampToParent: 1
+  positionAtAnchor: 1
+  removePannel: 1
+  tooltipPanel: {fileID: 0}
+  panelVisibility:
+    alternatePanels:
+    - {fileID: 982824313}
+    - {fileID: 447093711}
+    - {fileID: 560577844}
   basicInformation:
     icon: {fileID: 0}
     dataNameText: {fileID: 341242253}
@@ -102732,11 +102796,6 @@ MonoBehaviour:
     portraitSlotPrefab: {fileID: 0}
     portraitSelectionGroup: {fileID: 0}
     childInventory: {fileID: 0}
-  panelVisibility:
-    alternatePanels:
-    - {fileID: 982824313}
-    - {fileID: 447093711}
-    - {fileID: 560577844}
 --- !u!114 &1798906567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -105620,6 +105679,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipUI
   dataSource: {fileID: 0}
+  useTooltip: 1
+  startHidden: 0
+  offset: {x: 0, y: 20}
+  clampToParent: 1
+  positionAtAnchor: 1
+  removePannel: 1
+  tooltipPanel: {fileID: 0}
+  panelVisibility:
+    alternatePanels: []
   basicInformation:
     icon: {fileID: 986329587}
     dataNameText: {fileID: 658471766}
@@ -119359,6 +119427,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BasicTooltipUI
   dataSource: {fileID: 0}
+  useTooltip: 1
+  startHidden: 0
+  offset: {x: 0, y: 20}
+  clampToParent: 1
+  positionAtAnchor: 1
+  removePannel: 1
+  tooltipPanel: {fileID: 0}
+  panelVisibility:
+    alternatePanels: []
   basicInformation:
     icon: {fileID: 333306232}
     dataNameText: {fileID: 989736249}
@@ -127172,19 +127249,23 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 136773109316165482, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_fontSize
-      value: 52.75
+      value: 51.85
       objectReference: {fileID: 0}
     - target: {fileID: 218148014103819962, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_fontSize
-      value: 52.75
+      value: 51.85
       objectReference: {fileID: 0}
     - target: {fileID: 448825821970692641, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1070772976018564113, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 240
+      objectReference: {fileID: 0}
     - target: {fileID: 1500972622437323764, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_fontSize
-      value: 52.75
+      value: 51.85
       objectReference: {fileID: 0}
     - target: {fileID: 1570369582043666620, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_AnchorMax.y
@@ -127196,7 +127277,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1570369582043666620, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 159.99998
+      value: 158.75
       objectReference: {fileID: 0}
     - target: {fileID: 1570369582043666620, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_SizeDelta.y
@@ -127220,7 +127301,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2807402586490016110, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 159.99998
+      value: 158.75
       objectReference: {fileID: 0}
     - target: {fileID: 2807402586490016110, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_SizeDelta.y
@@ -127244,7 +127325,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3799478379600289690, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 159.99998
+      value: 158.75
       objectReference: {fileID: 0}
     - target: {fileID: 3799478379600289690, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_SizeDelta.y
@@ -127260,15 +127341,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4438719540398556265, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_fontSize
-      value: 52.75
+      value: 51.85
       objectReference: {fileID: 0}
     - target: {fileID: 4574985744466275320, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_fontSize
-      value: 52.75
+      value: 51.85
+      objectReference: {fileID: 0}
+    - target: {fileID: 4696562618139278388, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -325
+      objectReference: {fileID: 0}
+    - target: {fileID: 4696562618139278388, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 132.5
       objectReference: {fileID: 0}
     - target: {fileID: 4851158275080745394, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_fontSize
-      value: 52.75
+      value: 51.85
       objectReference: {fileID: 0}
     - target: {fileID: 5230137672166213072, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_AnchorMax.y
@@ -127280,7 +127369,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5230137672166213072, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 159.99998
+      value: 158.75
       objectReference: {fileID: 0}
     - target: {fileID: 5230137672166213072, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_SizeDelta.y
@@ -127292,6 +127381,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5230137672166213072, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5268799803110115042, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
+      propertyPath: m_ChildControlWidth
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5268799803110115042, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
+      propertyPath: m_ChildForceExpandWidth
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5347674103273052234, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
@@ -127308,7 +127405,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5364293123137792577, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 159.99998
+      value: 158.75
       objectReference: {fileID: 0}
     - target: {fileID: 5364293123137792577, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_SizeDelta.y
@@ -127324,7 +127421,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5844922501908954950, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_fontSize
-      value: 52.75
+      value: 51.85
       objectReference: {fileID: 0}
     - target: {fileID: 5971011825062162009, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_Pivot.x
@@ -127408,7 +127505,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7071672979443349140, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_fontSize
-      value: 52.75
+      value: 51.85
       objectReference: {fileID: 0}
     - target: {fileID: 7150649058230468060, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_AnchorMax.y
@@ -127420,7 +127517,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7150649058230468060, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 159.99998
+      value: 158.75
       objectReference: {fileID: 0}
     - target: {fileID: 7150649058230468060, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_SizeDelta.y
@@ -127444,7 +127541,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8426155452452378770, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 159.99998
+      value: 158.75
       objectReference: {fileID: 0}
     - target: {fileID: 8426155452452378770, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_SizeDelta.y
@@ -127468,7 +127565,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8506553815424954690, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 159.99998
+      value: 158.75
       objectReference: {fileID: 0}
     - target: {fileID: 8506553815424954690, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
       propertyPath: m_SizeDelta.y
