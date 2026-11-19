@@ -6,7 +6,7 @@ using UnityEngine;
 public sealed class LocalizedTextValue
 {
     public language language;
-    [TextArea] public string text;
+    public string text;
 }
 [Serializable]
 public sealed class LocalizedTextEntry
@@ -18,6 +18,7 @@ public sealed class LocalizedTextEntry
 [CreateAssetMenu(fileName = "LocalizedTextTable", menuName = "Settings/Language/Text Table")]
 public sealed class LocalizedTextTable : ScriptableObject
 {
+    public string id;
     public LocalizedTextEntry[] entries = Array.Empty<LocalizedTextEntry>();
     private Dictionary<string, Dictionary<language, string>> lookup;
     private void OnEnable() => lookup = null;

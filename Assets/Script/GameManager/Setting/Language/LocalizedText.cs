@@ -25,6 +25,12 @@ public sealed class LocalizedText : MonoBehaviour, ISceneLocalizedUI
     private bool applied;
     public string AuthoredEnglish { get { Cache(); return authoredEnglish; } }
 
+    private void OnValidate()
+    {
+        if(string.IsNullOrEmpty(key) && tmpText != null)
+            key = tmpText.text;
+    }
+
     private void Reset() { tmpText = GetComponent<TMP_Text>(); if (tmpText == null) legacyText = GetComponent<Text>(); }
     private void Awake() => Cache();
     private void OnEnable() { Cache(); registeredScene = gameObject.scene; SceneLanguageMediator.Register(this); }

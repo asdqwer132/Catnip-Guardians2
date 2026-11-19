@@ -19,6 +19,7 @@ public sealed class SceneLanguageMediator : MonoBehaviour
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetStatics() { owners.Clear(); texts.Clear(); }
+
     private void OnEnable()
     {
         ownedScene = gameObject.scene;
