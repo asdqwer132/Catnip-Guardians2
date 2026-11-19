@@ -12,7 +12,7 @@ public class EnemyDataSet : DefaultData
     public EnemyPatternSetData patternData;
 
     [Space(10)]
-    [Tooltip("Optional display data recorded on defeat. Empty uses this enemy data set.")]
+    [Tooltip("Optional display data recorded on first encounter. Empty uses this enemy data set.")]
     public EnemyDataSet codexEntry;
 
     [Space(10)]

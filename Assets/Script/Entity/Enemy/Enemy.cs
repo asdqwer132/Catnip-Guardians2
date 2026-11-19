@@ -43,8 +43,6 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     private Animator cachedAnimator;
     private float previousAnimatorSpeed = 1f;
     private bool isInitialized = false;
-    private EnemyDataSet codexSourceData;
-    private bool recordsCodexDefeat;
     private EnemyAttackSlotManager attackSlots;
     private Transform facingPlant;
     private UnityEngine.Rendering.SortingGroup spawnSortingGroup;
@@ -544,8 +542,6 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     public void OnSpawnedFromPool()
     {
-        codexSourceData = null;
-        recordsCodexDefeat = false;
         ReleaseAttackSlot();
         isInitialized = false;
         ClearHitReaction();
@@ -576,8 +572,6 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     public void OnReturnedToPool()
     {
-        codexSourceData = null;
-        recordsCodexDefeat = false;
         isInitialized = false;
         ClearHitReaction();
         behaviorState = EnemyBehaviorState.Idle;
@@ -629,10 +623,6 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
             return;
         }
         facingPlant = (target as Plant)?.transform;
-        codexSourceData = dataSet;
-        var targetComponent = target as Component;
-        recordsCodexDefeat = gameObject.scene.name == GameSceneRoutes.Battle ||
-            (targetComponent != null && targetComponent.gameObject.scene.name == GameSceneRoutes.Battle);
         isInitialized = false;
         ClearHitReaction();
         behaviorState = EnemyBehaviorState.Idle;
@@ -877,10 +867,6 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     protected override void OnDeathStarted()
     {
-        if (recordsCodexDefeat && codexSourceData != null)
-            CodexDiscoveryHistory.Current.RecordEnemy(
-                codexSourceData.codexEntry != null ? codexSourceData.codexEntry : codexSourceData);
-
         ReleaseAttackSlot();
         if (EnemyManager.instance != null) EnemyManager.instance.RemoveEnemy(this);
         GameStatisticsManager.Instance?.AddKill();
