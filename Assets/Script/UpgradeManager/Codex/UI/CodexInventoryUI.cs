@@ -13,7 +13,7 @@ public sealed class CodexInventoryUI : InventoryUI
         set => base.slotPrefab = value != null ? value.gameObject : null;
     }
     public TooltipUI details;
-    [Tooltip("Items require acquisition/crafting, enemies require an encounter. Character and map visibility is unchanged.")]
+    [Tooltip("Items require acquisition/crafting, enemies require a kill. Character and map visibility is unchanged.")]
     public bool discoveredOnly = true;
     private CodexDiscoveryHistory subscribedHistory;
     private readonly List<DefaultData> visible = new List<DefaultData>();

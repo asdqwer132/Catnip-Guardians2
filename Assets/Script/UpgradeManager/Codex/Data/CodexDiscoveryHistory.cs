@@ -61,12 +61,7 @@ public sealed class CodexDiscoveryHistory
     public bool HasItem(ItemData item) => item != null && Contains(CodexDiscoveryKind.Item, item.dataId);
     public bool HasEnemy(EnemyDataSet enemy) => enemy != null && Contains(CodexDiscoveryKind.Enemy, enemy.dataId);
     public bool RecordItem(ItemData item) => item != null && Record(CodexDiscoveryKind.Item, item.dataId);
-    public bool RecordEnemy(EnemyDataSet enemy)
-    {
-        if (enemy == null) return false;
-        var entry = enemy.codexEntry != null ? enemy.codexEntry : enemy;
-        return Record(CodexDiscoveryKind.Enemy, entry.dataId);
-    }
+    public bool RecordEnemy(EnemyDataSet enemy) => enemy != null && Record(CodexDiscoveryKind.Enemy, enemy.dataId);
 
     public bool Contains(CodexDiscoveryKind kind, string id)
     {

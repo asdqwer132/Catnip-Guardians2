@@ -524,10 +524,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         Enemy enemy = spawnedEnemy.GetComponent<Enemy>();
 
         if (enemy != null)
-        {
             enemy.Init(targetPlant, buffManager, info.dataSet);
-            CodexDiscoveryHistory.Current.RecordEnemy(info.dataSet);
-        }
 
         if (EnemyManager.instance != null)
             EnemyManager.instance.RegisterEnemy(enemy);
