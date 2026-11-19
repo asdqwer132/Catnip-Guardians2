@@ -124,8 +124,7 @@ public abstract class DataBindingUI : MonoBehaviour, ISceneLocalizedUI
         grade = Grade.None;
         var item = data as ItemTooltipData;
         if (item != null) { series = item.series; grade = item.grade; }
-        else if (source is ItemData itemData) { series = itemData.series; grade = itemData.grade; }
-        else if (source is ItemBoxData box) { series = box.itemSeries; grade = box.grade; }
+        else if (source != null) { series = source.series; grade = source.grade; }
 
         SetOptionalText(amountText, payload?.amountText);
 

@@ -39,11 +39,11 @@ public static class DataWorkbookImport
     }
 
     private static readonly FieldInfo LanguageCache = typeof(DefaultData).GetField("languageDataMap", BindingFlags.Instance | BindingFlags.NonPublic);
-    private static readonly string[] IdentifyFields = { "dataId", "dataNumbering", "dataType", "icon", "grade", "rarity" };
+    private static readonly string[] IdentifyFields = { "dataId", "dataNumbering", "dataType", "icon", "grade", "series" };
     private static readonly string[] DisplayFields = { "dataId", "language", "dataName", "description", "detailDescription" };
     private static readonly Dictionary<string, string> ExtraAliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
     {
-        { "mapPath", "skillMap" }, { "requiredNodeIds", "requiredSkills" }, { "rewardPaths", "rewards" }
+        { "itemSeries", "series" }, { "mapPath", "skillMap" }, { "requiredNodeIds", "requiredSkills" }, { "rewardPaths", "rewards" }
     };
 
     public static List<Binding> ReadBindings(string file) => Bindings(ItemDataXlsxReader.Read(file));

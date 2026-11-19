@@ -23,15 +23,6 @@ public enum Grade
     Epic = 2,
     Legendary = 3,
 }
-public enum Rarity
-{
-    None = -1,
-    Common = 0,
-    Rare = 1,
-    Epic = 2,
-    Legendary = 3,
-}
-
 public class DefaultData : ScriptableObject, IUnlockable, DefinedData
 {
     [Header("Basic Data")]
@@ -43,7 +34,8 @@ public class DefaultData : ScriptableObject, IUnlockable, DefinedData
     public string dataId;
     public DataType dataType;
     public Grade grade = Grade.None;
-    public Rarity rarity = Rarity.None;
+    [UnityEngine.Serialization.FormerlySerializedAs("itemSeries")]
+    public ItemSeries series = ItemSeries.None;
 
     [Header("Extra Data")]
     public bool requireUnlock = false;

@@ -38,7 +38,6 @@ public class GachaItemInfo
 public class ItemBoxData : DefaultData
 {
     [Space(10)] public Cost[] costs;
-    [Space(10)] public ItemSeries itemSeries;
     public GachaItemInfo[] gachaItems;
     [Space(10), Tooltip("평상시에는 기본 아이콘을 사용하고 구매 성공 시에만 이 클립을 재생합니다.")]
     public AnimationClip openClip;

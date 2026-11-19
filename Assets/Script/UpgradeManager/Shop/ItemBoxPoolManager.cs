@@ -33,10 +33,10 @@ public class ItemBoxPoolManager : MonoBehaviour
             {
                 if (box == null || !seen.Add(box)) continue;
                 cachedBoxes.Add(box);
-                if (!boxesBySeries.TryGetValue(box.itemSeries, out var seriesBoxes))
+                if (!boxesBySeries.TryGetValue(box.series, out var seriesBoxes))
                 {
                     seriesBoxes = new List<ItemBoxData>();
-                    boxesBySeries.Add(box.itemSeries, seriesBoxes);
+                    boxesBySeries.Add(box.series, seriesBoxes);
                 }
                 seriesBoxes.Add(box);
             }

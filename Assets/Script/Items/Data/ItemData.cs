@@ -4,7 +4,6 @@ using UnityEngine;
 public class ItemData : DefaultData
 {
     [Space(10)]
-    public ItemSeries series;
     [Tooltip("하위 분류 에셋. 예: 뼈, 깃털. 이름이나 Monster 시리즈 전체로 대상을 추정하지 않습니다.")]
     public ItemTagDefinition[] tags;
 
