@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 47d3f35fa24e48a2b5c992adb0105125, type: 3}
-  m_Name: Translations Upgrade PannelToggle
+  m_Name: Translations Upgrade ControlArea
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextGroup
   id: Translations Upgrade SubPannel
   entries:
@@ -50,3 +50,21 @@ MonoBehaviour:
       text: Character
     - language: 1
       text: "\uCE90\uB9AD\uD130"
+  - key: Note 3
+    translations:
+    - language: 0
+      text: Character
+    - language: 1
+      text: "\uCE90\uB9AD\uD130"
+  - key: Bag 1
+    translations:
+    - language: 0
+      text: Recipe
+    - language: 1
+      text: "\uC870\uD569\uBC95"
+  - key: Bag 2
+    translations:
+    - language: 0
+      text: Equipment
+    - language: 1
+      text: "\uC7A5\uCC29"
