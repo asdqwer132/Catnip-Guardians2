@@ -10,6 +10,7 @@ public sealed class SkillNodePlacement
 {
     public SkillNodeData node;
     public Vector2 position;
+    [HideInInspector] public Vector2Int gridPosition;
 }
 
 [ExecuteAlways]

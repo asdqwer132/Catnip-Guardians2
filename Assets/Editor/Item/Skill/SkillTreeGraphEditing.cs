@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,7 +11,10 @@ public static class SkillTreeGraphEditing
         if (node.skillMap == null && layout.skillMap != null)
         { Undo.RecordObject(node, "Assign skill map"); node.skillMap = layout.skillMap; EditorUtility.SetDirty(node); }
         Undo.RecordObject(layout, "Add skill node"); layout.nodeDatas.Add(node);
-        layout.nodeLayout.Add(new SkillNodePlacement { node = node, position = position });
+        var placement = new SkillNodePlacement { node = node, position = position };
+        if (layout.gridPlacement) placement.gridPosition = GridCoordinate(position, GridPitch(layout));
+        layout.nodeLayout.Add(placement);
+        ArrangeGrid(layout);
         layout.revision++; EditorUtility.SetDirty(layout);
     }
     public static bool Connect(SkillTreeLayoutData layout, SkillNodeData parent, SkillNodeData child)
@@ -49,6 +53,88 @@ public static class SkillTreeGraphEditing
         Undo.RecordObject(layout, "Remove skill node"); layout.nodeDatas.Remove(node);
         layout.nodeLayout.RemoveAll(value => value == null || value.node == node);
         foreach (var child in layout.nodeDatas) if (child != null) Disconnect(node, child);
+        ArrangeGrid(layout);
         layout.revision++; EditorUtility.SetDirty(layout);
+    }
+
+    private static readonly Vector2 GridNodeSize = new Vector2(220f, 200f);
+
+    public static Vector2 GridPitch(SkillTreeLayoutData layout)
+    {
+        int largestGroup = layout.nodeLayout.Where(entry => entry != null && entry.node != null)
+            .GroupBy(entry => entry.gridPosition).Select(group => group.Count()).DefaultIfEmpty(1).Max();
+        int columns = Mathf.CeilToInt(Mathf.Sqrt(largestGroup));
+        int rows = Mathf.CeilToInt((float)largestGroup / columns);
+        return Vector2.Max(layout.gridCellSize,
+            Vector2.Scale(GridNodeSize + layout.gridNodeGap, new Vector2(columns, rows)));
+    }
+
+    public static Vector2Int GridCoordinate(Vector2 position, Vector2 pitch)
+        => new Vector2Int(Mathf.RoundToInt(position.x / pitch.x), Mathf.RoundToInt(position.y / pitch.y));
+
+    public static void SetGridMode(SkillTreeLayoutData layout, bool enabled)
+    {
+        if (layout.gridPlacement == enabled) return;
+        Undo.RecordObject(layout, "Change skill graph placement mode");
+        layout.gridPlacement = enabled;
+        if (enabled)
+        {
+            var pitch = Vector2.Max(layout.gridCellSize, GridNodeSize + layout.gridNodeGap);
+            foreach (var node in layout.nodeDatas)
+                if (node != null)
+                    GetPlacement(layout, node);
+            foreach (var entry in layout.nodeLayout)
+                if (entry != null) entry.gridPosition = GridCoordinate(entry.position, pitch);
+            ArrangeGrid(layout);
+        }
+        layout.revision++;
+        EditorUtility.SetDirty(layout);
+    }
+
+    public static void SetGridSpacing(SkillTreeLayoutData layout, Vector2 cellSize, Vector2 gap)
+    {
+        Undo.RecordObject(layout, "Change skill graph grid spacing");
+        layout.gridCellSize = Vector2.Max(Vector2.one, cellSize);
+        layout.gridNodeGap = Vector2.Max(Vector2.zero, gap);
+        ArrangeGrid(layout);
+        layout.revision++;
+        EditorUtility.SetDirty(layout);
+    }
+
+    public static void MoveToGrid(SkillTreeLayoutData layout, IEnumerable<KeyValuePair<SkillNodeData, Vector2Int>> changes)
+    {
+        Undo.RecordObject(layout, "Move skill nodes in grid");
+        foreach (var change in changes)
+            GetPlacement(layout, change.Key).gridPosition = change.Value;
+        ArrangeGrid(layout);
+        layout.revision++;
+        EditorUtility.SetDirty(layout);
+    }
+
+    private static SkillNodePlacement GetPlacement(SkillTreeLayoutData layout, SkillNodeData node)
+    {
+        var entry = layout.nodeLayout.Find(value => value != null && value.node == node);
+        if (entry != null) return entry;
+        entry = new SkillNodePlacement { node = node };
+        layout.nodeLayout.Add(entry);
+        return entry;
+    }
+
+    private static void ArrangeGrid(SkillTreeLayoutData layout)
+    {
+        if (!layout.gridPlacement) return;
+        var pitch = GridPitch(layout);
+        var stride = GridNodeSize + layout.gridNodeGap;
+        foreach (var group in layout.nodeLayout.Where(entry => entry != null && entry.node != null).GroupBy(entry => entry.gridPosition))
+        {
+            int columns = Mathf.CeilToInt(Mathf.Sqrt(group.Count()));
+            int index = 0;
+            foreach (var entry in group)
+            {
+                entry.position = Vector2.Scale((Vector2)group.Key, pitch)
+                    + new Vector2(index % columns * stride.x, -(index / columns) * stride.y);
+                index++;
+            }
+        }
     }
 }

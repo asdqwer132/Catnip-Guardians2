@@ -50,6 +50,7 @@ public partial class SkillTreeNodePlacer
         if (!CanEdit || nodeArea == null) return;
         if (layout != null && appliedLayoutRevision != layout.revision)
         { ApplySavedLayout(); return; }
+        if (layout != null && layout.gridPlacement) return;
         var views = Views();
         bool changed = false;
         foreach (var pair in views)
