@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 [ExecuteAlways, DisallowMultipleComponent, DefaultExecutionOrder(210)]
 public sealed class MergeWallUIFitter : MonoBehaviour
@@ -8,7 +9,14 @@ public sealed class MergeWallUIFitter : MonoBehaviour
     public RectTransform frame;
     [Tooltip("벽마다 별도 UI를 연결하면 해당 Rect 전체를 사용합니다.")]
     public RectTransform leftWall, rightWall, bottomWall;
-    [Range(.005f, .2f)] public float edgeThickness = .035f;
+    public RectTransform topWall;
+    public BoxCollider2D topCollider;
+    public RectTransform inletAnchor;
+    public Image backGraphic;
+    [Range(.005f, .2f)] public float leftThickness = .035f;
+    [Range(.005f, .2f)] public float rightThickness = .035f;
+    [Range(.005f, .2f)] public float bottomThickness = .035f;
+    [Range(.005f, .2f)] public float topThickness = .035f;
 
     private void OnEnable() => Canvas.willRenderCanvases += FitWalls;
     private void OnDisable() => Canvas.willRenderCanvases -= FitWalls;
@@ -21,21 +29,32 @@ public sealed class MergeWallUIFitter : MonoBehaviour
         bool changed = false;
         foreach (var part in box.visuals)
         {
+            if (part != null && part.role == MergeBoxSpriteRole.BackFrame)
+                FitBackground(part.renderer);
             var wall = part?.wallCollider;
             if (wall == null) continue;
-            float width = edgeThickness;
             switch (part.role)
             {
                 case MergeBoxSpriteRole.LeftWall:
-                    changed |= Fit(wall, leftWall, new Rect(0, 0, width, 1));
+                    changed |= Fit(wall, leftWall, new Rect(0, 0, leftThickness, 1));
                     break;
                 case MergeBoxSpriteRole.RightWall:
-                    changed |= Fit(wall, rightWall, new Rect(1 - width, 0, width, 1));
+                    changed |= Fit(wall, rightWall, new Rect(1 - rightThickness, 0, rightThickness, 1));
                     break;
                 case MergeBoxSpriteRole.BottomWall:
-                    changed |= Fit(wall, bottomWall, new Rect(0, 0, 1, width));
+                    changed |= Fit(wall, bottomWall, new Rect(0, 0, 1, bottomThickness));
                     break;
             }
+        }
+        if (topCollider != null)
+            changed |= Fit(topCollider, topWall, new Rect(0, 1 - topThickness, 1, topThickness));
+        var spawn = box.dropZone != null ? box.dropZone.spawnPoint : null;
+        if (spawn != null && inletAnchor != null && TryGetUICamera(inletAnchor, out var uiCamera) &&
+            Project(inletAnchor, uiCamera, new Plane(Vector3.forward, spawn.position), inletAnchor.rect.center, out var inlet) &&
+            (spawn.position - inlet).sqrMagnitude > .00000001f)
+        {
+            spawn.position = inlet;
+            changed = true;
         }
         if (changed && Application.isPlaying) Physics2D.SyncTransforms();
     }
@@ -43,12 +62,7 @@ public sealed class MergeWallUIFitter : MonoBehaviour
     private bool Fit(BoxCollider2D wall, RectTransform anchor, Rect edge)
     {
         RectTransform source = anchor != null ? anchor : frame;
-        if (source == null || !source.gameObject.activeInHierarchy) return false;
-        var canvas = source.GetComponentInParent<Canvas>()?.rootCanvas;
-        if (canvas == null || canvas.targetDisplay != worldCamera.targetDisplay) return false;
-        bool overlay = canvas.renderMode == RenderMode.ScreenSpaceOverlay;
-        Camera uiCamera = overlay ? null : canvas.worldCamera;
-        if (!overlay && uiCamera == null) return false;
+        if (!TryGetUICamera(source, out var uiCamera)) return false;
 
         Rect area = source.rect;
         if (anchor == null)
@@ -91,6 +105,45 @@ public sealed class MergeWallUIFitter : MonoBehaviour
             changed = true;
         }
         return changed;
+    }
+
+    // The card background belongs behind the physics sprites, which an overlay Image would cover.
+    private void FitBackground(SpriteRenderer renderer)
+    {
+        if (renderer == null || backGraphic == null || backGraphic.sprite == null ||
+            !TryGetUICamera(backGraphic.rectTransform, out var uiCamera)) return;
+        var source = backGraphic.rectTransform;
+        Rect area = source.rect;
+        if (area.width <= 0f || area.height <= 0f) return;
+        var t = renderer.transform;
+        var plane = new Plane(Vector3.forward, t.position);
+        if (!Project(source, uiCamera, plane, area.min, out var lowerLeft) ||
+            !Project(source, uiCamera, plane, area.max, out var upperRight))
+            return;
+        var spriteSize = backGraphic.sprite.bounds.size;
+        Vector3 span = t.parent != null ? t.parent.InverseTransformVector(upperRight - lowerLeft)
+            : upperRight - lowerLeft;
+        span = Quaternion.Inverse(t.localRotation) * span;
+        if (Mathf.Abs(span.x) < .0001f || Mathf.Abs(span.y) < .0001f ||
+            spriteSize.x <= 0f || spriteSize.y <= 0f) return;
+        if (renderer.drawMode != SpriteDrawMode.Simple) renderer.drawMode = SpriteDrawMode.Simple;
+        if (renderer.sprite != backGraphic.sprite) renderer.sprite = backGraphic.sprite;
+        var scale = new Vector3(Mathf.Abs(span.x) / spriteSize.x, Mathf.Abs(span.y) / spriteSize.y, t.localScale.z);
+        if ((t.localScale - scale).sqrMagnitude > .00000001f) t.localScale = scale;
+        var position = (lowerLeft + upperRight) * .5f - t.TransformVector(renderer.localBounds.center);
+        if ((t.position - position).sqrMagnitude > .00000001f) t.position = position;
+        if (!renderer.enabled) renderer.enabled = true;
+    }
+
+    private bool TryGetUICamera(RectTransform source, out Camera camera)
+    {
+        camera = null;
+        if (source == null || !source.gameObject.activeInHierarchy) return false;
+        var canvas = source.GetComponentInParent<Canvas>()?.rootCanvas;
+        if (canvas == null || canvas.targetDisplay != worldCamera.targetDisplay) return false;
+        if (canvas.renderMode == RenderMode.ScreenSpaceOverlay) return true;
+        camera = canvas.worldCamera;
+        return camera != null;
     }
 
     private bool Project(RectTransform source, Camera uiCamera, Plane plane, Vector2 point, out Vector3 world)

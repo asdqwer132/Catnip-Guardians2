@@ -166,6 +166,14 @@ internal sealed class MergeItemDropper
         => MergeTree.IsAvailable(material) && material.mergeUI != null &&
             material.mergeUI.toggle != null && material.mergeUI.toggle.isOn;
 
+    public void AdvanceSelectedMaterial()
+    {
+        var previous = owner.currentMaterial;
+        if (!RefreshSelectionState()) return;
+        if (previous == owner.currentMaterial)
+            owner.currentMaterial = NextFeedingMaterial(previous);
+    }
+
     private MergeItemMaterial NextFeedingMaterial(MergeItemMaterial current)
     {
         if (owner.mergeMaterials == null || owner.mergeMaterials.Count == 0) return null;

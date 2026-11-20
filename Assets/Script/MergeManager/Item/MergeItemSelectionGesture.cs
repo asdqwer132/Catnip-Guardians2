@@ -8,6 +8,8 @@ public sealed class MergeItemSelectionGesture
     public Vector2 Start { get; private set; }
     public Vector2 End { get; private set; }
     private float nextSelectionAt;
+    private float cooldownDuration;
+    public float CooldownProgress(float now) => cooldownDuration > 0f ? Mathf.Clamp01(CooldownRemaining(now) / cooldownDuration) : 0f;
     public Rect Bounds => Rect.MinMaxRect(Mathf.Min(Start.x, End.x), Mathf.Min(Start.y, End.y),
         Mathf.Max(Start.x, End.x), Mathf.Max(Start.y, End.y));
     public float CooldownRemaining(float now) => Mathf.Max(0f, nextSelectionAt - now);
@@ -39,7 +41,8 @@ public sealed class MergeItemSelectionGesture
     {
         if (!IsActive) return;
         // 클릭과 드래그가 같은 다음 선택 시각을 공유하므로 번갈아 써도 우회할 수 없습니다.
-        nextSelectionAt = now + EffectStatUtility.Safe(cooldown, 0f, 600f, 0f);
+        cooldownDuration = EffectStatUtility.Safe(cooldown, 0f, 600f, 0f);
+        nextSelectionAt = now + cooldownDuration;
         Cancel();
     }
 

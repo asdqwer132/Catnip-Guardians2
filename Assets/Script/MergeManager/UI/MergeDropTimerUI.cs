@@ -11,6 +11,7 @@ public sealed class MergeDropTimerUI : MonoBehaviour
     public MergegameManager board;
     public TMP_Text timeText;
     public Image nextItemIcon;
+    public Image secondaryItemIcon;
     [Tooltip("Second, third, fourth upcoming items, in UI order.")]
     public Image[] nextExtraItemIcons = Array.Empty<Image>();
     private readonly List<ItemData> upcoming = new List<ItemData>(4);
@@ -28,6 +29,7 @@ public sealed class MergeDropTimerUI : MonoBehaviour
         if (current != null) current.GetUpcomingDropItems(upcoming, 1 + (nextExtraItemIcons?.Length ?? 0));
         else upcoming.Clear();
         SetIcon(nextItemIcon, 0);
+        SetIcon(secondaryItemIcon, 0);
         if (nextExtraItemIcons != null)
             for (int i = 0; i < nextExtraItemIcons.Length; i++) SetIcon(nextExtraItemIcons[i], i + 1);
         if (progressImage != null)

@@ -21,7 +21,7 @@ public sealed class MergeGeneralManager : MonoBehaviour
     public int SelectedIndex { get; private set; } = -1;
     public int SelectedLevel => boxes != null && SelectedIndex >= 0 ? boxes.SelectedLevel : startingLevel;
     public int StartingSeriesIndex => Math.Max(1, startingSeriesIndex) - 1;
-    private readonly Dictionary<MergegameManager, int[]> configuredCounts = new Dictionary<MergegameManager, int[]>();
+    private readonly Dictionary<MergegameManager, List<MergeItemMaterial>> configuredMaterials = new Dictionary<MergegameManager, List<MergeItemMaterial>>();
     private GameSession session, appliedSession;
     private int appliedRevision = -1, appliedRound = -1;
     private UpgradeToGeneralData roundData;
@@ -30,7 +30,7 @@ public sealed class MergeGeneralManager : MonoBehaviour
     private void Awake()
     {
         if (boxes != null) boxes.gameManager = this;
-        CaptureConfiguredCounts();
+        CaptureConfiguredMaterials();
     }
     private void OnEnable()
     {
@@ -91,30 +91,63 @@ public sealed class MergeGeneralManager : MonoBehaviour
         debugMode = value;
         RestartRound();
     }
-    private void CaptureConfiguredCounts()
+    private void CaptureConfiguredMaterials()
     {
         if (boxes == null) return;
         foreach (var entry in boxes.profiles)
         {
             var board = entry != null ? entry.board : null;
-            if (board == null || configuredCounts.ContainsKey(board)) continue;
-            var counts = new int[board.mergeMaterials.Count];
-            for (int i = 0; i < counts.Length; i++) counts[i] = Math.Max(0, board.mergeMaterials[i]?.count ?? 0);
-            configuredCounts.Add(board, counts);
+            if (board == null || configuredMaterials.ContainsKey(board)) continue;
+            var defaults = new List<MergeItemMaterial>();
+            foreach (var material in board.mergeMaterials)
+                if (material?.mergeItem != null)
+                    defaults.Add(new MergeItemMaterial(material.mergeItem, null, material.count));
+            configuredMaterials.Add(board, defaults);
         }
     }
+
     private void ApplyRoundStock()
     {
-        CaptureConfiguredCounts();
-        foreach (var entry in configuredCounts)
+        CaptureConfiguredMaterials();
+        int limit = boxes != null && boxes.card != null ? Mathf.Max(1, boxes.card.maximumMaterials) : int.MaxValue;
+        foreach (var entry in configuredMaterials)
         {
-            if (entry.Key == null) continue;
-            if (debugMode) entry.Key.SetConfiguredMaterialCounts(entry.Value);
-            else entry.Key.SetMaterialStock(roundData?.materialItems);
+            var board = entry.Key;
+            if (board == null) continue;
+            var materials = new List<MergeItemMaterial>();
+            if (debugMode)
+            {
+                foreach (var material in entry.Value)
+                {
+                    if (materials.Count >= limit) break;
+                    materials.Add(new MergeItemMaterial(material.mergeItem, null, material.count));
+                }
+                board.mergeMaterials = materials;
+                var counts = new int[materials.Count];
+                for (int i = 0; i < counts.Length; i++) counts[i] = materials[i].count;
+                board.SetConfiguredMaterialCounts(counts);
+                continue;
+            }
+
+            var added = new HashSet<ItemData>();
+            if (roundData?.materialItems != null)
+                foreach (var stock in roundData.materialItems)
+                {
+                    if (materials.Count >= limit) break;
+                    var item = stock?.itemData;
+                    if (item == null || stock.amount <= 0 || item.series != board.itemSeries || !added.Add(item)) continue;
+                    var definition = board.GetDefinitionAtMergeItem(item)
+                        ?? entry.Value.Find(material => material.mergeItem.item == item)?.mergeItem;
+                    if (!MergegameManager.TryGetPrefab(definition, out _)) continue;
+                    materials.Add(new MergeItemMaterial(definition, null, 0));
+                }
+            board.mergeMaterials = materials;
+            board.SetMaterialStock(roundData?.materialItems);
         }
         initialized = true;
         appliedDebugMode = debugMode;
     }
+
     public bool StartRound(int seriesIndex, int level)
     {
         if (boxes == null || !boxes.CanShowBox(seriesIndex)) return false;

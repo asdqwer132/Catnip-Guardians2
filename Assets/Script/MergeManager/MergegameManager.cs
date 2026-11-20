@@ -78,6 +78,7 @@ public partial class MergegameManager : MonoBehaviour
     public void SetAutomaticDrop(bool value) => Dropper.SetAutomaticDrop(value);
     public bool TryDropCurrent() => Dropper.TryDropCurrent();
     public void GetUpcomingDropItems(List<ItemData> result, int maximum) => Dropper.GetUpcomingItems(result, maximum);
+    public void AdvanceSelectedMaterial() => Dropper.AdvanceSelectedMaterial();
     public void SetAllMaterialsSelected(bool selected) => Dropper.SetAllMaterialsSelected(selected);
     public void SetMaterialStock(IReadOnlyList<InventoryItem> items) => Dropper.SetMaterialStock(items);
     public void SetConfiguredMaterialCounts(IReadOnlyList<int> counts) => Dropper.SetConfiguredMaterialCounts(counts);

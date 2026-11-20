@@ -87,6 +87,7 @@ public sealed class MergeItemSelection : MonoBehaviour, IBuffTarget
     public bool IsSelecting => gesture.IsActive;
     public bool IsDragging => gesture.IsActive && gesture.IsDrag;
     public Rect SelectionBounds => gesture.Bounds;
+    public float CooldownProgress => gesture.CooldownProgress(Time.time);
     public float CooldownRemaining => gesture.CooldownRemaining(Time.time);
     public int LastUsedCount { get; private set; }
     public int LastRemovedCount { get; private set; }

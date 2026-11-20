@@ -17,21 +17,21 @@ public class MergeItemInjecter : MonoBehaviour
     [ContextMenu("Inject")]
     public void Inject()
     {
-        if (mergegameManager == null || mergeUIRoot == null || mergeItems == null)
+        if (mergegameManager == null || mergeItems == null)
         {
-            Debug.LogError("MergeItemInjecter: Manager / Merge UI Root / Merge Items를 연결하세요.", this);
+            Debug.LogError("MergeItemInjecter: Manager / Merge Items를 연결하세요.", this);
             return;
         }
         // 재료가 없어서 숨겨진 슬롯도 다음 주입에 같은 순서로 다시 연결합니다.
-        var slots = mergeUIRoot.GetComponentsInChildren<MergeUI>(true);
-        if (slots.Length < mergeItems.Length)
+        var slots = mergeUIRoot != null ? mergeUIRoot.GetComponentsInChildren<MergeUI>(true) : System.Array.Empty<MergeUI>();
+        if (mergeUIRoot != null && slots.Length < mergeItems.Length)
         {
             Debug.LogError("MergeItemInjecter: Merge Items 개수만큼 MergeUI 슬롯이 필요합니다. 기존 데이터는 유지합니다.", this);
             return;
         }
         var materials = new List<MergeItemMaterial>(mergeItems.Length);
         for (int i = 0; i < mergeItems.Length; i++)
-            materials.Add(new MergeItemMaterial(mergeItems[i], slots[i], Mathf.Max(0, count)));
+            materials.Add(new MergeItemMaterial(mergeItems[i], i < slots.Length ? slots[i] : null, Mathf.Max(0, count)));
 
 
 #if UNITY_EDITOR

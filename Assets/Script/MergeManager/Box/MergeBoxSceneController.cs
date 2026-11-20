@@ -24,6 +24,7 @@ public sealed class MergeBoxSceneController : MonoBehaviour
     public TMP_Dropdown seriesDropdown;
     public MergeItemSelection selection;
     public MergeBoxBindings sharedBox;
+    public MergeCardUI card;
     [Tooltip("상자 번호 순서대로 입력합니다. 첫 항목이 1번입니다.")]
     public MergeBoxRoundProfile[] profiles = Array.Empty<MergeBoxRoundProfile>();
     public MergeBoxDeadlineLevel[] deadlineLevels = Array.Empty<MergeBoxDeadlineLevel>();
@@ -92,6 +93,7 @@ public sealed class MergeBoxSceneController : MonoBehaviour
         profile.board.spawnPoint = sharedBox.dropZone.spawnPoint;
         profile.board.enabled = true;
         if (profile.gimmick != null) profile.gimmick.gameObject.SetActive(true);
+        card?.Bind(profile.board);
         profile.board.SetMaterialUIEnabled(true);
         if (selection != null) selection.SetBoard(profile.board);
         if (seriesDropdown != null) seriesDropdown.SetValueWithoutNotify(index);

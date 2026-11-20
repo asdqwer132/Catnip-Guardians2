@@ -7,6 +7,7 @@ public class MergeUI : MonoBehaviour
     public TextMeshProUGUI countText;
     public GameObject slotObj;
     public Toggle toggle;
+    public Image itemIcon;
     public void SetSlot(bool isActive)
     {
         // Exhausted material stays visible with a zero count.
