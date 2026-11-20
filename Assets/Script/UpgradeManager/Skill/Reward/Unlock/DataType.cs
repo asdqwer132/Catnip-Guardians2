@@ -11,6 +11,7 @@ public enum DataType
     Enemy = 5,
     Chest = 6,
     ItemMaterial = 7,
+    MergeBox = 8,
 }
 
 [Serializable]

@@ -29,7 +29,7 @@ public sealed class MineralMergeItemObject : MergeItemObject
     protected override void ResetPoolState() { remainingResource = Mathf.Max(1, totalResource); nextHit = 0f; }
     public bool TryMine(MergeItemObject pickaxe)
     {
-        if (!(Owner is MineralMergeGameManager owner) || !owner.CanOperate || !CanSelect || RemainingResource <= 0 || Time.time < nextHit ||
+        if (!(Owner is { } owner) || !owner.CanOperate || !CanSelect || RemainingResource <= 0 || Time.time < nextHit ||
             pickaxe == null || pickaxe == this || pickaxe.Owner != owner || !pickaxe.CanSelect ||
             !System.Array.Exists(pickaxes, definition => definition != null && definition == pickaxe.Definition)) return false;
         nextHit = Time.time + Mathf.Max(.01f, hitInterval);

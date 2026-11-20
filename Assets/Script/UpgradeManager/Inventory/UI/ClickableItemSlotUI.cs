@@ -99,5 +99,6 @@ public class ClickableItemSlotUI : BaseItemSlotUI
         if (slotButton != null) slotButton.onClick.RemoveListener(OnClickSlot);
     }
 
-    public virtual void OnClickSlot() { }
+    public event System.Action<InventoryItem> Clicked;
+    public virtual void OnClickSlot() => Clicked?.Invoke(currentItem);
 }

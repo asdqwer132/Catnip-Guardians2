@@ -3,6 +3,7 @@ using UnityEngine;
 public class UpgradeManager : MonoBehaviour
 {
     private bool isInited = false;
+    private bool captureQueued;
 
     [Header("Managers")]
     public ItemInitManager itemInitManager;
@@ -33,7 +34,7 @@ public class UpgradeManager : MonoBehaviour
 
         isInited = true;
         var inventory = materialInventory != null ? materialInventory : InventoryManager.instance;
-        if (inventory != null) inventory.onInventoryChanged += CaptureProgress;
+        if (inventory != null) inventory.onInventoryChanged += QueueCapture;
         if (potionEquipment != null) potionEquipment.Changed += CaptureProgress;
         if (mergeBoxUpgrades != null && mergeBoxUpgrades.skillTree != null) mergeBoxUpgrades.skillTree.OnSkillTreeChanged += CaptureProgress;
         CaptureProgress();
@@ -85,7 +86,7 @@ public class UpgradeManager : MonoBehaviour
     private void OnDestroy()
     {
         var inventory = materialInventory != null ? materialInventory : InventoryManager.instance;
-        if (inventory != null) inventory.onInventoryChanged -= CaptureProgress;
+        if (inventory != null) inventory.onInventoryChanged -= QueueCapture;
         if (potionEquipment != null) potionEquipment.Changed -= CaptureProgress;
         if (mergeBoxUpgrades != null && mergeBoxUpgrades.skillTree != null) mergeBoxUpgrades.skillTree.OnSkillTreeChanged -= CaptureProgress;
     }
@@ -97,7 +98,17 @@ public class UpgradeManager : MonoBehaviour
         if (loader != null) loader.GoGameScene();
     }
 
+    private void QueueCapture() => captureQueued = true;
+
+    private void LateUpdate()
+    {
+        if (captureQueued) CaptureProgress();
+    }
+
     private void CaptureProgress()
-        => GameSession.GetOrCreate().CaptureUpgradeProgress(
+    {
+        captureQueued = false;
+        GameSession.GetOrCreate().CaptureUpgradeProgress(
             mergeBoxUpgrades, potionEquipment, materialInventory != null ? materialInventory : InventoryManager.instance, buffSkillManager);
+    }
 }

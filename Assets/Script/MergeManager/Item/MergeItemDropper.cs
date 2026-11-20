@@ -207,7 +207,7 @@ internal sealed class MergeItemDropper
             {
                 if (material?.mergeItem == null) continue;
                 long count = 0;
-                if (items != null && material.mergeItem.item != null && material.mergeItem.item.series == owner.itemSeries)
+                if (items != null && material.mergeItem.item != null)
                     foreach (var item in items)
                         if (item?.itemData == material.mergeItem.item) count += Math.Max(0, item.amount);
                 material.count = (int)Math.Min(int.MaxValue, count);

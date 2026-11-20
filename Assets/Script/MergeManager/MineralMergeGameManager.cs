@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [DefaultExecutionOrder(-200)]
-public sealed class MineralMergeGameManager : MergegameManager
+public sealed class MineralMergeGameManager : MergegameManager { }
+
+public partial class MergegameManager
 {
     public int OreCount
     {
@@ -15,14 +17,9 @@ public sealed class MineralMergeGameManager : MergegameManager
             ore.item.prefab.GetComponent<MineralMergeItemObject>() != null ? ore.weight : 0f);
         return entry != null && TrySpawnGimmickItem(entry.item, deliveryPosition ?? position, out _);
     }
-    protected override void LateUpdate()
-    {
-        base.LateUpdate();
-    }
     public void ClearOres()
     {
         foreach (var piece in new List<MergeItemObject>(ActiveItems))
             if (piece is MineralMergeItemObject && piece.IsLive) piece.ReturnToPool();
     }
-    protected override void OnDisable() { ClearOres(); base.OnDisable(); }
 }

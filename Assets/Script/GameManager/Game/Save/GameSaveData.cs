@@ -11,6 +11,7 @@ public static class GameSaveData
         PotionRecipeHistory.SaveFileName,
         MergeDiscoveryHistory.SaveFileName,
         UpgradeProgressSave.SaveFileName,
+        EquipmentSave.SaveFileName,
         MergeBoxUpgradeManager.SaveFileName
     };
 
@@ -27,6 +28,9 @@ public static class GameSaveData
         }
 
         PlayerPrefs.DeleteAll();
+        EquipmentSave.ResetCache();
+        UnlockManager.Instance?.ClearAllUnlocks();
+        MergeBoxUpgradeManager.SkipDevelopmentSeed();
         PlayerPrefs.Save();
         // Core services survive scene changes: deleting files alone leaves their old values alive.
         StoryProgressManager.Instance?.ReloadProgress();

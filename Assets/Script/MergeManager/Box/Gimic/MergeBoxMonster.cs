@@ -7,12 +7,12 @@ public sealed class MergeBoxMonster : MergeBoxGimic
     public WeightedMergeItem[] monsters = System.Array.Empty<WeightedMergeItem>();
     protected override void EnsureSkills() => SetDefaultSkills(new GimicSkill { id = "Monster.Spawn", type = GimicSkillType.Passive, defaultSkillCool = 10f });
     protected override void OnPassiveSkill(int index)
-    { if (Board is MonsterMergeGameManager monster) monster.TrySpawnMonster(monsters, monsterSpawnArea); }
+    { if (Board is { } monster) monster.TrySpawnMonster(monsters, monsterSpawnArea); }
     public override void GimicStop()
-    { if (Board is MonsterMergeGameManager monster) monster.ClearMonsters(); base.GimicStop(); }
+    { if (Board is { } monster) monster.ClearMonsters(); base.GimicStop(); }
     protected override void TickGimic(float deltaTime)
     {
-        if (!(Board is MonsterMergeGameManager monster)) return;
+        if (!(Board is { } monster)) return;
         monster.TickMonsters(quarantineArea);
     }
 }

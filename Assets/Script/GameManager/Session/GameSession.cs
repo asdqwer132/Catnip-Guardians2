@@ -75,10 +75,27 @@ public class GameSession : MonoBehaviour
             data.mainPlantIndex = mergeBoxUpgrades.MainPlantIndex;
             data.unlockedSkillNodes = mergeBoxUpgrades.CaptureUnlockedNodes();
         }
-        if (potionEquipment != null) data.potionSlots = potionEquipment.CaptureSlots();
+        if (potionEquipment != null)
+        {
+            data.potionSlots = potionEquipment.CaptureSlots();
+            EquipmentSave.StorePotions(data.potionSlots);
+        }
+        else data.potionSlots = EquipmentSave.RestorePotions();
+        data.equipment = EquipmentSave.Current.Copy();
         var inventory = materialInventory;
         if (inventory != null)
+        {
             data.materialItems = GameSessionItemCopy.Copy(inventory.items);
+            // Crafting slots are temporary reservations. Recover their quantities in the save only.
+            if (inventory == InventoryManager.instance && PotionCraftManager.instance != null)
+                foreach (var held in PotionCraftManager.instance.GetMaterials())
+                {
+                    if (held?.itemData == null || held.amount <= 0) continue;
+                    var item = data.materialItems.Find(entry => entry.itemData == held.itemData);
+                    if (item == null) data.materialItems.Add(new InventoryItem(held.itemData, held.amount));
+                    else item.amount = (int)Math.Min(int.MaxValue, (long)item.amount + held.amount);
+                }
+        }
 
         if (buffSkillManager != null)
         {
@@ -88,21 +105,34 @@ public class GameSession : MonoBehaviour
                     data.skillItems.Add(new SkillItemSnapshot(item));
             }
         }
+        data.unlockedMergeBoxes = MergeBoxUpgradeManager.CaptureChestUnlocks(data.unlockedSkillNodes);
         SaveUpgradeToGeneral(data);
     }
 
     public void ReloadUpgradeProgress()
     {
         var data = UpgradeProgressSave.Read();
-        if (data == null) return;
+        if (data == null)
+        {
+            if (!EquipmentSave.Exists) return;
+            data = new UpgradeToGeneralData { legacySkillsOnly = true };
+        }
+        var savedPotions = EquipmentSave.RestorePotions();
+        if (savedPotions.Count > 0) data.potionSlots = savedPotions;
+        else EquipmentSave.StorePotions(data.potionSlots);
         UpgradeProgressSave.RefreshSkillValues(data);
+        data.equipment = EquipmentSave.Current.Copy();
+        data.unlockedMergeBoxes = MergeBoxUpgradeManager.CaptureChestUnlocks(data.unlockedSkillNodes);
         SaveUpgradeToGeneral(data);
     }
 
     public void SaveUpgradeToGeneral(UpgradeToGeneralData data)
     {
         generalData = (data ?? new UpgradeToGeneralData()).Copy();
-        UpgradeProgressSave.Write(generalData);
+        var progress = generalData.Copy();
+        progress.equipment = null;
+        if (EquipmentSave.Current.potions.Count > 0) progress.potionSlots.Clear();
+        UpgradeProgressSave.Write(progress);
         hasGeneralData = true;
         GameDataRevision++;
         ClearBattleTransfers();
@@ -113,6 +143,14 @@ public class GameSession : MonoBehaviour
     {
         data = hasGeneralData ? generalData?.Copy() : null;
         return data != null;
+    }
+
+    public void UpdateEquipment(EquipmentData equipment)
+    {
+        if (!hasGeneralData || generalData == null) return;
+        generalData.equipment = equipment?.Copy();
+        GameDataRevision++;
+        GameDataChanged?.Invoke();
     }
 
     public void BeginRound()

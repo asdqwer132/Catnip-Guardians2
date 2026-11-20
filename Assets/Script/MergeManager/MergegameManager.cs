@@ -53,13 +53,9 @@ public partial class MergegameManager : MonoBehaviour
     public bool IsDropTimerRunning => Dropper.IsTimerRunning;
     public float DropInterval => Dropper.Interval;
     public bool MaterialUIEnabled => displayMaterialUI;
-    public virtual bool RetainSelectedItems => false;
     public bool SelectionSuppressed { get; set; }
-    public virtual bool CapturesSelectionPointer(Vector2 worldPosition) => false;
-    public virtual bool ForceAutomaticFeeding => false;
     public bool UsesAutomaticFeeding => automaticDrop || ForceAutomaticFeeding;
     public bool IsFeedingEnabled => isFeeding || ForceAutomaticFeeding;
-    public virtual float FeedingSpeedMultiplier => 1f;
     public bool CanOperate => isActiveAndEnabled && !clearing && Time.timeScale > 0f;
     internal int Revision => revision;
     internal int ActiveItemCount
@@ -71,7 +67,15 @@ public partial class MergegameManager : MonoBehaviour
     protected virtual void Start() { PrewarmItems(); RefreshUI(); }
     protected virtual void Update() => Dropper.Tick();
     protected virtual void LateUpdate() { if (CanOperate) dropZone?.TickDeadline(this); Combiner.ProcessContacts(); }
-    protected virtual void OnDisable() { dropper?.End(); ClearItems(); }
+    protected virtual void OnDisable()
+    {
+        CancelClaw();
+        ReleaseRoots();
+        ClearMagic();
+        ClearMonsters();
+        dropper?.End();
+        ClearItems();
+    }
 
     public void RefreshFeedingTiming() => Dropper.ResetCooldown();
     public void SetFeeding(bool value) => Dropper.SetFeeding(value);
@@ -134,9 +138,40 @@ public partial class MergegameManager : MonoBehaviour
         return null;
     }
 
+    private IReadOnlyList<MergeBoxRoundProfile> roundSources;
+
+    internal void SetRoundRecipeSources(IReadOnlyList<MergeBoxRoundProfile> sources) => roundSources = sources;
+
+    internal IEnumerable<ItemRecipeData> GetRoundRecipes()
+    {
+        if (recipeBook != null)
+            foreach (var recipe in recipeBook.Recipes) yield return recipe;
+        if (roundSources == null) yield break;
+        foreach (var profile in roundSources)
+        {
+            var book = profile?.board?.recipeBook;
+            if (book == null || book == recipeBook) continue;
+            foreach (var recipe in book.Recipes) yield return recipe;
+        }
+    }
+
     public MergeItem GetDefinitionAtMergeItem(ItemData item)
     {
         if (item == null) return null;
+        var definition = GetLocalMergeDefinition(item);
+        if (definition != null || roundSources == null) return definition;
+        foreach (var profile in roundSources)
+        {
+            var board = profile?.board;
+            if (board == null || board == this) continue;
+            definition = board.GetLocalMergeDefinition(item);
+            if (definition != null) return definition;
+        }
+        return null;
+    }
+
+    private MergeItem GetLocalMergeDefinition(ItemData item)
+    {
         var fromBook = recipeBook != null ? recipeBook.GetDefinition(item) : null;
         if (fromBook != null) return fromBook;
         if (mergeItems != null) foreach (var definition in mergeItems)

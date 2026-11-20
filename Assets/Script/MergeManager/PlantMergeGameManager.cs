@@ -11,7 +11,9 @@ public sealed class MergePlantGrowthRule
 }
 
 [DefaultExecutionOrder(-200)]
-public sealed class PlantMergeGameManager : MergegameManager
+public sealed class PlantMergeGameManager : MergegameManager { }
+
+public partial class MergegameManager
 {
     private sealed class Growth
     {
@@ -119,5 +121,4 @@ public sealed class PlantMergeGameManager : MergegameManager
         growing.Clear();
     }
 
-    protected override void OnDisable() { ReleaseRoots(); base.OnDisable(); }
 }

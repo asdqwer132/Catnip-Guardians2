@@ -33,7 +33,7 @@ public sealed class MergeBoxMineral : MergeBoxGimic
     { if (phase == 0) BeginDelivery(-1); }
     private void BeginDelivery(int index)
     {
-        if (!(Board is MineralMergeGameManager mineral) || mineral.OreCount >= maximumOres || oreSpawnArea == null)
+        if (!(Board is { } mineral) || mineral.OreCount >= maximumOres || oreSpawnArea == null)
         { if (index >= 0) CompleteSkill(index); return; }
         activeRequest = index;
         if (!MergeGimmickUtility.TryPoint(oreSpawnArea, out deliveryPosition))
@@ -64,7 +64,7 @@ public sealed class MergeBoxMineral : MergeBoxGimic
         else if (phase == 2)
         {
             elapsed += deltaTime; Animate(pouringFrames, deltaTime);
-            if (elapsed >= pourSeconds && Board is MineralMergeGameManager mineral)
+            if (elapsed >= pourSeconds && Board is { } mineral)
             {
                 mineral.TrySpawnOre(ores, oreSpawnArea, maximumOres, deliveryPosition);
                 phase = cart != null ? 3 : 0;
@@ -73,5 +73,5 @@ public sealed class MergeBoxMineral : MergeBoxGimic
         }
     }
     public override void GimicStop()
-    { phase = 0; activeRequest = -1; if (cart != null && cartStart != null) cart.position = cartStart.position; if (Board is MineralMergeGameManager mineral) mineral.ClearOres(); base.GimicStop(); }
+    { phase = 0; activeRequest = -1; if (cart != null && cartStart != null) cart.position = cartStart.position; if (Board is { } mineral) mineral.ClearOres(); base.GimicStop(); }
 }

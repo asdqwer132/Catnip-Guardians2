@@ -6,7 +6,6 @@ public sealed class MergeCardUI : MonoBehaviour
 {
     public MergeBoxSceneController boxes;
     public MergeItemSelection selection;
-    public Button materialSelector;
     public Button materialChange;
     public Image dragCooldown;
     public GameObject materialPanel;
@@ -22,14 +21,12 @@ public sealed class MergeCardUI : MonoBehaviour
 
     private void OnEnable()
     {
-        if (materialPanel != null) materialPanel.SetActive(false);
-        if (materialSelector != null) materialSelector.onClick.AddListener(TogglePanel);
+        if (materialPanel != null) materialPanel.SetActive(true);
         if (materialChange != null) materialChange.onClick.AddListener(AdvanceMaterial);
     }
 
     private void OnDisable()
     {
-        if (materialSelector != null) materialSelector.onClick.RemoveListener(TogglePanel);
         if (materialChange != null) materialChange.onClick.RemoveListener(AdvanceMaterial);
     }
 
@@ -41,11 +38,6 @@ public sealed class MergeCardUI : MonoBehaviour
             dragCooldown.fillAmount = progress;
             dragCooldown.enabled = progress > 0f;
         }
-    }
-
-    private void TogglePanel()
-    {
-        if (materialPanel != null) materialPanel.SetActive(!materialPanel.activeSelf);
     }
 
     private void AdvanceMaterial() => boxes?.SelectedBoard?.AdvanceSelectedMaterial();

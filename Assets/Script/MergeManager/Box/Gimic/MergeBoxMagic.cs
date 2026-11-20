@@ -11,15 +11,15 @@ public sealed class MergeBoxMagic : MergeBoxGimic
     protected override float GetSkillDuration(int index) => index==0?unlimitedUseSeconds:rapidFeedingSeconds;
     protected override void OnSkillDurationEnded(int index)
     {
-        if(!(Board is MagicMergeGameManager magic)) return;
+        if(!(Board is { } magic)) return;
         if(index==0) magic.ClearUnlimitedUse();else magic.ClearRapidFeeding();
     }
     protected override void OnActiveSkill(int index)
     {
-        if (!(Board is MagicMergeGameManager magic)) return;
+        if (!(Board is { } magic)) return;
         if (index == 0) magic.ActivateUnlimitedUse(unlimitedUseSeconds);
         else if (index == 1) magic.ActivateRapidFeeding(rapidFeedingSeconds, feedingSpeedMultiplier);
     }
     public override void GimicStop()
-    { if (Board is MagicMergeGameManager magic) magic.ClearMagic(); base.GimicStop(); }
+    { if (Board is { } magic) magic.ClearMagic(); base.GimicStop(); }
 }

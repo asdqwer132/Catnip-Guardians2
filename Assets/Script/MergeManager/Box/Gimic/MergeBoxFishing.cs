@@ -47,7 +47,7 @@ public sealed class MergeBoxFishing : MergeBoxGimic
         if(minigamePanel!=null) minigamePanel.SetActive(false);
         CompleteSkill(0);
         if(result==0) { Debug.Log("[Fishing] 미니게임 실패",this);return; }
-        if(!(Board is FishingMergeGameManager fishing)) return;
+        if(!(Board is { } fishing)) return;
         bool perfect=result==2;
         var rewards=perfect && perfectFish!=null && perfectFish.Length>0?perfectFish:fish;
         int min=Mathf.Max(1,perfect?minimumPerfectFish:minimumFish);

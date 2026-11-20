@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [DefaultExecutionOrder(-200)]
-public sealed class MonsterMergeGameManager : MergegameManager
+public sealed class MonsterMergeGameManager : MergegameManager { }
+
+public partial class MergegameManager
 {
     private MergeItem pendingMonster;
     private Vector3 pendingPosition;

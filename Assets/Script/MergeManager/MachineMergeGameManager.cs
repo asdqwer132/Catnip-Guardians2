@@ -4,10 +4,12 @@ using UnityEngine;
 public enum MergeClawState { Idle, AwaitingItem, Lifting, MovingAlongRail, ApproachingItem, Lowering, Retracting, Returning }
 
 [DefaultExecutionOrder(-200)]
-public sealed class MachineMergeGameManager : MergegameManager
+public sealed class MachineMergeGameManager : MergegameManager { }
+
+public partial class MergegameManager
 {
     public Collider2D LaserDragArea { get; set; }
-    public override bool CapturesSelectionPointer(Vector2 worldPosition) => ClawState != MergeClawState.Idle ||
+    public virtual bool CapturesSelectionPointer(Vector2 worldPosition) => ClawState != MergeClawState.Idle ||
         (LaserDragArea != null && LaserDragArea.isActiveAndEnabled && LaserDragArea.OverlapPoint(worldPosition));
     public MergeClawState ClawState { get; private set; }
     private Transform claw;
@@ -34,7 +36,7 @@ public sealed class MachineMergeGameManager : MergegameManager
     private readonly List<MergeSpawnRequest> splitOutputs = new List<MergeSpawnRequest>();
     public int FireLaser(Collider2D area,int multiplier=2)
     {
-        if(!CanOperate || recipeBook==null || area==null || !area.isActiveAndEnabled)
+        if(!CanOperate || area==null || !area.isActiveAndEnabled)
         {
             Debug.Log("[Machine Laser] 발사 불가: 동작 상태, 레시피북 또는 판정 영역을 확인하세요.", this);
             return 0;
@@ -63,9 +65,9 @@ public sealed class MachineMergeGameManager : MergegameManager
     }
     public bool TrySplit(MergeItemObject piece, int multiplier = 2)
     {
-        if (piece == null || piece.Owner != this || recipeBook == null || !piece.CanMerge) return false;
+        if (piece == null || piece.Owner != this || !piece.CanMerge) return false;
         ItemRecipeData recipe = null;
-        foreach (var entry in recipeBook.Recipes)
+        foreach (var entry in GetRoundRecipes())
             if (entry != null && entry.resultItem == piece.item) { recipe = entry; break; }
         var materials = new List<InventoryItem>();
         if (recipe == null || !recipe.TryGetRequiredMaterials(materials)) return false;
@@ -157,5 +159,4 @@ public sealed class MachineMergeGameManager : MergegameManager
         ClawState = MergeClawState.Idle; dropRequested = false;
         if (claw != null && cleanPoint != null) ParkClaw(claw, cleanPoint, returnDuration);
     }
-    protected override void OnDisable() { CancelClaw(); base.OnDisable(); }
 }

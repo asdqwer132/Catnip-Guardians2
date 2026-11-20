@@ -43,16 +43,16 @@ public sealed class MergeBoxMachine : MergeBoxGimic
         new GimicSkill { id = "Machine.Claw", type = GimicSkillType.Active, defaultSkillCool = 10f });
     public override void GimicStart()
     {
-        if (Board is MachineMergeGameManager machine) machine.LaserDragArea = laserDragArea;
+        if (Board is { } machine) machine.LaserDragArea = laserDragArea;
         ParkClaw();
     }
-    protected override bool CanUseActiveSkill(int index) => Board is MachineMergeGameManager machine &&
+    protected override bool CanUseActiveSkill(int index) => Board is { } machine &&
         machine.ClawState == MergeClawState.Idle && (index == 0 ? laserEmitter != null && laserHitArea!=null && laserObject!=null : clawVisual != null && clawRail != null);
     protected override float GetSkillDuration(int index) => index==0?laserVisualSeconds:base.GetSkillDuration(index);
     protected override bool WaitForSkillCompletion(int index) => index==1;
     protected override void OnActiveSkill(int index)
     {
-        if (!(Board is MachineMergeGameManager machine)) return;
+        if (!(Board is { } machine)) return;
         if (index == 0)
         {
             laserObject.SetActive(true);
@@ -64,7 +64,7 @@ public sealed class MergeBoxMachine : MergeBoxGimic
     }
     protected override void TickGimic(float deltaTime)
     {
-        if (!(Board is MachineMergeGameManager machine)) return;
+        if (!(Board is { } machine)) return;
         laserRemaining -= deltaTime;
         if (laserObject != null && laserRemaining <= 0f) laserObject.SetActive(false);
         machine.TickClaw(deltaTime);
@@ -96,10 +96,10 @@ public sealed class MergeBoxMachine : MergeBoxGimic
     }
     private void ParkClaw()
     {
-        if (Board is MachineMergeGameManager machine)
+        if (Board is { } machine)
             machine.ParkClaw(clawVisual, clawCleanPoint, clawReturnDuration);
     }
-    private void UpdateClawPresentation(MachineMergeGameManager machine)
+    private void UpdateClawPresentation(MergegameManager machine)
     {
         if (clawVisual == null) return;
         Vector3 position = clawVisual.position;
@@ -131,14 +131,14 @@ public sealed class MergeBoxMachine : MergeBoxGimic
     }
     public bool TryGrabClawItem(Vector2 world)
     {
-        followingTarget=Board is MachineMergeGameManager machine && machine.TryGrab(world);
+        followingTarget=Board is { } machine && machine.TryGrab(world);
         if(followingTarget) UpdateClawTarget(world);
         return followingTarget;
     }
     public void UpdateClawTarget(Vector2 world)
     {
         if(clawTarget==null) return;
-        bool visible=followingTarget && Board is MachineMergeGameManager machine && machine.ClawState!=MergeClawState.Idle;
+        bool visible=followingTarget && Board is { } machine && machine.ClawState!=MergeClawState.Idle;
         clawTarget.gameObject.SetActive(visible);
         if(visible) clawTarget.position=new Vector3(world.x,world.y,clawTarget.position.z);
     }
@@ -163,7 +163,7 @@ public sealed class MergeBoxMachine : MergeBoxGimic
     public override void GimicStop()
     {
         EndLaserDrag();
-        if (Board is MachineMergeGameManager machine) { machine.CancelClaw(); machine.LaserDragArea = null; }
+        if (Board is { } machine) { machine.CancelClaw(); machine.LaserDragArea = null; }
         ParkClaw();
         if (laserObject != null) laserObject.SetActive(false);
         followingTarget=false;if(clawTarget!=null) clawTarget.gameObject.SetActive(false);

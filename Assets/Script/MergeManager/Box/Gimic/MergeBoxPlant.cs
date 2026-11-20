@@ -28,12 +28,12 @@ public sealed class MergeBoxPlant : MergeBoxGimic
     }
 
     protected override void TickGimic(float deltaTime)
-    { if (Board is PlantMergeGameManager plant) plant.TickPlants(groundArea, growthRules, deltaTime); }
+    { if (Board is { } plant) plant.TickPlants(groundArea, growthRules, deltaTime); }
     protected override bool CanUseActiveSkill(int index)
-        => Board is PlantMergeGameManager && InstantGrowthArea != null && InstantGrowthArea.isActiveAndEnabled;
+        => Board != null && InstantGrowthArea != null && InstantGrowthArea.isActiveAndEnabled;
     protected override void OnActiveSkill(int index)
-    { if (Board is PlantMergeGameManager plant) plant.InstantGrowInArea(InstantGrowthArea, growthRules); }
+    { if (Board is { } plant) plant.InstantGrowInArea(InstantGrowthArea, growthRules); }
 
     public override void GimicStop()
-    { if (Board is PlantMergeGameManager plant) plant.ReleaseRoots(); base.GimicStop(); }
+    { if (Board is { } plant) plant.ReleaseRoots(); base.GimicStop(); }
 }

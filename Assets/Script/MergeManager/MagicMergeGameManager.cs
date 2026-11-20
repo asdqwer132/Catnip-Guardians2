@@ -1,7 +1,9 @@
 using UnityEngine;
 
 [DefaultExecutionOrder(-200)]
-public sealed class MagicMergeGameManager : MergegameManager
+public sealed class MagicMergeGameManager : MergegameManager { }
+
+public partial class MergegameManager
 {
     private float retainUntil, rapidUntil;
     private float rapidMultiplier = 1f;
@@ -14,8 +16,7 @@ public sealed class MagicMergeGameManager : MergegameManager
     public void ClearUnlimitedUse() => retainUntil=0f;
     public void ClearRapidFeeding() { rapidUntil=0f;rapidMultiplier=1f;RefreshFeedingTiming(); }
     public void ClearMagic() { retainUntil = rapidUntil = 0f; rapidMultiplier = 1f; RefreshFeedingTiming(); }
-    protected override void OnDisable() { ClearMagic(); base.OnDisable(); }
-    public override bool RetainSelectedItems => Time.time < retainUntil;
-    public override bool ForceAutomaticFeeding => Time.time < rapidUntil;
-    public override float FeedingSpeedMultiplier => ForceAutomaticFeeding ? rapidMultiplier : 1f;
+    public virtual bool RetainSelectedItems => Time.time < retainUntil;
+    public virtual bool ForceAutomaticFeeding => Time.time < rapidUntil;
+    public virtual float FeedingSpeedMultiplier => ForceAutomaticFeeding ? rapidMultiplier : 1f;
 }

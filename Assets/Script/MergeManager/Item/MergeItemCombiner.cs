@@ -50,7 +50,7 @@ internal sealed class MergeItemCombiner
                 lives[contact.a] = contact.aLife; lives[contact.b] = contact.bLife;
             }
             var plans = new List<RecipePlan>();
-            if (owner.recipeBook != null) foreach (var recipe in owner.recipeBook.Recipes)
+            foreach (var recipe in owner.GetRoundRecipes())
                     if (MergeTree.TryGetIngredients(recipe, out var required)) plans.Add(new RecipePlan { recipe = recipe, required = required });
             foreach (var contact in pending)
             {
@@ -90,9 +90,11 @@ internal sealed class MergeItemCombiner
     }
     public bool TryBake(MergeItemObject food, MergeItem burningItem)
     {
-        if (!Usable(food) || burningItem == null || owner.recipeBook == null) return false;
-        if (!owner.recipeBook.TryGetRecipe(food.item, burningItem.item, out var recipe)) return false;
-        return TryMerge(recipe, new List<MergeItemObject> { food });
+        if (!Usable(food) || burningItem == null) return false;
+        foreach (var recipe in owner.GetRoundRecipes())
+            if (MergeTree.MatchesPair(recipe, food.item, burningItem.item))
+                return TryMerge(recipe, new List<MergeItemObject> { food });
+        return false;
     }
 
     private bool TryMerge(ItemRecipeData recipe, List<MergeItemObject> ingredients)

@@ -55,6 +55,10 @@ public class UnlockManager : MonoBehaviour
 
     public void Unlock(DataType type, string unlockId)
     {
+        if (type == DataType.MergeBox &&
+            (!int.TryParse(unlockId, out int box) || box < 2 || box > 8 || box.ToString() != unlockId))
+            return;
+
         if (string.IsNullOrEmpty(unlockId))
         {
             Debug.LogWarning("해금 ID가 비어있습니다. Type: " + type);
@@ -70,6 +74,8 @@ public class UnlockManager : MonoBehaviour
         bool added = ids.Add(unlockId);
 
         RefreshDebugList();
+        if (type == DataType.MergeBox && added)
+            RefreshBroadcaster.Instance?.Broadcast(RefreshType.Unlock | RefreshType.Equipment);
 
         if (debugLog)
         {
@@ -82,6 +88,10 @@ public class UnlockManager : MonoBehaviour
 
     public void Lock(DataType type, string unlockId)
     {
+        if (type == DataType.MergeBox &&
+            (!int.TryParse(unlockId, out int box) || box < 2 || box > 8 || box.ToString() != unlockId))
+            return;
+
         if (string.IsNullOrEmpty(unlockId))
             return;
 
@@ -96,6 +106,8 @@ public class UnlockManager : MonoBehaviour
         }
 
         RefreshDebugList();
+        if (type == DataType.MergeBox && removed)
+            RefreshBroadcaster.Instance?.Broadcast(RefreshType.Unlock | RefreshType.Equipment);
 
         if (debugLog && removed)
         {
@@ -105,6 +117,7 @@ public class UnlockManager : MonoBehaviour
 
     public bool IsUnlocked(DataType type, string unlockId)
     {
+        if (type == DataType.MergeBox && unlockId == "1") return true;
         if (string.IsNullOrEmpty(unlockId))
             return false;
 
@@ -121,6 +134,7 @@ public class UnlockManager : MonoBehaviour
 
     public bool HasAnyUnlocked(DataType type)
     {
+        if (type == DataType.MergeBox) return true;
         if (!unlockedByType.TryGetValue(type, out HashSet<string> ids))
             return false;
 
@@ -129,10 +143,9 @@ public class UnlockManager : MonoBehaviour
 
     public List<string> GetUnlockedIds(DataType type)
     {
-        if (!unlockedByType.TryGetValue(type, out HashSet<string> ids))
-            return new List<string>();
-
-        return new List<string>(ids);
+        var result = unlockedByType.TryGetValue(type, out var ids) ? new List<string>(ids) : new List<string>();
+        if (type == DataType.MergeBox) result.Insert(0, "1");
+        return result;
     }
 
     public Dictionary<DataType, List<string>> GetAllUnlockedByType()
@@ -145,6 +158,7 @@ public class UnlockManager : MonoBehaviour
             result.Add(pair.Key, new List<string>(pair.Value));
         }
 
+        result[DataType.MergeBox] = GetUnlockedIds(DataType.MergeBox);
         return result;
     }
 
