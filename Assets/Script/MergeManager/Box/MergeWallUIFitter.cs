@@ -48,15 +48,42 @@ public sealed class MergeWallUIFitter : MonoBehaviour
         }
         if (topCollider != null)
             changed |= Fit(topCollider, topWall, new Rect(0, 1 - topThickness, 1, topThickness));
-        var spawn = box.dropZone != null ? box.dropZone.spawnPoint : null;
-        if (spawn != null && inletAnchor != null && TryGetUICamera(inletAnchor, out var uiCamera) &&
-            Project(inletAnchor, uiCamera, new Plane(Vector3.forward, spawn.position), inletAnchor.rect.center, out var inlet) &&
-            (spawn.position - inlet).sqrMagnitude > .00000001f)
+        var zone = box.dropZone;
+        if (zone != null)
         {
-            spawn.position = inlet;
-            changed = true;
+            FitDeadlineWidth(zone.lineSprite);
+            var spawn = zone.spawnPoint;
+            if (spawn != null && TryGetUICamera(inletAnchor, out var uiCamera) &&
+                Project(inletAnchor, uiCamera, new Plane(Vector3.forward, spawn.position), inletAnchor.rect.center, out var inlet))
+            {
+                var marker = zone.spawnMarker;
+                if (marker != null)
+                {
+                    if ((marker.transform.position - inlet).sqrMagnitude > .00000001f)
+                        marker.transform.position = inlet;
+                    marker.enabled = marker.sprite != null;
+                }
+                if ((spawn.position - inlet).sqrMagnitude > .00000001f)
+                    spawn.position = inlet;
+            }
         }
         if (changed && Application.isPlaying) Physics2D.SyncTransforms();
+    }
+
+    private void FitDeadlineWidth(SpriteRenderer line)
+    {
+        if (line == null || line.drawMode == SpriteDrawMode.Simple || !TryGetUICamera(frame, out var uiCamera)) return;
+        var t = line.transform;
+        var plane = new Plane(Vector3.forward, t.position);
+        var area = frame.rect;
+        if (!Project(frame, uiCamera, plane, new Vector2(area.xMin, area.center.y), out var left) ||
+            !Project(frame, uiCamera, plane, new Vector2(area.xMax, area.center.y), out var right)) return;
+        float width = Mathf.Abs(t.InverseTransformVector(right - left).x);
+        if (width < .0001f) return;
+        if (Mathf.Abs(line.size.x - width) > .0001f) line.size = new Vector2(width, line.size.y);
+        var position = t.position;
+        position.x = (left.x + right.x) * .5f - t.TransformVector(line.localBounds.center).x;
+        if (Mathf.Abs(position.x - t.position.x) > .0001f) t.position = position;
     }
 
     private bool Fit(BoxCollider2D wall, RectTransform anchor, Rect edge)
