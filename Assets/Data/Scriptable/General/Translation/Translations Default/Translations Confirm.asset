@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47d3f35fa24e48a2b5c992adb0105125, type: 3}
+  m_Name: Translations Confirm
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextGroup
+  id: Translations Confirm
+  entries:
+  - key: Confirm
+    translations:
+    - language: 0
+      text: Confirm
+    - language: 1
+      text: "\uD655\uC778"
+  - key: Cancel
+    translations:
+    - language: 0
+      text: Cancel
+    - language: 1
+      text: "\uCDE8\uC18C"
+  - key: Retry
+    translations:
+    - language: 0
+      text: Retry
+    - language: 1
+      text: "\uB2E4\uC2DC\uD558\uAE30"
+  - key: Clear
+    translations:
+    - language: 0
+      text: Clear
+    - language: 1
+      text: "\uBE44\uC6B0\uAE30"
+  - key: Buy
+    translations:
+    - language: 0
+      text: Buy
+    - language: 1
+      text: "\uAD6C\uB9E4"
+  - key: Reroll
+    translations:
+    - language: 0
+      text: Reroll
+    - language: 1
+      text: "\uC0C8\uB85C\uACE0\uCE68"
+  - key: Craft
+    translations:
+    - language: 0
+      text: Reroll
+    - language: 1
+      text: "\uC81C\uC791"
+  - key: Unequip
+    translations:
+    - language: 0
+      text: Unequip
+    - language: 1
+      text: "\uD574\uC81C"
+  - key: Equip
+    translations:
+    - language: 0
+      text: Equip
+    - language: 1
+      text: "\uC7A5\uCC29"

@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47d3f35fa24e48a2b5c992adb0105125, type: 3}
+  m_Name: Translations GameTitle
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextGroup
+  id: Translations GameTitle
+  entries:
+  - key: Catnip
+    translations:
+    - language: 0
+      text: Catnip
+    - language: 1
+      text: "\uCEA3\uC78E"
+  - key: Guardians
+    translations:
+    - language: 0
+      text: Catnip Guardians
+    - language: 1
+      text: "\uAC00\uB514\uC5B8\uC988"
+  - key: Catnip Guardians
+    translations:
+    - language: 0
+      text: Catnip Guardians
+    - language: 1
+      text: "\uCEA3\uC78E \uAC00\uB514\uC5B8\uC988"

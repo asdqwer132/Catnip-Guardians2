@@ -1081,7 +1081,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 7847992530475677994, guid: aa44388e3c2d97640a53a86f57731b5b, type: 3}
+  m_Sprite: {fileID: 4806441815073385067, guid: 70c5bb63940ea7d46b2a7fd5ec42e43c, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -1623,12 +1623,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipUI
   dataSource: {fileID: 0}
   useTooltip: 1
+  startHidden: 1
   offset: {x: 0, y: 0}
   clampToParent: 1
   positionAtAnchor: 0
   removePannel: 1
   tooltipPanel: {fileID: 342736692659104325}
-  startHidden: 1
+  panelVisibility:
+    alternatePanels: []
   basicInformation:
     icon: {fileID: 3804130882100141709}
     dataNameText: {fileID: 3239612097855235006}
@@ -1643,6 +1645,12 @@ MonoBehaviour:
     gradeIcon: {fileID: 438466699227073458}
     series: 0
     grade: -1
+  itemInformation:
+    amountText: {fileID: 0}
+    categoryText: {fileID: 0}
+    weightText: {fileID: 0}
+    cooldownText: {fileID: 0}
+    effectDescriptions: {fileID: 0}
 --- !u!1 &6521430352617230679
 GameObject:
   m_ObjectHideFlags: 0
@@ -1924,6 +1932,7 @@ GameObject:
   - component: {fileID: 3416137415145305532}
   - component: {fileID: 1984265758060830006}
   - component: {fileID: 5357964643622099286}
+  - component: {fileID: 8429459511458842408}
   m_Layer: 5
   m_Name: Placeholder
   m_TagString: Untagged
@@ -2070,6 +2079,23 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &8429459511458842408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7745645499371494604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6e08452a43a4f16979a3dbb92718533, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: Enter Item Name...
+  tmpText: {fileID: 0}
+  legacyText: {fileID: 0}
+  source: 0
+  dataSource: {fileID: 0}
 --- !u!1 &8166489225136216031
 GameObject:
   m_ObjectHideFlags: 0

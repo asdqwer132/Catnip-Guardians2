@@ -1354,8 +1354,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 990890000000}
   - component: {fileID: 1090940797}
+  - component: {fileID: 990890000000}
   - component: {fileID: 1090940799}
   - component: {fileID: 1090940798}
   m_Layer: 5
@@ -2027,6 +2027,7 @@ GameObject:
   - component: {fileID: 1763886221}
   - component: {fileID: 1763886223}
   - component: {fileID: 1763886222}
+  - component: {fileID: 1763886224}
   m_Layer: 5
   m_Name: MainText_Guardians
   m_TagString: Untagged
@@ -2153,6 +2154,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1763886220}
   m_CullTransparentMesh: 1
+--- !u!114 &1763886224
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1763886220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6e08452a43a4f16979a3dbb92718533, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: GUARDIANS
+  tmpText: {fileID: 1763886222}
+  legacyText: {fileID: 0}
+  source: 0
+  dataSource: {fileID: 0}
 --- !u!1 &1791776288
 GameObject:
   m_ObjectHideFlags: 0
@@ -2161,8 +2179,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 990890000001}
   - component: {fileID: 1791776289}
+  - component: {fileID: 990890000001}
   - component: {fileID: 1791776291}
   - component: {fileID: 1791776290}
   m_Layer: 5
@@ -2359,6 +2377,7 @@ GameObject:
   - component: {fileID: 1875897458}
   - component: {fileID: 1875897460}
   - component: {fileID: 1875897459}
+  - component: {fileID: 1875897461}
   m_Layer: 5
   m_Name: MainText_Catnip
   m_TagString: Untagged
@@ -2485,6 +2504,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1875897457}
   m_CullTransparentMesh: 1
+--- !u!114 &1875897461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1875897457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6e08452a43a4f16979a3dbb92718533, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: CATNIP
+  tmpText: {fileID: 1875897459}
+  legacyText: {fileID: 0}
+  source: 0
+  dataSource: {fileID: 0}
 --- !u!1 &1899334927
 GameObject:
   m_ObjectHideFlags: 0
@@ -2800,8 +2836,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 990890000002}
   - component: {fileID: 2021674178}
+  - component: {fileID: 990890000002}
   - component: {fileID: 2021674180}
   - component: {fileID: 2021674179}
   m_Layer: 5
@@ -3100,8 +3136,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 990890000003}
   - component: {fileID: 2136566526}
+  - component: {fileID: 990890000003}
   - component: {fileID: 2136566528}
   - component: {fileID: 2136566527}
   m_Layer: 5
@@ -3310,8 +3346,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 990750000001}
   - component: {fileID: 910010200001}
+  - component: {fileID: 990750000001}
   - component: {fileID: 910010200002}
   m_Layer: 0
   m_Name: Scene Language Mediator
@@ -3349,6 +3385,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SceneLanguageMediator
   translations: {fileID: 11400000, guid: e2d0936290084564a5887153b8edeb10, type: 2}
   standaloneLanguage: 0
+--- !u!114 &990750000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 910010200000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8500711e87f52804bbf9d324c5883808, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LanguageManager
+  selectedLanguage: 1
 --- !u!114 &990890000000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3359,9 +3408,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6e08452a43a4f16979a3dbb92718533, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
-  key: "Continue"
+  key: Continue
   tmpText: {fileID: 1090940798}
   legacyText: {fileID: 0}
   source: 0
@@ -3376,9 +3425,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6e08452a43a4f16979a3dbb92718533, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
-  key: "New Game"
+  key: New Game
   tmpText: {fileID: 1791776290}
   legacyText: {fileID: 0}
   source: 0
@@ -3393,9 +3442,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6e08452a43a4f16979a3dbb92718533, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
-  key: "Exit"
+  key: Exit
   tmpText: {fileID: 2021674179}
   legacyText: {fileID: 0}
   source: 0
@@ -3410,26 +3459,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6e08452a43a4f16979a3dbb92718533, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
-  key: "Setting"
+  key: Setting
   tmpText: {fileID: 2136566527}
   legacyText: {fileID: 0}
   source: 0
   dataSource: {fileID: 0}
---- !u!114 &990750000001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 910010200000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8500711e87f52804bbf9d324c5883808, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::LanguageManager
-  selectedLanguage: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

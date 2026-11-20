@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [Serializable]
 public sealed class LocalizedTextValue
@@ -24,9 +25,13 @@ public sealed class LocalizedTextTable : ScriptableObject
     public LocalizedTextEntry[] entries = Array.Empty<LocalizedTextEntry>();
     private Dictionary<string, Dictionary<language, string>> lookup;
     private void OnEnable() => lookup = null;
-    private void OnValidate() => lookup = null;
     public void Rebuild() => lookup = BuildLookup(entries);
-
+    private void OnValidate()
+    {
+        lookup = null;
+        if (string.IsNullOrEmpty(id))
+            id = name;
+    }
     internal static Dictionary<string, Dictionary<language, string>> BuildLookup(LocalizedTextEntry[] entries)
     {
         var lookup = new Dictionary<string, Dictionary<language, string>>(StringComparer.Ordinal);

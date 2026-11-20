@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47d3f35fa24e48a2b5c992adb0105125, type: 3}
+  m_Name: Translations Upgrade PannelToggle
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextGroup
+  id: Translations Upgrade SubPannel
+  entries:
+  - key: Potion 1
+    translations:
+    - language: 0
+      text: Craft Materials
+    - language: 1
+      text: "\uC81C\uC791"
+  - key: Potion 2
+    translations:
+    - language: 0
+      text: Recipe
+    - language: 1
+      text: "\uC870\uD569\uBC95"
+  - key: Potion 3
+    translations:
+    - language: 0
+      text: Equipment
+    - language: 1
+      text: "\uC7A5\uCC29"
+  - key: Note 1
+    translations:
+    - language: 0
+      text: Item
+    - language: 1
+      text: "\uC544\uC774\uD15C"
+  - key: Note 2
+    translations:
+    - language: 0
+      text: Enemy
+    - language: 1
+      text: "\uC801"
+  - key: Note 3
+    translations:
+    - language: 0
+      text: Character
+    - language: 1
+      text: "\uCE90\uB9AD\uD130"

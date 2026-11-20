@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 389316847283763872}
   - component: {fileID: 4685113543304238623}
   - component: {fileID: 6724683907774232594}
+  - component: {fileID: 3144983556576196861}
   m_Layer: 5
   m_Name: Description (2)
   m_TagString: Untagged
@@ -137,6 +138,23 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &3144983556576196861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5910413300746044140}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6e08452a43a4f16979a3dbb92718533, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: Not Selected Guide 1
+  tmpText: {fileID: 6724683907774232594}
+  legacyText: {fileID: 0}
+  source: 0
+  dataSource: {fileID: 0}
 --- !u!1 &6832711687441276060
 GameObject:
   m_ObjectHideFlags: 0
@@ -212,6 +230,7 @@ GameObject:
   - component: {fileID: 8881721131278400157}
   - component: {fileID: 8765394582475052813}
   - component: {fileID: 7932450403700740048}
+  - component: {fileID: 997625953293097168}
   m_Layer: 5
   m_Name: Description (3)
   m_TagString: Untagged
@@ -338,6 +357,23 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &997625953293097168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8802167837664317942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6e08452a43a4f16979a3dbb92718533, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: Not Selected Guide 2
+  tmpText: {fileID: 7932450403700740048}
+  legacyText: {fileID: 0}
+  source: 0
+  dataSource: {fileID: 0}
 --- !u!1001 &2360945084968915457
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -761,13 +797,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: InventoryPotion
       objectReference: {fileID: 0}
+    - target: {fileID: 8429459511458842408, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
+      propertyPath: tmpText
+      value: 
+      objectReference: {fileID: 7093821050839865453}
     - target: {fileID: 8936779777747725687, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
       propertyPath: m_CellSize.x
-      value: 116.100075
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8936779777747725687, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
       propertyPath: m_CellSize.y
-      value: 116.100075
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
@@ -783,3 +823,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 5834123525538068181, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
   m_PrefabInstance: {fileID: 8789856148167607643}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7093821050839865453 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1984265758060830006, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
+  m_PrefabInstance: {fileID: 8789856148167607643}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI

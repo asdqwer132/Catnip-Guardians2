@@ -17,6 +17,8 @@ MonoBehaviour:
   dataNumbering: 
   dataId: MainTree 1
   dataType: 0
+  grade: -1
+  series: 0
   requireUnlock: 0
   growthSprites:
   - {fileID: 1076134543, guid: 000cf1c15f864e64c970de36d69182ba, type: 3}
@@ -25,13 +27,13 @@ MonoBehaviour:
   - {fileID: -446725817, guid: 000cf1c15f864e64c970de36d69182ba, type: 3}
   - {fileID: 2141502318, guid: 000cf1c15f864e64c970de36d69182ba, type: 3}
   maxHP: 100
-  nutrientsRequired: 10
+  nutrientsRequired: 10000
   nutrientsPerSecond: 1
   reward:
   - currencyType: 1
     amount: 1
   spawnNormalEnemyCount: 1
-  normalSpawnInterval: 100
+  normalSpawnInterval: 5
   normalEnemies:
   - dataSet: {fileID: 11400000, guid: 2389ea0bb2cf2db478a55b929927c53e, type: 2}
     spawnWeight: 50

@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 975dba4b5514492291967d4b794ebd0e, type: 3}
+  m_Name: Localization CoreScene
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextTable
+  id: Core
+  sharedGroups:
+  - {fileID: 11400000, guid: 03606ada8e0fc0c4c8a0d01d12fe3a54, type: 2}
+  - {fileID: 11400000, guid: cdbdd51b234cd8c44a34ba39a52f9b34, type: 2}
+  - {fileID: 11400000, guid: 1fa3441ca6dd6a94699bfb116596cb4a, type: 2}
+  - {fileID: 11400000, guid: 428974ebf22fb364f9534da8430f2a42, type: 2}
+  entries:
+  - key: General
+    translations:
+    - language: 0
+      text: General
+    - language: 1
+      text: "\uC77C\uBC18"
+  - key: GamePlay
+    translations:
+    - language: 0
+      text: GamePlay
+    - language: 1
+      text: "\uAC8C\uC784"
+  - key: Setting
+    translations:
+    - language: 0
+      text: Setting
+    - language: 1
+      text: "\uC124\uC815"
