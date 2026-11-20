@@ -17,10 +17,12 @@ public sealed class DataExcelManagerWindow : EditorWindow
         [NonSerialized] public string message;
         [NonSerialized] public string loadedFile;
         [NonSerialized] public long loadedTicks;
+        [NonSerialized] public long loadedCodeTicks;
     }
 
     [SerializeField] private WorkbookPanel identify = new WorkbookPanel { file = "Assets/Data/Excel/BasicDataIdentify.xlsx" };
-    [SerializeField] private WorkbookPanel displayer = new WorkbookPanel { file = "Assets/Data/Excel/BasicDataDisplayer.xlsx" };
+    private const string DisplayEnglishPath = "Assets/Data/Excel/BasicDataDisplayerEnglish.xlsx";
+    [SerializeField] private WorkbookPanel displayer = new WorkbookPanel { file = DisplayEnglishPath };
     [SerializeField] private WorkbookPanel extra = new WorkbookPanel { file = "Assets/Data/Excel/ExtraData.xlsx" };
     [SerializeField] private int selected;
     private Vector2 scroll;
@@ -41,6 +43,8 @@ public sealed class DataExcelManagerWindow : EditorWindow
                 story.DrawUI();
                 return;
             }
+            if (displayer.file == "Assets/Data/Excel/BasicDataDisplayer.xlsx" && !File.Exists(displayer.file))
+                displayer.file = DisplayEnglishPath;
             scroll = EditorGUILayout.BeginScrollView(scroll);
             DrawWorkbook(selected == 0 ? identify : selected == 1 ? displayer : extra, (DataWorkbookKind)selected);
             EditorGUILayout.EndScrollView();
@@ -51,9 +55,13 @@ public sealed class DataExcelManagerWindow : EditorWindow
     {
         if (DataExcelGUI.Workbook(ref panel.file, Tabs[(int)kind] + " 엑셀 선택")) panel.loadedFile = null;
         long ticks = File.Exists(panel.file) ? File.GetLastWriteTimeUtc(panel.file).Ticks : 0;
-        if (panel.loadedFile != panel.file || panel.loadedTicks != ticks)
+        long codeTicks = File.GetLastWriteTimeUtc(DataWorkbookImport.CodeWorkbookPath).Ticks;
+        if (panel.loadedFile != panel.file || panel.loadedTicks != ticks || panel.loadedCodeTicks != codeTicks)
         {
-            panel.loadedFile = panel.file; panel.loadedTicks = ticks; panel.preview = null;
+            panel.loadedFile = panel.file;
+            panel.loadedTicks = ticks;
+            panel.loadedCodeTicks = codeTicks;
+            panel.preview = null;
             try { panel.bindings = DataWorkbookImport.ReadBindings(panel.file); panel.message = null; }
             catch (Exception error) { panel.bindings = null; panel.message = error.Message; }
         }
@@ -66,7 +74,7 @@ public sealed class DataExcelManagerWindow : EditorWindow
         if (panel.bindings != null)
         {
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("적용할 시트 (Code 기준)", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("적용할 시트 (Code.xlsx 기준)", EditorStyles.boldLabel);
             using (new EditorGUILayout.HorizontalScope())
             {
                 if (GUILayout.Button("전체 선택")) { panel.disabledSheets.Clear(); panel.preview = null; }
@@ -102,7 +110,7 @@ public sealed class DataExcelManagerWindow : EditorWindow
     {
         try
         {
-            // Never apply an old preview: re-read both the workbook and the current asset IDs.
+            // Re-read the data workbook, Code.xlsx, and current asset IDs before applying.
             panel.preview = DataWorkbookImport.Read(panel.file, kind, panel.bindings.Where(binding => !panel.disabledSheets.Contains(binding.Sheet)).Select(binding => binding.Sheet));
             if (apply && panel.preview.Errors.Count == 0) DataWorkbookImport.Apply(panel.preview);
             panel.message = (apply && panel.preview.Errors.Count == 0 ? "적용 완료: " : "검증 결과: ") + panel.preview.Summary;

@@ -46,11 +46,28 @@ public static class DataWorkbookImport
         { "itemSeries", "series" }, { "mapPath", "skillMap" }, { "requiredNodeIds", "requiredSkills" }, { "rewardPaths", "rewards" }
     };
 
-    public static List<Binding> ReadBindings(string file) => Bindings(ItemDataXlsxReader.Read(file));
+    public const string CodeWorkbookPath = "Assets/Data/Excel/Code.xlsx";
+
+    public static List<Binding> ReadBindings(string file)
+    {
+        var sheets = ItemDataXlsxReader.Read(file);
+        var bindings = ReadCodeBindings()
+            .Where(binding => sheets.ContainsKey(binding.Sheet)).ToList();
+        if (bindings.Count == 0)
+            throw new InvalidDataException("Code.xlsx에 등록된 데이터 시트가 이 엑셀에 없습니다.");
+        return bindings;
+    }
+
+    private static List<Binding> ReadCodeBindings()
+    {
+        if (!File.Exists(CodeWorkbookPath))
+            throw new FileNotFoundException("공통 매핑 파일이 없습니다: " + CodeWorkbookPath);
+        return Bindings(ItemDataXlsxReader.Read(CodeWorkbookPath));
+    }
 
     private static List<Binding> Bindings(Dictionary<string, ItemDataXlsxReader.Sheet> sheets)
     {
-        if (!sheets.TryGetValue("Code", out var code)) throw new InvalidDataException("Code 시트가 없습니다.");
+        if (!sheets.TryGetValue("Code", out var code)) throw new InvalidDataException("Code.xlsx에 Code 시트가 없습니다.");
         var table = new Table(code, "Sheet", "DataType", "RootPath");
         var result = new List<Binding>();
         var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -70,12 +87,12 @@ public static class DataWorkbookImport
         try
         {
             var sheets = ItemDataXlsxReader.Read(file);
-            var bindings = Bindings(sheets);
+            var bindings = ReadCodeBindings();
             var selected = new HashSet<string>(selectedSheets ?? Array.Empty<string>(), StringComparer.OrdinalIgnoreCase);
             if (selected.Count == 0) throw new InvalidDataException("적용할 시트를 선택하세요.");
             foreach (string name in selected)
                 if (!bindings.Any(binding => string.Equals(binding.Sheet, name, StringComparison.OrdinalIgnoreCase)))
-                    plan.Errors.Add("Code에 등록되지 않은 시트: " + name);
+                    plan.Errors.Add("Code.xlsx에 등록되지 않은 시트: " + name);
             foreach (var binding in bindings.Where(binding => selected.Contains(binding.Sheet)))
             {
                 try { ReadSheet(plan, binding, sheets); }
