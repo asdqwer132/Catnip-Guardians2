@@ -68,7 +68,7 @@ public sealed class MergeGeneralManager : MonoBehaviour
         if (session == null) return;
         if (initialized && appliedSession == session && appliedRevision == session.GameDataRevision && appliedRound == session.RoundRevision && appliedDebugMode == debugMode) return;
         UpgradeToGeneralData data = null;
-        if (!debugMode) session.TryReadGeneralData(out data);
+        if (!debugMode) session.TryReadItemRound(out data);
         appliedSession = session;
         appliedRevision = session.GameDataRevision;
         appliedRound = session.RoundRevision;
@@ -79,7 +79,8 @@ public sealed class MergeGeneralManager : MonoBehaviour
         roundData = data?.Copy();
         ResolveEquippedProfiles();
         ApplyRoundStock();
-        int index = UsesLoadout ? equippedProfileIndices[0] : SelectedIndex >= 0 ? SelectedIndex : StartingSeriesIndex;
+        int index = UsesLoadout ? (equippedProfileIndices.Count > 0 ? equippedProfileIndices[0] : StartingSeriesIndex) :
+            SelectedIndex >= 0 ? SelectedIndex : StartingSeriesIndex;
         if (boxes != null && boxes.seriesDropdown != null) boxes.seriesDropdown.interactable = !UsesLoadout;
         ActivateBox(index, ResolveLevel(index), true);
     }
@@ -87,7 +88,7 @@ public sealed class MergeGeneralManager : MonoBehaviour
     public void RestartRound()
     {
         var data = roundData;
-        if (session != null && !debugMode) session.TryReadGeneralData(out data);
+        if (session != null && !debugMode) session.TryReadItemRound(out data);
         InitializeRound(data);
     }
     public void SetDebugMode(bool value)
@@ -126,7 +127,6 @@ public sealed class MergeGeneralManager : MonoBehaviour
             equippedProfileIndices.Add(index);
             if (equippedProfileIndices.Count == 2) break;
         }
-        if (equippedProfileIndices.Count == 0) equippedProfileIndices.Add(0);
         foreach (int index in equippedProfileIndices)
             equippedModules.Add(boxes?.GetProfile(index)?.gimmick);
     }
@@ -159,22 +159,11 @@ public sealed class MergeGeneralManager : MonoBehaviour
             var stockItems = roundData?.materialItems;
             if (stockItems != null)
             {
-                if (UsesLoadout)
+                foreach (var stock in stockItems)
                 {
-                    foreach (string id in roundData.equipment.itemIds)
-                    {
-                        if (materials.Count >= limit) break;
-                        if (string.IsNullOrEmpty(id)) continue;
-                        var stock = stockItems.Find(value => value?.itemData != null && value.itemData.dataId == id && value.amount > 0);
-                        AddMaterial(stock);
-                    }
+                    if (materials.Count >= limit) break;
+                    if (UsesLoadout || stock?.itemData?.series == board.itemSeries) AddMaterial(stock);
                 }
-                else
-                    foreach (var stock in stockItems)
-                    {
-                        if (materials.Count >= limit) break;
-                        if (stock?.itemData != null && stock.itemData.series == board.itemSeries) AddMaterial(stock);
-                    }
             }
 
             void AddMaterial(InventoryItem stock)
@@ -234,7 +223,7 @@ public sealed class MergeGeneralManager : MonoBehaviour
         gimicManager?.StopGimic();
         boxes.ShowBox(index, level, restart);
         SelectedIndex = index;
-        if (UsesLoadout) gimicManager?.InitializeModules(boxes.SelectedBoard, equippedModules);
+        if (!debugMode) gimicManager?.InitializeModules(boxes.SelectedBoard, equippedModules);
         else gimicManager?.InitializeModule(boxes.SelectedBoard, boxes.SelectedProfile.gimmick);
         return true;
     }

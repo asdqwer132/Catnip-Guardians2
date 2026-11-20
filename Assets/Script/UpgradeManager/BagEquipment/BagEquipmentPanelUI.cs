@@ -9,8 +9,7 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
     public BagEquipmentSlotUI[] itemSlots = Array.Empty<BagEquipmentSlotUI>();
     public BagEquipmentSlotUI[] chestSlots = Array.Empty<BagEquipmentSlotUI>();
     public BagEquipmentSlotUI[] chestChoices = Array.Empty<BagEquipmentSlotUI>();
-    public ItemBoxData[] chestData = Array.Empty<ItemBoxData>();
-    public MergeRecipeBook[] materialRecipeBooks = Array.Empty<MergeRecipeBook>();
+    public MergeBoxEquipmentData[] chestData = Array.Empty<MergeBoxEquipmentData>();
     public BasicTooltipUI equippedDetails;
     public BasicTooltipUI candidateDetails;
     public GameObject comparison;
@@ -47,7 +46,7 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
             }
             for (int i = 0; i < chestChoices.Length; i++)
             {
-                int number = i + 1;
+                int number = chestData.Length > i && chestData[i] != null ? chestData[i].boxIndex : 0;
                 chestChoices[i]?.Bind(() => SelectChest(number));
             }
         }
@@ -122,7 +121,7 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
 
     public void SelectChest(int number)
     {
-        if (!Unlocked(number)) return;
+        if (FindChest(number) == null || !Unlocked(number)) return;
         var data = EquipmentSave.Current;
         int existing = data.equippedChests.IndexOf(number);
         if (existing >= 0 && existing < chestSlots.Length) { PickSlot(SlotType.Chest, existing); return; }
@@ -180,7 +179,7 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
     {
         var data = EquipmentSave.Current.Copy();
         data.itemIds.Clear();
-        data.equippedChests = new List<int> { 1, 0 };
+        data.equippedChests.Clear();
         Apply(data);
     }
 
@@ -204,7 +203,11 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
         for (int i = 0; i < chestSlots.Length; i++)
             chestSlots[i]?.Show(FindChest(ChestNumber(data, i)), selectedType == SlotType.Chest && selectedSlot == i);
         for (int i = 0; i < chestChoices.Length; i++)
-            chestChoices[i]?.Show(FindChest(i + 1), chestCandidate == i + 1, !Unlocked(i + 1));
+        {
+            var choice = i < chestData.Length ? chestData[i] : null;
+            int number = choice != null ? choice.boxIndex : 0;
+            chestChoices[i]?.Show(choice, chestCandidate != 0 && chestCandidate == number, !Unlocked(number));
+        }
 
         DefaultData equipped = selectedType == SlotType.Material ? FindItem(ItemId(data, selectedSlot)) :
             selectedType == SlotType.Chest ? FindChest(ChestNumber(data, selectedSlot)) : null;
@@ -226,9 +229,13 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
     public bool IsMaterial(ItemData item)
     {
         if (item == null || string.IsNullOrWhiteSpace(item.dataId)) return false;
-        foreach (var book in materialRecipeBooks)
-            if (book != null && MergegameManager.TryGetPrefab(book.GetDefinition(item), out _)) return true;
-        return false;
+        if (item.dataType == DataType.ItemMaterial) return true;
+
+        // Existing material assets can still be tagged Item in the data workbook.
+        string prefix = item.series + "Material";
+        return item.dataType == DataType.Item && MergeBoxLevelSnapshot.IsBoxSeries(item.series) &&
+            item.dataId.StartsWith(prefix, StringComparison.Ordinal) &&
+            int.TryParse(item.dataId.Substring(prefix.Length), out int number) && number > 0;
     }
 
     private bool OwnsMaterial(ItemData item)
@@ -252,7 +259,8 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
         return null;
     }
 
-    private ItemBoxData FindChest(int number) => number > 0 && number <= chestData.Length ? chestData[number - 1] : null;
+    private MergeBoxEquipmentData FindChest(int number)
+        => Array.Find(chestData, chest => chest != null && chest.boxIndex == number);
     private int FirstEmptyMaterial(EquipmentData data)
     {
         for (int i = 0; i < itemSlots.Length; i++)

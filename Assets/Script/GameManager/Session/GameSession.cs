@@ -145,6 +145,22 @@ public class GameSession : MonoBehaviour
         return data != null;
     }
 
+    public bool TryReadItemRound(out UpgradeToGeneralData data)
+    {
+        if (!TryReadGeneralData(out data)) return false;
+        if (data.equipment == null) return true;
+
+        var inventory = data.materialItems;
+        data.materialItems = new List<InventoryItem>();
+        foreach (string id in data.equipment.itemIds)
+        {
+            if (string.IsNullOrEmpty(id)) continue;
+            var item = inventory.Find(entry => entry.itemData.dataId == id);
+            if (item != null) data.materialItems.Add(item);
+        }
+        return true;
+    }
+
     public void UpdateEquipment(EquipmentData equipment)
     {
         if (!hasGeneralData || generalData == null) return;

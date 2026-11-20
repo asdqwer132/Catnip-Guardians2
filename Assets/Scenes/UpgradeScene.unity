@@ -26993,23 +26993,14 @@ MonoBehaviour:
   - {fileID: 2037613940}
   - {fileID: 2037613936}
   chestData:
-  - {fileID: 11400000, guid: 50047ccd586f2374f83c3dfe20df8c15, type: 2}
-  - {fileID: 11400000, guid: bd3e79ae55ec50f4280c559e9e7ae697, type: 2}
-  - {fileID: 11400000, guid: 9d2f10a2d3f25724988b86a44c6ed784, type: 2}
-  - {fileID: 11400000, guid: a05260174cf29454097d1cd1d78dbd50, type: 2}
-  - {fileID: 11400000, guid: e5f302fb58a035f478a889ff5a44ed96, type: 2}
-  - {fileID: 11400000, guid: 4fa585bbf7e3ab94d8db13feaac03217, type: 2}
-  - {fileID: 11400000, guid: eaa0dc9fd06912a45b445878a5d83f71, type: 2}
-  - {fileID: 11400000, guid: ba8117b3e56ce184a94f18e1c44a6036, type: 2}
-  materialRecipeBooks:
-  - {fileID: 11400000, guid: a5c3066ecfdbcc54eaa1259d5dc11f55, type: 2}
-  - {fileID: 11400000, guid: e1d83e2e79722802688156dc0c54c57f, type: 2}
-  - {fileID: 11400000, guid: eda3e5bee6ddb2678959d305b1a3d3dd, type: 2}
-  - {fileID: 11400000, guid: 6f5af23cf213f32979654daef6a75d8c, type: 2}
-  - {fileID: 11400000, guid: d666d65ac4ea6e88eb6b70bc6d54ac41, type: 2}
-  - {fileID: 11400000, guid: c4fc5f29668aa0c5085888913975ae97, type: 2}
-  - {fileID: 11400000, guid: 0ac28a94550aa8bfaa417f006effe236, type: 2}
-  - {fileID: 11400000, guid: e12606425bca22c47b29206c834421d8, type: 2}
+  - {fileID: 11400000, guid: 8123e8778d924876a1bf62144c35d7fe, type: 2}
+  - {fileID: 11400000, guid: 470e875d0eab4905811c8133518067ec, type: 2}
+  - {fileID: 11400000, guid: a2a0f92c40414ad58bd496a4c4730c0a, type: 2}
+  - {fileID: 11400000, guid: b4691a9a8b9644c0bb36c9fbd0c64864, type: 2}
+  - {fileID: 11400000, guid: c2a923207d6d431cb2a78e1501b3f759, type: 2}
+  - {fileID: 11400000, guid: e36bab1b5b0240d8b91e5912f4441702, type: 2}
+  - {fileID: 11400000, guid: 2a58f9eacf134960b9dce0a524b86c4b, type: 2}
+  - {fileID: 11400000, guid: e4c57a9563c54b3f8aa6e7e383c67477, type: 2}
   equippedDetails: {fileID: 624134268}
   candidateDetails: {fileID: 2060410848}
   comparison: {fileID: 1102961241}
@@ -45399,13 +45390,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be9d051359c84b2ea72441dbd549210b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BagEquipmentInventoryUI
-  categoryMask: 0000000001000000ffffffff020000000300000004000000050000000600000008000000
+  categoryMask:
   seriesMask: 00000000ffffffff
   gradeMask: 
   slotParent: {fileID: 2037613937}
   slotPrefab: {fileID: 7991120730881528602, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
   showItemCount: 0
-  tooltipUI: {fileID: 0}
+  tooltipUI: {fileID: 1504305395}
   showTooltipOnSelection: 0
   selectionGroup: {fileID: 2037613939}
   materialSource: {fileID: 0}

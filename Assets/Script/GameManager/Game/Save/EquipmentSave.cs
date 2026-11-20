@@ -7,13 +7,13 @@ using UnityEngine;
 public sealed class EquipmentData
 {
     public List<string> itemIds = new List<string>();
-    public List<int> equippedChests = new List<int> { 1, 0 };
+    public List<int> equippedChests = new List<int>();
     public List<SavedPotionSlot> potions = new List<SavedPotionSlot>();
 
     public EquipmentData Copy() => new EquipmentData
     {
         itemIds = itemIds != null ? new List<string>(itemIds) : new List<string>(),
-        equippedChests = equippedChests != null ? new List<int>(equippedChests) : new List<int> { 1, 0 },
+        equippedChests = equippedChests != null ? new List<int>(equippedChests) : new List<int>(),
         potions = potions != null ? potions.ConvertAll(slot => slot?.Copy()) : new List<SavedPotionSlot>()
     };
 }

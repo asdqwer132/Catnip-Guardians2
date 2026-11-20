@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0ec2e8b33b74a1a8091c28369d8de27, type: 3}
+  m_Name: 01.Weapon
+  m_EditorClassIdentifier: Assembly-CSharp::MergeBoxEquipmentData
+  icon: {fileID: 2118951385950709744, guid: fe6d5036de28f3e42ac02bb58bc7ba38, type: 3}
+  data:
+  - language: 0
+    dataName: Weapon Box
+  - language: 1
+    dataName: 무기 상자
+  dataId: "1"
+  dataType: 8
+  grade: -1
+  series: 1
+  requireUnlock: 0
+  boxIndex: 1
