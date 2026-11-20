@@ -6598,6 +6598,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
+  - component: {fileID: 990760000001}
   - component: {fileID: 1122774686}
   - component: {fileID: 990400000003}
   - component: {fileID: 990200000001}
@@ -14957,6 +14958,25 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 10ed06c8720e447789f3715432e00c5e, type: 3}
+--- !u!114 &990760000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1122774685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ee36358a8ce40dcbe2caaf6c5929135, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MergeWallUIFitter
+  box: {fileID: 381265478}
+  worldCamera: {fileID: 1889333136}
+  frame: {fileID: 604680137}
+  leftWall: {fileID: 0}
+  rightWall: {fileID: 0}
+  bottomWall: {fileID: 0}
+  edgeThickness: 0.035
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
