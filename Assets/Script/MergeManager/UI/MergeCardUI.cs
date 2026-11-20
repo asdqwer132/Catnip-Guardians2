@@ -10,7 +10,6 @@ public sealed class MergeCardUI : MonoBehaviour
     public Image dragCooldown;
     public GameObject materialPanel;
     public RectTransform slotParent;
-    public MergeUI slotPrefab;
     public MergeMaterialSelectionUI materialHelpers;
     [Min(1)] public int maximumMaterials = 12;
 
@@ -18,6 +17,24 @@ public sealed class MergeCardUI : MonoBehaviour
     private readonly List<MergeItemMaterial> boundMaterials = new List<MergeItemMaterial>();
     private readonly Dictionary<MergegameManager, HashSet<ItemData>> selections = new Dictionary<MergegameManager, HashSet<ItemData>>();
     private MergegameManager boundBoard;
+    private bool slotsCached;
+
+    public int MaterialCapacity
+    {
+        get
+        {
+            CacheSlots();
+            return Mathf.Min(maximumMaterials, slots.Count);
+        }
+    }
+
+    private void CacheSlots()
+    {
+        if (slotsCached || slotParent == null) return;
+        slotsCached = true;
+        foreach (Transform child in slotParent)
+            if (child.TryGetComponent<MergeUI>(out var slot)) slots.Add(slot);
+    }
 
     private void OnEnable()
     {
@@ -44,7 +61,7 @@ public sealed class MergeCardUI : MonoBehaviour
 
     public void Bind(MergegameManager board)
     {
-        if (slotPrefab == null || slotParent == null) return;
+        int capacity = MaterialCapacity;
         if (boundBoard != null)
         {
             var selected = selections[boundBoard];
@@ -60,15 +77,18 @@ public sealed class MergeCardUI : MonoBehaviour
         boundMaterials.Clear();
         boundBoard = board;
         if (materialHelpers != null) materialHelpers.board = board;
-        if (board == null) return;
+        if (board == null)
+        {
+            HideUnusedSlots();
+            return;
+        }
         if (!selections.TryGetValue(board, out var remembered))
             selections.Add(board, remembered = new HashSet<ItemData>());
         foreach (var material in board.mergeMaterials)
         {
             var item = material?.mergeItem?.item;
-            if (item == null || boundMaterials.Count >= maximumMaterials) continue;
+            if (item == null || boundMaterials.Count >= capacity) continue;
             int index = boundMaterials.Count;
-            if (slots.Count <= index) slots.Add(Instantiate(slotPrefab, slotParent));
             var slot = slots[index];
             material.mergeUI = slot;
             boundMaterials.Add(material);
@@ -76,7 +96,13 @@ public sealed class MergeCardUI : MonoBehaviour
             if (slot.toggle != null) slot.toggle.SetIsOnWithoutNotify(material.count > 0 && remembered.Contains(item));
             slot.gameObject.SetActive(true);
         }
-        for (int i = boundMaterials.Count; i < slots.Count; i++) slots[i].gameObject.SetActive(false);
+        HideUnusedSlots();
         board.RefreshUI();
+    }
+
+    private void HideUnusedSlots()
+    {
+        for (int i = boundMaterials.Count; i < slots.Count; i++)
+            slots[i].gameObject.SetActive(false);
     }
 }

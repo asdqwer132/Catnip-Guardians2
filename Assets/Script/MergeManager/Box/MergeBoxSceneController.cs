@@ -82,7 +82,6 @@ public sealed class MergeBoxSceneController : MonoBehaviour
                 SelectedBoard.SetMaterialUIEnabled(false);
                 SelectedBoard.enabled = false;
             }
-            if (SelectedProfile?.gimmick != null) SelectedProfile.gimmick.gameObject.SetActive(false);
         }
         else if (restart)
             profile.board.ClearItems();
@@ -92,7 +91,6 @@ public sealed class MergeBoxSceneController : MonoBehaviour
         profile.board.dropZone = sharedBox.dropZone;
         profile.board.spawnPoint = sharedBox.dropZone.spawnPoint;
         profile.board.enabled = true;
-        if (profile.gimmick != null) profile.gimmick.gameObject.SetActive(true);
         card?.Bind(profile.board);
         profile.board.SetMaterialUIEnabled(true);
         if (selection != null) selection.SetBoard(profile.board);

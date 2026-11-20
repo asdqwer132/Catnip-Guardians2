@@ -33,6 +33,11 @@ public class MergeGimicManager : MonoBehaviour
                 if (gimmick == null || modules.Contains(gimmick)) continue;
                 gimmick.gameObject.SetActive(true);
                 gimmick.Initialize(board);
+                if (!gimmick.Running)
+                {
+                    gimmick.gameObject.SetActive(false);
+                    continue;
+                }
                 modules.Add(gimmick);
                 if (modules.Count == 2) break;
             }

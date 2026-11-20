@@ -18,6 +18,9 @@ public sealed class MergeGeneralManager : MonoBehaviour
     [Tooltip("켜면 가방 수량을 무시하고 각 머지 매니저에 작성된 Count로 라운드를 시작합니다.")]
     public bool debugMode;
 
+    [Header("현재 활성 기믹")]
+    [SerializeField, ReadOnly] private List<MergeBoxGimic> activeGimmicks = new List<MergeBoxGimic>(2);
+
     public int SelectedIndex { get; private set; } = -1;
     public int SelectedLevel => boxes != null && SelectedIndex >= 0 ? boxes.SelectedLevel : startingLevel;
     public int StartingSeriesIndex => Math.Max(1, startingSeriesIndex) - 1;
@@ -134,7 +137,7 @@ public sealed class MergeGeneralManager : MonoBehaviour
     private void ApplyRoundStock()
     {
         CaptureConfiguredMaterials();
-        int limit = boxes != null && boxes.card != null ? Mathf.Max(1, boxes.card.maximumMaterials) : int.MaxValue;
+        int limit = boxes != null && boxes.card != null ? boxes.card.MaterialCapacity : int.MaxValue;
         foreach (var entry in configuredMaterials)
         {
             var board = entry.Key;
@@ -225,6 +228,12 @@ public sealed class MergeGeneralManager : MonoBehaviour
         SelectedIndex = index;
         if (!debugMode) gimicManager?.InitializeModules(boxes.SelectedBoard, equippedModules);
         else gimicManager?.InitializeModule(boxes.SelectedBoard, boxes.SelectedProfile.gimmick);
+
+        activeGimmicks.Clear();
+        if (gimicManager != null)
+            foreach (var gimmick in gimicManager.ActiveModules)
+                if (gimmick != null && gimmick.Running && gimmick.isActiveAndEnabled)
+                    activeGimmicks.Add(gimmick);
         return true;
     }
 
@@ -261,5 +270,6 @@ public sealed class MergeGeneralManager : MonoBehaviour
         UnbindSession();
         session = null;
         gimicManager?.StopGimic();
+        activeGimmicks.Clear();
     }
 }
