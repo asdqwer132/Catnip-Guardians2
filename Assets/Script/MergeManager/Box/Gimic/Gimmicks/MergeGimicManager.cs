@@ -17,8 +17,13 @@ public class MergeGimicManager : MonoBehaviour
 
     public void InitializeGimic(MergegameManager board, MergeBoxBindings box)
     {
+        InitializeModule(board, box != null ? box.GetComponent<MergeBoxGimic>() : null);
+    }
+
+    public void InitializeModule(MergegameManager board, MergeBoxGimic gimmick)
+    {
         StopGimic();
-        currentBox = box != null ? box.GetComponent<MergeBoxGimic>() : null;
+        currentBox = gimmick;
         if (currentBox != null && board != null) currentBox.Initialize(board);
         SetSkills();
     }
@@ -26,6 +31,7 @@ public class MergeGimicManager : MonoBehaviour
     public void StopGimic()
     {
         currentBox?.GimicStop();
+        currentBox = null;
         ClearSkills();
     }
     private void OnDisable() => StopGimic();

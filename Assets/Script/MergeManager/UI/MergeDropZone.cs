@@ -56,6 +56,12 @@ public sealed class MergeDropZone : MonoBehaviour
         return true;
     }
 
+    internal void ResetDeadlineContacts()
+    {
+        deadlines.Clear();
+        touchingDeadline.Clear();
+    }
+
     public void TickDeadline(MergegameManager board)
     {
         if (!blockAboveLine || board == null || !TryGetLine(out var start, out var end)) { deadlines.Clear(); return; }

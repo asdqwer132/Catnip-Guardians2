@@ -3,69 +3,137 @@ using TMPro;
 using UnityEngine;
 
 [Serializable]
-public sealed class MergeBoxEntry
+public sealed class MergeBoxRoundProfile
 {
-    public Transform boxRoot;
     public MergegameManager board;
-    public MergeBoxLevelManager levelManager;
+    public MergeBoxGimic gimmick;
 }
 
-// 드롭다운 항목 순서와 boxes 순서는 Inspector에서 연결합니다. 항목 UI를 생성하지 않습니다.
+[Serializable]
+public sealed class MergeBoxDeadlineLevel
+{
+    [Min(1)] public int minimumLevel = 1;
+    [Tooltip("공용 상자 기준의 투입 제한선 Y 좌표")]
+    public float deadlineY;
+}
+
 [DefaultExecutionOrder(-100)]
 public sealed class MergeBoxSceneController : MonoBehaviour
 {
     public MergeGeneralManager gameManager;
-    public Transform mainCamera;
-    public Vector3 root;
-    public ObjectAutoPlacer autoPlacer;
     public TMP_Dropdown seriesDropdown;
     public MergeItemSelection selection;
-    public MergeSeriesSelector[] boxes = Array.Empty<MergeSeriesSelector>();
-    [ReadOnly]
-    [SerializeField] private int selectedIndex;
-    public int SelectedIndex => selectedIndex;
-    public MergegameManager SelectedBoard => selectedIndex >= 0 && selectedIndex < boxes.Length ? boxes[selectedIndex]?.board : null;
+    public MergeBoxBindings sharedBox;
+    [Tooltip("상자 번호 순서대로 입력합니다. 첫 항목이 1번입니다.")]
+    public MergeBoxRoundProfile[] profiles = Array.Empty<MergeBoxRoundProfile>();
+    public MergeBoxDeadlineLevel[] deadlineLevels = Array.Empty<MergeBoxDeadlineLevel>();
 
-    public MergeBoxLevelManager SelectedBoxManager => selectedIndex >= 0 && selectedIndex < boxes.Length ? boxes[selectedIndex]?.levelManager : null;
+    public int SelectedIndex { get; private set; } = -1;
+    public int SelectedLevel { get; private set; } = 1;
+    public MergeBoxRoundProfile SelectedProfile => GetProfile(SelectedIndex);
+    public MergegameManager SelectedBoard => SelectedProfile?.board;
+    private float defaultDeadlineY;
+
+    public MergeBoxRoundProfile GetProfile(int index)
+        => index >= 0 && index < profiles.Length ? profiles[index] : null;
+
+    private void Awake()
+    {
+        if (sharedBox != null && sharedBox.dropZone != null && sharedBox.dropZone.lineSprite != null)
+            defaultDeadlineY = sharedBox.transform.InverseTransformPoint(sharedBox.dropZone.lineSprite.transform.position).y;
+
+        foreach (var profile in profiles)
+        {
+            if (profile?.board != null)
+            {
+                if (profile.board.TryGetComponent<MergeItemSelection>(out var settings) && settings != selection)
+                    settings.enabled = false;
+                profile.board.SetMaterialUIEnabled(false);
+                profile.board.enabled = false;
+            }
+            if (profile?.gimmick != null) profile.gimmick.gameObject.SetActive(false);
+        }
+    }
 
     private void OnEnable()
     {
-        foreach (var entry in boxes)
-        {
-            if (entry?.board == null || entry.boxRoot == null) continue;
-            var settings=entry.board.GetComponent<MergeItemSelection>();
-            if(settings!=null && settings!=selection) settings.enabled=false;
-            if (entry.levelManager == null) entry.levelManager = entry.boxRoot.GetComponent<MergeBoxLevelManager>();
-            if (entry.levelManager != null)
-            {
-                entry.levelManager.BindBoard(entry.board);
-                entry.levelManager.BoxChanged += OnBoxChanged;
-            }
-            entry.board.SetMaterialUIEnabled(false);
-        }
         if (seriesDropdown != null) seriesDropdown.onValueChanged.AddListener(SelectBox);
     }
 
     private void OnDisable()
     {
         if (seriesDropdown != null) seriesDropdown.onValueChanged.RemoveListener(SelectBox);
-        foreach (var entry in boxes)
-            if (entry?.levelManager != null) entry.levelManager.BoxChanged -= OnBoxChanged;
-        selection?.CancelSelection();
+        CancelSelection();
     }
 
-    private void OnBoxChanged(MergeBoxLevelManager value)
+    public bool CanShowBox(int index)
+        => GetProfile(index)?.board != null && sharedBox != null && sharedBox.dropZone != null &&
+            sharedBox.dropZone.spawnPoint != null && sharedBox.dropZone.lineSprite != null;
+
+    public void ShowBox(int index, int level, bool restart)
     {
-        if (value != SelectedBoxManager) return;
-        selection?.CancelSelection();
-        if (selection != null) selection.ActiveSpawnPointDragger?.EndDrag();
+        var profile = GetProfile(index);
+        CancelSelection();
+        if (SelectedProfile != profile)
+        {
+            if (SelectedBoard != null)
+            {
+                SelectedBoard.SetMaterialUIEnabled(false);
+                SelectedBoard.enabled = false;
+            }
+            if (SelectedProfile?.gimmick != null) SelectedProfile.gimmick.gameObject.SetActive(false);
+        }
+        else if (restart)
+            profile.board.ClearItems();
+
+        SelectedIndex = index;
+        SetDeadlineLevel(level);
+        profile.board.dropZone = sharedBox.dropZone;
+        profile.board.spawnPoint = sharedBox.dropZone.spawnPoint;
+        profile.board.enabled = true;
+        if (profile.gimmick != null) profile.gimmick.gameObject.SetActive(true);
+        profile.board.SetMaterialUIEnabled(true);
+        if (selection != null) selection.SetBoard(profile.board);
+        if (seriesDropdown != null) seriesDropdown.SetValueWithoutNotify(index);
     }
 
-    public MergeBoxLevelManager GetBoxManager(ItemSeries series)
+    internal void SetDeadlineLevel(int level)
     {
-        foreach (var entry in boxes)
-            if (entry?.board != null && entry.board.itemSeries == series) return entry.levelManager;
-        return null;
+        SelectedLevel = Mathf.Max(1, level);
+        var line = sharedBox.dropZone.lineSprite.transform;
+        Vector3 position = sharedBox.transform.InverseTransformPoint(line.position);
+        position.y = ResolveDeadline(SelectedLevel, defaultDeadlineY);
+        line.position = sharedBox.transform.TransformPoint(position);
+        sharedBox.dropZone.ResetDeadlineContacts();
+        sharedBox.dropZone.RefreshLine();
+    }
+
+    private float ResolveDeadline(int level, float fallback)
+    {
+        int best = 0;
+        foreach (var entry in deadlineLevels)
+        {
+            if (entry == null || entry.minimumLevel <= best || entry.minimumLevel > level) continue;
+            best = entry.minimumLevel;
+            fallback = entry.deadlineY;
+        }
+        return fallback;
+    }
+
+    public int NextLevel(int level)
+    {
+        int next = int.MaxValue;
+        foreach (var entry in deadlineLevels)
+            if (entry != null && entry.minimumLevel > level)
+                next = Math.Min(next, entry.minimumLevel);
+        return next;
+    }
+
+    private void CancelSelection()
+    {
+        if (selection == null) return;
+        selection.CancelSelection();
+        selection.ActiveSpawnPointDragger?.EndDrag();
     }
 
     public bool SetBoxLevel(ItemSeries series, int level) => gameManager != null && gameManager.SetBoxLevel(series, level);
@@ -74,28 +142,9 @@ public sealed class MergeBoxSceneController : MonoBehaviour
     public void UpgradeCurrentBox() => gameManager?.UpgradeCurrentBox();
     public void SelectBox(int index) => gameManager?.SetBox(index);
 
-    public void ShowBox(int index)
-    {
-        if (index < 0 || index >= boxes.Length || boxes[index]?.board == null || boxes[index].boxRoot == null) return;
-        if (SelectedBoard != null) SelectedBoard.SetMaterialUIEnabled(false);
-        selection?.CancelSelection();
-        if (selection != null) selection.ActiveSpawnPointDragger?.EndDrag();
-        selectedIndex = index;
-        var entry = boxes[index];
-        entry.board.SetMaterialUIEnabled(true);
-        if (mainCamera != null && autoPlacer != null)
-        {
-            Vector3 pos = root + autoPlacer.offset * index;
-            pos.z = mainCamera.transform.position.z;
-            mainCamera.transform.position = pos;
-        }
-        if (selection != null) selection.SetBoard(entry.board);
-        if (seriesDropdown != null) seriesDropdown.SetValueWithoutNotify(index);
-    }
-
     public void SetFeeding(bool value)
     {
-        foreach (var entry in boxes) if (entry?.board != null) entry.board.SetFeeding(value);
+        foreach (var profile in profiles) if (profile?.board != null) profile.board.SetFeeding(value);
     }
 
     public void SetCurrentFeeding(bool value) => SelectedBoard?.SetFeeding(value);

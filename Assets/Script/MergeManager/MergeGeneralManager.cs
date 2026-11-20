@@ -19,7 +19,7 @@ public sealed class MergeGeneralManager : MonoBehaviour
     public bool debugMode;
 
     public int SelectedIndex { get; private set; } = -1;
-    public int SelectedLevel => boxes != null && boxes.SelectedBoxManager != null ? boxes.SelectedBoxManager.CurrentLevel : startingLevel;
+    public int SelectedLevel => boxes != null && SelectedIndex >= 0 ? boxes.SelectedLevel : startingLevel;
     public int StartingSeriesIndex => Math.Max(1, startingSeriesIndex) - 1;
     private readonly Dictionary<MergegameManager, int[]> configuredCounts = new Dictionary<MergegameManager, int[]>();
     private GameSession session, appliedSession;
@@ -36,8 +36,8 @@ public sealed class MergeGeneralManager : MonoBehaviour
     {
         GameSession.InstanceChanged += BindSession;
         BindSession();
-        if (initialized && gimicManager != null && gimicManager.CurrentGimic != null && !gimicManager.CurrentGimic.Running)
-            ActivateBox(SelectedIndex, SelectedLevel);
+        if (initialized && SelectedIndex >= 0 && gimicManager != null && !(gimicManager.CurrentGimic?.Running ?? false))
+            ActivateBox(SelectedIndex, SelectedLevel, true);
     }
     private void Start()
     {
@@ -76,7 +76,7 @@ public sealed class MergeGeneralManager : MonoBehaviour
         roundData = data?.Copy();
         ApplyRoundStock();
         int index = SelectedIndex >= 0 ? SelectedIndex : StartingSeriesIndex;
-        ActivateBox(index, ResolveLevel(index));
+        ActivateBox(index, ResolveLevel(index), true);
     }
     [ContextMenu("Restart Item Round")]
     public void RestartRound()
@@ -93,8 +93,8 @@ public sealed class MergeGeneralManager : MonoBehaviour
     }
     private void CaptureConfiguredCounts()
     {
-        if (boxes == null || boxes.boxes == null) return;
-        foreach (var entry in boxes.boxes)
+        if (boxes == null) return;
+        foreach (var entry in boxes.profiles)
         {
             var board = entry != null ? entry.board : null;
             if (board == null || configuredCounts.ContainsKey(board)) continue;
@@ -117,56 +117,57 @@ public sealed class MergeGeneralManager : MonoBehaviour
     }
     public bool StartRound(int seriesIndex, int level)
     {
+        if (boxes == null || !boxes.CanShowBox(seriesIndex)) return false;
         ApplyRoundStock();
-        return ActivateBox(seriesIndex, level);
+        return ActivateBox(seriesIndex, level, true);
     }
+
+    // Public round input uses the displayed, one-based box number.
+    public bool StartBoxRound(int boxNumber, int level)
+        => boxNumber > 0 && StartRound(boxNumber - 1, level);
+
     private int ResolveLevel(int index)
     {
         int level = Math.Max(1, startingLevel);
-        if (debugMode || !useSessionLevels || roundData?.boxLevels == null || boxes == null || index < 0 || index >= boxes.boxes.Length) return level;
-        var board = boxes.boxes[index]?.board;
-        if (board == null) return level;
+        var board = boxes != null ? boxes.GetProfile(index)?.board : null;
+        if (board == null || debugMode || !useSessionLevels || roundData?.boxLevels == null) return level;
         level = 1;
         foreach (var snapshot in roundData.boxLevels)
             if (snapshot != null && snapshot.series == board.itemSeries) level = Math.Max(level, snapshot.level);
         return level;
     }
-    private bool ActivateBox(int index, int level)
+
+    private bool ActivateBox(int index, int level, bool restart = false)
     {
-        if (boxes == null || boxes.boxes == null || index < 0 || index >= boxes.boxes.Length) return false;
-        var entry = boxes.boxes[index];
-        if (entry == null || entry.board == null || entry.boxRoot == null || entry.levelManager == null) return false;
-        if (entry.levelManager.Board != entry.board) entry.levelManager.BindBoard(entry.board);
-        if (!entry.levelManager.TrySetLevel(level)) return false;
-        gimicManager?.StopGimic();
-        SelectedIndex = index;
-        foreach (var other in boxes.boxes)
+        if (boxes == null || !boxes.CanShowBox(index)) return false;
+        if (!restart && SelectedIndex == index)
         {
-            if (other == null) continue;
-            bool selected = other == entry;
-            if (other.board != null) other.board.enabled = selected;
-            if (other.boxRoot != null) other.boxRoot.gameObject.SetActive(selected);
+            if (SelectedLevel != Math.Max(1, level)) boxes.SetDeadlineLevel(level);
+            return true;
         }
-        boxes.ShowBox(index);
-        gimicManager?.InitializeGimic(entry.board, entry.levelManager.CurrentBox);
+
+        gimicManager?.StopGimic();
+        boxes.ShowBox(index, level, restart);
+        SelectedIndex = index;
+        gimicManager?.InitializeModule(boxes.SelectedBoard, boxes.SelectedProfile.gimmick);
         return true;
     }
+
     public void SetBox(int index) => ActivateBox(index, ResolveLevel(index));
     public void SetCurrentBoxLevel(int level) { if (SelectedIndex >= 0) ActivateBox(SelectedIndex, level); }
+
     public bool SetBoxLevel(ItemSeries series, int level)
     {
         if (boxes == null) return false;
-        for (int i = 0; i < boxes.boxes.Length; i++)
-            if (boxes.boxes[i]?.board != null && boxes.boxes[i].board.itemSeries == series) return ActivateBox(i, level);
+        for (int i = 0; i < boxes.profiles.Length; i++)
+            if (boxes.GetProfile(i)?.board != null && boxes.GetProfile(i).board.itemSeries == series)
+                return ActivateBox(i, level);
         return false;
     }
+
     public bool UpgradeCurrentBox()
     {
-        var manager = boxes != null ? boxes.SelectedBoxManager : null;
-        if (manager == null) return false;
-        int next = int.MaxValue;
-        foreach (var entry in manager.levels)
-            if (entry?.box != null && entry.minimumLevel > manager.CurrentLevel) next = Math.Min(next, entry.minimumLevel);
+        int next = boxes != null ? boxes.NextLevel(SelectedLevel) : int.MaxValue;
         return next != int.MaxValue && ActivateBox(SelectedIndex, next);
     }
     private void UnbindSession()
