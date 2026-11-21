@@ -11,8 +11,14 @@ public sealed class MergeWallUIFitter : MonoBehaviour
     public RectTransform topWall;
     public BoxCollider2D topCollider;
     public RectTransform inletAnchor;
-    [Tooltip("배경 스프라이트가 상자 UI 프레임 밖으로 나가지 않도록 맞춥니다.")]
-    public bool fitBackgroundToFrame = true;
+    public enum BackgroundMode { Fill, Mask }
+
+    [Tooltip("Fill은 영역에 맞춰 크기를 조정합니다. Mask는 현재 크기와 위치를 유지하고 영역 밖을 가립니다.")]
+    public BackgroundMode backgroundMode;
+    private SpriteMask backgroundMask;
+    private Sprite maskSprite;
+    private SpriteRenderer maskedRenderer;
+    private SpriteMaskInteraction previousMaskInteraction;
     [SerializeField] private bool showFitGizmos = true;
     [Range(.005f, .2f)] public float leftThickness = .035f;
     [Range(.005f, .2f)] public float rightThickness = .035f;
@@ -20,7 +26,28 @@ public sealed class MergeWallUIFitter : MonoBehaviour
     [Range(.005f, .2f)] public float topThickness = .035f;
 
     private void OnEnable() => Canvas.willRenderCanvases += FitWalls;
-    private void OnDisable() => Canvas.willRenderCanvases -= FitWalls;
+    private void OnDisable()
+    {
+        Canvas.willRenderCanvases -= FitWalls;
+        ClearMask();
+        if (backgroundMask != null) DestroyPreview(backgroundMask.gameObject);
+        if (maskSprite != null) DestroyPreview(maskSprite);
+        backgroundMask = null;
+        maskSprite = null;
+    }
+
+    private static void DestroyPreview(Object preview)
+    {
+        if (Application.isPlaying) Destroy(preview);
+        else DestroyImmediate(preview);
+    }
+
+    private void ClearMask()
+    {
+        if (maskedRenderer != null) maskedRenderer.maskInteraction = previousMaskInteraction;
+        maskedRenderer = null;
+        if (backgroundMask != null) backgroundMask.enabled = false;
+    }
     private void LateUpdate() => FitWalls();
 
     [ContextMenu("Fit Walls")]
@@ -138,10 +165,18 @@ public sealed class MergeWallUIFitter : MonoBehaviour
     // The card background belongs behind the physics sprites, which an overlay Image would cover.
     private void FitBackground(SpriteRenderer renderer)
     {
-        if (!fitBackgroundToFrame || renderer == null || renderer.sprite == null ||
-            !TryGetUICamera(frame, out var uiCamera)) return;
+        if (backgroundMode == BackgroundMode.Fill && maskedRenderer != null) ClearMask();
+        if (renderer == null || renderer.sprite == null || !TryGetUICamera(frame, out var uiCamera))
+        {
+            if (maskedRenderer != null) ClearMask();
+            return;
+        }
         Rect area = ScreenBounds(frame, uiCamera);
-        if (area.width <= 0f || area.height <= 0f) return;
+        if (area.width <= 0f || area.height <= 0f)
+        {
+            if (maskedRenderer != null) ClearMask();
+            return;
+        }
 
         var t = renderer.transform;
         var plane = new Plane(Vector3.forward, t.position);
@@ -149,6 +184,12 @@ public sealed class MergeWallUIFitter : MonoBehaviour
             !ProjectScreen(plane, area.max, out var upperRight))
             return;
         Vector3 worldSpan = upperRight - lowerLeft;
+        if (backgroundMode == BackgroundMode.Mask)
+        {
+            FitMask(renderer, (lowerLeft + upperRight) * .5f, worldSpan);
+            return;
+        }
+
         if (renderer.drawMode == SpriteDrawMode.Simple)
         {
             Vector3 spriteSize = renderer.sprite.bounds.size;
@@ -170,6 +211,42 @@ public sealed class MergeWallUIFitter : MonoBehaviour
 
         var position = (lowerLeft + upperRight) * .5f - t.TransformVector(renderer.localBounds.center);
         if ((t.position - position).sqrMagnitude > .00000001f) t.position = position;
+    }
+
+    private void FitMask(SpriteRenderer renderer, Vector3 center, Vector3 span)
+    {
+        if (backgroundMask == null)
+        {
+            var maskObject = new GameObject("Merge Background Mask") { hideFlags = HideFlags.HideAndDontSave };
+            UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(maskObject, gameObject.scene);
+            maskObject.layer = renderer.gameObject.layer;
+            backgroundMask = maskObject.AddComponent<SpriteMask>();
+            Texture2D texture = Texture2D.whiteTexture;
+            maskSprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
+                new Vector2(.5f, .5f), texture.width);
+            maskSprite.hideFlags = HideFlags.HideAndDontSave;
+            backgroundMask.sprite = maskSprite;
+            backgroundMask.isCustomRangeActive = true;
+        }
+
+        if (maskedRenderer != renderer)
+        {
+            ClearMask();
+            maskedRenderer = renderer;
+            previousMaskInteraction = renderer.maskInteraction;
+            renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+        }
+
+        backgroundMask.gameObject.layer = renderer.gameObject.layer;
+        backgroundMask.frontSortingLayerID = renderer.sortingLayerID;
+        backgroundMask.backSortingLayerID = renderer.sortingLayerID;
+        backgroundMask.frontSortingOrder = renderer.sortingOrder + 1;
+        backgroundMask.backSortingOrder = renderer.sortingOrder - 1;
+        var maskTransform = backgroundMask.transform;
+        maskTransform.position = center;
+        Vector3 bounds = maskSprite.bounds.size;
+        maskTransform.localScale = new Vector3(Mathf.Abs(span.x) / bounds.x, Mathf.Abs(span.y) / bounds.y, 1f);
+        backgroundMask.enabled = true;
     }
 
     private bool TryGetUICamera(RectTransform source, out Camera camera)
