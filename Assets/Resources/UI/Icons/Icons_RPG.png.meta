@@ -4240,15 +4240,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Icons_RPG_161
+      name: Icons_RPG_BossEnemy
       rect:
         serializedVersion: 2
-        x: 147
-        y: 67
-        width: 9
-        height: 10
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 176
+        y: 64
+        width: 15
+        height: 16
+      alignment: 9
+      pivot: {x: 0.4892273, y: 0.5193901}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -4279,50 +4279,6 @@ TextureImporter:
       bones: []
       spriteID: b38cd0611260462e0800000000000000
       internalID: -2133573584293083077
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Icons_RPG_163
-      rect:
-        serializedVersion: 2
-        x: 176
-        y: 64
-        width: 15
-        height: 8
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0f4629ff8cf86f700800000000000000
-      internalID: 573804095980332272
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Icons_RPG_164
-      rect:
-        serializedVersion: 2
-        x: 178
-        y: 69
-        width: 11
-        height: 11
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 64f437c1fdec33b10800000000000000
-      internalID: 1960137720486645574
       vertices: []
       indices: 
       edges: []
@@ -5009,6 +4965,28 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Icons_RPG_NormarEnemy
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 67
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9594335d27aa70348904dadec6fbd1c3
+      internalID: 1516154139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -5092,7 +5070,6 @@ TextureImporter:
       Icons_RPG_159: 8179449865512487080
       Icons_RPG_16: 4690182764836200012
       Icons_RPG_160: -4259543114850881263
-      Icons_RPG_161: 1698224350930686645
       Icons_RPG_162: -2133573584293083077
       Icons_RPG_163: 573804095980332272
       Icons_RPG_164: 1960137720486645574
@@ -5219,6 +5196,8 @@ TextureImporter:
       Icons_RPG_98: -3021159001035374173
       Icons_RPG_99: -7913834397607815108
       Icons_RPG_Battle: 7743783479661146896
+      Icons_RPG_BossEnemy: 1698224350930686645
+      Icons_RPG_NormarEnemy: 1516154139
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

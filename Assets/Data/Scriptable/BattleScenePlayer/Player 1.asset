@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f8f4e6f6ccad4d0f8a4ecdcd668374a0, type: 3}
-  m_Name: Mocha Battle Player
+  m_Name: Player 1
   m_EditorClassIdentifier: Assembly-CSharp::PlayerData
-  icon: {fileID: 4859444097497657657, guid: 55370924131a36f459dbfb17efb0c13e, type: 3}
+  icon: {fileID: 2973604841176774763, guid: 97b87cd2941f2fc44b4bd2a33ef9b883, type: 3}
   data:
   - language: 0
     dataName: Mocha
@@ -23,10 +23,10 @@ MonoBehaviour:
     description: 
     detailDescription: 
   dataNumbering: 
-  dataId: Mocha
+  dataId: Player1
   dataType: 4
   grade: -1
   series: 0
-  battleVisual: {fileID: 11400000, guid: f7d469a679c75214c99ae9c06ebbac10, type: 2}
+  battleVisual: {fileID: 11400000, guid: df9ff0a6e2dee5f40b763c05bcbdc723, type: 2}
   normalPlant: {fileID: 11400000, guid: dc6526ac4f4000246b4850c22004d1b8, type: 2}
-  bossPlant: {fileID: 0}
+  bossPlant: {fileID: 11400000, guid: 1eab9565adfdde149b6f4ed6bf7161bd, type: 2}
