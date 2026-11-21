@@ -3,7 +3,7 @@ using UnityEngine;
 
 // Stage information has no item effects, rarity or crafting behaviour.
 [CreateAssetMenu(fileName = "Stage Codex", menuName = "Upgrade/Codex/Stage")]
-public sealed class StageCodexData : DefaultData
+public sealed class StageCodexData : UnlockableDefaultData
 {
     [Space(10)]
     public MapCodexData map;

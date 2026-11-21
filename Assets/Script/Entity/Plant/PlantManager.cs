@@ -47,25 +47,19 @@ public class PlantManager : MonoBehaviour
         currentPlantIndex = index;
     }
 
-    public void SetPlants()
+    public void SetPlants(PlantData selectedPlant = null)
     {
         CurrentPlant = null;
         int selectedIndex = CurrentPlantIndex;
-        if (allPlants == null || selectedIndex < 0 || selectedIndex >= allPlants.Length)
+        bool useIndex = potionPlantIndex >= 0 || skillPlantIndex >= 0 || selectedPlant == null;
+        if (useIndex && !IsValidIndex(selectedIndex))
         {
-            Debug.LogWarning("Plant index is outside All Plants.", this);
+            Debug.LogWarning("Selected plant is missing or outside All Plants.", this);
             return;
         }
 
-        var data = allPlants[selectedIndex];
-        if (data == null || !UnlockCheckUtility.CanUse(data))
-        {
-            Debug.LogWarning("Selected plant is missing or locked.", this);
-            return;
-        }
-
-        CurrentPlant = data;
-        if (plant != null) plant.Init(data);
+        CurrentPlant = useIndex ? allPlants[selectedIndex] : selectedPlant;
+        if (plant != null) plant.Init(CurrentPlant);
     }
 
     public void PlayGrown()

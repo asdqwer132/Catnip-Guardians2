@@ -3,6 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Entities/Player/Battle Visual Data")]
 public sealed class PlayerBattleVisualData : ScriptableObject
 {
+    public Sprite sprite;
     public AnimationClip idle;
     public AnimationClip move;
     public AnimationClip attack;

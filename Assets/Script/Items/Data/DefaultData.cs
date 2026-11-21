@@ -23,7 +23,7 @@ public enum Grade
     Epic = 2,
     Legendary = 3,
 }
-public class DefaultData : ScriptableObject, IUnlockable, DefinedData
+public class DefaultData : ScriptableObject, DefinedData
 {
     [Header("Basic Data")]
     public Sprite icon;
@@ -36,13 +36,6 @@ public class DefaultData : ScriptableObject, IUnlockable, DefinedData
     public Grade grade = Grade.None;
     [UnityEngine.Serialization.FormerlySerializedAs("itemSeries")]
     public ItemSeries series = ItemSeries.None;
-
-    [Header("Extra Data")]
-    public bool requireUnlock = false;
-
-    public bool RequireUnlock => requireUnlock;
-    public DataType UnlockType => dataType;
-    public string UnlockId => dataId;
 
     private Dictionary<language, Description> languageDataMap;
 
@@ -122,4 +115,14 @@ public class DefaultData : ScriptableObject, IUnlockable, DefinedData
         languageDataMap = null;
     }
 #endif
+}
+
+public abstract class UnlockableDefaultData : DefaultData, IUnlockable
+{
+    [Header("Extra Data")]
+    public bool requireUnlock = false;
+
+    public bool RequireUnlock => requireUnlock;
+    public DataType UnlockType => dataType;
+    public string UnlockId => dataId;
 }

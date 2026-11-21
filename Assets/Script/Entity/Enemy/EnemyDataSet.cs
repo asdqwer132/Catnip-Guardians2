@@ -3,7 +3,7 @@ using UnityEngine;
 [Serializable]
 
 [CreateAssetMenu(fileName = "EnemySetData", menuName = "Entities/Enemy/Enemy Set Data")]
-public class EnemyDataSet : DefaultData
+public class EnemyDataSet : UnlockableDefaultData
 {
     [Space(10)]
     public RuntimeAnimatorController animatorController;

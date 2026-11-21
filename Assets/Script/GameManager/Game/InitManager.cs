@@ -4,6 +4,7 @@ public class InitManager : MonoBehaviour
 {
     [Header("Managers")]
     public PlantManager plantManager;
+    public Player player;
     public ItemUseManager itemUseManager;
     public BuffManager buffManager;
     public BuffSkillManager buffSkillManager;
@@ -25,9 +26,13 @@ public class InitManager : MonoBehaviour
         statisticsManager?.ResetRound();
         enemyManager?.PrepareRound();
         plantManager?.ResetSelectionOverrides();
-        ApplyStartingEffects();
+        UpgradeToGeneralData data = null;
+        GameSession.Instance?.TryReadGeneralData(out data);
+        player?.ApplyPlayerData(data?.battlePlayer);
+        ApplyStartingEffects(data);
 
-        plantManager?.SetPlants();
+        PlantData selectedPlant = player?.CurrentPlayerData?.GetPlant(data?.bossBattle ?? false);
+        plantManager?.SetPlants(selectedPlant);
         Debug.Log($"[SkillTransfer][Battle APPLIED] index={plantManager?.CurrentPlantIndex}, plant={plantManager?.CurrentPlant?.dataId ?? "none"}", this);
         if (enemyManager != null && plantManager != null) enemyManager.Init(plantManager.CurrentPlant);
         itemUseManager?.Init();
@@ -35,15 +40,9 @@ public class InitManager : MonoBehaviour
         OffscreenTargetIndicatorManager.Instance?.ClearAll();
         isInited = true;
     }
-    private void ApplyStartingEffects()
+    private void ApplyStartingEffects(UpgradeToGeneralData data)
     {
-        UpgradeToGeneralData data = null;
-        var session = GameSession.Instance;
-        if (session != null)
-        {
-            session.LoadSkillItems(buffSkillManager);
-            session.TryReadGeneralData(out data);
-        }
+        GameSession.Instance?.LoadSkillItems(buffSkillManager);
         Debug.Log("[SkillTransfer][Battle RECEIVE] " + GameSessionSkillDiagnostics.Describe(data), this);
         if (data != null && data.mainPlantIndex >= 0)
             plantManager?.SetSkillPlantIndex(data.mainPlantIndex);

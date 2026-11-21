@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Item", menuName = "Items/Item")]
-public class ItemData : DefaultData
+public class ItemData : UnlockableDefaultData
 {
     [Space(10)]
     [Tooltip("하위 분류 에셋. 예: 뼈, 깃털. 이름이나 Monster 시리즈 전체로 대상을 추정하지 않습니다.")]

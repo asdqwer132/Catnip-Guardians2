@@ -3,7 +3,7 @@ using UnityEngine;
 
 // Display metadata shared by item and enemy codices. Reading it never executes effects.
 [CreateAssetMenu(fileName = "Codex Effect Description", menuName = "Upgrade/Codex/Effect Description")]
-public sealed class CodexEffectDescription : DefaultData { }
+public sealed class CodexEffectDescription : UnlockableDefaultData { }
 
 public static class CodexEffectUtility
 {

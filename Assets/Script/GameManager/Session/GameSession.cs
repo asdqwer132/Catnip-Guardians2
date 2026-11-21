@@ -68,7 +68,11 @@ public class GameSession : MonoBehaviour
     public void CaptureUpgradeProgress(MergeBoxUpgradeManager mergeBoxUpgrades, PotionEquipmentManager potionEquipment,
         InventoryManager materialInventory, BuffSkillManager buffSkillManager)
     {
-        var data = new UpgradeToGeneralData();
+        var data = new UpgradeToGeneralData
+        {
+            battlePlayer = generalData?.battlePlayer,
+            bossBattle = generalData?.bossBattle ?? false
+        };
         if (mergeBoxUpgrades != null)
         {
             data.boxLevels = mergeBoxUpgrades.CaptureLevels();
@@ -138,6 +142,10 @@ public class GameSession : MonoBehaviour
         ClearBattleTransfers();
         GameDataChanged?.Invoke();
     }
+
+    public void SelectBattlePlayer(PlayerData player) => generalData.battlePlayer = player;
+
+    public void SetBossBattle(bool isBossBattle) => generalData.bossBattle = isBossBattle;
 
     public bool TryReadGeneralData(out UpgradeToGeneralData data)
     {

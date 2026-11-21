@@ -5,7 +5,7 @@ using UnityEngine;
     fileName = "SkillNodeData",
     menuName = "Upgrade/Skills/Node"
 )]
-public class SkillNodeData : DefaultData
+public class SkillNodeData : UnlockableDefaultData
 {
     public string ProgressKey => skillMap != null && !string.IsNullOrEmpty(skillMap.dataId)
         ? skillMap.dataId + "\n" + dataId : dataId;

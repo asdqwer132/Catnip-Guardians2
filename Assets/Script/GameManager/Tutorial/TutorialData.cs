@@ -25,7 +25,7 @@ public sealed class TutorialPageData : DefinedData
 }
 
 [CreateAssetMenu(fileName = "TutorialData", menuName = "Settings/Tutorial Data")]
-public sealed class TutorialData : DefaultData
+public sealed class TutorialData : UnlockableDefaultData
 {
     public TutorialPageData[] pages = Array.Empty<TutorialPageData>();
     public bool HasPages

@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Map Codex", menuName = "Upgrade/Codex/Map")]
-public sealed class MapCodexData : DefaultData
+public sealed class MapCodexData : UnlockableDefaultData
 {
     [Space(10)]
     public Sprite preview;

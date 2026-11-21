@@ -11,6 +11,7 @@ public class PlantUI : MonoBehaviour
     private PlantData plantData;
     private PlantBattleVisualData battleVisual;
     private Sprite growthSprite;
+    private int growthStage;
     private bool isHurt;
     private float nextHurtAt;
     public Sprite CurrentSprite => growthSprite != null ? growthSprite : spriteRenderer != null ? spriteRenderer.sprite : null;
@@ -18,18 +19,36 @@ public class PlantUI : MonoBehaviour
     public void SetPlantData(PlantData data)
     {
         plantData = data;
-        battleVisual = data != null && data.battleVisual != null ? data.battleVisual : defaultBattleVisual;
+        growthStage = -1;
         nextHurtAt = 0f;
-        isHurt = false;
-        animationPlayer.Stop();
-        SetGrowthProgress(0f);
-        PlayIdle();
+        ApplyGrowthStage(data != null ? data.GetGrowthStageIndex(0f) : -1, false);
     }
 
     public void SetGrowthProgress(float progress01)
     {
-        growthSprite = plantData != null ? plantData.GetGrowthSprite(progress01) : null;
-        if (!isHurt && spriteRenderer != null) spriteRenderer.sprite = growthSprite;
+        int stage = plantData != null ? plantData.GetGrowthStageIndex(progress01) : -1;
+        if (stage != growthStage) ApplyGrowthStage(stage, stage > growthStage);
+    }
+
+    private void ApplyGrowthStage(int stage, bool playGrowthEffect)
+    {
+        growthStage = stage;
+        var stageVisual = stage >= 0 ? plantData.growthVisuals[stage] : null;
+        battleVisual = stageVisual != null ? stageVisual : defaultBattleVisual;
+        growthSprite = battleVisual != null ? battleVisual.sprite : null;
+        isHurt = false;
+        if (isActiveAndEnabled) PlayIdle();
+        else
+        {
+            animationPlayer.Stop();
+            if (spriteRenderer != null) spriteRenderer.sprite = growthSprite;
+        }
+
+        if (playGrowthEffect && stageVisual != null && stageVisual.growthEffect != null)
+        {
+            Transform anchor = spriteRenderer != null ? spriteRenderer.transform : transform;
+            stageVisual.growthEffect.Play(new EffectVisualContext(anchor.position, anchor.rotation, audioOwner: gameObject));
+        }
     }
 
     public void PlayHurt()

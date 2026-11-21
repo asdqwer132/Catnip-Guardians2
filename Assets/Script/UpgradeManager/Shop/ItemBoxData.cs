@@ -35,7 +35,7 @@ public class GachaItemInfo
 }
 
 [CreateAssetMenu(fileName = "Box", menuName = "Upgrade/Shop/Box")]
-public class ItemBoxData : DefaultData
+public class ItemBoxData : UnlockableDefaultData
 {
     [Space(10)] public Cost[] costs;
     public GachaItemInfo[] gachaItems;

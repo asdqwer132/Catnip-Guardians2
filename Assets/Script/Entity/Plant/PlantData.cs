@@ -29,15 +29,19 @@ public class SpecialEnemySpawnInfo : EnemySpawnData
 public class PlantData : DefaultData
 {
     [Space(10)]
-    [Tooltip("Growth order: first is the seed, last is fully grown. Intermediate sprites change at equal progress intervals.")]
-    public Sprite[] growthSprites = new Sprite[0];
-    public PlantBattleVisualData battleVisual;
+    [Tooltip("성장 순서입니다. 첫 번째는 씨앗이고 마지막은 성장 완료입니다.")]
+    public PlantBattleVisualData[] growthVisuals = System.Array.Empty<PlantBattleVisualData>();
+
+    public int GetGrowthStageIndex(float progress01)
+    {
+        if (growthVisuals == null || growthVisuals.Length == 0) return -1;
+        return Mathf.FloorToInt(Mathf.Clamp01(progress01) * (growthVisuals.Length - 1));
+    }
 
     public Sprite GetGrowthSprite(float progress01)
     {
-        if (growthSprites == null || growthSprites.Length == 0) return null;
-        int index = Mathf.FloorToInt(Mathf.Clamp01(progress01) * (growthSprites.Length - 1));
-        return growthSprites[index];
+        int index = GetGrowthStageIndex(progress01);
+        return index >= 0 ? growthVisuals[index]?.sprite : null;
     }
 
     [Space(10)]

@@ -15,7 +15,10 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver, IBuffTarget
     public PlayerRangeIndicatorController rangeIndicatorController;
 
     [Header("Battle Display")]
+    [SerializeField] private PlayerData defaultPlayer;
     [SerializeField] private PlayerBattleVisualData battleVisual;
+    private PlayerBattleVisualData activeBattleVisual;
+    public PlayerData CurrentPlayerData { get; private set; }
     [SerializeField] private Animator displayAnimator;
     [SerializeField] private SpriteRenderer displaySprite;
     [SerializeField] private Transform movementCenter;
@@ -60,6 +63,7 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver, IBuffTarget
         moveTargetPosition = initialPosition;
         if (displaySprite != null) defaultSprite = displaySprite.sprite;
 
+        ApplyPlayerData(null);
         RefreshBuffedStat();
     }
 
@@ -80,25 +84,41 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver, IBuffTarget
         if (displaySprite != null) displaySprite.sprite = defaultSprite;
     }
 
+    public void ApplyPlayerData(PlayerData data)
+    {
+        CurrentPlayerData = data != null ? data : defaultPlayer;
+        activeBattleVisual = CurrentPlayerData != null && CurrentPlayerData.battleVisual != null
+            ? CurrentPlayerData.battleVisual : battleVisual;
+        animationPlayer.Stop();
+        isThrowing = false;
+        lastThrowFrame = -1;
+        StopMove();
+        ScheduleCircleMove();
+        if (displaySprite != null) displaySprite.sprite = GetDisplaySprite();
+    }
+
+    private Sprite GetDisplaySprite()
+        => activeBattleVisual != null && activeBattleVisual.sprite != null ? activeBattleVisual.sprite : defaultSprite;
+
     private void Update()
     {
         if (isThrowing || (GameEndManager.instance != null && GameEndManager.instance.IsGameEnded) ||
             (GameInputManager.instance != null && GameInputManager.instance.IsBlocked(GameInputBlockType.Gameplay))) return;
 
-        if (canMove && !hasMoveTarget && battleVisual != null && battleVisual.useCircleMovement &&
-            battleVisual.radius > 0f && Time.time >= nextMoveAt)
+        if (canMove && !hasMoveTarget && activeBattleVisual != null && activeBattleVisual.useCircleMovement &&
+            activeBattleVisual.radius > 0f && Time.time >= nextMoveAt)
         {
             Vector3 center = movementCenter != null ? movementCenter.position : initialPosition;
             float angle = Random.Range(0f, Mathf.PI * 2f);
             Vector3 radial = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle));
-            SetDestination(center + radial * battleVisual.radius);
+            SetDestination(center + radial * activeBattleVisual.radius);
         }
         MoveToTarget();
     }
 
     private void LateUpdate()
     {
-        if (battleVisual == null) return;
+        if (activeBattleVisual == null) return;
 
         if (isThrowing)
         {
@@ -110,22 +130,22 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver, IBuffTarget
 
         bool moving = mover != null && mover.IsMoving;
         if (moving) Face(mover.CurrentMoveDirection.x);
-        var clip = moving ? battleVisual.move : battleVisual.idle;
+        var clip = moving ? activeBattleVisual.move : activeBattleVisual.idle;
         animationPlayer.Play(displayAnimator, clip);
-        if (!animationPlayer.IsPlaying && displaySprite != null) displaySprite.sprite = defaultSprite;
+        if (!animationPlayer.IsPlaying && displaySprite != null) displaySprite.sprite = GetDisplaySprite();
         animationPlayer.Tick(Time.deltaTime, true);
     }
 
     public void PlayThrowAnimation(Vector3 target)
     {
-        if (!isActiveAndEnabled || battleVisual == null) return;
+        if (!isActiveAndEnabled || activeBattleVisual == null) return;
         // Multiple items thrown together share the pose and keep the first facing.
         if (lastThrowFrame == Time.frameCount) return;
         lastThrowFrame = Time.frameCount;
         Face(target.x - transform.position.x);
-        if (battleVisual.attack == null || displayAnimator == null) return;
+        if (activeBattleVisual.attack == null || displayAnimator == null) return;
         mover?.Stop();
-        animationPlayer.Play(displayAnimator, battleVisual.attack, restart: true);
+        animationPlayer.Play(displayAnimator, activeBattleVisual.attack, restart: true);
         isThrowing = true;
     }
 
@@ -137,9 +157,9 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver, IBuffTarget
 
     private void ScheduleCircleMove()
     {
-        if (battleVisual == null) return;
-        float variation = battleVisual.intervalVariation;
-        nextMoveAt = Time.time + Mathf.Max(.01f, battleVisual.idleInterval + Random.Range(-variation, variation));
+        if (activeBattleVisual == null) return;
+        float variation = activeBattleVisual.intervalVariation;
+        nextMoveAt = Time.time + Mathf.Max(.01f, activeBattleVisual.idleInterval + Random.Range(-variation, variation));
     }
 
     private void RegisterToBuffManager()
