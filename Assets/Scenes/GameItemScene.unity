@@ -1811,11 +1811,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1028233407191758515, guid: ace62b7fe17681c2b96b248c2ced83df, type: 3}
       propertyPath: m_Size.x
-      value: 10
+      value: 5.6381044
       objectReference: {fileID: 0}
     - target: {fileID: 1028233407191758515, guid: ace62b7fe17681c2b96b248c2ced83df, type: 3}
       propertyPath: m_Size.y
-      value: 10
+      value: 7.857142
       objectReference: {fileID: 0}
     - target: {fileID: 1028233407191758515, guid: ace62b7fe17681c2b96b248c2ced83df, type: 3}
       propertyPath: m_Sprite
@@ -1871,11 +1871,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1767303628502471328, guid: ace62b7fe17681c2b96b248c2ced83df, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.00000013623918
       objectReference: {fileID: 0}
     - target: {fileID: 1767303628502471328, guid: ace62b7fe17681c2b96b248c2ced83df, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 3.5392852
       objectReference: {fileID: 0}
     - target: {fileID: 2119934115442261356, guid: ace62b7fe17681c2b96b248c2ced83df, type: 3}
       propertyPath: m_Enabled
@@ -6269,7 +6269,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: af1e2edb3ca38e14284f77cef981f552, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 61ba53cc383af504d99e5544d252d099, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -8052,6 +8052,7 @@ MonoBehaviour:
   topCollider: {fileID: 953831645}
   inletAnchor: {fileID: 1642672719}
   backgroundMode: 0
+  showFitGizmos: 1
   leftThickness: 0.035
   rightThickness: 0.035
   bottomThickness: 0.035
