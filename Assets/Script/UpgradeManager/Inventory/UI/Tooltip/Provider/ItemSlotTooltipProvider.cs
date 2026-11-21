@@ -15,6 +15,11 @@ public class ItemSlotTooltipProvider : TooltipProvider
     {
         InventoryItem item = slot != null ? slot.currentItem : null;
         data = item != null ? ItemTooltipData.FromItem(item.itemData, item.amount) : null;
+        if (data == null && slot != null && slot.dataSource != null && !(slot.dataSource is ItemData))
+        {
+            var source = slot.dataSource;
+            data = new TooltipData { sourceData = source, icon = source.Icon, dataName = source.name };
+        }
         return data != null;
     }
 }

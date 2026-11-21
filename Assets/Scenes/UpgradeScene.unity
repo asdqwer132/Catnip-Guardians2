@@ -9237,7 +9237,8 @@ MonoBehaviour:
   removePannel: 1
   tooltipPanel: {fileID: 1008334836}
   panelVisibility:
-    alternatePanels: []
+    alternatePanels:
+    - {fileID: 1485494592}
   basicInformation:
     icon: {fileID: 763168492}
     dataNameText: {fileID: 1954613836}
@@ -28537,7 +28538,27 @@ MonoBehaviour:
   chestSlots:
   - {fileID: 2096351479}
   - {fileID: 1530258224}
-  chestChoices: []
+  chestChoices:
+  - {fileID: 210000600011}
+  - {fileID: 210000600012}
+  - {fileID: 210000600013}
+  - {fileID: 210000600014}
+  - {fileID: 210000600015}
+  - {fileID: 210000600016}
+  - {fileID: 210000600017}
+  - {fileID: 210000600018}
+  playerSlot: {fileID: 210000600031}
+  playerChoices:
+  - slot: {fileID: 210000600021}
+    player: {fileID: 11400000, guid: c82dc94efc1b457fa817a3151e2b3164, type: 2}
+  - slot: {fileID: 210000600022}
+    player: {fileID: 11400000, guid: 636f6ada0a592b84da81f465c456ff24, type: 2}
+  - slot: {fileID: 210000600023}
+    player: {fileID: 11400000, guid: 9f8f312c2dbea5f46b8d366d60b4629a, type: 2}
+  - slot: {fileID: 210000600024}
+    player: {fileID: 11400000, guid: be0e6d68f44f4d046b9b704a9bd6207e, type: 2}
+  chestTooltip: {fileID: 156437003}
+  playerTooltip: {fileID: 1618130550}
   chestData:
   - {fileID: 11400000, guid: 8123e8778d924876a1bf62144c35d7fe, type: 2}
   - {fileID: 11400000, guid: 470e875d0eab4905811c8133518067ec, type: 2}
@@ -28547,10 +28568,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e36bab1b5b0240d8b91e5912f4441702, type: 2}
   - {fileID: 11400000, guid: 2a58f9eacf134960b9dce0a524b86c4b, type: 2}
   - {fileID: 11400000, guid: e4c57a9563c54b3f8aa6e7e383c67477, type: 2}
-  equippedDetails: {fileID: 0}
-  candidateDetails: {fileID: 0}
-  comparison: {fileID: 0}
-  guide: {fileID: 0}
+  equippedDetails: {fileID: 776718611}
+  candidateDetails: {fileID: 1031879299}
+  comparison: {fileID: 959251216}
+  guide: {fileID: 393754487}
   confirmArea: {fileID: 1356676886}
   clearArea: {fileID: 1090446240}
   comparisonArrow: {fileID: 1601763097}
@@ -47593,7 +47614,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be9d051359c84b2ea72441dbd549210b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BagEquipmentInventoryUI
-  categoryMask: ffffffff040000000500000003000000020000000000000001000000
+  categoryMask: ffffffff0400000005000000030000000200000000000000
   seriesMask: 00000000ffffffff
   gradeMask: 
   slotParent: {fileID: 2037613937}
@@ -80767,6 +80788,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 574057063}
     m_Modifications:
+    - target: {fileID: 6500863067822367230, guid: 5560e5c889f13664bb98182402742905, type: 3}
+      propertyPath: m_Group
+      value:
+      objectReference: {fileID: 574057064}
     - target: {fileID: 1128468844478580642, guid: 5560e5c889f13664bb98182402742905, type: 3}
       propertyPath: m_Name
       value: PlayerEquipSlot
@@ -98312,7 +98337,8 @@ MonoBehaviour:
   removePannel: 1
   tooltipPanel: {fileID: 1358960898}
   panelVisibility:
-    alternatePanels: []
+    alternatePanels:
+    - {fileID: 2075403082}
   basicInformation:
     icon: {fileID: 714562691}
     dataNameText: {fileID: 4546255}
@@ -107524,7 +107550,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ToggleGroup
-  m_AllowSwitchOff: 0
+  m_AllowSwitchOff: 1
 --- !u!1001 &1762602659
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -117313,7 +117339,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ToggleGroup
-  m_AllowSwitchOff: 0
+  m_AllowSwitchOff: 1
 --- !u!1 &1920646272
 GameObject:
   m_ObjectHideFlags: 0
@@ -139337,6 +139363,149 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
+--- !u!114 &210000600011 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5704112146065660191, guid: a2af8187cd65c5840a7bf01a0286c777, type: 3}
+  m_PrefabInstance: {fileID: 1114090896}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaf8e5db7da24177bc984f95d227b515, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::BagEquipmentSlotUI
+--- !u!114 &210000600012 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5704112146065660191, guid: a2af8187cd65c5840a7bf01a0286c777, type: 3}
+  m_PrefabInstance: {fileID: 1696073414}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaf8e5db7da24177bc984f95d227b515, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::BagEquipmentSlotUI
+--- !u!114 &210000600013 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5704112146065660191, guid: a2af8187cd65c5840a7bf01a0286c777, type: 3}
+  m_PrefabInstance: {fileID: 1541696629}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaf8e5db7da24177bc984f95d227b515, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::BagEquipmentSlotUI
+--- !u!114 &210000600014 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5704112146065660191, guid: a2af8187cd65c5840a7bf01a0286c777, type: 3}
+  m_PrefabInstance: {fileID: 760271792}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaf8e5db7da24177bc984f95d227b515, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::BagEquipmentSlotUI
+--- !u!114 &210000600015 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5704112146065660191, guid: a2af8187cd65c5840a7bf01a0286c777, type: 3}
+  m_PrefabInstance: {fileID: 648036122}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaf8e5db7da24177bc984f95d227b515, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::BagEquipmentSlotUI
+--- !u!114 &210000600016 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5704112146065660191, guid: a2af8187cd65c5840a7bf01a0286c777, type: 3}
+  m_PrefabInstance: {fileID: 1415398380}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaf8e5db7da24177bc984f95d227b515, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::BagEquipmentSlotUI
+--- !u!114 &210000600017 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5704112146065660191, guid: a2af8187cd65c5840a7bf01a0286c777, type: 3}
+  m_PrefabInstance: {fileID: 1623375895}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaf8e5db7da24177bc984f95d227b515, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::BagEquipmentSlotUI
+--- !u!114 &210000600018 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5704112146065660191, guid: a2af8187cd65c5840a7bf01a0286c777, type: 3}
+  m_PrefabInstance: {fileID: 136346477}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaf8e5db7da24177bc984f95d227b515, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::BagEquipmentSlotUI
+--- !u!114 &210000600021 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3680740000000000001, guid: bfff294635245864980ca66bfaed234a, type: 3}
+  m_PrefabInstance: {fileID: 1866471840}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79e58c9a0e2c48159db77ed150eefbef, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerEquipmentSlotUI
+--- !u!114 &210000600022 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3680740000000000001, guid: bfff294635245864980ca66bfaed234a, type: 3}
+  m_PrefabInstance: {fileID: 1172104950}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79e58c9a0e2c48159db77ed150eefbef, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerEquipmentSlotUI
+--- !u!114 &210000600023 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3680740000000000001, guid: bfff294635245864980ca66bfaed234a, type: 3}
+  m_PrefabInstance: {fileID: 15975459}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79e58c9a0e2c48159db77ed150eefbef, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerEquipmentSlotUI
+--- !u!114 &210000600024 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3680740000000000001, guid: bfff294635245864980ca66bfaed234a, type: 3}
+  m_PrefabInstance: {fileID: 1533640734}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79e58c9a0e2c48159db77ed150eefbef, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerEquipmentSlotUI
+--- !u!114 &210000600031 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: 5560e5c889f13664bb98182402742905, type: 3}
+  m_PrefabInstance: {fileID: 1308405798}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaf8e5db7da24177bc984f95d227b515, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::BagEquipmentSlotUI
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

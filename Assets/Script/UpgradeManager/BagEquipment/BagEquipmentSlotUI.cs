@@ -2,7 +2,7 @@ using System;
 using TMPro;
 using UnityEngine;
 
-public sealed class BagEquipmentSlotUI : ClickableItemSlotUI
+public class BagEquipmentSlotUI : ClickableItemSlotUI
 {
     public TextMeshProUGUI slotNumberText;
     private Action clicked;
@@ -10,14 +10,15 @@ public sealed class BagEquipmentSlotUI : ClickableItemSlotUI
     protected override bool AllowEmptySelection => true;
     protected override bool KeepSelectionOnRefresh => true;
 
-    public void Bind(Action action, int number = 0)
+    public void Bind(Action action, int number = 0, TooltipUI tooltip = null)
     {
         clicked = action;
+        if (tooltip != null && TryGetComponent<ItemTooltipTrigger>(out var trigger)) trigger.Init(tooltip);
         if (slotNumberText != null && number > 0) slotNumberText.text = number.ToString();
         if (icon != null) normalIconColor = icon.color;
     }
 
-    public void Show(DefaultData data, bool selected, bool isLocked = false)
+    public virtual void Show(DefaultData data, bool selected, bool isLocked = false)
     {
         ClearSlot();
         if (data != null)
@@ -34,7 +35,7 @@ public sealed class BagEquipmentSlotUI : ClickableItemSlotUI
         if (slotToggle != null)
         {
             slotToggle.interactable = !isLocked;
-            if (selected) slotToggle.SetIsOnWithoutNotify(true);
+            if (selected && !isLocked) slotToggle.SetIsOnWithoutNotify(true);
             else ResetSelection();
         }
         if (slotButton != null) slotButton.interactable = !isLocked;

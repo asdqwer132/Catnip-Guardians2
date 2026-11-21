@@ -23,7 +23,9 @@ public sealed class UpgradeProgressCatalogBuilder : IPreprocessBuildWithReport
         var catalog = AssetDatabase.LoadAssetAtPath<UpgradeProgressCatalog>(path);
         if (catalog == null) { catalog = ScriptableObject.CreateInstance<UpgradeProgressCatalog>(); AssetDatabase.CreateAsset(catalog, path); }
         catalog.entries.Clear();
-        foreach (var guid in AssetDatabase.FindAssets("t:ItemData").Concat(AssetDatabase.FindAssets("t:SkillNodeData")).Distinct())
+        foreach (var guid in AssetDatabase.FindAssets("t:ItemData")
+            .Concat(AssetDatabase.FindAssets("t:SkillNodeData"))
+            .Concat(AssetDatabase.FindAssets("t:PlayerData")).Distinct())
             catalog.entries.Add(new UpgradeProgressCatalog.Entry { key = guid, asset = AssetDatabase.LoadAssetAtPath<Object>(AssetDatabase.GUIDToAssetPath(guid)) });
         EditorUtility.SetDirty(catalog); AssetDatabase.SaveAssets();
     }

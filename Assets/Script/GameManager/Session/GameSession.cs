@@ -125,6 +125,7 @@ public class GameSession : MonoBehaviour
         else EquipmentSave.StorePotions(data.potionSlots);
         UpgradeProgressSave.RefreshSkillValues(data);
         data.equipment = EquipmentSave.Current.Copy();
+        data.battlePlayer = EquipmentSave.ResolveBattlePlayer(data.equipment.battlePlayerId);
         data.unlockedMergeBoxes = MergeBoxUpgradeManager.CaptureChestUnlocks(data.unlockedSkillNodes);
         SaveUpgradeToGeneral(data);
     }
@@ -134,6 +135,7 @@ public class GameSession : MonoBehaviour
         generalData = (data ?? new UpgradeToGeneralData()).Copy();
         var progress = generalData.Copy();
         progress.equipment = null;
+        progress.battlePlayer = null;
         if (EquipmentSave.Current.potions.Count > 0) progress.potionSlots.Clear();
         UpgradeProgressSave.Write(progress);
         hasGeneralData = true;
@@ -142,7 +144,12 @@ public class GameSession : MonoBehaviour
         GameDataChanged?.Invoke();
     }
 
-    public void SelectBattlePlayer(PlayerData player) => generalData.battlePlayer = player;
+    public void SelectBattlePlayer(PlayerData player)
+    {
+        var equipment = EquipmentSave.Current.Copy();
+        equipment.battlePlayerId = player != null ? player.dataId : null;
+        if (EquipmentSave.Write(equipment)) UpdateEquipment(equipment);
+    }
 
     public void SetBossBattle(bool isBossBattle) => generalData.bossBattle = isBossBattle;
 
@@ -170,8 +177,10 @@ public class GameSession : MonoBehaviour
 
     public void UpdateEquipment(EquipmentData equipment)
     {
-        if (!hasGeneralData || generalData == null) return;
+        generalData ??= new UpgradeToGeneralData();
         generalData.equipment = equipment?.Copy();
+        generalData.battlePlayer = EquipmentSave.ResolveBattlePlayer(equipment?.battlePlayerId);
+        if (!hasGeneralData) return;
         GameDataRevision++;
         GameDataChanged?.Invoke();
     }

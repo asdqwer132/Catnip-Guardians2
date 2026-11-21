@@ -8,12 +8,14 @@ public sealed class EquipmentData
 {
     public List<string> itemIds = new List<string>();
     public List<int> equippedChests = new List<int>();
+    public string battlePlayerId;
     public List<SavedPotionSlot> potions = new List<SavedPotionSlot>();
 
     public EquipmentData Copy() => new EquipmentData
     {
         itemIds = itemIds != null ? new List<string>(itemIds) : new List<string>(),
         equippedChests = equippedChests != null ? new List<int>(equippedChests) : new List<int>(),
+        battlePlayerId = battlePlayerId,
         potions = potions != null ? potions.ConvertAll(slot => slot?.Copy()) : new List<SavedPotionSlot>()
     };
 }
@@ -72,6 +74,9 @@ public static class EquipmentSave
             return false;
         }
     }
+
+    public static PlayerData ResolveBattlePlayer(string id) => string.IsNullOrEmpty(id) ? null :
+        Catalog?.entries.Find(entry => entry.asset is PlayerData player && player.dataId == id)?.asset as PlayerData;
 
     public static bool StorePotions(IReadOnlyList<PotionEquipmentSnapshot> slots)
     {

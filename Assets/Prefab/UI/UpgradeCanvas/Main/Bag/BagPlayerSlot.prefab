@@ -812,6 +812,7 @@ GameObject:
   - component: {fileID: 3772527877091420719}
   - component: {fileID: 1755977667368127755}
   - component: {fileID: 7634912363898678484}
+  - component: {fileID: 3680740000000000001}
   m_Layer: 5
   m_Name: BagPlayerSlot
   m_TagString: Untagged
@@ -958,7 +959,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemSlotTooltipProvider
   anchorRect: {fileID: 9071733703590225705}
-  slot: {fileID: 0}
+  slot: {fileID: 3680740000000000001}
 --- !u!1 &5304142214127825439
 GameObject:
   m_ObjectHideFlags: 0
@@ -1390,6 +1391,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2481741221715287313}
     m_Modifications:
+    - target: {fileID: 112284016848460286, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4087091385425324797, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4047147333766088748, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -1529,6 +1538,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6338221249147995691}
     m_Modifications:
+    - target: {fileID: 112284016848460286, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 682089836361810639, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
       propertyPath: m_Enabled
       value: 1
@@ -1539,7 +1552,7 @@ PrefabInstance:
       objectReference: {fileID: -5239504327025718580, guid: 5b3473b94d0380242923d01001c58ed2, type: 3}
     - target: {fileID: 4087091385425324797, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5704112146065660191, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
       propertyPath: slotInformation.amountText
@@ -1774,3 +1787,61 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1609567345260214993, guid: ec1eeadb418e3964ea0b3adc509b551f, type: 3}
   m_PrefabInstance: {fileID: 3675594075061947064}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3680740000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5058506944134209619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79e58c9a0e2c48159db77ed150eefbef, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerEquipmentSlotUI
+  dataSource: {fileID: 0}
+  slotInformation:
+    icon: {fileID: 2907053801801702810}
+    dataNameText: {fileID: 0}
+    amountText: {fileID: 0}
+  classification:
+    seriesText: {fileID: 0}
+    gradeText: {fileID: 0}
+    seriesIcon: {fileID: 0}
+    gradeIcon: {fileID: 0}
+    series: 0
+    grade: -1
+  amountImage: {fileID: 0}
+  locked: {fileID: 0}
+  ready: {fileID: 0}
+  IsLocked: 0
+  currentItem:
+    itemData: {fileID: 0}
+    amount: 0
+  slotButton: {fileID: 0}
+  slotToggle: {fileID: 5188265481251609521}
+  slotNumberText: {fileID: 0}
+  normalPlantPreview: {fileID: 3680740000000000002}
+  bossPlantPreview: {fileID: 3680740000000000003}
+--- !u!114 &3680740000000000002 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5704112146065660191, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
+  m_PrefabInstance: {fileID: 1155434350460492674}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9146464070970329240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a3f5b214a30c2d40a875f5d7a93b459, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySlotUI
+--- !u!114 &3680740000000000003 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5704112146065660191, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
+  m_PrefabInstance: {fileID: 2734255337480131698}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5410001044749682536}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a3f5b214a30c2d40a875f5d7a93b459, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySlotUI
