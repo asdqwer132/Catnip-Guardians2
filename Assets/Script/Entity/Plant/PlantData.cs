@@ -31,6 +31,7 @@ public class PlantData : DefaultData
     [Space(10)]
     [Tooltip("Growth order: first is the seed, last is fully grown. Intermediate sprites change at equal progress intervals.")]
     public Sprite[] growthSprites = new Sprite[0];
+    public PlantBattleVisualData battleVisual;
 
     public Sprite GetGrowthSprite(float progress01)
     {

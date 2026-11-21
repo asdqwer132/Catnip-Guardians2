@@ -278,6 +278,7 @@ public class ActorAttack : MonoBehaviour
             if (string.IsNullOrEmpty(category))
                 category = target != null && target.TargetTransform != null ? target.TargetTransform.gameObject.tag : gameObject.tag;
             SceneAudioChannel.PlaySfx(gameObject, category);
+            if (target?.TargetDamageable is Plant plant) plant.PlaySlotAttackReaction();
             enemyOwner.NotifySlotAttack();
             return;
         }

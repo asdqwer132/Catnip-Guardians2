@@ -91,6 +91,8 @@ public class ItemThrowExecutor : MonoBehaviour
         );
 
         flightScope.Close();
+        if (parentContext == null && owner != null && owner.TryGetComponent<Player>(out var player))
+            player.PlayThrowAnimation(targetPosition);
         return true;
     }
 

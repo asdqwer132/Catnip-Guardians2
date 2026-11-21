@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[DefaultExecutionOrder(20)]
 [BuffTargetGroups("Player")]
 public class Player : MonoBehaviour, IDynamicBuffReceiver, IBuffTarget
 {
@@ -12,6 +13,20 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver, IBuffTarget
     public ActorMover mover;
     public MovePingController movePingController;
     public PlayerRangeIndicatorController rangeIndicatorController;
+
+    [Header("Battle Display")]
+    [SerializeField] private PlayerBattleVisualData battleVisual;
+    [SerializeField] private Animator displayAnimator;
+    [SerializeField] private SpriteRenderer displaySprite;
+    [SerializeField] private Transform movementCenter;
+    [SerializeField] private bool allowManualMove = true;
+
+    private readonly BattleAnimationPlayer animationPlayer = new BattleAnimationPlayer();
+    private Sprite defaultSprite;
+    private Vector3 initialPosition;
+    private float nextMoveAt;
+    private int lastThrowFrame = -1;
+    private bool isThrowing;
 
     [Header("Move")]
     public bool canMove = true;
@@ -41,7 +56,9 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver, IBuffTarget
         if (rangeIndicatorController == null)
             rangeIndicatorController = GetComponent<PlayerRangeIndicatorController>();
 
-        moveTargetPosition = transform.position;
+        initialPosition = transform.position;
+        moveTargetPosition = initialPosition;
+        if (displaySprite != null) defaultSprite = displaySprite.sprite;
 
         RefreshBuffedStat();
     }
@@ -50,17 +67,79 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver, IBuffTarget
     {
         RegisterToBuffManager();
         SubscribeInput();
+        ScheduleCircleMove();
     }
 
     private void OnDisable()
     {
         UnregisterFromBuffManager();
         UnsubscribeInput();
+        StopMove();
+        animationPlayer.Stop();
+        isThrowing = false;
+        if (displaySprite != null) displaySprite.sprite = defaultSprite;
     }
 
     private void Update()
     {
+        if (isThrowing || (GameEndManager.instance != null && GameEndManager.instance.IsGameEnded) ||
+            (GameInputManager.instance != null && GameInputManager.instance.IsBlocked(GameInputBlockType.Gameplay))) return;
+
+        if (canMove && !hasMoveTarget && battleVisual != null && battleVisual.useCircleMovement &&
+            battleVisual.radius > 0f && Time.time >= nextMoveAt)
+        {
+            Vector3 center = movementCenter != null ? movementCenter.position : initialPosition;
+            float angle = Random.Range(0f, Mathf.PI * 2f);
+            Vector3 radial = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle));
+            SetDestination(center + radial * battleVisual.radius);
+        }
         MoveToTarget();
+    }
+
+    private void LateUpdate()
+    {
+        if (battleVisual == null) return;
+
+        if (isThrowing)
+        {
+            animationPlayer.Tick(Time.deltaTime, false);
+            if (!animationPlayer.IsFinished) return;
+            isThrowing = false;
+            animationPlayer.Stop();
+        }
+
+        bool moving = mover != null && mover.IsMoving;
+        if (moving) Face(mover.CurrentMoveDirection.x);
+        var clip = moving ? battleVisual.move : battleVisual.idle;
+        animationPlayer.Play(displayAnimator, clip);
+        if (!animationPlayer.IsPlaying && displaySprite != null) displaySprite.sprite = defaultSprite;
+        animationPlayer.Tick(Time.deltaTime, true);
+    }
+
+    public void PlayThrowAnimation(Vector3 target)
+    {
+        if (!isActiveAndEnabled || battleVisual == null) return;
+        // Multiple items thrown together share the pose and keep the first facing.
+        if (lastThrowFrame == Time.frameCount) return;
+        lastThrowFrame = Time.frameCount;
+        Face(target.x - transform.position.x);
+        if (battleVisual.attack == null || displayAnimator == null) return;
+        mover?.Stop();
+        animationPlayer.Play(displayAnimator, battleVisual.attack, restart: true);
+        isThrowing = true;
+    }
+
+    private void Face(float horizontal)
+    {
+        if (displaySprite != null && Mathf.Abs(horizontal) > .001f)
+            displaySprite.flipX = horizontal < 0f;
+    }
+
+    private void ScheduleCircleMove()
+    {
+        if (battleVisual == null) return;
+        float variation = battleVisual.intervalVariation;
+        nextMoveAt = Time.time + Mathf.Max(.01f, battleVisual.idleInterval + Random.Range(-variation, variation));
     }
 
     private void RegisterToBuffManager()
@@ -146,7 +225,7 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver, IBuffTarget
 
     private void SetMoveTargetFromInput()
     {
-        if (!canMove)
+        if (!canMove || !allowManualMove)
             return;
 
         if (GameInputManager.instance == null)
@@ -160,13 +239,16 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver, IBuffTarget
 
     public void SetMoveTarget(Vector3 targetPosition)
     {
-        targetPosition.z = transform.position.z;
-
-        moveTargetPosition = targetPosition;
-        hasMoveTarget = true;
-
+        SetDestination(targetPosition);
         if (movePingController != null)
             movePingController.ShowPing(moveTargetPosition);
+    }
+
+    private void SetDestination(Vector3 targetPosition)
+    {
+        targetPosition.z = transform.position.z;
+        moveTargetPosition = targetPosition;
+        hasMoveTarget = true;
     }
 
     private void MoveToTarget()
@@ -188,7 +270,8 @@ public class Player : MonoBehaviour, IDynamicBuffReceiver, IBuffTarget
         if (distance <= stopDistance)
         {
             StopMove();
-            movePingController.HidePing();
+            movePingController?.HidePing();
+            ScheduleCircleMove();
             return;
         }
 
