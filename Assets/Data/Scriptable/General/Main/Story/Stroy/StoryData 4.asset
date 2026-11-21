@@ -12,14 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c1a70fcd7e8f8c42920e122a812509f, type: 3}
   m_Name: StoryData 4
   m_EditorClassIdentifier: Assembly-CSharp::StoryData
-  sprites:
-  - {fileID: -7568637311315393400, guid: 308660d4c7bfbc94ca4c6913e83bcddd, type: 3}
-  - {fileID: 6153137791131425073, guid: 25c9807b97a77e7428f9463626809a31, type: 3}
-  - {fileID: 1905244558592257038, guid: 1db4424e8f976cc4eb9dbd7706cff940, type: 3}
-  - {fileID: -8205705246009586327, guid: e48a1934bc4e99b458b0a9b8e9027e51, type: 3}
-  - {fileID: 1004276775728783810, guid: f5ad600dbfdcb364499232bb6ea6c2aa, type: 3}
   dialogues:
-  - nextImage: 0
+  - background: {fileID: 21300000, guid: 73c493a0b3ab6e04baa54aba9cf2ef31, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: 0}
     translations:
     - languageType: 0
       speaker: Narrator
@@ -30,7 +26,9 @@ MonoBehaviour:
       dialogue: "\uB204\uC544\uAC00 \uC0C8 \uBC14\uD034 \uD14C\uB97C \uB450\uB4DC\uB824
         \uB07C\uC6B0\uACE0 \uBAA8\uCE74\uAC00 \uBC14\uD034\uB97C \uBD99\uC7A1\uC558\uB2E4.
         \uC218\uB808\uB294 \uB2E4\uC2DC \uC6C0\uC9C1\uC77C \uC900\uBE44\uB97C \uB9C8\uCCE4\uB2E4."
-  - nextImage: 0
+  - background: {fileID: 21300000, guid: 73c493a0b3ab6e04baa54aba9cf2ef31, type: 3}
+    leftCharacter: {fileID: -8000596390684728517, guid: 607807caba3f0d540925c77c91b174e4, type: 3}
+    rightCharacter: {fileID: 0}
     translations:
     - languageType: 0
       speaker: Mocha
@@ -38,7 +36,9 @@ MonoBehaviour:
     - languageType: 1
       speaker: "\uBAA8\uCE74"
       dialogue: "\uC774 \uC815\uB3C4\uBA74 \uB2AA\uAE38\uB3C4 \uBC84\uD2F0\uACA0\uC9C0!"
-  - nextImage: 1
+  - background: {fileID: 21300000, guid: 73c493a0b3ab6e04baa54aba9cf2ef31, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: 0}
     translations:
     - languageType: 0
       speaker: Narrator
@@ -49,7 +49,9 @@ MonoBehaviour:
       dialogue: "\uBAA8\uCE74\uC640 \uB204\uC544\uB294 \uBC18\uB4EF\uD558\uAC8C \uB9CC\uB4E0
         \uC8FC\uAD34\uB97C \uB178\uC810\uC5D0 \uC62C\uB838\uB2E4. \uC554\uC0C1\uC778\uC740
         \uBB34\uAC8C\uB97C \uC7AC\uBA70 \uC6C3\uC5C8\uB2E4."
-  - nextImage: 0
+  - background: {fileID: 21300000, guid: 73c493a0b3ab6e04baa54aba9cf2ef31, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: 0}
     translations:
     - languageType: 0
       speaker: Merchant
@@ -58,7 +60,9 @@ MonoBehaviour:
       speaker: "\uC554\uC0C1\uC778"
       dialogue: "\uBB3C\uAC74\uC740 \uC88B\uB124. \uC5F4\uC1E0\uB294 \uC544\uC9C1
         \uC880 \uBAA8\uC790\uB77C\uC9C0\uB9CC."
-  - nextImage: 1
+  - background: {fileID: 21300000, guid: 73c493a0b3ab6e04baa54aba9cf2ef31, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: 0}
     translations:
     - languageType: 0
       speaker: Narrator
@@ -69,7 +73,9 @@ MonoBehaviour:
       dialogue: "\uC554\uC0C1\uC778\uC740 \uB354 \uC624\uB978 \uC5F4\uC1E0\uAC12\uC744
         \uAC00\uB9AC\uD0A4\uB354\uB2C8 \uC816\uACE0 \uCC22\uC5B4\uC9C4 \uB36E\uAC1C\uB97C
         \uB0B4\uBC00\uC5C8\uB2E4."
-  - nextImage: 0
+  - background: {fileID: 21300000, guid: 73c493a0b3ab6e04baa54aba9cf2ef31, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: 0}
     translations:
     - languageType: 0
       speaker: Merchant
@@ -79,7 +85,9 @@ MonoBehaviour:
       speaker: "\uC554\uC0C1\uC778"
       dialogue: "\uB2AA\uC744 \uAC74\uB108\uB824\uBA74 \uBC29\uC218\uC81C\uAC00 \uD544\uC694\uD574.
         \uB9C8\uBB3C \uBE44\uB298 \uC815\uC218\uB97C \uAC00\uC838\uC640."
-  - nextImage: 1
+  - background: {fileID: 21300000, guid: 73c493a0b3ab6e04baa54aba9cf2ef31, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: 0}
     translations:
     - languageType: 0
       speaker: Narrator
@@ -91,7 +99,9 @@ MonoBehaviour:
         \uC815\uC218\uB97C \uB9CC\uB4E4\uACE0 \uC788\uC5C8\uB2E4. \uBB3C\uC774 \uC791\uC5C5\uB300\uAE4C\uC9C0
         \uCC28\uC624\uB974\uC790 \uB204\uC544\uAC00 \uBC1B\uCE68\uC744 \uC138\uC6B0\uACE0
         \uBAA8\uCE74\uAC00 \uC801\uC744 \uB9C9\uC558\uB2E4."
-  - nextImage: 0
+  - background: {fileID: 21300000, guid: 73c493a0b3ab6e04baa54aba9cf2ef31, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: 3870107277556667874, guid: 14b1de42f0c1a7547a84a35461671803, type: 3}
     translations:
     - languageType: 0
       speaker: Nocti
@@ -100,7 +110,9 @@ MonoBehaviour:
       speaker: "\uB179\uD2F0"
       dialogue: "\uC870\uAE08\uB9CC \uBC84\uD168 \uC918\uC694. \uAC70\uC758 \uB2E4
         \uB410\uC5B4\uC694!"
-  - nextImage: 1
+  - background: {fileID: 21300000, guid: 73c493a0b3ab6e04baa54aba9cf2ef31, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: 0}
     translations:
     - languageType: 0
       speaker: Narrator
@@ -111,7 +123,9 @@ MonoBehaviour:
       dialogue: "\uB179\uD2F0\uAC00 \uAD6C\uB9AC \uAD00\uC744 \uC5F0\uACB0\uD558\uC790
         \uCD08\uB85D \uC815\uC218\uAC00 \uD55C \uBC29\uC6B8\uC529 \uB5A8\uC5B4\uC84C\uB2E4.
         \uBAA8\uCE74\uB294 \uB36E\uAC1C\uC5D0 \uBC14\uB97C \uCC9C\uC744 \uC900\uBE44\uD588\uB2E4."
-  - nextImage: 0
+  - background: {fileID: 21300000, guid: 73c493a0b3ab6e04baa54aba9cf2ef31, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: 3870107277556667874, guid: 14b1de42f0c1a7547a84a35461671803, type: 3}
     translations:
     - languageType: 0
       speaker: Nocti

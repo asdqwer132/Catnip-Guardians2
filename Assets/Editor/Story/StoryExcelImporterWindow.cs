@@ -5,7 +5,7 @@ using UnityEngine;
 
 public sealed class StoryExcelImporterWindow : EditorWindow
 {
-    [SerializeField] private string workbook = "Assets/Data/Excel/StoryData.xlsx";
+    [SerializeField] private string workbook = "Assets/Data/Excel/VisualNovelExample.xlsx";
     [SerializeField] private string outputFolder = "Assets/Data/Scriptable/Story/ExcelTest";
     private List<StoryExcelImporter.Entry> preview;
     private string status;
@@ -21,15 +21,15 @@ public sealed class StoryExcelImporterWindow : EditorWindow
         DataExcelGUI.Workbook(ref workbook, "스토리 엑셀 선택");
         if (DataExcelGUI.AdditionalSettings(ref showSettings))
         {
-        outputFolder = EditorGUILayout.TextField("출력 폴더", outputFolder);
-        EditorGUILayout.LabelField("Sheets: english, korean. Sprite order: natural filename order.", EditorStyles.wordWrappedLabel);
+            outputFolder = EditorGUILayout.TextField("출력 폴더", outputFolder);
+            EditorGUILayout.LabelField("Sheets: english, korean. Sprite: Assets/path.png or Assets/path.png#SpriteName.", EditorStyles.wordWrappedLabel);
         }
         DataExcelGUI.Actions(() => Run(false), () => Run(true));
         scroll = EditorGUILayout.BeginScrollView(scroll);
         if (!string.IsNullOrEmpty(status)) EditorGUILayout.LabelField(status, EditorStyles.wordWrappedLabel);
         if (preview != null)
             foreach (var entry in preview)
-                EditorGUILayout.LabelField($"{entry.assetPath}\n{entry.sprites.Length} images / {entry.dialogues.Length} dialogues", EditorStyles.wordWrappedLabel);
+                EditorGUILayout.LabelField($"{entry.assetPath}\n{entry.dialogues.Length} dialogues", EditorStyles.wordWrappedLabel);
         EditorGUILayout.EndScrollView();
     }
 

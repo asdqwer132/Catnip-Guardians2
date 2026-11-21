@@ -17,7 +17,12 @@ public class StoryData : ScriptableObject
     [Serializable]
     public class DialogueData
     {
-        public bool nextImage;
+        public Sprite background;
+        public Sprite leftCharacter;
+        public Sprite rightCharacter;
+        public string backgroundTrigger;
+        public string leftTrigger;
+        public string rightTrigger;
         public LocalizedDialogue[] translations;
 
         public LocalizedDialogue GetDialogue(language selected)
@@ -26,16 +31,13 @@ public class StoryData : ScriptableObject
 
             foreach (var data in translations)
             {
-                if (data.languageType == selected)
+                if (data != null && data.languageType == selected)
                     return data;
             }
 
             return null;
         }
     }
-
-    [Header("Sprites")]
-    public Sprite[] sprites;
 
     [Header("Dialogues")]
     public DialogueData[] dialogues;

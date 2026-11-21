@@ -7,8 +7,15 @@ public class StoryManager : MonoBehaviour, ISceneLocalizedUI
     [Header("Stories")]
     [SerializeField] private StoryData[] stories;
 
-    [Header("Cuts")]
-    [SerializeField] private Image[] cuts;
+    [Header("Visual Novel")]
+    [SerializeField] private Image background;
+    [SerializeField] private Image leftCharacter;
+    [SerializeField] private Image rightCharacter;
+    [SerializeField] private Animator backgroundAnimator;
+    [SerializeField] private Animator leftAnimator;
+    [SerializeField] private Animator rightAnimator;
+
+    [Header("Dialogue")]
     [SerializeField] private TMP_Text pageText;
     [SerializeField] private TMP_Text dialogueText;
     [SerializeField] private TMP_Text speakerText;
@@ -27,7 +34,6 @@ public class StoryManager : MonoBehaviour, ISceneLocalizedUI
 
     private int currentStoryIndex;
     private int currentDialogueIndex;
-    private int currentCutIndex;
     private bool isPlaying;
     private StoryData requestedStory;
     private bool independentStory;
@@ -39,11 +45,11 @@ public class StoryManager : MonoBehaviour, ISceneLocalizedUI
     {
         foreach (var btn in (prevButtons ?? System.Array.Empty<Button>()))
             if (btn != null)
-                btn.onClick.AddListener(PrevCut);
+                btn.onClick.AddListener(PreviousDialogue);
 
         foreach (var btn in (nextButtons ?? System.Array.Empty<Button>()))
             if (btn != null)
-                btn.onClick.AddListener(NextCut);
+                btn.onClick.AddListener(NextDialogue);
 
         foreach (var btn in (skipButtons ?? System.Array.Empty<Button>()))
             if (btn != null)
@@ -68,7 +74,7 @@ public class StoryManager : MonoBehaviour, ISceneLocalizedUI
         {
             requestedStory = StoryProgressManager.Instance.PlayingStory;
             independentStory = true;
-            currentDialogueIndex = currentCutIndex = 0;
+            currentDialogueIndex = 0;
             isPlaying = true;
             RefreshView();
             return;
@@ -95,13 +101,12 @@ public class StoryManager : MonoBehaviour, ISceneLocalizedUI
         requestedReturnScene = null;
         currentStoryIndex = index;
         currentDialogueIndex = 0;
-        currentCutIndex = 0;
         isPlaying = true;
 
         RefreshView();
     }
 
-    public void NextCut()
+    public void NextDialogue()
     {
         if (!isPlaying) return;
 
@@ -118,7 +123,7 @@ public class StoryManager : MonoBehaviour, ISceneLocalizedUI
         RefreshView();
     }
 
-    public void PrevCut()
+    public void PreviousDialogue()
     {
         if (!isPlaying || currentDialogueIndex <= 0)
             return;
@@ -148,49 +153,36 @@ public class StoryManager : MonoBehaviour, ISceneLocalizedUI
 
     private void RefreshView()
     {
-        RefreshCuts();
+        RefreshVisuals();
         RefreshLanguage();
         RefreshButtons();
     }
 
-    private void RefreshCuts()
+    private void RefreshVisuals()
     {
-        var story = CurrentStory;
-        var dialogues = story.dialogues;
+        var dialogues = CurrentStory.dialogues;
+        var line = dialogues != null && currentDialogueIndex < dialogues.Length ? dialogues[currentDialogueIndex] : null;
+        ShowLayer(background, backgroundAnimator, line?.background, line?.backgroundTrigger);
+        ShowLayer(leftCharacter, leftAnimator, line?.leftCharacter, line?.leftTrigger);
+        ShowLayer(rightCharacter, rightAnimator, line?.rightCharacter, line?.rightTrigger);
+    }
 
-        currentCutIndex = 0;
-
-        if (dialogues != null)
+    private static void ShowLayer(Image image, Animator animator, Sprite sprite, string trigger)
+    {
+        if (image != null)
         {
-            for (int i = 0;
-                 i <= currentDialogueIndex && i < (dialogues?.Length ?? 0);
-                 i++)
-            {
-                if (dialogues[i] != null && dialogues[i].nextImage)
-                    currentCutIndex++;
-            }
+            image.sprite = sprite;
+            image.enabled = sprite != null;
         }
 
-        int spriteCount = story.sprites?.Length ?? 0;
+        if (sprite == null || string.IsNullOrWhiteSpace(trigger) || animator == null ||
+            !animator.isActiveAndEnabled || animator.runtimeAnimatorController == null) return;
 
-        currentCutIndex = Mathf.Clamp(
-            currentCutIndex,
-            0,
-            Mathf.Max(0, spriteCount - 1)
-        );
-
-        for (int i = 0; cuts != null && i < cuts.Length; i++)
+        foreach (var parameter in animator.parameters)
         {
-            if (cuts[i] == null) continue;
-
-            bool active = i < spriteCount;
-            cuts[i].gameObject.SetActive(active);
-
-            if (active)
-            {
-                cuts[i].sprite = story.sprites[i];
-                cuts[i].enabled = i <= currentCutIndex;
-            }
+            if (parameter.type != AnimatorControllerParameterType.Trigger || parameter.name != trigger) continue;
+            animator.SetTrigger(parameter.nameHash);
+            return;
         }
     }
 
