@@ -13,6 +13,9 @@ public sealed class MergeWallUIFitter : MonoBehaviour
     public BoxCollider2D topCollider;
     public RectTransform inletAnchor;
     public Image backGraphic;
+    [Tooltip("배경 스프라이트가 상자 UI 프레임 밖으로 나가지 않도록 맞춥니다.")]
+    public bool keepBackgroundInsideFrame = true;
+    [SerializeField] private bool showFitGizmos = true;
     [Range(.005f, .2f)] public float leftThickness = .035f;
     [Range(.005f, .2f)] public float rightThickness = .035f;
     [Range(.005f, .2f)] public float bottomThickness = .035f;
@@ -140,12 +143,24 @@ public sealed class MergeWallUIFitter : MonoBehaviour
         if (renderer == null || backGraphic == null || backGraphic.sprite == null ||
             !TryGetUICamera(backGraphic.rectTransform, out var uiCamera)) return;
         var source = backGraphic.rectTransform;
-        Rect area = source.rect;
-        if (area.width <= 0f || area.height <= 0f) return;
+        Rect area = ScreenBounds(source, uiCamera);
+        if (keepBackgroundInsideFrame && TryGetUICamera(frame, out var frameCamera))
+        {
+            Rect frameArea = ScreenBounds(frame, frameCamera);
+            area = Rect.MinMaxRect(Mathf.Max(area.xMin, frameArea.xMin), Mathf.Max(area.yMin, frameArea.yMin),
+                Mathf.Min(area.xMax, frameArea.xMax), Mathf.Min(area.yMax, frameArea.yMax));
+        }
+
+        if (area.width <= 0f || area.height <= 0f)
+        {
+            renderer.enabled = false;
+            return;
+        }
+
         var t = renderer.transform;
         var plane = new Plane(Vector3.forward, t.position);
-        if (!Project(source, uiCamera, plane, area.min, out var lowerLeft) ||
-            !Project(source, uiCamera, plane, area.max, out var upperRight))
+        if (!ProjectScreen(plane, area.min, out var lowerLeft) ||
+            !ProjectScreen(plane, area.max, out var upperRight))
             return;
         var spriteSize = backGraphic.sprite.bounds.size;
         Vector3 span = t.parent != null ? t.parent.InverseTransformVector(upperRight - lowerLeft)
@@ -175,13 +190,78 @@ public sealed class MergeWallUIFitter : MonoBehaviour
 
     private bool Project(RectTransform source, Camera uiCamera, Plane plane, Vector2 point, out Vector3 world)
     {
-        Vector3 uiPoint = source.TransformPoint(point);
-        Vector2 screenPoint = uiCamera != null
-            ? (Vector2)SceneViewportInput.WorldToScreenPoint(uiCamera, uiPoint)
-            : RectTransformUtility.WorldToScreenPoint(null, uiPoint);
-        Ray ray = SceneViewportInput.ScreenPointToRay(worldCamera, screenPoint);
+        return ProjectScreen(plane, ScreenPoint(source, uiCamera, point), out world);
+    }
+
+    private static Vector2 ScreenPoint(RectTransform source, Camera camera, Vector2 point)
+    {
+        Vector3 world = source.TransformPoint(point);
+        return camera != null ? (Vector2)SceneViewportInput.WorldToScreenPoint(camera, world)
+            : RectTransformUtility.WorldToScreenPoint(null, world);
+    }
+
+    private static Rect ScreenBounds(RectTransform source, Camera camera)
+    {
+        Rect rect = source.rect;
+        Vector2 a = ScreenPoint(source, camera, rect.min);
+        Vector2 b = ScreenPoint(source, camera, rect.max);
+        Vector2 c = ScreenPoint(source, camera, new Vector2(rect.xMin, rect.yMax));
+        Vector2 d = ScreenPoint(source, camera, new Vector2(rect.xMax, rect.yMin));
+        Vector2 min = Vector2.Min(Vector2.Min(a, b), Vector2.Min(c, d));
+        Vector2 max = Vector2.Max(Vector2.Max(a, b), Vector2.Max(c, d));
+        return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
+    }
+
+    private bool ProjectScreen(Plane plane, Vector2 point, out Vector3 world)
+    {
+        Ray ray = SceneViewportInput.ScreenPointToRay(worldCamera, point);
         bool hit = plane.Raycast(ray, out float distance);
         world = ray.GetPoint(distance);
         return hit;
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (!showFitGizmos || box == null || worldCamera == null) return;
+        Color previousColor = Gizmos.color;
+        Matrix4x4 previousMatrix = Gizmos.matrix;
+        Gizmos.matrix = Matrix4x4.identity;
+        DrawProjectedRect(frame, box.transform.position, Color.cyan);
+
+        foreach (var part in box.visuals)
+        {
+            if (part == null || part.role != MergeBoxSpriteRole.BackFrame || part.renderer == null) continue;
+            var renderer = part.renderer;
+            DrawProjectedRect(backGraphic != null ? backGraphic.rectTransform : null,
+                renderer.transform.position, Color.yellow);
+            if (!renderer.enabled || renderer.sprite == null) continue;
+            Gizmos.color = Color.green;
+            Gizmos.matrix = renderer.transform.localToWorldMatrix;
+            Bounds bounds = renderer.localBounds;
+            Gizmos.DrawWireCube(bounds.center, bounds.size);
+            Gizmos.matrix = Matrix4x4.identity;
+        }
+
+        Gizmos.matrix = previousMatrix;
+        Gizmos.color = previousColor;
+    }
+
+    private void DrawProjectedRect(RectTransform source, Vector3 depth, Color color)
+    {
+        if (!TryGetUICamera(source, out var camera)) return;
+        var plane = new Plane(Vector3.forward, depth);
+        Rect area = source.rect;
+        if (!Project(source, camera, plane, area.min, out var a) ||
+            !Project(source, camera, plane, new Vector2(area.xMax, area.yMin), out var b) ||
+            !Project(source, camera, plane, area.max, out var c) ||
+            !Project(source, camera, plane, new Vector2(area.xMin, area.yMax), out var d)) return;
+
+        Gizmos.color = color;
+        Gizmos.DrawLine(a, b);
+        Gizmos.DrawLine(b, c);
+        Gizmos.DrawLine(c, d);
+        Gizmos.DrawLine(d, a);
+    }
+#endif
 }
