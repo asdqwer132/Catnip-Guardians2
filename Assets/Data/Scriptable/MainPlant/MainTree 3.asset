@@ -17,12 +17,13 @@ MonoBehaviour:
   dataNumbering: 
   dataId: MainTree 3
   dataType: 0
+  grade: -1
+  series: 0
   growthVisuals:
   - {fileID: 11401000}
   - {fileID: 11401001}
   - {fileID: 11401002}
   - {fileID: 11401003}
-  - {fileID: 11401004}
   maxHP: 100
   nutrientsRequired: 10
   nutrientsPerSecond: 1
@@ -69,8 +70,8 @@ MonoBehaviour:
   m_Name: MainTree 3 Stage 1
   m_EditorClassIdentifier: Assembly-CSharp::PlantBattleVisualData
   sprite: {fileID: 1889607551, guid: 30bcdbb257bf63a479229f78b3f2b570, type: 3}
-  idle: {fileID: 0}
-  hurt: {fileID: 0}
+  idle: {fileID: 7400000, guid: 97c51c04d64abda41a4cf863b8187c01, type: 2}
+  hurt: {fileID: 7400000, guid: 0d99b67a1f0be0b4eb50b6c76791e1a8, type: 2}
   useHurtCooldown: 1
   hurtCooldown: 0.5
   growthEffect: {fileID: 0}
@@ -87,8 +88,8 @@ MonoBehaviour:
   m_Name: MainTree 3 Stage 2
   m_EditorClassIdentifier: Assembly-CSharp::PlantBattleVisualData
   sprite: {fileID: 672682046, guid: 30bcdbb257bf63a479229f78b3f2b570, type: 3}
-  idle: {fileID: 0}
-  hurt: {fileID: 0}
+  idle: {fileID: 7400000, guid: cc719acf0ca92154fbd1270e0c635cf4, type: 2}
+  hurt: {fileID: 7400000, guid: faef1f92ca9fa114194c7f9111388b19, type: 2}
   useHurtCooldown: 1
   hurtCooldown: 0.5
   growthEffect: {fileID: 0}
@@ -105,8 +106,8 @@ MonoBehaviour:
   m_Name: MainTree 3 Stage 3
   m_EditorClassIdentifier: Assembly-CSharp::PlantBattleVisualData
   sprite: {fileID: -356286447, guid: 30bcdbb257bf63a479229f78b3f2b570, type: 3}
-  idle: {fileID: 0}
-  hurt: {fileID: 0}
+  idle: {fileID: 7400000, guid: 4c00803f83f76804e88ee862a183b58d, type: 2}
+  hurt: {fileID: 7400000, guid: d4f08b6729d758d44a694f49350b1608, type: 2}
   useHurtCooldown: 1
   hurtCooldown: 0.5
   growthEffect: {fileID: 0}
@@ -123,8 +124,8 @@ MonoBehaviour:
   m_Name: MainTree 3 Stage 4
   m_EditorClassIdentifier: Assembly-CSharp::PlantBattleVisualData
   sprite: {fileID: 1550304631, guid: 30bcdbb257bf63a479229f78b3f2b570, type: 3}
-  idle: {fileID: 0}
-  hurt: {fileID: 0}
+  idle: {fileID: 7400000, guid: c1006520b4d3ed849affeb92d39cc90f, type: 2}
+  hurt: {fileID: 7400000, guid: b75d2c315c4c82b4abb61e1089ac8b4a, type: 2}
   useHurtCooldown: 1
   hurtCooldown: 0.5
   growthEffect: {fileID: 0}

@@ -24,7 +24,6 @@ MonoBehaviour:
   - {fileID: 11401001}
   - {fileID: 11401002}
   - {fileID: 11401003}
-  - {fileID: 11401004}
   maxHP: 100
   nutrientsRequired: 10000
   nutrientsPerSecond: 1
@@ -74,8 +73,8 @@ MonoBehaviour:
   m_Name: MainTree 1 Stage 1
   m_EditorClassIdentifier: Assembly-CSharp::PlantBattleVisualData
   sprite: {fileID: 1076134543, guid: 000cf1c15f864e64c970de36d69182ba, type: 3}
-  idle: {fileID: 0}
-  hurt: {fileID: 0}
+  idle: {fileID: 7400000, guid: cb3acba238f1cb942ad69a4c0b8db7c3, type: 2}
+  hurt: {fileID: 7400000, guid: 141d9ed092411f74083202acd9c3c826, type: 2}
   useHurtCooldown: 1
   hurtCooldown: 0.5
   growthEffect: {fileID: 0}
@@ -92,8 +91,8 @@ MonoBehaviour:
   m_Name: MainTree 1 Stage 2
   m_EditorClassIdentifier: Assembly-CSharp::PlantBattleVisualData
   sprite: {fileID: -963339712, guid: 000cf1c15f864e64c970de36d69182ba, type: 3}
-  idle: {fileID: 0}
-  hurt: {fileID: 0}
+  idle: {fileID: 7400000, guid: 6c5e85923c6d088409f3269248a58f80, type: 2}
+  hurt: {fileID: 7400000, guid: c860298fa6822174bb4247ee9c98b9b8, type: 2}
   useHurtCooldown: 1
   hurtCooldown: 0.5
   growthEffect: {fileID: 0}
@@ -110,8 +109,8 @@ MonoBehaviour:
   m_Name: MainTree 1 Stage 3
   m_EditorClassIdentifier: Assembly-CSharp::PlantBattleVisualData
   sprite: {fileID: 1550449559, guid: 000cf1c15f864e64c970de36d69182ba, type: 3}
-  idle: {fileID: 0}
-  hurt: {fileID: 0}
+  idle: {fileID: 7400000, guid: cd4b7db05ea533643b9b5e5ec8d1f801, type: 2}
+  hurt: {fileID: 7400000, guid: 4c021ec30feffc3499d6f8259e14c6c4, type: 2}
   useHurtCooldown: 1
   hurtCooldown: 0.5
   growthEffect: {fileID: 0}
@@ -128,26 +127,8 @@ MonoBehaviour:
   m_Name: MainTree 1 Stage 4
   m_EditorClassIdentifier: Assembly-CSharp::PlantBattleVisualData
   sprite: {fileID: -446725817, guid: 000cf1c15f864e64c970de36d69182ba, type: 3}
-  idle: {fileID: 0}
-  hurt: {fileID: 0}
-  useHurtCooldown: 1
-  hurtCooldown: 0.5
-  growthEffect: {fileID: 0}
---- !u!114 &11401004
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b5104adf2944135b10f6f1fda8b1981, type: 3}
-  m_Name: MainTree 1 Stage 5
-  m_EditorClassIdentifier: Assembly-CSharp::PlantBattleVisualData
-  sprite: {fileID: 2141502318, guid: 000cf1c15f864e64c970de36d69182ba, type: 3}
-  idle: {fileID: 0}
-  hurt: {fileID: 0}
+  idle: {fileID: 7400000, guid: 16315353cdeed5a4d8dce087ceffa404, type: 2}
+  hurt: {fileID: 7400000, guid: 8ccc1f36778cd6044b3d6336eec94725, type: 2}
   useHurtCooldown: 1
   hurtCooldown: 0.5
   growthEffect: {fileID: 0}

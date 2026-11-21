@@ -1113,7 +1113,7 @@ GameObject:
   - component: {fileID: 1230235208}
   - component: {fileID: 990250000001}
   m_Layer: 0
-  m_Name: UIComponnent
+  m_Name: DisplayComponet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1149,28 +1149,6 @@ MonoBehaviour:
   spriteRenderer: {fileID: 1230235208}
   displayAnimator: {fileID: 990250000001}
   defaultBattleVisual: {fileID: 11400000, guid: 9e5a4e6873d946ab8daa909c6cbcfc09, type: 2}
---- !u!95 &990250000001
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 329843152}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage:
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &332667244
 GameObject:
   m_ObjectHideFlags: 0
@@ -2058,15 +2036,15 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.2
-    y: 0.0625
-    width: 0.6
-    height: 0.875
+    x: 0
+    y: 0
+    width: 1
+    height: 1
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 4.285714
+  orthographic size: 4.375
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -9762,9 +9740,9 @@ Canvas:
   m_GameObject: {fileID: 775106883}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
-  m_Camera: {fileID: 519420031}
-  m_PlaneDistance: 100
+  m_RenderMode: 0
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 0.5
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -18183,15 +18161,15 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1076134543, guid: 000cf1c15f864e64c970de36d69182ba, type: 3}
+  m_Sprite: {fileID: -8841212818224313639, guid: 63f15a5119024ed40a0689e019b38508, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2, y: 2}
+  m_Size: {x: 0.5, y: 0.5}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
 --- !u!4 &1230235209
 Transform:
@@ -18208,7 +18186,6 @@ Transform:
   m_Children:
   - {fileID: 430141813}
   - {fileID: 1571861291}
-  - {fileID: 1952276984}
   - {fileID: 329843153}
   m_Father: {fileID: 2026265277}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -18825,7 +18802,7 @@ GameObject:
   - component: {fileID: 1355081022}
   - component: {fileID: 1355081021}
   m_Layer: 0
-  m_Name: PlayerDisplayer
+  m_Name: DisplayComponent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18856,7 +18833,7 @@ Animator:
   m_GameObject: {fileID: 1355081019}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 05da48aab0413c44e891efab32920c46, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -18917,15 +18894,15 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 2
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 4859444097497657657, guid: 55370924131a36f459dbfb17efb0c13e, type: 3}
+  m_Sprite: {fileID: 5085445101205960362, guid: cc80e8b24aa61394b8731621d0b56f71, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1.5, y: 1.5}
+  m_Size: {x: 0.16, y: 0.15}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
 --- !u!1 &1384822616
 GameObject:
@@ -19379,7 +19356,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1952276984}
   m_Father: {fileID: 1230235209}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1571861292
@@ -20427,7 +20405,7 @@ GameObject:
   - component: {fileID: 1836332730}
   - component: {fileID: 910000500001}
   m_Layer: 0
-  m_Name: PlayerThrower
+  m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -21083,12 +21061,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1952276983}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1230235209}
+  m_Father: {fileID: 1571861291}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1952276985
 MonoBehaviour:
@@ -21116,9 +21094,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TimerManager
   itemEffectExecutor: {fileID: 1952276985}
-  itemDatas:
-  - {fileID: 11400000, guid: 5d094b1a626cdb2469a047be5ba092b9, type: 2}
-  - {fileID: 11400000, guid: b7163e8fd8132f74194f41cfc80b5698, type: 2}
+  itemDatas: []
   timerSteps:
   - 10000
   - 10001
@@ -21574,7 +21550,7 @@ GameObject:
   - component: {fileID: 2045318517}
   - component: {fileID: 2045318515}
   m_Layer: 0
-  m_Name: PlayerComponnt
+  m_Name: RangeComponent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -21775,9 +21751,9 @@ Canvas:
   m_GameObject: {fileID: 2074210488}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
-  m_Camera: {fileID: 519420031}
-  m_PlaneDistance: 100
+  m_RenderMode: 0
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 0.5
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -46683,11 +46659,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.PixelPerfectCamera
   m_ComponentVersion: 1
-  m_AssetsPPU: 32
-  m_RefResolutionX: 368
-  m_RefResolutionY: 280
+  m_AssetsPPU: 64
+  m_RefResolutionX: 788
+  m_RefResolutionY: 560
   m_CropFrame: 0
-  m_GridSnapping: 0
+  m_GridSnapping: 1
   m_FilterMode: 0
   m_UpscaleRT: 0
   m_PixelSnapping: 0
@@ -46958,6 +46934,28 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   gizmoColor: {r: 1, g: 0.7, b: 0.1, a: 0.8}
+--- !u!95 &990250000001
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 329843152}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 028906d39a0f8884a96772e05c55f4cc, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &990750000001
 MonoBehaviour:
   m_ObjectHideFlags: 0

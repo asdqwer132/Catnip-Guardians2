@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27249a49db114f1d85631c9d54ef70e2, type: 3}
+  m_Name: Player Battle Visual 1
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerBattleVisualData
+  sprite: {fileID: 4859444097497657657, guid: 55370924131a36f459dbfb17efb0c13e, type: 3}
+  idle: {fileID: 7400000, guid: 364d9fff210acd74aa05249e8dc6dd7b, type: 2}
+  move: {fileID: 7400000, guid: 696cb4d96ab10d1459a80fc3ec271b5f, type: 2}
+  attack: {fileID: 7400000, guid: 2c454547fe3d6c34e8fd29139ce10b4a, type: 2}
+  useCircleMovement: 1
+  radius: 1.5
+  idleInterval: 3
+  intervalVariation: 1

@@ -39,7 +39,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
     flipGreenChannel: 0
-  isReadable: 1
+  isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -52,7 +52,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -66,7 +66,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 32
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -90,7 +90,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 1
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -131,19 +131,19 @@ TextureImporter:
       name: kitten01_attack_strip6_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 32
-        height: 32
+        x: 5
+        y: 6
+        width: 16
+        height: 15
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 5f76344661aecaf4da3afe74421ed435
+      spriteID: aa6b12e2061239640800000000000000
       internalID: 5085445101205960362
       vertices: []
       indices: 
@@ -153,19 +153,19 @@ TextureImporter:
       name: kitten01_attack_strip6_1
       rect:
         serializedVersion: 2
-        x: 32
-        y: 0
-        width: 32
-        height: 32
+        x: 39
+        y: 6
+        width: 21
+        height: 15
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 6c614d4e80fff8746b119649e1f04ea4
+      spriteID: 8c4d305a742b9ce00800000000000000
       internalID: 1065578807630746824
       vertices: []
       indices: 
@@ -175,19 +175,19 @@ TextureImporter:
       name: kitten01_attack_strip6_2
       rect:
         serializedVersion: 2
-        x: 64
-        y: 0
-        width: 32
-        height: 32
+        x: 70
+        y: 6
+        width: 21
+        height: 14
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: c1ce3778130c60941bf829fa0be3e68b
+      spriteID: 6803711fb69f4fe80800000000000000
       internalID: -8145611584004738938
       vertices: []
       indices: 
@@ -197,19 +197,19 @@ TextureImporter:
       name: kitten01_attack_strip6_3
       rect:
         serializedVersion: 2
-        x: 96
-        y: 0
-        width: 32
-        height: 32
+        x: 103
+        y: 6
+        width: 17
+        height: 11
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 6e32d51c910fe314aa7a5495334e9c05
+      spriteID: d36ea281433042970800000000000000
       internalID: 8729105500029511229
       vertices: []
       indices: 
@@ -219,19 +219,19 @@ TextureImporter:
       name: kitten01_attack_strip6_4
       rect:
         serializedVersion: 2
-        x: 128
-        y: 0
-        width: 32
-        height: 32
+        x: 135
+        y: 6
+        width: 17
+        height: 12
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 986b1b8d4569a2d408412a9680b714bc
+      spriteID: 75fd38d07f06cec20800000000000000
       internalID: 3237068846372478807
       vertices: []
       indices: 
@@ -241,19 +241,19 @@ TextureImporter:
       name: kitten01_attack_strip6_5
       rect:
         serializedVersion: 2
-        x: 160
-        y: 0
-        width: 32
-        height: 32
+        x: 167
+        y: 6
+        width: 17
+        height: 14
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 83dc74e4ea812594b8aae6f74b104e61
+      spriteID: 71efecbe8046a24f0800000000000000
       internalID: -852759189954560489
       vertices: []
       indices: 
@@ -263,7 +263,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: beb6b9b68d5c76e498f9e6ea470d2b1c
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
