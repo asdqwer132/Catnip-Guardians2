@@ -35,7 +35,19 @@ public class PlantData : DefaultData
     public int GetGrowthStageIndex(float progress01)
     {
         if (growthVisuals == null || growthVisuals.Length == 0) return -1;
-        return Mathf.FloorToInt(Mathf.Clamp01(progress01) * (growthVisuals.Length - 1));
+        int stageCount = 0;
+        foreach (var stage in growthVisuals)
+            if (stage != null) stageCount++;
+        if (stageCount == 0) return -1;
+
+        int stageNumber = Mathf.FloorToInt(Mathf.Clamp01(progress01) * (stageCount - 1));
+        for (int index = 0; index < growthVisuals.Length; index++)
+        {
+            if (growthVisuals[index] == null) continue;
+            if (stageNumber-- == 0) return index;
+        }
+
+        return -1;
     }
 
     public Sprite GetGrowthSprite(float progress01)

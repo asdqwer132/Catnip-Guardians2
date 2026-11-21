@@ -27,7 +27,9 @@ public class PlantUI : MonoBehaviour
     public void SetGrowthProgress(float progress01)
     {
         int stage = plantData != null ? plantData.GetGrowthStageIndex(progress01) : -1;
-        if (stage != growthStage) ApplyGrowthStage(stage, stage > growthStage);
+        var visual = stage >= 0 ? plantData.growthVisuals[stage] : null;
+        if (stage != growthStage || (visual != null ? visual : defaultBattleVisual) != battleVisual)
+            ApplyGrowthStage(stage, stage > growthStage);
     }
 
     private void ApplyGrowthStage(int stage, bool playGrowthEffect)
