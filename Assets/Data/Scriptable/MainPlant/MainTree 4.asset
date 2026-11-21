@@ -18,11 +18,11 @@ MonoBehaviour:
   dataId: MainTree 4
   dataType: 0
   growthVisuals:
-  - {fileID: 11400000, guid: f88efbb0d0fe4b1ba8cd3b408fffde17, type: 2}
-  - {fileID: 11400000, guid: 85012c2c653a4f76bdd30681aee051f2, type: 2}
-  - {fileID: 11400000, guid: 943d8e1e1fa247c0bdd20685fa14ea0b, type: 2}
-  - {fileID: 11400000, guid: 965806ac207342dd97938bed071f8f9c, type: 2}
-  - {fileID: 11400000, guid: acee61b18db044749b50c61d49abe1b2, type: 2}
+  - {fileID: 11401000}
+  - {fileID: 11401001}
+  - {fileID: 11401002}
+  - {fileID: 11401003}
+  - {fileID: 11401004}
   maxHP: 100
   nutrientsRequired: 10
   nutrientsPerSecond: 1
@@ -56,3 +56,93 @@ MonoBehaviour:
   - dataSet: {fileID: 11400000, guid: 4963b5fff9b2a1342903a2ef1a49b4b1, type: 2}
     spawnWeight: 1
     spawnRate: 1000
+--- !u!114 &11401000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b5104adf2944135b10f6f1fda8b1981, type: 3}
+  m_Name: MainTree 4 Stage 1
+  m_EditorClassIdentifier: Assembly-CSharp::PlantBattleVisualData
+  sprite: {fileID: 8648288515219240390, guid: eee2138deb337c346ac95d245b1a43ff, type: 3}
+  idle: {fileID: 0}
+  hurt: {fileID: 0}
+  useHurtCooldown: 1
+  hurtCooldown: 0.5
+  growthEffect: {fileID: 0}
+--- !u!114 &11401001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b5104adf2944135b10f6f1fda8b1981, type: 3}
+  m_Name: MainTree 4 Stage 2
+  m_EditorClassIdentifier: Assembly-CSharp::PlantBattleVisualData
+  sprite: {fileID: -2293954340948820292, guid: eee2138deb337c346ac95d245b1a43ff, type: 3}
+  idle: {fileID: 0}
+  hurt: {fileID: 0}
+  useHurtCooldown: 1
+  hurtCooldown: 0.5
+  growthEffect: {fileID: 0}
+--- !u!114 &11401002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b5104adf2944135b10f6f1fda8b1981, type: 3}
+  m_Name: MainTree 4 Stage 3
+  m_EditorClassIdentifier: Assembly-CSharp::PlantBattleVisualData
+  sprite: {fileID: 2505622087787812697, guid: eee2138deb337c346ac95d245b1a43ff, type: 3}
+  idle: {fileID: 0}
+  hurt: {fileID: 0}
+  useHurtCooldown: 1
+  hurtCooldown: 0.5
+  growthEffect: {fileID: 0}
+--- !u!114 &11401003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b5104adf2944135b10f6f1fda8b1981, type: 3}
+  m_Name: MainTree 4 Stage 4
+  m_EditorClassIdentifier: Assembly-CSharp::PlantBattleVisualData
+  sprite: {fileID: -1552496811178882113, guid: eee2138deb337c346ac95d245b1a43ff, type: 3}
+  idle: {fileID: 0}
+  hurt: {fileID: 0}
+  useHurtCooldown: 1
+  hurtCooldown: 0.5
+  growthEffect: {fileID: 0}
+--- !u!114 &11401004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b5104adf2944135b10f6f1fda8b1981, type: 3}
+  m_Name: MainTree 4 Stage 5
+  m_EditorClassIdentifier: Assembly-CSharp::PlantBattleVisualData
+  sprite: {fileID: -8389111359959498520, guid: eee2138deb337c346ac95d245b1a43ff, type: 3}
+  idle: {fileID: 0}
+  hurt: {fileID: 0}
+  useHurtCooldown: 1
+  hurtCooldown: 0.5
+  growthEffect: {fileID: 0}
