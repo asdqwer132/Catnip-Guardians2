@@ -5,6 +5,7 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     [Header("Manager")]
     public InitManager initManager;
+    public BattlePlayerManager battlePlayerManager;
     public RoundManager roundManager;
     public GameStatisticsManager statisticsManager;
 
@@ -13,6 +14,11 @@ public class GameManager : MonoBehaviour
         instance = this;
        
     }
+    private void OnDestroy()
+    {
+        if (instance == this) instance = null;
+    }
+
     private void Start()
     {
         RetryGame();
@@ -62,7 +68,7 @@ public class GameManager : MonoBehaviour
         if (initManager != null)
         {
             initManager.isInited = false;
-            initManager.InitAll();
+            initManager.InitAll(battlePlayerManager);
         }
 
 

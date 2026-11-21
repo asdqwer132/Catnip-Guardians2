@@ -26,7 +26,7 @@ public static class SpecialStatusTargetUtility
             case SpecialStatusQueryTarget.AllItems:
                 return BuffQueryContext.ForAllItems();
             case SpecialStatusQueryTarget.PlantHealth:
-                Plant plant = PlantManager.instance != null ? PlantManager.instance.plant : null;
+                Plant plant = GameManager.instance?.battlePlayerManager?.MainPlant;
                 return plant != null && plant.health != null && !plant.IsDead
                     ? BuffQueryContext.ForTarget(plant.health) : null;
             case SpecialStatusQueryTarget.SourceSummon:

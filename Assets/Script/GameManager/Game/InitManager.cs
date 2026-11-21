@@ -3,8 +3,6 @@ using UnityEngine;
 public class InitManager : MonoBehaviour
 {
     [Header("Managers")]
-    public PlantManager plantManager;
-    public Player player;
     public ItemUseManager itemUseManager;
     public BuffManager buffManager;
     public BuffSkillManager buffSkillManager;
@@ -17,7 +15,7 @@ public class InitManager : MonoBehaviour
     public BuffUIManager buffUIManager;
     public bool isInited;
 
-    public void InitAll()
+    public void InitAll(BattlePlayerManager battlePlayerManager)
     {
         if (isInited) return;
         // Clear the old round before effects create any new runtime objects or buffs.
@@ -25,16 +23,13 @@ public class InitManager : MonoBehaviour
         buffManager?.ClearAllBuffs();
         statisticsManager?.ResetRound();
         enemyManager?.PrepareRound();
-        plantManager?.ResetSelectionOverrides();
         UpgradeToGeneralData data = null;
         GameSession.Instance?.TryReadGeneralData(out data);
-        player?.ApplyPlayerData(data?.battlePlayer);
+        battlePlayerManager?.Prepare(data);
         ApplyStartingEffects(data);
 
-        PlantData selectedPlant = player?.CurrentPlayerData?.GetPlant(data?.bossBattle ?? false);
-        plantManager?.SetPlants(selectedPlant);
-        Debug.Log($"[SkillTransfer][Battle APPLIED] index={plantManager?.CurrentPlantIndex}, plant={plantManager?.CurrentPlant?.dataId ?? "none"}", this);
-        if (enemyManager != null && plantManager != null) enemyManager.Init(plantManager.CurrentPlant);
+        battlePlayerManager?.ApplyPlant();
+        if (enemyManager != null && battlePlayerManager != null) enemyManager.Init(battlePlayerManager.CurrentPlant);
         itemUseManager?.Init();
         buffUIManager?.Init();
         OffscreenTargetIndicatorManager.Instance?.ClearAll();
@@ -44,8 +39,6 @@ public class InitManager : MonoBehaviour
     {
         GameSession.Instance?.LoadSkillItems(buffSkillManager);
         Debug.Log("[SkillTransfer][Battle RECEIVE] " + GameSessionSkillDiagnostics.Describe(data), this);
-        if (data != null && data.mainPlantIndex >= 0)
-            plantManager?.SetSkillPlantIndex(data.mainPlantIndex);
         if (buffSkillManager != null)
             buffSkillManager.ExecuteAllRegisteredBuffItems(buffSkillManager.gameObject);
         if (data?.potionSlots == null) return;
@@ -58,6 +51,6 @@ public class InitManager : MonoBehaviour
                     executor.gameObject, ItemEffectOrigin.Potion);
     }
 
-    public void RoundInit() { isInited = false; InitAll(); }
+    public void RoundInit() { isInited = false; InitAll(GameManager.instance?.battlePlayerManager); }
     public void ResetEntity() { DamageArea.ClearAllActiveAreas(); enemyManager?.AllStop(); }
 }

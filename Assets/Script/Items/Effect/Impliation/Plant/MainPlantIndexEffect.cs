@@ -6,7 +6,7 @@ public sealed class MainPlantIndexEffect : ItemEffectData
     [Min(0)] public int plantIndex;
     public override void ExecuteEffect(ItemEffectContext context)
     {
-        var plants = PlantManager.instance;
+        var plants = GameManager.instance?.battlePlayerManager;
         if (plants == null || context == null) return;
         if (context.origin == ItemEffectOrigin.Skill) plants.SetSkillPlantIndex(plantIndex);
         else plants.SetPotionPlantIndex(plantIndex);
