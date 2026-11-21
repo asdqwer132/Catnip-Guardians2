@@ -76,7 +76,6 @@ public class GameSession : MonoBehaviour
         if (mergeBoxUpgrades != null)
         {
             data.boxLevels = mergeBoxUpgrades.CaptureLevels();
-            data.mainPlantIndex = mergeBoxUpgrades.MainPlantIndex;
             data.unlockedSkillNodes = mergeBoxUpgrades.CaptureUnlockedNodes();
         }
         if (potionEquipment != null)

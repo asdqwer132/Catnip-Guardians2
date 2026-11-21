@@ -22,9 +22,6 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
     private IMergeBoxUpgradeSaveStore store;
     private bool loaded, restoring, initialized;
     private bool usesDefaultStore;
-    private int mainPlantIndex = -1;
-    public int MainPlantIndex { get { Initialize(); if (skillTree != null) RebuildLevels(); return mainPlantIndex; } }
-    public void ApplyMainPlantIndex(int index) => mainPlantIndex = Math.Max(mainPlantIndex, Math.Max(0, index));
 
     private void Awake() => Load();
     private void OnEnable()
@@ -170,7 +167,6 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
         progress.boxLevels.Clear();
         foreach (ItemSeries series in Enum.GetValues(typeof(ItemSeries)))
             if (MergeBoxLevelSnapshot.IsBoxSeries(series)) ApplyReward(series, 1);
-        mainPlantIndex = -1;
         foreach (string id in progress.unlockedSkillIds)
         {
             var node = skillNodes.Find(value => value != null && value.ProgressKey == id);
@@ -178,7 +174,6 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
             foreach (var reward in node.rewards)
             {
                 if (reward is MergeBoxLevelSkillReward box) ApplyReward(box.series, box.level);
-                else if (reward is MainPlantIndexSkillReward plant) ApplyMainPlantIndex(plant.plantIndex);
             }
         }
     }

@@ -53,7 +53,6 @@ public sealed class UpgradeToGeneralData
     public List<InventoryItem> materialItems = new List<InventoryItem>();
     public List<SkillItemSnapshot> skillItems = new List<SkillItemSnapshot>();
     public List<SkillNodeData> unlockedSkillNodes = new List<SkillNodeData>();
-    public int mainPlantIndex = -1;
     public List<PotionEquipmentSnapshot> potionSlots = new List<PotionEquipmentSnapshot>();
     public List<MergeBoxLevelSnapshot> boxLevels = new List<MergeBoxLevelSnapshot>();
 
@@ -64,7 +63,7 @@ public sealed class UpgradeToGeneralData
             equipment = equipment?.Copy(),
             battlePlayer = battlePlayer, bossBattle = bossBattle,
             unlockedMergeBoxes = unlockedMergeBoxes != null ? new List<int>(unlockedMergeBoxes) : new List<int> { 1 },
-            materialItems = GameSessionItemCopy.Copy(materialItems), mainPlantIndex = mainPlantIndex,
+            materialItems = GameSessionItemCopy.Copy(materialItems),
             unlockedSkillNodes = unlockedSkillNodes != null ? new List<SkillNodeData>(unlockedSkillNodes) : new List<SkillNodeData>(),
             potionSlots = potionSlots != null ? potionSlots.ConvertAll(value => value?.Copy()) : new List<PotionEquipmentSnapshot>()
         };

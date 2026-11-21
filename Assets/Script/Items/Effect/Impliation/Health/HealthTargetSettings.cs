@@ -25,7 +25,7 @@ public class HealthTargetSettings
         if (context == null || !context.CanContinue) return;
         if (target == HealthTargetMode.Plant)
         {
-            Plant plant = GameManager.instance?.plantManager?.MainPlant;
+            Plant plant = GameManager.instance?.MainPlant;
             Add(plant != null ? plant.health : null, context, results);
         }
         else if (target == HealthTargetMode.Owner)

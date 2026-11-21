@@ -9,7 +9,7 @@ public class GameStatisticsManager : MonoBehaviour
 
     public StatisticsUI ui;
     [Header("Battle Progress Sources (same scene)")]
-    public PlantManager plantManager;
+    public Plant mainPlant;
     public GrowManager growManager;
     [SerializeField] private float battleTimeSeconds;
     [SerializeField] private float gameProgress01;
@@ -118,12 +118,12 @@ public class GameStatisticsManager : MonoBehaviour
     }
     private void CaptureProgress()
     {
-        var selectedPlant = plantManager != null ? plantManager.CurrentPlant : null;
+        var selectedPlant = mainPlant != null ? mainPlant.plantData : null;
         totalStages = selectedPlant != null ? 1 : 0;
         currentStageNumber = totalStages;
         stageProgress01 = growManager != null ? Mathf.Clamp01(growManager.GrowProgress01) : 0f;
         gameProgress01 = stageProgress01;
-        var visual = plantManager != null && plantManager.MainPlant != null ? plantManager.MainPlant.plantUI : null;
+        var visual = mainPlant != null ? mainPlant.plantUI : null;
         currentPlantSprite = visual != null ? visual.CurrentSprite
             : selectedPlant != null ? selectedPlant.GetGrowthSprite(stageProgress01) : null;
     }

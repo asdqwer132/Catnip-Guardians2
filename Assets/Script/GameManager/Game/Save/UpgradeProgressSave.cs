@@ -50,7 +50,6 @@ public static class UpgradeProgressSave
                 {
                     snapshot.skillItems.Clear();
                     snapshot.boxLevels.Clear();
-                    snapshot.mainPlantIndex = -1;
                     RefreshSkillValues(snapshot);
                 }
             }
@@ -69,7 +68,6 @@ public static class UpgradeProgressSave
     public static void RefreshSkillValues(UpgradeToGeneralData data)
     {
         if (data.unlockedSkillNodes == null || data.unlockedSkillNodes.Count == 0) return;
-        data.mainPlantIndex = -1;
         data.skillItems.Clear();
         data.boxLevels.Clear();
         foreach (var node in data.unlockedSkillNodes)
@@ -77,7 +75,6 @@ public static class UpgradeProgressSave
             if (node == null || node.rewards == null) continue;
             foreach (var reward in node.rewards)
             {
-                if (reward is MainPlantIndexSkillReward plant) data.mainPlantIndex = Math.Max(data.mainPlantIndex, plant.plantIndex);
                 if (reward is BuffSkillReward buff && buff.buffItemData != null && !data.skillItems.Exists(value => value.itemData == buff.buffItemData))
                     data.skillItems.Add(new SkillItemSnapshot { itemData = buff.buffItemData });
                 if (reward is MergeBoxLevelSkillReward box)

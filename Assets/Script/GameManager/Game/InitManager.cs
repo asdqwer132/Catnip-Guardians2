@@ -15,7 +15,7 @@ public class InitManager : MonoBehaviour
     public BuffUIManager buffUIManager;
     public bool isInited;
 
-    public void InitAll(BattlePlayerManager battlePlayerManager, PlantManager plantManager)
+    public void InitAll(GameManager game)
     {
         if (isInited) return;
         // Clear the old round before effects create any new runtime objects or buffs.
@@ -25,14 +25,9 @@ public class InitManager : MonoBehaviour
         enemyManager?.PrepareRound();
         UpgradeToGeneralData data = null;
         GameSession.Instance?.TryReadGeneralData(out data);
-        battlePlayerManager?.Prepare(data?.battlePlayer);
-        var player = battlePlayerManager?.CurrentPlayer;
-        plantManager?.Prepare(player?.normalPlant, player?.bossPlant, data?.bossBattle ?? false,
-            data?.mainPlantIndex ?? -1);
+        PlantData selectedPlant = game != null ? game.PrepareBattle(data) : null;
         ApplyStartingEffects(data);
-
-        plantManager?.ApplyStartingPlant();
-        if (enemyManager != null && plantManager != null) enemyManager.Init(plantManager.CurrentPlant);
+        if (game != null) InitializePlant(game.MainPlant, selectedPlant);
         itemUseManager?.Init();
         buffUIManager?.Init();
         OffscreenTargetIndicatorManager.Instance?.ClearAll();
@@ -54,13 +49,19 @@ public class InitManager : MonoBehaviour
                     executor.gameObject, ItemEffectOrigin.Potion);
     }
 
-    public void RoundInit() { isInited = false; InitAll(GameManager.instance?.battlePlayerManager, GameManager.instance?.plantManager); }
-    public void StartBossPhase(PlantManager plantManager)
+    public void RoundInit() { isInited = false; InitAll(GameManager.instance); }
+
+    public void StartBossPhase(Plant plant, PlantData data)
     {
         DamageArea.ClearAllActiveAreas();
         enemyManager?.PrepareRound();
-        plantManager.StartBossPhase();
-        enemyManager?.Init(plantManager.CurrentPlant);
+        InitializePlant(plant, data);
+    }
+
+    private void InitializePlant(Plant plant, PlantData data)
+    {
+        if (plant != null) plant.Init(data);
+        enemyManager?.Init(data);
     }
 
     public void ResetEntity() { DamageArea.ClearAllActiveAreas(); enemyManager?.AllStop(); }

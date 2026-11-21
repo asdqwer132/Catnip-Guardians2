@@ -6,8 +6,7 @@ public static class GameSessionSkillDiagnostics
     {
         if (data == null) return "No UpgradeToGeneralData in GameSession. Using standalone defaults.";
         var text = new StringBuilder();
-        text.Append("skillPlantIndex=").Append(data.mainPlantIndex)
-            .Append(", unlockedNodes=").Append(data.unlockedSkillNodes?.Count ?? 0);
+        text.Append("unlockedNodes=").Append(data.unlockedSkillNodes?.Count ?? 0);
         if (data.unlockedSkillNodes != null)
             foreach (var node in data.unlockedSkillNodes)
             {
@@ -17,7 +16,6 @@ public static class GameSessionSkillDiagnostics
                 if (node.rewards != null) foreach (var reward in node.rewards)
                 {
                     text.Append("\n    Reward=").Append(reward != null ? reward.name : "MISSING");
-                    if (reward is MainPlantIndexSkillReward plant) text.Append(", plantIndex=").Append(plant.plantIndex);
                 }
             }
         text.Append("\n  Registered skill items=").Append(data.skillItems?.Count ?? 0);
@@ -28,8 +26,6 @@ public static class GameSessionSkillDiagnostics
             {
                 text.Append("\n  Potion slot=").Append(entry.slotIndex).Append(", locked=").Append(entry.locked)
                     .Append(", itemId=").Append(entry.potion.dataId);
-                if (entry.potion.effectDatas != null) foreach (var effect in entry.potion.effectDatas)
-                    if (effect is MainPlantIndexEffect plant) text.Append(", potionPlantIndex=").Append(plant.plantIndex);
             }
         return text.ToString();
     }

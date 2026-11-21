@@ -4,7 +4,7 @@ public class RoundManager : MonoBehaviour
 {
     [Header("Manager")]
     public EnemyManager enemyManager;
-    public PlantManager plantManager;
+    public Plant mainPlant;
     public GameEndManager endManager;
 
     public void Victory()
@@ -12,7 +12,7 @@ public class RoundManager : MonoBehaviour
         var result = endManager != null ? endManager : GameEndManager.instance;
         if (result != null && result.IsGameEnded) return;
 
-        if (plantManager == null || plantManager.CurrentPlant == null)
+        if (mainPlant == null || mainPlant.plantData == null)
         {
             Debug.LogWarning("CurrentPlant is null");
             GameOver();
@@ -25,7 +25,7 @@ public class RoundManager : MonoBehaviour
 
     public void AwardCurrentPlantReward()
     {
-        var rewards = plantManager?.CurrentPlant?.reward;
+        var rewards = mainPlant?.plantData?.reward;
         if (rewards == null || GameStatisticsManager.Instance == null) return;
 
         foreach (var reward in rewards)

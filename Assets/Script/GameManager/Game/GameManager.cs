@@ -5,9 +5,11 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     [Header("Manager")]
     public InitManager initManager;
-    public BattlePlayerManager battlePlayerManager;
-    public PlantManager plantManager;
-    [SerializeField] private UnityEngine.Events.UnityEvent onNormalPlantCompleted = new UnityEngine.Events.UnityEvent();
+    [SerializeField] private Player player;
+    [SerializeField] private Plant mainPlant;
+    public Plant MainPlant => mainPlant;
+    private PlantData bossPlant;
+    private bool isBossPhase;
     private bool growthCompletionPending;
     public RoundManager roundManager;
     public GameStatisticsManager statisticsManager;
@@ -35,13 +37,27 @@ public class GameManager : MonoBehaviour
         growthCompletionPending = false;
         if (GameEndManager.instance != null && GameEndManager.instance.IsGameEnded) return;
 
-        if (plantManager != null && plantManager.CanAdvanceToBoss && initManager != null)
+        if (!isBossPhase)
         {
-            roundManager?.AwardCurrentPlantReward();
-            onNormalPlantCompleted?.Invoke();
-            initManager.StartBossPhase(plantManager);
+            Debug.Log("Normal plant growth completed.", this);
+            if (bossPlant != null && initManager != null)
+            {
+                roundManager?.AwardCurrentPlantReward();
+                isBossPhase = true;
+                initManager.StartBossPhase(mainPlant, bossPlant);
+                return;
+            }
         }
-        else Victory();
+        Victory();
+    }
+
+    internal PlantData PrepareBattle(UpgradeToGeneralData data)
+    {
+        player?.ApplyPlayerData(data?.battlePlayer);
+        var selection = player?.CurrentPlayerData;
+        bossPlant = selection?.bossPlant;
+        isBossPhase = (data?.bossBattle ?? false) && bossPlant != null;
+        return isBossPhase ? bossPlant : selection?.normalPlant;
     }
 
     public void Victory()
@@ -89,7 +105,7 @@ public class GameManager : MonoBehaviour
         if (initManager != null)
         {
             initManager.isInited = false;
-            initManager.InitAll(battlePlayerManager, plantManager);
+            initManager.InitAll(this);
         }
 
 
