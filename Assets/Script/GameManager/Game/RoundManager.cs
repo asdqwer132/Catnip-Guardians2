@@ -4,7 +4,7 @@ public class RoundManager : MonoBehaviour
 {
     [Header("Manager")]
     public EnemyManager enemyManager;
-    public BattlePlayerManager battlePlayerManager;
+    public PlantManager plantManager;
     public GameEndManager endManager;
 
     public void Victory()
@@ -12,19 +12,25 @@ public class RoundManager : MonoBehaviour
         var result = endManager != null ? endManager : GameEndManager.instance;
         if (result != null && result.IsGameEnded) return;
 
-        if (battlePlayerManager == null || battlePlayerManager.CurrentPlant == null)
+        if (plantManager == null || plantManager.CurrentPlant == null)
         {
             Debug.LogWarning("CurrentPlant is null");
             GameOver();
             return;
         }
 
-        if (battlePlayerManager.CurrentPlant.reward != null && GameStatisticsManager.Instance != null)
-            foreach (var reward in battlePlayerManager.CurrentPlant.reward)
-                if (reward != null)
-                    GameStatisticsManager.Instance.AddCurrency(reward.currencyType, reward.amount);
-
+        AwardCurrentPlantReward();
         CompleteGame();
+    }
+
+    public void AwardCurrentPlantReward()
+    {
+        var rewards = plantManager?.CurrentPlant?.reward;
+        if (rewards == null || GameStatisticsManager.Instance == null) return;
+
+        foreach (var reward in rewards)
+            if (reward != null)
+                GameStatisticsManager.Instance.AddCurrency(reward.currencyType, reward.amount);
     }
 
     public void GameOver() => FinishGame(GameEndType.Lose);

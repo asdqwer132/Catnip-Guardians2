@@ -17868,7 +17868,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameStatisticsManager
   ui: {fileID: 1143083050}
-  battlePlayerManager: {fileID: 1230235214}
+  plantManager: {fileID: 1230235215}
   growManager: {fileID: 1571861292}
   battleTimeSeconds: 0
   gameProgress01: 0
@@ -18300,6 +18300,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BattlePlayerManager
   player: {fileID: 1836332726}
+--- !u!114 &1230235215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1318438113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1df17e7432ae4ce393482762b4452459, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PlantManager
   mainPlant: {fileID: 1230235210}
   indexedPlants:
   - {fileID: 11400000, guid: dc6526ac4f4000246b4850c22004d1b8, type: 2}
@@ -18701,6 +18713,7 @@ GameObject:
   - component: {fileID: 1318438115}
   - component: {fileID: 1318438114}
   - component: {fileID: 1230235214}
+  - component: {fileID: 1230235215}
   - component: {fileID: 1318438120}
   - component: {fileID: 910000680001}
   m_Layer: 0
@@ -18723,6 +18736,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   battlePlayerManager: {fileID: 1230235214}
+  plantManager: {fileID: 1230235215}
   initManager: {fileID: 1473317464}
   roundManager: {fileID: 1318438120}
   statisticsManager: {fileID: 1143083051}
@@ -18758,7 +18772,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoundManager
   enemyManager: {fileID: 197801883}
-  battlePlayerManager: {fileID: 1230235214}
+  plantManager: {fileID: 1230235215}
   endManager: {fileID: 0}
 --- !u!1 &1319898606
 GameObject:

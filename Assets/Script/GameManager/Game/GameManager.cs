@@ -6,6 +6,9 @@ public class GameManager : MonoBehaviour
     [Header("Manager")]
     public InitManager initManager;
     public BattlePlayerManager battlePlayerManager;
+    public PlantManager plantManager;
+    [SerializeField] private UnityEngine.Events.UnityEvent onNormalPlantCompleted = new UnityEngine.Events.UnityEvent();
+    private bool growthCompletionPending;
     public RoundManager roundManager;
     public GameStatisticsManager statisticsManager;
 
@@ -22,6 +25,23 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         RetryGame();
+    }
+
+    public void OnPlantGrowthCompleted() => growthCompletionPending = true;
+
+    private void LateUpdate()
+    {
+        if (!growthCompletionPending) return;
+        growthCompletionPending = false;
+        if (GameEndManager.instance != null && GameEndManager.instance.IsGameEnded) return;
+
+        if (plantManager != null && plantManager.CanAdvanceToBoss && initManager != null)
+        {
+            roundManager?.AwardCurrentPlantReward();
+            onNormalPlantCompleted?.Invoke();
+            initManager.StartBossPhase(plantManager);
+        }
+        else Victory();
     }
 
     public void Victory()
@@ -54,6 +74,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void RetryGame()
     {
+        growthCompletionPending = false;
         GamePause.SetResumeTimeScale(1f);
 
         // Pay the finished battle before ResetRound clears its rewards.
@@ -68,7 +89,7 @@ public class GameManager : MonoBehaviour
         if (initManager != null)
         {
             initManager.isInited = false;
-            initManager.InitAll(battlePlayerManager);
+            initManager.InitAll(battlePlayerManager, plantManager);
         }
 
 

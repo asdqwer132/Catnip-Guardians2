@@ -15,7 +15,7 @@ public class InitManager : MonoBehaviour
     public BuffUIManager buffUIManager;
     public bool isInited;
 
-    public void InitAll(BattlePlayerManager battlePlayerManager)
+    public void InitAll(BattlePlayerManager battlePlayerManager, PlantManager plantManager)
     {
         if (isInited) return;
         // Clear the old round before effects create any new runtime objects or buffs.
@@ -25,11 +25,14 @@ public class InitManager : MonoBehaviour
         enemyManager?.PrepareRound();
         UpgradeToGeneralData data = null;
         GameSession.Instance?.TryReadGeneralData(out data);
-        battlePlayerManager?.Prepare(data);
+        battlePlayerManager?.Prepare(data?.battlePlayer);
+        var player = battlePlayerManager?.CurrentPlayer;
+        plantManager?.Prepare(player?.normalPlant, player?.bossPlant, data?.bossBattle ?? false,
+            data?.mainPlantIndex ?? -1);
         ApplyStartingEffects(data);
 
-        battlePlayerManager?.ApplyPlant();
-        if (enemyManager != null && battlePlayerManager != null) enemyManager.Init(battlePlayerManager.CurrentPlant);
+        plantManager?.ApplyStartingPlant();
+        if (enemyManager != null && plantManager != null) enemyManager.Init(plantManager.CurrentPlant);
         itemUseManager?.Init();
         buffUIManager?.Init();
         OffscreenTargetIndicatorManager.Instance?.ClearAll();
@@ -51,6 +54,14 @@ public class InitManager : MonoBehaviour
                     executor.gameObject, ItemEffectOrigin.Potion);
     }
 
-    public void RoundInit() { isInited = false; InitAll(GameManager.instance?.battlePlayerManager); }
+    public void RoundInit() { isInited = false; InitAll(GameManager.instance?.battlePlayerManager, GameManager.instance?.plantManager); }
+    public void StartBossPhase(PlantManager plantManager)
+    {
+        DamageArea.ClearAllActiveAreas();
+        enemyManager?.PrepareRound();
+        plantManager.StartBossPhase();
+        enemyManager?.Init(plantManager.CurrentPlant);
+    }
+
     public void ResetEntity() { DamageArea.ClearAllActiveAreas(); enemyManager?.AllStop(); }
 }

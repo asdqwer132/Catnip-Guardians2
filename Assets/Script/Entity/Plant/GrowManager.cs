@@ -182,6 +182,6 @@ public class GrowManager : MonoBehaviour, IStoryProgressSource
             StoryProgressValue.NumberValue("growth-percent", GrowProgressPercent),
             StoryProgressValue.NumberValue("max-growth", maxGrowValue)));
         if (gameManager != null)
-            gameManager.Victory();
+            gameManager.OnPlantGrowthCompleted();
     }
 }
