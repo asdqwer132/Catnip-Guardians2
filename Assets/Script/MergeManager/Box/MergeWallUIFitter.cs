@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 [ExecuteAlways, DisallowMultipleComponent, DefaultExecutionOrder(210)]
 public sealed class MergeWallUIFitter : MonoBehaviour
@@ -12,9 +11,8 @@ public sealed class MergeWallUIFitter : MonoBehaviour
     public RectTransform topWall;
     public BoxCollider2D topCollider;
     public RectTransform inletAnchor;
-    public Image backGraphic;
     [Tooltip("배경 스프라이트가 상자 UI 프레임 밖으로 나가지 않도록 맞춥니다.")]
-    public bool keepBackgroundInsideFrame = true;
+    public bool fitBackgroundToFrame = true;
     [SerializeField] private bool showFitGizmos = true;
     [Range(.005f, .2f)] public float leftThickness = .035f;
     [Range(.005f, .2f)] public float rightThickness = .035f;
@@ -140,41 +138,38 @@ public sealed class MergeWallUIFitter : MonoBehaviour
     // The card background belongs behind the physics sprites, which an overlay Image would cover.
     private void FitBackground(SpriteRenderer renderer)
     {
-        if (renderer == null || backGraphic == null || backGraphic.sprite == null ||
-            !TryGetUICamera(backGraphic.rectTransform, out var uiCamera)) return;
-        var source = backGraphic.rectTransform;
-        Rect area = ScreenBounds(source, uiCamera);
-        if (keepBackgroundInsideFrame && TryGetUICamera(frame, out var frameCamera))
-        {
-            Rect frameArea = ScreenBounds(frame, frameCamera);
-            area = Rect.MinMaxRect(Mathf.Max(area.xMin, frameArea.xMin), Mathf.Max(area.yMin, frameArea.yMin),
-                Mathf.Min(area.xMax, frameArea.xMax), Mathf.Min(area.yMax, frameArea.yMax));
-        }
-
-        if (area.width <= 0f || area.height <= 0f)
-        {
-            renderer.enabled = false;
-            return;
-        }
+        if (!fitBackgroundToFrame || renderer == null || renderer.sprite == null ||
+            !TryGetUICamera(frame, out var uiCamera)) return;
+        Rect area = ScreenBounds(frame, uiCamera);
+        if (area.width <= 0f || area.height <= 0f) return;
 
         var t = renderer.transform;
         var plane = new Plane(Vector3.forward, t.position);
         if (!ProjectScreen(plane, area.min, out var lowerLeft) ||
             !ProjectScreen(plane, area.max, out var upperRight))
             return;
-        var spriteSize = backGraphic.sprite.bounds.size;
-        Vector3 span = t.parent != null ? t.parent.InverseTransformVector(upperRight - lowerLeft)
-            : upperRight - lowerLeft;
-        span = Quaternion.Inverse(t.localRotation) * span;
-        if (Mathf.Abs(span.x) < .0001f || Mathf.Abs(span.y) < .0001f ||
-            spriteSize.x <= 0f || spriteSize.y <= 0f) return;
-        if (renderer.drawMode != SpriteDrawMode.Simple) renderer.drawMode = SpriteDrawMode.Simple;
-        if (renderer.sprite != backGraphic.sprite) renderer.sprite = backGraphic.sprite;
-        var scale = new Vector3(Mathf.Abs(span.x) / spriteSize.x, Mathf.Abs(span.y) / spriteSize.y, t.localScale.z);
-        if ((t.localScale - scale).sqrMagnitude > .00000001f) t.localScale = scale;
+        Vector3 worldSpan = upperRight - lowerLeft;
+        if (renderer.drawMode == SpriteDrawMode.Simple)
+        {
+            Vector3 spriteSize = renderer.sprite.bounds.size;
+            if (spriteSize.x <= 0f || spriteSize.y <= 0f) return;
+            Vector3 span = t.parent != null ? t.parent.InverseTransformVector(worldSpan) : worldSpan;
+            span = Quaternion.Inverse(t.localRotation) * span;
+            Vector3 scale = t.localScale;
+            scale.x = Mathf.Abs(span.x) / spriteSize.x * (scale.x < 0f ? -1f : 1f);
+            scale.y = Mathf.Abs(span.y) / spriteSize.y * (scale.y < 0f ? -1f : 1f);
+            if ((t.localScale - scale).sqrMagnitude > .00000001f) t.localScale = scale;
+        }
+        else
+        {
+            Vector3 span = t.InverseTransformVector(worldSpan);
+            Vector2 size = new Vector2(Mathf.Abs(span.x), Mathf.Abs(span.y));
+            if (size.x <= 0f || size.y <= 0f) return;
+            if ((renderer.size - size).sqrMagnitude > .00000001f) renderer.size = size;
+        }
+
         var position = (lowerLeft + upperRight) * .5f - t.TransformVector(renderer.localBounds.center);
         if ((t.position - position).sqrMagnitude > .00000001f) t.position = position;
-        if (!renderer.enabled) renderer.enabled = true;
     }
 
     private bool TryGetUICamera(RectTransform source, out Camera camera)
@@ -227,14 +222,12 @@ public sealed class MergeWallUIFitter : MonoBehaviour
         Color previousColor = Gizmos.color;
         Matrix4x4 previousMatrix = Gizmos.matrix;
         Gizmos.matrix = Matrix4x4.identity;
-        DrawProjectedRect(frame, box.transform.position, Color.cyan);
+        DrawProjectedRect(frame, box.transform.position, Color.yellow);
 
         foreach (var part in box.visuals)
         {
             if (part == null || part.role != MergeBoxSpriteRole.BackFrame || part.renderer == null) continue;
             var renderer = part.renderer;
-            DrawProjectedRect(backGraphic != null ? backGraphic.rectTransform : null,
-                renderer.transform.position, Color.yellow);
             if (!renderer.enabled || renderer.sprite == null) continue;
             Gizmos.color = Color.green;
             Gizmos.matrix = renderer.transform.localToWorldMatrix;
