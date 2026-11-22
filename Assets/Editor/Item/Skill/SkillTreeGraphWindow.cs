@@ -89,16 +89,21 @@ public sealed class SkillTreeGraphWindow : EditorWindow
                 Rebuild();
             });
             gridOptions.Add(gridToggle);
+            rootVisualElement.Add(gridOptions);
             if (gridMode)
             {
                 AddGridSpacing("Cell W / H", layout.gridCellSize, true);
                 AddGridSpacing("Same-cell Gap X / Y", layout.gridNodeGap, false);
             }
-            rootVisualElement.Add(gridOptions);
 
             void AddGridSpacing(string label, Vector2 value, bool cellSize)
             {
+                var row = new Toolbar();
                 var spacing = new Vector2Field(label) { value = value };
+                spacing.style.width = 420;
+                spacing.style.maxWidth = Length.Percent(100);
+                spacing.labelElement.style.minWidth = 140;
+                spacing.labelElement.style.width = 140;
                 spacing.RegisterValueChangedCallback(evt =>
                 {
                     var next = evt.newValue;
@@ -112,7 +117,8 @@ public sealed class SkillTreeGraphWindow : EditorWindow
                     spacing.SetValueWithoutNotify(cellSize ? layout.gridCellSize : layout.gridNodeGap);
                     graph?.RefreshGrid();
                 });
-                gridOptions.Add(spacing);
+                row.Add(spacing);
+                rootVisualElement.Add(row);
             }
         }
         var viewOptions = new Toolbar();
