@@ -1,4 +1,7 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class ClickableItemSlotUI : BaseItemSlotUI
@@ -6,6 +9,7 @@ public class ClickableItemSlotUI : BaseItemSlotUI
     [Header("Interaction")]
     public Button slotButton;
     public Toggle slotToggle;
+    private static readonly List<RaycastResult> ClickHits = new();
     private ItemTooltipTrigger selectionTooltip;
     protected virtual bool AllowEmptySelection => false;
     protected virtual bool KeepSelectionOnRefresh => false;
@@ -34,24 +38,61 @@ public class ClickableItemSlotUI : BaseItemSlotUI
         if (selected) OnClickSlot();
     }
 
+    protected void LateUpdate()
+    {
+        if (slotToggle == null || !slotToggle.isOn) return;
+
+        var mouse = Mouse.current;
+        var eventSystem = EventSystem.current;
+        if (mouse == null || !mouse.leftButton.wasPressedThisFrame || eventSystem == null ||
+            HitsUIControl(eventSystem, mouse.position.ReadValue())) return;
+
+        SetToggleOff(notify: true);
+        selectionTooltip?.ReleaseSelection(true);
+    }
+
+    private static bool HitsUIControl(EventSystem eventSystem, Vector2 position)
+    {
+        eventSystem.RaycastAll(new PointerEventData(eventSystem) { position = position }, ClickHits);
+        bool hitsControl = false;
+        foreach (var hit in ClickHits)
+        {
+            if (hit.module is not GraphicRaycaster) continue;
+
+            var target = hit.gameObject;
+            hitsControl = target.GetComponentInParent<Selectable>() != null ||
+                ExecuteEvents.GetEventHandler<IPointerClickHandler>(target) != null ||
+                ExecuteEvents.GetEventHandler<IPointerDownHandler>(target) != null ||
+                ExecuteEvents.GetEventHandler<IDragHandler>(target) != null;
+            break;
+        }
+        ClickHits.Clear();
+        return hitsControl;
+    }
+
     public void ResetSelection(bool hideTooltip = false)
     {
-        if (slotToggle != null)
-        {
-            var group = slotToggle.group;
-            bool allowSwitchOff = group != null && group.allowSwitchOff;
-            try
-            {
-                // Explicit resets must clear selection even in a required group.
-                if (group != null) group.allowSwitchOff = true;
-                slotToggle.SetIsOnWithoutNotify(false);
-            }
-            finally
-            {
-                if (group != null) group.allowSwitchOff = allowSwitchOff;
-            }
-        }
+        SetToggleOff(notify: false);
         if ((slotToggle != null || hideTooltip) && selectionTooltip != null) selectionTooltip.ReleaseSelection(true);
+    }
+
+    private void SetToggleOff(bool notify)
+    {
+        if (slotToggle == null) return;
+
+        var group = slotToggle.group;
+        bool allowSwitchOff = group != null && group.allowSwitchOff;
+        try
+        {
+            // Explicit resets must clear selection even in a required group.
+            if (group != null) group.allowSwitchOff = true;
+            if (notify) slotToggle.isOn = false;
+            else slotToggle.SetIsOnWithoutNotify(false);
+        }
+        finally
+        {
+            if (group != null) group.allowSwitchOff = allowSwitchOff;
+        }
     }
 
     public override void ClearSlot()

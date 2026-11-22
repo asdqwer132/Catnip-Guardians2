@@ -31,7 +31,7 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
             for (int i = 0; i < itemSlots.Length; i++)
             {
                 int index = i;
-                itemSlots[i]?.Bind(() => PickSlot(index), index + 1);
+                itemSlots[i]?.Bind(() => PickSlot(index), index + 1, onDeselected: () => ClearSlotSelection(index));
             }
         }
         if (equipButton != null) equipButton.onClick.AddListener(Confirm);
@@ -103,6 +103,13 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
     {
         selectedSlot = index;
         candidate = null;
+        Refresh();
+    }
+
+    private void ClearSlotSelection(int index)
+    {
+        if (selectedSlot != index) return;
+        ResetSelection();
         Refresh();
     }
 
