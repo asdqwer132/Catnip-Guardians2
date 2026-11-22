@@ -16,6 +16,9 @@ public sealed class SkillTreeGraphWindow : EditorWindow
     [SerializeField] private Vector2 positionScale = Vector2.one;
     [SerializeField] private float nodeWidth = 220f;
     [SerializeField] private float maximumZoom = 10f;
+    [SerializeField] private bool showComposer;
+    [SerializeField] private SkillNodeData centerNode;
+    [SerializeField] private SkillTreeLayoutComposer.Settings composition = new SkillTreeLayoutComposer.Settings();
     [MenuItem("Tools/Skill/Tree Graph")]
     public static void Open() => GetWindow<SkillTreeGraphWindow>("Skill Tree Graph");
     public static void Open(SkillTreeLayoutData data)
@@ -159,8 +162,149 @@ public sealed class SkillTreeGraphWindow : EditorWindow
         widthField.SetEnabled(!gridMode);
         sizeOptions.Add(widthField);
         rootVisualElement.Add(sizeOptions);
+        if (layout != null) AddLayoutComposer(gridMode);
         graph = new Canvas(layout, gridMode ? 1f : spacingScale, maximumZoom, gridMode ? 220f : nodeWidth); graph.style.flexGrow = 1; rootVisualElement.Add(graph);
     }
+    private void AddLayoutComposer(bool gridMode)
+    {
+        var foldout = new Foldout { text = "Compose Layout", value = showComposer };
+        foldout.RegisterValueChangedCallback(evt => showComposer = evt.newValue);
+        rootVisualElement.Add(foldout);
+        if (gridMode)
+        {
+            foldout.Add(new HelpBox("Switch off Grid Placement to compose free-form positions.", HelpBoxMessageType.Info));
+            return;
+        }
+
+        SkillTreeLayoutComposer composer;
+        try { composer = new SkillTreeLayoutComposer(layout, centerNode); }
+        catch (System.InvalidOperationException error)
+        {
+            foldout.Add(new HelpBox(error.Message, HelpBoxMessageType.Error));
+            return;
+        }
+        if (composer.Root == null) return;
+
+        var panel = new ScrollView { style = { maxHeight = 335 } };
+        foldout.Add(panel);
+        var center = new ObjectField("Center Node") { objectType = typeof(SkillNodeData), value = composer.Root };
+        center.tooltip = "Select a node with no prerequisites inside this graph.";
+        center.RegisterValueChangedCallback(evt =>
+        {
+            centerNode = evt.newValue as SkillNodeData;
+            Rebuild();
+        });
+        panel.Add(center);
+        AddMixFields(panel, composition.mix);
+        var seed = new IntegerField("Seed") { value = composition.seed };
+        seed.RegisterValueChangedCallback(evt => composition.seed = evt.newValue);
+        panel.Add(seed);
+        AddNumber(panel, "Jitter", composition.jitter, 0, 2, value => composition.jitter = value);
+        AddNumber(panel, "Spacing", composition.spacing, 40, 5000, value => composition.spacing = value);
+        AddNumber(panel, "Clearance", composition.clearance, 0, 1000, value => composition.clearance = value);
+        AddNumber(panel, "Rotation", composition.rotation, -360, 360, value => composition.rotation = value);
+        AddNumber(panel, "Sweep", composition.sweep, 10, 360, value => composition.sweep = value);
+        AddNumber(panel, "Branch Spread", composition.spread, 0, 10, value => composition.spread = value);
+        AddNumber(panel, "Twist (Radians)", composition.twist, -3.14f, 3.14f, value => composition.twist = value);
+        if (composer.Heads.Count > 0)
+        {
+            var branches = new Foldout { text = "Branch Overrides", value = false };
+            panel.Add(branches);
+            foreach (var head in composer.Heads)
+            {
+                var item = new Foldout { text = head.name, value = false };
+                branches.Add(item);
+                var branchSettings = composition.branches.FirstOrDefault(value => value.head == head);
+                var enabled = new Toggle("Use Custom Mix") { value = branchSettings != null };
+                item.Add(enabled);
+                var controls = new VisualElement();
+                item.Add(controls);
+                void RefreshBranch()
+                {
+                    controls.Clear();
+                    if (branchSettings == null) return;
+                    AddMixFields(controls, branchSettings.mix);
+                    AddNumber(controls, "Angle Offset", branchSettings.angleOffset, -360, 360,
+                        value => branchSettings.angleOffset = value);
+                    AddNumber(controls, "Spacing Multiplier", branchSettings.spacingMultiplier, .1f, 5,
+                        value => branchSettings.spacingMultiplier = value);
+                }
+                enabled.RegisterValueChangedCallback(evt =>
+                {
+                    if (evt.newValue)
+                    {
+                        branchSettings = new SkillTreeLayoutComposer.Branch { head = head };
+                        branchSettings.mix.radialConstellationFan = composition.mix.radialConstellationFan;
+                        branchSettings.mix.clusterSpiralDiamond = composition.mix.clusterSpiralDiamond;
+                        composition.branches.Add(branchSettings);
+                    }
+                    else
+                    {
+                        composition.branches.Remove(branchSettings);
+                        branchSettings = null;
+                    }
+                    RefreshBranch();
+                });
+                RefreshBranch();
+            }
+        }
+
+        var actions = new Toolbar();
+        foldout.Add(actions);
+        actions.Add(new ToolbarButton(() => seed.value = UnityEngine.Random.Range(0, int.MaxValue)) { text = "Randomize Seed" });
+        actions.Add(new ToolbarButton(() =>
+        {
+            try
+            {
+                var current = new SkillTreeLayoutComposer(layout, centerNode);
+                var positions = current.Calculate(composition, new Vector2(nodeWidth, 220f) / spacingScale);
+                SkillTreeGraphEditing.ApplyComposedLayout(layout, positions);
+                Rebuild();
+                graph?.FrameAll();
+            }
+            catch (System.InvalidOperationException error)
+            {
+                EditorUtility.DisplayDialog("Compose Layout", error.Message, "OK");
+            }
+        }) { text = "Apply Layout" });
+    }
+
+    private static void AddMixFields(VisualElement parent, SkillTreeLayoutComposer.Mix mix)
+    {
+        AddWeights("Radial / Constellation / Fan", mix.radialConstellationFan, value => mix.radialConstellationFan = value);
+        AddWeights("Cluster / Spiral / Diamond", mix.clusterSpiralDiamond, value => mix.clusterSpiralDiamond = value);
+
+        void AddWeights(string label, Vector3 value, System.Action<Vector3> changed)
+        {
+            var field = new Vector3Field(label) { value = value };
+            field.labelElement.style.minWidth = 185;
+            field.tooltip = "X, Y and Z are the weights for the three listed shapes.";
+            field.RegisterValueChangedCallback(evt =>
+            {
+                var next = evt.newValue;
+                if (!float.IsFinite(next.x) || !float.IsFinite(next.y) || !float.IsFinite(next.z))
+                    next = evt.previousValue;
+                next = Vector3.Min(Vector3.one * 100, Vector3.Max(Vector3.zero, next));
+                field.SetValueWithoutNotify(next);
+                changed(next);
+            });
+            parent.Add(field);
+        }
+    }
+
+    private static void AddNumber(VisualElement parent, string label, float value, float minimum, float maximum,
+        System.Action<float> changed)
+    {
+        var field = new FloatField(label) { value = value, isDelayed = true };
+        field.RegisterValueChangedCallback(evt =>
+        {
+            float next = float.IsFinite(evt.newValue) ? Mathf.Clamp(evt.newValue, minimum, maximum) : evt.previousValue;
+            field.SetValueWithoutNotify(next);
+            changed(next);
+        });
+        parent.Add(field);
+    }
+
     private sealed class Card : Node
     {
         public SkillNodeData data;

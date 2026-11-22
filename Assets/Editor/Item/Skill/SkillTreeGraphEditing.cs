@@ -48,6 +48,14 @@ public static class SkillTreeGraphEditing
         else entry.position = position;
         layout.revision++; EditorUtility.SetDirty(layout);
     }
+    internal static void ApplyComposedLayout(SkillTreeLayoutData layout, IReadOnlyDictionary<SkillNodeData, Vector2> positions)
+    {
+        Undo.RecordObject(layout, "Compose skill tree layout");
+        foreach (var pair in positions) GetPlacement(layout, pair.Key).position = pair.Value;
+        layout.revision++;
+        EditorUtility.SetDirty(layout);
+    }
+
     public static void Remove(SkillTreeLayoutData layout, SkillNodeData node)
     {
         Undo.RecordObject(layout, "Remove skill node"); layout.nodeDatas.Remove(node);
