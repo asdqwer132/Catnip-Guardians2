@@ -26,8 +26,6 @@ public class ClickableItemSlotUI : BaseItemSlotUI
             if (slotToggle != null) slotToggle.SetIsOnWithoutNotify(false);
             return;
         }
-        // Capture the clicked item before its action can consume stock and recycle this row.
-        if (selectionTooltip != null) selectionTooltip.OnSlotSelectionChanged(selected);
         OnSelectionChanged(selected);
     }
 

@@ -1,14 +1,14 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ItemTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class ItemTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [Header("Option")]
     public bool isPointer = true;
     public bool autoDisable = true;
     public bool startShow = false;
     public bool hideOnPointerExit = true;
-    [Tooltip("Select a slot Toggle to pin its item information. Pointer hover is ignored in this mode.")]
+    [Tooltip("Click to pin the tooltip until another item is hovered or this slot is clicked again.")]
     public bool showOnSelection;
     [Header("Tooltip")]
     public TooltipUI tooltipUI;
@@ -47,25 +47,25 @@ public class ItemTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerE
 
     public virtual void OnPointerEnter(PointerEventData eventData)
     {
-        if (isPointer && !showOnSelection)
-            ShowTooltip();
+        if (!isPointer) return;
+        CacheProvider();
+        if (provider != null) tooltipUI?.Show(provider, replacePin: true);
     }
 
     public virtual void OnPointerExit(PointerEventData eventData)
     {
-        if (!isPointer || showOnSelection) return;
+        if (!isPointer) return;
         CacheProvider();
         if (hideOnPointerExit || (provider is TooltipProvider source && source.HideOnPointerExit))
             HideTooltip();
     }
 
-    public void OnSlotSelectionChanged(bool selected)
+    public void OnPointerClick(PointerEventData eventData)
     {
-        if (!showOnSelection || tooltipUI == null) return;
+        if (!showOnSelection || tooltipUI == null || eventData.button != PointerEventData.InputButton.Left) return;
         CacheProvider();
         if (provider == null) return;
-        if (selected) tooltipUI.Pin(provider);
-        else ReleaseSelection(true);
+        tooltipUI.TogglePin(provider);
     }
 
     // Recycling an inventory row releases ownership but keeps the captured info.

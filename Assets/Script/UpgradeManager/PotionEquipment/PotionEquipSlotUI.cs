@@ -10,6 +10,8 @@ public sealed class PotionEquipSlotUI : ClickableItemSlotUI
 
     public void Bind(PotionEquipmentPanelUI owner, int index)
     {
+        if (panel != owner && owner.inventoryView != null && TryGetComponent<ItemTooltipTrigger>(out var trigger))
+            trigger.Init(owner.inventoryView.tooltipUI);
         panel = owner;
         SlotIndex = index;
         RefreshSlot();

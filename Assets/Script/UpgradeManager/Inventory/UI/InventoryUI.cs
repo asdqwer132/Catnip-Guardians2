@@ -14,7 +14,7 @@ public class InventoryUI : ItemSearchFilterTargetUI
 
     [Header("Tooltip")]
     public TooltipUI tooltipUI;
-    [Tooltip("Pin item information when an inventory slot Toggle is selected. Disable to keep hover tooltips.")]
+    [Tooltip("Click to pin item information. Hover behavior is controlled separately by the slot trigger.")]
     public bool showTooltipOnSelection;
     public ToggleGroup selectionGroup;
 

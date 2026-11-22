@@ -5,10 +5,12 @@ public sealed class ChestEquipmentSelectorUI : MonoBehaviour
 {
     [SerializeField] private BagEquipmentSlotUI chestSlot;
     [SerializeField] private Button nextButton;
+    [SerializeField] private TooltipUI chestTooltip;
     private GameSession session;
 
     private void OnEnable()
     {
+        chestSlot.Bind(null, tooltip: chestTooltip);
         session = GameSession.GetOrCreate();
         session.GameDataChanged += Refresh;
         nextButton.onClick.AddListener(SelectNext);
@@ -43,6 +45,11 @@ public sealed class ChestEquipmentSelectorUI : MonoBehaviour
             equipment.equippedChests.Add(number);
             if (EquipmentSave.Write(equipment))
             {
+                if (chestSlot.TryGetComponent<ItemTooltipTrigger>(out var trigger))
+                {
+                    trigger.ReleaseSelection(true);
+                    trigger.HideTooltip();
+                }
                 session.UpdateEquipment(equipment);
                 Refresh();
             }
