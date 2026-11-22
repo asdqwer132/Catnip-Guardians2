@@ -18,7 +18,13 @@ public sealed class CodexInventoryUI : InventoryUI
     private CodexDiscoveryHistory subscribedHistory;
     private readonly List<DefaultData> visible = new List<DefaultData>();
     public IReadOnlyList<DefaultData> VisibleEntries => visible;
-    public DefaultData SelectedEntry { get; private set; }
+    protected override void ConfigureTooltip(ItemTooltipTrigger trigger)
+    {
+        // Codex details use the position authored for the panel.
+        if (details != null) details.positionAtAnchor = false;
+        var target = details != null ? details : tooltipUI;
+        if (target != null) trigger.Init(target);
+    }
 
     protected override bool ListenForMaterialReturns => false;
 
@@ -39,7 +45,7 @@ public sealed class CodexInventoryUI : InventoryUI
     public void OnTabSelected(bool selected)
     {
         if (!selected) return;
-        Select(null);
+        ClearSelection();
         if (details != null && details.AlternatePanels != null)
             foreach (var panel in details.AlternatePanels)
                 if (panel != null) panel.SetActive(false);
@@ -65,21 +71,8 @@ public sealed class CodexInventoryUI : InventoryUI
     }
     protected override void BindSlot(BaseItemSlotUI slot, int index)
     {
-        if (slot is CodexSlotUI codexSlot) codexSlot.Bind(visible[index], this);
+        if (slot is CodexSlotUI codexSlot) codexSlot.Bind(visible[index]);
     }
-    protected override void OnSlotsRefreshed()
-    {
-        if (SelectedEntry != null && !visible.Contains(SelectedEntry)) Select(null);
-        else ApplySelection();
-    }
-
-    public void Select(DefaultData entry)
-    {
-        SelectedEntry = entry != null && visible.Contains(entry) ? entry : null;
-        ApplySelection();
-        if (details != null) details.Show(SelectedEntry);
-    }
-
     private bool IsDiscovered(DefaultData entry)
     {
         if (!discoveredOnly || entry is StageCodexData) return true;
@@ -87,11 +80,5 @@ public sealed class CodexInventoryUI : InventoryUI
         if (entry is ItemData item) return history.HasItem(item);
         if (entry is EnemyDataSet enemy) return history.HasEnemy(enemy);
         return true;
-    }
-
-    private void ApplySelection()
-    {
-        foreach (var row in Slots)
-            if (row is CodexSlotUI slot) slot.ApplySelection(slot.gameObject.activeSelf && slot.Entry != null && slot.Entry == SelectedEntry);
     }
 }

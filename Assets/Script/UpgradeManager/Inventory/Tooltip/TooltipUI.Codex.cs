@@ -61,7 +61,7 @@ public partial class TooltipUI
             {
                 var map = entry as MapCodexData;
                 childInventory.SetEntries(map != null ? map.stages : null);
-                childInventory.Select(null);
+                childInventory.ClearSelection();
             }
             ApplyPreview();
             RefreshPortraitInformation(DisplayLanguage);

@@ -113,6 +113,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7991120730881528602, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4213283082690108472}
+    - targetCorrespondingSourceObject: {fileID: 7991120730881528602, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 990241100011}
+    - targetCorrespondingSourceObject: {fileID: 7991120730881528602, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 990241100012}
   m_SourcePrefab: {fileID: 100100000, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
 --- !u!1 &2144039893557172464 stripped
 GameObject:
@@ -166,3 +172,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
   m_Name:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Toggle
+--- !u!114 &990241100011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2144039893557172464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f811147cfbd52a4b8cf7877b3eb1bc0, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipTrigger
+  isPointer: 0
+  autoDisable: 1
+  startShow: 0
+  showOnSelection: 1
+  tooltipUI: {fileID: 0}
+  providerComponent: {fileID: 990241100012}
+--- !u!114 &990241100012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2144039893557172464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 231b2d1c8c7747045aa0d46cd57f8cc7, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ItemSlotTooltipProvider
+  anchorRect: {fileID: 0}
+  slot: {fileID: 4213283082690108472}

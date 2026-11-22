@@ -35,6 +35,13 @@ public class InventoryUI : ItemSearchFilterTargetUI
     protected virtual bool CanDisplayItem(InventoryItem item) => IsInventoryItemVisible(item);
     protected virtual void ConfigureSlot(BaseItemSlotUI slot) { }
 
+    protected virtual void ConfigureTooltip(ItemTooltipTrigger trigger)
+    {
+        trigger.Init(tooltipUI);
+        if (trigger.showOnSelection && !showTooltipOnSelection) trigger.ReleaseSelection();
+        trigger.showOnSelection = showTooltipOnSelection;
+    }
+
     public virtual void Init()
     {
         BindMaterialReturns();
@@ -75,7 +82,7 @@ public class InventoryUI : ItemSearchFilterTargetUI
     public void ClearSelection()
     {
         foreach (var row in quickSlotUIs)
-            if (row is ClickableItemSlotUI slot) slot.ResetSelection();
+            if (row is ClickableItemSlotUI slot) slot.ResetSelection(true);
     }
 
     private void BindMaterialReturns()
@@ -179,11 +186,7 @@ public class InventoryUI : ItemSearchFilterTargetUI
                 quickSlotUIs[i].SetSlot(null);
             quickSlotUIs[i].SetAmountVisible(showItemCount);
             var trigger = quickSlotObjects[i].GetComponent<ItemTooltipTrigger>();
-            if (trigger != null)
-            {
-                if (trigger.showOnSelection && !showTooltipOnSelection) trigger.ReleaseSelection();
-                trigger.showOnSelection = showTooltipOnSelection;
-            }
+            if (trigger != null) ConfigureTooltip(trigger);
         }
     }
 
@@ -196,11 +199,7 @@ public class InventoryUI : ItemSearchFilterTargetUI
             BaseItemSlotUI slotUI = slotObj.GetComponent<BaseItemSlotUI>();
             ItemTooltipTrigger tooltipTrigger = slotObj.GetComponent<ItemTooltipTrigger>();
 
-            if (tooltipTrigger != null)
-            {
-                tooltipTrigger.Init(tooltipUI);
-                tooltipTrigger.showOnSelection = showTooltipOnSelection;
-            }
+            if (tooltipTrigger != null) ConfigureTooltip(tooltipTrigger);
             if (slotObj.TryGetComponent<Toggle>(out var toggle))
             {
                 toggle.group = selectionGroup != null ? selectionGroup : GetComponent<ToggleGroup>();
