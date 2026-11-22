@@ -68,14 +68,7 @@ public static class SkillTreeGraphEditing
     private static readonly Vector2 GridNodeSize = new Vector2(220f, 200f);
 
     public static Vector2 GridPitch(SkillTreeLayoutData layout)
-    {
-        int largestGroup = layout.nodeLayout.Where(entry => entry != null && entry.node != null)
-            .GroupBy(entry => entry.gridPosition).Select(group => group.Count()).DefaultIfEmpty(1).Max();
-        int columns = Mathf.CeilToInt(Mathf.Sqrt(largestGroup));
-        int rows = Mathf.CeilToInt((float)largestGroup / columns);
-        return Vector2.Max(layout.gridCellSize,
-            Vector2.Scale(GridNodeSize + layout.gridNodeGap, new Vector2(columns, rows)));
-    }
+        => Vector2.Max(Vector2.one, layout.gridCellSize);
 
     public static Vector2Int GridCoordinate(Vector2 position, Vector2 pitch)
         => new Vector2Int(Mathf.RoundToInt(position.x / pitch.x), Mathf.RoundToInt(position.y / pitch.y));
@@ -87,7 +80,7 @@ public static class SkillTreeGraphEditing
         layout.gridPlacement = enabled;
         if (enabled)
         {
-            var pitch = Vector2.Max(layout.gridCellSize, GridNodeSize + layout.gridNodeGap);
+            var pitch = GridPitch(layout);
             foreach (var node in layout.nodeDatas)
                 if (node != null)
                     GetPlacement(layout, node);

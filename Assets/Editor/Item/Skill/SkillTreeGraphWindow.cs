@@ -92,6 +92,11 @@ public sealed class SkillTreeGraphWindow : EditorWindow
             rootVisualElement.Add(gridOptions);
             if (gridMode)
             {
+                gridOptions.Add(new ToolbarButton(() =>
+                {
+                    SkillTreeGraphEditing.SetGridSpacing(layout, layout.gridCellSize, layout.gridNodeGap);
+                    graph?.RefreshGrid();
+                }) { text = "Reapply Grid", tooltip = "Recalculate saved node positions using the current cell size." });
                 AddGridSpacing("Cell W / H", layout.gridCellSize, true);
                 AddGridSpacing("Same-cell Gap X / Y", layout.gridNodeGap, false);
             }
@@ -99,7 +104,13 @@ public sealed class SkillTreeGraphWindow : EditorWindow
             void AddGridSpacing(string label, Vector2 value, bool cellSize)
             {
                 var row = new Toolbar();
-                var spacing = new Vector2Field(label) { value = value };
+                var spacing = new Vector2Field(label)
+                {
+                    value = value,
+                    tooltip = cellSize
+                        ? "Exact distance between adjacent grid coordinates in skill tree UI units."
+                        : "Additional spacing between nodes sharing the same grid coordinate."
+                };
                 spacing.style.width = 420;
                 spacing.style.maxWidth = Length.Percent(100);
                 spacing.labelElement.style.minWidth = 140;
