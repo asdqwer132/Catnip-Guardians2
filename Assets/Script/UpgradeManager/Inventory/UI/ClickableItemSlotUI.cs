@@ -44,30 +44,26 @@ public class ClickableItemSlotUI : BaseItemSlotUI
 
         var mouse = Mouse.current;
         var eventSystem = EventSystem.current;
-        if (mouse == null || !mouse.leftButton.wasPressedThisFrame || eventSystem == null ||
-            HitsUIControl(eventSystem, mouse.position.ReadValue())) return;
+        if (mouse == null || !mouse.leftButton.wasReleasedThisFrame || eventSystem == null ||
+            HitsToggle(eventSystem, mouse.position.ReadValue())) return;
 
         SetToggleOff(notify: true);
         selectionTooltip?.ReleaseSelection(true);
     }
 
-    private static bool HitsUIControl(EventSystem eventSystem, Vector2 position)
+    private static bool HitsToggle(EventSystem eventSystem, Vector2 position)
     {
         eventSystem.RaycastAll(new PointerEventData(eventSystem) { position = position }, ClickHits);
-        bool hitsControl = false;
+        bool hitsToggle = false;
         foreach (var hit in ClickHits)
         {
             if (hit.module is not GraphicRaycaster) continue;
 
-            var target = hit.gameObject;
-            hitsControl = target.GetComponentInParent<Selectable>() != null ||
-                ExecuteEvents.GetEventHandler<IPointerClickHandler>(target) != null ||
-                ExecuteEvents.GetEventHandler<IPointerDownHandler>(target) != null ||
-                ExecuteEvents.GetEventHandler<IDragHandler>(target) != null;
+            hitsToggle = hit.gameObject.GetComponentInParent<Toggle>() != null;
             break;
         }
         ClickHits.Clear();
-        return hitsControl;
+        return hitsToggle;
     }
 
     public void ResetSelection(bool hideTooltip = false)
