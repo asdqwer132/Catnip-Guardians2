@@ -124,7 +124,7 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
 
         while (data.itemIds.Count <= selectedSlot) data.itemIds.Add("");
         data.itemIds[selectedSlot] = candidate.dataId;
-        Apply(data);
+        Apply(data, clearInventorySelection: false);
     }
 
     public void Unequip()
@@ -143,19 +143,19 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
         Apply(data);
     }
 
-    private void Apply(EquipmentData data)
+    private void Apply(EquipmentData data, bool clearInventorySelection = true)
     {
         if (!EquipmentSave.Write(data)) return;
-        ResetSelection();
+        ResetSelection(clearInventorySelection);
         GameSession.GetOrCreate().UpdateEquipment(data);
         Refresh();
     }
 
-    private void ResetSelection()
+    private void ResetSelection(bool clearInventorySelection = true)
     {
         selectedSlot = -1;
         candidate = null;
-        inventory?.ClearSelection();
+        if (clearInventorySelection) inventory?.ClearSelection();
     }
 
     private void Refresh()
