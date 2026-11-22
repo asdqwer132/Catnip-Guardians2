@@ -165,33 +165,5 @@ PrefabInstance:
     - {fileID: 2858062717882138169, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
     - {fileID: 4430664105333645965, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 7611431930530473483, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1186742261107539469}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
---- !u!224 &2728216931405066767 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 2969261783221912670, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
-  m_PrefabInstance: {fileID: 930130779194734161}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &7298435072151687258 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7611431930530473483, guid: 3caa99c1e0656ab488fee980befc5371, type: 3}
-  m_PrefabInstance: {fileID: 930130779194734161}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1186742261107539469
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7298435072151687258}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3475bc8df45416e439ea3a5dc7ab927d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SkillMapTooltipProvider
-  anchorRect: {fileID: 2728216931405066767}
-  mapData: {fileID: 11400000, guid: d5de1aa9d85f30f4ca52d4b62c8ecee9, type: 2}
-  treeManager: {fileID: 0}
