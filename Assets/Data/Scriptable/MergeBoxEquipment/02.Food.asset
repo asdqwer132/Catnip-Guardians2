@@ -12,17 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0ec2e8b33b74a1a8091c28369d8de27, type: 3}
   m_Name: 02.Food
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxEquipmentData
-  icon: {fileID: -2128338265694890933, guid: 0f753beaa8e735642aa892c5f9cd79c5, type: 3}
+  icon: {fileID: -5239504327025718580, guid: 5b3473b94d0380242923d01001c58ed2, type: 3}
   data:
   - language: 0
     dataName: Food Box
+    description: 
+    detailDescription: 
   - language: 1
-    dataName: 요리 상자
-  dataId: "2"
+    dataName: "\uC694\uB9AC \uC0C1\uC790"
+    description: 
+    detailDescription: 
+  dataNumbering: 
+  dataId: 2
   dataType: 8
   grade: -1
   series: 2
   requireUnlock: 1
   boxIndex: 2
   plant: {fileID: 11400000, guid: 51a6d0f47a662db4e91a10494acccd72, type: 2}
-  player: {fileID: 11400000, guid: 636f6ada0a592b84da81f465c456ff24, type: 2}
+  player: {fileID: 11400000, guid: c82dc94efc1b457fa817a3151e2b3164, type: 2}

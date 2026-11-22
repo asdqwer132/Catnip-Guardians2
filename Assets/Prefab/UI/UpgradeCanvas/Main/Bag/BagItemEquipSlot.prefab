@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 6345719850758304572}
   - component: {fileID: 6500863067822367230}
   - component: {fileID: 5688156519195858012}
+  - component: {fileID: 4746107150106213644}
+  - component: {fileID: 1600875867168217723}
   m_Layer: 5
   m_Name: BagItemEquipSlot
   m_TagString: Untagged
@@ -120,6 +122,39 @@ MonoBehaviour:
   slotButton: {fileID: 0}
   slotToggle: {fileID: 6500863067822367230}
   slotNumberText: {fileID: 0}
+--- !u!114 &4746107150106213644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1128468844478580642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f811147cfbd52a4b8cf7877b3eb1bc0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipTrigger
+  isPointer: 1
+  autoDisable: 1
+  startShow: 0
+  hideOnPointerExit: 1
+  showOnSelection: 0
+  tooltipUI: {fileID: 0}
+  providerComponent: {fileID: 1600875867168217723}
+--- !u!114 &1600875867168217723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1128468844478580642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 231b2d1c8c7747045aa0d46cd57f8cc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemSlotTooltipProvider
+  anchorRect: {fileID: 0}
+  slot: {fileID: 5688156519195858012}
 --- !u!1 &1201660906467768346
 GameObject:
   m_ObjectHideFlags: 0

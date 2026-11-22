@@ -12,17 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0ec2e8b33b74a1a8091c28369d8de27, type: 3}
   m_Name: 06.Plant
   m_EditorClassIdentifier: Assembly-CSharp::MergeBoxEquipmentData
-  icon: {fileID: -3622053620560354584, guid: 6f7b1f2dedf3ba943a01d9e947153686, type: 3}
+  icon: {fileID: 7530567168608496679, guid: 3adcabb03410d3141b81baecdeb151fb, type: 3}
   data:
   - language: 0
     dataName: Plant Box
+    description: 
+    detailDescription: 
   - language: 1
-    dataName: 식물 상자
-  dataId: "6"
+    dataName: "\uC2DD\uBB3C \uC0C1\uC790"
+    description: 
+    detailDescription: 
+  dataNumbering: 
+  dataId: 6
   dataType: 8
   grade: -1
   series: 6
   requireUnlock: 1
   boxIndex: 6
   plant: {fileID: 11400000, guid: fc8513b4bb82356489cfd5e2fd120157, type: 2}
-  player: {fileID: 11400000, guid: 636f6ada0a592b84da81f465c456ff24, type: 2}
+  player: {fileID: 11400000, guid: 9f8f312c2dbea5f46b8d366d60b4629a, type: 2}
