@@ -9,14 +9,14 @@ public class ToggleTooltipTrigger : ItemTooltipTrigger
     public bool isExitUse = false;
     public override void OnPointerEnter(PointerEventData eventData)
     {
-        if (!isPointer) return;
+        if (!isPointer || (tooltipUI != null && tooltipUI.IsPinned)) return;
         base.OnPointerEnter(eventData);
         if (infoToggle != null)
             infoToggle.isOn = true;
     }
     public override void OnPointerExit(PointerEventData eventData)
     {
-        if (!isPointer) return;
+        if (!isPointer || (tooltipUI != null && tooltipUI.IsPinned)) return;
         if (!isExitUse && invenToggle != null)
             invenToggle.isOn = true;
         else if (infoToggle == null && invenToggle == null)

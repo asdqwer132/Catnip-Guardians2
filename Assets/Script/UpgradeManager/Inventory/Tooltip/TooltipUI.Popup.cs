@@ -58,7 +58,7 @@ public partial class TooltipUI
         VisibilityChanged?.Invoke(data != null);
     }
 
-    public void Show(ITooltipContentProvider provider, bool replacePin = false)
+    public void Show(ITooltipContentProvider provider)
     {
         if (!useTooltip)
             return;
@@ -74,7 +74,6 @@ public partial class TooltipUI
         if (anchor == null)
             return;
 
-        if (replacePin && pinnedOwner != provider) pinnedOwner = null;
         Show(data, anchor, provider);
     }
 
@@ -144,6 +143,14 @@ public partial class TooltipUI
             ReleasePin(provider, true);
             return;
         }
+        Pin(provider);
+    }
+
+    public bool IsPinned => pinnedOwner != null;
+
+    public void Pin(ITooltipContentProvider provider)
+    {
+        if (!useTooltip || provider == null) return;
         if (!provider.TryGetTooltipData(out var data)) return;
         var anchor = provider.GetTooltipAnchor();
         if (data == null || anchor == null) return;

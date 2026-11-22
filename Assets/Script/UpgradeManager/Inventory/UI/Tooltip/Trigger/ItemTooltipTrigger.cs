@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class ItemTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
@@ -8,7 +9,7 @@ public class ItemTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerE
     public bool autoDisable = true;
     public bool startShow = false;
     public bool hideOnPointerExit = true;
-    [Tooltip("Click to pin the tooltip until another item is hovered or this slot is clicked again.")]
+    [Tooltip("Pin while the slot toggle is on. Slots without a toggle pin and unpin on click.")]
     public bool showOnSelection;
     [Header("Tooltip")]
     public TooltipUI tooltipUI;
@@ -17,11 +18,19 @@ public class ItemTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerE
     [SerializeField] private TooltipProvider providerComponent;
 
     private ITooltipContentProvider provider;
+    private Toggle slotToggle;
 
     private void Awake()
     {
+        slotToggle = GetComponent<Toggle>();
         CacheProvider();
     }
+
+    private void OnEnable()
+    {
+        if (slotToggle != null) slotToggle.onValueChanged.AddListener(OnToggleChanged);
+    }
+
     private void Start()
     {
         if(startShow)
@@ -36,11 +45,25 @@ public class ItemTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerE
     
     private void OnDisable()
     {
-        // Inventory rows can disappear immediately after their last item is used.
-        // The inventory panel releases a pinned snapshot when the panel closes.
-        if (showOnSelection) return;
-        if (autoDisable)
-            HideTooltip();
+        if (slotToggle != null)
+        {
+            slotToggle.onValueChanged.RemoveListener(OnToggleChanged);
+            ReleaseSelection(true);
+        }
+        if (autoDisable) HideTooltip();
+    }
+
+    private void OnToggleChanged(bool selected)
+    {
+        if (!showOnSelection || tooltipUI == null) return;
+        if (!selected || !slotToggle.isOn)
+        {
+            ReleaseSelection(true);
+            return;
+        }
+
+        CacheProvider();
+        if (provider != null) tooltipUI.Pin(provider);
     }
 
     private void OnDestroy() => ReleaseSelection();
@@ -49,7 +72,7 @@ public class ItemTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerE
     {
         if (!isPointer) return;
         CacheProvider();
-        if (provider != null) tooltipUI?.Show(provider, replacePin: true);
+        if (provider != null) tooltipUI?.Show(provider);
     }
 
     public virtual void OnPointerExit(PointerEventData eventData)
@@ -62,7 +85,7 @@ public class ItemTooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerE
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (!showOnSelection || tooltipUI == null || eventData.button != PointerEventData.InputButton.Left) return;
+        if (slotToggle != null || !showOnSelection || tooltipUI == null || eventData.button != PointerEventData.InputButton.Left) return;
         CacheProvider();
         if (provider == null) return;
         tooltipUI.TogglePin(provider);

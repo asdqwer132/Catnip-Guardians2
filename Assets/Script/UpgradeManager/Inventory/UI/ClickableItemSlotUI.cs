@@ -51,7 +51,7 @@ public class ClickableItemSlotUI : BaseItemSlotUI
                 if (group != null) group.allowSwitchOff = allowSwitchOff;
             }
         }
-        if (hideTooltip && selectionTooltip != null) selectionTooltip.ReleaseSelection(true);
+        if ((slotToggle != null || hideTooltip) && selectionTooltip != null) selectionTooltip.ReleaseSelection(true);
     }
 
     public override void ClearSlot()
