@@ -120,18 +120,12 @@ public sealed class MergeGeneralManager : MonoBehaviour
         equippedProfileIndices.Clear();
         equippedModules.Clear();
         if (!UsesLoadout) return;
-        var loadout = roundData.equipment;
-        foreach (int number in loadout.equippedChests)
-        {
-            int index = number - 1;
-            if (number < 1 || number > 8 || (number != 1 && !roundData.unlockedMergeBoxes.Contains(number)) ||
-                equippedProfileIndices.Contains(index) || boxes == null || boxes.GetProfile(index) == null)
-                continue;
-            equippedProfileIndices.Add(index);
-            if (equippedProfileIndices.Count == 2) break;
-        }
-        foreach (int index in equippedProfileIndices)
-            equippedModules.Add(boxes?.GetProfile(index)?.gimmick);
+        var chest = roundData.equippedChest;
+        int index = chest != null ? chest.boxIndex - 1 : 0;
+        var profile = boxes != null ? boxes.GetProfile(index) : null;
+        if (profile == null) return;
+        equippedProfileIndices.Add(index);
+        equippedModules.Add(profile.gimmick);
     }
 
     private void ApplyRoundStock()

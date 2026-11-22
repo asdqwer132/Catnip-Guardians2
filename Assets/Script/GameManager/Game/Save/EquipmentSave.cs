@@ -8,14 +8,12 @@ public sealed class EquipmentData
 {
     public List<string> itemIds = new List<string>();
     public List<int> equippedChests = new List<int>();
-    public string battlePlayerId;
     public List<SavedPotionSlot> potions = new List<SavedPotionSlot>();
 
     public EquipmentData Copy() => new EquipmentData
     {
         itemIds = itemIds != null ? new List<string>(itemIds) : new List<string>(),
         equippedChests = equippedChests != null ? new List<int>(equippedChests) : new List<int>(),
-        battlePlayerId = battlePlayerId,
         potions = potions != null ? potions.ConvertAll(slot => slot?.Copy()) : new List<SavedPotionSlot>()
     };
 }
@@ -75,8 +73,27 @@ public static class EquipmentSave
         }
     }
 
-    public static PlayerData ResolveBattlePlayer(string id) => string.IsNullOrEmpty(id) ? null :
-        Catalog?.entries.Find(entry => entry.asset is PlayerData player && player.dataId == id)?.asset as PlayerData;
+    public static MergeBoxEquipmentData FindChest(int number) =>
+        Catalog?.entries.Find(entry => entry.asset is MergeBoxEquipmentData chest && chest.boxIndex == number)?.asset
+            as MergeBoxEquipmentData;
+
+    public static MergeBoxEquipmentData ResolveChest(EquipmentData equipment, IReadOnlyList<int> unlocked)
+    {
+        if (equipment != null)
+            foreach (int number in equipment.equippedChests)
+                if (IsChestUnlocked(number, unlocked) && FindChest(number) is { } chest) return chest;
+
+        return FindChest(1);
+    }
+
+    public static bool IsChestUnlocked(int number, IReadOnlyList<int> unlocked)
+    {
+        if (number == 1) return true;
+        if (number < 2 || number > 8 || unlocked == null) return false;
+        foreach (int value in unlocked)
+            if (value == number) return true;
+        return false;
+    }
 
     public static bool StorePotions(IReadOnlyList<PotionEquipmentSnapshot> slots)
     {

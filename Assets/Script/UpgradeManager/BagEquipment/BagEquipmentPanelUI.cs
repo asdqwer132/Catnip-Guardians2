@@ -7,12 +7,6 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
 {
     public BagEquipmentInventoryUI inventory;
     public BagEquipmentSlotUI[] itemSlots = Array.Empty<BagEquipmentSlotUI>();
-    public BagEquipmentSlotUI[] chestSlots = Array.Empty<BagEquipmentSlotUI>();
-    public BagEquipmentSlotUI[] chestChoices = Array.Empty<BagEquipmentSlotUI>();
-    public BagEquipmentSlotUI playerSlot;
-    public PlayerChoice[] playerChoices = Array.Empty<PlayerChoice>();
-    public TooltipUI chestTooltip, playerTooltip;
-    public MergeBoxEquipmentData[] chestData = Array.Empty<MergeBoxEquipmentData>();
     public BasicTooltipUI equippedDetails;
     public BasicTooltipUI candidateDetails;
     public GameObject comparison;
@@ -22,17 +16,8 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
     public GameObject comparisonArrow;
     public Button equipButton, unequipButton, clearButton;
 
-    [Serializable]
-    public sealed class PlayerChoice
-    {
-        public PlayerEquipmentSlotUI slot;
-        public PlayerData player;
-    }
-
-    private enum SlotType { None, Material, Chest, Player }
-    private SlotType selectedType;
     private int selectedSlot = -1;
-    private DefaultData candidate;
+    private ItemData candidate;
     private bool inputsBound;
     private RefreshBroadcaster broadcaster;
     private InventoryManager observedInventory;
@@ -46,21 +31,8 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
             for (int i = 0; i < itemSlots.Length; i++)
             {
                 int index = i;
-                itemSlots[i]?.Bind(() => PickSlot(SlotType.Material, index), index + 1);
+                itemSlots[i]?.Bind(() => PickSlot(index), index + 1);
             }
-            for (int i = 0; i < chestSlots.Length; i++)
-            {
-                int index = i;
-                chestSlots[i]?.Bind(() => PickSlot(SlotType.Chest, index), index + 1);
-            }
-            for (int i = 0; i < chestChoices.Length; i++)
-            {
-                int number = chestData.Length > i && chestData[i] != null ? chestData[i].boxIndex : 0;
-                chestChoices[i]?.Bind(() => SelectChest(number), tooltip: chestTooltip);
-            }
-            playerSlot?.Bind(() => PickSlot(SlotType.Player, 0));
-            foreach (var choice in playerChoices)
-                choice?.slot?.Bind(() => SelectPlayer(choice.player), tooltip: playerTooltip);
         }
         if (equipButton != null) equipButton.onClick.AddListener(Confirm);
         if (unequipButton != null) unequipButton.onClick.AddListener(Unequip);
@@ -108,9 +80,6 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
         if ((type & (RefreshType.Unlock | RefreshType.Equipment | RefreshType.Inventory)) != 0) Refresh();
     }
 
-    private static bool Unlocked(int number) => UnlockManager.Instance != null
-        ? UnlockManager.Instance.IsUnlocked(DataType.MergeBox, number.ToString()) : number == 1;
-
     public void SelectMaterial(ItemData item)
     {
         if (!OwnsMaterial(item)) return;
@@ -118,90 +87,36 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
         if (data.itemIds.Contains(item.dataId))
         {
             int equippedIndex = data.itemIds.IndexOf(item.dataId);
-            if (equippedIndex < itemSlots.Length) PickSlot(SlotType.Material, equippedIndex);
+            if (equippedIndex < itemSlots.Length) PickSlot(equippedIndex);
             return;
         }
 
-        int slot = selectedType == SlotType.Material ? selectedSlot : FirstEmptyMaterial(data);
+        int slot = selectedSlot >= 0 ? selectedSlot : FirstEmptyMaterial(data);
         if (slot < 0) { Refresh(); return; }
-        SelectCandidate(SlotType.Material, slot, item, FindItem(ItemId(data, slot)));
-    }
-
-    public void SelectChest(int number)
-    {
-        var chest = FindChest(number);
-        if (chest == null || !Unlocked(number)) return;
-        chestTooltip?.Show(chest);
-
-        var data = EquipmentSave.Current;
-        int existing = data.equippedChests.IndexOf(number);
-        if (existing >= 0 && existing < chestSlots.Length) { PickSlot(SlotType.Chest, existing); return; }
-
-        int slot = selectedType == SlotType.Chest ? selectedSlot : FirstEmptyChest(data);
-        if (slot < 0) { Refresh(); return; }
-        SelectCandidate(SlotType.Chest, slot, chest, FindChest(ChestNumber(data, slot)));
-    }
-
-    public void SelectPlayer(PlayerData player)
-    {
-        if (playerSlot == null || player == null || string.IsNullOrWhiteSpace(player.dataId)) return;
-        playerTooltip?.Show(player);
-        var equipped = FindPlayer(EquipmentSave.Current.battlePlayerId);
-        if (player == equipped) { PickSlot(SlotType.Player, 0); return; }
-        SelectCandidate(SlotType.Player, 0, player, equipped);
-    }
-
-    private void SelectCandidate(SlotType type, int index, DefaultData next, DefaultData equipped)
-    {
-        selectedType = type;
-        selectedSlot = index;
-        candidate = next;
-        if (equipped == null) Confirm();
+        selectedSlot = slot;
+        candidate = item;
+        if (FindItem(ItemId(data, slot)) == null) Confirm();
         else Refresh();
     }
 
-    private void PickSlot(SlotType type, int index)
+    private void PickSlot(int index)
     {
-        selectedType = type;
         selectedSlot = index;
         candidate = null;
         Refresh();
     }
 
     private bool CanEquip(EquipmentData data)
-    {
-        if (selectedSlot < 0) return false;
-        return selectedType switch
-        {
-            SlotType.Material => selectedSlot < itemSlots.Length && candidate is ItemData item &&
-                OwnsMaterial(item) && !data.itemIds.Contains(item.dataId),
-            SlotType.Chest => selectedSlot < Mathf.Min(2, chestSlots.Length) && candidate is MergeBoxEquipmentData box &&
-                Unlocked(box.boxIndex) && !data.equippedChests.Contains(box.boxIndex),
-            SlotType.Player => playerSlot != null && candidate is PlayerData player &&
-                !string.IsNullOrWhiteSpace(player.dataId) && data.battlePlayerId != player.dataId,
-            _ => false
-        };
-    }
+        => selectedSlot >= 0 && selectedSlot < itemSlots.Length && OwnsMaterial(candidate) &&
+            !data.itemIds.Contains(candidate.dataId);
 
     public void Confirm()
     {
         var data = EquipmentSave.Current.Copy();
         if (!CanEquip(data)) return;
 
-        switch (candidate)
-        {
-            case ItemData item:
-                while (data.itemIds.Count <= selectedSlot) data.itemIds.Add("");
-                data.itemIds[selectedSlot] = item.dataId;
-                break;
-            case MergeBoxEquipmentData box:
-                while (data.equippedChests.Count <= selectedSlot) data.equippedChests.Add(0);
-                data.equippedChests[selectedSlot] = box.boxIndex;
-                break;
-            case PlayerData player:
-                data.battlePlayerId = player.dataId;
-                break;
-        }
+        while (data.itemIds.Count <= selectedSlot) data.itemIds.Add("");
+        data.itemIds[selectedSlot] = candidate.dataId;
         Apply(data);
     }
 
@@ -209,10 +124,8 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
     {
         if (selectedSlot < 0) return;
         var data = EquipmentSave.Current.Copy();
-        if (selectedType == SlotType.Material && selectedSlot < data.itemIds.Count) data.itemIds[selectedSlot] = "";
-        else if (selectedType == SlotType.Chest && selectedSlot < data.equippedChests.Count) data.equippedChests[selectedSlot] = 0;
-        else if (selectedType == SlotType.Player) data.battlePlayerId = null;
-        else return;
+        if (selectedSlot >= data.itemIds.Count) return;
+        data.itemIds[selectedSlot] = "";
         Apply(data);
     }
 
@@ -220,8 +133,6 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
     {
         var data = EquipmentSave.Current.Copy();
         data.itemIds.Clear();
-        data.equippedChests.Clear();
-        data.battlePlayerId = null;
         Apply(data);
     }
 
@@ -236,7 +147,6 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
     private void ResetSelection()
     {
         selectedSlot = -1;
-        selectedType = SlotType.None;
         candidate = null;
         inventory?.ClearSelection();
     }
@@ -245,27 +155,9 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
     {
         var data = EquipmentSave.Current;
         for (int i = 0; i < itemSlots.Length; i++)
-            itemSlots[i]?.Show(FindItem(ItemId(data, i)), selectedType == SlotType.Material && selectedSlot == i);
-        for (int i = 0; i < chestSlots.Length; i++)
-            chestSlots[i]?.Show(FindChest(ChestNumber(data, i)), selectedType == SlotType.Chest && selectedSlot == i);
-        for (int i = 0; i < chestChoices.Length; i++)
-        {
-            var choice = i < chestData.Length ? chestData[i] : null;
-            chestChoices[i]?.Show(choice, choice != null && candidate == choice, choice == null || !Unlocked(choice.boxIndex));
-        }
+            itemSlots[i]?.Show(FindItem(ItemId(data, i)), selectedSlot == i);
 
-        var equippedPlayer = FindPlayer(data.battlePlayerId);
-        playerSlot?.Show(equippedPlayer, selectedType == SlotType.Player && selectedSlot == 0);
-        foreach (var choice in playerChoices)
-            choice?.slot?.Show(choice.player, choice.player != null && candidate == choice.player, choice.player == null);
-
-        DefaultData equipped = selectedType switch
-        {
-            SlotType.Material => FindItem(ItemId(data, selectedSlot)),
-            SlotType.Chest => FindChest(ChestNumber(data, selectedSlot)),
-            SlotType.Player => equippedPlayer,
-            _ => null
-        };
+        var equipped = FindItem(ItemId(data, selectedSlot));
         bool hasSelection = selectedSlot >= 0;
         if (comparison != null) comparison.SetActive(hasSelection);
         if (guide != null) guide.SetActive(!hasSelection);
@@ -277,10 +169,6 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
         if (equipButton != null) equipButton.interactable = CanEquip(data);
         if (unequipButton != null) unequipButton.interactable = equipped != null;
     }
-
-    private PlayerData FindPlayer(string id)
-        => string.IsNullOrEmpty(id) ? null : Array.Find(playerChoices, choice => choice?.player != null && choice.player.dataId == id)?.player
-            ?? EquipmentSave.ResolveBattlePlayer(id);
 
     public bool IsMaterial(ItemData item)
     {
@@ -301,12 +189,6 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
     private static string ItemId(EquipmentData data, int slot)
         => slot >= 0 && slot < data.itemIds.Count ? data.itemIds[slot] : null;
 
-    private static int ChestNumber(EquipmentData data, int slot)
-    {
-        int number = slot >= 0 && slot < data.equippedChests.Count ? data.equippedChests[slot] : 0;
-        return Unlocked(number) ? number : 0;
-    }
-
     private static ItemData FindItem(string id)
     {
         if (string.IsNullOrEmpty(id) || InventoryManager.instance == null) return null;
@@ -315,8 +197,6 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
         return null;
     }
 
-    private MergeBoxEquipmentData FindChest(int number)
-        => Array.Find(chestData, chest => chest != null && chest.boxIndex == number);
     private int FirstEmptyMaterial(EquipmentData data)
     {
         for (int i = 0; i < itemSlots.Length; i++)
@@ -324,10 +204,4 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
         return -1;
     }
 
-    private int FirstEmptyChest(EquipmentData data)
-    {
-        for (int i = 0; i < Mathf.Min(2, chestSlots.Length); i++)
-            if (ChestNumber(data, i) == 0) return i;
-        return -1;
-    }
 }

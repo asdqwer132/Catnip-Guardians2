@@ -51,13 +51,6 @@ public class InitManager : MonoBehaviour
 
     public void RoundInit() { isInited = false; InitAll(GameManager.instance); }
 
-    public void StartBossPhase(Plant plant, PlantData data)
-    {
-        DamageArea.ClearAllActiveAreas();
-        enemyManager?.PrepareRound();
-        InitializePlant(plant, data);
-    }
-
     private void InitializePlant(Plant plant, PlantData data)
     {
         if (plant != null) plant.Init(data);

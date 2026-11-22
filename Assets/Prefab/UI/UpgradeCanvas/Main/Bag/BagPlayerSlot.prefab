@@ -1796,9 +1796,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 5058506944134209619}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 79e58c9a0e2c48159db77ed150eefbef, type: 3}
+  m_Script: {fileID: 11500000, guid: eaf8e5db7da24177bc984f95d227b515, type: 3}
   m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerEquipmentSlotUI
+  m_EditorClassIdentifier: Assembly-CSharp::BagEquipmentSlotUI
   dataSource: {fileID: 0}
   slotInformation:
     icon: {fileID: 2907053801801702810}
@@ -1821,8 +1821,6 @@ MonoBehaviour:
   slotButton: {fileID: 0}
   slotToggle: {fileID: 5188265481251609521}
   slotNumberText: {fileID: 0}
-  normalPlantPreview: {fileID: 3680740000000000002}
-  bossPlantPreview: {fileID: 3680740000000000003}
 --- !u!114 &3680740000000000002 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5704112146065660191, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}

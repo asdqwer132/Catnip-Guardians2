@@ -68,11 +68,7 @@ public class GameSession : MonoBehaviour
     public void CaptureUpgradeProgress(MergeBoxUpgradeManager mergeBoxUpgrades, PotionEquipmentManager potionEquipment,
         InventoryManager materialInventory, BuffSkillManager buffSkillManager)
     {
-        var data = new UpgradeToGeneralData
-        {
-            battlePlayer = generalData?.battlePlayer,
-            bossBattle = generalData?.bossBattle ?? false
-        };
+        var data = new UpgradeToGeneralData();
         if (mergeBoxUpgrades != null)
         {
             data.boxLevels = mergeBoxUpgrades.CaptureLevels();
@@ -125,7 +121,6 @@ public class GameSession : MonoBehaviour
         else EquipmentSave.StorePotions(data.potionSlots);
         UpgradeProgressSave.RefreshSkillValues(data);
         data.equipment = EquipmentSave.Current.Copy();
-        data.battlePlayer = EquipmentSave.ResolveBattlePlayer(data.equipment.battlePlayerId);
         data.unlockedMergeBoxes = MergeBoxUpgradeManager.CaptureChestUnlocks(data.unlockedSkillNodes);
         SaveUpgradeToGeneral(data);
     }
@@ -133,9 +128,10 @@ public class GameSession : MonoBehaviour
     public void SaveUpgradeToGeneral(UpgradeToGeneralData data)
     {
         generalData = (data ?? new UpgradeToGeneralData()).Copy();
+        generalData.equippedChest = EquipmentSave.ResolveChest(generalData.equipment, generalData.unlockedMergeBoxes);
         var progress = generalData.Copy();
         progress.equipment = null;
-        progress.battlePlayer = null;
+        progress.equippedChest = null;
         if (EquipmentSave.Current.potions.Count > 0) progress.potionSlots.Clear();
         UpgradeProgressSave.Write(progress);
         hasGeneralData = true;
@@ -143,15 +139,6 @@ public class GameSession : MonoBehaviour
         ClearBattleTransfers();
         GameDataChanged?.Invoke();
     }
-
-    public void SelectBattlePlayer(PlayerData player)
-    {
-        var equipment = EquipmentSave.Current.Copy();
-        equipment.battlePlayerId = player != null ? player.dataId : null;
-        if (EquipmentSave.Write(equipment)) UpdateEquipment(equipment);
-    }
-
-    public void SetBossBattle(bool isBossBattle) => generalData.bossBattle = isBossBattle;
 
     public bool TryReadGeneralData(out UpgradeToGeneralData data)
     {
@@ -179,7 +166,7 @@ public class GameSession : MonoBehaviour
     {
         generalData ??= new UpgradeToGeneralData();
         generalData.equipment = equipment?.Copy();
-        generalData.battlePlayer = EquipmentSave.ResolveBattlePlayer(equipment?.battlePlayerId);
+        generalData.equippedChest = EquipmentSave.ResolveChest(equipment, generalData.unlockedMergeBoxes);
         if (!hasGeneralData) return;
         GameDataRevision++;
         GameDataChanged?.Invoke();

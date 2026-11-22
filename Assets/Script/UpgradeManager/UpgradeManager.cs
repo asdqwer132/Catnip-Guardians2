@@ -91,9 +91,7 @@ public class UpgradeManager : MonoBehaviour
         if (mergeBoxUpgrades != null && mergeBoxUpgrades.skillTree != null) mergeBoxUpgrades.skillTree.OnSkillTreeChanged -= CaptureProgress;
     }
 
-    public void SelectBattlePlayer(PlayerData player) => GameSession.GetOrCreate().SelectBattlePlayer(player);
 
-    public void SetBossBattle(bool isBossBattle) => GameSession.GetOrCreate().SetBossBattle(isBossBattle);
 
     public void GoGame()
     {

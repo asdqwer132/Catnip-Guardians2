@@ -8,8 +8,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Player player;
     [SerializeField] private Plant mainPlant;
     public Plant MainPlant => mainPlant;
-    private PlantData bossPlant;
-    private bool isBossPhase;
+    [SerializeField] private MergeBoxEquipmentData defaultChest;
     private bool growthCompletionPending;
     public RoundManager roundManager;
     public GameStatisticsManager statisticsManager;
@@ -37,27 +36,14 @@ public class GameManager : MonoBehaviour
         growthCompletionPending = false;
         if (GameEndManager.instance != null && GameEndManager.instance.IsGameEnded) return;
 
-        if (!isBossPhase)
-        {
-            Debug.Log("Normal plant growth completed.", this);
-            if (bossPlant != null && initManager != null)
-            {
-                roundManager?.AwardCurrentPlantReward();
-                isBossPhase = true;
-                initManager.StartBossPhase(mainPlant, bossPlant);
-                return;
-            }
-        }
         Victory();
     }
 
     internal PlantData PrepareBattle(UpgradeToGeneralData data)
     {
-        player?.ApplyPlayerData(data?.battlePlayer);
-        var selection = player?.CurrentPlayerData;
-        bossPlant = selection?.bossPlant;
-        isBossPhase = (data?.bossBattle ?? false) && bossPlant != null;
-        return isBossPhase ? bossPlant : selection?.normalPlant;
+        var chest = data?.equippedChest != null ? data.equippedChest : defaultChest;
+        player?.ApplyPlayerData(chest != null ? chest.player : null);
+        return chest != null && chest.plant != null ? chest.plant : defaultChest != null ? defaultChest.plant : null;
     }
 
     public void Victory()

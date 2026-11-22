@@ -27626,45 +27626,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BagEquipmentPanelUI
   inventory: {fileID: 804281870}
   itemSlots:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  chestSlots:
-  - {fileID: 0}
-  - {fileID: 0}
-  chestChoices:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  playerSlot: {fileID: 0}
-  playerChoices:
-  - slot: {fileID: 0}
-    player: {fileID: 11400000, guid: c82dc94efc1b457fa817a3151e2b3164, type: 2}
-  - slot: {fileID: 0}
-    player: {fileID: 11400000, guid: 636f6ada0a592b84da81f465c456ff24, type: 2}
-  - slot: {fileID: 0}
-    player: {fileID: 11400000, guid: 9f8f312c2dbea5f46b8d366d60b4629a, type: 2}
-  - slot: {fileID: 0}
-    player: {fileID: 11400000, guid: be0e6d68f44f4d046b9b704a9bd6207e, type: 2}
-  chestTooltip: {fileID: 0}
-  playerTooltip: {fileID: 0}
-  chestData:
-  - {fileID: 11400000, guid: 8123e8778d924876a1bf62144c35d7fe, type: 2}
-  - {fileID: 11400000, guid: 470e875d0eab4905811c8133518067ec, type: 2}
-  - {fileID: 11400000, guid: a2a0f92c40414ad58bd496a4c4730c0a, type: 2}
-  - {fileID: 11400000, guid: b4691a9a8b9644c0bb36c9fbd0c64864, type: 2}
-  - {fileID: 11400000, guid: c2a923207d6d431cb2a78e1501b3f759, type: 2}
-  - {fileID: 11400000, guid: e36bab1b5b0240d8b91e5912f4441702, type: 2}
-  - {fileID: 11400000, guid: 2a58f9eacf134960b9dce0a524b86c4b, type: 2}
-  - {fileID: 11400000, guid: e4c57a9563c54b3f8aa6e7e383c67477, type: 2}
+  - {fileID: 990231100001}
+  - {fileID: 990231100002}
+  - {fileID: 990231100003}
+  - {fileID: 990231100004}
+  - {fileID: 990231100005}
+  - {fileID: 990231100006}
+  - {fileID: 990231100007}
+  - {fileID: 990231100008}
   equippedDetails: {fileID: 776718611}
   candidateDetails: {fileID: 1031879299}
   comparison: {fileID: 959251216}
@@ -37138,16 +37107,16 @@ MonoBehaviour:
   - {fileID: 1799780489}
   - {fileID: 590247539}
   - {fileID: 970439393}
-  selectedDetails: {fileID: 0}
-  notSelectedDetails: {fileID: 0}
-  equippedPotion: {fileID: 0}
-  newPotion: {fileID: 0}
-  replacementArrow: {fileID: 0}
-  selectedConfirmArea: {fileID: 0}
-  notSelectedConfirmArea: {fileID: 0}
-  unequipButton: {fileID: 0}
-  replaceButton: {fileID: 0}
-  clearButton: {fileID: 0}
+  selectedDetails: {fileID: 724162922}
+  notSelectedDetails: {fileID: 583927}
+  equippedPotion: {fileID: 1264269346}
+  newPotion: {fileID: 110282585}
+  replacementArrow: {fileID: 810246771}
+  selectedConfirmArea: {fileID: 2050954299}
+  notSelectedConfirmArea: {fileID: 727123920}
+  unequipButton: {fileID: 990231100060}
+  replaceButton: {fileID: 990231100061}
+  clearButton: {fileID: 990231100062}
 --- !u!114 &644996530 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3275813019440117299, guid: 695c2bc0e662cb1478f84c8f20dac209, type: 3}
@@ -50023,6 +49992,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 844971829}
+  - component: {fileID: 990231100040}
   m_Layer: 5
   m_Name: ChestSelect
   m_TagString: Untagged
@@ -113670,23 +113640,7 @@ PrefabInstance:
       objectReference: {fileID: 21300000, guid: 1132d32ae26c61f439ab3c028e52e079, type: 3}
     - target: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: UnlockSkill
-      objectReference: {fileID: 0}
-    - target: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: CostTooltipUI, Assembly-CSharp
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8551487739303024711, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
       propertyPath: m_Pivot.x
@@ -124071,6 +124025,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2095859463}
+  - component: {fileID: 990231100030}
   m_Layer: 5
   m_Name: ChestSelect
   m_TagString: Untagged
@@ -134029,6 +133984,199 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c4778d8b77e98c344bf7d39a0e039a91, type: 3}
+--- !u!114 &990231100001 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: e4abca9bf0f259e489172f9ed3354887, type: 3}
+  m_PrefabInstance: {fileID: 1342666553}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaf8e5db7da24177bc984f95d227b515, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::BagEquipmentSlotUI
+--- !u!114 &990231100002 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: e4abca9bf0f259e489172f9ed3354887, type: 3}
+  m_PrefabInstance: {fileID: 538642411}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaf8e5db7da24177bc984f95d227b515, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::BagEquipmentSlotUI
+--- !u!114 &990231100003 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: e4abca9bf0f259e489172f9ed3354887, type: 3}
+  m_PrefabInstance: {fileID: 855312303}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaf8e5db7da24177bc984f95d227b515, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::BagEquipmentSlotUI
+--- !u!114 &990231100004 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: e4abca9bf0f259e489172f9ed3354887, type: 3}
+  m_PrefabInstance: {fileID: 132184299}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaf8e5db7da24177bc984f95d227b515, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::BagEquipmentSlotUI
+--- !u!114 &990231100005 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: e4abca9bf0f259e489172f9ed3354887, type: 3}
+  m_PrefabInstance: {fileID: 974462207}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaf8e5db7da24177bc984f95d227b515, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::BagEquipmentSlotUI
+--- !u!114 &990231100006 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: e4abca9bf0f259e489172f9ed3354887, type: 3}
+  m_PrefabInstance: {fileID: 1029773801}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaf8e5db7da24177bc984f95d227b515, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::BagEquipmentSlotUI
+--- !u!114 &990231100007 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: e4abca9bf0f259e489172f9ed3354887, type: 3}
+  m_PrefabInstance: {fileID: 655415144}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaf8e5db7da24177bc984f95d227b515, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::BagEquipmentSlotUI
+--- !u!114 &990231100008 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5688156519195858012, guid: e4abca9bf0f259e489172f9ed3354887, type: 3}
+  m_PrefabInstance: {fileID: 379668556}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaf8e5db7da24177bc984f95d227b515, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::BagEquipmentSlotUI
+--- !u!114 &990231100031 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2797035388526676394, guid: 7145c54aa7e834b479806bf2f84d51aa, type: 3}
+  m_PrefabInstance: {fileID: 644530393}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaf8e5db7da24177bc984f95d227b515, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::BagEquipmentSlotUI
+--- !u!114 &990231100032 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7783250951639559683, guid: adbf67f148851494fb4ae3aaa54eb9ec, type: 3}
+  m_PrefabInstance: {fileID: 1629592790}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+--- !u!114 &990231100030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2095859462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30a4ea3f04ae47a58af1ffd89717531e, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ChestEquipmentSelectorUI
+  chestSlot: {fileID: 990231100031}
+  nextButton: {fileID: 990231100032}
+--- !u!114 &990231100041 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2797035388526676394, guid: 7145c54aa7e834b479806bf2f84d51aa, type: 3}
+  m_PrefabInstance: {fileID: 2137666552}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaf8e5db7da24177bc984f95d227b515, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::BagEquipmentSlotUI
+--- !u!114 &990231100042 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7783250951639559683, guid: adbf67f148851494fb4ae3aaa54eb9ec, type: 3}
+  m_PrefabInstance: {fileID: 1417025286}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+--- !u!114 &990231100040
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 844971828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30a4ea3f04ae47a58af1ffd89717531e, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ChestEquipmentSelectorUI
+  chestSlot: {fileID: 990231100041}
+  nextButton: {fileID: 990231100042}
+--- !u!114 &990231100060 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
+  m_PrefabInstance: {fileID: 1589297404}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+--- !u!114 &990231100061 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
+  m_PrefabInstance: {fileID: 1938882182}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+--- !u!114 &990231100062 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6016688715878142862, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
+  m_PrefabInstance: {fileID: 1467898682}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

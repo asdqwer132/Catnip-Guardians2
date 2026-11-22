@@ -47,8 +47,7 @@ public sealed class UpgradeToGeneralData
 {
     public bool legacySkillsOnly;
     public EquipmentData equipment;
-    public PlayerData battlePlayer;
-    public bool bossBattle;
+    public MergeBoxEquipmentData equippedChest;
     public List<int> unlockedMergeBoxes = new List<int> { 1 };
     public List<InventoryItem> materialItems = new List<InventoryItem>();
     public List<SkillItemSnapshot> skillItems = new List<SkillItemSnapshot>();
@@ -61,7 +60,7 @@ public sealed class UpgradeToGeneralData
         var copy = new UpgradeToGeneralData {
             legacySkillsOnly = legacySkillsOnly,
             equipment = equipment?.Copy(),
-            battlePlayer = battlePlayer, bossBattle = bossBattle,
+            equippedChest = equippedChest,
             unlockedMergeBoxes = unlockedMergeBoxes != null ? new List<int>(unlockedMergeBoxes) : new List<int> { 1 },
             materialItems = GameSessionItemCopy.Copy(materialItems),
             unlockedSkillNodes = unlockedSkillNodes != null ? new List<SkillNodeData>(unlockedSkillNodes) : new List<SkillNodeData>(),
