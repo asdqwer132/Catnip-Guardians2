@@ -101,6 +101,49 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
         }
     }
 
+    [ContextMenu("Fit Nodes Inside Rectangle")]
+    private void FitNodesInsideRectangle()
+    {
+        if (nodes == null) return;
+        var views = nodes.GetComponentsInChildren<SkillNodeUI>(true);
+        if (!TryMeasure(views, nodes, out var bounds)) return;
+
+        var rect = nodes.rect;
+        var delta = new Vector2(
+            FitAxis(rect.xMin + padding.left - bounds.xMin, rect.xMax - padding.right - bounds.xMax),
+            FitAxis(rect.yMin + padding.bottom - bounds.yMin, rect.yMax - padding.top - bounds.yMax));
+        if (delta.sqrMagnitude < .0001f) return;
+
+        var groups = new System.Collections.Generic.HashSet<Transform>();
+        foreach (var view in views)
+        {
+            var child = view.transform;
+            if (child == nodes) continue;
+            while (child.parent != nodes) child = child.parent;
+            groups.Add(child);
+        }
+
+        foreach (var child in groups)
+        {
+#if UNITY_EDITOR
+            if (!Application.isPlaying) Undo.RecordObject(child, "Fit Nodes Inside Rectangle");
+#endif
+            child.localPosition += (Vector3)delta;
+#if UNITY_EDITOR
+            if (!Application.isPlaying) PrefabUtility.RecordPrefabInstancePropertyModifications(child);
+#endif
+        }
+
+        if (lines != null && lines != nodes && lines.parent == nodes.parent)
+            foreach (var connection in lines.GetComponentsInChildren<SkillTreeConnectionUI>(true))
+                connection.RefreshGeometry(recordUndo: true);
+    }
+
+    private static float FitAxis(float minimumShift, float maximumShift)
+        => minimumShift <= maximumShift
+            ? Mathf.Clamp(0f, minimumShift, maximumShift)
+            : (minimumShift + maximumShift) * .5f;
+
     private void ApplyLayoutShift(RectTransform origin, Vector3 previousPosition, Vector2 shift)
     {
         var position = previousPosition + (Vector3)(shift - appliedLayoutShift);
