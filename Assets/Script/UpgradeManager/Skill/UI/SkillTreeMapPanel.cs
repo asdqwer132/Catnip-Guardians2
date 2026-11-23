@@ -104,14 +104,14 @@ public sealed class SkillTreeMapPanel : MonoBehaviour
         {
             var content = scrollRect.content;
             scrollRect.StopMovement();
-            if (content.TryGetComponent<SkillTreeAreaSizer>(out _))
+            if (content.TryGetComponent<SkillTreeAreaSizer>(out var sizer))
             {
                 if (!fittedStartPositions.TryGetValue(content, out var start))
                 {
-                    start = content.anchoredPosition;
+                    start = content.anchoredPosition - sizer.AppliedBoundsOffset;
                     fittedStartPositions.Add(content, start);
                 }
-                content.anchoredPosition = start;
+                content.anchoredPosition = start + sizer.AppliedBoundsOffset;
             }
             else content.anchoredPosition = Vector2.zero;
         }

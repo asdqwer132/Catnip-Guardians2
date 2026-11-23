@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -15,17 +16,21 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
     [SerializeField] private RectTransform lines;
 
     [Header("Fit Bounds")]
-    [Tooltip("Moves the fitted bounds in local UI units. Positive X goes right and positive Y goes up.")]
+    [Tooltip("Moves this SkillTreeArea and its contents in parent UI units. Positive X goes right and positive Y goes up.")]
     [SerializeField] private Vector2 boundsOffset;
     [Tooltip("Local UI units per edge. Negative padding insets the edge.")]
     [SerializeField] private RectOffset padding = new RectOffset();
-    [Tooltip("In play mode, fit to unlocked nodes. Before the first unlock, use the full tree.")]
-    [SerializeField] private bool unlockedNodesOnlyInPlayMode;
+    [Tooltip("In play mode, include visible nodes that are unlocked or have met their prerequisites.")]
+    [FormerlySerializedAs("unlockedNodesOnlyInPlayMode")]
+    [SerializeField] private bool visibleNodesOnlyInPlayMode;
 
     private SkillTreeManager skillTree;
     private bool fitPending;
 
     [SerializeField, HideInInspector] private Vector2 nodeCenterOffset;
+    [SerializeField, HideInInspector] private Vector2 appliedBoundsOffset;
+
+    internal Vector2 AppliedBoundsOffset => appliedBoundsOffset;
 
     internal Vector2 GetNodeCenterOffset(RectTransform nodeArea)
         => nodeArea == nodes ? nodeCenterOffset : Vector2.zero;
@@ -53,13 +58,13 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
         RequestFit();
     }
 
-    private void RequestFit() => fitPending = unlockedNodesOnlyInPlayMode && skillTree != null;
+    private void RequestFit() => fitPending = visibleNodesOnlyInPlayMode && skillTree != null;
 
     private void LateUpdate()
     {
         if (!fitPending) return;
         fitPending = false;
-        if (unlockedNodesOnlyInPlayMode) FitSkillTreeAreas();
+        if (visibleNodesOnlyInPlayMode) FitSkillTreeAreas();
     }
 
     [ContextMenu("Fit Skill Tree Areas")]
@@ -69,13 +74,13 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
         if (nodes == null || lines == null || nodes == lines || nodes.parent != area || lines.parent != area)
             return;
 
+        ApplyPositionOffset(area);
+
         var nodeViews = nodes.GetComponentsInChildren<SkillNodeUI>(true);
         var manager = SkillTreeManager.Instance;
-        if (Application.isPlaying && unlockedNodesOnlyInPlayMode && manager != null)
-        {
-            var unlocked = System.Array.FindAll(nodeViews, node => manager.IsUnlocked(node.SkillNodeData));
-            if (unlocked.Length > 0) nodeViews = unlocked;
-        }
+        if (Application.isPlaying && visibleNodesOnlyInPlayMode && manager != null)
+            nodeViews = System.Array.FindAll(nodeViews, node => node.gameObject.activeInHierarchy && node.IsVisible &&
+                (manager.IsUnlocked(node.SkillNodeData) || manager.HasRequiredSkills(node.SkillNodeData)));
         if (!TryMeasure(nodeViews, area, out var areaBounds) ||
             !TryMeasure(nodeViews, nodes, out var nodesBounds) ||
             !TryMeasure(nodeViews, lines, out var linesBounds)) return;
@@ -116,6 +121,29 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
 #endif
     }
 
+    private void ApplyPositionOffset(RectTransform area)
+    {
+        if (appliedBoundsOffset == boundsOffset) return;
+
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+        {
+            Undo.RecordObject(this, "Offset Skill Tree Area");
+            Undo.RecordObject(area, "Offset Skill Tree Area");
+        }
+#endif
+        // Apply the difference so unlock events and repeated fits do not accumulate movement.
+        area.anchoredPosition += boundsOffset - appliedBoundsOffset;
+        appliedBoundsOffset = boundsOffset;
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+        {
+            PrefabUtility.RecordPrefabInstancePropertyModifications(this);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(area);
+        }
+#endif
+    }
+
     private bool TryMeasure(SkillNodeUI[] views, RectTransform space, out Rect bounds)
     {
         var min = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
@@ -139,8 +167,8 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
 
     private Rect AdjustBounds(Rect bounds)
     {
-        var min = bounds.min + boundsOffset - new Vector2(padding.left, padding.bottom);
-        var max = bounds.max + boundsOffset + new Vector2(padding.right, padding.top);
+        var min = bounds.min - new Vector2(padding.left, padding.bottom);
+        var max = bounds.max + new Vector2(padding.right, padding.top);
         var center = (min + max) * .5f;
         var size = Vector2.Max(Vector2.one * .01f, max - min);
         return new Rect(center - size * .5f, size);
