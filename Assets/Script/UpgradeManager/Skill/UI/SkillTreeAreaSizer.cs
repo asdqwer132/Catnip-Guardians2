@@ -15,9 +15,7 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
     [SerializeField] private RectTransform lines;
 
     [Header("Fit Bounds")]
-    [Tooltip("Pos X / Pos Y of the shared LayoutOrigin inside the scroll content.")]
-    [SerializeField] private Vector2 boundsOffset;
-    [Tooltip("Left and right padding add to the scroll width. Top and bottom add to the scroll height. LayoutOrigin controls placement.")]
+    [Tooltip("Space around the measured nodes inside the scroll content.")]
     [SerializeField] private RectOffset padding = new RectOffset();
     [Tooltip("In play mode, include visible nodes that are unlocked or have met their prerequisites.")]
     [FormerlySerializedAs("unlockedNodesOnlyInPlayMode")]
@@ -80,28 +78,33 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
         if (Application.isPlaying && visibleNodesOnlyInPlayMode && manager != null)
             nodeViews = System.Array.FindAll(nodeViews, node => node.gameObject.activeInHierarchy && node.IsVisible &&
                 (manager.IsUnlocked(node.SkillNodeData) || manager.HasRequiredSkills(node.SkillNodeData)));
-        if (TryMeasure(nodeViews, nodes, out var size))
+        if (TryMeasure(nodeViews, area, out var bounds))
         {
-            size += new Vector2(padding.left, padding.bottom) + new Vector2(padding.right, padding.top);
-            size = Vector2.Max(Vector2.one * .01f, size);
+            bool canAlign = sharedLayers && origin.parent == area;
+            var lower = new Vector2(padding.left, padding.bottom);
+            var upper = new Vector2(padding.right, padding.top);
+            var size = Vector2.Max(Vector2.one * .01f, bounds.size + lower + upper);
             SetSize(area, size);
             SetSize(nodes, size);
             if (sharedLayers) SetSize(lines, size);
+
+            // Stretch anchors may move the layers on resize. Measure again before aligning.
+            if (canAlign && TryMeasure(nodeViews, area, out bounds))
+                SetLayoutOrigin(origin, origin.anchoredPosition + (area.rect.min + lower - bounds.min));
         }
 
         if (!sharedLayers) return;
-        if (origin.parent == area) SetLayoutOrigin(origin);
         foreach (var connection in lines.GetComponentsInChildren<SkillTreeConnectionUI>(true))
             connection.RefreshGeometry(recordUndo: true);
     }
 
-    private void SetLayoutOrigin(RectTransform origin)
+    private void SetLayoutOrigin(RectTransform origin, Vector2 position)
     {
-        if (origin.anchoredPosition == boundsOffset) return;
+        if ((origin.anchoredPosition - position).sqrMagnitude < .0001f) return;
 #if UNITY_EDITOR
         if (!Application.isPlaying) Undo.RecordObject(origin, "Set Skill Tree Layout Origin");
 #endif
-        origin.anchoredPosition = boundsOffset;
+        origin.anchoredPosition = position;
 #if UNITY_EDITOR
         if (!Application.isPlaying) PrefabUtility.RecordPrefabInstancePropertyModifications(origin);
 #endif
@@ -120,7 +123,7 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
 #endif
     }
 
-    private bool TryMeasure(SkillNodeUI[] views, RectTransform space, out Vector2 size)
+    private bool TryMeasure(SkillNodeUI[] views, RectTransform space, out Rect bounds)
     {
         var min = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
         var max = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
@@ -137,7 +140,7 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
             }
         }
 
-        size = max - min;
-        return float.IsFinite(size.x) && float.IsFinite(size.y);
+        bounds = Rect.MinMaxRect(min.x, min.y, max.x, max.y);
+        return float.IsFinite(bounds.width) && float.IsFinite(bounds.height);
     }
 }
