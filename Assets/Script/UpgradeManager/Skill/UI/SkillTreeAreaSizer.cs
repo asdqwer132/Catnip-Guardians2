@@ -14,6 +14,11 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
     [Tooltip("Direct child containing the connection lines.")]
     [SerializeField] private RectTransform lines;
 
+    [SerializeField, HideInInspector] private Vector2 nodeCenterOffset;
+
+    internal Vector2 GetNodeCenterOffset(RectTransform nodeArea)
+        => nodeArea == nodes ? nodeCenterOffset : Vector2.zero;
+
     [ContextMenu("Fit Skill Tree Areas")]
     public void FitSkillTreeAreas()
     {
@@ -21,31 +26,14 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
         if (nodes == null || lines == null || nodes == lines || nodes.parent != area || lines.parent != area)
             return;
 
-        var bounds = new Rect();
-        bool hasNodes = false;
-        var corners = new Vector3[4];
-        foreach (var node in nodes.GetComponentsInChildren<SkillNodeUI>(true))
-        {
-            if (node.transform == nodes || node.transform is not RectTransform rect) continue;
-            rect.GetWorldCorners(corners);
-            foreach (var corner in corners)
-            {
-                Vector2 point = nodes.InverseTransformPoint(corner);
-                if (!hasNodes)
-                {
-                    bounds = new Rect(point, Vector2.zero);
-                    hasNodes = true;
-                    continue;
-                }
-                bounds = Rect.MinMaxRect(Mathf.Min(bounds.xMin, point.x), Mathf.Min(bounds.yMin, point.y),
-                    Mathf.Max(bounds.xMax, point.x), Mathf.Max(bounds.yMax, point.y));
-            }
-        }
+        var nodeViews = nodes.GetComponentsInChildren<SkillNodeUI>(true);
+        if (!TryMeasure(nodeViews, area, out var areaBounds) ||
+            !TryMeasure(nodeViews, nodes, out var nodesBounds) ||
+            !TryMeasure(nodeViews, lines, out var linesBounds)) return;
+        if (Matches(area.rect, areaBounds) && Matches(nodes.rect, nodesBounds) && Matches(lines.rect, linesBounds)) return;
 
-        if (!hasNodes || !float.IsFinite(bounds.width) || !float.IsFinite(bounds.height)) return;
-        Vector2 size = bounds.size;
-        if (area.rect.size == size && nodes.rect.size == size && lines.rect.size == size) return;
-
+        var previousNodeCenter = nodes.rect.center;
+        var areaPosition = area.localPosition;
         var nodesPosition = nodes.localPosition;
         var linesPosition = lines.localPosition;
         var placements = new List<ChildPlacement>(nodes.childCount + lines.childCount);
@@ -53,15 +41,17 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
         CaptureChildren(lines, placements);
 
 #if UNITY_EDITOR
-        var edited = new List<Object> { area, nodes, lines };
+        var edited = new List<Object> { this, area, nodes, lines };
         foreach (var placement in placements) edited.Add(placement.Transform);
         if (!Application.isPlaying) Undo.RecordObjects(edited.ToArray(), "Fit Skill Tree Areas");
 #endif
 
-        SetSize(area, size);
-        SetSize(nodes, size);
-        SetSize(lines, size);
-        // Stretch anchors can shift local positions when an ancestor changes size.
+        FitRect(area, areaBounds);
+        FitRect(nodes, nodesBounds);
+        FitRect(lines, linesBounds);
+        // Keep the authored coordinate origin stable even if the rectangle center moves.
+        nodeCenterOffset += previousNodeCenter - nodes.rect.center;
+        area.localPosition = areaPosition;
         nodes.localPosition = nodesPosition;
         lines.localPosition = linesPosition;
         foreach (var placement in placements) placement.Restore();
@@ -72,6 +62,40 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
                 if (PrefabUtility.IsPartOfPrefabInstance(item))
                     PrefabUtility.RecordPrefabInstancePropertyModifications(item);
 #endif
+    }
+
+    private bool TryMeasure(SkillNodeUI[] views, RectTransform space, out Rect bounds)
+    {
+        var min = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
+        var max = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
+        var corners = new Vector3[4];
+        foreach (var node in views)
+        {
+            if (node.transform == nodes || node.transform is not RectTransform rect) continue;
+            rect.GetWorldCorners(corners);
+            foreach (var corner in corners)
+            {
+                Vector2 point = space.InverseTransformPoint(corner);
+                min = Vector2.Min(min, point);
+                max = Vector2.Max(max, point);
+            }
+        }
+
+        bounds = Rect.MinMaxRect(min.x, min.y, max.x, max.y);
+        return float.IsFinite(bounds.width) && float.IsFinite(bounds.height);
+    }
+
+    private static bool Matches(Rect current, Rect desired)
+        => (current.min - desired.min).sqrMagnitude < .0001f &&
+           (current.max - desired.max).sqrMagnitude < .0001f;
+
+    private static void FitRect(RectTransform rect, Rect bounds)
+    {
+        // Align both edges around the current transform position by shifting the pivot.
+        rect.pivot = new Vector2(
+            bounds.width > .0001f ? -bounds.xMin / bounds.width : rect.pivot.x,
+            bounds.height > .0001f ? -bounds.yMin / bounds.height : rect.pivot.y);
+        SetSize(rect, bounds.size);
     }
 
     private static void CaptureChildren(RectTransform root, List<ChildPlacement> placements)

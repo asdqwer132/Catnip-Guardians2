@@ -20,7 +20,16 @@ public partial class SkillTreeNodePlacer
     private static bool Different(Vector2 a, Vector2 b) => (a - b).sqrMagnitude > .0001f;
     private Vector2 OriginAnchor => layout != null && layout.placementOrigin == SkillTreePlacementOrigin.NodeAreaPivot
         ? nodeArea.pivot : new Vector2(.5f, .5f);
-    private Vector2 OriginPadding => layout != null ? layout.placementPadding : Vector2.zero;
+    private Vector2 OriginPadding
+    {
+        get
+        {
+            var padding = layout != null ? layout.placementPadding : Vector2.zero;
+            if (layout != null && layout.placementOrigin == SkillTreePlacementOrigin.NodeAreaPivot) return padding;
+            return nodeArea.parent != null && nodeArea.parent.TryGetComponent<SkillTreeAreaSizer>(out var sizer)
+                ? padding + sizer.GetNodeCenterOffset(nodeArea) : padding;
+        }
+    }
     private Vector2 LocalOrigin => nodeArea.rect.min + Vector2.Scale(nodeArea.rect.size, OriginAnchor) + OriginPadding;
 
     private Vector2 Position(SkillNodeUI view)
