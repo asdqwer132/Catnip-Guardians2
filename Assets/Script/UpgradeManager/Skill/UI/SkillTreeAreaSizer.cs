@@ -78,80 +78,13 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
         if (Application.isPlaying && visibleNodesOnlyInPlayMode && manager != null)
             nodeViews = System.Array.FindAll(nodeViews, node => node.gameObject.activeInHierarchy && node.IsVisible &&
                 (manager.IsUnlocked(node.SkillNodeData) || manager.HasRequiredSkills(node.SkillNodeData)));
-        if (TryMeasure(nodeViews, area, out var bounds))
-        {
-            bool canAlign = sharedLayers && origin.parent == area;
-            var lower = new Vector2(padding.left, padding.bottom);
-            var upper = new Vector2(padding.right, padding.top);
-            var size = Vector2.Max(Vector2.one * .01f, bounds.size + lower + upper);
-            SetSize(area, size);
-            FitNodeRect(nodeViews, lower, size);
-            if (sharedLayers) SetSize(lines, size);
+        if (!TryMeasure(nodeViews, area, out var bounds)) return;
 
-            // Stretch anchors may move the layers on resize. Measure again before aligning.
-            if (canAlign && TryMeasure(nodeViews, area, out bounds))
-                SetLayoutOrigin(origin, origin.anchoredPosition + (area.rect.min + lower - bounds.min));
-        }
-
-        if (!sharedLayers) return;
-        foreach (var connection in lines.GetComponentsInChildren<SkillTreeConnectionUI>(true))
-            connection.RefreshGeometry(recordUndo: true);
-    }
-
-    private void FitNodeRect(SkillNodeUI[] views, Vector2 paddingBefore, Vector2 size)
-    {
-        if (!TryMeasure(views, nodes, out var bounds)) return;
-        var min = bounds.min - paddingBefore;
-        var pivot = new Vector2(-min.x / size.x, -min.y / size.y);
-        if ((nodes.pivot - pivot).sqrMagnitude < .00000001f && (nodes.rect.size - size).sqrMagnitude < .0001f) return;
-
-        var position = nodes.localPosition;
-        var center = nodes.rect.center;
-        var children = new (Transform transform, Vector3 position, Vector2 size)[nodes.childCount];
-        for (int i = 0; i < children.Length; i++)
-        {
-            var child = nodes.GetChild(i);
-            children[i] = (child, child.localPosition, child is RectTransform rect ? rect.rect.size : Vector2.zero);
-        }
-#if UNITY_EDITOR
-        if (!Application.isPlaying)
-        {
-            Undo.RecordObject(this, "Fit Skill Node Bounds");
-            Undo.RecordObject(nodes, "Fit Skill Node Bounds");
-            foreach (var child in children) Undo.RecordObject(child.transform, "Preserve Skill Node Layout");
-        }
-#endif
-        nodes.pivot = pivot;
+        var paddingSize = new Vector2((float)padding.left + padding.right, (float)padding.top + padding.bottom);
+        var size = Vector2.Max(Vector2.one * .01f, bounds.size + paddingSize);
+        SetSize(area, size);
         SetSize(nodes, size);
-        nodes.localPosition = position;
-        nodeCenterOffset += center - nodes.rect.center;
-        foreach (var child in children)
-        {
-            if (child.transform is RectTransform rect) SetSize(rect, child.size);
-            child.transform.localPosition = child.position;
-#if UNITY_EDITOR
-            if (!Application.isPlaying) PrefabUtility.RecordPrefabInstancePropertyModifications(child.transform);
-#endif
-        }
-#if UNITY_EDITOR
-        if (!Application.isPlaying)
-        {
-            PrefabUtility.RecordPrefabInstancePropertyModifications(this);
-            PrefabUtility.RecordPrefabInstancePropertyModifications(nodes);
-        }
-#endif
-    }
-
-    private void SetLayoutOrigin(RectTransform origin, Vector2 position)
-    {
-        if ((origin.anchoredPosition - position).sqrMagnitude < .0001f) return;
-#if UNITY_EDITOR
-        if (!Application.isPlaying) Undo.RecordObject(origin, "Set Skill Tree Layout Origin");
-#endif
-        origin.anchoredPosition = position;
-#if UNITY_EDITOR
-        if (!Application.isPlaying) PrefabUtility.RecordPrefabInstancePropertyModifications(origin);
-#endif
+        if (sharedLayers) SetSize(lines, size);
     }
 
     private static void SetSize(RectTransform rect, Vector2 size)
