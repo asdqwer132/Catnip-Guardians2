@@ -101,6 +101,42 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
         }
     }
 
+    [ContextMenu("Align Nodes Inside Nodes Rect")]
+    private void AlignNodesInsideNodesRect()
+    {
+        if (nodes == null) return;
+        var views = nodes.GetComponentsInChildren<SkillNodeUI>(true);
+        if (!TryMeasure(views, nodes, out var bounds)) return;
+
+        var target = new Vector2(nodes.rect.xMin + padding.left, nodes.rect.yMax - padding.top);
+        var delta = target - new Vector2(bounds.xMin, bounds.yMax);
+        if (delta.sqrMagnitude < .0001f) return;
+
+        var groups = new System.Collections.Generic.HashSet<Transform>();
+        foreach (var view in views)
+        {
+            var child = view.transform;
+            if (child == nodes) continue;
+            while (child.parent != nodes) child = child.parent;
+            groups.Add(child);
+        }
+
+        foreach (var child in groups)
+        {
+#if UNITY_EDITOR
+            if (!Application.isPlaying) Undo.RecordObject(child, "Align Skill Nodes");
+#endif
+            child.localPosition += (Vector3)delta;
+#if UNITY_EDITOR
+            if (!Application.isPlaying) PrefabUtility.RecordPrefabInstancePropertyModifications(child);
+#endif
+        }
+
+        if (lines != null && lines != nodes && lines.parent == nodes.parent)
+            foreach (var connection in lines.GetComponentsInChildren<SkillTreeConnectionUI>(true))
+                connection.RefreshGeometry(recordUndo: true);
+    }
+
     private void ApplyLayoutShift(RectTransform origin, Vector3 previousPosition, Vector2 shift)
     {
         var position = previousPosition + (Vector3)(shift - appliedLayoutShift);
