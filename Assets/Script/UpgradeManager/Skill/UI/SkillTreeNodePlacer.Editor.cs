@@ -25,9 +25,9 @@ public partial class SkillTreeNodePlacer
         get
         {
             var padding = layout != null ? layout.placementPadding : Vector2.zero;
-            if (layout != null && layout.placementOrigin == SkillTreePlacementOrigin.NodeAreaPivot) return padding;
+            bool usePivot = layout != null && layout.placementOrigin == SkillTreePlacementOrigin.NodeAreaPivot;
             var sizer = nodeArea.GetComponentInParent<SkillTreeAreaSizer>(true);
-            return sizer != null ? padding + sizer.GetNodeCenterOffset(nodeArea) : padding;
+            return sizer != null ? padding + sizer.GetNodePlacementOffset(nodeArea, usePivot) : padding;
         }
     }
     private Vector2 LocalOrigin => nodeArea.rect.min + Vector2.Scale(nodeArea.rect.size, OriginAnchor) + OriginPadding;

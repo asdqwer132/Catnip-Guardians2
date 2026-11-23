@@ -30,8 +30,10 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
     // Preserve the graph origin for layouts fitted by earlier versions.
     [SerializeField, HideInInspector] private Vector2 nodeCenterOffset;
 
-    internal Vector2 GetNodeCenterOffset(RectTransform nodeArea)
-        => nodeArea == nodes ? nodeCenterOffset : Vector2.zero;
+    [SerializeField, HideInInspector] private Vector2 nodeAlignmentOffset;
+
+    internal Vector2 GetNodePlacementOffset(RectTransform nodeArea, bool usePivot)
+        => nodeArea == nodes ? nodeAlignmentOffset + (usePivot ? Vector2.zero : nodeCenterOffset) : Vector2.zero;
 
     private void OnEnable()
     {
@@ -113,6 +115,13 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
             FitAxis(rect.xMin + padding.left - bounds.xMin, rect.xMax - padding.right - bounds.xMax),
             FitAxis(rect.yMin + padding.bottom - bounds.yMin, rect.yMax - padding.top - bounds.yMax));
         if (delta.sqrMagnitude < .0001f) return;
+#if UNITY_EDITOR
+        if (!Application.isPlaying) Undo.RecordObject(this, "Fit Nodes Inside Rectangle");
+#endif
+        nodeAlignmentOffset += delta;
+#if UNITY_EDITOR
+        if (!Application.isPlaying) PrefabUtility.RecordPrefabInstancePropertyModifications(this);
+#endif
 
         var groups = new System.Collections.Generic.HashSet<Transform>();
         foreach (var view in views)
