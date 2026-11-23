@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 #if UNITY_EDITOR
@@ -12,13 +11,11 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
 {
     [Tooltip("Direct child containing the skill nodes.")]
     [SerializeField] private RectTransform nodes;
-    [Tooltip("Direct child containing the connection lines.")]
-    [SerializeField] private RectTransform lines;
 
     [Header("Fit Bounds")]
     [Tooltip("Moves this SkillTreeArea and its contents in parent UI units. Positive X goes right and positive Y goes up.")]
     [SerializeField] private Vector2 boundsOffset;
-    [Tooltip("Local UI units per edge. Negative padding insets the edge.")]
+    [Tooltip("Horizontal and vertical padding totals adjust the size around the existing pivot. Negative values reduce the size.")]
     [SerializeField] private RectOffset padding = new RectOffset();
     [Tooltip("In play mode, include visible nodes that are unlocked or have met their prerequisites.")]
     [FormerlySerializedAs("unlockedNodesOnlyInPlayMode")]
@@ -27,6 +24,7 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
     private SkillTreeManager skillTree;
     private bool fitPending;
 
+    // Preserve the graph origin for layouts fitted by earlier versions.
     [SerializeField, HideInInspector] private Vector2 nodeCenterOffset;
     [SerializeField, HideInInspector] private Vector2 appliedBoundsOffset;
 
@@ -71,8 +69,7 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
     public void FitSkillTreeAreas()
     {
         var area = (RectTransform)transform;
-        if (nodes == null || lines == null || nodes == lines || nodes.parent != area || lines.parent != area)
-            return;
+        if (nodes == null || nodes.parent != area) return;
 
         ApplyPositionOffset(area);
 
@@ -81,43 +78,21 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
         if (Application.isPlaying && visibleNodesOnlyInPlayMode && manager != null)
             nodeViews = System.Array.FindAll(nodeViews, node => node.gameObject.activeInHierarchy && node.IsVisible &&
                 (manager.IsUnlocked(node.SkillNodeData) || manager.HasRequiredSkills(node.SkillNodeData)));
-        if (!TryMeasure(nodeViews, area, out var areaBounds) ||
-            !TryMeasure(nodeViews, nodes, out var nodesBounds) ||
-            !TryMeasure(nodeViews, lines, out var linesBounds)) return;
-        areaBounds = AdjustBounds(areaBounds);
-        nodesBounds = AdjustBounds(nodesBounds);
-        linesBounds = AdjustBounds(linesBounds);
-        if (Matches(area.rect, areaBounds) && Matches(nodes.rect, nodesBounds) && Matches(lines.rect, linesBounds)) return;
+        if (!TryMeasure(nodeViews, area, out var size)) return;
 
-        var previousNodeCenter = nodes.rect.center;
-        var areaPosition = area.localPosition;
-        var nodesPosition = nodes.localPosition;
-        var linesPosition = lines.localPosition;
-        var placements = new List<ChildPlacement>(nodes.childCount + lines.childCount);
-        CaptureChildren(nodes, placements);
-        CaptureChildren(lines, placements);
+        size += new Vector2(padding.left, padding.bottom) + new Vector2(padding.right, padding.top);
+        size = Vector2.Max(Vector2.one * .01f, size);
+        if ((area.rect.size - size).sqrMagnitude < .0001f) return;
 
 #if UNITY_EDITOR
-        var edited = new List<Object> { this, area, nodes, lines };
-        foreach (var placement in placements) edited.Add(placement.Transform);
-        if (!Application.isPlaying) Undo.RecordObjects(edited.ToArray(), "Fit Skill Tree Areas");
+        if (!Application.isPlaying) Undo.RecordObject(area, "Fit Skill Tree Area");
 #endif
 
-        FitRect(area, areaBounds);
-        FitRect(nodes, nodesBounds);
-        FitRect(lines, linesBounds);
-        // Keep the authored coordinate origin stable even if the rectangle center moves.
-        nodeCenterOffset += previousNodeCenter - nodes.rect.center;
-        area.localPosition = areaPosition;
-        nodes.localPosition = nodesPosition;
-        lines.localPosition = linesPosition;
-        foreach (var placement in placements) placement.Restore();
+        area.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
+        area.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);
 
 #if UNITY_EDITOR
-        if (!Application.isPlaying)
-            foreach (var item in edited)
-                if (PrefabUtility.IsPartOfPrefabInstance(item))
-                    PrefabUtility.RecordPrefabInstancePropertyModifications(item);
+        if (!Application.isPlaying) PrefabUtility.RecordPrefabInstancePropertyModifications(area);
 #endif
     }
 
@@ -144,7 +119,7 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
 #endif
     }
 
-    private bool TryMeasure(SkillNodeUI[] views, RectTransform space, out Rect bounds)
+    private bool TryMeasure(SkillNodeUI[] views, RectTransform space, out Vector2 size)
     {
         var min = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
         var max = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
@@ -161,60 +136,7 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
             }
         }
 
-        bounds = Rect.MinMaxRect(min.x, min.y, max.x, max.y);
-        return float.IsFinite(bounds.width) && float.IsFinite(bounds.height);
-    }
-
-    private Rect AdjustBounds(Rect bounds)
-    {
-        var min = bounds.min - new Vector2(padding.left, padding.bottom);
-        var max = bounds.max + new Vector2(padding.right, padding.top);
-        var center = (min + max) * .5f;
-        var size = Vector2.Max(Vector2.one * .01f, max - min);
-        return new Rect(center - size * .5f, size);
-    }
-
-    private static bool Matches(Rect current, Rect desired)
-        => (current.min - desired.min).sqrMagnitude < .0001f &&
-           (current.max - desired.max).sqrMagnitude < .0001f;
-
-    private static void FitRect(RectTransform rect, Rect bounds)
-    {
-        // Align both edges around the current transform position by shifting the pivot.
-        rect.pivot = new Vector2(
-            bounds.width > .0001f ? -bounds.xMin / bounds.width : rect.pivot.x,
-            bounds.height > .0001f ? -bounds.yMin / bounds.height : rect.pivot.y);
-        SetSize(rect, bounds.size);
-    }
-
-    private static void CaptureChildren(RectTransform root, List<ChildPlacement> placements)
-    {
-        foreach (Transform child in root) placements.Add(new ChildPlacement(child));
-    }
-
-    private static void SetSize(RectTransform rect, Vector2 size)
-    {
-        rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
-        rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);
-    }
-
-    private readonly struct ChildPlacement
-    {
-        public Transform Transform { get; }
-        private readonly Vector3 position;
-        private readonly Vector2 size;
-
-        public ChildPlacement(Transform child)
-        {
-            Transform = child;
-            position = child.localPosition;
-            size = child is RectTransform rect ? rect.rect.size : Vector2.zero;
-        }
-
-        public void Restore()
-        {
-            if (Transform is RectTransform rect) SetSize(rect, size);
-            Transform.localPosition = position;
-        }
+        size = max - min;
+        return float.IsFinite(size.x) && float.IsFinite(size.y);
     }
 }
