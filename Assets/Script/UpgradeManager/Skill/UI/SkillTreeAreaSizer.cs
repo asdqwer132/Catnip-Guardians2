@@ -11,9 +11,11 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
 {
     [Tooltip("Direct child containing the skill nodes.")]
     [SerializeField] private RectTransform nodes;
+    [Tooltip("Direct child containing the connection lines.")]
+    [SerializeField] private RectTransform lines;
 
     [Header("Fit Bounds")]
-    [Tooltip("Moves this SkillTreeArea and its contents in parent UI units. Positive X goes right and positive Y goes up.")]
+    [Tooltip("Absolute Pos X / Pos Y of this SkillTreeArea in parent UI units.")]
     [SerializeField] private Vector2 boundsOffset;
     [Tooltip("Horizontal and vertical padding totals adjust the size around the existing pivot. Negative values reduce the size.")]
     [SerializeField] private RectOffset padding = new RectOffset();
@@ -26,9 +28,8 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
 
     // Preserve the graph origin for layouts fitted by earlier versions.
     [SerializeField, HideInInspector] private Vector2 nodeCenterOffset;
-    [SerializeField, HideInInspector] private Vector2 appliedBoundsOffset;
 
-    internal Vector2 AppliedBoundsOffset => appliedBoundsOffset;
+    internal Vector2 BoundsOffset => boundsOffset;
 
     internal Vector2 GetNodeCenterOffset(RectTransform nodeArea)
         => nodeArea == nodes ? nodeCenterOffset : Vector2.zero;
@@ -62,16 +63,20 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
     {
         if (!fitPending) return;
         fitPending = false;
-        if (visibleNodesOnlyInPlayMode) FitSkillTreeAreas();
+        if (visibleNodesOnlyInPlayMode) FitSizes((RectTransform)transform);
     }
 
     [ContextMenu("Fit Skill Tree Areas")]
     public void FitSkillTreeAreas()
     {
         var area = (RectTransform)transform;
-        if (nodes == null || nodes.parent != area) return;
-
         ApplyPositionOffset(area);
+        FitSizes(area);
+    }
+
+    private void FitSizes(RectTransform area)
+    {
+        if (nodes == null || nodes.parent != area) return;
 
         var nodeViews = nodes.GetComponentsInChildren<SkillNodeUI>(true);
         var manager = SkillTreeManager.Instance;
@@ -82,40 +87,33 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
 
         size += new Vector2(padding.left, padding.bottom) + new Vector2(padding.right, padding.top);
         size = Vector2.Max(Vector2.one * .01f, size);
-        if ((area.rect.size - size).sqrMagnitude < .0001f) return;
+        SetSize(area, size);
+        SetSize(nodes, size);
+        if (lines != null && lines.parent == area && lines != nodes) SetSize(lines, size);
+    }
 
+    private static void SetSize(RectTransform rect, Vector2 size)
+    {
+        if ((rect.rect.size - size).sqrMagnitude < .0001f) return;
 #if UNITY_EDITOR
-        if (!Application.isPlaying) Undo.RecordObject(area, "Fit Skill Tree Area");
+        if (!Application.isPlaying) Undo.RecordObject(rect, "Fit Skill Tree Areas");
 #endif
-
-        area.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
-        area.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);
-
+        rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size.x);
+        rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);
 #if UNITY_EDITOR
-        if (!Application.isPlaying) PrefabUtility.RecordPrefabInstancePropertyModifications(area);
+        if (!Application.isPlaying) PrefabUtility.RecordPrefabInstancePropertyModifications(rect);
 #endif
     }
 
     private void ApplyPositionOffset(RectTransform area)
     {
-        if (appliedBoundsOffset == boundsOffset) return;
-
+        if (area.anchoredPosition == boundsOffset) return;
 #if UNITY_EDITOR
-        if (!Application.isPlaying)
-        {
-            Undo.RecordObject(this, "Offset Skill Tree Area");
-            Undo.RecordObject(area, "Offset Skill Tree Area");
-        }
+        if (!Application.isPlaying) Undo.RecordObject(area, "Set Skill Tree Area Position");
 #endif
-        // Apply the difference so unlock events and repeated fits do not accumulate movement.
-        area.anchoredPosition += boundsOffset - appliedBoundsOffset;
-        appliedBoundsOffset = boundsOffset;
+        area.anchoredPosition = boundsOffset;
 #if UNITY_EDITOR
-        if (!Application.isPlaying)
-        {
-            PrefabUtility.RecordPrefabInstancePropertyModifications(this);
-            PrefabUtility.RecordPrefabInstancePropertyModifications(area);
-        }
+        if (!Application.isPlaying) PrefabUtility.RecordPrefabInstancePropertyModifications(area);
 #endif
     }
 

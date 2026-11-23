@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -27,7 +26,6 @@ public sealed class SkillTreeMapPanel : MonoBehaviour
     private UnityAction<bool>[] listeners;
     private SkillTreeManager subscribedManager;
     private int selectedIndex;
-    private readonly Dictionary<RectTransform, Vector2> fittedStartPositions = new Dictionary<RectTransform, Vector2>();
 
     private void OnEnable()
     {
@@ -104,16 +102,8 @@ public sealed class SkillTreeMapPanel : MonoBehaviour
         {
             var content = scrollRect.content;
             scrollRect.StopMovement();
-            if (content.TryGetComponent<SkillTreeAreaSizer>(out var sizer))
-            {
-                if (!fittedStartPositions.TryGetValue(content, out var start))
-                {
-                    start = content.anchoredPosition - sizer.AppliedBoundsOffset;
-                    fittedStartPositions.Add(content, start);
-                }
-                content.anchoredPosition = start + sizer.AppliedBoundsOffset;
-            }
-            else content.anchoredPosition = Vector2.zero;
+            content.anchoredPosition = content.TryGetComponent<SkillTreeAreaSizer>(out var sizer)
+                ? sizer.BoundsOffset : Vector2.zero;
         }
         if (maps[index].zoom != null)
             maps[index].zoom.ResetZoom();
