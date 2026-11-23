@@ -19,11 +19,48 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
     [SerializeField] private Vector2 boundsOffset;
     [Tooltip("Local UI units per edge. Negative padding insets the edge.")]
     [SerializeField] private RectOffset padding = new RectOffset();
+    [Tooltip("In play mode, fit to unlocked nodes. Before the first unlock, use the full tree.")]
+    [SerializeField] private bool unlockedNodesOnlyInPlayMode;
+
+    private SkillTreeManager skillTree;
+    private bool fitPending;
 
     [SerializeField, HideInInspector] private Vector2 nodeCenterOffset;
 
     internal Vector2 GetNodeCenterOffset(RectTransform nodeArea)
         => nodeArea == nodes ? nodeCenterOffset : Vector2.zero;
+
+    private void OnEnable()
+    {
+        if (!Application.isPlaying) return;
+        SkillTreeManager.InstanceChanged += BindSkillTree;
+        BindSkillTree();
+    }
+
+    private void OnDisable()
+    {
+        SkillTreeManager.InstanceChanged -= BindSkillTree;
+        if (skillTree != null) skillTree.OnSkillTreeChanged -= RequestFit;
+        skillTree = null;
+        fitPending = false;
+    }
+
+    private void BindSkillTree()
+    {
+        if (skillTree != null) skillTree.OnSkillTreeChanged -= RequestFit;
+        skillTree = SkillTreeManager.Instance;
+        if (skillTree != null) skillTree.OnSkillTreeChanged += RequestFit;
+        RequestFit();
+    }
+
+    private void RequestFit() => fitPending = unlockedNodesOnlyInPlayMode && skillTree != null;
+
+    private void LateUpdate()
+    {
+        if (!fitPending) return;
+        fitPending = false;
+        if (unlockedNodesOnlyInPlayMode) FitSkillTreeAreas();
+    }
 
     [ContextMenu("Fit Skill Tree Areas")]
     public void FitSkillTreeAreas()
@@ -33,6 +70,12 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
             return;
 
         var nodeViews = nodes.GetComponentsInChildren<SkillNodeUI>(true);
+        var manager = SkillTreeManager.Instance;
+        if (Application.isPlaying && unlockedNodesOnlyInPlayMode && manager != null)
+        {
+            var unlocked = System.Array.FindAll(nodeViews, node => manager.IsUnlocked(node.SkillNodeData));
+            if (unlocked.Length > 0) nodeViews = unlocked;
+        }
         if (!TryMeasure(nodeViews, area, out var areaBounds) ||
             !TryMeasure(nodeViews, nodes, out var nodesBounds) ||
             !TryMeasure(nodeViews, lines, out var linesBounds)) return;
