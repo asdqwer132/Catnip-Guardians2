@@ -9,11 +9,43 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 3190744577762700973, guid: 0ad114edf838127459965d6ac6b4b2c9, type: 3}
+      propertyPath: layout
+      value: 
+      objectReference: {fileID: 11400000, guid: d167918e26d6af84a8f9c829752af0d6, type: 2}
+    - target: {fileID: 3190744577762700973, guid: 0ad114edf838127459965d6ac6b4b2c9, type: 3}
+      propertyPath: curveBend
+      value: 0.229
+      objectReference: {fileID: 0}
+    - target: {fileID: 3190744577762700973, guid: 0ad114edf838127459965d6ac6b4b2c9, type: 3}
+      propertyPath: nodeSize.x
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 3190744577762700973, guid: 0ad114edf838127459965d6ac6b4b2c9, type: 3}
+      propertyPath: nodeSize.y
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 3190744577762700973, guid: 0ad114edf838127459965d6ac6b4b2c9, type: 3}
       propertyPath: nodeDatas.Array.size
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3190744577762700973, guid: 0ad114edf838127459965d6ac6b4b2c9, type: 3}
+      propertyPath: legacyNodes.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3190744577762700973, guid: 0ad114edf838127459965d6ac6b4b2c9, type: 3}
+      propertyPath: legacyLayout.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3190744577762700973, guid: 0ad114edf838127459965d6ac6b4b2c9, type: 3}
       propertyPath: 'nodeDatas.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 02dd6e2df5388e3429c20107dad4ea00, type: 2}
+    - target: {fileID: 3190744577762700973, guid: 0ad114edf838127459965d6ac6b4b2c9, type: 3}
+      propertyPath: 'legacyNodes.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 02dd6e2df5388e3429c20107dad4ea00, type: 2}
+    - target: {fileID: 3190744577762700973, guid: 0ad114edf838127459965d6ac6b4b2c9, type: 3}
+      propertyPath: legacyLayout.Array.data[0].node
       value: 
       objectReference: {fileID: 11400000, guid: 02dd6e2df5388e3429c20107dad4ea00, type: 2}
     - target: {fileID: 3628101269313942303, guid: 0ad114edf838127459965d6ac6b4b2c9, type: 3}
