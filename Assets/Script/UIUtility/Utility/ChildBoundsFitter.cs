@@ -7,22 +7,40 @@ using UnityEditor;
 [DisallowMultipleComponent]
 [RequireComponent(typeof(RectTransform))]
 [AddComponentMenu("Layout/Child Bounds Fitter")]
-public sealed class ChildBoundsFitter : MonoBehaviour
+public class ChildBoundsFitter : MonoBehaviour
 {
     [Tooltip("Padding in local UI units. Negative values inset the corresponding edge.")]
     [SerializeField] private RectOffset padding = new RectOffset();
 
+    [Tooltip("Measure only this child subtree. Leave empty to measure the entire hierarchy.")]
+    [SerializeField] private RectTransform measurementRoot;
+
+    protected RectTransform MeasurementRoot => measurementRoot != null && measurementRoot != transform && measurementRoot.IsChildOf(transform)
+        ? measurementRoot : null;
+
+    protected virtual IEnumerable<RectTransform> GetMeasuredRects()
+    {
+        if (measurementRoot != null && MeasurementRoot == null) return System.Array.Empty<RectTransform>();
+        var root = MeasurementRoot != null ? MeasurementRoot : transform;
+        return root.GetComponentsInChildren<RectTransform>(true);
+    }
+
+    protected virtual bool FitEmptyBounds => false;
+
     [ContextMenu("Fit To Child Bounds")]
-    public void FitToChildBounds()
+    public void FitToChildBounds() => FitToBounds(GetMeasuredRects());
+
+    protected void FitToBounds(IEnumerable<RectTransform> rects)
     {
         var parent = (RectTransform)transform;
         var corners = new Vector3[4];
         var min = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
         var max = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
 
-        foreach (var descendant in parent.GetComponentsInChildren<RectTransform>(true))
+        var root = MeasurementRoot;
+        foreach (var descendant in rects)
         {
-            if (descendant == parent) continue;
+            if (descendant == null || descendant == parent || descendant == root) continue;
             descendant.GetWorldCorners(corners);
             foreach (var corner in corners)
             {
@@ -32,7 +50,11 @@ public sealed class ChildBoundsFitter : MonoBehaviour
             }
         }
         if (!float.IsFinite(min.x) || !float.IsFinite(min.y) ||
-            !float.IsFinite(max.x) || !float.IsFinite(max.y)) return;
+            !float.IsFinite(max.x) || !float.IsFinite(max.y))
+        {
+            if (!FitEmptyBounds) return;
+            min = max = Vector2.zero;
+        }
 
         min -= new Vector2(padding.left, padding.bottom);
         max += new Vector2(padding.right, padding.top);
