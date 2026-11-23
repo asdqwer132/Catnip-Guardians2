@@ -17,6 +17,9 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
     [Header("Fit Bounds")]
     [Tooltip("Space around the measured nodes inside the scroll content.")]
     [SerializeField] private RectOffset padding = new RectOffset();
+    [Tooltip("Extra scroll space per edge. Moves the shared layout to make room.")]
+    [SerializeField] private RectOffset layoutPadding = new RectOffset();
+    [SerializeField, HideInInspector] private Vector2 appliedLayoutShift;
     [Tooltip("In play mode, include visible nodes that are unlocked or have met their prerequisites.")]
     [FormerlySerializedAs("unlockedNodesOnlyInPlayMode")]
     [SerializeField] private bool visibleNodesOnlyInPlayMode;
@@ -82,9 +85,42 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
 
         var paddingSize = new Vector2((float)padding.left + padding.right, (float)padding.top + padding.bottom);
         var size = Vector2.Max(Vector2.one * .01f, bounds.size + paddingSize);
-        SetSize(area, size);
+        bool canMoveLayout = sharedLayers && origin.parent == area;
+        var extra = canMoveLayout
+            ? new Vector2((float)layoutPadding.left + layoutPadding.right, (float)layoutPadding.bottom + layoutPadding.top)
+            : Vector2.zero;
+        var previousPosition = canMoveLayout ? origin.localPosition : Vector3.zero;
+        SetSize(area, Vector2.Max(Vector2.one * .01f, size + extra));
         SetSize(nodes, size);
         if (sharedLayers) SetSize(lines, size);
+        if (canMoveLayout)
+        {
+            var shift = new Vector2(layoutPadding.left, layoutPadding.bottom) - Vector2.Scale(area.pivot, extra);
+            if (shift != Vector2.zero || appliedLayoutShift != Vector2.zero)
+                ApplyLayoutShift(origin, previousPosition, shift);
+        }
+    }
+
+    private void ApplyLayoutShift(RectTransform origin, Vector3 previousPosition, Vector2 shift)
+    {
+        var position = previousPosition + (Vector3)(shift - appliedLayoutShift);
+        if (origin.localPosition == position && appliedLayoutShift == shift) return;
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+        {
+            Undo.RecordObject(this, "Set Skill Tree Layout Padding");
+            Undo.RecordObject(origin, "Set Skill Tree Layout Padding");
+        }
+#endif
+        origin.localPosition = position;
+        appliedLayoutShift = shift;
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+        {
+            PrefabUtility.RecordPrefabInstancePropertyModifications(this);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(origin);
+        }
+#endif
     }
 
     private static void SetSize(RectTransform rect, Vector2 size)
