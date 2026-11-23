@@ -9,6 +9,7 @@ public partial class SkillTreeNodePlacer
 {
     public bool IsApplyingLayout { get; private set; }
     private int appliedLayoutRevision = -1;
+    private Vector2 appliedOriginAnchor;
     private Dictionary<SkillNodeData, SkillNodeUI> Views()
     {
         var result = new Dictionary<SkillNodeData, SkillNodeUI>();
@@ -17,8 +18,13 @@ public partial class SkillTreeNodePlacer
         return result;
     }
     private static bool Different(Vector2 a, Vector2 b) => (a - b).sqrMagnitude > .0001f;
+    private Vector2 OriginAnchor => layout != null && layout.placementOrigin == SkillTreePlacementOrigin.NodeAreaPivot
+        ? nodeArea.pivot : new Vector2(.5f, .5f);
+    private Vector2 OriginPadding => layout != null ? layout.placementPadding : Vector2.zero;
+    private Vector2 LocalOrigin => nodeArea.rect.min + Vector2.Scale(nodeArea.rect.size, OriginAnchor) + OriginPadding;
+
     private Vector2 Position(SkillNodeUI view)
-        => (Vector2)nodeArea.InverseTransformPoint(view.transform.position) - nodeArea.rect.center;
+        => (Vector2)nodeArea.InverseTransformPoint(view.transform.position) - LocalOrigin;
     private void Dirty(UnityEngine.Object target)
     {
         EditorUtility.SetDirty(target);
@@ -48,7 +54,7 @@ public partial class SkillTreeNodePlacer
     public void CaptureNodePositions()
     {
         if (!CanEdit || nodeArea == null) return;
-        if (layout != null && appliedLayoutRevision != layout.revision)
+        if (layout != null && (appliedLayoutRevision != layout.revision || appliedOriginAnchor != OriginAnchor))
         { ApplySavedLayout(); return; }
         if (layout != null && layout.gridPlacement) return;
         var views = Views();
@@ -80,6 +86,16 @@ public partial class SkillTreeNodePlacer
             foreach (var pair in Views())
             {
                 var rect = (RectTransform)pair.Value.transform;
+                var saved = nodeLayout.Find(entry => entry != null && entry.node == pair.Key);
+                bool anchorsChanged = saved != null && layout != null && rect.parent == nodeArea &&
+                    (rect.anchorMin != OriginAnchor || rect.anchorMax != OriginAnchor);
+                if (anchorsChanged)
+                {
+                    if (recordUndo) Undo.RecordObject(rect, "Set skill node anchor");
+                    rect.anchorMin = rect.anchorMax = OriginAnchor;
+                    Dirty(rect);
+                }
+
                 Vector2 size = new Vector2(Mathf.Max(1, nodeSize.x), Mathf.Max(1, nodeSize.y));
                 if (Different(rect.rect.size, size))
                 {
@@ -88,14 +104,17 @@ public partial class SkillTreeNodePlacer
                     rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, size.y);
                     Dirty(rect);
                 }
-                var saved = nodeLayout.Find(entry => entry != null && entry.node == pair.Key);
-                if (saved == null || !Different(Position(pair.Value), saved.position)) continue;
+                if (saved == null || (!anchorsChanged && !Different(Position(pair.Value), saved.position))) continue;
                 if (recordUndo) Undo.RegisterCompleteObjectUndo(pair.Value.transform, "Position skill node");
-                pair.Value.transform.position = nodeArea.TransformPoint(nodeArea.rect.center + saved.position);
+                pair.Value.transform.position = nodeArea.TransformPoint(LocalOrigin + saved.position);
                 Dirty(pair.Value.transform);
             }
             RefreshConnections();
-            if (layout != null) appliedLayoutRevision = layout.revision;
+            if (layout != null)
+            {
+                appliedLayoutRevision = layout.revision;
+                appliedOriginAnchor = OriginAnchor;
+            }
         }
         finally { IsApplyingLayout = false; }
     }
@@ -118,10 +137,10 @@ public partial class SkillTreeNodePlacer
                 : Instantiate(nodePrefab, nodeArea, false);
             if (useReadableName) view.name = data.name;
             var rect = (RectTransform)view.transform;
-            rect.anchorMin = rect.anchorMax = new Vector2(.5f, .5f);
+            rect.anchorMin = rect.anchorMax = OriginAnchor;
             rect.localScale = Vector3.one;
             var saved = nodeLayout.Find(entry => entry != null && entry.node == data);
-            rect.anchoredPosition = saved != null ? saved.position : Vector2.zero;
+            rect.anchoredPosition = OriginPadding + (saved != null ? saved.position : Vector2.zero);
             view.SetData(data, Array.Empty<GameObject>());
             Dirty(view); Dirty(rect);
             Undo.RegisterCreatedObjectUndo(view.gameObject, "Create skill node");

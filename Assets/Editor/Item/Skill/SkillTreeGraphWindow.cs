@@ -179,9 +179,49 @@ public sealed class SkillTreeGraphWindow : EditorWindow
         widthField.SetEnabled(!gridMode);
         sizeOptions.Add(widthField);
         rootVisualElement.Add(sizeOptions);
+        if (layout != null) AddScenePlacementOptions();
         if (layout != null) AddLayoutComposer(gridMode);
         graph = new Canvas(layout, gridMode ? 1f : spacingScale, maximumZoom, gridMode ? 220f : nodeWidth); graph.style.flexGrow = 1; rootVisualElement.Add(graph);
     }
+    private void AddScenePlacementOptions()
+    {
+        var options = new Toolbar();
+        options.style.flexWrap = Wrap.Wrap;
+        options.style.height = StyleKeyword.Auto;
+
+        var origin = new EnumField("Scene Origin", layout.placementOrigin);
+        origin.style.width = 240;
+        origin.labelElement.style.minWidth = 90;
+        origin.tooltip = "Where graph position (0, 0) lands in the Scene Placer's Node Area.";
+        origin.RegisterValueChangedCallback(evt =>
+        {
+            Undo.RecordObject(layout, "Change skill tree scene origin");
+            layout.placementOrigin = (SkillTreePlacementOrigin)evt.newValue;
+            layout.revision++;
+            EditorUtility.SetDirty(layout);
+        });
+        options.Add(origin);
+
+        var padding = new Vector2Field("Origin Padding") { value = layout.placementPadding };
+        padding.style.width = 305;
+        padding.labelElement.style.minWidth = 100;
+        padding.tooltip = "Signed offset from the selected origin in UI units. Positive X goes right; positive Y goes up.";
+        padding.RegisterValueChangedCallback(evt =>
+        {
+            if (!float.IsFinite(evt.newValue.x) || !float.IsFinite(evt.newValue.y))
+            {
+                padding.SetValueWithoutNotify(evt.previousValue);
+                return;
+            }
+            Undo.RecordObject(layout, "Change skill tree origin padding");
+            layout.placementPadding = evt.newValue;
+            layout.revision++;
+            EditorUtility.SetDirty(layout);
+        });
+        options.Add(padding);
+        rootVisualElement.Add(options);
+    }
+
     private void AddLayoutComposer(bool gridMode)
     {
         var foldout = new Foldout { text = "Compose Layout", value = showComposer };

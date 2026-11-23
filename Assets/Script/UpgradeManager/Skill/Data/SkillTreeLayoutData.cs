@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum SkillTreePlacementOrigin { Center, NodeAreaPivot }
+
 [CreateAssetMenu(menuName = "Upgrade/Skills/Tree Layout", fileName = "SkillTreeLayout")]
 public sealed class SkillTreeLayoutData : ScriptableObject
 {
@@ -9,6 +11,8 @@ public sealed class SkillTreeLayoutData : ScriptableObject
     [HideInInspector] public Vector2 gridCellSize = new Vector2(400f, 300f);
     [HideInInspector] public Vector2 gridNodeGap = new Vector2(20f, 20f);
     [HideInInspector] public int revision;
+    [HideInInspector] public SkillTreePlacementOrigin placementOrigin;
+    [HideInInspector] public Vector2 placementPadding;
     public List<SkillNodeData> nodeDatas = new List<SkillNodeData>();
     public List<SkillNodePlacement> nodeLayout = new List<SkillNodePlacement>();
 }
