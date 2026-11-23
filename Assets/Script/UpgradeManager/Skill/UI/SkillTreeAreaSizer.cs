@@ -9,15 +9,15 @@ using UnityEditor;
 [AddComponentMenu("Layout/Skill Tree Area Sizer")]
 public sealed class SkillTreeAreaSizer : MonoBehaviour
 {
-    [Tooltip("Direct child containing the skill nodes.")]
+    [Tooltip("Layer containing the skill nodes under the shared layout parent.")]
     [SerializeField] private RectTransform nodes;
-    [Tooltip("Direct child containing the connection lines.")]
+    [Tooltip("Layer sharing the same parent as Nodes.")]
     [SerializeField] private RectTransform lines;
 
     [Header("Fit Bounds")]
     [Tooltip("Absolute Pos X / Pos Y of this SkillTreeArea in parent UI units.")]
     [SerializeField] private Vector2 boundsOffset;
-    [Tooltip("Horizontal and vertical padding totals adjust the size around the existing pivot. Negative values reduce the size.")]
+    [Tooltip("Padding around each edge of the measured node bounds. Negative values reduce the margin.")]
     [SerializeField] private RectOffset padding = new RectOffset();
     [Tooltip("In play mode, include visible nodes that are unlocked or have met their prerequisites.")]
     [FormerlySerializedAs("unlockedNodesOnlyInPlayMode")]
@@ -39,6 +39,7 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
         if (!Application.isPlaying) return;
         SkillTreeManager.InstanceChanged += BindSkillTree;
         BindSkillTree();
+        fitPending = true;
     }
 
     private void OnDisable()
@@ -63,7 +64,7 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
     {
         if (!fitPending) return;
         fitPending = false;
-        if (visibleNodesOnlyInPlayMode) FitSizes((RectTransform)transform);
+        FitSizes((RectTransform)transform);
     }
 
     [ContextMenu("Fit Skill Tree Areas")]
@@ -76,20 +77,41 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
 
     private void FitSizes(RectTransform area)
     {
-        if (nodes == null || nodes.parent != area) return;
+        if (nodes == null || !nodes.IsChildOf(area)) return;
+        var origin = nodes.parent as RectTransform;
+        bool sharedOrigin = origin != null && origin.parent == area && lines != null && lines.parent == origin;
 
         var nodeViews = nodes.GetComponentsInChildren<SkillNodeUI>(true);
         var manager = SkillTreeManager.Instance;
         if (Application.isPlaying && visibleNodesOnlyInPlayMode && manager != null)
             nodeViews = System.Array.FindAll(nodeViews, node => node.gameObject.activeInHierarchy && node.IsVisible &&
                 (manager.IsUnlocked(node.SkillNodeData) || manager.HasRequiredSkills(node.SkillNodeData)));
-        if (!TryMeasure(nodeViews, area, out var size)) return;
+        if (!TryMeasure(nodeViews, area, out var bounds)) return;
 
-        size += new Vector2(padding.left, padding.bottom) + new Vector2(padding.right, padding.top);
+        var size = bounds.size + new Vector2(padding.left, padding.bottom) + new Vector2(padding.right, padding.top);
         size = Vector2.Max(Vector2.one * .01f, size);
         SetSize(area, size);
         SetSize(nodes, size);
-        if (lines != null && lines.parent == area && lines != nodes) SetSize(lines, size);
+        if (lines != null && lines.parent == nodes.parent && lines != nodes) SetSize(lines, size);
+
+        if (sharedOrigin && TryMeasure(nodeViews, area, out bounds))
+        {
+            var target = new Vector2(area.rect.xMin + padding.left, area.rect.yMax - padding.top);
+            var topLeft = new Vector2(bounds.xMin, bounds.yMax);
+            MoveLayoutOrigin(origin, target - topLeft);
+        }
+    }
+
+    private static void MoveLayoutOrigin(RectTransform origin, Vector2 delta)
+    {
+        if (delta.sqrMagnitude < .0001f) return;
+#if UNITY_EDITOR
+        if (!Application.isPlaying) Undo.RecordObject(origin, "Align Skill Tree Padding");
+#endif
+        origin.anchoredPosition += delta;
+#if UNITY_EDITOR
+        if (!Application.isPlaying) PrefabUtility.RecordPrefabInstancePropertyModifications(origin);
+#endif
     }
 
     private static void SetSize(RectTransform rect, Vector2 size)
@@ -117,7 +139,7 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
 #endif
     }
 
-    private bool TryMeasure(SkillNodeUI[] views, RectTransform space, out Vector2 size)
+    private bool TryMeasure(SkillNodeUI[] views, RectTransform space, out Rect bounds)
     {
         var min = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
         var max = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
@@ -134,7 +156,7 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
             }
         }
 
-        size = max - min;
-        return float.IsFinite(size.x) && float.IsFinite(size.y);
+        bounds = Rect.MinMaxRect(min.x, min.y, max.x, max.y);
+        return float.IsFinite(bounds.width) && float.IsFinite(bounds.height);
     }
 }
