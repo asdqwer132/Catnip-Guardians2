@@ -9,7 +9,6 @@ public sealed class SkillTreeLayoutData : ScriptableObject
     public SkillMapData skillMap;
     [HideInInspector] public bool gridPlacement;
     [HideInInspector] public Vector2 gridCellSize = new Vector2(400f, 300f);
-    [HideInInspector] public Vector2 gridNodeGap = new Vector2(20f, 20f);
     [HideInInspector] public int revision;
     [HideInInspector] public SkillTreePlacementOrigin placementOrigin;
     [HideInInspector] public Vector2 placementPadding;

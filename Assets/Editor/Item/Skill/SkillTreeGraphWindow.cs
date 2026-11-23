@@ -12,10 +12,9 @@ public sealed class SkillTreeGraphWindow : EditorWindow
     private SkillNodeData addNode;
     private SkillTreeNodePlacer placer;
     private Canvas graph;
-    [SerializeField] private float spacingScale = 1f;
+    private const float CardWidth = 220f;
+    private static readonly Vector2 GraphGridPitch = new Vector2(400f, 300f);
     [SerializeField] private Vector2 positionScale = Vector2.one;
-    [SerializeField] private float nodeWidth = 220f;
-    [SerializeField] private float maximumZoom = 10f;
     [SerializeField] private bool showComposer;
     [SerializeField] private SkillNodeData centerNode;
     [SerializeField] private SkillTreeLayoutComposer.Settings composition = new SkillTreeLayoutComposer.Settings();
@@ -55,7 +54,7 @@ public sealed class SkillTreeGraphWindow : EditorWindow
             string path = EditorUtility.SaveFilePanelInProject("Create node", "SkillNodeData " + next, "asset", "", folder);
             if (string.IsNullOrEmpty(path)) return;
             var node = CreateInstance<SkillNodeData>(); node.skillMap = layout.skillMap; node.dataId = System.IO.Path.GetFileNameWithoutExtension(path);
-            AssetDatabase.CreateAsset(node, path); SkillTreeGraphEditing.Add(layout, node, new Vector2(layout.nodeDatas.Count * 260, 0)); Rebuild();
+            AssetDatabase.CreateAsset(node, path); SkillTreeGraphEditing.Add(layout, node, ToLayoutPosition(layout, new Vector2(layout.nodeDatas.Count * 260, 0))); Rebuild();
         }) { text = "+ Node" });
         bar.Add(new ToolbarButton(() => { AssetDatabase.SaveAssets(); graph?.FrameAll(); }) { text = "Save / Frame" });
         rootVisualElement.Add(bar);
@@ -68,7 +67,7 @@ public sealed class SkillTreeGraphWindow : EditorWindow
         }
         var nodeField = new ObjectField("Existing Node") { objectType = typeof(SkillNodeData), value = addNode };
         nodeField.RegisterValueChangedCallback(evt => addNode = evt.newValue as SkillNodeData); inputs.Add(nodeField);
-        inputs.Add(new ToolbarButton(() => { if (layout == null) return; SkillTreeGraphEditing.Add(layout, addNode, new Vector2(layout.nodeDatas.Count * 260, 0)); Rebuild(); }) { text = "Add" });
+        inputs.Add(new ToolbarButton(() => { if (layout == null) return; SkillTreeGraphEditing.Add(layout, addNode, ToLayoutPosition(layout, new Vector2(layout.nodeDatas.Count * 260, 0))); Rebuild(); }) { text = "Add" });
         var placerField = new ObjectField("Scene Placer") { objectType = typeof(SkillTreeNodePlacer), allowSceneObjects = true, value = placer };
         placerField.RegisterValueChangedCallback(evt => placer = evt.newValue as SkillTreeNodePlacer); inputs.Add(placerField);
         inputs.Add(new ToolbarButton(() =>
@@ -94,22 +93,19 @@ public sealed class SkillTreeGraphWindow : EditorWindow
             {
                 gridOptions.Add(new ToolbarButton(() =>
                 {
-                    SkillTreeGraphEditing.SetGridSpacing(layout, layout.gridCellSize, layout.gridNodeGap);
+                    SkillTreeGraphEditing.SetGridSpacing(layout, layout.gridCellSize);
                     graph?.RefreshGrid();
                 }) { text = "Reapply Grid", tooltip = "Recalculate saved node positions using the current cell size." });
-                AddGridSpacing("Cell W / H", layout.gridCellSize, true);
-                AddGridSpacing("Same-cell Gap X / Y", layout.gridNodeGap, false);
+                AddGridSpacing();
             }
 
-            void AddGridSpacing(string label, Vector2 value, bool cellSize)
+            void AddGridSpacing()
             {
                 var row = new Toolbar();
-                var spacing = new Vector2Field(label)
+                var spacing = new Vector2Field("Scene Cell W / H")
                 {
-                    value = value,
-                    tooltip = cellSize
-                        ? "Exact distance between adjacent grid coordinates in skill tree UI units."
-                        : "Additional spacing between nodes sharing the same grid coordinate."
+                    value = layout.gridCellSize,
+                    tooltip = "Distance between adjacent grid coordinates in the scene. Does not change graph spacing."
                 };
                 spacing.style.width = 420;
                 spacing.style.maxWidth = Length.Percent(100);
@@ -123,9 +119,8 @@ public sealed class SkillTreeGraphWindow : EditorWindow
                         spacing.SetValueWithoutNotify(evt.previousValue);
                         return;
                     }
-                    SkillTreeGraphEditing.SetGridSpacing(layout,
-                        cellSize ? next : layout.gridCellSize, cellSize ? layout.gridNodeGap : next);
-                    spacing.SetValueWithoutNotify(cellSize ? layout.gridCellSize : layout.gridNodeGap);
+                    SkillTreeGraphEditing.SetGridSpacing(layout, next);
+                    spacing.SetValueWithoutNotify(layout.gridCellSize);
                     graph?.RefreshGrid();
                 });
                 row.Add(spacing);
@@ -133,14 +128,6 @@ public sealed class SkillTreeGraphWindow : EditorWindow
             }
         }
         var viewOptions = new Toolbar();
-        var displaySpacing = new FloatField("Spacing Multiplier") { value = spacingScale, isDelayed = true };
-        displaySpacing.style.width = 280;
-        displaySpacing.tooltip = "Visual spacing only; saved node coordinates remain unchanged.";
-        displaySpacing.RegisterValueChangedCallback(evt => { if (float.IsFinite(evt.newValue)) spacingScale = Mathf.Clamp(evt.newValue, .1f, 20f); Rebuild(); });
-        displaySpacing.SetEnabled(!gridMode);
-        viewOptions.Add(displaySpacing);
-        rootVisualElement.Add(viewOptions);
-        viewOptions = new Toolbar();
         void AddAxisScale(string label, bool xAxis)
         {
             var field = new FloatField(label) { value = xAxis ? positionScale.x : positionScale.y, isDelayed = true };
@@ -167,22 +154,16 @@ public sealed class SkillTreeGraphWindow : EditorWindow
             EditorUtility.SetDirty(layout);
             Rebuild();
         }) { text = "Apply Position Scale" });
-        var zoomLimit = new FloatField("Maximum Zoom") { value = maximumZoom, isDelayed = true };
-        zoomLimit.style.width = 250;
-        zoomLimit.RegisterValueChangedCallback(evt => { if (float.IsFinite(evt.newValue)) maximumZoom = Mathf.Clamp(evt.newValue, 2f, 30f); Rebuild(); });
-        viewOptions.Add(zoomLimit);
-        rootVisualElement.Add(viewOptions);
-        var sizeOptions = new Toolbar();
-        var widthField = new FloatField("Node Width") { value = nodeWidth, isDelayed = true };
-        widthField.style.width = 250;
-        widthField.RegisterValueChangedCallback(evt => { if (float.IsFinite(evt.newValue)) nodeWidth = Mathf.Clamp(evt.newValue, 180f, 600f); Rebuild(); });
-        widthField.SetEnabled(!gridMode);
-        sizeOptions.Add(widthField);
-        rootVisualElement.Add(sizeOptions);
+        if (layout != null && !gridMode) rootVisualElement.Add(viewOptions);
         if (layout != null) AddScenePlacementOptions();
         if (layout != null) AddLayoutComposer(gridMode);
-        graph = new Canvas(layout, gridMode ? 1f : spacingScale, maximumZoom, gridMode ? 220f : nodeWidth); graph.style.flexGrow = 1; rootVisualElement.Add(graph);
+        graph = new Canvas(layout); graph.style.flexGrow = 1; rootVisualElement.Add(graph);
     }
+    private static Vector2 ToLayoutPosition(SkillTreeLayoutData layout, Vector2 graphPosition)
+        => layout.gridPlacement
+            ? Vector2.Scale(SkillTreeGraphEditing.GridCoordinate(graphPosition, GraphGridPitch), SkillTreeGraphEditing.GridPitch(layout))
+            : graphPosition;
+
     private void AddScenePlacementOptions()
     {
         var options = new Toolbar();
@@ -314,7 +295,7 @@ public sealed class SkillTreeGraphWindow : EditorWindow
             try
             {
                 var current = new SkillTreeLayoutComposer(layout, centerNode);
-                var positions = current.Calculate(composition, new Vector2(nodeWidth, 220f) / spacingScale);
+                var positions = current.Calculate(composition, Vector2.one * CardWidth);
                 SkillTreeGraphEditing.ApplyComposedLayout(layout, positions);
                 Rebuild();
                 graph?.FrameAll();
@@ -369,10 +350,9 @@ public sealed class SkillTreeGraphWindow : EditorWindow
         private readonly Vector2Field positionField;
         private readonly Vector2IntField gridField;
         private readonly SkillTreeLayoutData layoutData;
-        private readonly float spacingScale;
-        public Card(SkillNodeData data, SkillTreeLayoutData layout, float spacingScale, float nodeWidth, System.Action<SkillNodeData, Vector2Int> moveInGrid)
+        public Card(SkillNodeData data, SkillTreeLayoutData layout, System.Action<SkillNodeData, Vector2Int> moveInGrid)
         {
-            this.data = data; layoutData = layout; this.spacingScale = spacingScale; title = data.name;
+            this.data = data; layoutData = layout; title = data.name;
             input = InstantiatePort(Orientation.Horizontal, Direction.Input, Port.Capacity.Multi, typeof(SkillNodeData)); input.portName = "Requires";
             output = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(SkillNodeData)); output.portName = "Output";
             inputContainer.Add(input); outputContainer.Add(output);
@@ -381,12 +361,12 @@ public sealed class SkillTreeGraphWindow : EditorWindow
             {
                 tooltip = "Layout coordinates: X increases right, Y increases up. Matches the scene UI placement."
             };
-            positionField.style.width = nodeWidth - 24;
+            positionField.style.width = CardWidth - 24;
             positionField.style.flexDirection = FlexDirection.Column;
             positionField.labelElement.style.minWidth = 60;
             positionField.labelElement.style.width = 60;
-            style.minWidth = nodeWidth;
-            style.width = nodeWidth;
+            style.minWidth = CardWidth;
+            style.width = CardWidth;
             positionField.RegisterValueChangedCallback(evt =>
             {
                 if (!float.IsFinite(evt.newValue.x) || !float.IsFinite(evt.newValue.y))
@@ -418,13 +398,13 @@ public sealed class SkillTreeGraphWindow : EditorWindow
         {
             SkillTreeGraphEditing.Move(layoutData, data, position);
             var rect = GetPosition();
-            rect.position = new Vector2(position.x, -position.y) * spacingScale;
+            rect.position = new Vector2(position.x, -position.y);
             SetPosition(rect);
         }
-        public void ApplyPlacement(SkillNodePlacement entry)
+        public void ApplyPlacement(SkillNodePlacement entry, Vector2 position)
         {
             var rect = GetPosition();
-            rect.position = new Vector2(entry.position.x, -entry.position.y) * spacingScale;
+            rect.position = new Vector2(position.x, -position.y);
             SetPosition(rect);
             gridField?.SetValueWithoutNotify(entry.gridPosition);
         }
@@ -432,20 +412,20 @@ public sealed class SkillTreeGraphWindow : EditorWindow
         public override void SetPosition(Rect position)
         {
             base.SetPosition(position);
-            positionField?.SetValueWithoutNotify(new Vector2(position.x, -position.y) / spacingScale);
+            positionField?.SetValueWithoutNotify(new Vector2(position.x, -position.y));
         }
     }
     private sealed class Canvas : GraphView
     {
         private readonly SkillTreeLayoutData data;
-        private readonly float spacingScale;
         private readonly Dictionary<SkillNodeData, Card> cards = new Dictionary<SkillNodeData, Card>();
         private readonly IMGUIContainer coordinates;
-        public Canvas(SkillTreeLayoutData data) : this(data, 1f, 10f) { }
-        public Canvas(SkillTreeLayoutData data, float spacingScale, float maximumZoom) : this(data, spacingScale, maximumZoom, 220f) { }
-        public Canvas(SkillTreeLayoutData data, float spacingScale, float maximumZoom, float nodeWidth)
+        private readonly Dictionary<SkillNodeData, Vector2> gridPositions = new Dictionary<SkillNodeData, Vector2>();
+
+        public Canvas(SkillTreeLayoutData data)
         {
-            this.data = data; this.spacingScale = spacingScale; SetupZoom(.05f, maximumZoom);
+            this.data = data;
+            SetupZoom(.05f, 10f);
             this.AddManipulator(new ContentDragger()); this.AddManipulator(new SelectionDragger()); this.AddManipulator(new RectangleSelector());
             coordinates = new IMGUIContainer(DrawCoordinates) { pickingMode = PickingMode.Ignore };
             Insert(0, coordinates);
@@ -456,14 +436,15 @@ public sealed class SkillTreeGraphWindow : EditorWindow
             foreach (var node in data.nodeDatas)
             {
                 if (node == null || cards.ContainsKey(node)) continue;
-                var card = new Card(node, data, spacingScale, nodeWidth, MoveCardToGrid); var saved = data.nodeLayout.Find(value => value != null && value.node == node);
+                var card = new Card(node, data, MoveCardToGrid); var saved = data.nodeLayout.Find(value => value != null && value.node == node);
                 var position = saved != null ? saved.position : Vector2.zero;
-                card.SetPosition(new Rect(position.x * spacingScale, -position.y * spacingScale, nodeWidth, 100)); AddElement(card); cards.Add(node, card);
-                if (saved != null) card.ApplyPlacement(saved);
+                card.SetPosition(new Rect(position.x, -position.y, CardWidth, 100)); AddElement(card); cards.Add(node, card);
+                if (saved != null) card.ApplyPlacement(saved, saved.position);
             }
             foreach (var pair in cards)
                 foreach (var parent in pair.Key.requiredSkills ?? new List<SkillNodeData>())
                     if (parent != null && cards.TryGetValue(parent, out var source)) AddElement(source.output.ConnectTo(pair.Value.input));
+            RefreshGrid();
             graphViewChanged = Changed;
             RegisterCallback<DragUpdatedEvent>(evt => { if (DragAndDrop.objectReferences.Any(value => value is SkillNodeData)) DragAndDrop.visualMode = DragAndDropVisualMode.Copy; });
             RegisterCallback<DragPerformEvent>(evt =>
@@ -473,7 +454,8 @@ public sealed class SkillTreeGraphWindow : EditorWindow
                 foreach (var value in DragAndDrop.objectReferences)
                     if (value is SkillNodeData node)
                     {
-                        SkillTreeGraphEditing.Add(data, node, new Vector2(point.x + index % 5 * 440, -point.y - index / 5 * 180) / spacingScale);
+                        var position = new Vector2(point.x + index % 5 * 440, -point.y - index / 5 * 180);
+                        SkillTreeGraphEditing.Add(data, node, ToLayoutPosition(data, position));
                         index++;
                     }
                 DragAndDrop.AcceptDrag(); GetWindow<SkillTreeGraphWindow>().Rebuild();
@@ -488,9 +470,14 @@ public sealed class SkillTreeGraphWindow : EditorWindow
         public void RefreshGrid()
         {
             if (data == null || !data.gridPlacement) return;
-            foreach (var entry in data.nodeLayout)
-                if (entry != null && entry.node != null && cards.TryGetValue(entry.node, out var card) && card.parent != null)
-                    card.ApplyPlacement(entry);
+            gridPositions.Clear();
+            foreach (var pair in SkillTreeGraphEditing.GridPositions(data, GraphGridPitch))
+            {
+                var entry = pair.Key;
+                gridPositions[entry.node] = pair.Value;
+                if (cards.TryGetValue(entry.node, out var card) && card.parent != null)
+                    card.ApplyPlacement(entry, pair.Value);
+            }
             coordinates.MarkDirtyRepaint();
         }
 
@@ -498,12 +485,12 @@ public sealed class SkillTreeGraphWindow : EditorWindow
         {
             if (Event.current.type != EventType.Repaint) return;
             float width = contentRect.width, height = contentRect.height;
-            float zoom = contentViewContainer.resolvedStyle.scale.value.x * spacingScale;
+            float zoom = contentViewContainer.resolvedStyle.scale.value.x;
             if (width <= 0 || height <= 0 || zoom <= 0) return;
             Vector2 origin = contentViewContainer.ChangeCoordinatesTo(this, Vector2.zero);
             // Keep the labels legible when zoomed out. Values remain in saved layout units.
             bool gridMode = data != null && data.gridPlacement;
-            Vector2 pitch = gridMode ? SkillTreeGraphEditing.GridPitch(data) : new Vector2(100, 100);
+            Vector2 pitch = gridMode ? GraphGridPitch : new Vector2(100, 100);
             Vector2 steps = pitch * zoom;
             while (steps.x < 70) steps.x *= 2;
             while (steps.y < 70) steps.y *= 2;
@@ -536,17 +523,17 @@ public sealed class SkillTreeGraphWindow : EditorWindow
             if (change.movedElements != null)
             {
                 var gridChanges = new List<KeyValuePair<SkillNodeData, Vector2Int>>();
-                Vector2 pitch = data.gridPlacement ? SkillTreeGraphEditing.GridPitch(data) : Vector2.one;
                 foreach (var element in change.movedElements)
                 {
                     if (!(element is Card card)) continue;
                     var rect = card.GetPosition();
-                    Vector2 position = new Vector2(rect.x, -rect.y) / spacingScale;
+                    Vector2 position = new Vector2(rect.x, -rect.y);
                     if (data.gridPlacement)
                     {
                         var saved = data.nodeLayout.Find(entry => entry != null && entry.node == card.data);
-                        var cell = saved == null ? SkillTreeGraphEditing.GridCoordinate(position, pitch)
-                            : saved.gridPosition + SkillTreeGraphEditing.GridCoordinate(position - saved.position, pitch);
+                        var cell = saved != null && gridPositions.TryGetValue(card.data, out var oldPosition)
+                            ? saved.gridPosition + SkillTreeGraphEditing.GridCoordinate(position - oldPosition, GraphGridPitch)
+                            : SkillTreeGraphEditing.GridCoordinate(position, GraphGridPitch);
                         gridChanges.Add(new KeyValuePair<SkillNodeData, Vector2Int>(card.data, cell));
                     }
                     else SkillTreeGraphEditing.Move(data, card.data, position);

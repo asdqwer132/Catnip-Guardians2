@@ -65,7 +65,7 @@ public static class SkillTreeGraphEditing
         layout.revision++; EditorUtility.SetDirty(layout);
     }
 
-    private static readonly Vector2 GridNodeSize = new Vector2(220f, 200f);
+    private static readonly Vector2 GridNodeStride = new Vector2(240f, 220f);
 
     public static Vector2 GridPitch(SkillTreeLayoutData layout)
         => Vector2.Max(Vector2.one, layout.gridCellSize);
@@ -92,11 +92,10 @@ public static class SkillTreeGraphEditing
         EditorUtility.SetDirty(layout);
     }
 
-    public static void SetGridSpacing(SkillTreeLayoutData layout, Vector2 cellSize, Vector2 gap)
+    public static void SetGridSpacing(SkillTreeLayoutData layout, Vector2 cellSize)
     {
         Undo.RecordObject(layout, "Change skill graph grid spacing");
         layout.gridCellSize = Vector2.Max(Vector2.one, cellSize);
-        layout.gridNodeGap = Vector2.Max(Vector2.zero, gap);
         ArrangeGrid(layout);
         layout.revision++;
         EditorUtility.SetDirty(layout);
@@ -124,16 +123,21 @@ public static class SkillTreeGraphEditing
     private static void ArrangeGrid(SkillTreeLayoutData layout)
     {
         if (!layout.gridPlacement) return;
-        var pitch = GridPitch(layout);
-        var stride = GridNodeSize + layout.gridNodeGap;
+        foreach (var pair in GridPositions(layout, GridPitch(layout))) pair.Key.position = pair.Value;
+    }
+
+    internal static IEnumerable<KeyValuePair<SkillNodePlacement, Vector2>> GridPositions(
+        SkillTreeLayoutData layout, Vector2 pitch)
+    {
         foreach (var group in layout.nodeLayout.Where(entry => entry != null && entry.node != null).GroupBy(entry => entry.gridPosition))
         {
             int columns = Mathf.CeilToInt(Mathf.Sqrt(group.Count()));
             int index = 0;
             foreach (var entry in group)
             {
-                entry.position = Vector2.Scale((Vector2)group.Key, pitch)
-                    + new Vector2(index % columns * stride.x, -(index / columns) * stride.y);
+                var position = Vector2.Scale((Vector2)group.Key, pitch)
+                    + new Vector2(index % columns * GridNodeStride.x, -(index / columns) * GridNodeStride.y);
+                yield return new KeyValuePair<SkillNodePlacement, Vector2>(entry, position);
                 index++;
             }
         }
