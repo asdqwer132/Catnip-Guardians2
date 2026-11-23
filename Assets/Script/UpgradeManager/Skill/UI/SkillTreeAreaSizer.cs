@@ -15,9 +15,9 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
     [SerializeField] private RectTransform lines;
 
     [Header("Fit Bounds")]
-    [Tooltip("Absolute Pos X / Pos Y of this SkillTreeArea in parent UI units.")]
+    [Tooltip("Pos X / Pos Y of the shared LayoutOrigin inside the scroll content.")]
     [SerializeField] private Vector2 boundsOffset;
-    [Tooltip("Padding around each edge of the measured node bounds. Negative values reduce the margin.")]
+    [Tooltip("Left and right padding add to the scroll width. Top and bottom add to the scroll height. LayoutOrigin controls placement.")]
     [SerializeField] private RectOffset padding = new RectOffset();
     [Tooltip("In play mode, include visible nodes that are unlocked or have met their prerequisites.")]
     [FormerlySerializedAs("unlockedNodesOnlyInPlayMode")]
@@ -28,8 +28,6 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
 
     // Preserve the graph origin for layouts fitted by earlier versions.
     [SerializeField, HideInInspector] private Vector2 nodeCenterOffset;
-
-    internal Vector2 BoundsOffset => boundsOffset;
 
     internal Vector2 GetNodeCenterOffset(RectTransform nodeArea)
         => nodeArea == nodes ? nodeCenterOffset : Vector2.zero;
@@ -58,57 +56,52 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
         RequestFit();
     }
 
-    private void RequestFit() => fitPending = visibleNodesOnlyInPlayMode && skillTree != null;
+    private void RequestFit()
+    {
+        if (visibleNodesOnlyInPlayMode && skillTree != null) fitPending = true;
+    }
 
     private void LateUpdate()
     {
-        if (!fitPending) return;
-        fitPending = false;
-        FitSizes((RectTransform)transform);
+        if (fitPending) FitSkillTreeAreas();
     }
 
     [ContextMenu("Fit Skill Tree Areas")]
     public void FitSkillTreeAreas()
     {
+        fitPending = false;
         var area = (RectTransform)transform;
-        ApplyPositionOffset(area);
-        FitSizes(area);
-    }
-
-    private void FitSizes(RectTransform area)
-    {
-        if (nodes == null || !nodes.IsChildOf(area)) return;
+        if (nodes == null || nodes == area || !nodes.IsChildOf(area)) return;
         var origin = nodes.parent as RectTransform;
-        bool sharedOrigin = origin != null && origin.parent == area && lines != null && lines.parent == origin;
+        bool sharedLayers = origin != null && lines != null && lines != nodes && lines.parent == origin;
 
         var nodeViews = nodes.GetComponentsInChildren<SkillNodeUI>(true);
         var manager = SkillTreeManager.Instance;
         if (Application.isPlaying && visibleNodesOnlyInPlayMode && manager != null)
             nodeViews = System.Array.FindAll(nodeViews, node => node.gameObject.activeInHierarchy && node.IsVisible &&
                 (manager.IsUnlocked(node.SkillNodeData) || manager.HasRequiredSkills(node.SkillNodeData)));
-        if (!TryMeasure(nodeViews, area, out var bounds)) return;
-
-        var size = bounds.size + new Vector2(padding.left, padding.bottom) + new Vector2(padding.right, padding.top);
-        size = Vector2.Max(Vector2.one * .01f, size);
-        SetSize(area, size);
-        SetSize(nodes, size);
-        if (lines != null && lines.parent == nodes.parent && lines != nodes) SetSize(lines, size);
-
-        if (sharedOrigin && TryMeasure(nodeViews, area, out bounds))
+        if (TryMeasure(nodeViews, nodes, out var size))
         {
-            var target = new Vector2(area.rect.xMin + padding.left, area.rect.yMax - padding.top);
-            var topLeft = new Vector2(bounds.xMin, bounds.yMax);
-            MoveLayoutOrigin(origin, target - topLeft);
+            size += new Vector2(padding.left, padding.bottom) + new Vector2(padding.right, padding.top);
+            size = Vector2.Max(Vector2.one * .01f, size);
+            SetSize(area, size);
+            SetSize(nodes, size);
+            if (sharedLayers) SetSize(lines, size);
         }
+
+        if (!sharedLayers) return;
+        if (origin.parent == area) SetLayoutOrigin(origin);
+        foreach (var connection in lines.GetComponentsInChildren<SkillTreeConnectionUI>(true))
+            connection.RefreshGeometry(recordUndo: true);
     }
 
-    private static void MoveLayoutOrigin(RectTransform origin, Vector2 delta)
+    private void SetLayoutOrigin(RectTransform origin)
     {
-        if (delta.sqrMagnitude < .0001f) return;
+        if (origin.anchoredPosition == boundsOffset) return;
 #if UNITY_EDITOR
-        if (!Application.isPlaying) Undo.RecordObject(origin, "Align Skill Tree Padding");
+        if (!Application.isPlaying) Undo.RecordObject(origin, "Set Skill Tree Layout Origin");
 #endif
-        origin.anchoredPosition += delta;
+        origin.anchoredPosition = boundsOffset;
 #if UNITY_EDITOR
         if (!Application.isPlaying) PrefabUtility.RecordPrefabInstancePropertyModifications(origin);
 #endif
@@ -127,19 +120,7 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
 #endif
     }
 
-    private void ApplyPositionOffset(RectTransform area)
-    {
-        if (area.anchoredPosition == boundsOffset) return;
-#if UNITY_EDITOR
-        if (!Application.isPlaying) Undo.RecordObject(area, "Set Skill Tree Area Position");
-#endif
-        area.anchoredPosition = boundsOffset;
-#if UNITY_EDITOR
-        if (!Application.isPlaying) PrefabUtility.RecordPrefabInstancePropertyModifications(area);
-#endif
-    }
-
-    private bool TryMeasure(SkillNodeUI[] views, RectTransform space, out Rect bounds)
+    private bool TryMeasure(SkillNodeUI[] views, RectTransform space, out Vector2 size)
     {
         var min = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
         var max = new Vector2(float.NegativeInfinity, float.NegativeInfinity);
@@ -156,7 +137,7 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
             }
         }
 
-        bounds = Rect.MinMaxRect(min.x, min.y, max.x, max.y);
-        return float.IsFinite(bounds.width) && float.IsFinite(bounds.height);
+        size = max - min;
+        return float.IsFinite(size.x) && float.IsFinite(size.y);
     }
 }

@@ -1,6 +1,10 @@
+using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
-// 배치 시 계산한 선분을 사용합니다. 게임 중에는 해금과 표시 상태만 갱신합니다.
+// Placement and area resizing update geometry. Skill progress updates visibility.
 [ExecuteAlways]
 public sealed class SkillTreeConnectionUI : MonoBehaviour
 {
@@ -16,7 +20,7 @@ public sealed class SkillTreeConnectionUI : MonoBehaviour
     private bool unlocked;
 
     private SkillNodeUI boundFrom, boundTo;
-    private readonly System.Collections.Generic.List<SkillTreeLineUI> authoredSegments = new System.Collections.Generic.List<SkillTreeLineUI>();
+    private readonly List<SkillTreeLineUI> authoredSegments = new List<SkillTreeLineUI>();
     private bool capturedSegments;
     private SkillTreeManager boundManager;
 
@@ -89,14 +93,59 @@ public sealed class SkillTreeConnectionUI : MonoBehaviour
         if (verticalLine != null) verticalLine.SetUnlocked(unlocked);
     }
 
-    public void RefreshGeometry()
+    public void RefreshGeometry() => RefreshGeometry(recordUndo: false);
+
+    internal void RefreshGeometry(bool recordUndo)
     {
-        if (Application.isPlaying) { RefreshVisibility(); return; }
-        if (shape != SkillLineShape.Curve && curveLines != null) foreach (var line in curveLines) Hide(line);
         var space = transform as RectTransform;
         var startRect = from != null ? from.transform as RectTransform : null;
         var endRect = to != null ? to.transform as RectTransform : null;
         if (space == null || startRect == null || endRect == null) return;
+
+#if UNITY_EDITOR
+        var edited = !Application.isPlaying && recordUndo ? RecordSegmentUndo() : null;
+#endif
+        if (Application.isPlaying)
+        {
+            authoredSegments.Clear();
+            capturedSegments = true;
+        }
+
+        ApplyGeometry(space, startRect, endRect);
+        if (Application.isPlaying) RefreshVisibility();
+
+#if UNITY_EDITOR
+        if (edited != null)
+            foreach (var target in edited)
+                if (PrefabUtility.IsPartOfPrefabInstance(target))
+                    PrefabUtility.RecordPrefabInstancePropertyModifications(target);
+#endif
+    }
+
+#if UNITY_EDITOR
+    private List<Object> RecordSegmentUndo()
+    {
+        var targets = new List<Object>();
+        AddSegment(horizontalLine);
+        AddSegment(verticalLine);
+        if (curveLines != null)
+            foreach (var line in curveLines) AddSegment(line);
+        Undo.RecordObjects(targets.ToArray(), "Fit Skill Tree Connection");
+        return targets;
+
+        void AddSegment(SkillTreeLineUI line)
+        {
+            if (line == null) return;
+            targets.Add(line.gameObject);
+            targets.Add(line.transform);
+        }
+    }
+#endif
+
+    private void ApplyGeometry(RectTransform space, RectTransform startRect, RectTransform endRect)
+    {
+        if (shape != SkillLineShape.Curve && curveLines != null)
+            foreach (var line in curveLines) UseSegment(line, false);
         Vector2 start = space.InverseTransformPoint(startRect.TransformPoint(startRect.rect.center));
         Vector2 end = space.InverseTransformPoint(endRect.TransformPoint(endRect.rect.center));
         float sx = Mathf.Sign(end.x - start.x), sy = Mathf.Sign(end.y - start.y);
@@ -109,8 +158,8 @@ public sealed class SkillTreeConnectionUI : MonoBehaviour
         float endY = Mathf.Abs(space.InverseTransformVector(endRect.TransformVector(Vector3.up * endHalf.y)).y);
         if (shape != SkillLineShape.Elbow)
         {
-            Hide(horizontalLine);
-            Hide(verticalLine);
+            if (shape != SkillLineShape.Straight) UseSegment(horizontalLine, false);
+            UseSegment(verticalLine, false);
             var delta = end - start;
             var tangent = shape == SkillLineShape.Straight || Mathf.Abs(delta.x) < .01f || Mathf.Abs(delta.y) < .01f
                 ? delta.normalized
@@ -120,7 +169,13 @@ public sealed class SkillTreeConnectionUI : MonoBehaviour
                 : (horizontalFirst ? Vector2.up * sy : Vector2.right * sx);
             start += EdgeOffset(tangent, startX, startY);
             end -= EdgeOffset(endTangent, endX, endY);
-            if (Vector2.Dot(end - start, delta) <= 0) return;
+            if (Vector2.Dot(end - start, delta) <= 0)
+            {
+                if (shape == SkillLineShape.Straight) UseSegment(horizontalLine, false);
+                else if (curveLines != null)
+                    foreach (var line in curveLines) UseSegment(line, false);
+                return;
+            }
             if (shape == SkillLineShape.Straight)
             {
                 SetAngledSegment(horizontalLine, space, start, end);
@@ -144,12 +199,12 @@ public sealed class SkillTreeConnectionUI : MonoBehaviour
         if (Mathf.Abs(start.y - end.y) < .01f)
         {
             SetSegment(horizontalLine, space, start + Vector2.right * startX * sx, end - Vector2.right * endX * sx, true, sx);
-            Hide(verticalLine);
+            UseSegment(verticalLine, false);
         }
         else if (Mathf.Abs(start.x - end.x) < .01f)
         {
             SetSegment(verticalLine, space, start + Vector2.up * startY * sy, end - Vector2.up * endY * sy, false, sy);
-            Hide(horizontalLine);
+            UseSegment(horizontalLine, false);
         }
         else if (horizontalFirst)
         {
@@ -172,11 +227,13 @@ public sealed class SkillTreeConnectionUI : MonoBehaviour
         return denominator > .0001f ? direction / denominator : Vector2.zero;
     }
 
-    private static void SetAngledSegment(SkillTreeLineUI line, RectTransform space, Vector2 start, Vector2 end)
+    private void SetAngledSegment(SkillTreeLineUI line, RectTransform space, Vector2 start, Vector2 end)
     {
         if (line == null || !(line.transform is RectTransform rect)) return;
         var delta = end - start;
-        line.gameObject.SetActive(delta.sqrMagnitude > .0001f);
+        bool used = delta.sqrMagnitude > .0001f;
+        UseSegment(line, used);
+        if (!used) return;
         rect.anchorMin = rect.anchorMax = space.pivot;
         rect.pivot = new Vector2(.5f, .5f);
         rect.anchoredPosition = (start + end) * .5f;
@@ -185,12 +242,18 @@ public sealed class SkillTreeConnectionUI : MonoBehaviour
         rect.localScale = Vector3.one;
     }
 
-    private static void Hide(SkillTreeLineUI line) { if (line != null) line.gameObject.SetActive(false); }
-    private static void SetSegment(SkillTreeLineUI line, RectTransform space, Vector2 start, Vector2 end, bool horizontal, float direction)
+    private void UseSegment(SkillTreeLineUI line, bool used)
+    {
+        if (line == null) return;
+        if (Application.isPlaying && used) authoredSegments.Add(line);
+        else if (line.gameObject.activeSelf != used) line.gameObject.SetActive(used);
+    }
+
+    private void SetSegment(SkillTreeLineUI line, RectTransform space, Vector2 start, Vector2 end, bool horizontal, float direction)
     {
         if (line == null || !(line.transform is RectTransform rect)) return;
         float length = (horizontal ? end.x - start.x : end.y - start.y) * direction;
-        line.gameObject.SetActive(length > .01f);
+        UseSegment(line, length > .01f);
         if (length <= .01f) return;
         rect.anchorMin = rect.anchorMax = space.pivot;
         rect.pivot = new Vector2(.5f, .5f);

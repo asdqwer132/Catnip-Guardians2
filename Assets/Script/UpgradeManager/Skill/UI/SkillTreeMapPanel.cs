@@ -97,16 +97,21 @@ public sealed class SkillTreeMapPanel : MonoBehaviour
             if (maps[i].toggle != null)
                 maps[i].toggle.SetIsOnWithoutNotify(i == index);
         }
+        if (maps[index].zoom != null)
+            maps[index].zoom.ResetZoom();
         ScrollRect scrollRect = maps[index].scrollRect;
         if (scrollRect != null && scrollRect.content != null)
         {
             var content = scrollRect.content;
             scrollRect.StopMovement();
-            content.anchoredPosition = content.TryGetComponent<SkillTreeAreaSizer>(out var sizer)
-                ? sizer.BoundsOffset : Vector2.zero;
+            if (content.TryGetComponent<SkillTreeAreaSizer>(out var sizer))
+            {
+                sizer.FitSkillTreeAreas();
+                if (scrollRect.horizontal) scrollRect.horizontalNormalizedPosition = Mathf.Clamp01(content.pivot.x);
+                if (scrollRect.vertical) scrollRect.verticalNormalizedPosition = Mathf.Clamp01(content.pivot.y);
+            }
+            else content.anchoredPosition = Vector2.zero;
         }
-        if (maps[index].zoom != null)
-            maps[index].zoom.ResetZoom();
         RefreshInformation();
     }
 
