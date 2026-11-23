@@ -40,7 +40,6 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
         if (!Application.isPlaying) return;
         SkillTreeManager.InstanceChanged += BindSkillTree;
         BindSkillTree();
-        fitPending = true;
     }
 
     private void OnDisable()
@@ -66,11 +65,13 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (fitPending) FitSkillTreeAreas();
+        if (fitPending) FitSizes(applyLayoutPadding: false);
     }
 
     [ContextMenu("Fit Skill Tree Areas")]
-    public void FitSkillTreeAreas()
+    public void FitSkillTreeAreas() => FitSizes(applyLayoutPadding: true);
+
+    private void FitSizes(bool applyLayoutPadding)
     {
         fitPending = false;
         var area = (RectTransform)transform;
@@ -95,7 +96,7 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
         SetSize(area, Vector2.Max(Vector2.one * .01f, size + extra));
         SetSize(nodes, size);
         if (sharedLayers) SetSize(lines, size);
-        if (canMoveLayout)
+        if (canMoveLayout && applyLayoutPadding)
         {
             var shift = new Vector2(layoutPadding.left, layoutPadding.bottom) - Vector2.Scale(area.pivot, extra);
             if (shift != Vector2.zero || appliedLayoutShift != Vector2.zero)
