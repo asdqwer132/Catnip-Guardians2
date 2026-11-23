@@ -183,23 +183,23 @@ public sealed class SkillTreeGraphWindow : EditorWindow
         });
         options.Add(origin);
 
-        var padding = new Vector2Field("Origin Padding") { value = layout.placementPadding };
-        padding.style.width = 305;
-        padding.labelElement.style.minWidth = 100;
-        padding.tooltip = "Signed offset from the selected origin in UI units. Positive X goes right; positive Y goes up.";
-        padding.RegisterValueChangedCallback(evt =>
+        var offset = new Vector2Field("Origin Offset") { value = layout.placementPadding };
+        offset.style.width = 305;
+        offset.labelElement.style.minWidth = 100;
+        offset.tooltip = "Signed offset from the selected origin in UI units. Positive X goes right; positive Y goes up.";
+        offset.RegisterValueChangedCallback(evt =>
         {
             if (!float.IsFinite(evt.newValue.x) || !float.IsFinite(evt.newValue.y))
             {
-                padding.SetValueWithoutNotify(evt.previousValue);
+                offset.SetValueWithoutNotify(evt.previousValue);
                 return;
             }
-            Undo.RecordObject(layout, "Change skill tree origin padding");
+            Undo.RecordObject(layout, "Change skill tree origin offset");
             layout.placementPadding = evt.newValue;
             layout.revision++;
             EditorUtility.SetDirty(layout);
         });
-        options.Add(padding);
+        options.Add(offset);
         rootVisualElement.Add(options);
     }
 

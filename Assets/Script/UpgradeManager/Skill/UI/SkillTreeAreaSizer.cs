@@ -14,6 +14,12 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
     [Tooltip("Direct child containing the connection lines.")]
     [SerializeField] private RectTransform lines;
 
+    [Header("Fit Bounds")]
+    [Tooltip("Moves the fitted bounds in local UI units. Positive X goes right and positive Y goes up.")]
+    [SerializeField] private Vector2 boundsOffset;
+    [Tooltip("Local UI units per edge. Negative padding insets the edge.")]
+    [SerializeField] private RectOffset padding = new RectOffset();
+
     [SerializeField, HideInInspector] private Vector2 nodeCenterOffset;
 
     internal Vector2 GetNodeCenterOffset(RectTransform nodeArea)
@@ -30,6 +36,9 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
         if (!TryMeasure(nodeViews, area, out var areaBounds) ||
             !TryMeasure(nodeViews, nodes, out var nodesBounds) ||
             !TryMeasure(nodeViews, lines, out var linesBounds)) return;
+        areaBounds = AdjustBounds(areaBounds);
+        nodesBounds = AdjustBounds(nodesBounds);
+        linesBounds = AdjustBounds(linesBounds);
         if (Matches(area.rect, areaBounds) && Matches(nodes.rect, nodesBounds) && Matches(lines.rect, linesBounds)) return;
 
         var previousNodeCenter = nodes.rect.center;
@@ -83,6 +92,15 @@ public sealed class SkillTreeAreaSizer : MonoBehaviour
 
         bounds = Rect.MinMaxRect(min.x, min.y, max.x, max.y);
         return float.IsFinite(bounds.width) && float.IsFinite(bounds.height);
+    }
+
+    private Rect AdjustBounds(Rect bounds)
+    {
+        var min = bounds.min + boundsOffset - new Vector2(padding.left, padding.bottom);
+        var max = bounds.max + boundsOffset + new Vector2(padding.right, padding.top);
+        var center = (min + max) * .5f;
+        var size = Vector2.Max(Vector2.one * .01f, max - min);
+        return new Rect(center - size * .5f, size);
     }
 
     private static bool Matches(Rect current, Rect desired)
