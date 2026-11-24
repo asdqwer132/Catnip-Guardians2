@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Food28
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: 769c8d1ba02355840839fb6a985ade38, type: 3}
+  data:
+  - language: 1
+    dataName: "\uAD6C\uC6B4 \uC591\uACE0\uAE30 \uC2A4\uD14C\uC774\uD06C"
+    description: "\uB178\uB987\uD558\uAC8C \uAD6C\uC6B4 \uACB0\uC744 \uC0B4\uB824
+      \uC790\uB978 \uC591\uACE0\uAE30."
+    detailDescription: "\uBD88\uC5D0 \uB2FF\uC740 \uD45C\uBA74\uC5D0 \uC9D9\uC740
+      \uAD6C\uC774 \uC790\uAD6D\uACFC \uC591\uACE0\uAE30 \uD2B9\uC720\uC758 \uD5A5\uC774
+      \uB0A8\uC558\uB2E4."
+  - language: 0
+    dataName: Grilled Lamb Steak
+    description: A cut of lamb grilled golden brown.
+    detailDescription: Dark grill marks and the distinctive aroma of lamb remain
+      on the seared surface.
+  dataNumbering: 028
+  dataId: Food28
+  dataType: 1
+  grade: 2
+  series: 2
+  requireUnlock: 0
+  tags: []
+  weight: 1
+  cooldown: 1
+  effectDatas:
+  - {fileID: 11400000, guid: dafbe2ad4cdf4ce4e939be8210837cda, type: 2}
+  codexEffects: []
+  endVisualData: {fileID: 0}
+  endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

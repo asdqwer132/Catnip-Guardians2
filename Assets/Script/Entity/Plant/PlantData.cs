@@ -1,38 +1,82 @@
-﻿using UnityEngine;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 [System.Serializable]
-public class EnemySpawnInfo
+public class EnemySpawnData
 {
     public EnemyDataSet dataSet;
+}
 
+[System.Serializable]
+public class EnemySpawnInfo : EnemySpawnData
+{
     [Tooltip("일반 적 배열에서 랜덤 선택될 확률입니다.")]
     public float spawnWeight = 1f;
 
-    [Tooltip("일반 스포너에서는 반복 스폰 간격, 미들보스/보스 스포너에서는 등장까지 대기 시간입니다.")]
+}
+
+[System.Serializable]
+public class SpecialEnemySpawnInfo : EnemySpawnData
+{
+    [Tooltip("Relative chance in Weighted One mode. Zero excludes this entry from weighted selection.")]
+    [Min(0f)] public float spawnWeight = 1f;
+    [Tooltip("Interval in seconds used only in Independent Intervals mode.")]
+    [Min(.05f)]
     public float spawnRate = 1f;
 }
 
-[CreateAssetMenu(menuName = "01.Entities/Plant/Plant Data")]
+[CreateAssetMenu(menuName = "Entities/Plant/Plant Data")]
 public class PlantData : DefaultData
 {
-    [Header("Visual")]
-    public Sprite seed;
-    public Sprite[] growing;
-    public Sprite grownUp;
+    [Space(10)]
+    [Tooltip("성장 순서입니다. 첫 번째는 씨앗이고 마지막은 성장 완료입니다.")]
+    public PlantBattleVisualData[] growthVisuals = System.Array.Empty<PlantBattleVisualData>();
 
-    [Header("Stat")]
-    public float maxHP = 100f;
-    public float growTime = 60f;
+    public int GetGrowthStageIndex(float progress01)
+    {
+        if (growthVisuals == null || growthVisuals.Length == 0) return -1;
+        int stageCount = 0;
+        foreach (var stage in growthVisuals)
+            if (stage != null) stageCount++;
+        if (stageCount == 0) return -1;
 
-    [Header("Resource")]
+        int stageNumber = Mathf.FloorToInt(Mathf.Clamp01(progress01) * (stageCount - 1));
+        for (int index = 0; index < growthVisuals.Length; index++)
+        {
+            if (growthVisuals[index] == null) continue;
+            if (stageNumber-- == 0) return index;
+        }
+
+        return -1;
+    }
+
+    public Sprite GetGrowthSprite(float progress01)
+    {
+        int index = GetGrowthStageIndex(progress01);
+        return index >= 0 ? growthVisuals[index]?.sprite : null;
+    }
+
+    [Space(10)]
+    [Min(1f)] public float maxHP = 100f;
+    [FormerlySerializedAs("growTime")]
+    [Min(0f)] public float nutrientsRequired = 60f;
+    [Min(0f)] public float nutrientsPerSecond = 1f;
+
+    [Space(10)]
     public Cost[] reward;
-    public Cost[] buyCosts;
 
-    [Header("Normal Enemy Spawn")]
+    [Space(10)]
+    [Tooltip("Number of normal spawners to activate, starting from the first entry in Enemy Manager.")]
+    [Min(0)]
     public int spawnNormalEnemyCount = 1;
+    [Tooltip("Shared cooldown in seconds for all normal enemy choices and active normal spawners.")]
+    [Min(.05f)] public float normalSpawnInterval = 1.5f;
     public EnemySpawnInfo[] normalEnemies;
 
-    [Header("Special Enemy Spawn")]
-    public EnemySpawnInfo middleBossEnemies;
-    public EnemySpawnInfo bossEnemies;
+    [Space(10)]
+    public SpecialEnemySpawnSettings middleBossSpawnSettings = new SpecialEnemySpawnSettings();
+    public SpecialEnemySpawnInfo[] middleBossEnemies = new SpecialEnemySpawnInfo[0];
+    [Space(10)]
+    public SpecialEnemySpawnSettings bossSpawnSettings = new SpecialEnemySpawnSettings();
+    public SpecialEnemySpawnInfo[] bossEnemies = new SpecialEnemySpawnInfo[0];
 }

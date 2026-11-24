@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0ec2e8b33b74a1a8091c28369d8de27, type: 3}
+  m_Name: 03.Mineral
+  m_EditorClassIdentifier: Assembly-CSharp::MergeBoxEquipmentData
+  icon: {fileID: -5016500432853290594, guid: f06ec641899bfcf49a663aedebb35f0b, type: 3}
+  data:
+  - language: 0
+    dataName: Mineral Box
+    description: 
+    detailDescription: 
+  - language: 1
+    dataName: "\uAD11\uBB3C \uC0C1\uC790"
+    description: 
+    detailDescription: 
+  dataNumbering: 
+  dataId: 3
+  dataType: 8
+  grade: -1
+  series: 3
+  requireUnlock: 1
+  boxIndex: 3
+  plant: {fileID: 11400000, guid: 1522cb3be6ec4b0408d3435dd3f1e347, type: 2}
+  player: {fileID: 11400000, guid: 636f6ada0a592b84da81f465c456ff24, type: 2}

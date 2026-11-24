@@ -28,8 +28,7 @@ public sealed class SummonGroupReactionContext
     public ItemEffectContext CreateExecution(Vector3 position, ItemEffectLifetime lifetime)
     {
         if (source == null) return null;
-        return new ItemEffectContext(source.owner, source.sourceItemData, position, position,
-            source.sourceBag, buffManager: source.buffManager, direction: source.direction)
+        return new ItemEffectContext(source.owner, source.sourceItemData, position, position, buffManager: source.buffManager, direction: source.direction)
         {
             lifetime = lifetime,
             damageMultiplier = source.damageMultiplier,

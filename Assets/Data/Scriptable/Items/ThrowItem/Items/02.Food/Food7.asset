@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Food7
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: 3fb15879fe2d1a043ba04d37dada2ad0, type: 3}
+  data:
+  - language: 1
+    dataName: "\uD3EC\uB3C4"
+    description: "\uC791\uC740 \uC54C\uC774 \uC1A1\uC774\uC9F8 \uB2EC\uB9B0 \uACFC\uC77C."
+    detailDescription: "\uC1A1\uC774\uC5D0\uC11C \uD55C \uC54C\uC529 \uB5BC\uC5B4
+      \uBA39\uAE30 \uC88B\uB2E4."
+  - language: 0
+    dataName: Grapes
+    description: Small fruits growing in a cluster.
+    detailDescription: They are easy to pluck from the bunch and eat one at a time.
+  dataNumbering: 007
+  dataId: Food7
+  dataType: 1
+  grade: 0
+  series: 2
+  requireUnlock: 0
+  tags: []
+  weight: 1
+  cooldown: 1
+  effectDatas:
+  - {fileID: 11400000, guid: 7c7d30efbf70a984abd15d780ac5b2a4, type: 2}
+  codexEffects: []
+  endVisualData: {fileID: 0}
+  endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

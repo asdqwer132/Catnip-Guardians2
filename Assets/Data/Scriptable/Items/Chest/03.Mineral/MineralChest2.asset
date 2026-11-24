@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b981b44f6bdba44eb09234b25940801, type: 3}
+  m_Name: MineralChest2
+  m_EditorClassIdentifier: Assembly-CSharp::ItemBoxData
+  icon: {fileID: 6360959035448939630, guid: 7da2211f27a0be14cbec3d3800e13561, type: 3}
+  data:
+  - language: 1
+    dataName: "\uBCF4\uC11D \uB300\uD615 \uAD11\uBB3C \uC0C1\uC790"
+    description: "\uD478\uB978 \uBCF4\uC11D\uC774 \uB2EC\uB9B0 \uB113\uC740 \uAD11\uBB3C
+      \uC0C1\uC790."
+    detailDescription: "\uAE08\uBE5B \uD14C\uB450\uB9AC \uD55C\uAC00\uC6B4\uB370\uC5D0
+      \uB9D1\uC740 \uD478\uB978 \uBCF4\uC11D\uC774 \uBC15\uD600 \uC788\uB2E4."
+  - language: 0
+    dataName: Large Jeweled Mineral Chest
+    description: A wide mineral chest set with a blue gem.
+    detailDescription: A clear blue gem sits at the center of its golden trim.
+  dataNumbering: 03
+  dataId: MineralChest2
+  dataType: 6
+  grade: 1
+  series: 3
+  requireUnlock: 0
+  costs:
+  - currencyType: 0
+    amount: 10
+  - currencyType: 1
+    amount: 10
+  gachaItems:
+  - itemData: {fileID: 11400000, guid: 93758f7537ed6684898dc8cab8237aaa, type: 2}
+    probability: 0.75
+    amounts:
+    - count: 1
+      weight: 1
+    - count: 2
+      weight: 3
+  - itemData: {fileID: 11400000, guid: 9a41f7892b5c8e445987b81b88bacb9b, type: 2}
+    probability: 0.75
+    amounts:
+    - count: 1
+      weight: 1
+    - count: 2
+      weight: 3
+  openClip: {fileID: 7400000, guid: 5c069a7ace8faed47b6187b9aa6da02c, type: 2}

@@ -1,11 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using UnityEngine;
-
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 [Serializable]
 public class Description
@@ -15,28 +10,36 @@ public class Description
 
     [TextArea]
     public string description;
+
+    [TextArea]
+    public string detailDescription;
 }
 
-public class DefaultData : ScriptableObject, IUnlockable
+public enum Grade
 {
-    [Header("Basic Info")]
+    None = -1,
+    Common = 0,
+    Rare = 1,
+    Epic = 2,
+    Legendary = 3,
+}
+public class DefaultData : ScriptableObject, DefinedData
+{
+    [Header("Basic Data")]
     public Sprite icon;
+    public Sprite Icon => icon;
     public Description[] data;
 
-    [Header("Id Info")]
     public string dataNumbering;
     public string dataId;
     public DataType dataType;
-    public bool requireUnlock = false;
-
-
-    public bool RequireUnlock => requireUnlock;
-    public DataType UnlockType => dataType;
-    public string UnlockId => dataId;
+    public Grade grade = Grade.None;
+    [UnityEngine.Serialization.FormerlySerializedAs("itemSeries")]
+    public ItemSeries series = ItemSeries.None;
 
     private Dictionary<language, Description> languageDataMap;
 
-    public string GetDataName() => GetDataName(LanguageManager.instance.selectedLan);
+    public string GetDataName() => GetDataName(LanguageManager.CurrentLanguage);
 
     public string GetDataName(language targetLanguage)
     {
@@ -48,7 +51,7 @@ public class DefaultData : ScriptableObject, IUnlockable
         return languageData.dataName;
     }
 
-    public string GetDescription() => GetDescription(LanguageManager.instance.selectedLan);
+    public string GetDescription() => GetDescription(LanguageManager.CurrentLanguage);
 
     public string GetDescription(language targetLanguage)
     {
@@ -58,6 +61,14 @@ public class DefaultData : ScriptableObject, IUnlockable
             return null;
 
         return languageData.description;
+    }
+
+    public string GetDetailDescription() => GetDetailDescription(LanguageManager.CurrentLanguage);
+
+    public string GetDetailDescription(language targetLanguage)
+    {
+        Description languageData = GetLanguageData(targetLanguage);
+        return languageData?.detailDescription;
     }
 
     public Description GetLanguageData(language targetLanguage)
@@ -104,4 +115,14 @@ public class DefaultData : ScriptableObject, IUnlockable
         languageDataMap = null;
     }
 #endif
+}
+
+public abstract class UnlockableDefaultData : DefaultData, IUnlockable
+{
+    [Header("Extra Data")]
+    public bool requireUnlock = false;
+
+    public bool RequireUnlock => requireUnlock;
+    public DataType UnlockType => dataType;
+    public string UnlockId => dataId;
 }

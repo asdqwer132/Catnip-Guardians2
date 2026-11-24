@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-[CreateAssetMenu(fileName = "SummonItemThrow", menuName = "04.Items/Effects/Direct Effects/Summon/Summon Modules/Item Throw")]
+[CreateAssetMenu(fileName = "SummonItemThrow", menuName = "Items/Effects/Direct Effects/Summon/Summon Modules/Item Throw")]
 public sealed class SummonItemThrowModule : SummonBehaviourModule
 {
     public ItemData item;

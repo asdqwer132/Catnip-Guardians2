@@ -11,7 +11,7 @@ public sealed class SummonAuraTargetFilter
     public string[] requiredTags;
 }
 
-[CreateAssetMenu(fileName = "SummonAura", menuName = "04.Items/Effects/Direct Effects/Summon/Summon Modules/Aura")]
+[CreateAssetMenu(fileName = "SummonAura", menuName = "Items/Effects/Direct Effects/Summon/Summon Modules/Aura")]
 public sealed class SummonAuraModule : SummonBehaviourModule
 {
     public SummonAuraTargetFilter targets = new SummonAuraTargetFilter();

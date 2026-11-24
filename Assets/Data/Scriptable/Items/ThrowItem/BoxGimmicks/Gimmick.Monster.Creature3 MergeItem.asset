@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ead659dc7e8849b24b4b2f19a8571016, type: 3}
+  m_Name: Gimmick.Monster.Creature3 MergeItem
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterMergeItem
+  item: {fileID: 11400000, guid: 5a12bcfd931760db1b888ff1ed1b3553, type: 2}
+  prefab: {fileID: 8505337325015537218, guid: 3d4c1f079525a418186bc59983d7022d, type: 3}
+  radius: 0.4
+  eatInterval: 5
+  eatCountPerTick: 1
+  eatOtherMonsters: 0
+  quarantineRewards:
+  - item: {fileID: 11400000, guid: a54de58b6b38e0a43920305abd65e9e9, type: 2}
+    minimumCount: 2
+    maximumCount: 3
+    probability: 1
+    resourceCostPerItem: 0

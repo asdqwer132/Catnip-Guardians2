@@ -54,7 +54,7 @@ public sealed class RepeatItemRunner : AttackObject<RepeatItemStat>
         transform.position = origin;
         BindLifetime(context);
         InitWithSnapshotAndDynamicBuff(context.GetUnscaledSnapshotStat(effect, effect.repeatStat),
-            context.sourceItemData, context.sourceBag, context.buffManager, context.owner);
+            context.sourceItemData, context.buffManager, context.owner);
         total = EffectStatUtility.Count(stat.itemRepeatCount);
         direction = AttackPlacement.Direction(context, effect.directionMode, effect.fixedWorldDirection, stat.itemRepeatDirectionAngle);
         initialized = waitingForFirstUse = true;
@@ -165,7 +165,7 @@ public sealed class RepeatItemRunner : AttackObject<RepeatItemStat>
         context.targetPosition = lastImpact;
         if (item != null)
             ItemEffectExecutor.ExecuteItem(item, execution.usePosition, lastImpact, execution.direction,
-                owner, sourceBag, buffManager, execution, triggerSpecial, thrown);
+                owner, buffManager, execution, triggerSpecial, thrown);
         ItemEffectUtility.Execute(effects, execution);
     }
 

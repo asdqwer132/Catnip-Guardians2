@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: WeaponMaterial6
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: 3663919c940dce44a9bace77d1c389b3, type: 3}
+  data:
+  - language: 1
+    dataName: "\uB2E4\uC774\uC544\uBAAC\uB4DC \uC870\uAC01"
+    description: "\uBAA8\uC11C\uB9AC\uAC00 \uB0A0\uCE74\uB85C\uC6B4 \uB2E4\uC774\uC544\uBAAC\uB4DC
+      \uC870\uAC01."
+    detailDescription: "\uC791\uC740 \uC870\uAC01\uC774\uC9C0\uB9CC \uAC01\uB3C4\uC5D0
+      \uB530\uB77C \uB208\uBD80\uC2E0 \uBE5B\uC744 \uD295\uAE34\uB2E4."
+  - language: 0
+    dataName: Diamond Shard
+    description: A sharp-edged diamond shard.
+    detailDescription: Small as it is, it reflects a dazzling light at the right
+      angle.
+  dataNumbering: 006
+  dataId: WeaponMaterial6
+  dataType: 7
+  grade: 1
+  series: 1
+  requireUnlock: 0
+  tags: []
+  weight: 1
+  cooldown: 1
+  effectDatas:
+  - {fileID: 11400000, guid: 860bd383df3ae8f46ad00f54a9dd029c, type: 2}
+  codexEffects: []
+  endVisualData: {fileID: 0}
+  endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

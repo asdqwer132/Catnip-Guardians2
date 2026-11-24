@@ -15,7 +15,7 @@ public enum EnemyMovementControlExecutionMode
     PersistentArea = 1
 }
 
-[CreateAssetMenu(fileName = "EnemyMovementControlEffect", menuName = "04.Items/Effects/Direct Effects/Movement/Control")]
+[CreateAssetMenu(fileName = "EnemyMovementControlEffect", menuName = "Items/Effects/Direct Effects/Movement/Control")]
 public class EnemyMovementControlEffect : ItemEffectData
 {
     [Header("Movement")]
@@ -290,7 +290,7 @@ public class EnemyMovementControlEffect : ItemEffectData
 
         Vector3 position = new Vector3(area.center.x, area.center.y, 0f);
         ItemEffectContext visualContext = new ItemEffectContext(context.owner, context.sourceItemData,
-            context.usePosition, position, context.sourceBag, this, context.buffManager, context.direction, context.plan);
+            context.usePosition, position, this, context.buffManager, context.direction, context.plan);
         Quaternion rotation = areaShape != null ? areaShape.GetVisualRotation(area) : Quaternion.identity;
         ImpactVfxInstance impact = Instantiate(impactVfxPrefab, position, rotation);
         impact.Init(

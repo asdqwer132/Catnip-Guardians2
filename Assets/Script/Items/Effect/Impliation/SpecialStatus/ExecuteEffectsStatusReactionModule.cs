@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ExecuteEffectsStatusReaction", menuName = "04.Items/Effects/Direct Effects/Special Status/Item Use Modules/Execute Effects")]
+[CreateAssetMenu(fileName = "ExecuteEffectsStatusReaction", menuName = "Items/Effects/Direct Effects/Special Status/Item Use Modules/Execute Effects")]
 public sealed class ExecuteEffectsStatusReactionModule : SpecialStatusItemUseModule
 {
     [Header("아이템 사용 후 추가 효과")]

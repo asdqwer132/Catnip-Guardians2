@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Food12
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: 27ff4792e7419c34787535ef77dbcd6e, type: 3}
+  data:
+  - language: 1
+    dataName: "\uC0DD\uD06C\uB9BC \uD30C\uC774"
+    description: "\uC0DD\uD06C\uB9BC\uC774 \uC62C\uB77C\uAC04 \uBD80\uB4DC\uB7EC\uC6B4
+      \uD30C\uC774."
+    detailDescription: "\uBC14\uC0AD\uD55C \uD30C\uC774 \uAECD\uC9C8 \uC704\uC5D0
+      \uAC00\uBCCD\uAC8C \uD718\uD551\uD55C \uD06C\uB9BC\uC744 \uC5B9\uC5C8\uB2E4."
+  - language: 0
+    dataName: Cream Pie
+    description: A soft pie topped with fresh cream.
+    detailDescription: Lightly whipped cream rests on a crisp pie crust.
+  dataNumbering: 012
+  dataId: Food12
+  dataType: 1
+  grade: 0
+  series: 2
+  requireUnlock: 0
+  tags: []
+  weight: 1
+  cooldown: 1
+  effectDatas: []
+  codexEffects: []
+  endVisualData: {fileID: 0}
+  endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

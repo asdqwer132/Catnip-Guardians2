@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b981b44f6bdba44eb09234b25940801, type: 3}
+  m_Name: MachineChest1
+  m_EditorClassIdentifier: Assembly-CSharp::ItemBoxData
+  icon: {fileID: 8600036800817134727, guid: 1aea6ab5f0dc5fb4d966d0bba8d2dd09, type: 3}
+  data:
+  - language: 1
+    dataName: "\uBD89\uC740 \uCCA0\uD14C \uAE30\uACC4 \uC0C1\uC790"
+    description: "\uBD89\uC740 \uD310\uC7AC\uC5D0 \uCCA0\uD14C\uB97C \uB450\uB978
+      \uC0C1\uC790."
+    detailDescription: "\uAD75\uC740 \uD68C\uC0C9 \uAE08\uC18D \uB760\uAC00 \uBD89\uC740
+      \uB69C\uAED1\uC744 \uB2E8\uB2E8\uD788 \uACE0\uC815\uD55C\uB2E4."
+  - language: 0
+    dataName: Red Iron-Banded Machine Chest
+    description: A red-paneled chest with iron bands.
+    detailDescription: Thick gray metal bands hold its red lid firmly in place.
+  dataNumbering: 07
+  dataId: MachineChest1
+  dataType: 6
+  grade: 0
+  series: 7
+  requireUnlock: 0
+  costs:
+  - currencyType: 0
+    amount: 10
+  - currencyType: 1
+    amount: 10
+  gachaItems:
+  - itemData: {fileID: 11400000, guid: 93758f7537ed6684898dc8cab8237aaa, type: 2}
+    probability: 0.75
+    amounts:
+    - count: 1
+      weight: 1
+    - count: 2
+      weight: 3
+  - itemData: {fileID: 11400000, guid: 9a41f7892b5c8e445987b81b88bacb9b, type: 2}
+    probability: 0.75
+    amounts:
+    - count: 1
+      weight: 1
+    - count: 2
+      weight: 3
+  openClip: {fileID: 7400000, guid: b28e45e11793b174b87ca1799cec4622, type: 2}

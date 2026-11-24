@@ -50,6 +50,13 @@ public class Plant : HealthActor
     }
 
     #region OnEvent
+    protected override void OnDamaged(float damage) => plantUI?.PlayHurt();
+
+    public void PlaySlotAttackReaction()
+    {
+        if (isActiveAndEnabled && !IsDead) plantUI?.PlayHurt();
+    }
+
     public override void TakeDamage(float damage)
     {
         if (useHealthDefeat) base.TakeDamage(damage);

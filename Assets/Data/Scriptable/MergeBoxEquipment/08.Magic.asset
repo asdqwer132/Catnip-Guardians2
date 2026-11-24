@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0ec2e8b33b74a1a8091c28369d8de27, type: 3}
+  m_Name: 08.Magic
+  m_EditorClassIdentifier: Assembly-CSharp::MergeBoxEquipmentData
+  icon: {fileID: -1593041819287214542, guid: 19a4b6ab8f2951548a76535246c6f887, type: 3}
+  data:
+  - language: 0
+    dataName: Magic Box
+    description: 
+    detailDescription: 
+  - language: 1
+    dataName: "\uB9C8\uBC95 \uC0C1\uC790"
+    description: 
+    detailDescription: 
+  dataNumbering: 
+  dataId: 8
+  dataType: 8
+  grade: -1
+  series: 8
+  requireUnlock: 1
+  boxIndex: 8
+  plant: {fileID: 11400000, guid: 624e0ff64b534264c8db164d50de83a7, type: 2}
+  player: {fileID: 11400000, guid: be0e6d68f44f4d046b9b704a9bd6207e, type: 2}

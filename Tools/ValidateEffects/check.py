@@ -138,6 +138,7 @@ def compile_files():
              'Items/Upgrade/Inventory/Search/ISearchable.cs', 'Items/Upgrade/Skill/Reward/Unlock/IUnlockable.cs',
              'Items/Upgrade/Skill/Reward/Unlock/DataType.cs')
     files += [ROOT / 'Assets/Script' / name for name in extra]
+    files += [ROOT / 'Assets/Script/Manager/Utility/GamePause.cs']
     files += list((ROOT / 'Assets/Script/Manager/Utility/Scene').glob('*.cs'))
     files += list((ROOT / 'Assets/Script/Items/Merge').glob('*.cs'))
     files += [ROOT / 'Assets/Script/Items/Upgrade/Craft/Recipe/ItemRecipeData.cs']
@@ -153,8 +154,9 @@ def compile_files():
                    'Manager/Setting/Setting/SettingChangeType.cs', 'Manager/Setting/Setting/ISettingChangeListener.cs',
                    'Manager/Setting/Setting/SettingWindowController.cs', 'Manager/Setting/Setting/SettingUIButton.cs',
                    'Manager/Setting/Setting/SettingInjecter.cs', 'Manager/Setting/Setting/CursorChanger.cs',
-                   'Manager/Tutorial/Manager/TutorialEventExecutor.cs', 'Manager/Tutorial/Manager/TutorialProgress.cs', 'Manager/Tutorial/Manager/TutorialSave.cs',
-                   'Manager/Tutorial/Data/TutorialSequenceStep.cs')
+                   'Manager/Tutorial/TutorialCompletionHistory.cs', 'Manager/Tutorial/TutorialPanelSequence.cs',
+                   'Manager/Tutorial/TutorialCanvasController.cs', 'Manager/Tutorial/TutorialTrigger.cs', 'Manager/Tutorial/TutorialSignals.cs',
+                   'Manager/Tutorial/TutorialData.cs', 'Manager/Tutorial/TutorialPageView.cs', 'Manager/Tutorial/TutorialSelectionToggle.cs')
     files += [ROOT / 'Assets/Script' / name for name in scene_extra]
     return list(dict.fromkeys(files))
 

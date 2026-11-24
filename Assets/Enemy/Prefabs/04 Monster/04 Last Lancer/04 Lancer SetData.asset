@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edc90614ba7134b47808661fe4744b2e, type: 3}
+  m_Name: 04 Lancer SetData
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDataSet
+  icon: {fileID: 3272805312411629707, guid: eb4c73c869857c349acf969c5ed33912, type: 3}
+  data:
+  - language: 0
+    dataName: Knight Commander
+    description: A mounted knight carrying a lance.
+    detailDescription: An armored horse and a long lance define the rider's silhouette.
+  - language: 1
+    dataName: "\uAE30\uC0AC\uB2E8\uC7A5"
+    description: "\uB9D0\uC5D0 \uC62C\uB77C\uD0C4 \uCC3D\uC758 \uAE30\uC0AC."
+    detailDescription: "\uAC11\uC637\uC744 \uC785\uD78C \uB9D0\uACFC \uAE38\uAC8C
+      \uBED7\uC740 \uCC3D\uC774 \uB208\uC5D0 \uB748\uB2E4."
+  dataNumbering: 04
+  dataId: 04Lancer
+  dataType: 5
+  grade: 0
+  series: 1
+  requireUnlock: 0
+  animatorController: {fileID: 9100000, guid: 133fa4e168bed6e478652e57da141ba5, type: 2}
+  statData: {fileID: 11400000, guid: 99cf067d0bba3434094af12ca2a95772, type: 2}
+  patternData: {fileID: 11400000, guid: 8803ba3630419dc4594358b0a1725fb4, type: 2}
+  codexEntry: {fileID: 0}
+  codexEffects: []

@@ -25,8 +25,7 @@ public sealed class ProjectileAttackRuntime : AttackObject<ProjectileAttackStat>
         if (!context.TryGetDirection(out direction)) direction = Vector3.right;
         dispatcher = new HitEffectDispatcher(data.onHitEffects, data.hitEffectApplyMode, context);
         BindLifetime(context);
-        InitWithSnapshotAndDynamicBuff(context.GetUnscaledSnapshotStat(data, data.attackStat), context.sourceItemData,
-            context.sourceBag, context.buffManager, context.owner);
+        InitWithSnapshotAndDynamicBuff(context.GetUnscaledSnapshotStat(data, data.attackStat), context.sourceItemData, context.buffManager, context.owner);
         orbitAngle = EffectStatUtility.Safe(data.orbitStartAngle, -36000f, 36000f, 0f) * Mathf.Deg2Rad;
         if (data.path == ProjectileAttackPath.Orbit)
             transform.position = Center() + OrbitOffset(orbitAngle);

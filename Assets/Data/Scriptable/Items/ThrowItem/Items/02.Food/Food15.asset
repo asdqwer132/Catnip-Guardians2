@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Food15
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: 0978435ffb936b44083441a5639f63e7, type: 3}
+  data:
+  - language: 1
+    dataName: "\uB179\uC999 \uD30C\uC774"
+    description: "\uB179\uC999\uC744 \uB123\uC5B4 \uBE5B\uAE54\uC744 \uB0B8 \uD30C\uC774."
+    detailDescription: "\uD55C \uC870\uAC01\uC744 \uC790\uB974\uBA74 \uD480 \uB0B4\uC74C\uC774
+      \uC740\uC740\uD55C \uCD08\uB85D\uBE5B \uC18D\uC774 \uBCF4\uC778\uB2E4."
+  - language: 0
+    dataName: Green Juice Pie
+    description: A pie colored with green vegetable juice.
+    detailDescription: Cutting a slice reveals a green filling with a faint grassy
+      scent.
+  dataNumbering: 015
+  dataId: Food15
+  dataType: 1
+  grade: 1
+  series: 2
+  requireUnlock: 0
+  tags: []
+  weight: 1
+  cooldown: 1
+  effectDatas: []
+  codexEffects: []
+  endVisualData: {fileID: 0}
+  endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

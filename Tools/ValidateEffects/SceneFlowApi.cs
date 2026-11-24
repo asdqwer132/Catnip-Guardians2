@@ -39,17 +39,3 @@ public class ShopManager : MonoBehaviour { public void InitShop() { } }
 public class SkillTreeUI : MonoBehaviour { public void Init() { } }
 public class InventoryUI : MonoBehaviour { public void Init() { } }
 public class EquipmentBagManager : MonoBehaviour { public List<EquipmentBag> bags; public void Init() { } }
-public class TutorialProgressManager : MonoBehaviour
-{
-    public static TutorialProgressManager instance;
-    public void ResetProgress() { }
-    public void IncreaseProgress() { }
-    public void DecreaseProgress() { }
-    public void SetProgress(TutorialProgress progress) { }
-}
-public class TutorialDialogueController : MonoBehaviour
-{
-    public void Show() { } public void Hide() { } public void SetSpeakerName(string value) { }
-    public void SetText(string value) { } public void Clear() { }
-}
-public class TutorialHighlightController : MonoBehaviour { public void ShowHighlight(int index) { } public void HideHighlight() { } }

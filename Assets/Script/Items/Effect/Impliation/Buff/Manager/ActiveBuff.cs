@@ -8,7 +8,6 @@ public class ActiveBuff
 {
     [Header("Source")]
     public ItemData sourceItemData;
-    public EquipmentBag sourceBag;
     public ItemEffectData sourceEffectData;
 
     [Header("Target")]
@@ -80,7 +79,6 @@ public class ActiveBuff
         BuffModifier[] modifiers,
         BuffInfo info,
         ItemData sourceItemData,
-        EquipmentBag sourceBag,
         ItemEffectData sourceEffectData,
         BuffTargetHandle target,
         bool includeSelf,
@@ -89,7 +87,6 @@ public class ActiveBuff
     {
         this.modifiers = modifiers;
         this.sourceItemData = sourceItemData;
-        this.sourceBag = sourceBag;
         this.sourceEffectData = sourceEffectData;
         this.target = target;
         this.includeSelf = includeSelf;
@@ -267,7 +264,6 @@ public class ActiveBuff
 
     public bool IsSameBuff(
         ItemData sourceItemData,
-        EquipmentBag sourceBag,
         ItemEffectData sourceEffectData,
         BuffTargetHandle target
     )
@@ -275,8 +271,6 @@ public class ActiveBuff
         if (this.sourceItemData != sourceItemData)
             return false;
 
-        if (this.sourceBag != sourceBag)
-            return false;
 
         if (this.sourceEffectData != sourceEffectData)
             return false;

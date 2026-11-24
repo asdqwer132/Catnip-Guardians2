@@ -19,7 +19,7 @@ public sealed class WeightedEffectEntry
     }
 }
 
-[CreateAssetMenu(fileName = "WeightedRandomEffect", menuName = "04.Items/Effects/Use Effects/Weighted Random")]
+[CreateAssetMenu(fileName = "WeightedRandomEffect", menuName = "Items/Effects/Use Effects/Weighted Random")]
 public sealed class WeightedRandomEffect : ItemEffectData
 {
     public WeightedEffectEntry[] entries;
@@ -38,7 +38,7 @@ public sealed class WeightedRandomEffect : ItemEffectData
             ItemEffectContext child = context.Copy(context.targetPosition, context.direction);
             if (entry.item != null)
                 ItemEffectExecutor.ExecuteItem(entry.item, child.usePosition, child.targetPosition, child.direction,
-                    child.owner, child.sourceBag, child.buffManager, child, triggerSpecialItems,
+                    child.owner, child.buffManager, child, triggerSpecialItems,
                     consumeUseBuffs: consumeUseBuffs);
             ItemEffectUtility.Execute(entry.effects, child);
         }

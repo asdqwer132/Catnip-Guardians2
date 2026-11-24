@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b981b44f6bdba44eb09234b25940801, type: 3}
+  m_Name: WeaponChest2
+  m_EditorClassIdentifier: Assembly-CSharp::ItemBoxData
+  icon: {fileID: -592988392406658374, guid: 194afa4effde4204c9887e32b811b2f1, type: 3}
+  data:
+  - language: 1
+    dataName: "\uCCA0\uD14C \uB300\uD615 \uBB34\uAE30 \uC0C1\uC790"
+    description: "\uCCA0\uD14C\uB97C \uB450\uB978 \uB113\uC740 \uB098\uBB34 \uC0C1\uC790."
+    detailDescription: "\uB465\uADFC \uB69C\uAED1 \uC544\uB798\uB85C \uB113\uC740
+      \uBAB8\uD1B5\uACFC \uD07C\uC9C1\uD55C \uC7A0\uAE08\uC7A5\uCE58\uAC00 \uB2EC\uB824
+      \uC788\uB2E4."
+  - language: 0
+    dataName: Large Iron-Banded Weapon Chest
+    description: A wide wooden chest with iron bands.
+    detailDescription: A broad body and large lock sit beneath its rounded lid.
+  dataNumbering: 01
+  dataId: WeaponChest2
+  dataType: 6
+  grade: 1
+  series: 1
+  requireUnlock: 0
+  costs:
+  - currencyType: 0
+    amount: 10
+  - currencyType: 1
+    amount: 10
+  gachaItems:
+  - itemData: {fileID: 11400000, guid: 93758f7537ed6684898dc8cab8237aaa, type: 2}
+    probability: 0.75
+    amounts:
+    - count: 1
+      weight: 1
+    - count: 2
+      weight: 3
+  - itemData: {fileID: 11400000, guid: 9a41f7892b5c8e445987b81b88bacb9b, type: 2}
+    probability: 0.75
+    amounts:
+    - count: 1
+      weight: 1
+    - count: 2
+      weight: 3
+  openClip: {fileID: 7400000, guid: 812cd7f8ed3b6a241b246eae80d25aa8, type: 2}

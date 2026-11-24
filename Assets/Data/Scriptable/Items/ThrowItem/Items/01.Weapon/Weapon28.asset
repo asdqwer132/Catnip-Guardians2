@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Weapon28
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: a7033d1efa9b133419c56163cb0b3e4f, type: 3}
+  data:
+  - language: 1
+    dataName: "\uBFCC\uB9AC \uCC3D"
+    description: "\uB4A4\uD2C0\uB9B0 \uB098\uBB34\uBFCC\uB9AC\uB85C \uB2E4\uB4EC\uC740
+      \uCC3D."
+    detailDescription: "\uC5EC\uB7EC \uAC08\uB798\uC758 \uBFCC\uB9AC\uAC00 \uD55C
+      \uC904\uAE30\uCC98\uB7FC \uB2E8\uB2E8\uD788 \uC5BD\uD600 \uC788\uB2E4. \uAE34
+      \uC790\uB8E8 \uB05D\uC744 \uBFB0\uC871\uD558\uAC8C \uB9C8\uBB34\uB9AC\uD588\uB2E4."
+  - language: 0
+    dataName: Root Spear
+    description: A spear shaped from twisted tree roots.
+    detailDescription: Several branching roots are tightly entwined into a single
+      length. The long shaft ends in a sharp point.
+  dataNumbering: 028
+  dataId: Weapon28
+  dataType: 1
+  grade: 2
+  series: 1
+  requireUnlock: 0
+  tags: []
+  weight: 1
+  cooldown: 1
+  effectDatas:
+  - {fileID: 11400000, guid: 4403941fa01ba9e45b9e68200c4cb987, type: 2}
+  codexEffects: []
+  endVisualData: {fileID: 0}
+  endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

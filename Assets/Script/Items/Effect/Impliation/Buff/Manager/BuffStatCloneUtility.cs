@@ -10,21 +10,19 @@ public static class BuffStatCloneUtility
     {
         private readonly BuffStorage storage;
         private readonly ItemData item;
-        private readonly EquipmentBag bag;
         private readonly ItemEffectData effect;
 
         public AppliedBuff(ActiveBuff buff)
         {
             storage = buff.StorageOwner;
             item = buff.sourceItemData;
-            bag = buff.sourceBag;
             effect = buff.sourceEffectData;
         }
 
         // 재부여/제거 후 같은 출처가 다시 등록되어도 캡처된 Snapshot은 그대로 사용합니다.
         public bool Matches(ActiveBuff buff)
             => ReferenceEquals(storage, buff.StorageOwner) && ReferenceEquals(item, buff.sourceItemData) &&
-               ReferenceEquals(bag, buff.sourceBag) && ReferenceEquals(effect, buff.sourceEffectData);
+               ReferenceEquals(effect, buff.sourceEffectData);
     }
 
     // 스탯이 더 이상 사용되지 않으면 기록도 GC 대상입니다. 에셋이나 씬에는 저장하지 않습니다.

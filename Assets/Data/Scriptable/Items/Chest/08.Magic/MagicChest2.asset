@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b981b44f6bdba44eb09234b25940801, type: 3}
+  m_Name: MagicChest2
+  m_EditorClassIdentifier: Assembly-CSharp::ItemBoxData
+  icon: {fileID: -4564795679207965745, guid: 4b7f52af976bfb940afc685702d39ace, type: 3}
+  data:
+  - language: 1
+    dataName: "\uBCF4\uB78F\uBE5B \uB300\uD615 \uB9C8\uBC95 \uC0C1\uC790"
+    description: "\uBCF4\uB78F\uBE5B \uB36E\uAC1C\uC758 \uB113\uC740 \uBCF4\uC11D
+      \uC0C1\uC790."
+    detailDescription: "\uB69C\uAED1 \uC911\uC559\uC758 \uD478\uB978 \uBCF4\uC11D\uC744
+      \uAE08\uBE5B \uC7A5\uC2DD\uC774 \uAC10\uC2FC\uB2E4."
+  - language: 0
+    dataName: Large Violet Magic Chest
+    description: A broad jeweled chest with a violet cover.
+    detailDescription: Golden ornaments surround the blue gem at the center of its
+      lid.
+  dataNumbering: 08
+  dataId: MagicChest2
+  dataType: 6
+  grade: 1
+  series: 8
+  requireUnlock: 0
+  costs:
+  - currencyType: 0
+    amount: 10
+  - currencyType: 1
+    amount: 10
+  gachaItems:
+  - itemData: {fileID: 11400000, guid: 93758f7537ed6684898dc8cab8237aaa, type: 2}
+    probability: 0.75
+    amounts:
+    - count: 1
+      weight: 1
+    - count: 2
+      weight: 3
+  - itemData: {fileID: 11400000, guid: 9a41f7892b5c8e445987b81b88bacb9b, type: 2}
+    probability: 0.75
+    amounts:
+    - count: 1
+      weight: 1
+    - count: 2
+      weight: 3
+  openClip: {fileID: 7400000, guid: 2297a5959bac11947827f85975a91d61, type: 2}

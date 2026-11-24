@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: FoodMaterial5
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: 082826ff611ca5848975c9decfbb1d57, type: 3}
+  data:
+  - language: 1
+    dataName: "1\uB4F1\uAE09 \uBC00\uAC00\uB8E8 \uD3EC\uB300"
+    description: "\uACF1\uAC8C \uBE7B\uC740 \uBC00\uAC00\uB8E8\uB97C \uB2F4\uC740
+      \uD3EC\uB300."
+    detailDescription: "\uAC00\uB8E8 \uC785\uC790\uAC00 \uACE0\uB974\uACE0 \uC190\uB05D\uC5D0
+      \uB2FF\uB294 \uAC10\uCD09\uC774 \uB9E4\uB044\uB7FD\uB2E4."
+  - language: 0
+    dataName: Grade 1 Flour Sack
+    description: A sack of finely milled flour.
+    detailDescription: Its even particles feel smooth to the touch.
+  dataNumbering: 005
+  dataId: FoodMaterial5
+  dataType: 1
+  grade: 1
+  series: 2
+  requireUnlock: 0
+  tags: []
+  weight: 1
+  cooldown: 1
+  effectDatas:
+  - {fileID: 11400000, guid: 860bd383df3ae8f46ad00f54a9dd029c, type: 2}
+  codexEffects: []
+  endVisualData: {fileID: 0}
+  endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

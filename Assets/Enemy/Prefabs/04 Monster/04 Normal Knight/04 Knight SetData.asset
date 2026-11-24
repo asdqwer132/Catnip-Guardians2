@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edc90614ba7134b47808661fe4744b2e, type: 3}
+  m_Name: 04 Knight SetData
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDataSet
+  icon: {fileID: -5711848221618334454, guid: 9ce93e7f6a7f66b41a13f8b32753c050, type: 3}
+  data:
+  - language: 0
+    dataName: Knight
+    description: A knight equipped with a sword and shield.
+    detailDescription: A red plume crowns the helmet above a straight sword.
+  - language: 1
+    dataName: "\uAE30\uC0AC"
+    description: "\uAC80\uACFC \uBC29\uD328\uB97C \uAC16\uCD98 \uAE30\uC0AC."
+    detailDescription: "\uBD89\uC740 \uAE43\uC774 \uB2EC\uB9B0 \uD22C\uAD6C\uC640
+      \uBC18\uB4EF\uD55C \uAC80\uC744 \uB4E4\uACE0 \uC788\uB2E4."
+  dataNumbering: 04
+  dataId: 04Knight
+  dataType: 5
+  grade: 0
+  series: 1
+  requireUnlock: 0
+  animatorController: {fileID: 9100000, guid: 25be345f3bbad0f4ea3049234e79e8d5, type: 2}
+  statData: {fileID: 11400000, guid: 8e63db1bc26cf014381e3dcc8165f5e7, type: 2}
+  patternData: {fileID: 11400000, guid: 689a6f9681b81f94699d981ff3acd020, type: 2}
+  codexEntry: {fileID: 0}
+  codexEffects: []

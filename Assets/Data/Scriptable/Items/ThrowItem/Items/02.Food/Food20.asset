@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Food20
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: 12ebe178b15666b488808ed3801460f2, type: 3}
+  data:
+  - language: 1
+    dataName: "\uD06C\uB9AC\uC2A4\uD0C8 \uD30C\uC774"
+    description: "\uACB0\uC815\uCC98\uB7FC \uBC18\uC9DD\uC774\uB294 \uD30C\uC774."
+    detailDescription: "\uC870\uAC01\uC744 \uB4E4\uC5B4 \uC62C\uB9AC\uBA74 \uD45C\uBA74\uC758
+      \uBC18\uC9DD\uC774\uB294 \uBD80\uBD84\uC774 \uBE5B\uC744 \uBC1B\uC544 \uBC18\uC9DD\uC778\uB2E4."
+  - language: 0
+    dataName: Crystal Pie
+    description: A pie that sparkles like crystal.
+    detailDescription: Lift a slice and its sparkling surface catches the light.
+  dataNumbering: 020
+  dataId: Food20
+  dataType: 1
+  grade: 1
+  series: 2
+  requireUnlock: 0
+  tags: []
+  weight: 1
+  cooldown: 1
+  effectDatas:
+  - {fileID: 11400000, guid: 9edeac2948b5e824abe90f8c24488e78, type: 2}
+  - {fileID: 11400000, guid: d05628127ae900546967925e97ee096d, type: 2}
+  codexEffects: []
+  endVisualData: {fileID: 0}
+  endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

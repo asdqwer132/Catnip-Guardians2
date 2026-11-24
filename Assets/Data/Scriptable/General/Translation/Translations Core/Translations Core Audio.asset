@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47d3f35fa24e48a2b5c992adb0105125, type: 3}
+  m_Name: Translations Core Audio
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedTextGroup
+  entries:
+  - key: Audio
+    translations:
+    - language: 0
+      text: Audio
+    - language: 1
+      text: "\uC18C\uB9AC"
+  - key: Master
+    translations:
+    - language: 0
+      text: Master
+    - language: 1
+      text: "\uC804\uCCB4"
+  - key: Music
+    translations:
+    - language: 0
+      text: Music
+    - language: 1
+      text: "\uBC30\uACBD\uC74C\uC545"
+  - key: Sound Effects
+    translations:
+    - language: 0
+      text: Sound Effects
+    - language: 1
+      text: "\uD6A8\uACFC\uC74C"

@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edc90614ba7134b47808661fe4744b2e, type: 3}
+  m_Name: 07 Black Knight_C SetData
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDataSet
+  icon: {fileID: -3255647874238778446, guid: 729664255f7f9764bbcdd16228602b26, type: 3}
+  data:
+  - language: 0
+    dataName: Black Dreadknight
+    description: A knight in ornate black armor.
+    detailDescription: Pointed armor and a red sword blade frame its body.
+  - language: 1
+    dataName: "\uC911\uAC11 \uD751\uAE30\uC0AC"
+    description: "\uC7A5\uC2DD \uB9CE\uC740 \uAC80\uC740 \uAC11\uC637\uC758 \uAE30\uC0AC."
+    detailDescription: "\uBFB0\uC871\uD55C \uAC11\uC637\uACFC \uBD89\uC740 \uAC80\uB0A0\uC774
+      \uC628\uBAB8\uC744 \uB458\uB7EC\uC2F8\uACE0 \uC788\uB2E4."
+  dataNumbering: 07
+  dataId: 07BlackKnight_C
+  dataType: 5
+  grade: 0
+  series: 1
+  requireUnlock: 0
+  animatorController: {fileID: 9100000, guid: 3dbfecd17ddd62b4fa46bf63d0b6d8f5, type: 2}
+  statData: {fileID: 11400000, guid: 1bf3fc59e84ff2045a0a267badc24cbf, type: 2}
+  patternData: {fileID: 11400000, guid: 5e229280d109dcf478e7b7a846005b19, type: 2}
+  codexEntry: {fileID: 0}
+  codexEffects: []

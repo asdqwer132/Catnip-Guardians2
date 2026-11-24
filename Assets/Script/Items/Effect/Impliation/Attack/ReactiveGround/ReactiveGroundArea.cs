@@ -82,7 +82,7 @@ public sealed class ReactiveGroundArea : AttackObject<ReactiveGroundStat>, IPref
         }
         BindLifetime(context);
         InitWithSnapshotAndDynamicBuff(context.GetUnscaledSnapshotStat(effect, effect.BaseStat),
-            context.sourceItemData, context.sourceBag, context.buffManager, context.owner);
+            context.sourceItemData, context.buffManager, context.owner);
         initialized = true;
         active.Add(this);
         AreaRegistry.Register(this);

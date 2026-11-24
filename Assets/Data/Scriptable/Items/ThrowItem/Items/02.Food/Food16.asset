@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Food16
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: c5111f9b97b5c5d4ca98c45c6f4fd578, type: 3}
+  data:
+  - language: 1
+    dataName: "\uBE14\uB8E8\uBCA0\uB9AC \uD30C\uC774"
+    description: "\uBE14\uB8E8\uBCA0\uB9AC\uB97C \uAC00\uB4DD \uB123\uC5B4 \uAD6C\uC6B4
+      \uD30C\uC774."
+    detailDescription: "\uAECD\uC9C8\uC744 \uAC00\uB974\uBA74 \uC9D9\uC740 \uBCF4\uB78F\uBE5B
+      \uC18D\uC774 \uAC00\uC7A5\uC790\uB9AC\uB85C \uC0B4\uC9DD \uD750\uB978\uB2E4."
+  - language: 0
+    dataName: Blueberry Pie
+    description: A pie baked with plenty of blueberries.
+    detailDescription: Cut through the crust and the deep purple filling spills gently
+      toward the edge.
+  dataNumbering: 016
+  dataId: Food16
+  dataType: 1
+  grade: 1
+  series: 2
+  requireUnlock: 0
+  tags: []
+  weight: 1
+  cooldown: 1
+  effectDatas:
+  - {fileID: 11400000, guid: bb71eeb81b6c2984b85e03d9e22ae265, type: 2}
+  - {fileID: 11400000, guid: 92aa50fbe8e86a04080e674cc0a8be3b, type: 2}
+  codexEffects: []
+  endVisualData: {fileID: 0}
+  endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

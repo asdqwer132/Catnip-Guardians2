@@ -100,6 +100,7 @@ public class ActorVisual : MonoBehaviour
 
     protected virtual void Update()
     {
+        ApplyPlantFacing();
         SetTimeStopAnimationPaused(enemyOwner != null && enemyOwner.IsTimeStopped);
         if (!IsAnimationPaused) actionTracker.Tick(animator, Time.deltaTime);
         if (!actionTracker.IsPlaying && actionAnimation != ActionAnimation.None && actionAnimation != ActionAnimation.Death)
@@ -214,8 +215,16 @@ public class ActorVisual : MonoBehaviour
         ForceIdle(Vector2.zero, false, true, true);
     }
 
+    private bool ApplyPlantFacing()
+    {
+        if (spriteRenderer == null || enemyOwner == null || !enemyOwner.TryGetPlantFlip(out bool flip)) return false;
+        spriteRenderer.flipX = flip;
+        return true;
+    }
+
     public virtual void LookDirection(Vector2 direction)
     {
+        if (ApplyPlantFacing()) return;
         if (IsHitPlaying || IsDeathPlaying || IsAnimationPaused) return;
         if (spriteRenderer == null)
             return;

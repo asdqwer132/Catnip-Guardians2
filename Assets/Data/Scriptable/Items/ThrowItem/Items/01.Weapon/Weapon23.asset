@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Weapon23
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: a3a77362e6bba534db19521f3966e055, type: 3}
+  data:
+  - language: 1
+    dataName: "\uAD6C\uB9AC \uCC3D"
+    description: "\uBD89\uC740\uBE5B\uC774 \uB3C4\uB294 \uAD6C\uB9AC\uB85C \uB2E4\uB4EC\uC740
+      \uCC3D."
+    detailDescription: "\uD45C\uBA74\uC5D0 \uBD89\uC740 \uAE08\uC18D\uAD11\uC774
+      \uD750\uB978\uB2E4. \uAE34 \uC790\uB8E8 \uB05D\uC744 \uBFB0\uC871\uD558\uAC8C
+      \uB9C8\uBB34\uB9AC\uD588\uB2E4."
+  - language: 0
+    dataName: Copper Spear
+    description: A spear shaped from reddish copper.
+    detailDescription: A reddish metallic sheen runs across the surface. The long
+      shaft ends in a sharp point.
+  dataNumbering: 023
+  dataId: Weapon23
+  dataType: 1
+  grade: 1
+  series: 1
+  requireUnlock: 0
+  tags: []
+  weight: 1
+  cooldown: 1
+  effectDatas:
+  - {fileID: 11400000, guid: 4c4b63a0cac630e458323184b560a25d, type: 2}
+  codexEffects: []
+  endVisualData: {fileID: 0}
+  endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

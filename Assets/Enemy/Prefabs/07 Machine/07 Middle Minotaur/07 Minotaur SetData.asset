@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edc90614ba7134b47808661fe4744b2e, type: 3}
+  m_Name: 07 Minotaur SetData
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDataSet
+  icon: {fileID: -7744424781442014258, guid: a17377e5dab6d8f488370aa967c0dba1, type: 3}
+  data:
+  - language: 0
+    dataName: Minotaur
+    description: A bull warrior carrying a huge axe.
+    detailDescription: Thick arms and a heavy axe sit beneath its large horns.
+  - language: 1
+    dataName: "\uBBF8\uB178\uD0C0\uC6B0\uB85C\uC2A4"
+    description: "\uAC70\uB300\uD55C \uB3C4\uB07C\uB97C \uB4E0 \uD669\uC18C \uC804\uC0AC."
+    detailDescription: "\uCEE4\uB2E4\uB780 \uBFD4 \uC544\uB798\uB85C \uB450\uAEBC\uC6B4
+      \uD314\uACFC \uBB35\uC9C1\uD55C \uB3C4\uB07C\uAC00 \uB4DC\uB7EC\uB09C\uB2E4."
+  dataNumbering: 07
+  dataId: 07Minotaur
+  dataType: 5
+  grade: 0
+  series: 1
+  requireUnlock: 0
+  animatorController: {fileID: 9100000, guid: c9e7deb6e4988ae4fb2ac7276cb62851, type: 2}
+  statData: {fileID: 11400000, guid: 6483b6b6b15726a4eb5422283afe05f3, type: 2}
+  patternData: {fileID: 11400000, guid: da0e51aa802e7d445be509c1c54bca81, type: 2}
+  codexEntry: {fileID: 0}
+  codexEffects: []

@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edc90614ba7134b47808661fe4744b2e, type: 3}
+  m_Name: 08 Eyeball Monster SetData
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDataSet
+  icon: {fileID: 6490289288879527950, guid: 3d700cd989d13904d999fc23ae485faf, type: 3}
+  data:
+  - language: 0
+    dataName: Eyeball Monster
+    description: A monster with one large eye.
+    detailDescription: Several dark limbs extend below its round eye.
+  - language: 1
+    dataName: "\uC678\uB208 \uAD34\uBB3C"
+    description: "\uCEE4\uB2E4\uB780 \uB208 \uD558\uB098\uB97C \uAC00\uC9C4 \uAD34\uBB3C."
+    detailDescription: "\uB465\uADFC \uB208 \uC544\uB798\uB85C \uC5B4\uB450\uC6B4
+      \uB2E4\uB9AC\uAC00 \uC5EC\uB7EC \uAC08\uB798 \uBED7\uC5B4 \uC788\uB2E4."
+  dataNumbering: 08
+  dataId: 08EyeballMonster
+  dataType: 5
+  grade: 0
+  series: 1
+  requireUnlock: 0
+  animatorController: {fileID: 9100000, guid: b046d1cd0e6741c49b1a3e9751394981, type: 2}
+  statData: {fileID: 11400000, guid: 144523641b83ae142b9b208e6d812bc9, type: 2}
+  patternData: {fileID: 11400000, guid: ad28d9d0f4877b0428d99aef7a94dc39, type: 2}
+  codexEntry: {fileID: 0}
+  codexEffects: []

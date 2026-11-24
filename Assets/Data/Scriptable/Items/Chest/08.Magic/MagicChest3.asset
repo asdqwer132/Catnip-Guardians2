@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b981b44f6bdba44eb09234b25940801, type: 3}
+  m_Name: MagicChest3
+  m_EditorClassIdentifier: Assembly-CSharp::ItemBoxData
+  icon: {fileID: -2641600874721777212, guid: d64cf51c3af956f4196484e09dd86102, type: 3}
+  data:
+  - language: 1
+    dataName: "\uBC31\uAE08\uBE5B \uB9C8\uBC95 \uC0C1\uC790"
+    description: "\uD770 \uC7A5\uC2DD\uACFC \uAE08\uD14C\uAC00 \uC5B4\uC6B0\uB7EC\uC9C4
+      \uC0C1\uC790."
+    detailDescription: "\uBC1D\uC740 \uB36E\uAC1C \uC704\uB85C \uACE1\uC120 \uBAA8\uC591\uC758
+      \uAE08\uBE5B \uB760\uAC00 \uBED7\uC5B4 \uC788\uB2E4."
+  - language: 0
+    dataName: White-and-Gold Magic Chest
+    description: A chest combining white ornaments and golden trim.
+    detailDescription: Curved golden bands stretch across its pale cover.
+  dataNumbering: 08
+  dataId: MagicChest3
+  dataType: 6
+  grade: 2
+  series: 8
+  requireUnlock: 0
+  costs:
+  - currencyType: 0
+    amount: 10
+  - currencyType: 1
+    amount: 10
+  gachaItems:
+  - itemData: {fileID: 11400000, guid: 93758f7537ed6684898dc8cab8237aaa, type: 2}
+    probability: 0.75
+    amounts:
+    - count: 1
+      weight: 1
+    - count: 2
+      weight: 3
+  - itemData: {fileID: 11400000, guid: 9a41f7892b5c8e445987b81b88bacb9b, type: 2}
+    probability: 0.75
+    amounts:
+    - count: 1
+      weight: 1
+    - count: 2
+      weight: 3
+  openClip: {fileID: 7400000, guid: 4531895f831484b4294c32379a8c3a90, type: 2}

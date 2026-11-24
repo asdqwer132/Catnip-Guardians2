@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Food27
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: c83e2eb98c2bb5e47b7c3004b0de2cb5, type: 3}
+  data:
+  - language: 1
+    dataName: "\uAD6C\uC6B4 \uB2ED\uACE0\uAE30 \uC2A4\uD14C\uC774\uD06C"
+    description: "\uB178\uB987\uD558\uAC8C \uAD6C\uC6B4 \uB113\uAC8C \uC190\uC9C8\uD55C
+      \uB2ED\uACE0\uAE30."
+    detailDescription: "\uAC89\uC740 \uB178\uB987\uD558\uACE0 \uB450\uD23C\uD55C
+      \uC18D\uAE4C\uC9C0 \uCD09\uCD09\uD558\uAC8C \uC775\uC5C8\uB2E4."
+  - language: 0
+    dataName: Grilled Chicken Steak
+    description: A broad cut of chicken grilled golden brown.
+    detailDescription: The outside is golden, and the thick center is cooked through
+      and juicy.
+  dataNumbering: 027
+  dataId: Food27
+  dataType: 1
+  grade: 2
+  series: 2
+  requireUnlock: 0
+  tags: []
+  weight: 1
+  cooldown: 1
+  effectDatas:
+  - {fileID: 11400000, guid: ae9b447be2f1f8d4ebdc17b7cfd985b0, type: 2}
+  codexEffects: []
+  endVisualData: {fileID: 11400000, guid: dd2e9e5b542c6754e9fb077204a48072, type: 2}
+  endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

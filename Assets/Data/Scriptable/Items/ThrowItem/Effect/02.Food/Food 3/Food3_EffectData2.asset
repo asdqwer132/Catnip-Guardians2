@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0fe7c68c5644726b1e8d936ab16d2f1, type: 3}
+  m_Name: Food3_EffectData2
+  m_EditorClassIdentifier: Assembly-CSharp::RegenerationEffect
+  codexDescription: {fileID: 11400000, guid: 182a93dfea6410409bc5e01cf2f1276e, type: 2}
+  conditionMode: 0
+  conditions: []
+  visualData: {fileID: 11400000, guid: bd45a2dbbe28f3949b0066d3b3d72b46, type: 2}
+  impactVfxPrefab: {fileID: 0}
+  impactBaseScale: {x: 1, y: 1, z: 1}
+  scaleImpactVfxByRadius: 1
+  useAnimatorClipLifeTime: 1
+  audioSource: 
+  impactVfxLifeTime: 1
+  endVisualData: {fileID: 0}
+  targets:
+    target: 0
+    useRadius: 1
+    radius: 5
+    center: 0
+    shape: 0
+    width: 5
+    length: 5
+    sameOwnerOnly: 1
+    maximumTargets: 128
+  amountMode: 0
+  firstTick: 0
+  regenerationStat:
+    regenerationAmount: 1
+    regenerationInterval: 1
+    regenerationDuration: 5
+  buffUI:
+    showInUI: 1
+    displayName: 
+    buffIcon: {fileID: 21300000, guid: 07e0b61d44be19e419ea250929d7d4fb, type: 3}

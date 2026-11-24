@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: FoodMaterial9
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: 4776bb62339b95b47878c02d800aa192, type: 3}
+  data:
+  - language: 1
+    dataName: "\uD654\uB048\uD55C \uC870\uBBF8\uB8CC"
+    description: "\uAC15\uB82C\uD55C \uD5A5\uC744 \uB0B4\uB294 \uC870\uBBF8\uB8CC."
+    detailDescription: "\uB69C\uAED1\uC744 \uC5EC\uB294 \uC21C\uAC04 \uCF54\uB05D\uC744
+      \uC5BC\uC5BC\uD558\uAC8C \uD558\uB294 \uD5A5\uC774 \uCE58\uACE0 \uC62C\uB77C\uC628\uB2E4."
+  - language: 0
+    dataName: Fiery Seasoning
+    description: A seasoning with an intense aroma.
+    detailDescription: Opening the lid releases a sharp scent that stings the nose.
+  dataNumbering: 009
+  dataId: FoodMaterial9
+  dataType: 1
+  grade: 2
+  series: 2
+  requireUnlock: 0
+  tags: []
+  weight: 1
+  cooldown: 1
+  effectDatas:
+  - {fileID: 11400000, guid: 860bd383df3ae8f46ad00f54a9dd029c, type: 2}
+  codexEffects: []
+  endVisualData: {fileID: 0}
+  endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

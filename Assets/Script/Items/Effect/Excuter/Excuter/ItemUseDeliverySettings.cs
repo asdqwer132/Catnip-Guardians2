@@ -44,11 +44,11 @@ public sealed class ItemUseDeliverySettings
         {
             Vector3 start, target;
             if (!TryGetThrowPath(context, out start, out target)) return false;
-            return executor.Throw(item, start, target, context.owner, context.sourceBag, 0, useContext,
+            return executor.Throw(item, start, target, context.owner, useContext,
                 triggerSpecialItems: false, options: throwOptions);
         }
         ItemEffectExecutor.ExecuteItem(item, context.usePosition, context.targetPosition, context.direction,
-            context.owner, context.sourceBag, context.buffManager, useContext,
+            context.owner, context.buffManager, useContext,
             triggerSpecialItems: false, consumeUseBuffs: consumeUseBuffs);
         return context.CanContinue;
     }

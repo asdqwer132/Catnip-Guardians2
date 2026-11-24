@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c1a70fcd7e8f8c42920e122a812509f, type: 3}
+  m_Name: StoryData 1
+  m_EditorClassIdentifier: Assembly-CSharp::StoryData
+  dialogues:
+  - background: {fileID: 21300000, guid: d69df1b67b2685643a026ec67aea0030, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: 0}
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: On a forest path, Mocha found a locked chest beneath an old tree.
+        Something rustled behind its paw-stamped lock.
+    - languageType: 1
+      speaker: "\uB0B4\uB808\uC774\uC158"
+      dialogue: "\uC232\uAE38\uC744 \uAC77\uB358 \uBAA8\uCE74\uB294 \uB098\uBB34\uBFCC\uB9AC
+        \uC544\uB798\uC5D0\uC11C \uC7A0\uAE34 \uC0C1\uC790\uB97C \uBC1C\uACAC\uD588\uB2E4.
+        \uBC1C\uBC14\uB2E5 \uBB38\uC591\uC758 \uC790\uBB3C\uC1E0 \uB108\uBA38\uB85C
+        \uBC14\uC2A4\uB77D \uC18C\uB9AC\uAC00 \uB0AC\uB2E4."
+  - background: {fileID: 21300000, guid: d69df1b67b2685643a026ec67aea0030, type: 3}
+    leftCharacter: {fileID: -8000596390684728517, guid: 607807caba3f0d540925c77c91b174e4, type: 3}
+    rightCharacter: {fileID: 0}
+    translations:
+    - languageType: 0
+      speaker: Mocha
+      dialogue: What's inside? I've got to find out!
+    - languageType: 1
+      speaker: "\uBAA8\uCE74"
+      dialogue: "\uC548\uC5D0 \uBB50\uAC00 \uB4E4\uC5C8\uC744\uAE4C? \uAF2D \uC5F4\uC5B4
+        \uBCF4\uACE0 \uC2F6\uC5B4!"
+  - background: {fileID: 21300000, guid: d69df1b67b2685643a026ec67aea0030, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: 0}
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: In a shadowy alley, a hooded merchant dangled the matching key. Mocha
+        had only two copper coins.
+    - languageType: 1
+      speaker: "\uB0B4\uB808\uC774\uC158"
+      dialogue: "\uC5B4\uB450\uC6B4 \uACE8\uBAA9\uC758 \uC554\uC0C1\uC778\uC774 \uAF2D
+        \uB9DE\uB294 \uC5F4\uC1E0\uB97C \uD754\uB4E4\uC5C8\uB2E4. \uBAA8\uCE74\uC758
+        \uC8FC\uBA38\uB2C8\uC5D0\uB294 \uB3D9\uC804 \uB450 \uB2E2\uBFD0\uC774\uC5C8\uB2E4."
+  - background: {fileID: 21300000, guid: d69df1b67b2685643a026ec67aea0030, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: 0}
+    translations:
+    - languageType: 0
+      speaker: Merchant
+      dialogue: This key? It'll cost you. Bring me something worth buying first.
+    - languageType: 1
+      speaker: "\uC554\uC0C1\uC778"
+      dialogue: "\uC774 \uC5F4\uC1E0? \uAC12\uC774 \uC880 \uB098\uAC00\uC9C0. \uBB3C\uAC74\uBD80\uD130
+        \uAC00\uC838\uC640 \uBD10."
+  - background: {fileID: 21300000, guid: d69df1b67b2685643a026ec67aea0030, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: 0}
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: Mocha upgraded her supply chest and held off enemies while gathering
+        weapons. Selling her first sword earned a little money toward the key.
+    - languageType: 1
+      speaker: "\uB0B4\uB808\uC774\uC158"
+      dialogue: "\uBAA8\uCE74\uB294 \uBCF4\uAE09\uC0C1\uC790\uB97C \uD0A4\uC6B0\uACE0,
+        \uBAB0\uB824\uC624\uB294 \uC801\uC744 \uB9C9\uC73C\uBA70 \uBB34\uAE30\uB97C
+        \uBAA8\uC558\uB2E4. \uCCAB \uAC80\uC744 \uD314\uC790 \uC5F4\uC1E0\uB97C \uC0B4
+        \uB3C8\uC774 \uC870\uAE08 \uC0DD\uACBC\uB2E4."
+  - background: {fileID: 21300000, guid: d69df1b67b2685643a026ec67aea0030, type: 3}
+    leftCharacter: {fileID: -8000596390684728517, guid: 607807caba3f0d540925c77c91b174e4, type: 3}
+    rightCharacter: {fileID: 0}
+    translations:
+    - languageType: 0
+      speaker: Mocha
+      dialogue: Just a little more, right?
+    - languageType: 1
+      speaker: "\uBAA8\uCE74"
+      dialogue: "\uC870\uAE08\uB9CC \uB354 \uBAA8\uC73C\uBA74 \uB418\uACA0\uC9C0?"

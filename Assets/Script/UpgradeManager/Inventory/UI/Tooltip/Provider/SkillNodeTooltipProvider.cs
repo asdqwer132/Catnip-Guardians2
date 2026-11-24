@@ -1,0 +1,56 @@
+using UnityEngine;
+
+public class SkillNodeTooltipProvider : CostTooltipProvider
+{
+    [Header("Target")]
+    [SerializeField] private SkillNodeUI skillNodeUI;
+    public override bool HideOnPointerExit => skillNodeUI != null &&
+        SkillTreeManager.Instance != null && SkillTreeManager.Instance.IsUnlocked(skillNodeUI.SkillNodeData);
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        if (skillNodeUI == null)
+            skillNodeUI = GetComponent<SkillNodeUI>();
+    }
+
+    public override bool TryGetTooltipData(out TooltipData data)
+    {
+        data = null;
+
+        if (skillNodeUI == null)
+            return false;
+
+        SkillNodeData nodeData = skillNodeUI.SkillNodeData;
+
+        if (nodeData == null)
+            return false;
+
+        data = new CostTooltipData
+        {
+            sourceData = nodeData,
+            icon = nodeData.icon,
+            dataName = GetSkillName(nodeData),
+            amountText = "",
+            description = nodeData.GetDescription(),
+            detailDescription = nodeData.GetDetailDescription(),
+            costs = nodeData.costs,
+            isUnlocked = HideOnPointerExit
+
+        };
+
+        return true;
+    }
+    private string GetSkillName(SkillNodeData nodeData)
+    {
+        if (nodeData == null)
+            return "";
+
+        if (!string.IsNullOrEmpty(nodeData.GetDataName()))
+            return nodeData.GetDataName();
+
+        return nodeData.name;
+    }
+
+}

@@ -11,6 +11,7 @@ public class EnemySpawnerStat : IGameStat<EnemySpawnerStat>
     [Header("Rectangle Size")]
     [Min(0.01f)] public float spawnWidth = 16f;
     [Min(0.01f)] public float spawnHeight = 2f;
+    [Min(0f)] public float spawnBorderThickness;
     
     public EnemySpawnerStat Clone()
     {
@@ -19,7 +20,8 @@ public class EnemySpawnerStat : IGameStat<EnemySpawnerStat>
             spawnInterval = spawnInterval,
             spawnDistance = spawnDistance,
             spawnWidth = spawnWidth,
-            spawnHeight = spawnHeight
+            spawnHeight = spawnHeight,
+            spawnBorderThickness = spawnBorderThickness
         };
     }
 
@@ -29,5 +31,6 @@ public class EnemySpawnerStat : IGameStat<EnemySpawnerStat>
         spawnDistance = Mathf.Max(0.01f, spawnDistance);
         spawnWidth = EffectStatUtility.Safe(spawnWidth, 0.01f, 100000f, 16f);
         spawnHeight = EffectStatUtility.Safe(spawnHeight, 0.01f, 100000f, 2f);
+        spawnBorderThickness = EffectStatUtility.Safe(spawnBorderThickness, 0f, 100000f, 0f);
     }
 }

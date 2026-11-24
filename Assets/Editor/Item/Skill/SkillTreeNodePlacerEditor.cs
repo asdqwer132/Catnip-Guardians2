@@ -7,23 +7,24 @@ public class SkillTreeNodePlacerEditor : Editor
 {
     public override void OnInspectorGUI()
     {
-        DrawDefaultInspector();
-
         SkillTreeNodePlacer placer = (SkillTreeNodePlacer)target;
+        if (placer.autoRememberPositions) placer.CaptureNodePositions();
+        if (DrawDefaultInspector()) placer.ApplySavedLayout();
 
         GUILayout.Space(12);
+        if (placer.layout != null && GUILayout.Button("Open Layout Graph")) SkillTreeGraphWindow.Open(placer.layout);
+        if (placer.layout == null && GUILayout.Button("Save Legacy Layout As Asset")) placer.SaveLegacyLayout();
 
         if (GUILayout.Button("Generate Skill Tree"))
         {
-            Undo.RegisterFullObjectHierarchyUndo(placer.gameObject, "Generate Skill Tree");
             placer.Generate();
         }
 
         if (GUILayout.Button("Clear Generated Objects"))
         {
-            Undo.RegisterFullObjectHierarchyUndo(placer.gameObject, "Clear Skill Tree");
             placer.ClearGeneratedObjects();
         }
+
     }
 }
 #endif

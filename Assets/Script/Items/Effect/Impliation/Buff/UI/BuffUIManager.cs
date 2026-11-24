@@ -13,7 +13,6 @@ public class BuffUIManager : MonoBehaviour
     public bool refreshOnEnable = true;
 
     [Header("Item Targets")]
-    public EquipmentBag targetBag;
     public ItemData targetItemData;
     public ItemSeries targetItemSeries = ItemSeries.None;
 
@@ -72,9 +71,6 @@ public class BuffUIManager : MonoBehaviour
 
         switch (displayMode)
         {
-            case BuffUIDisplayMode.Bag:
-                DisplayBagBuffs(targetBag);
-                break;
 
             case BuffUIDisplayMode.Item:
                 DisplayItemBuffs(targetItemData);
@@ -108,21 +104,6 @@ public class BuffUIManager : MonoBehaviour
 
         displayMode = BuffUIDisplayMode.All;
         RefreshSlots(buffManager.GetAllVisibleBuffs(), "전체 버프");
-    }
-
-    public void DisplayBagBuffs(EquipmentBag bag)
-    {
-        if (buffManager == null)
-        {
-            ClearSlots();
-            return;
-        }
-
-        displayMode = BuffUIDisplayMode.Bag;
-        targetBag = bag;
-
-        string label = bag != null ? "가방 버프: " + bag.name : "가방 버프";
-        RefreshSlots(buffManager.GetVisibleBagBuffsAsList(bag), label);
     }
 
     public void DisplayItemBuffs(ItemData itemData)
@@ -191,14 +172,6 @@ public class BuffUIManager : MonoBehaviour
             : "그룹 버프";
 
         RefreshSlots(buffManager.GetVisibleTargetGroupBuffsAsList(group), label);
-    }
-
-    public void SetTargetBag(EquipmentBag bag)
-    {
-        targetBag = bag;
-
-        if (displayMode == BuffUIDisplayMode.Bag)
-            DisplayBagBuffs(targetBag);
     }
 
     public void SetTargetItem(ItemData itemData)

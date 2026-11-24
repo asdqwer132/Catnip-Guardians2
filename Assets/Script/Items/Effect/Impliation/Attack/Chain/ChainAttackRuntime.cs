@@ -22,8 +22,7 @@ public sealed class ChainAttackRuntime : AttackObject<ChainAttackStat>
         origin = context.targetPosition;
         dispatcher = new HitEffectDispatcher(data.onHitEffects, data.hitEffectApplyMode, context);
         BindLifetime(context);
-        InitWithSnapshotAndDynamicBuff(context.GetUnscaledSnapshotStat(data, data.attackStat), context.sourceItemData,
-            context.sourceBag, context.buffManager, context.owner);
+        InitWithSnapshotAndDynamicBuff(context.GetUnscaledSnapshotStat(data, data.attackStat), context.sourceItemData, context.buffManager, context.owner);
         initialized = true;
         SelectNext();
         Advance();

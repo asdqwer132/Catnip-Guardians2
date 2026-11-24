@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Food1
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: 2ad2969354ce6f14184a85f284a0d59e, type: 3}
+  data:
+  - language: 1
+    dataName: "\uBE14\uB8E8\uBCA0\uB9AC"
+    description: "\uC9D9\uD478\uB978 \uAECD\uC9C8\uC758 \uC791\uC740 \uC5F4\uB9E4."
+    detailDescription: "\uD55C \uC54C\uC744 \uAE68\uBB3C\uBA74 \uB2EC\uCF64\uD55C
+      \uC999 \uB05D\uC5D0 \uC0B0\uBBF8\uAC00 \uB0A8\uB294\uB2E4."
+  - language: 0
+    dataName: Blueberry
+    description: A small berry with deep blue skin.
+    detailDescription: A bite releases sweet juice with a tart finish.
+  dataNumbering: 001
+  dataId: Food1
+  dataType: 1
+  grade: 0
+  series: 2
+  requireUnlock: 0
+  tags: []
+  weight: 1
+  cooldown: 1
+  effectDatas:
+  - {fileID: 11400000, guid: ab1f7160815066545b4ec2ee1fd08f8b, type: 2}
+  codexEffects: []
+  endVisualData: {fileID: 0}
+  endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

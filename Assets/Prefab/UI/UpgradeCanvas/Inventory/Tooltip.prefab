@@ -46,18 +46,36 @@ MonoBehaviour:
   m_GameObject: {fileID: 781001843681307953}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2496adaf7d1069943a771ae27d7e6843, type: 3}
+  m_Script: {fileID: 11500000, guid: 184d5aebb276482ea9052bb161fdeaf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipUI
+  dataSource: {fileID: 0}
   useTooltip: 1
   offset: {x: -125, y: 200}
   clampToParent: 1
+  positionAtAnchor: 1
+  removePannel: 1
   tooltipPanel: {fileID: 6332433096817834098}
-  icon: {fileID: 545613454280400247}
-  titleText: {fileID: 323103887096993095}
-  subTitleText: {fileID: 2663343342365515177}
-  amountText: {fileID: 1182234814775603246}
-  descriptionText: {fileID: 8580365208336608250}
+  startHidden: 1
+  basicInformation:
+    icon: {fileID: 545613454280400247}
+    dataNameText: {fileID: 323103887096993095}
+    descriptionText: {fileID: 8580365208336608250}
+    detailDescriptionText: {fileID: 0}
+    hideEmptyDescription: 0
+    hideEmptyDetailDescription: 1
+  classification:
+    seriesText: {fileID: 0}
+    gradeText: {fileID: 2663343342365515177}
+    seriesIcon: {fileID: 0}
+    gradeIcon: {fileID: 0}
+    series: 0
+    grade: -1
+  itemInformation:
+    amountText: {fileID: 1182234814775603246}
+    categoryText: {fileID: 0}
+    weightText: {fileID: 0}
+    cooldownText: {fileID: 0}
 --- !u!1 &2628580990834433947
 GameObject:
   m_ObjectHideFlags: 0
@@ -106,6 +124,7 @@ GameObject:
   - component: {fileID: 8340207262789380615}
   - component: {fileID: 8123245885717445405}
   - component: {fileID: 8580365208336608250}
+  - component: {fileID: 910010300002}
   m_Layer: 5
   m_Name: description
   m_TagString: Untagged
@@ -243,6 +262,7 @@ GameObject:
   - component: {fileID: 7336188721190337800}
   - component: {fileID: 7559232672921322326}
   - component: {fileID: 323103887096993095}
+  - component: {fileID: 910010300001}
   m_Layer: 5
   m_Name: Title
   m_TagString: Untagged
@@ -936,3 +956,37 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 390, y: 150}
   m_Pivot: {x: 0.5, y: 1}
+--- !u!114 &910010300001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3307270400692561749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6e08452a43a4f16979a3dbb92718533, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: ""
+  tmpText: {fileID: 323103887096993095}
+  legacyText: {fileID: 0}
+  source: 1
+  dataSource: {fileID: 0}
+--- !u!114 &910010300002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3111174379454796251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6e08452a43a4f16979a3dbb92718533, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: ""
+  tmpText: {fileID: 8580365208336608250}
+  legacyText: {fileID: 0}
+  source: 2
+  dataSource: {fileID: 0}

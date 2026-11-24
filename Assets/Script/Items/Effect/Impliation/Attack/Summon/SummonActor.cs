@@ -33,7 +33,6 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
     [SerializeField] private float spawnLifetime = 5f;
     private float extraLifetime;
     private ItemData sourceItemData;
-    private EquipmentBag sourceBag;
     private BuffManager buffManager;
     private ItemEffectLease effectLease;
     private GameObject owner;
@@ -137,7 +136,7 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
     {
         // 씬에 직접 배치한 기존 소환물도 자신의 기능 설정으로 시작합니다.
         if (initialized) return;
-        Initialize(new ItemEffectContext(null, null, transform.position, transform.position, null,
+        Initialize(new ItemEffectContext(null, null, transform.position, transform.position,
             buffManager: BuffManager.instance), spawnLifetime);
     }
 
@@ -179,7 +178,7 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
             result.sourceSummonLifeId = LifeId;
             return result;
         }
-        return new ItemEffectContext(owner, sourceItemData, transform.position, target, sourceBag,
+        return new ItemEffectContext(owner, sourceItemData, transform.position, target,
             buffManager: buffManager, direction: direction) { sourceSummon = this, sourceSummonLifeId = LifeId };
     }
 
@@ -212,11 +211,11 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
         if ((target - transform.position).sqrMagnitude <= 0.0001f)
         {
             ItemEffectExecutor.ExecuteItem(item, transform.position, target, context.direction,
-                owner, sourceBag, buffManager, context, false, isThrownItem: true);
+                owner, buffManager, context, false, isThrownItem: true);
             NotifyAttack();
             return true;
         }
-        bool thrown = itemThrowExecutor.Throw(item, transform.position, target, owner, sourceBag, 0, context, false);
+        bool thrown = itemThrowExecutor.Throw(item, transform.position, target, owner, context, false);
         if (thrown) NotifyAttack();
         return thrown;
     }
@@ -253,7 +252,6 @@ public class SummonActor : AttackObjectBase, IBuffTarget, IDynamicBuffReceiver, 
         timer = 0f;
         finishing = false;
         sourceItemData = context.sourceItemData;
-        sourceBag = context.sourceBag;
         buffManager = context.buffManager;
         owner = context.owner;
         spawnLifetime = EffectStatUtility.Safe(lifetime, 0.01f, 600f, 5f);

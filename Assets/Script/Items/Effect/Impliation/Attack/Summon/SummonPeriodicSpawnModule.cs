@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SummonPeriodicSpawn", menuName = "04.Items/Effects/Direct Effects/Summon/Summon Modules/Periodic Spawn")]
+[CreateAssetMenu(fileName = "SummonPeriodicSpawn", menuName = "Items/Effects/Direct Effects/Summon/Summon Modules/Periodic Spawn")]
 public sealed class SummonPeriodicSpawnModule : SummonBehaviourModule
 {
     [Header("기본 스탯 · 주기적 소환")]

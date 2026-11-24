@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SummonPull", menuName = "04.Items/Effects/Direct Effects/Summon/Summon Modules/Pull")]
+[CreateAssetMenu(fileName = "SummonPull", menuName = "Items/Effects/Direct Effects/Summon/Summon Modules/Pull")]
 public sealed class SummonPullModule : SummonBehaviourModule
 {
     [Header("기본 스탯 · 끌어당김")]

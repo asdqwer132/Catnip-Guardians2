@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: WeaponMaterial3
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: d841ca5329084174ca0f29fd4ee63533, type: 3}
+  data:
+  - language: 1
+    dataName: "\uC7A5\uC791 \uB354\uBBF8"
+    description: "\uBD88\uC3D8\uC2DC\uAC1C\uB85C \uC313\uC544 \uB454 \uC7A5\uC791."
+    detailDescription: "\uAD75\uAC8C \uCABC\uAC20 \uB9C8\uB978 \uC7A5\uC791\uC744
+      \uD55C\uB370 \uBAA8\uC544 \uB450\uC5C8\uB2E4."
+  - language: 0
+    dataName: Firewood Pile
+    description: Firewood stacked for kindling.
+    detailDescription: Thick pieces of dry, split wood have been gathered together.
+  dataNumbering: 003
+  dataId: WeaponMaterial3
+  dataType: 7
+  grade: 0
+  series: 1
+  requireUnlock: 0
+  tags: []
+  weight: 1
+  cooldown: 1
+  effectDatas:
+  - {fileID: 11400000, guid: 860bd383df3ae8f46ad00f54a9dd029c, type: 2}
+  codexEffects: []
+  endVisualData: {fileID: 0}
+  endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

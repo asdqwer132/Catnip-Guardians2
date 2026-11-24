@@ -84,7 +84,7 @@ public class BuffManager : MonoBehaviour
 
     // 스탯 조회/미리보기와 실제 아이템 사용을 분리한다.
     // 모든 효과를 실행하기 전에 시작하고, 모든 효과가 끝난 뒤 완료한다.
-    public BuffItemUseToken BeginItemUse(ItemData itemData, EquipmentBag sourceBag)
+    public BuffItemUseToken BeginItemUse(ItemData itemData)
     {
         if (storage == null || itemData == null)
             return default(BuffItemUseToken);
@@ -210,7 +210,6 @@ public class BuffManager : MonoBehaviour
                 effect.modifiers,
                 finalInfo,
                 context.sourceItemData,
-                context.sourceBag,
                 effect,
                 target,
                 effect.includeSelf,
@@ -260,7 +259,6 @@ public class BuffManager : MonoBehaviour
             effect.modifiers,
             finalInfo,
             itemContext.sourceItemData,
-            itemContext.sourceBag,
             effect,
             BuffTargetHandle.Target(buffTarget),
             effect.includeSelf,
@@ -280,7 +278,7 @@ public class BuffManager : MonoBehaviour
     {
         if (storage == null || effect == null || info == null || effect.specialStatusKey == null ||
             context == null || !context.CanContinue || target == null) return null;
-        ActiveBuff active = storage.RegisterSpecialStatus(effect.specialStatusKey, info, context.sourceItemData, context.sourceBag,
+        ActiveBuff active = storage.RegisterSpecialStatus(effect.specialStatusKey, info, context.sourceItemData,
             effect, target, effect.showInUI);
         active.uiDisplayName = effect.specialStatusKey.displayName;
         active.uiIcon = effect.statusIcon;
@@ -311,8 +309,7 @@ public class BuffManager : MonoBehaviour
         if (finalInfo == null) return null;
         finalInfo.Clamp();
         // 표식은 출처별 반응 컨텍스트를 보존해야 하므로 상태 전용 누적과 별도로 등록한다.
-        ActiveBuff active = storage.RegisterBuff(null, finalInfo, context.sourceItemData,
-            context.sourceBag, marker, BuffTargetHandle.Target(target), true, marker.showInUI);
+        ActiveBuff active = storage.RegisterBuff(null, finalInfo, context.sourceItemData, marker, BuffTargetHandle.Target(target), true, marker.showInUI);
         active.specialStatusKey = status;
         TrackBuffCompletion(active, marker, context);
         NotifyBuffChanged(BuffNotifyScope.Target);
@@ -377,14 +374,14 @@ public class BuffManager : MonoBehaviour
     {
         if (storage == null || status == null || context == null) return 0;
         if (context.buffTarget != null && context.buffTarget.BuffTargetObject == null) return 0;
-        if (context.buffTarget == null && context.itemData == null && context.bag == null) return 0;
+        if (context.buffTarget == null && context.itemData == null && !context.allItems) return 0;
         int total = 0;
         for (int i = 0; i < storage.activeBuffs.Count; i++)
         {
             ActiveBuff buff = storage.activeBuffs[i];
             if (buff == null || buff.IsExpired || buff.specialStatusKey != status ||
                 !buff.MatchesQuery(context)) continue;
-            if (context.buffTarget == null && context.itemData == null && !buff.target.MatchesBag(context.bag)) continue;
+            if (context.buffTarget == null && context.itemData == null && !buff.target.Matches(context)) continue;
             total = (int)System.Math.Min(int.MaxValue, (long)total + Mathf.Max(1, buff.stack));
         }
         return total;
@@ -399,12 +396,12 @@ public class BuffManager : MonoBehaviour
         results.Clear();
         if (storage == null || status == null || context == null) return;
         if (context.buffTarget != null && context.buffTarget.BuffTargetObject == null) return;
-        if (context.buffTarget == null && context.itemData == null && context.bag == null) return;
+        if (context.buffTarget == null && context.itemData == null && !context.allItems) return;
         for (int i = 0; i < storage.activeBuffs.Count; i++)
         {
             ActiveBuff buff = storage.activeBuffs[i];
             if (buff != null && !buff.IsExpired && buff.specialStatusKey == status && buff.MatchesQuery(context) &&
-                (context.buffTarget != null || context.itemData != null || buff.target.MatchesBag(context.bag)))
+                (context.buffTarget != null || context.itemData != null || buff.target.Matches(context)))
                 results.Add(buff);
         }
     }
@@ -662,14 +659,13 @@ public class BuffManager : MonoBehaviour
     public T GetBuffedStatForItem<T>(
         T baseStat,
         ItemData targetItemData,
-        EquipmentBag targetBag,
         BuffCalculationMode calculationMode = BuffCalculationMode.All,
         bool consumeUseCount = false
     ) where T : class, IGameStat<T>
     {
         return GetBuffedStat(
             baseStat,
-            BuffQueryContext.ForItem(targetItemData, targetBag),
+            BuffQueryContext.ForItem(targetItemData),
             calculationMode,
             consumeUseCount
         );
@@ -783,30 +779,14 @@ public class BuffManager : MonoBehaviour
         int minimumStack = 1
     )
     {
-        return HasActiveBuffInternal(effect, context, minimumStack, false);
+        return HasActiveBuffInternal(effect, context, minimumStack);
     }
 
-    // 가방 조건은 그 가방 또는 전체 가방에 등록된 버프만 확인한다.
-    // AllItems나 개별 아이템/시리즈 버프를 가방 버프로 간주하지 않는다.
-    public bool HasActiveBuffForBag(
-        BuffEffect effect,
-        EquipmentBag bag,
-        int minimumStack = 1
-    )
-    {
-        if (bag == null)
-            return false;
-
-        return HasActiveBuffInternal(
-            effect, BuffQueryContext.ForBag(bag), minimumStack, true
-        );
-    }
 
     private bool HasActiveBuffInternal(
         BuffEffect effect,
         BuffQueryContext context,
-        int minimumStack,
-        bool bagOnly
+        int minimumStack
     )
     {
         if (storage == null || effect == null || context == null)
@@ -817,7 +797,7 @@ public class BuffManager : MonoBehaviour
             if (context.buffTarget.BuffTargetObject == null)
                 return false;
         }
-        else if (context.itemData == null && context.bag == null)
+        else if (context.itemData == null && !context.allItems)
         {
             return false;
         }
@@ -832,10 +812,7 @@ public class BuffManager : MonoBehaviour
             if (buff.sourceEffectData != effect || buff.stack < requiredStack)
                 continue;
 
-            if (bagOnly && !buff.target.MatchesBag(context.bag))
-                continue;
-
-            // includeSelf, 가방, 시리즈, 전체 아이템, 대상 그룹 규칙을 그대로 따른다.
+            // includeSelf, 시리즈, 전체 아이템, 대상 그룹 규칙을 그대로 따른다.
             if (buff.MatchesQuery(context))
                 return true;
         }
@@ -871,17 +848,6 @@ public class BuffManager : MonoBehaviour
     public List<ActiveBuff> GetInfiniteVisibleBuffs()
     {
         return query != null ? query.GetInfiniteVisibleBuffs() : new List<ActiveBuff>();
-    }
-
-    public List<ActiveBuff> GetBagBuffsAsList(EquipmentBag bag)
-    {
-        return query != null ? query.GetBagBuffsAsList(bag) : new List<ActiveBuff>();
-    }
-
-    public List<ActiveBuff> GetVisibleBagBuffsAsList(EquipmentBag bag)
-    {
-        return AppendEffectUI(query != null ? query.GetBagBuffsAsList(bag, true) : new List<ActiveBuff>(),
-            buff => bag != null && buff.sourceBag == bag);
     }
 
     public List<ActiveBuff> GetItemBuffsAsList(ItemData itemData)
@@ -942,7 +908,7 @@ public class BuffManager : MonoBehaviour
         if (target != null && targetHandle == null) return null;
         ActiveBuff record = new ActiveBuff(null,
             new BuffInfo { useLimitType = BuffUseLimitType.Time, duration = duration },
-            context.sourceItemData, context.sourceBag, effect, targetHandle, true, true);
+            context.sourceItemData, effect, targetHandle, true, true);
         // Preserve sub-frame durations instead of BuffInfo's gameplay minimum.
         record.maxTime = record.remainTime = duration;
         record.uiDisplayName = displayName;

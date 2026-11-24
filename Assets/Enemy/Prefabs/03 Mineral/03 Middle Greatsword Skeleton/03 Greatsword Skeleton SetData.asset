@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edc90614ba7134b47808661fe4744b2e, type: 3}
+  m_Name: 03 Greatsword Skeleton SetData
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDataSet
+  icon: {fileID: 4354231566380549168, guid: c428500b182e84c488b3c2480cb6fd49, type: 3}
+  data:
+  - language: 0
+    dataName: Greatsword Skeleton
+    description: A skeletal warrior carrying a greatsword.
+    detailDescription: Its helmet covers its skull, and its sword is long for its
+      frame.
+  - language: 1
+    dataName: "\uB300\uAC80 \uC2A4\uCF08\uB808\uD1A4"
+    description: "\uCEE4\uB2E4\uB780 \uAC80\uC744 \uB4E0 \uD574\uACE8 \uC804\uC0AC."
+    detailDescription: "\uBAB8\uC9D1\uC5D0 \uBE44\uD574 \uAE34 \uB300\uAC80\uC744
+      \uB4E4\uACE0 \uD22C\uAD6C\uB85C \uBA38\uB9AC\uB97C \uAC00\uB838\uB2E4."
+  dataNumbering: 03
+  dataId: 03GreatswordSkeleton
+  dataType: 5
+  grade: 0
+  series: 1
+  requireUnlock: 0
+  animatorController: {fileID: 9100000, guid: 32e37fe9990250a49bb309de80d7b7a5, type: 2}
+  statData: {fileID: 11400000, guid: 44ce333719e42f9499f3236593d558dc, type: 2}
+  patternData: {fileID: 11400000, guid: c523682afafdd7a4592636d9692ac7a9, type: 2}
+  codexEntry: {fileID: 0}
+  codexEffects: []

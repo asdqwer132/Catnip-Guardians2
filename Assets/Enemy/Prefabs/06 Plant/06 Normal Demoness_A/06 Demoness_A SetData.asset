@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edc90614ba7134b47808661fe4744b2e, type: 3}
+  m_Name: 06 Demoness_A SetData
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDataSet
+  icon: {fileID: 2493270514713746438, guid: cd8a2d3a93359ee419f12df771d0feca, type: 3}
+  data:
+  - language: 0
+    dataName: Scythe Demoness
+    description: A bluish demoness carrying a long scythe.
+    detailDescription: The scythe rises high behind its curved horns and dark wings.
+  - language: 1
+    dataName: "\uB0AB\uC758 \uC545\uB9C8"
+    description: "\uAE34 \uB0AB\uC744 \uB4E0 \uD478\uB978\uBE5B \uC545\uB9C8."
+    detailDescription: "\uAD7D\uC740 \uBFD4\uACFC \uC9D9\uC740 \uB0A0\uAC1C \uB4A4\uB85C
+      \uB0AB\uB0A0\uC774 \uB192\uAC8C \uC19F\uC544 \uC788\uB2E4."
+  dataNumbering: 06
+  dataId: 06Demoness_A
+  dataType: 5
+  grade: 0
+  series: 1
+  requireUnlock: 0
+  animatorController: {fileID: 9100000, guid: 6a68ad55c816d1c4088f3c4e07b30036, type: 2}
+  statData: {fileID: 11400000, guid: 86c8edbd0597eb04e84f64eb71b327a7, type: 2}
+  patternData: {fileID: 11400000, guid: 0e2faee7f05aab149b771de68a1d8068, type: 2}
+  codexEntry: {fileID: 0}
+  codexEffects: []

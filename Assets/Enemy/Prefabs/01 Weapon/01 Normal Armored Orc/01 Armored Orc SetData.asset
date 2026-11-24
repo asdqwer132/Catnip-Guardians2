@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edc90614ba7134b47808661fe4744b2e, type: 3}
+  m_Name: 01 Armored Orc SetData
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDataSet
+  icon: {fileID: 2912446813672376553, guid: bdb52e37cc73abd4d9870ea2e5fa7cfc, type: 3}
+  data:
+  - language: 0
+    dataName: Armored Orc
+    description: An orc equipped with a helmet and shield.
+    detailDescription: A horned helmet and round shield cover its body.
+  - language: 1
+    dataName: "\uBB34\uC7A5 \uC624\uD06C"
+    description: "\uD22C\uAD6C\uC640 \uBC29\uD328\uB97C \uAC16\uCD98 \uC624\uD06C."
+    detailDescription: "\uBFD4 \uB2EC\uB9B0 \uD22C\uAD6C\uC640 \uB465\uADFC \uBC29\uD328\uB85C
+      \uBAB8\uC744 \uAC10\uC2F8\uACE0 \uC788\uB2E4."
+  dataNumbering: 01
+  dataId: 01ArmoredOrc
+  dataType: 5
+  grade: 0
+  series: 1
+  requireUnlock: 0
+  animatorController: {fileID: 9100000, guid: 111d0a3896c5e1c45ac7ea839fd93ca1, type: 2}
+  statData: {fileID: 11400000, guid: e4a127541c8fe8f4393bdef6ca4529cf, type: 2}
+  patternData: {fileID: 11400000, guid: df266ea3266dcff4ba9b59261bf4af42, type: 2}
+  codexEntry: {fileID: 0}
+  codexEffects: []

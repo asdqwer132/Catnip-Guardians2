@@ -43,6 +43,9 @@ public class EnemyManager : MonoBehaviour
     private readonly List<Enemy> currentEnemies = new List<Enemy>();
     public IReadOnlyList<Enemy> ActiveEnemies => currentEnemies;
 
+    private PlantData plantLimitData;
+    private Health plantLimitSource;
+
     private float spawnStartTime;
     private bool allEnemiesActionDisabled = false;
 
@@ -54,12 +57,58 @@ public class EnemyManager : MonoBehaviour
         instance = this;
     }
 
-    public void Init(PlantData plantData)
+    private void OnEnable() => BindPlantLimit();
+    private void OnDisable() => UnbindPlantLimit();
+    private void OnDestroy()
     {
+        UnbindPlantLimit();
+        if (instance == this) instance = null;
+    }
+
+    private void UnbindPlantLimit()
+    {
+        if (plantLimitSource != null) plantLimitSource.OnHpChanged -= OnPlantHealthChanged;
+        plantLimitSource = null;
+    }
+
+    private void BindPlantLimit()
+    {
+        var source = isActiveAndEnabled && plantLimitData != null && Target != null ? Target.health : null;
+        if (plantLimitSource == source) return;
+        UnbindPlantLimit();
+        plantLimitSource = source;
+        if (plantLimitSource == null) return;
+        plantLimitSource.OnHpChanged += OnPlantHealthChanged;
+        OnPlantHealthChanged(plantLimitSource.Hp, plantLimitSource.MaxHp);
+    }
+
+    private void OnPlantHealthChanged(float hp, float maxHp)
+    {
+        int next = Mathf.CeilToInt(EffectStatUtility.Safe(maxHp, 1f, 100000000f, 1f));
+        if (maxAliveEnemyCount == next) return;
+        maxAliveEnemyCount = next;
+        RefreshEnemyCount();
+    }
+
+    // Called before the plant is revived so its new HP cannot end the previous battle.
+    public void PrepareRound()
+    {
+        plantLimitData = null;
+        UnbindPlantLimit();
         fieldLimitReached = false;
         StopAllSpawners();
         KillAllEnemies();
         if (attackSlotManager != null) attackSlotManager.ClearReservations();
+    }
+
+    public void Init(PlantData plantData)
+    {
+        PrepareRound();
+        plantLimitData = plantData;
+        if (plantData != null)
+            maxAliveEnemyCount = Mathf.Max(1, Mathf.CeilToInt(plantData.maxHP));
+        BindPlantLimit();
+        RefreshEnemyCount();
 
         allEnemiesActionDisabled = false;
         spawnStartTime = Time.time;
@@ -71,8 +120,8 @@ public class EnemyManager : MonoBehaviour
             return;
 
         SetupNormalSpawners(plantData);
-        SetupSpecialSpawner(middleBossSpawner, plantData.middleBossEnemies, MiddleBossSpawnerIndex);
-        SetupSpecialSpawner(bossSpawner, plantData.bossEnemies, BossSpawnerIndex);
+        SetupSpecialSpawner(middleBossSpawner, plantData.middleBossEnemies, MiddleBossSpawnerIndex, plantData.middleBossSpawnSettings);
+        SetupSpecialSpawner(bossSpawner, plantData.bossEnemies, BossSpawnerIndex, plantData.bossSpawnSettings);
 
         if (logSpawnTime)
             Debug.Log("Enemy Spawn Init Time: 0.00ÃÊ");
@@ -113,32 +162,24 @@ public class EnemyManager : MonoBehaviour
                 plantData.normalEnemies,
                 Target,
                 i,
-                spawnStartTime
+                spawnStartTime,
+                plantData.normalSpawnInterval
             );
         }
     }
 
-    private void SetupSpecialSpawner(EnemySpawner spawner, EnemySpawnInfo spawnInfo, int spawnerIndex)
+    private void SetupSpecialSpawner(EnemySpawner spawner, SpecialEnemySpawnInfo[] infos, int spawnerIndex, SpecialEnemySpawnSettings settings)
     {
-        if (spawner == null)
-            return;
-
+        if (spawner == null) return;
         spawner.StopSpawning();
-
-        bool hasSpawnInfo = HasValidSpawnInfo(spawnInfo);
+        bool hasSpawnInfo = false;
+        if (infos != null)
+            foreach (var info in infos)
+                if (info != null && info.dataSet != null) { hasSpawnInfo = true; break; }
         spawner.gameObject.SetActive(hasSpawnInfo);
-
-        if (!hasSpawnInfo)
-            return;
-
+        if (!hasSpawnInfo) return;
         spawner.overSpawn = specialSpawnerIgnoresMaxAliveCount;
-
-        spawner.SetSpawner(
-            new EnemySpawnInfo[] { spawnInfo },
-            Target,
-            spawnerIndex,
-            spawnStartTime
-        );
+        spawner.SetSpecialSpawner(infos, Target, spawnerIndex, spawnStartTime, settings, this);
     }
 
     private bool HasValidSpawnInfos(EnemySpawnInfo[] infos)
@@ -181,6 +222,8 @@ public class EnemyManager : MonoBehaviour
         }
 
         currentAliveEnemyCount = currentEnemies.Count;
+        if (plantLimitData != null && attackSlotManager != null)
+            attackSlotManager.SetTotalCapacity(maxAliveEnemyCount);
         if (lastNotifiedEnemyCount != currentAliveEnemyCount || lastNotifiedEnemyLimit != maxAliveEnemyCount)
         {
             lastNotifiedEnemyCount = currentAliveEnemyCount;
@@ -205,10 +248,12 @@ public class EnemyManager : MonoBehaviour
             enemy.DisableAction();
 
         RefreshEnemyCount();
+        if (currentEnemies.Contains(enemy)) TutorialSignals.Raise(gameObject.scene, TutorialSignals.EnemySpawned);
     }
 
     private void Update()
     {
+        BindPlantLimit();
         if (lastNotifiedEnemyLimit != maxAliveEnemyCount ||
             (loseWhenFieldFull && !fieldLimitReached && maxAliveEnemyCount > 0 &&
              currentAliveEnemyCount >= maxAliveEnemyCount)) RefreshEnemyCount();

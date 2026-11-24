@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0ec2e8b33b74a1a8091c28369d8de27, type: 3}
+  m_Name: 05.Fishing
+  m_EditorClassIdentifier: Assembly-CSharp::MergeBoxEquipmentData
+  icon: {fileID: 773157657670214537, guid: 9dff7042e5e251b48be60d81182ab537, type: 3}
+  data:
+  - language: 0
+    dataName: Fishing Box
+    description: 
+    detailDescription: 
+  - language: 1
+    dataName: "\uB09A\uC2DC \uC0C1\uC790"
+    description: 
+    detailDescription: 
+  dataNumbering: 
+  dataId: 5
+  dataType: 8
+  grade: -1
+  series: 5
+  requireUnlock: 1
+  boxIndex: 5
+  plant: {fileID: 11400000, guid: 1eab9565adfdde149b6f4ed6bf7161bd, type: 2}
+  player: {fileID: 11400000, guid: 9f8f312c2dbea5f46b8d366d60b4629a, type: 2}

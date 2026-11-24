@@ -31,7 +31,7 @@ public class ItemUsePositionProvider : MonoBehaviour
     {
         if (mainCamera == null)
             mainCamera = Camera.main;
-        targetRangeIndicatorPrefab.gameObject.SetActive(false);
+        if (targetRangeIndicatorPrefab != null) targetRangeIndicatorPrefab.gameObject.SetActive(false);
     }
 
     public Vector3 GetUseStartPosition(GameObject owner)
@@ -85,7 +85,7 @@ public class ItemUsePositionProvider : MonoBehaviour
         }
 
         Vector3 worldPosition = Mouse.current != null
-            ? mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue()) : transform.position;
+            ? SceneViewportInput.ScreenToWorldPoint(mainCamera,Mouse.current.position.ReadValue()) : transform.position;
         worldPosition.z = 0f;
 
         return worldPosition;
@@ -105,7 +105,7 @@ public class ItemUsePositionProvider : MonoBehaviour
     public bool SelectScreenPosition(Vector2 screenPosition)
     {
         if (mainCamera == null || !mainCamera.isActiveAndEnabled || Time.timeScale <= 0f ||
-            !mainCamera.pixelRect.Contains(screenPosition) ||
+            !SceneViewportInput.ScreenRect(mainCamera).Contains(screenPosition) ||
             (GameInputManager.instance != null && GameInputManager.instance.IsBlocked(GameInputBlockType.Gameplay)))
             return false;
 
@@ -123,7 +123,7 @@ public class ItemUsePositionProvider : MonoBehaviour
                     return false;
         }
 
-        Ray ray = mainCamera.ScreenPointToRay(screenPosition);
+        Ray ray = SceneViewportInput.ScreenPointToRay(mainCamera,screenPosition);
         var plane = new Plane(Vector3.forward, Vector3.zero);
         return plane.Raycast(ray, out float distance) && SelectPosition(ray.GetPoint(distance));
     }
@@ -139,8 +139,11 @@ public class ItemUsePositionProvider : MonoBehaviour
         hasSelectedPosition = true;
         PositionSelected?.Invoke(selectedPosition);
 
-        targetRangeIndicatorPrefab.gameObject.SetActive(true);
-        targetRangeIndicatorPrefab.transform.position = selectedPosition;
+        if (targetRangeIndicatorPrefab != null)
+        {
+            targetRangeIndicatorPrefab.gameObject.SetActive(true);
+            targetRangeIndicatorPrefab.transform.position = selectedPosition;
+        }
 
         return true;
     }

@@ -2,7 +2,7 @@
 
 [CreateAssetMenu(
     fileName = "DamageAreaAttackEffect",
-    menuName = "04.Items/Effects/Direct Effects/Attack/Damage"
+    menuName = "Items/Effects/Direct Effects/Attack/Damage"
 )]
 public class DamageAreaAttackEffect : ItemEffectData
 {
@@ -72,7 +72,6 @@ public class DamageAreaAttackEffect : ItemEffectData
         damageArea.InitWithSnapshotAndDynamicBuff(
             snapshotAttackStat: snapshotStat,
             sourceItemData: context.sourceItemData,
-            sourceBag: context.sourceBag,
             buffManager: context.buffManager,
             owner: context.owner
         );

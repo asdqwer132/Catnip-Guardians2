@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b4743ae51b54f098689da459b221a6b, type: 3}
+  m_Name: PlantGrowthStory 5
+  m_EditorClassIdentifier: 
+  id: plantgrowth-story5
+  story: {fileID: 11400000, guid: 074dac8a580fed24abb74345f43dfec0, type: 2}
+  condition: {fileID: 11400000, guid: 683353ec35faa924b80b876d6b25f7cd, type: 2}
+  startMode: 0
+  confirmationArea: battle-result
+  delaySeconds: 3
+  returnScene: UpgradeScene

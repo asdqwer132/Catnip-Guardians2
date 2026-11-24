@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Food23
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: 5176ee39a470211428ac0f30239af45a, type: 3}
+  data:
+  - language: 1
+    dataName: "\uC591\uACE0\uAE30 \uC2A4\uD14C\uC774\uD06C"
+    description: "\uACB0\uC744 \uC0B4\uB824 \uC790\uB978 \uC591\uACE0\uAE30."
+    detailDescription: "\uB2E8\uBA74\uC5D0 \uACE0\uC6B4 \uACB0\uC774 \uBCF4\uC774\uACE0
+      \uAC00\uC7A5\uC790\uB9AC\uC5D0 \uC587\uC740 \uC9C0\uBC29\uC774 \uBD99\uC5B4
+      \uC788\uB2E4."
+  - language: 0
+    dataName: Lamb Steak
+    description: A cut of lamb that shows its grain.
+    detailDescription: Fine grain is visible on the cut face, with a thin layer of
+      fat along the edge.
+  dataNumbering: 023
+  dataId: Food23
+  dataType: 1
+  grade: 1
+  series: 2
+  requireUnlock: 0
+  tags: []
+  weight: 1
+  cooldown: 1
+  effectDatas:
+  - {fileID: 11400000, guid: 7f9dc3f8b60dddc4b8de550be2e54909, type: 2}
+  codexEffects: []
+  endVisualData: {fileID: 0}
+  endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

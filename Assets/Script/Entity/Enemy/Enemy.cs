@@ -43,7 +43,41 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     private Animator cachedAnimator;
     private float previousAnimatorSpeed = 1f;
     private bool isInitialized = false;
+    private EnemyDataSet codexSourceData;
+    private bool recordsCodexDefeat;
     private EnemyAttackSlotManager attackSlots;
+    private Transform facingPlant;
+    private UnityEngine.Rendering.SortingGroup spawnSortingGroup;
+
+    private EnemyAttackSlotManager sortingOwner;
+
+    public void SetSpawnSortingOrder(EnemyAttackSlotManager owner, int order)
+    {
+        if (spawnSortingGroup == null)
+        {
+            spawnSortingGroup = GetComponent<UnityEngine.Rendering.SortingGroup>();
+            if (spawnSortingGroup == null)
+            {
+                spawnSortingGroup = gameObject.AddComponent<UnityEngine.Rendering.SortingGroup>();
+                var renderer = visual != null ? visual.spriteRenderer : GetComponentInChildren<SpriteRenderer>(true);
+                if (renderer != null) spawnSortingGroup.sortingLayerID = renderer.sortingLayerID;
+            }
+        }
+        sortingOwner = owner;
+        spawnSortingGroup.sortingOrder = order;
+    }
+
+    private void ClearSpawnSorting()
+    {
+        if (sortingOwner != null) sortingOwner.RemovePresentation(this);
+        sortingOwner = null;
+    }
+
+    public bool TryGetPlantFlip(out bool flip)
+    {
+        flip = facingPlant != null && transform.position.x > facingPlant.position.x;
+        return UsesAttackSlots && facingPlant != null;
+    }
     public bool UsesAttackSlots => attackSlots != null;
     public bool IsAtAttackSlot => attackSlots != null && attackSlots.IsAtSlot(this);
     private bool isActionDisabled = false;
@@ -122,6 +156,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     protected override void OnDisable()
     {
+        ClearSpawnSorting();
         if (EnemyManager.instance != null) EnemyManager.instance.RemoveEnemy(this);
         ReleaseAttackSlot();
         ClearHitReaction();
@@ -136,6 +171,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     private void OnDestroy()
     {
+        ClearSpawnSorting();
         ReleaseAttackSlot();
         if (buffManager != null)
             buffManager.UnregisterBuffTarget(this);
@@ -216,12 +252,17 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     public void ConfigureAttackSlots(EnemyAttackSlotManager slots)
     {
+        ClearSpawnSorting();
         ReleaseAttackSlot();
         attackSlots = slots;
         if (attackSlots == null) return;
         if (patternRunner != null) patternRunner.StopPattern();
         CancelAttack();
-        attackSlots.TryGetDestination(this, out _);
+        if (attackSlots.TryGetDestination(this, out var destination))
+        {
+            if (visual != null) visual.LookDirection(destination - (Vector2)transform.position);
+        }
+        else attackSlots.SetSpawnSortPosition(this, transform.position);
     }
 
     private void ReleaseAttackSlot()
@@ -243,7 +284,7 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
         {
             behaviorState = EnemyBehaviorState.Moving;
             CancelAttack();
-            if (mover != null) mover.MoveToPosition(new Vector3(transform.position.x, destination.y, transform.position.z), 0f);
+            if (mover != null) mover.MoveToPosition(new Vector3(destination.x, destination.y, transform.position.z), 0f);
             return;
         }
         StopMove();
@@ -254,6 +295,13 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
     }
 
     public void NotifySlotAttack() => attackSlots?.NotifyAttack(this);
+
+    public void NotifyPlantAttack()
+    {
+        if (!(actorTarget != null && actorTarget.TargetDamageable is Plant)) return;
+        TutorialSignals.Raise(attackSlots != null ? attackSlots.gameObject.scene : gameObject.scene,
+            TutorialSignals.EnemyAttackedPlant);
+    }
 
     private void TickDefaultAI(Transform targetTransform)
     {
@@ -496,6 +544,8 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     public void OnSpawnedFromPool()
     {
+        codexSourceData = null;
+        recordsCodexDefeat = false;
         ReleaseAttackSlot();
         isInitialized = false;
         ClearHitReaction();
@@ -526,6 +576,8 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     public void OnReturnedToPool()
     {
+        codexSourceData = null;
+        recordsCodexDefeat = false;
         isInitialized = false;
         ClearHitReaction();
         behaviorState = EnemyBehaviorState.Idle;
@@ -576,6 +628,11 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
             Debug.LogError($"[{name}] EnemyDataSet이 없습니다.", this);
             return;
         }
+        facingPlant = (target as Plant)?.transform;
+        codexSourceData = dataSet;
+        var targetComponent = target as Component;
+        recordsCodexDefeat = gameObject.scene.name == GameSceneRoutes.Battle ||
+            (targetComponent != null && targetComponent.gameObject.scene.name == GameSceneRoutes.Battle);
         isInitialized = false;
         ClearHitReaction();
         behaviorState = EnemyBehaviorState.Idle;
@@ -820,6 +877,9 @@ public class Enemy : HealthActor, IPoolable, IBuffTarget
 
     protected override void OnDeathStarted()
     {
+        if (recordsCodexDefeat && codexSourceData != null)
+            CodexDiscoveryHistory.Current.RecordEnemy(codexSourceData);
+
         ReleaseAttackSlot();
         if (EnemyManager.instance != null) EnemyManager.instance.RemoveEnemy(this);
         GameStatisticsManager.Instance?.AddKill();

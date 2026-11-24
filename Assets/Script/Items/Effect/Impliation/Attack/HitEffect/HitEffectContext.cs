@@ -10,7 +10,6 @@ public sealed class HitEffectContext
     public readonly int targetLifeId;
     public readonly GameObject owner;
     public readonly ItemData sourceItemData;
-    public readonly EquipmentBag sourceBag;
     public readonly ItemEffectData sourceEffectData;
     public readonly BuffManager buffManager;
     public readonly Vector3 usePosition;
@@ -43,7 +42,6 @@ public sealed class HitEffectContext
 
         owner = sourceContext.owner;
         sourceItemData = sourceContext.sourceItemData;
-        sourceBag = sourceContext.sourceBag;
         sourceEffectData = sourceContext.currentEffectData;
         buffManager = sourceContext.buffManager;
         usePosition = sourceContext.usePosition;
@@ -52,7 +50,7 @@ public sealed class HitEffectContext
     public ItemEffectContext CreateBuffContext(BuffEffect effect, BuffManager manager)
     {
         ItemEffectContext result = new ItemEffectContext(
-            owner, sourceItemData, usePosition, hitPosition, sourceBag, effect, manager,
+            owner, sourceItemData, usePosition, hitPosition, effect, manager,
             sourceContext != null ? sourceContext.direction : Vector3.zero,
             sourceContext != null ? sourceContext.plan : null
         );

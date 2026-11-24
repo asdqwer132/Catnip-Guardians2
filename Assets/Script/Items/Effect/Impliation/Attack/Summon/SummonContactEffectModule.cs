@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SummonContactEffects", menuName = "04.Items/Effects/Direct Effects/Summon/Summon Modules/Contact Effects")]
+[CreateAssetMenu(fileName = "SummonContactEffects", menuName = "Items/Effects/Direct Effects/Summon/Summon Modules/Contact Effects")]
 public sealed class SummonContactEffectModule : SummonBehaviourModule
 {
     [Header("기본 스탯 · 접촉 이펙트")]

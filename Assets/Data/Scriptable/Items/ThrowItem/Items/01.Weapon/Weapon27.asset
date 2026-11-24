@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Weapon27
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: 7c6b078c2faed2f42a036e5b108c67f7, type: 3}
+  data:
+  - language: 1
+    dataName: "\uBF08 \uCC3D"
+    description: "\uD76C\uAC8C \uBC14\uB79C \uBF08\uB85C \uB2E4\uB4EC\uC740 \uCC3D."
+    detailDescription: "\uD76C\uAC8C \uBC14\uB79C \uD45C\uBA74\uC5D0 \uAC00\uB290\uB2E4\uB780
+      \uAE08\uC774 \uB0A8\uC544 \uC788\uB2E4. \uAE34 \uC790\uB8E8 \uB05D\uC744 \uBFB0\uC871\uD558\uAC8C
+      \uB9C8\uBB34\uB9AC\uD588\uB2E4."
+  - language: 0
+    dataName: Bone Spear
+    description: A spear shaped from bleached bone.
+    detailDescription: Fine cracks remain on the bleached surface. The long shaft
+      ends in a sharp point.
+  dataNumbering: 027
+  dataId: Weapon27
+  dataType: 1
+  grade: 2
+  series: 1
+  requireUnlock: 0
+  tags: []
+  weight: 1
+  cooldown: 1
+  effectDatas:
+  - {fileID: 11400000, guid: 8948b84273f4bf140b643bb6e1c7d565, type: 2}
+  codexEffects: []
+  endVisualData: {fileID: 0}
+  endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

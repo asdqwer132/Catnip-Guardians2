@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Food11
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: 6bcca57c5cfafe94787c7708f41e34d3, type: 3}
+  data:
+  - language: 1
+    dataName: "\uD30C\uC774"
+    description: "\uBC14\uC0AD\uD55C \uAECD\uC9C8\uC744 \uC785\uD78C \uD30C\uC774."
+    detailDescription: "\uAD6C\uC6CC \uB0B8 \uAC00\uC7A5\uC790\uB9AC\uAC00 \uB178\uB987\uD558\uACE0
+      \uD55C \uC870\uAC01\uC529 \uC790\uB974\uAE30 \uC88B\uB2E4."
+  - language: 0
+    dataName: Pie
+    description: A pie with a crisp crust.
+    detailDescription: Its baked edges are golden and easy to cut into slices.
+  dataNumbering: 011
+  dataId: Food11
+  dataType: 1
+  grade: 0
+  series: 2
+  requireUnlock: 0
+  tags: []
+  weight: 1
+  cooldown: 1
+  effectDatas:
+  - {fileID: 11400000, guid: cf72dbe096bb40342822ab7eaf47affc, type: 2}
+  codexEffects: []
+  endVisualData: {fileID: 0}
+  endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

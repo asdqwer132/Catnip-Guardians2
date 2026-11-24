@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: FoodMaterial6
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: 662a31d60eb758347b3e0738ce96dbb4, type: 3}
+  data:
+  - language: 1
+    dataName: "1\uB4F1\uAE09 \uACE0\uAE30 \uD3EC\uB300"
+    description: "\uC88B\uC740 \uBD80\uC704\uB97C \uACE8\uB77C \uB2F4\uC740 \uACE0\uAE30
+      \uD3EC\uB300."
+    detailDescription: "\uACB0\uACFC \uB450\uAED8\uAC00 \uACE0\uB978 \uC870\uAC01\uC744
+      \uACE8\uB77C \uD3EC\uC7A5\uD588\uB2E4."
+  - language: 0
+    dataName: Grade 1 Meat Sack
+    description: A sack of selected cuts of meat.
+    detailDescription: Cuts with an even grain and thickness have been chosen and
+      packed.
+  dataNumbering: 006
+  dataId: FoodMaterial6
+  dataType: 1
+  grade: 1
+  series: 2
+  requireUnlock: 0
+  tags: []
+  weight: 1
+  cooldown: 1
+  effectDatas:
+  - {fileID: 11400000, guid: 860bd383df3ae8f46ad00f54a9dd029c, type: 2}
+  codexEffects: []
+  endVisualData: {fileID: 0}
+  endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

@@ -122,7 +122,6 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>, IBuffTarget, IPref
     public override void InitWithSnapshotAndDynamicBuff(
         DamageAreaAttackStat snapshotAttackStat,
         ItemData sourceItemData,
-        EquipmentBag sourceBag,
         BuffManager buffManager,
         GameObject owner
     )
@@ -137,7 +136,6 @@ public class DamageArea : AttackObject<DamageAreaAttackStat>, IBuffTarget, IPref
         base.InitWithSnapshotAndDynamicBuff(
             snapshotAttackStat,
             sourceItemData,
-            sourceBag,
             buffManager,
             owner
         );

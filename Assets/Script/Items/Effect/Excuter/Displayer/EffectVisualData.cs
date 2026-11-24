@@ -1,9 +1,14 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "EffectVisual", menuName = "04.Items/EffectVisual")]
+[CreateAssetMenu(fileName = "EffectVisual", menuName = "Items/EffectVisual")]
 public class EffectVisualData : ScriptableObject
 {
     [Header("Visual")]
+    public AnimationClip animationClip;
+    public bool loopAnimation;
+    public string sortingLayerName = "Default";
+    public int sortingOrder;
+    [HideInInspector]
     public ImpactVfxInstance impactVfxPrefab;
     public Vector3 impactBaseScale = Vector3.one;
     [Tooltip("아이템 연출: 공격 반경을 크기에 반영합니다. 명중 연출: 고정 크기를 사용합니다.")]
@@ -12,12 +17,16 @@ public class EffectVisualData : ScriptableObject
     public bool attachParticlesToFollowTarget = true;
 
     [Header("Lifetime")]
+    [Tooltip("연출을 요청한 아이템/스킬이 종료·초기화될 때 이 효과도 종료합니다. 반복 여부와 독립적인 옵션입니다.")]
+    public bool stopOnReset;
     public bool useAnimatorClipLifeTime = true;
     [Min(0.01f)] public float impactVfxLifeTime = 1f;
 
     [Header("Audio")]
     [Tooltip("기존 AudioManager.PlaySfx에 전달하는 사운드 이름. 프리팹 없이 사운드만 재생할 수도 있습니다.")]
     public string audioSource;
+    [Tooltip("설정하면 목록에서 하나를 재생합니다. 비어 있으면 기존 Audio Source 분류를 사용합니다.")]
+    public AudioClip[] audioClips = System.Array.Empty<AudioClip>();
 
     [Header("Pool")]
     [Min(0)]
@@ -27,19 +36,41 @@ public class EffectVisualData : ScriptableObject
     [Header("Debug")]
     [Tooltip("출력되는 Target/VFX/Anchor ID로 각 재생의 대상과 루트가 따로 연결되는지 확인합니다.")]
     public bool debugLog;
+    private void OnValidate()
+    {
+        if (loopAnimation) useAnimatorClipLifeTime = false;
+        if (float.IsNaN(impactVfxLifeTime) || float.IsInfinity(impactVfxLifeTime)) impactVfxLifeTime = 1f;
+        impactVfxLifeTime = Mathf.Max(.01f, impactVfxLifeTime);
+    }
 
     public void Prewarm()
     {
-        EffectVisualPool.Prewarm(impactVfxPrefab, prewarmCount);
+        EffectVisualPool.Prewarm(animationClip != null ? EffectVisualPool.GetAnimationTemplate() : impactVfxPrefab, prewarmCount);
     }
 
     public ImpactVfxInstance Play(EffectVisualContext context)
     {
+        if (loopAnimation) useAnimatorClipLifeTime = false;
+        if (context == null || !context.CanContinuePlayback) return null;
+        bool hasClips = audioClips != null && audioClips.Length > 0;
+        if (hasClips && context.audioOwner != null)
+        {
+            var channel = SceneAudioChannel.InScene(context.audioOwner.scene);
+            var clip = audioClips[Random.Range(0,audioClips.Length)];
+            if (channel != null && clip != null) channel.TryPlayClip(clip, "EffectVisual");
+        }
         ImpactVfxInstance instance = PlayInternal(
-            context, impactVfxPrefab, impactBaseScale,
-            scaleImpactVfxByRadius, impactVfxLifeTime,
-            useAnimatorClipLifeTime, audioSource, prewarmCount, attachParticlesToFollowTarget
+            context, animationClip != null ? EffectVisualPool.GetAnimationTemplate() : impactVfxPrefab, impactBaseScale,
+            scaleImpactVfxByRadius, animationClip != null && useAnimatorClipLifeTime ? Mathf.Max(.01f,animationClip.length) : impactVfxLifeTime,
+            animationClip == null && useAnimatorClipLifeTime, hasClips ? null : audioSource, prewarmCount, attachParticlesToFollowTarget
         );
+        if (instance != null && animationClip != null)
+        {
+            var sprite = instance.GetComponent<SpriteRenderer>();
+            if (context.audioOwner != null) instance.gameObject.layer = context.audioOwner.layer;
+            sprite.sortingLayerName = sortingLayerName; sprite.sortingOrder = sortingOrder;
+            instance.GetComponent<EffectClipPlayer>().Play(animationClip, loopAnimation);
+        }
 
         if (debugLog && instance != null)
         {

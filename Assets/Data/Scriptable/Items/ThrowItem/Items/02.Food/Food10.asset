@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Food10
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: 31592ffaae8979c43aab080c465b8b01, type: 3}
+  data:
+  - language: 1
+    dataName: "\uC218\uBC15"
+    description: "\uB450\uAEBC\uC6B4 \uC904\uBB34\uB2AC \uAECD\uC9C8\uC758 \uC5EC\uB984
+      \uACFC\uC77C."
+    detailDescription: "\uCEE4\uB2E4\uB780 \uD1B5\uC744 \uAC00\uB974\uBA74 \uC218\uBD84\uC774
+      \uB9CE\uC740 \uBD89\uC740 \uACFC\uC721\uC774 \uB4DC\uB7EC\uB09C\uB2E4."
+  - language: 0
+    dataName: Watermelon
+    description: A summer fruit with a thick, striped rind.
+    detailDescription: Cutting it open reveals juicy red flesh.
+  dataNumbering: 010
+  dataId: Food10
+  dataType: 1
+  grade: 0
+  series: 2
+  requireUnlock: 0
+  tags: []
+  weight: 1
+  cooldown: 1
+  effectDatas:
+  - {fileID: 11400000, guid: 41474e36d652ad946a141ba541f3be4a, type: 2}
+  codexEffects: []
+  endVisualData: {fileID: 0}
+  endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

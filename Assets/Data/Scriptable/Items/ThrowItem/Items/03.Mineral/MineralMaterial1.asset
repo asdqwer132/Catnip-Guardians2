@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: MineralMaterial1
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: e35c0067965f0ff409facd9bf4d82a6e, type: 3}
+  data:
+  - language: 1
+    dataName: "\uB098\uBB34 \uACE1\uAD2D\uC774"
+    description: "\uB098\uBB34\uB85C \uB9CC\uB4E0 \uAE30\uCD08 \uACE1\uAD2D\uC774."
+    detailDescription: "\uC790\uB8E8\uC640 \uACE1\uAD2D\uC774 \uBA38\uB9AC \uBAA8\uB450
+      \uB098\uBB47\uACB0\uC774 \uC120\uBA85\uD558\uAC8C \uB4DC\uB7EC\uB09C\uB2E4."
+  - language: 0
+    dataName: Wooden Pickaxe
+    description: A basic pickaxe made of wood.
+    detailDescription: The grain is clearly visible on both its handle and head.
+  dataNumbering: 001
+  dataId: MineralMaterial1
+  dataType: 1
+  grade: 0
+  series: 3
+  requireUnlock: 0
+  tags: []
+  weight: 1
+  cooldown: 1
+  effectDatas:
+  - {fileID: 11400000, guid: 1a5cd424984022c4786851e72b432651, type: 2}
+  codexEffects: []
+  endVisualData: {fileID: 0}
+  endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

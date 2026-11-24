@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: FoodMaterial8
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: ef46bfb0fcc5c7b418dde33c80d9bd7f, type: 3}
+  data:
+  - language: 1
+    dataName: "\uB9C8\uBC95\uC758 \uAC00\uB8E8"
+    description: "\uC740\uC740\uD558\uAC8C \uBC18\uC9DD\uC774\uB294 \uACE0\uC6B4
+      \uAC00\uB8E8."
+    detailDescription: "\uD55C \uAF2C\uC9D1\uC744 \uC9D1\uC73C\uBA74 \uAC00\uB290\uB2E4\uB780
+      \uBC18\uC9DD\uC784\uC774 \uC190\uB05D\uC5D0 \uBB3B\uC5B4\uB09C\uB2E4."
+  - language: 0
+    dataName: Magic Powder
+    description: A fine powder with a gentle sparkle.
+    detailDescription: A pinch leaves tiny glimmers on your fingertips.
+  dataNumbering: 008
+  dataId: FoodMaterial8
+  dataType: 1
+  grade: 2
+  series: 2
+  requireUnlock: 0
+  tags: []
+  weight: 1
+  cooldown: 1
+  effectDatas:
+  - {fileID: 11400000, guid: 860bd383df3ae8f46ad00f54a9dd029c, type: 2}
+  codexEffects: []
+  endVisualData: {fileID: 0}
+  endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

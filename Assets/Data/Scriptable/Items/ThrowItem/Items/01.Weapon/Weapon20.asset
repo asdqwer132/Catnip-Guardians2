@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a1e1bd87a794bc4fa94e4f2aaeeee6a, type: 3}
+  m_Name: Weapon20
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  icon: {fileID: 21300000, guid: 9b4182a9265036146be06f2b61dc9cbf, type: 3}
+  data:
+  - language: 1
+    dataName: "\uBCC4\uBD80\uC218\uAE30 \uB3C4\uB07C"
+    description: "\uBCC4\uBE5B\uC744 \uB2EE\uC740 \uC7AC\uB8CC\uB85C \uB9CC\uB4E0
+      \uB3C4\uB07C."
+    detailDescription: "\uC5B4\uB450\uC6B4 \uBC14\uD0D5\uC5D0 \uBCC4\uBE5B \uAC19\uC740
+      \uC810\uB4E4\uC774 \uBC15\uD600 \uC788\uB2E4. \uB113\uC740 \uB0A0\uC774 \uC790\uB8E8
+      \uB05D \uD55C\uCABD\uC73C\uB85C \uBB35\uC9C1\uD558\uAC8C \uBED7\uC5B4 \uC788\uB2E4."
+  - language: 0
+    dataName: Starbreaker Axe
+    description: A axe made from material resembling starlight.
+    detailDescription: Points of starlike light are embedded in a dark surface. A
+      broad blade extends heavily to one side of the handle.
+  dataNumbering: 020
+  dataId: Weapon20
+  dataType: 1
+  grade: 1
+  series: 1
+  requireUnlock: 0
+  tags: []
+  weight: 1
+  cooldown: 1
+  effectDatas:
+  - {fileID: 11400000, guid: 2db4275028b8bf544ac9fcbbf8f75766, type: 2}
+  codexEffects: []
+  endVisualData: {fileID: 0}
+  endVisualAtOwner: 0
+  afterCompletionItems: []
+  afterCompletionItemsAtOwner: 0
+  afterCompletionConsumeUseBuffs: 0
+  afterCompletionTriggerSpecialItems: 0

@@ -1,0 +1,267 @@
+using System.Collections.Generic;
+using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+// Placement and area resizing update geometry. Skill progress updates visibility.
+[ExecuteAlways]
+public sealed class SkillTreeConnectionUI : MonoBehaviour
+{
+    [Tooltip("출발 노드가 해금되면 길이 보이고, 도착 노드가 해금되면 해금 선으로 표시합니다.")]
+    public SkillNodeUI from;
+    public SkillNodeUI to;
+    public SkillTreeLineUI horizontalLine;
+    public SkillTreeLineUI verticalLine;
+    public SkillLineShape shape;
+    public SkillLineEndpoint endpoint;
+    public float curveBend = .5f;
+    public SkillTreeLineUI[] curveLines = System.Array.Empty<SkillTreeLineUI>();
+    private bool unlocked;
+
+    private SkillNodeUI boundFrom, boundTo;
+    private readonly List<SkillTreeLineUI> authoredSegments = new List<SkillTreeLineUI>();
+    private bool capturedSegments;
+    private SkillTreeManager boundManager;
+
+    private void OnEnable()
+    {
+        if (!Application.isPlaying) return;
+        SkillTreeManager.InstanceChanged += BindManager;
+        BindManager();
+    }
+    private void BindManager()
+    {
+        if (boundManager != null) boundManager.OnSkillTreeChanged -= RefreshVisibility;
+        boundManager = SkillTreeManager.Instance;
+        if (boundManager != null) boundManager.OnSkillTreeChanged += RefreshVisibility;
+        RefreshVisibility();
+    }
+    private void OnDisable()
+    {
+        SkillTreeManager.InstanceChanged -= BindManager;
+        if (boundManager != null) boundManager.OnSkillTreeChanged -= RefreshVisibility;
+        boundManager = null;
+        if (boundFrom != null) boundFrom.VisibilityChanged -= RefreshVisibility;
+        if (boundTo != null) boundTo.VisibilityChanged -= RefreshVisibility;
+        boundFrom = boundTo = null;
+    }
+
+    public void RefreshVisibility()
+    {
+        if (!Application.isPlaying) return;
+        if (boundFrom != from)
+        {
+            if (boundFrom != null) boundFrom.VisibilityChanged -= RefreshVisibility;
+            boundFrom = from;
+            if (boundFrom != null) boundFrom.VisibilityChanged += RefreshVisibility;
+        }
+        if (boundTo != to)
+        {
+            if (boundTo != null) boundTo.VisibilityChanged -= RefreshVisibility;
+            boundTo = to;
+            if (boundTo != null) boundTo.VisibilityChanged += RefreshVisibility;
+        }
+        if (!capturedSegments)
+        {
+            if (horizontalLine == null && verticalLine == null && (curveLines == null || curveLines.Length == 0)) return;
+            if (horizontalLine != null && horizontalLine.gameObject.activeSelf) authoredSegments.Add(horizontalLine);
+            if (verticalLine != null && verticalLine.gameObject.activeSelf) authoredSegments.Add(verticalLine);
+            if (curveLines != null) foreach (var line in curveLines)
+                if (line != null && line.gameObject.activeSelf) authoredSegments.Add(line);
+            capturedSegments = true;
+        }
+        var manager = SkillTreeManager.Instance;
+        bool visible = manager != null && from != null && to != null && from.IsVisible && to.IsVisible &&
+            from.SkillNodeData != null && to.SkillNodeData != null && manager.IsUnlocked(from.SkillNodeData) &&
+            manager.HasRequiredSkills(to.SkillNodeData);
+        ApplyUnlockedState(manager != null && to != null && to.SkillNodeData != null && manager.IsUnlocked(to.SkillNodeData));
+        foreach (var line in authoredSegments) if (line != null && line.gameObject.activeSelf != visible) line.gameObject.SetActive(visible);
+    }
+
+    public void SetUnlocked(bool unlocked)
+    {
+        if (Application.isPlaying) { RefreshVisibility(); return; }
+        ApplyUnlockedState(unlocked);
+    }
+
+    private void ApplyUnlockedState(bool unlocked)
+    {
+        this.unlocked = unlocked;
+        if (curveLines != null) foreach (var line in curveLines) if (line != null) line.SetUnlocked(unlocked);
+        if (horizontalLine != null) horizontalLine.SetUnlocked(unlocked);
+        if (verticalLine != null) verticalLine.SetUnlocked(unlocked);
+    }
+
+    public void RefreshGeometry() => RefreshGeometry(recordUndo: false);
+
+    internal void RefreshGeometry(bool recordUndo)
+    {
+        var space = transform as RectTransform;
+        var startRect = from != null ? from.transform as RectTransform : null;
+        var endRect = to != null ? to.transform as RectTransform : null;
+        if (space == null || startRect == null || endRect == null) return;
+
+#if UNITY_EDITOR
+        var edited = !Application.isPlaying && recordUndo ? RecordSegmentUndo() : null;
+#endif
+        if (Application.isPlaying)
+        {
+            authoredSegments.Clear();
+            capturedSegments = true;
+        }
+
+        ApplyGeometry(space, startRect, endRect);
+        if (Application.isPlaying) RefreshVisibility();
+
+#if UNITY_EDITOR
+        if (edited != null)
+            foreach (var target in edited)
+                if (PrefabUtility.IsPartOfPrefabInstance(target))
+                    PrefabUtility.RecordPrefabInstancePropertyModifications(target);
+#endif
+    }
+
+#if UNITY_EDITOR
+    private List<Object> RecordSegmentUndo()
+    {
+        var targets = new List<Object>();
+        AddSegment(horizontalLine);
+        AddSegment(verticalLine);
+        if (curveLines != null)
+            foreach (var line in curveLines) AddSegment(line);
+        Undo.RecordObjects(targets.ToArray(), "Fit Skill Tree Connection");
+        return targets;
+
+        void AddSegment(SkillTreeLineUI line)
+        {
+            if (line == null) return;
+            targets.Add(line.gameObject);
+            targets.Add(line.transform);
+        }
+    }
+#endif
+
+    private void ApplyGeometry(RectTransform space, RectTransform startRect, RectTransform endRect)
+    {
+        if (shape != SkillLineShape.Curve && curveLines != null)
+            foreach (var line in curveLines) UseSegment(line, false);
+        Vector2 start = space.InverseTransformPoint(startRect.TransformPoint(startRect.rect.center));
+        Vector2 end = space.InverseTransformPoint(endRect.TransformPoint(endRect.rect.center));
+        float sx = Mathf.Sign(end.x - start.x), sy = Mathf.Sign(end.y - start.y);
+        bool horizontalFirst = Mathf.Abs(end.x - start.x) >= Mathf.Abs(end.y - start.y);
+        Vector2 startHalf = endpoint == SkillLineEndpoint.NodeCenter ? Vector2.zero : startRect.rect.size * .5f;
+        Vector2 endHalf = endpoint == SkillLineEndpoint.NodeCenter ? Vector2.zero : endRect.rect.size * .5f;
+        float startX = Mathf.Abs(space.InverseTransformVector(startRect.TransformVector(Vector3.right * startHalf.x)).x);
+        float startY = Mathf.Abs(space.InverseTransformVector(startRect.TransformVector(Vector3.up * startHalf.y)).y);
+        float endX = Mathf.Abs(space.InverseTransformVector(endRect.TransformVector(Vector3.right * endHalf.x)).x);
+        float endY = Mathf.Abs(space.InverseTransformVector(endRect.TransformVector(Vector3.up * endHalf.y)).y);
+        if (shape != SkillLineShape.Elbow)
+        {
+            if (shape != SkillLineShape.Straight) UseSegment(horizontalLine, false);
+            UseSegment(verticalLine, false);
+            var delta = end - start;
+            var tangent = shape == SkillLineShape.Straight || Mathf.Abs(delta.x) < .01f || Mathf.Abs(delta.y) < .01f
+                ? delta.normalized
+                : (horizontalFirst ? Vector2.right * sx : Vector2.up * sy);
+            var endTangent = shape == SkillLineShape.Straight || Mathf.Abs(delta.x) < .01f || Mathf.Abs(delta.y) < .01f
+                ? delta.normalized
+                : (horizontalFirst ? Vector2.up * sy : Vector2.right * sx);
+            start += EdgeOffset(tangent, startX, startY);
+            end -= EdgeOffset(endTangent, endX, endY);
+            if (Vector2.Dot(end - start, delta) <= 0)
+            {
+                if (shape == SkillLineShape.Straight) UseSegment(horizontalLine, false);
+                else if (curveLines != null)
+                    foreach (var line in curveLines) UseSegment(line, false);
+                return;
+            }
+            if (shape == SkillLineShape.Straight)
+            {
+                SetAngledSegment(horizontalLine, space, start, end);
+                return;
+            }
+            int count = curveLines != null ? curveLines.Length : 0;
+            float reach = Vector2.Distance(start, end) * Mathf.Clamp01(curveBend);
+            Vector2 c1 = start + tangent * reach, c2 = end - endTangent * reach;
+            Vector2 previous = start;
+            for (int i = 0; i < count; i++)
+            {
+                float t = (i + 1f) / count, u = 1 - t;
+                Vector2 point = u * u * u * start + 3 * u * u * t * c1 + 3 * u * t * t * c2 + t * t * t * end;
+                var line = curveLines[i];
+                if (line != null) line.SetUnlocked(unlocked);
+                SetAngledSegment(line, space, previous, point);
+                previous = point;
+            }
+            return;
+        }
+        if (Mathf.Abs(start.y - end.y) < .01f)
+        {
+            SetSegment(horizontalLine, space, start + Vector2.right * startX * sx, end - Vector2.right * endX * sx, true, sx);
+            UseSegment(verticalLine, false);
+        }
+        else if (Mathf.Abs(start.x - end.x) < .01f)
+        {
+            SetSegment(verticalLine, space, start + Vector2.up * startY * sy, end - Vector2.up * endY * sy, false, sy);
+            UseSegment(horizontalLine, false);
+        }
+        else if (horizontalFirst)
+        {
+            var corner = new Vector2(end.x, start.y);
+            SetSegment(horizontalLine, space, start + Vector2.right * startX * sx, corner, true, sx);
+            SetSegment(verticalLine, space, corner, end - Vector2.up * endY * sy, false, sy);
+        }
+        else
+        {
+            var corner = new Vector2(start.x, end.y);
+            SetSegment(verticalLine, space, start + Vector2.up * startY * sy, corner, false, sy);
+            SetSegment(horizontalLine, space, corner, end - Vector2.right * endX * sx, true, sx);
+        }
+    }
+
+    private static Vector2 EdgeOffset(Vector2 direction, float halfX, float halfY)
+    {
+        float denominator = Mathf.Max(halfX > 0 ? Mathf.Abs(direction.x) / halfX : 0,
+            halfY > 0 ? Mathf.Abs(direction.y) / halfY : 0);
+        return denominator > .0001f ? direction / denominator : Vector2.zero;
+    }
+
+    private void SetAngledSegment(SkillTreeLineUI line, RectTransform space, Vector2 start, Vector2 end)
+    {
+        if (line == null || !(line.transform is RectTransform rect)) return;
+        var delta = end - start;
+        bool used = delta.sqrMagnitude > .0001f;
+        UseSegment(line, used);
+        if (!used) return;
+        rect.anchorMin = rect.anchorMax = space.pivot;
+        rect.pivot = new Vector2(.5f, .5f);
+        rect.anchoredPosition = (start + end) * .5f;
+        rect.sizeDelta = new Vector2(delta.magnitude, rect.sizeDelta.y);
+        rect.localRotation = Quaternion.Euler(0, 0, Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg);
+        rect.localScale = Vector3.one;
+    }
+
+    private void UseSegment(SkillTreeLineUI line, bool used)
+    {
+        if (line == null) return;
+        if (Application.isPlaying && used) authoredSegments.Add(line);
+        else if (line.gameObject.activeSelf != used) line.gameObject.SetActive(used);
+    }
+
+    private void SetSegment(SkillTreeLineUI line, RectTransform space, Vector2 start, Vector2 end, bool horizontal, float direction)
+    {
+        if (line == null || !(line.transform is RectTransform rect)) return;
+        float length = (horizontal ? end.x - start.x : end.y - start.y) * direction;
+        UseSegment(line, length > .01f);
+        if (length <= .01f) return;
+        rect.anchorMin = rect.anchorMax = space.pivot;
+        rect.pivot = new Vector2(.5f, .5f);
+        rect.anchoredPosition = (start + end) * .5f;
+        var size = rect.sizeDelta;
+        if (horizontal) size.x = length; else size.y = length;
+        rect.sizeDelta = size;
+        rect.localRotation = Quaternion.identity;
+        rect.localScale = Vector3.one;
+    }
+}

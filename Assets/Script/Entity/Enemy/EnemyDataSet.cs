@@ -1,13 +1,16 @@
-﻿using System;
+using System;
 using UnityEngine;
 [Serializable]
 
-[CreateAssetMenu(fileName = "EnemySetData", menuName = "01.Entities/Enemy/Enemy Set Data")]
-public class EnemyDataSet : ScriptableObject
+[CreateAssetMenu(fileName = "EnemySetData", menuName = "Entities/Enemy/Enemy Set Data")]
+public class EnemyDataSet : UnlockableDefaultData
 {
-    [Header("Animation")]
+    [Space(10)]
     public RuntimeAnimatorController animatorController;
-    [Header("Data")]
+    [Space(10)]
     public EnemyStatData statData;
     public EnemyPatternSetData patternData;
+
+    [Space(10)]
+    public CodexEffectDescription[] codexEffects;
 }

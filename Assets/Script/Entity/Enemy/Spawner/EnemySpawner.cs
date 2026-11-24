@@ -1,7 +1,8 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public enum EnemySpawnShape { Circle, Rectangle }
+public enum EnemySpawnShape { Circle, Rectangle, RectanglePerimeter }
 
 [BuffTargetGroups("EnemySpawner")]
 public class EnemySpawner : MonoBehaviour, IBuffTarget
@@ -9,17 +10,25 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
     [Header("Setting")]
     public GameObject enemyPrefab;
     public EnemySpawnInfo[] enemyInfos;
+    public SpecialEnemySpawnInfo[] specialEnemyInfos;
+    [SerializeField] private bool useSpecialEntries;
+    [SerializeField] private SpecialEnemySpawnSettings specialSpawnSettings = new SpecialEnemySpawnSettings();
     public EnemySpawnerStat baseStat = new EnemySpawnerStat();
     [Tooltip("켜면 스포너 시작 시 첫 번째 적은 대기시간 없이 바로 소환됩니다.")]
     public bool spawnImmediatelyOnStart = false;
     public bool overSpawn = false;
     public bool isBoss = false;
+    [Tooltip("Random seconds added to each buffed spawn interval. Each spawner samples independently every cycle. Immediate first spawns skip this wait.")]
+    public Vector2 spawnIntervalOffsetRange;
 
     [Header("Spawn Area")]
-    [Tooltip("Circle: 원의 둘레 / Rectangle: 지정한 사각형 영역 안에서 소환합니다.")]
+    [Tooltip("Circle: circular perimeter / Rectangle: filled rectangle / Rectangle Perimeter: rectangular border.")]
     public EnemySpawnShape spawnShape;
     [Tooltip("월드 좌표 기준 영역 중심입니다. 사각형 크기는 Base Stat의 Spawn Width / Height로 설정합니다.")]
     public Vector2 spawnCenter;
+    [Tooltip("Optional center transform. Spawn Center becomes an offset from this transform.")]
+    public Transform spawnCenterTarget;
+    public Vector2 SpawnWorldCenter => spawnCenterTarget != null ? (Vector2)spawnCenterTarget.position + spawnCenter : spawnCenter;
 
     [Header("Runtime Stat")]
     [SerializeField] private EnemySpawnerStat currentStat = new EnemySpawnerStat();
@@ -43,6 +52,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
 
     [Header("Managers")]
     public BuffManager buffManager;
+    public GameStatisticsManager statisticsManager;
 
     private Plant targetPlant;
     private Coroutine spawnCoroutine;
@@ -51,6 +61,13 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
     private EnemySpawnInfo pendingImmediateSpawn;
     private int spawnerIndex = -1;
     private float spawnStartTime;
+    private EnemyManager specialEnemySource;
+    private GameStatisticsManager killSource;
+    private int killRoundVersion = -1;
+    private int killBaseline;
+    public int SpecialKillsSinceLastSpawn => GetSpecialKillCount();
+
+    private bool IsSpawnClockStopped => Time.timeScale <= 0f || TimeStopRuntime.IsStopped(TimeStopTargets.EnemySpawning);
 
     public EnemySpawnerStat CurrentStat => currentStat;
 
@@ -83,9 +100,55 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         SetSpawner(infos, plant, index, startTime, buffManager);
     }
 
+    public void SetSpawner(EnemySpawnInfo[] infos, Plant plant, int index, float startTime, float interval)
+    {
+        if (baseStat == null) baseStat = new EnemySpawnerStat();
+        baseStat.spawnInterval = EffectStatUtility.Safe(interval, .05f, 100000f, 1.5f);
+        SetSpawner(infos, plant, index, startTime, buffManager);
+    }
+
     public void SetSpawner(EnemySpawnInfo[] infos, Plant plant, int index, float startTime, BuffManager manager)
     {
         enemyInfos = infos;
+        specialEnemyInfos = null;
+        useSpecialEntries = false;
+        Configure(plant, index, startTime, manager);
+        pendingImmediateSpawn = spawnImmediatelyOnStart ? GetRandomEnemySpawnInfo() : null;
+        StartSpawning();
+    }
+
+    public void SetSpecialSpawner(SpecialEnemySpawnInfo[] infos, Plant plant, int index, float startTime)
+        => SetSpecialSpawner(infos, plant, index, startTime, new SpecialEnemySpawnSettings());
+
+    public void SetSpecialSpawner(SpecialEnemySpawnInfo[] infos, Plant plant, int index, float startTime,
+        SpecialEnemySpawnSettings settings, EnemyManager enemySource = null)
+    {
+        StopSpawning();
+        specialSpawnSettings = settings ?? new SpecialEnemySpawnSettings();
+        specialEnemySource = enemySource;
+        killSource = null;
+        killRoundVersion = -1;
+        killBaseline = 0;
+        specialEnemyInfos = infos;
+        enemyInfos = null;
+        useSpecialEntries = true;
+        pendingImmediateSpawn = null;
+        if (baseStat == null) baseStat = new EnemySpawnerStat();
+        if (specialSpawnSettings.selection != SpecialEnemySpawnSelection.IndependentIntervals)
+            baseStat.spawnInterval = EffectStatUtility.Safe(specialSpawnSettings.spawnInterval, .05f, 100000f, 1.5f);
+        else if (infos != null)
+            foreach (var info in infos)
+                if (info != null && info.dataSet != null)
+                {
+                    baseStat.spawnInterval = EffectStatUtility.Safe(info.spawnRate, .05f, 100000f, 1.5f);
+                    break;
+                }
+        Configure(plant, index, startTime, buffManager);
+        StartSpawning();
+    }
+
+    private void Configure(Plant plant, int index, float startTime, BuffManager manager)
+    {
         targetPlant = plant;
         spawnerIndex = index;
         spawnStartTime = startTime;
@@ -95,15 +158,6 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
             buffManager.RegisterBuffTarget(this);
 
         RefreshBuffedStat();
-
-
-        pendingImmediateSpawn = null;
-        if (spawnImmediatelyOnStart)
-        {
-
-            pendingImmediateSpawn = GetRandomEnemySpawnInfo();
-        }
-        StartSpawning();
     }
 
     public void RefreshBuffedStat()
@@ -126,11 +180,14 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
     {
         StopSpawning();
 
-        if (enemyInfos == null || enemyInfos.Length == 0)
+        if (useSpecialEntries ? specialEnemyInfos == null || specialEnemyInfos.Length == 0
+            : enemyInfos == null || enemyInfos.Length == 0)
             return;
 
         isSpawning = true;
-        spawnCoroutine = StartCoroutine(SpawnRoutine());
+        spawnCoroutine = StartCoroutine(useSpecialEntries
+            ? specialSpawnSettings.selection == SpecialEnemySpawnSelection.IndependentIntervals ? SpecialSpawnRoutine() : SpecialGroupRoutine()
+            : SpawnRoutine());
     }
 
     public void StopSpawning()
@@ -151,7 +208,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
     {
         if (pendingImmediateSpawn != null)
         {
-            while (isSpawning && TimeStopRuntime.IsStopped(TimeStopTargets.EnemySpawning)) yield return null;
+            while (isSpawning && IsSpawnClockStopped) yield return null;
             if (!isSpawning) yield break;
             EnemySpawnInfo immediate = pendingImmediateSpawn;
             pendingImmediateSpawn = null;
@@ -167,22 +224,15 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
                 continue;
             }
 
-            baseStat.spawnInterval = Mathf.Max(0.01f, selectedInfo.spawnRate);
-            RefreshBuffedStat();
-
-            float interval = currentStat != null
-                ? currentStat.spawnInterval
-                : selectedInfo.spawnRate;
-
-            interval = Mathf.Max(0.01f, interval);
+            float interval = GetNextSpawnInterval();
 
             StartSpawnDebugTimer(selectedInfo, interval);
 
             float remaining = interval;
-            while (remaining > 0f || TimeStopRuntime.IsStopped(TimeStopTargets.EnemySpawning))
+            while (remaining > 0f || IsSpawnClockStopped)
             {
                 yield return null;
-                if (!TimeStopRuntime.IsStopped(TimeStopTargets.EnemySpawning))
+                if (!IsSpawnClockStopped)
                     remaining -= Time.deltaTime;
             }
 
@@ -190,6 +240,178 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
             SetSpawnDebugCompleted();
 
             SpawnEnemy(selectedInfo, interval);
+        }
+    }
+
+    public float GetNextSpawnInterval()
+    {
+        RefreshBuffedStat();
+        return ApplyIntervalOffset(currentStat != null ? currentStat.spawnInterval : 1.5f);
+    }
+
+    private float GetSpecialInterval(SpecialEnemySpawnInfo info)
+        => GetSpecialInterval(info.spawnRate);
+
+    private float GetSpecialInterval(float baseInterval)
+    {
+        var stat = baseStat != null ? baseStat.Clone() : new EnemySpawnerStat();
+        stat.spawnInterval = EffectStatUtility.Safe(baseInterval, .05f, 100000f, 1.5f);
+        var buffed = buffManager != null ? buffManager.GetBuffedStatForTarget(stat, this) : stat;
+        if (buffed == null) buffed = stat;
+        buffed.Clamp();
+        return ApplyIntervalOffset(buffed.spawnInterval);
+    }
+
+    private float ApplyIntervalOffset(float interval)
+    {
+        float first = EffectStatUtility.Safe(spawnIntervalOffsetRange.x, -100000f, 100000f, 0f);
+        float second = EffectStatUtility.Safe(spawnIntervalOffsetRange.y, -100000f, 100000f, 0f);
+        float offset = Random.Range(Mathf.Min(first, second), Mathf.Max(first, second));
+        return Mathf.Max(.05f, interval + offset);
+    }
+
+    private sealed class SpecialTimer
+    {
+        public SpecialEnemySpawnInfo info;
+        public float interval;
+        public float remaining;
+    }
+
+    private IEnumerator SpecialSpawnRoutine()
+    {
+        var timers = new List<SpecialTimer>();
+        foreach (var info in specialEnemyInfos)
+        {
+            if (info == null || info.dataSet == null) continue;
+            float interval = spawnImmediatelyOnStart ? 0f : GetSpecialInterval(info);
+            timers.Add(new SpecialTimer { info = info, interval = interval, remaining = interval });
+        }
+        while (isSpawning && timers.Count > 0)
+        {
+            if (!IsSpawnClockStopped)
+            {
+                foreach (var timer in timers)
+                {
+                    if (timer.remaining > 0f || !SpecialConditionsMet()) continue;
+                    bool spawned = SpawnEnemy(timer.info, timer.interval);
+                    if (spawned) ResetSpecialKillProgress();
+                    if (!isSpawning) yield break;
+                    if (!spawned) continue;
+                    timer.interval = GetSpecialInterval(timer.info);
+                    timer.remaining = timer.interval;
+                }
+            }
+            if (enableSpawnDebug)
+            {
+                var next = timers[0];
+                foreach (var timer in timers) if (timer.remaining < next.remaining) next = timer;
+                SetSpawnDebug(next.info, next.interval);
+                debugSelectedSpawnRate = next.info.spawnRate;
+                debugSpawnRemainingTime = RoundToOneDecimal(Mathf.Max(0f, next.remaining));
+                debugSpawnProgress01 = next.interval > 0f ? Mathf.Clamp01(1f - next.remaining / next.interval) : 1f;
+            }
+            yield return null;
+            if (!IsSpawnClockStopped)
+                foreach (var timer in timers) timer.remaining -= Time.deltaTime;
+        }
+    }
+
+    private GameStatisticsManager SpecialStatistics => statisticsManager != null ? statisticsManager : GameStatisticsManager.Instance;
+
+    private int GetSpecialKillCount()
+    {
+        var source = SpecialStatistics;
+        if (source == null)
+        {
+            killSource = null; killRoundVersion = -1; killBaseline = 0;
+            return 0;
+        }
+        if (killSource != source || killRoundVersion != source.RoundVersion || source.RoundKillCount < killBaseline)
+        {
+            killSource = source;
+            killRoundVersion = source.RoundVersion;
+            killBaseline = 0;
+        }
+        return Mathf.Max(0, source.RoundKillCount - killBaseline);
+    }
+
+    private void ResetSpecialKillProgress()
+    {
+        GetSpecialKillCount();
+        if (killSource != null) killBaseline = killSource.RoundKillCount;
+    }
+
+    private bool SpecialConditionsMet()
+    {
+        var enemies = specialEnemySource != null ? specialEnemySource : EnemyManager.instance;
+        return specialSpawnSettings.ConditionsMet(enemies != null ? enemies.CurrentAliveEnemyCount : 0,
+            GetSpecialKillCount(), enemies != null, SpecialStatistics != null);
+    }
+
+    private SpecialEnemySpawnInfo PickWeightedSpecial()
+    {
+        double total = 0;
+        foreach (var info in specialEnemyInfos)
+            if (info != null && info.dataSet != null)
+                total += EffectStatUtility.Safe(info.spawnWeight, 0f, 100000000f, 0f);
+        if (total <= 0) return null;
+        double roll = Random.value * total;
+        SpecialEnemySpawnInfo last = null;
+        foreach (var info in specialEnemyInfos)
+        {
+            if (info == null || info.dataSet == null) continue;
+            float weight = EffectStatUtility.Safe(info.spawnWeight, 0f, 100000000f, 0f);
+            if (weight <= 0) continue;
+            last = info;
+            roll -= weight;
+            if (roll < 0) return info;
+        }
+        return last;
+    }
+
+    private IEnumerator SpecialGroupRoutine()
+    {
+        float interval = spawnImmediatelyOnStart ? 0f : GetSpecialInterval(specialSpawnSettings.spawnInterval);
+        float remaining = interval;
+        while (isSpawning)
+        {
+            if (!IsSpawnClockStopped && remaining <= 0f && SpecialConditionsMet())
+            {
+                bool spawned = false;
+                if (specialSpawnSettings.selection == SpecialEnemySpawnSelection.WeightedOne)
+                {
+                    var selected = PickWeightedSpecial();
+                    if (selected != null) spawned = SpawnEnemy(selected, interval);
+                }
+                else
+                {
+                    // Test the group's conditions once: its own summons must not break an all-at-once batch.
+                    foreach (var info in specialEnemyInfos)
+                    {
+                        if (info == null || info.dataSet == null) continue;
+                        spawned |= SpawnEnemy(info, interval);
+                        if (!isSpawning) break;
+                    }
+                }
+                if (spawned) ResetSpecialKillProgress();
+                if (!isSpawning) yield break;
+                if (spawned)
+                {
+                    interval = GetSpecialInterval(specialSpawnSettings.spawnInterval);
+                    remaining = interval;
+                }
+            }
+            if (enableSpawnDebug)
+            {
+                debugNextEnemyName = specialSpawnSettings.selection == SpecialEnemySpawnSelection.AllTogether ? "All Together" : "Weighted One";
+                debugSpawnInterval = RoundToOneDecimal(interval);
+                debugSpawnRemainingTime = RoundToOneDecimal(Mathf.Max(0f, remaining));
+                debugSpawnProgress01 = interval > 0f ? Mathf.Clamp01(1f - remaining / interval) : 1f;
+                debugSelectedSpawnRate = specialSpawnSettings.spawnInterval;
+                debugSelectedSpawnWeight = 0;
+            }
+            yield return null;
+            if (!IsSpawnClockStopped) remaining -= Time.deltaTime;
         }
     }
 
@@ -229,7 +451,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
                 break;
 
             yield return null;
-            if (!TimeStopRuntime.IsStopped(TimeStopTargets.EnemySpawning))
+            if (!IsSpawnClockStopped)
                 elapsed += Time.deltaTime;
         }
 
@@ -237,7 +459,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         debugSpawnProgress01 = 1f;
     }
 
-    private void SetSpawnDebug(EnemySpawnInfo info, float interval)
+    private void SetSpawnDebug(EnemySpawnData info, float interval)
     {
         debugNextEnemyName = info != null && info.dataSet != null
             ? info.dataSet.name
@@ -248,8 +470,8 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         debugSpawnProgress01 = 0f;
 
 
-        debugSelectedSpawnRate = info != null ? info.spawnRate : 0f;
-        debugSelectedSpawnWeight = info != null ? info.spawnWeight : 0f;
+        debugSelectedSpawnRate = baseStat != null ? baseStat.spawnInterval : 0f;
+        debugSelectedSpawnWeight = info is EnemySpawnInfo normal ? normal.spawnWeight : 0f;
     }
 
     private void SetSpawnDebugCompleted()
@@ -277,27 +499,27 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         return Mathf.Round(Mathf.Max(0f, value) * 10f) / 10f;
     }
 
-    private void SpawnEnemy(EnemySpawnInfo info, float usedInterval)
+    private bool SpawnEnemy(EnemySpawnData info, float usedInterval)
     {
-        if (EnemyManager.instance != null && EnemyManager.instance.FieldLimitReached) return;
-        if (TimeStopRuntime.IsStopped(TimeStopTargets.EnemySpawning) || info == null)
-            return;
+        if (EnemyManager.instance != null && EnemyManager.instance.FieldLimitReached) return false;
+        if (IsSpawnClockStopped || info == null || enemyPrefab == null)
+            return false;
 
         if (info.dataSet == null)
-            return;
+            return false;
 
         if (targetPlant == null)
-            return;
+            return false;
 
         if (EnemyManager.instance != null && !EnemyManager.instance.CanSpawnMoreEnemies() && !overSpawn)
-            return;
+            return false;
 
         Vector2 spawnPos = GetRandomSpawnPosition();
 
         GameObject spawnedEnemy = CreateEnemyObject(enemyPrefab, spawnPos);
 
         if (spawnedEnemy == null)
-            return;
+            return false;
 
         Enemy enemy = spawnedEnemy.GetComponent<Enemy>();
 
@@ -307,9 +529,10 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         if (EnemyManager.instance != null)
             EnemyManager.instance.RegisterEnemy(enemy);
 
-        if(isBoss)
+        if (isBoss && OffscreenTargetIndicatorManager.Instance != null)
             OffscreenTargetIndicatorManager.Instance.ShowIndicator(spawnedEnemy);
         LogSpawnTime(info, usedInterval);
+        return true;
     }
 
     private EnemySpawnerStat SpawnAreaStat => Application.isPlaying && currentStat != null ? currentStat : baseStat;
@@ -322,19 +545,21 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         if (spawnShape == EnemySpawnShape.Circle)
         {
             float angle = Random.Range(0f, Mathf.PI * 2f);
-            return spawnCenter + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * GetSpawnDistance();
+            return SpawnWorldCenter + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * GetSpawnDistance();
         }
 
         Vector2 size = SpawnRectangleSize;
-        Vector2 min = spawnCenter - size * .5f;
-        Vector2 max = spawnCenter + size * .5f;
+        if (spawnShape == EnemySpawnShape.RectanglePerimeter)
+            return SpawnWorldCenter + EnemyRegionGeometry.RectangleBorderPoint(size, SpawnAreaStat?.spawnBorderThickness ?? 0f);
+        Vector2 min = SpawnWorldCenter - size * .5f;
+        Vector2 max = SpawnWorldCenter + size * .5f;
         return new Vector2(Random.Range(min.x, max.x), Random.Range(min.y, max.y));
     }
 
     private float GetSpawnDistance()
         => EffectStatUtility.Safe(SpawnAreaStat?.spawnDistance ?? 8f, 0.01f, 100000f, 8f);
 
-    private void LogSpawnTime(EnemySpawnInfo info, float usedInterval)
+    private void LogSpawnTime(EnemySpawnData info, float usedInterval)
     {
         if (EnemyManager.instance == null)
             return;
@@ -352,7 +577,7 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
             "[Spawner " + spawnerIndex + "] " +
             elapsedTime.ToString("F1") + "초 경과 / " +
             enemyName + " 소환 / " +
-            "사용된 SpawnRate: " + info.spawnRate.ToString("F1") + " / " +
+            "기본 Spawn Interval: " + (info is SpecialEnemySpawnInfo special ? special.spawnRate : baseStat != null ? baseStat.spawnInterval : 0f).ToString("F1") + " / " +
             "실제 대기시간: " + usedInterval.ToString("F1")
         );
     }
@@ -451,15 +676,21 @@ public class EnemySpawner : MonoBehaviour, IBuffTarget
         if (!drawSpawnGizmo)
             return;
 
-        Vector3 center = spawnCenter;
+        Vector3 center = SpawnWorldCenter;
         float extent;
 
         Gizmos.color = spawnGizmoColor;
 
-        if (spawnShape == EnemySpawnShape.Rectangle)
+        if (spawnShape != EnemySpawnShape.Circle)
         {
             Vector2 size = SpawnRectangleSize;
-            Gizmos.DrawWireCube(center, new Vector3(size.x, size.y, 0f));
+            if (spawnShape == EnemySpawnShape.RectanglePerimeter)
+            {
+                EnemyRegionGeometry.RectangleHalfSizes(size, SpawnAreaStat?.spawnBorderThickness ?? 0f, out var inner, out var outer);
+                Gizmos.DrawWireCube(center, inner * 2f);
+                Gizmos.DrawWireCube(center, outer * 2f);
+            }
+            else Gizmos.DrawWireCube(center, new Vector3(size.x, size.y, 0f));
             extent = Mathf.Max(size.x, size.y) * .5f;
         }
         else

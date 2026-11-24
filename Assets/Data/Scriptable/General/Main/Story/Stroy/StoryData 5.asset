@@ -1,0 +1,153 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c1a70fcd7e8f8c42920e122a812509f, type: 3}
+  m_Name: StoryData 5
+  m_EditorClassIdentifier: Assembly-CSharp::StoryData
+  dialogues:
+  - background: {fileID: 21300000, guid: aad54c3cccbaae546b5000cb6a0a9811, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: 0}
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: Raindrops rolled off the wagon cover. The cargo stayed dry.
+    - languageType: 1
+      speaker: "\uB0B4\uB808\uC774\uC158"
+      dialogue: "\uBE44\uB97C \uB9DE\uC740 \uC218\uB808 \uB36E\uAC1C\uC5D0\uC11C
+        \uBB3C\uBC29\uC6B8\uC774 \uB610\uB974\uB974 \uAD74\uB800\uB2E4. \uC9D0\uC740
+        \uBB34\uC0AC\uD588\uB2E4."
+  - background: {fileID: 21300000, guid: aad54c3cccbaae546b5000cb6a0a9811, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: 3870107277556667874, guid: 14b1de42f0c1a7547a84a35461671803, type: 3}
+    translations:
+    - languageType: 0
+      speaker: Nocti
+      dialogue: It worked! I'll come with you as far as the landing.
+    - languageType: 1
+      speaker: "\uB179\uD2F0"
+      dialogue: "\uC131\uACF5\uC774\uC5D0\uC694! \uB098\uB8E8\uAE4C\uC9C0 \uC800\uB3C4
+        \uAC19\uC774 \uAC08\uAC8C\uC694."
+  - background: {fileID: 21300000, guid: aad54c3cccbaae546b5000cb6a0a9811, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: 0}
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: Nocti joined the party.
+    - languageType: 1
+      speaker: "\uB0B4\uB808\uC774\uC158"
+      dialogue: "\uB179\uD2F0\uB3C4 \uC77C\uD589\uC5D0 \uD569\uB958\uD588\uB2E4."
+  - background: {fileID: 21300000, guid: aad54c3cccbaae546b5000cb6a0a9811, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: 0}
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: When Mocha and Nocti delivered the essence, the merchant held a bottle
+        up to the lamp.
+    - languageType: 1
+      speaker: "\uB0B4\uB808\uC774\uC158"
+      dialogue: "\uBAA8\uCE74\uC640 \uB179\uD2F0\uAC00 \uC815\uC218\uB97C \uAC00\uC838\uC624\uC790
+        \uC554\uC0C1\uC778\uC740 \uBCD1 \uD558\uB098\uB97C \uB4F1\uBD88\uC5D0 \uBE44\uCDC4\uB2E4."
+  - background: {fileID: 21300000, guid: aad54c3cccbaae546b5000cb6a0a9811, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: 0}
+    translations:
+    - languageType: 0
+      speaker: Merchant
+      dialogue: This should do nicely. The key's price has changed again, though.
+    - languageType: 1
+      speaker: "\uC554\uC0C1\uC778"
+      dialogue: "\uC81C\uBC95 \uC4F8 \uB9CC\uD558\uACA0\uC5B4. \uD558\uC9C0\uB9CC
+        \uC5F4\uC1E0\uAC12\uC740 \uB610 \uB2EC\uB77C\uC84C\uC9C0."
+  - background: {fileID: 21300000, guid: aad54c3cccbaae546b5000cb6a0a9811, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: 0}
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: The key was still out of reach. The merchant handed over an empty
+        fish trap.
+    - languageType: 1
+      speaker: "\uB0B4\uB808\uC774\uC158"
+      dialogue: "\uC5F4\uC1E0\uB294 \uC5EC\uC804\uD788 \uC190\uC774 \uB2FF\uC9C0
+        \uC54A\uC558\uB2E4. \uC554\uC0C1\uC778\uC740 \uBE48 \uD1B5\uBC1C\uC744 \uAC74\uB138\uB2E4."
+  - background: {fileID: 21300000, guid: aad54c3cccbaae546b5000cb6a0a9811, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: 0}
+    translations:
+    - languageType: 0
+      speaker: Merchant
+      dialogue: The landing market's open again. Fish next.
+    - languageType: 1
+      speaker: "\uC554\uC0C1\uC778"
+      dialogue: "\uB098\uB8E8 \uC7A5\uD130\uAC00 \uC5F4\uB838\uC5B4. \uB2E4\uC74C\uC5D4
+        \uBB3C\uACE0\uAE30\uC57C."
+  - background: {fileID: 21300000, guid: aad54c3cccbaae546b5000cb6a0a9811, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: 0}
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: Mocha went to find Marin the angler.
+    - languageType: 1
+      speaker: "\uB0B4\uB808\uC774\uC158"
+      dialogue: "\uBAA8\uCE74\uB294 \uB09A\uC2DC\uAFBC \uB9C8\uB9B0\uC744 \uCC3E\uC544
+        \uB098\uC130\uB2E4."
+  - background: {fileID: 21300000, guid: aad54c3cccbaae546b5000cb6a0a9811, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: 0}
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: Marin struggled to hold on to both her rod and her bucket on a tilting
+        fishing platform. Mocha rushed to the bank.
+    - languageType: 1
+      speaker: "\uB0B4\uB808\uC774\uC158"
+      dialogue: "\uB9C8\uB9B0\uC740 \uAE30\uC6B8\uC5B4\uC9C4 \uB09A\uC2DC \uC88C\uB300\uC5D0\uC11C
+        \uB09A\uC2EF\uB300\uC640 \uC591\uB3D9\uC774\uB97C \uBC88\uAC08\uC544 \uBD99\uB4E4\uC5C8\uB2E4.
+        \uBAA8\uCE74\uAC00 \uBB3C\uAC00\uB85C \uB6F0\uC5B4\uC654\uB2E4."
+  - background: {fileID: 21300000, guid: aad54c3cccbaae546b5000cb6a0a9811, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: -5112458139969842252, guid: ff030c02d772e6a4c99364ce7193964a, type: 3}
+    translations:
+    - languageType: 0
+      speaker: Marin
+      dialogue: At this rate, I'll be in the water before the fish are out!
+    - languageType: 1
+      speaker: "\uB9C8\uB9B0"
+      dialogue: "\uBB3C\uACE0\uAE30\uBCF4\uB2E4 \uB0B4\uAC00 \uBA3C\uC800 \uBE60\uC9C0\uACA0\uC5B4!"
+  - background: {fileID: 21300000, guid: aad54c3cccbaae546b5000cb6a0a9811, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: 0}
+    translations:
+    - languageType: 0
+      speaker: Narrator
+      dialogue: Nua widened and secured the platform while Marin fitted a rod holder.
+        Mocha kept enemies away from the bank.
+    - languageType: 1
+      speaker: "\uB0B4\uB808\uC774\uC158"
+      dialogue: "\uB204\uC544\uAC00 \uBC1C\uD310\uC744 \uB113\uD600 \uACE0\uC815\uD558\uACE0,
+        \uB9C8\uB9B0\uC774 \uB09A\uC2EF\uB300 \uBC1B\uCE68\uC744 \uB2EC\uC558\uB2E4.
+        \uBAA8\uCE74\uB294 \uBB3C\uAC00\uB85C \uB2E4\uAC00\uC624\uB294 \uC801\uC744
+        \uB9C9\uC558\uB2E4."
+  - background: {fileID: 21300000, guid: aad54c3cccbaae546b5000cb6a0a9811, type: 3}
+    leftCharacter: {fileID: 0}
+    rightCharacter: {fileID: -5112458139969842252, guid: ff030c02d772e6a4c99364ce7193964a, type: 3}
+    translations:
+    - languageType: 0
+      speaker: Marin
+      dialogue: There! This time it won't wobble!
+    - languageType: 1
+      speaker: "\uB9C8\uB9B0"
+      dialogue: "\uC88B\uC544, \uC774\uBC88\uC5D0\uB294 \uD754\uB4E4\uB9AC\uC9C0
+        \uC54A\uC544!"
