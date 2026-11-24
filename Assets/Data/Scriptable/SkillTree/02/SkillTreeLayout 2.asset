@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SkillTreeLayoutData
   skillMap: {fileID: 11400000, guid: 26bdc2a0d6cdd3f4b9172203def60c8a, type: 2}
   gridPlacement: 1
-  gridCellSize: {x: 400, y: 300}
-  gridNodeGap: {x: 20, y: 20}
-  revision: 237
+  gridCellSize: {x: 200, y: 200}
+  revision: 344
+  placementOrigin: 0
+  placementPadding: {x: 0, y: 0}
   nodeDatas:
   - {fileID: 11400000, guid: 9a51d4ae8b6db4f4296ed80246c91cb4, type: 2}
   - {fileID: 11400000, guid: c38f007d65ad76d4d832cd95adc1d806, type: 2}
@@ -39,6 +40,18 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0d2a1637a46535c4c93df3c0fed10fe6, type: 2}
   - {fileID: 11400000, guid: 78280e5684921dc459c221bccb3e7017, type: 2}
   - {fileID: 11400000, guid: 544a21aff7089004fa4abacf6771cce7, type: 2}
+  - {fileID: 11400000, guid: 958084574f053294bbbd386deb2a6c68, type: 2}
+  - {fileID: 11400000, guid: 857df3984a271b54b97b73b68cff722c, type: 2}
+  - {fileID: 11400000, guid: 74361e514bea3af4d870fd833f84ea0b, type: 2}
+  - {fileID: 11400000, guid: d614da4389d2b104ca93e5a1dbb9d3e5, type: 2}
+  - {fileID: 11400000, guid: 2f2df7ab97b49014084b2f1761da44ec, type: 2}
+  - {fileID: 11400000, guid: e04156d4e61f2d64e9403b7b51eb1b85, type: 2}
+  - {fileID: 11400000, guid: b86bfbab0cef6f046b5303aacb3acaee, type: 2}
+  - {fileID: 11400000, guid: 7d9a9147310e6644a933f8c4e148895b, type: 2}
+  - {fileID: 11400000, guid: 1ce5781cec538344895986ff82b27530, type: 2}
+  - {fileID: 11400000, guid: 68eb2f7b0acf5b149b5e1f0fff7f3603, type: 2}
+  - {fileID: 11400000, guid: 7ea7e3a62c9ae964a8034a3b514d2d8e, type: 2}
+  - {fileID: 11400000, guid: 48ea918a06768334f8b1bd5db999f9cb, type: 2}
   nodeLayout:
   - node: {fileID: 11400000, guid: 9a51d4ae8b6db4f4296ed80246c91cb4, type: 2}
     position: {x: -1200, y: 0}
@@ -103,3 +116,39 @@ MonoBehaviour:
   - node: {fileID: 11400000, guid: 544a21aff7089004fa4abacf6771cce7, type: 2}
     position: {x: 0, y: 0}
     gridPosition: {x: 0, y: 0}
+  - node: {fileID: 11400000, guid: 958084574f053294bbbd386deb2a6c68, type: 2}
+    position: {x: 400, y: 0}
+    gridPosition: {x: 2, y: 0}
+  - node: {fileID: 11400000, guid: 857df3984a271b54b97b73b68cff722c, type: 2}
+    position: {x: 0, y: -200}
+    gridPosition: {x: 0, y: -1}
+  - node: {fileID: 11400000, guid: 74361e514bea3af4d870fd833f84ea0b, type: 2}
+    position: {x: 0, y: -600}
+    gridPosition: {x: 0, y: -3}
+  - node: {fileID: 11400000, guid: d614da4389d2b104ca93e5a1dbb9d3e5, type: 2}
+    position: {x: 200, y: 0}
+    gridPosition: {x: 1, y: 0}
+  - node: {fileID: 11400000, guid: 2f2df7ab97b49014084b2f1761da44ec, type: 2}
+    position: {x: 600, y: 0}
+    gridPosition: {x: 3, y: 0}
+  - node: {fileID: 11400000, guid: e04156d4e61f2d64e9403b7b51eb1b85, type: 2}
+    position: {x: 0, y: -400}
+    gridPosition: {x: 0, y: -2}
+  - node: {fileID: 11400000, guid: b86bfbab0cef6f046b5303aacb3acaee, type: 2}
+    position: {x: -400, y: 0}
+    gridPosition: {x: -2, y: 0}
+  - node: {fileID: 11400000, guid: 7d9a9147310e6644a933f8c4e148895b, type: 2}
+    position: {x: -600, y: 0}
+    gridPosition: {x: -3, y: 0}
+  - node: {fileID: 11400000, guid: 1ce5781cec538344895986ff82b27530, type: 2}
+    position: {x: -200, y: 0}
+    gridPosition: {x: -1, y: 0}
+  - node: {fileID: 11400000, guid: 68eb2f7b0acf5b149b5e1f0fff7f3603, type: 2}
+    position: {x: 0, y: 600}
+    gridPosition: {x: 0, y: 3}
+  - node: {fileID: 11400000, guid: 7ea7e3a62c9ae964a8034a3b514d2d8e, type: 2}
+    position: {x: 0, y: 400}
+    gridPosition: {x: 0, y: 2}
+  - node: {fileID: 11400000, guid: 48ea918a06768334f8b1bd5db999f9cb, type: 2}
+    position: {x: 0, y: 200}
+    gridPosition: {x: 0, y: 1}
