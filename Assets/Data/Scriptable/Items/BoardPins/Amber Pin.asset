@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b65e678af8d446388f570449fd5c64a1, type: 3}
+  m_Name: Amber Pin
+  m_EditorClassIdentifier: Assembly-CSharp::BoardPinData
+  icon: {fileID: 236844683, guid: 6118e20d7b781af41b86234faee2e1f2, type: 3}
+  data:
+  - language: 0
+    dataName: "Amber Pin"
+    description: "Equip this pin in a board cell."
+    detailDescription:
+  - language: 1
+    dataName: "\ud638\ubc15 \ud540"
+    description: "\ud22c\uc785 \ubcf4\ub4dc\uc758 \ud540 \uce78\uc5d0 \uc7a5\ucc29\ud560 \uc218 \uc788\ub2e4."
+    detailDescription:
+  dataNumbering:
+  dataId: BoardPin02
+  dataType: 9
+  grade: 1
+  series: 0
+  requireUnlock: 0
+  tags: []
+  weight: 1
+  cooldown: 0
+  effectDatas: []
+  boardIcon: {fileID: 236844683, guid: 6118e20d7b781af41b86234faee2e1f2, type: 3}

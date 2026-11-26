@@ -8,6 +8,7 @@ public partial class TooltipUI
     protected virtual bool HideOnAwake => startHidden;
     public Vector2 offset = new Vector2(0f, 20f);
     public bool clampToParent = true;
+    [SerializeField] private bool flipHorizontalOffsetAtEdge;
     [Tooltip("Disable for an information panel already positioned by the scene layout.")]
     public bool positionAtAnchor = true;
     public bool removePannel = true;
@@ -193,9 +194,13 @@ public partial class TooltipUI
         );
 
         Vector2 targetPos = localPos + offset;
-
         if (clampToParent)
+        {
+            if (flipHorizontalOffsetAtEdge && offset.x > 0 &&
+                targetPos.x + tooltipRect.rect.width * (1f - tooltipRect.pivot.x) > parentRect.rect.xMax)
+                targetPos.x = localPos.x - offset.x;
             targetPos = ClampToParent(targetPos);
+        }
 
         tooltipRect.anchoredPosition = targetPos;
     }

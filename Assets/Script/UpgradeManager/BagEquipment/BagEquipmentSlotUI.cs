@@ -5,9 +5,12 @@ using UnityEngine;
 public class BagEquipmentSlotUI : ClickableItemSlotUI
 {
     public TextMeshProUGUI slotNumberText;
+    [UnityEngine.SerializeField] private UnityEngine.UI.Image selectionBackground;
     private Action clicked;
     private Action deselected;
     private Color normalIconColor = Color.white;
+    private Color normalBackgroundColor;
+    private bool capturedColors;
     protected override bool AllowEmptySelection => true;
     protected override bool KeepSelectionOnRefresh => true;
 
@@ -17,19 +20,37 @@ public class BagEquipmentSlotUI : ClickableItemSlotUI
         deselected = onDeselected;
         if (tooltip != null && TryGetComponent<ItemTooltipTrigger>(out var trigger)) trigger.Init(tooltip);
         if (slotNumberText != null && number > 0) slotNumberText.text = number.ToString();
+        if (capturedColors) return;
+        capturedColors = true;
         if (icon != null) normalIconColor = icon.color;
+        if (selectionBackground != null) normalBackgroundColor = selectionBackground.color;
     }
 
     public virtual void Show(DefaultData data, bool selected, bool isLocked = false)
+        => Show(data, selected, isLocked, null);
+
+    public void Show(DefaultData data, bool selected, Sprite displayIcon)
+        => Show(data, selected, false, displayIcon);
+
+    private void Show(DefaultData data, bool selected, bool isLocked, Sprite displayIcon)
     {
         ClearSlot();
         if (data != null)
         {
             SetData(data);
+            if (displayIcon != null && icon != null)
+            {
+                icon.sprite = displayIcon;
+                icon.enabled = true;
+            }
             if (ready != null) ready.SetActive(false);
         }
         SetAmountVisible(false);
         IsLocked = isLocked;
+        if (selectionBackground != null)
+            selectionBackground.color = selected && !isLocked
+                ? Color.Lerp(normalBackgroundColor, new Color(0.93f, 0.71f, 0.40f, normalBackgroundColor.a), 0.45f)
+                : normalBackgroundColor;
         if (locked != null) locked.SetActive(isLocked);
         if (icon != null) icon.color = isLocked
             ? new Color(normalIconColor.r, normalIconColor.g, normalIconColor.b, normalIconColor.a * .4f)

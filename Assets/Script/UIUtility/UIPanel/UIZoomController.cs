@@ -19,6 +19,9 @@ public class UIZoomController : MonoBehaviour, IScrollHandler
 
     [Header("Shared Slider")]
     public Slider zoomSlider;
+    [SerializeField] private Button zoomInButton;
+    [SerializeField] private Button zoomOutButton;
+    [SerializeField] private TMPro.TMP_Text zoomLabel;
 
     [Header("Debug")]
     public bool debugLog = false;
@@ -40,10 +43,15 @@ public class UIZoomController : MonoBehaviour, IScrollHandler
     private void OnEnable()
     {
         InitSlider();
+        if (zoomInButton != null) zoomInButton.onClick.AddListener(ZoomIn);
+        if (zoomOutButton != null) zoomOutButton.onClick.AddListener(ZoomOut);
+        if (zoomSlider == null && zoomLabel != null) ApplyZoom();
     }
 
     private void OnDisable()
     {
+        if (zoomInButton != null) zoomInButton.onClick.RemoveListener(ZoomIn);
+        if (zoomOutButton != null) zoomOutButton.onClick.RemoveListener(ZoomOut);
         if (zoomSlider != null)
             zoomSlider.onValueChanged.RemoveListener(SetZoomFromSlider);
     }
@@ -79,24 +87,19 @@ public class UIZoomController : MonoBehaviour, IScrollHandler
 
     public void OnScroll(PointerEventData eventData)
     {
-        if (zoomSlider == null)
-            return;
+        if (zoomSlider != null || zoomInButton != null || zoomOutButton != null)
+            ChangeZoom(eventData.scrollDelta.y);
+    }
 
-        float scroll = eventData.scrollDelta.y;
+    private void ZoomIn() => ChangeZoom(1f);
+    private void ZoomOut() => ChangeZoom(-1f);
 
-        if (Mathf.Approximately(scroll, 0f))
-            return;
-
-        float nextZoom = zoomSlider.value + scroll * zoomSpeed;
-        nextZoom = Mathf.Clamp(nextZoom, minZoom, maxZoom);
-
-        // 중요:
-        // SetValueWithoutNotify 쓰면 안 됨.
-        // value를 직접 바꿔야 모든 UIZoomController가 onValueChanged를 받음.
-        zoomSlider.value = nextZoom;
-
-        if (debugLog)
-            Debug.Log($"[UIZoomController] Wheel / Slider Zoom: {zoomSlider.value}");
+    private void ChangeZoom(float steps)
+    {
+        if (Mathf.Approximately(steps, 0f)) return;
+        float next = Mathf.Clamp(currentZoom + steps * zoomSpeed, minZoom, maxZoom);
+        if (zoomSlider != null) zoomSlider.value = next;
+        else SetZoomFromSlider(next);
     }
 
     private void SetZoomFromSlider(float value)
@@ -114,6 +117,9 @@ public class UIZoomController : MonoBehaviour, IScrollHandler
             return;
 
         zoomTarget.localScale = Vector3.one * currentZoom;
+        if (zoomLabel != null) zoomLabel.text = $"{Mathf.RoundToInt(currentZoom * 100f)}%";
+        if (zoomInButton != null) zoomInButton.interactable = currentZoom < maxZoom;
+        if (zoomOutButton != null) zoomOutButton.interactable = currentZoom > minZoom;
     }
 
     public void ResetZoom()

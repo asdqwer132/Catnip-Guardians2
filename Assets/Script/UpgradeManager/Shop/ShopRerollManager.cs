@@ -10,6 +10,7 @@ public class ShopRerollManager : MonoBehaviour
     public bool firstRerollFree = false;
 
     private bool usedFirstFreeReroll = false;
+    public int CurrentPrice => firstRerollFree && !usedFirstFreeReroll ? 0 : price;
 
     public bool CanReroll()
     {

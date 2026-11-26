@@ -34,9 +34,12 @@ public class GachaItemInfo
     private static bool Valid(GachaAmountChance value) => value != null && value.count > 0 && value.weight > 0 && !float.IsInfinity(value.weight);
 }
 
+public enum ShopBoxKind { Material, Pin }
+
 [CreateAssetMenu(fileName = "Box", menuName = "Upgrade/Shop/Box")]
 public class ItemBoxData : UnlockableDefaultData
 {
+    public ShopBoxKind kind;
     [Space(10)] public Cost[] costs;
     public GachaItemInfo[] gachaItems;
     [Space(10), Tooltip("평상시에는 기본 아이콘을 사용하고 구매 성공 시에만 이 클립을 재생합니다.")]

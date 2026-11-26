@@ -12,6 +12,7 @@ public enum DataType
     Chest = 6,
     ItemMaterial = 7,
     MergeBox = 8,
+    Pin = 9,
 }
 
 [Serializable]

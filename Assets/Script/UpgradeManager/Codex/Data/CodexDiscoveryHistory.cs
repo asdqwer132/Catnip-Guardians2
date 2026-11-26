@@ -25,7 +25,7 @@ public sealed class CodexDiscoveryFileStore : ICodexDiscoveryStore
     }
 }
 
-public enum CodexDiscoveryKind { Item, Enemy, Character, Map }
+public enum CodexDiscoveryKind { Item, Enemy, Character, Map, Chest }
 
 // Scene-independent discovery storage. These records describe what the player
 // has discovered, independently of owned stock and crafted-only recipe histories.
@@ -39,6 +39,7 @@ public sealed class CodexDiscoveryHistory
         public List<string> discoveredEnemyIds = new List<string>();
         public List<string> discoveredCharacterIds = new List<string>();
         public List<string> discoveredMapIds = new List<string>();
+        public List<string> discoveredChestIds = new List<string>();
     }
 
     private static CodexDiscoveryHistory current;
@@ -49,6 +50,7 @@ public sealed class CodexDiscoveryHistory
     private readonly HashSet<string> items = new HashSet<string>(StringComparer.Ordinal);
     private readonly HashSet<string> enemies = new HashSet<string>(StringComparer.Ordinal);
     private readonly HashSet<string> characters = new HashSet<string>(StringComparer.Ordinal);
+    private readonly HashSet<string> chests = new HashSet<string>(StringComparer.Ordinal);
     private readonly HashSet<string> maps = new HashSet<string>(StringComparer.Ordinal);
     private bool loaded, dirty;
     public event Action Changed;
@@ -129,6 +131,7 @@ public sealed class CodexDiscoveryHistory
             case CodexDiscoveryKind.Enemy: return enemies;
             case CodexDiscoveryKind.Character: return characters;
             case CodexDiscoveryKind.Map: return maps;
+            case CodexDiscoveryKind.Chest: return chests;
             default: throw new ArgumentOutOfRangeException(nameof(kind));
         }
     }
@@ -146,6 +149,7 @@ public sealed class CodexDiscoveryHistory
                 ReadIds(enemies, data.discoveredEnemyIds);
                 ReadIds(characters, data.discoveredCharacterIds);
                 ReadIds(maps, data.discoveredMapIds);
+                ReadIds(chests, data.discoveredChestIds);
             }
             loaded = true;
             return true;
@@ -176,7 +180,8 @@ public sealed class CodexDiscoveryHistory
         var data = new SaveData
         {
             discoveredItemIds = Sorted(items), discoveredEnemyIds = Sorted(enemies),
-            discoveredCharacterIds = Sorted(characters), discoveredMapIds = Sorted(maps)
+            discoveredCharacterIds = Sorted(characters), discoveredMapIds = Sorted(maps),
+            discoveredChestIds = Sorted(chests)
         };
         try { store.Write(JsonUtility.ToJson(data, true)); dirty = false; }
         catch (Exception error) when (error is IOException || error is UnauthorizedAccessException)

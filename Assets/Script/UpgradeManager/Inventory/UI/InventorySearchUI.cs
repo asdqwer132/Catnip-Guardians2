@@ -11,6 +11,13 @@ public class InventorySearchUI : ItemSearchUIBase
     public Grade[] gradeDropdownValues = { Grade.None, Grade.Common, Grade.Rare, Grade.Epic, Grade.Legendary };
 
     [SerializeField] private TMP_InputField directSearchInput;
+    [SerializeField] private TMP_Dropdown seriesDropdown;
+
+    public void SetSeriesControlAvailable(bool available)
+    {
+        if (seriesDropdown != null) seriesDropdown.interactable = available;
+        if (!available) ResetSeriesFilter();
+    }
 
     public void OnGradeDropdownChanged(int index)
     {
@@ -77,5 +84,6 @@ public class InventorySearchUI : ItemSearchUIBase
     {
         if (directSearchInput != null && directSearchInput.text.Trim() != filter.query)
             directSearchInput.SetTextWithoutNotify(filter.query);
+        if (seriesDropdown != null && !filter.useSeries) seriesDropdown.SetValueWithoutNotify(0);
     }
 }

@@ -17,6 +17,7 @@ public class ShopBoxInfoUI : BasicTooltipUI
     [Header("Basic Info UI")]
     public GameObject pannel;
     public BoxCost[] extraBoxCosts;
+    public CurrencyUIGroup requiredCosts;
 
     [Header("Gacha Item List")]
     public Transform itemListParent;
@@ -34,7 +35,11 @@ public class ShopBoxInfoUI : BasicTooltipUI
         if (buyButton != null)
             buyButton.onClick.AddListener(OnClickBuy);
 
-        ClearInfo();
+    }
+
+    private void OnDestroy()
+    {
+        if (buyButton != null) buyButton.onClick.RemoveListener(OnClickBuy);
     }
 
     public void ShowBoxInfo(ItemBoxData boxData)
@@ -49,6 +54,7 @@ public class ShopBoxInfoUI : BasicTooltipUI
             pannel.SetActive(true);
 
         SetData(boxData);
+        requiredCosts?.SetRequiredCosts(boxData.costs);
 
 
         if (extraBoxCosts != null)
@@ -128,6 +134,7 @@ public class ShopBoxInfoUI : BasicTooltipUI
     public void ClearInfo()
     {
         ClearData();
+        requiredCosts?.SetRequiredCosts(null);
 
         if (pannel != null)
             pannel.SetActive(false);

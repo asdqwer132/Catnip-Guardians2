@@ -177,17 +177,7 @@ public sealed class BagEquipmentPanelUI : MonoBehaviour
         if (unequipButton != null) unequipButton.interactable = equipped != null;
     }
 
-    public bool IsMaterial(ItemData item)
-    {
-        if (item == null || string.IsNullOrWhiteSpace(item.dataId)) return false;
-        if (item.dataType == DataType.ItemMaterial) return true;
-
-        // Existing material assets can still be tagged Item in the data workbook.
-        string prefix = item.series + "Material";
-        return item.dataType == DataType.Item && MergeBoxLevelSnapshot.IsBoxSeries(item.series) &&
-            item.dataId.StartsWith(prefix, StringComparison.Ordinal) &&
-            int.TryParse(item.dataId.Substring(prefix.Length), out int number) && number > 0;
-    }
+    public bool IsMaterial(ItemData item) => BoardLoadout.AcceptsMaterial(item);
 
     private bool OwnsMaterial(ItemData item)
         => IsMaterial(item)

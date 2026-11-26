@@ -44,14 +44,14 @@ public class ItemBoxPoolManager : MonoBehaviour
         cacheReady = true;
     }
 
-    public List<ItemBoxData> GetRandomBoxes(int count)
+    public List<ItemBoxData> GetRandomBoxes(int count, ShopBoxKind kind = ShopBoxKind.Material)
     {
         var result = new List<ItemBoxData>();
         if (count <= 0) return result;
         if (!cacheReady) RebuildCache();
 
         var availableBoxes = new List<ItemBoxData>();
-        if (seriesToggles == null || seriesToggles.Length == 0)
+        if (kind == ShopBoxKind.Pin || seriesToggles == null || seriesToggles.Length == 0)
             availableBoxes.AddRange(cachedBoxes);
         else
         {
@@ -63,6 +63,8 @@ public class ItemBoxPoolManager : MonoBehaviour
                     availableBoxes.AddRange(seriesBoxes);
             }
         }
+
+        availableBoxes.RemoveAll(box => box.kind != kind);
 
         for (int i = 0; i < count && availableBoxes.Count > 0; i++)
         {

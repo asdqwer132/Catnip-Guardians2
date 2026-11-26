@@ -67,7 +67,7 @@ public class ShopBoxButton : SlotUI
 
     private void OnToggleChanged(bool selected)
     {
-        if (shopManager == null || boxData == null || IsPurchased)
+        if (shopManager == null || shopManager.IsShowingResult || boxData == null || IsPurchased)
         {
             if (selected) ClearSelection();
             return;

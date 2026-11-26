@@ -5,7 +5,9 @@ using UnityEngine.UI;
 public sealed class PotionEquipmentPanelUI : MonoBehaviour
 {
     public PotionEquipmentManager manager;
-    public PotionEquipmentInventoryUI inventoryView;
+    public InventoryUI inventoryView;
+    [SerializeField] private bool replaceOnInventoryClick;
+    [SerializeField] private TMPro.TMP_Text activeEffectSummary;
     public PotionEquipSlotUI[] equipmentSlots;
     public GameObject selectedDetails;
     public GameObject notSelectedDetails;
@@ -89,6 +91,7 @@ public sealed class PotionEquipmentPanelUI : MonoBehaviour
             manager.TryEquip(target, potion);
             return;
         }
+        if (replaceOnInventoryClick && current != potion && manager.TryReplace(target, potion)) return;
         PendingPotion = current != potion ? potion : null;
         RefreshUI();
     }
@@ -146,9 +149,27 @@ public sealed class PotionEquipmentPanelUI : MonoBehaviour
         if (notSelectedDetails != null) notSelectedDetails.SetActive(!occupied);
         if (selectedConfirmArea != null) selectedConfirmArea.SetActive(occupied);
         if (notSelectedConfirmArea != null) notSelectedConfirmArea.SetActive(!occupied);
+        if (activeEffectSummary != null)
+        {
+            var selectedLanguage = LanguageManager.CurrentLanguage;
+            var text = new System.Text.StringBuilder();
+            for (int i = 0; manager != null && i < manager.SlotCount; i++)
+            {
+                var potion = manager.GetPotion(i);
+                if (potion == null) continue;
+                if (text.Length > 0) text.Append("\n\n");
+                text.Append(i + 1).Append(". ").Append(DefinedDataUtility.GetName(potion, selectedLanguage, potion.name));
+                foreach (var effect in CodexEffectUtility.GetDescriptions(potion))
+                {
+                    var description = DefinedDataUtility.GetDescription(effect, selectedLanguage);
+                    if (!string.IsNullOrWhiteSpace(description)) text.Append('\n').Append(description);
+                }
+            }
+            activeEffectSummary.text = text.ToString();
+        }
         if (unequipButton != null)
         {
-            unequipButton.gameObject.SetActive(occupied);
+            unequipButton.gameObject.SetActive(replaceOnInventoryClick || occupied);
             unequipButton.interactable = occupied;
         }
         if (replaceButton != null)

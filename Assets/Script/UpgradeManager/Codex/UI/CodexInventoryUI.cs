@@ -40,6 +40,7 @@ public sealed class CodexInventoryUI : InventoryUI
         if (subscribedHistory != null) subscribedHistory.Changed -= RefreshUI;
         subscribedHistory = null;
         base.OnDisable();
+        if (details != null && details != tooltipUI) details.Hide();
     }
     private void Start() => Init();
     public void OnTabSelected(bool selected)

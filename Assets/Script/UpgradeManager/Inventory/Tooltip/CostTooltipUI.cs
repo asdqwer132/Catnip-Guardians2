@@ -13,6 +13,8 @@ public class CostTooltipUI : BasicTooltipUI
     public GameObject unlockButtonPanel;
     public GameObject lockedStatusPanel;
     public GameObject unlockedPanel;
+    [SerializeField] private TMP_Text statusText;
+    [SerializeField] private GameObject statusPanel;
     private SkillNodeData displayedSkill;
     private UnityEngine.UI.Button boundUnlockButton;
 
@@ -31,23 +33,42 @@ public class CostTooltipUI : BasicTooltipUI
         if (unlockButtonPanel != null)
         {
             var button = unlockButtonPanel.GetComponentInChildren<UnityEngine.UI.Button>(true);
-            if (boundUnlockButton != null) boundUnlockButton.onClick.RemoveListener(UnlockSkill);
-            boundUnlockButton = button;
+            if (boundUnlockButton != button)
+            {
+                if (boundUnlockButton != null) boundUnlockButton.onClick.RemoveListener(UnlockSkill);
+                boundUnlockButton = button;
+            }
             if (button != null)
             {
                 bool persistent = false;
                 for (int i = 0; i < button.onClick.GetPersistentEventCount(); i++)
                     if (button.onClick.GetPersistentTarget(i) == this && button.onClick.GetPersistentMethodName(i) == nameof(UnlockSkill)) persistent = true;
+                button.onClick.RemoveListener(UnlockSkill);
                 if (!persistent) button.onClick.AddListener(UnlockSkill);
             }
         }
 
+        bool korean = LanguageManager.CurrentLanguage == language.korean;
         if (data is not CostTooltipData costData)
+        {
+            if (boundUnlockButton != null) boundUnlockButton.interactable = false;
+            if (needCurrencyPanel != null) needCurrencyPanel.SetActive(false);
+            if (statusPanel != null) statusPanel.SetActive(data is SkillMapTooltipData);
+            if (statusText != null && data is SkillMapTooltipData summary)
+                statusText.text = $"{(korean ? "해금" : "Unlocked")} {summary.completedNodesCount} / {summary.totalNodesCount}";
             return;
+        }
 
-        if (boundUnlockButton != null) boundUnlockButton.interactable = displayedSkill != null && !costData.isUnlocked;
+        bool canUnlock = displayedSkill != null && !costData.isUnlocked &&
+            SkillTreeManager.Instance != null && SkillTreeManager.Instance.CanUnlock(displayedSkill);
+        if (statusText != null)
+            statusText.text = costData.isUnlocked ? (korean ? "해금됨" : "Unlocked") :
+                canUnlock ? (korean ? "해금하기" : "Unlock") : (korean ? "잠김" : "Locked");
+
+        if (boundUnlockButton != null) boundUnlockButton.interactable = statusPanel != null ? canUnlock : displayedSkill != null && !costData.isUnlocked;
         if (needCurrencyPanel != null) needCurrencyPanel.SetActive(!costData.isUnlocked);
-        if (unlockButtonPanel != null) unlockButtonPanel.SetActive(!costData.isUnlocked);
+        if (unlockButtonPanel != null) unlockButtonPanel.SetActive(statusPanel == unlockButtonPanel || !costData.isUnlocked);
+        if (statusPanel != null) statusPanel.SetActive(true);
         if (lockedStatusPanel != null) lockedStatusPanel.SetActive(!costData.isUnlocked);
         if (unlockedPanel != null) unlockedPanel.SetActive(costData.isUnlocked);
 
@@ -65,7 +86,6 @@ public class CostTooltipUI : BasicTooltipUI
             {
                 if (item != null && item.costPanel != null && item.costPanel.GetComponentInChildren<CurrencyUI>(true) == null)
                 {
-                    Debug.Log(item.costPanel.name);
                     item.costPanel.SetActive(false);
                 }
             }

@@ -10,6 +10,8 @@ public class SkillTreeUI : MonoBehaviour
 
     [Header("Option")]
     [SerializeField] private bool includeInactive = true;
+    [SerializeField] private TooltipUI selectionTooltip;
+    internal TooltipUI SelectionTooltip => selectionTooltip;
     private SkillTreeManager boundManager;
 
     private void OnEnable()

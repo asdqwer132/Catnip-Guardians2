@@ -21,7 +21,7 @@ public sealed class PotionRecipePanelUI : ItemSearchFilterTargetUI
     public Toggle craftingTab;
     public ItemCombinationPanelUI craftingPanel;
     private readonly List<PotionRecipeSlotUI> slots = new List<PotionRecipeSlotUI>();
-    private readonly List<PotionRecipeMaterialUI> materialRows = new List<PotionRecipeMaterialUI>();
+    [SerializeField] private List<PotionRecipeMaterialUI> materialRows = new List<PotionRecipeMaterialUI>();
     private readonly List<InventoryItem> requirements = new List<InventoryItem>();
     private readonly List<ItemRecipeData> visibleRecipes = new List<ItemRecipeData>();
     public ItemRecipeData SelectedRecipe { get; private set; }
@@ -44,7 +44,6 @@ public sealed class PotionRecipePanelUI : ItemSearchFilterTargetUI
         if (goToCraftingButton != null) goToCraftingButton.onClick.RemoveListener(GoToCrafting);
     }
     protected override void OnSearchFilterChanged() => RefreshRecipes();
-    private void SetActivePannel(bool isOn) => recipeInfoPannel.SetActive(isOn);
     public void RefreshRecipes()
     {
         visibleRecipes.Clear();
@@ -78,9 +77,10 @@ public sealed class PotionRecipePanelUI : ItemSearchFilterTargetUI
         requirements.Clear();
         if (SelectedRecipe != null && !SelectedRecipe.TryGetRequiredMaterials(requirements)) SelectedRecipe = null;
         if (details != null) details.SetData(SelectedRecipe != null ? SelectedRecipe.resultItem : null);
-        if (materialsContent != null && materialSlotPrefab != null)
+        if (materialsContent != null || materialRows.Count > 0)
         {
-            while (materialRows.Count < requirements.Count) materialRows.Add(Instantiate(materialSlotPrefab, materialsContent));
+            if (materialSlotPrefab != null && materialsContent != null)
+                while (materialRows.Count < requirements.Count) materialRows.Add(Instantiate(materialSlotPrefab, materialsContent));
             for (int i = 0; i < materialRows.Count; i++)
             {
                 bool active = i < requirements.Count;

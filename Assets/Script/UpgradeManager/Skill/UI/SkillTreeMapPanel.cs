@@ -22,6 +22,8 @@ public sealed class SkillTreeMapPanel : MonoBehaviour
     public TooltipUI mapInformation;
     public TooltipUI nodeInformation;
     public Image progressFill;
+    [SerializeField] private Button summaryButton;
+    [SerializeField] private bool showSummaryAutomatically = true;
 
     private UnityAction<bool>[] listeners;
     private SkillTreeManager subscribedManager;
@@ -29,6 +31,7 @@ public sealed class SkillTreeMapPanel : MonoBehaviour
 
     private void OnEnable()
     {
+        if (summaryButton != null) summaryButton.onClick.AddListener(ToggleSummary);
         if (nodeInformation != null)
             nodeInformation.VisibilityChanged += OnNodeVisibilityChanged;
         listeners = new UnityAction<bool>[maps.Length];
@@ -68,6 +71,7 @@ public sealed class SkillTreeMapPanel : MonoBehaviour
 
     private void OnDisable()
     {
+        if (summaryButton != null) summaryButton.onClick.RemoveListener(ToggleSummary);
         if (nodeInformation != null)
             nodeInformation.VisibilityChanged -= OnNodeVisibilityChanged;
         if (subscribedManager != null)
@@ -100,7 +104,7 @@ public sealed class SkillTreeMapPanel : MonoBehaviour
         var scrollRect = maps[index].scrollRect;
         var content = scrollRect != null ? scrollRect.content : null;
         bool hasFittedLayout = content != null && content.TryGetComponent<SkillTreeAreaSizer>(out _);
-        if (!hasFittedLayout)
+        if (!hasFittedLayout && (maps.Length > 1 || maps[index].toggle != null))
         {
             if (maps[index].zoom != null) maps[index].zoom.ResetZoom();
             if (content != null) content.anchoredPosition = Vector2.zero;
@@ -116,7 +120,7 @@ public sealed class SkillTreeMapPanel : MonoBehaviour
         SkillMapTooltipProvider provider = maps[selectedIndex].information;
         if (provider == null)
             return;
-        if (mapInformation != null && (nodeInformation == null || !nodeInformation.IsVisible))
+        if (showSummaryAutomatically && mapInformation != null && (nodeInformation == null || !nodeInformation.IsVisible))
             mapInformation.Show(provider);
         SkillMapData map = provider.MapData;
         if (progressFill != null && map != null)
@@ -125,10 +129,15 @@ public sealed class SkillTreeMapPanel : MonoBehaviour
             progressFill.fillAmount = map.totalNodeCount > 0
                 ? Mathf.Clamp01((float)unlocked / map.totalNodeCount) : 0f;
         }
-        foreach(var mapInfo in maps)
-        {
-            mapInfo.toggleText.text = mapInfo.information.MapData.GetDataName();
-        }
+        foreach (var mapInfo in maps)
+            if (mapInfo.toggleText != null && mapInfo.information != null && mapInfo.information.MapData != null)
+                mapInfo.toggleText.text = mapInfo.information.MapData.GetDataName();
+    }
+
+    private void ToggleSummary()
+    {
+        if (mapInformation == null || selectedIndex >= maps.Length) return;
+        mapInformation.TogglePin(maps[selectedIndex].information);
     }
 
     private void OnNodeVisibilityChanged(bool visible)

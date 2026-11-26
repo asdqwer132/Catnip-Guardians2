@@ -19,6 +19,7 @@ public class SkillNodeUI : MonoBehaviour
     [SerializeField] private bool hideUnavailableNodes;
 
     private SkillTreeUI ownerUI;
+    private SkillNodeTooltipProvider tooltipProvider;
     private CanvasGroup visibilityGroup;
     private float visibleAlpha;
     private bool visibleInteractable, visibleRaycasts;
@@ -39,6 +40,7 @@ public class SkillNodeUI : MonoBehaviour
     public void Init(SkillTreeUI owner)
     {
         ownerUI = owner;
+        if (tooltipProvider == null) TryGetComponent(out tooltipProvider);
 
         if (button == null)
             button = GetComponent<Button>();
@@ -68,6 +70,12 @@ public class SkillNodeUI : MonoBehaviour
 
         if (SkillTreeManager.Instance == null)
             return;
+
+        if (ownerUI != null && ownerUI.SelectionTooltip != null && tooltipProvider != null)
+        {
+            ownerUI.SelectionTooltip.TogglePin(tooltipProvider);
+            return;
+        }
 
         bool success = SkillTreeManager.Instance.UnlockSkill(skillNodeData);
 
@@ -137,21 +145,9 @@ public class SkillNodeUI : MonoBehaviour
             iconImage.enabled = icon != null;
         }
 
-        if (button != null)
-            button.interactable = isCanClick;
-
-        if (lockImage != null)
-            lockImage.gameObject.SetActive(isCanClick);
-
-        if (isUnlocked)
-        {
-            if (button != null)
-                button.interactable = false;
-
-            if (lockImage != null)
-                lockImage.gameObject.SetActive(false);
-
-        }
+        bool showDetails = ownerUI != null && ownerUI.SelectionTooltip != null && tooltipProvider != null;
+        if (button != null) button.interactable = showDetails || isCanClick;
+        if (lockImage != null) lockImage.gameObject.SetActive(isCanClick);
     }
 
     private void SetLinesUnlocked(bool unlocked)

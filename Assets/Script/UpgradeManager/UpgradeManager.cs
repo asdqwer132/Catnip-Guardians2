@@ -16,6 +16,7 @@ public class UpgradeManager : MonoBehaviour
     [Header("UI")]
     public SkillTreeUI skillTreeUI;
     public InventoryUI[] inventoryUIs;
+    [SerializeField] private BoardEquipmentPanelUI boardEquipment;
 
     [Header("DataCarrier")]
     public SceneMoveManager sceneMoveManager;
@@ -68,6 +69,11 @@ public class UpgradeManager : MonoBehaviour
     private void UIInit()
     {
         mergeBoxUpgrades?.Initialize();
+        if (boardEquipment != null)
+        {
+            var unlockedNodes = mergeBoxUpgrades != null ? mergeBoxUpgrades.CaptureUnlockedNodes() : null;
+            boardEquipment.InitializeLoadout(MergeBoxUpgradeManager.CaptureChestUnlocks(unlockedNodes));
+        }
         if (potionEquipment != null && GameSession.Instance != null && GameSession.Instance.TryReadGeneralData(out var data))
             potionEquipment.RestoreSlots(data.potionSlots);
         if (skillTreeUI != null)

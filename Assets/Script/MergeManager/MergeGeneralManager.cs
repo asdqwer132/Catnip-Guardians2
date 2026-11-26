@@ -120,6 +120,20 @@ public sealed class MergeGeneralManager : MonoBehaviour
         equippedProfileIndices.Clear();
         equippedModules.Clear();
         if (!UsesLoadout) return;
+
+        var board = roundData.equipment.board;
+        if (board?.IsConfigured == true)
+        {
+            equippedProfileIndices.Add(StartingSeriesIndex);
+            foreach (int number in board.skillIndices)
+            {
+                if (!EquipmentSave.IsChestUnlocked(number, roundData.unlockedMergeBoxes)) continue;
+                var gimmick = boxes != null ? boxes.GetProfile(number - 1)?.gimmick : null;
+                if (gimmick != null && !equippedModules.Contains(gimmick)) equippedModules.Add(gimmick);
+            }
+            return;
+        }
+
         var chest = roundData.equippedChest;
         int index = chest != null ? chest.boxIndex - 1 : 0;
         var profile = boxes != null ? boxes.GetProfile(index) : null;

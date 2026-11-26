@@ -8,13 +8,43 @@ public sealed class EquipmentData
 {
     public List<string> itemIds = new List<string>();
     public List<int> equippedChests = new List<int>();
+    public BoardLoadout board;
     public List<SavedPotionSlot> potions = new List<SavedPotionSlot>();
 
     public EquipmentData Copy() => new EquipmentData
     {
         itemIds = itemIds != null ? new List<string>(itemIds) : new List<string>(),
         equippedChests = equippedChests != null ? new List<int>(equippedChests) : new List<int>(),
+        board = board?.IsConfigured == true ? board.Copy() : null,
         potions = potions != null ? potions.ConvertAll(slot => slot?.Copy()) : new List<SavedPotionSlot>()
+    };
+}
+
+[Serializable]
+public sealed class BoardLoadout
+{
+    public int eggBoxIndex;
+    public List<int> skillIndices = new List<int>();
+    public List<string> pinIds = new List<string>();
+
+    public static bool AcceptsMaterial(ItemData item)
+    {
+        if (item == null || string.IsNullOrWhiteSpace(item.dataId)) return false;
+        if (item.dataType == DataType.ItemMaterial) return true;
+
+        // Existing material assets can still be tagged Item in the data workbook.
+        string prefix = item.series + "Material";
+        return item.dataType == DataType.Item && MergeBoxLevelSnapshot.IsBoxSeries(item.series) &&
+            item.dataId.StartsWith(prefix, StringComparison.Ordinal) &&
+            int.TryParse(item.dataId.Substring(prefix.Length), out int number) && number > 0;
+    }
+
+    public bool IsConfigured => eggBoxIndex > 0;
+    public BoardLoadout Copy() => new BoardLoadout
+    {
+        eggBoxIndex = eggBoxIndex,
+        skillIndices = skillIndices != null ? new List<int>(skillIndices) : new List<int>(),
+        pinIds = pinIds != null ? new List<string>(pinIds) : new List<string>()
     };
 }
 
@@ -84,6 +114,14 @@ public static class EquipmentSave
                 if (IsChestUnlocked(number, unlocked) && FindChest(number) is { } chest) return chest;
 
         return FindChest(1);
+    }
+
+    public static MergeBoxEquipmentData ResolveEgg(EquipmentData equipment, IReadOnlyList<int> unlocked)
+    {
+        if (equipment?.board?.IsConfigured != true) return ResolveChest(equipment, unlocked);
+        int index = equipment.board.eggBoxIndex;
+        return IsChestUnlocked(index, unlocked) && FindChest(index) is { plant: not null } egg
+            ? egg : FindChest(1);
     }
 
     public static bool IsChestUnlocked(int number, IReadOnlyList<int> unlocked)

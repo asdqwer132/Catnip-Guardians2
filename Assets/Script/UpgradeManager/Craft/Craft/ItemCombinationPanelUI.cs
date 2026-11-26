@@ -10,14 +10,20 @@ public sealed class ItemCombinationPanelUI : MonoBehaviour
     public ItemTooltipTrigger resultTooltip;
     public Button combineButton;
     public ResultPanelUI resultPanel;
+    [SerializeField] private Button clearButton;
+    [SerializeField] private Button inlineResultButton;
+    private ItemData inlineResult;
+    private bool resultAwaitingConfirmation;
 
     public PotionCraftManager Manager => manager;
 
     private void OnEnable()
     {
+        if (clearButton != null) clearButton.onClick.AddListener(ReturnMaterials);
+        if (inlineResultButton != null) inlineResultButton.onClick.AddListener(ConfirmInlineResult);
         if (manager != null)
         {
-            manager.onMaterialChanged += RefreshUI;
+            manager.onMaterialChanged += OnMaterialsChanged;
             if (manager.recipeHistory != null) manager.recipeHistory.Changed += RefreshUI;
         }
         RefreshUI();
@@ -35,10 +41,12 @@ public sealed class ItemCombinationPanelUI : MonoBehaviour
 
     private void OnDisable()
     {
+        if (clearButton != null) clearButton.onClick.RemoveListener(ReturnMaterials);
+        if (inlineResultButton != null) inlineResultButton.onClick.RemoveListener(ConfirmInlineResult);
         if (combineButton != null) combineButton.onClick.RemoveListener(Combine);
         if (manager != null)
         {
-            manager.onMaterialChanged -= RefreshUI;
+            manager.onMaterialChanged -= OnMaterialsChanged;
             if (manager.recipeHistory != null) manager.recipeHistory.Changed -= RefreshUI;
         }
         if (resultTooltip != null)
@@ -59,8 +67,28 @@ public sealed class ItemCombinationPanelUI : MonoBehaviour
 
     public void Combine()
     {
-        if (manager != null && manager.TryCombine(out ItemData result) && resultPanel != null)
-            resultPanel.ShowResult(result);
+        if (manager == null || !manager.TryCombine(out ItemData result)) return;
+        if (resultPanel != null) resultPanel.ShowResult(result);
+        if (inlineResultButton != null)
+        {
+            inlineResult = result;
+            resultAwaitingConfirmation = true;
+            RefreshUI();
+        }
+    }
+
+    private void ConfirmInlineResult()
+    {
+        if (!resultAwaitingConfirmation) return;
+        resultAwaitingConfirmation = false;
+        manager?.ConfirmCraftResult();
+    }
+
+    private void OnMaterialsChanged()
+    {
+        inlineResult = null;
+        resultAwaitingConfirmation = false;
+        RefreshUI();
     }
 
     public void RefreshUI()
@@ -76,12 +104,13 @@ public sealed class ItemCombinationPanelUI : MonoBehaviour
                         materialSlots[i].LockSlot();
                     else materialSlots[i].SetSlot(manager.GetMaterialAt(i));
                 }
-        ItemData preview = manager.GetPreviewResult();
+        ItemData preview = inlineResult != null ? inlineResult : manager.GetPreviewResult();
+        if (inlineResultButton != null) inlineResultButton.interactable = preview != null;
         if (resultSlot != null)
             resultSlot.SetSlot(preview != null ? new InventoryItem(preview, 1) : null);
         if (combineButton != null)
             combineButton.interactable = manager.CanCraft();
-        if (resultTooltip != null)
+        if (resultTooltip != null && inlineResultButton == null)
         {
             if (preview != null)
                 resultTooltip.ShowTooltip();

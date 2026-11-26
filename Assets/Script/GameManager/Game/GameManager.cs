@@ -41,7 +41,8 @@ public class GameManager : MonoBehaviour
 
     internal PlantData PrepareBattle(UpgradeToGeneralData data)
     {
-        var chest = data?.equippedChest != null ? data.equippedChest : defaultChest;
+        var chest = data?.equippedEgg != null ? data.equippedEgg :
+            data?.equippedChest != null ? data.equippedChest : defaultChest;
         player?.ApplyPlayerData(chest != null ? chest.player : null);
         return chest != null && chest.plant != null ? chest.plant : defaultChest != null ? defaultChest.plant : null;
     }

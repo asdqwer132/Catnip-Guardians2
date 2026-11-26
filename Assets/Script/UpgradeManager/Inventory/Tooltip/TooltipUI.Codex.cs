@@ -54,7 +54,7 @@ public partial class TooltipUI
             if (count > 0) SelectPortrait(0);
             else
             {
-                SetImage(portraitImage, null);
+                if (portraitImage != icon) SetImage(portraitImage, null);
                 if (portraitInformation != null) portraitInformation.SetDefinedData(null);
             }
             if (childInventory != null)
@@ -78,6 +78,12 @@ public partial class TooltipUI
         if (portraitInformation != null) portraitInformation.SetDefinedData(portrait, portrait?.stateId ?? "");
         for (int i = 0; i < portraitSlots.Count; i++) portraitSlots[i].ApplySelection(i == SelectedPortrait);
         RefreshPortraitInformation(DisplayLanguage);
+    }
+
+    public void CyclePortrait()
+    {
+        if (SelectedData is CharacterCodexData character && character.portraits?.Count > 0)
+            SelectPortrait((SelectedPortrait + 1) % character.portraits.Count);
     }
 
     public void PreviousPortrait() { if (SelectedPortrait > 0) SelectPortrait(SelectedPortrait - 1); }

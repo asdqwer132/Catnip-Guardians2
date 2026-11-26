@@ -61,6 +61,9 @@ public partial class TooltipUI
     {
         if (effectDescriptions == null) return;
         var text = new System.Text.StringBuilder();
+        bool sharedBody = effectDescriptions == descriptionText;
+        if (sharedBody && effectSource != null)
+            text.Append(DefinedDataUtility.GetDescription(effectSource, selected));
         foreach (var effect in CodexEffectUtility.GetDescriptions(effectSource))
         {
             if (text.Length > 0) text.Append("\n\n");
@@ -71,7 +74,7 @@ public partial class TooltipUI
             if (!string.IsNullOrEmpty(detail)) text.Append('\n').Append(detail);
         }
         effectDescriptions.text = text.ToString();
-        effectDescriptions.gameObject.SetActive(text.Length > 0);
+        effectDescriptions.gameObject.SetActive(text.Length > 0 || (sharedBody && !HideDescriptionWhenEmpty));
     }
 
 }

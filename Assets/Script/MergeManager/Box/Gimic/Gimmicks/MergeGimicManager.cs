@@ -9,6 +9,7 @@ using TMPro;
 [DefaultExecutionOrder(-90)]
 public class MergeGimicManager : MonoBehaviour
 {
+    public const int MaxActiveModules = 2;
     [SerializeField] private CoolButton[] skillButtons = Array.Empty<CoolButton>();
     [ReadOnly, SerializeField] private MergeBoxGimic currentBox;
     private readonly List<MergeBoxGimic> modules = new List<MergeBoxGimic>(2);
@@ -39,7 +40,7 @@ public class MergeGimicManager : MonoBehaviour
                     continue;
                 }
                 modules.Add(gimmick);
-                if (modules.Count == 2) break;
+                if (modules.Count == MaxActiveModules) break;
             }
         currentBox = modules.Count > 0 ? modules[0] : null;
         SetSkills();

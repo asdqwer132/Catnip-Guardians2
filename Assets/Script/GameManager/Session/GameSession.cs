@@ -25,6 +25,7 @@ public class GameSession : MonoBehaviour
     public int GameDataRevision { get; private set; }
     public int RoundRevision { get; private set; }
     public int PendingBattleBatchCount => pendingBattleItems.Count;
+    public IReadOnlyList<int> UnlockedMergeBoxes => generalData?.unlockedMergeBoxes;
     public bool HasSkillItems =>
         generalData != null && generalData.skillItems != null && generalData.skillItems.Count > 0;
     public GameItemToBattleData LastSentToBattle => lastSentToBattle?.Copy();
@@ -129,6 +130,7 @@ public class GameSession : MonoBehaviour
     {
         generalData = (data ?? new UpgradeToGeneralData()).Copy();
         generalData.equippedChest = EquipmentSave.ResolveChest(generalData.equipment, generalData.unlockedMergeBoxes);
+        generalData.equippedEgg = EquipmentSave.ResolveEgg(generalData.equipment, generalData.unlockedMergeBoxes);
         var progress = generalData.Copy();
         progress.equipment = null;
         progress.equippedChest = null;
@@ -153,11 +155,34 @@ public class GameSession : MonoBehaviour
 
         var inventory = data.materialItems;
         data.materialItems = new List<InventoryItem>();
+        bool hasBoard = data.equipment.board?.IsConfigured == true;
         foreach (string id in data.equipment.itemIds)
         {
-            if (string.IsNullOrEmpty(id)) continue;
-            var item = inventory.Find(entry => entry.itemData.dataId == id);
+            var item = string.IsNullOrEmpty(id) ? null : inventory.Find(entry => entry.itemData.dataId == id);
+            if (hasBoard)
+            {
+                if (!BoardLoadout.AcceptsMaterial(item?.itemData)) item = null;
+                data.boardMaterialSlots.Add(item);
+            }
             if (item != null) data.materialItems.Add(item);
+        }
+
+        if (hasBoard)
+        {
+            var used = new Dictionary<BoardPinData, int>();
+            foreach (string id in data.equipment.board.pinIds)
+            {
+                var entry = string.IsNullOrEmpty(id) ? null :
+                    inventory.Find(item => item.itemData is BoardPinData && item.itemData.dataId == id);
+                var pin = entry?.itemData as BoardPinData;
+                if (pin != null)
+                {
+                    used.TryGetValue(pin, out int equipped);
+                    if (equipped < entry.amount) used[pin] = equipped + 1;
+                    else pin = null;
+                }
+                data.boardPinSlots.Add(pin);
+            }
         }
         return true;
     }
@@ -167,6 +192,7 @@ public class GameSession : MonoBehaviour
         generalData ??= new UpgradeToGeneralData();
         generalData.equipment = equipment?.Copy();
         generalData.equippedChest = EquipmentSave.ResolveChest(equipment, generalData.unlockedMergeBoxes);
+        generalData.equippedEgg = EquipmentSave.ResolveEgg(equipment, generalData.unlockedMergeBoxes);
         if (!hasGeneralData) return;
         GameDataRevision++;
         GameDataChanged?.Invoke();
