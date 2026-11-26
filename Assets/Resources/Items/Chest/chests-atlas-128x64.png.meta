@@ -1,22 +1,31 @@
 fileFormatVersion: 2
-guid: a210b34758c290e47bef300ed14bf420
+guid: 52a31ae5714cac94f984eaee1ca32a3b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 9008015399477033087
-    second: MainBtnAdd_0
+      213: 8231885794640594128
+    second: chests-atlas-128x64_0
   - first:
-      213: 6473711237345320762
-    second: MainBtnAdd_1
+      213: -5991576393813393872
+    second: chests-atlas-128x64_1
   - first:
-      213: 6869975155315667341
-    second: MainBtnAdd_2
+      213: -3536141013040680995
+    second: chests-atlas-128x64_2
   - first:
-      213: 255965516977911804
-    second: MainBtnAdd_3
+      213: 8020897384996890197
+    second: chests-atlas-128x64_3
   - first:
-      213: 8516843083426355427
-    second: MainBtnAdd_4
+      213: 3924514860026588056
+    second: chests-atlas-128x64_4
+  - first:
+      213: 5861961462300029305
+    second: chests-atlas-128x64_5
+  - first:
+      213: -7991369183387111281
+    second: chests-atlas-128x64_6
+  - first:
+      213: 3559880490142032075
+    second: chests-atlas-128x64_7
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -58,12 +67,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 96
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -125,111 +134,177 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: MainBtnAdd_0
+      name: chests-atlas-128x64_0
       rect:
         serializedVersion: 2
-        x: 1
-        y: 17
-        width: 14
-        height: 14
+        x: 2
+        y: 37
+        width: 28
+        height: 21
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f78b3118746e20d70800000000000000
-      internalID: 9008015399477033087
+      spriteID: 0d4032d04888d3270800000000000000
+      internalID: 8231885794640594128
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: MainBtnAdd_1
+      name: chests-atlas-128x64_1
       rect:
         serializedVersion: 2
-        x: 12
-        y: 12
-        width: 8
-        height: 8
+        x: 34
+        y: 37
+        width: 28
+        height: 21
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a3f1c68321e37d950800000000000000
-      internalID: 6473711237345320762
+      spriteID: 03ef22ab305a9dca0800000000000000
+      internalID: -5991576393813393872
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: MainBtnAdd_2
+      name: chests-atlas-128x64_2
       rect:
         serializedVersion: 2
-        x: 17
-        y: 17
-        width: 14
-        height: 14
+        x: 66
+        y: 37
+        width: 28
+        height: 21
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d81795c410e075f50800000000000000
-      internalID: 6869975155315667341
+      spriteID: ddf2502eb7a1deec0800000000000000
+      internalID: -3536141013040680995
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: MainBtnAdd_3
+      name: chests-atlas-128x64_3
       rect:
         serializedVersion: 2
-        x: 1
-        y: 1
-        width: 14
-        height: 14
+        x: 98
+        y: 37
+        width: 28
+        height: 21
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: cf7b732184f5d8300800000000000000
-      internalID: 255965516977911804
+      spriteID: 5566994dca3ff4f60800000000000000
+      internalID: 8020897384996890197
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: MainBtnAdd_4
+      name: chests-atlas-128x64_4
       rect:
         serializedVersion: 2
-        x: 17
-        y: 1
-        width: 14
-        height: 14
+        x: 2
+        y: 5
+        width: 28
+        height: 21
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3e8de5309a7e13670800000000000000
-      internalID: 8516843083426355427
+      spriteID: 89b60a3e87da67630800000000000000
+      internalID: 3924514860026588056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: chests-atlas-128x64_5
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 5
+        width: 28
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9713c6754eed95150800000000000000
+      internalID: 5861961462300029305
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: chests-atlas-128x64_6
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 5
+        width: 28
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f80353b5114f81190800000000000000
+      internalID: -7991369183387111281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: chests-atlas-128x64_7
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 5
+        width: 28
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc062c9d17c376130800000000000000
+      internalID: 3559880490142032075
       vertices: []
       indices: 
       edges: []
@@ -238,7 +313,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 10a74e07f5c97794bb6a27d2084daea7
     internalID: 0
     vertices: []
     indices: 
@@ -246,13 +321,18 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      MainBtnAdd_0: 9008015399477033087
-      MainBtnAdd_1: 6473711237345320762
-      MainBtnAdd_2: 6869975155315667341
-      MainBtnAdd_3: 255965516977911804
-      MainBtnAdd_4: 8516843083426355427
+      chests-atlas-128x64_0: 8231885794640594128
+      chests-atlas-128x64_1: -5991576393813393872
+      chests-atlas-128x64_2: -3536141013040680995
+      chests-atlas-128x64_3: 8020897384996890197
+      chests-atlas-128x64_4: 3924514860026588056
+      chests-atlas-128x64_5: 5861961462300029305
+      chests-atlas-128x64_6: -7991369183387111281
+      chests-atlas-128x64_7: 3559880490142032075
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
