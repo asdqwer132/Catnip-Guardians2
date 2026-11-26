@@ -1,13 +1,16 @@
 using System;
+using TMPro;
 using UnityEngine;
 
-// UI creation, layout and event wiring are authored in the Inspector.
+// Reuses the authored search controls and filters the inventory as the text changes.
 // On...Changed takes enum values; OnGradeDropdownChanged maps authored row indices.
 public class InventorySearchUI : ItemSearchUIBase
 {
     [Header("Authored Grade Dropdown")]
     [Tooltip("Grade for each existing dropdown row. None means All. This maps values only; it does not create or change UI options.")]
     public Grade[] gradeDropdownValues = { Grade.None, Grade.Common, Grade.Rare, Grade.Epic, Grade.Legendary };
+
+    [SerializeField] private TMP_InputField directSearchInput;
 
     public void OnGradeDropdownChanged(int index)
     {
@@ -48,9 +51,31 @@ public class InventorySearchUI : ItemSearchUIBase
             ChangeGradeFilter(true, (Grade)value);
     }
 
-    // Keep the shared filter/target/synchronization lifecycle without controlling any UI.
-    protected override void RebuildControls() { }
-    protected override void BindControlEvents() { }
-    protected override void UnbindControlEvents() { }
-    protected override void ApplyFilterToControlsWithoutNotify() { }
+    protected override void RebuildControls()
+    {
+        if (directSearchInput != null)
+            return;
+
+        var directSearch = transform.Find("DirectSearch");
+        if (directSearch != null)
+            directSearchInput = directSearch.GetComponentInChildren<TMP_InputField>(true);
+    }
+
+    protected override void BindControlEvents()
+    {
+        if (directSearchInput != null)
+            directSearchInput.onValueChanged.AddListener(OnSearchTextChanged);
+    }
+
+    protected override void UnbindControlEvents()
+    {
+        if (directSearchInput != null)
+            directSearchInput.onValueChanged.RemoveListener(OnSearchTextChanged);
+    }
+
+    protected override void ApplyFilterToControlsWithoutNotify()
+    {
+        if (directSearchInput != null && directSearchInput.text.Trim() != filter.query)
+            directSearchInput.SetTextWithoutNotify(filter.query);
+    }
 }

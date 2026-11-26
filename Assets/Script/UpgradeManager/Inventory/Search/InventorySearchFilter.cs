@@ -12,6 +12,8 @@ public class InventorySearchFilter
     public bool useGrade;
     public Grade grade;
 
+    public string query = string.Empty;
+
     private DataType[] categoryMask;
     private ItemSeries[] seriesMask;
     private Grade[] gradeMask;
@@ -34,7 +36,19 @@ public class InventorySearchFilter
         if (useGrade && item.GetGrade() != grade)
             return false;
 
-        return true;
+        return MatchesName(item.GetSearchData());
+    }
+
+    public bool MatchesName(DefaultData data)
+    {
+        if (string.IsNullOrEmpty(query))
+            return true;
+
+        if (data == null)
+            return false;
+
+        string name = DefinedDataUtility.GetName(data, LanguageManager.CurrentLanguage, data.name);
+        return name.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0;
     }
 
     public bool IsMasked(ISearchable data)
@@ -109,6 +123,7 @@ public class InventorySearchFilter
 
     public void Clear()
     {
+        query = string.Empty;
         useCategory = false;
         useSeries = false;
         useGrade = false;

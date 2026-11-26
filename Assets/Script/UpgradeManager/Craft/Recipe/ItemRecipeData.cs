@@ -32,6 +32,7 @@ public class ItemRecipeData : ScriptableObject, ISearchable
 
     public Sprite Icon => resultItem.icon;
     public string GetDataName() => resultItem.GetDataName();
+    public DefaultData GetSearchData() => resultItem;
     public Grade GetGrade() { return itemGrade; }
     public DataType GetDataType() { return resultItem != null ? resultItem.dataType : DataType.None; }
     public ItemSeries GetItemSeries() { return itemSeries; }

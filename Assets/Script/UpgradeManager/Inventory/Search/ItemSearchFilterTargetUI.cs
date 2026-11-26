@@ -142,7 +142,7 @@ public abstract class ItemSearchFilterTargetUI : MonoBehaviour, IItemSearchFilte
         if (searchFilter.useGrade && itemData.grade != searchFilter.grade)
             return false;
 
-        return true;
+        return searchFilter.MatchesName(itemData);
     }
 
 }

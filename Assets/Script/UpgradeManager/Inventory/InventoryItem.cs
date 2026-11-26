@@ -13,6 +13,7 @@ public class InventoryItem : ISearchable
     }
 
 
+    public DefaultData GetSearchData() => itemData;
     public Grade GetGrade() { return itemData.grade; }
     public DataType GetDataType() { return itemData.dataType; }
     public ItemSeries GetItemSeries() { return itemData.series; }

@@ -11,6 +11,8 @@ public static class InventorySearchFilterUtil
             return;
         }
 
+        to.query = from.query ?? string.Empty;
+
         to.useCategory = from.useCategory;
         to.category = from.category;
 

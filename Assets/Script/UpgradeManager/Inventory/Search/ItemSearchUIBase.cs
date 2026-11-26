@@ -10,6 +10,7 @@ public abstract class ItemSearchUIBase : MonoBehaviour
     public bool resetCategory = true;
     public bool resetSeries = true;
     public bool resetGrade = true;
+    public bool resetQuery = true;
 
     private readonly InventorySearchFilter localFilter = new InventorySearchFilter();
     // A connected search UI reads the target's live filter, including its masks.
@@ -121,6 +122,9 @@ public abstract class ItemSearchUIBase : MonoBehaviour
 
     public void ResetFilter()
     {
+        if (resetQuery)
+            filter.query = string.Empty;
+
         if (resetCategory)
             filter.useCategory = false;
 
@@ -162,6 +166,16 @@ public abstract class ItemSearchUIBase : MonoBehaviour
 
         filter.useGrade = false;
         ApplyFilterToControlsWithoutNotify();
+        ApplyFilter(true);
+    }
+
+    protected void OnSearchTextChanged(string text)
+    {
+        string query = text?.Trim() ?? string.Empty;
+        if (filter.query == query)
+            return;
+
+        filter.query = query;
         ApplyFilter(true);
     }
 
