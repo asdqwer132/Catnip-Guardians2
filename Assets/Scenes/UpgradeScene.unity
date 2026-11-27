@@ -1773,6 +1773,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f274288ac78361e79aa0a3f899912df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SkillTreeLineUI
+--- !u!1001 &35522902
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1177894372}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &35522903 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 35522902}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &36023666 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2871478678529551251, guid: 85ed61df791fa39c5952fb7091be6fb9, type: 3}
@@ -6128,6 +6162,40 @@ PrefabInstance:
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8239930663799005487, guid: c3f07a6945ceb1a43ae8dba212d6962d, type: 3}
   m_PrefabInstance: {fileID: 116567072}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &119109966
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1243259183}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &119109967 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 119109966}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &122310449
 GameObject:
@@ -10781,6 +10849,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f274288ac78361e79aa0a3f899912df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SkillTreeLineUI
+--- !u!1001 &248349957
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1269282817}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &248349958 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 248349957}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &249624581
 GameObject:
   m_ObjectHideFlags: 0
@@ -16128,6 +16234,44 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1001 &368017264
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1655343315}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &368017265 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 368017264}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &368708307
 GameObject:
   m_ObjectHideFlags: 0
@@ -21693,6 +21837,44 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!1001 &478811849
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1243259183}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &478811850 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 478811849}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &484246110
 GameObject:
   m_ObjectHideFlags: 0
@@ -29572,6 +29754,40 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 3217733625769636221, guid: 91849b745a92bc647bfedafa79c67803, type: 3}
   m_PrefabInstance: {fileID: 131891770}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &690025868
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1269282817}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &690025869 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 690025868}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &690988066
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -30051,6 +30267,40 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 704883833}
   m_CullTransparentMesh: 1
+--- !u!1001 &705160308
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 394724725}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &705160309 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 705160308}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &708724276
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -30541,6 +30791,44 @@ MonoBehaviour:
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 996236174319317418, guid: 450ee74ded8267444af19ddbf188a9de, type: 3}
   m_PrefabInstance: {fileID: 715392320}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &719660203
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1269282817}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &719660204 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 719660203}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &719825072
 PrefabInstance:
@@ -34900,6 +35188,44 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 85ed61df791fa39c5952fb7091be6fb9, type: 3}
+--- !u!1001 &819157228
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 394724725}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &819157229 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 819157228}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &821680663
 GameObject:
   m_ObjectHideFlags: 0
@@ -35447,6 +35773,44 @@ MonoBehaviour:
   endpoint: 1
   curveBend: 0.5
   curveLines: []
+--- !u!1001 &825328009
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 394724725}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &825328010 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 825328009}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &826254038
 GameObject:
   m_ObjectHideFlags: 0
@@ -40081,6 +40445,44 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 2871478678529551251, guid: 85ed61df791fa39c5952fb7091be6fb9, type: 3}
   m_PrefabInstance: {fileID: 1465542610}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &943631877
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1243259183}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &943631878 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 943631877}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &945475639
 GameObject:
   m_ObjectHideFlags: 0
@@ -41352,6 +41754,44 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -20, y: -20}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1001 &986285542
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 811238943}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &986285543 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 986285542}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &992900061
 GameObject:
   m_ObjectHideFlags: 0
@@ -53850,6 +54290,7 @@ GameObject:
   - component: {fileID: 1254489547}
   - component: {fileID: 1254489546}
   - component: {fileID: 910000400001}
+  - component: {fileID: 910000500002}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -55055,6 +55496,40 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 996236174319317418, guid: 450ee74ded8267444af19ddbf188a9de, type: 3}
   m_PrefabInstance: {fileID: 1266475293}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1268258811
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 811238943}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &1268258812 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 1268258811}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1269196860
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -55835,6 +56310,44 @@ PrefabInstance:
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1609567345260214993, guid: ec1eeadb418e3964ea0b3adc509b551f, type: 3}
   m_PrefabInstance: {fileID: 1284037156}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1285233635
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 972826349}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &1285233636 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 1285233635}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1287807861
 GameObject:
@@ -58319,6 +58832,44 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1342844288}
   m_CullTransparentMesh: 1
+--- !u!1001 &1347577001
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 972826349}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &1347577002 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 1347577001}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1356015433
 GameObject:
   m_ObjectHideFlags: 0
@@ -61244,6 +61795,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f274288ac78361e79aa0a3f899912df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SkillTreeLineUI
+--- !u!1001 &1386847117
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 349548192}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &1386847118 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 1386847117}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1386850607
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -69284,6 +69869,44 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 390, y: 76}
   m_Pivot: {x: 1, y: 0.5}
+--- !u!1001 &1601477047
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 811238943}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &1601477048 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 1601477047}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1602761230
 GameObject:
   m_ObjectHideFlags: 0
@@ -70015,6 +70638,40 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1613944228}
   m_CullTransparentMesh: 1
+--- !u!1001 &1614945435
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1655343315}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &1614945436 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 1614945435}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1619575480
 GameObject:
   m_ObjectHideFlags: 0
@@ -73267,6 +73924,44 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1716921139}
   m_CullTransparentMesh: 1
+--- !u!1001 &1720976850
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 349548192}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &1720976851 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 1720976850}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1721031035
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -75484,6 +76179,44 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1773822744}
   m_CullTransparentMesh: 1
+--- !u!1001 &1774811067
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 349548192}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &1774811068 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 1774811067}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1778449065
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -81610,6 +82343,44 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 996236174319317418, guid: 450ee74ded8267444af19ddbf188a9de, type: 3}
   m_PrefabInstance: {fileID: 1912060112}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1912158442
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1177894372}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &1912158443 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 1912158442}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1916645746
 GameObject:
   m_ObjectHideFlags: 0
@@ -84122,6 +84893,44 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1978572892}
   m_CullTransparentMesh: 1
+--- !u!1001 &1979065149
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1177894372}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &1979065150 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 1979065149}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1979291817
 GameObject:
   m_ObjectHideFlags: 0
@@ -86590,6 +87399,44 @@ PrefabInstance:
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4857091120275252702, guid: c24940459bed61240b700971930c99a1, type: 3}
   m_PrefabInstance: {fileID: 2034061749}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &2034199219
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1655343315}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &2034199220 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 2034199219}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &2042064346
 GameObject:
@@ -89332,6 +90179,40 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2074575092}
   m_CullTransparentMesh: 1
+--- !u!1001 &2076186525
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 972826349}
+    m_Modifications:
+    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_Name
+      value: SkillFrame (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+--- !u!224 &2076186526 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 2076186525}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2078116539
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -92392,6 +93273,50 @@ MonoBehaviour:
     height: 0
   backgroundDepth: -100
   receiveVisibilitySettings: 1
+--- !u!114 &910000500002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1254489545}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_AllowHDROutput: 1
+  m_UseScreenCoordOverride: 0
+  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_TaaSettings:
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
 --- !u!114 &920962000001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95016,6 +95941,270 @@ MonoBehaviour:
   legacyText: {fileID: 0}
   source: 0
   dataSource: {fileID: 0}
+--- !u!114 &992800001001 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 2076186525}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
+--- !u!114 &992800001002 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 1347577001}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
+--- !u!114 &992800001003 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 1285233635}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
+--- !u!114 &992800001004 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 35522902}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
+--- !u!114 &992800001005 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 1979065149}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
+--- !u!114 &992800001006 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 1912158442}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
+--- !u!114 &992800001007 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 119109966}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
+--- !u!114 &992800001008 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 943631877}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
+--- !u!114 &992800001009 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 478811849}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
+--- !u!114 &992800001010 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 705160308}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
+--- !u!114 &992800001011 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 825328009}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
+--- !u!114 &992800001012 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 819157228}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
+--- !u!114 &992800001013 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 1614945435}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
+--- !u!114 &992800001014 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 2034199219}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
+--- !u!114 &992800001015 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 368017264}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
+--- !u!114 &992800001016 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 1386847117}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
+--- !u!114 &992800001017 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 1720976850}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
+--- !u!114 &992800001018 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 1774811067}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
+--- !u!114 &992800001019 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 690025868}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
+--- !u!114 &992800001020 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 248349957}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
+--- !u!114 &992800001021 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 719660203}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
+--- !u!114 &992800001022 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 1268258811}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
+--- !u!114 &992800001023 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 1601477047}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
+--- !u!114 &992800001024 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
+  m_PrefabInstance: {fileID: 986285542}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
 --- !u!114 &92207547126504772 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 92207549007773983, guid: 60d707da406d9e541a9df049d81f80f8, type: 3}
@@ -99946,795 +101135,3 @@ SceneRoots:
   - {fileID: 618159609}
   - {fileID: 1603326670}
   - {fileID: 2094446613}
---- !u!1001 &2076186525
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 972826349}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (1)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &2076186526 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 2076186525}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001001 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 2076186525}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
---- !u!1001 &1347577001
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 972826349}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (2)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &1347577002 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 1347577001}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001002 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 1347577001}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
---- !u!1001 &1285233635
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 972826349}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (3)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &1285233636 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 1285233635}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001003 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 1285233635}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
---- !u!1001 &35522902
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1177894372}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (1)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &35522903 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 35522902}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001004 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 35522902}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
---- !u!1001 &1979065149
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1177894372}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (2)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &1979065150 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 1979065149}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001005 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 1979065149}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
---- !u!1001 &1912158442
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1177894372}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (3)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &1912158443 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 1912158442}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001006 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 1912158442}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
---- !u!1001 &119109966
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1243259183}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (1)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &119109967 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 119109966}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001007 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 119109966}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
---- !u!1001 &943631877
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1243259183}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (2)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &943631878 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 943631877}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001008 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 943631877}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
---- !u!1001 &478811849
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1243259183}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (3)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &478811850 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 478811849}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001009 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 478811849}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
---- !u!1001 &705160308
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 394724725}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (1)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &705160309 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 705160308}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001010 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 705160308}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
---- !u!1001 &825328009
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 394724725}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (2)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &825328010 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 825328009}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001011 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 825328009}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
---- !u!1001 &819157228
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 394724725}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (3)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &819157229 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 819157228}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001012 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 819157228}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
---- !u!1001 &1614945435
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1655343315}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (1)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &1614945436 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 1614945435}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001013 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 1614945435}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
---- !u!1001 &2034199219
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1655343315}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (2)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &2034199220 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 2034199219}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001014 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 2034199219}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
---- !u!1001 &368017264
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1655343315}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (3)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &368017265 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 368017264}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001015 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 368017264}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
---- !u!1001 &1386847117
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 349548192}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (1)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &1386847118 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 1386847117}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001016 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 1386847117}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
---- !u!1001 &1720976850
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 349548192}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (2)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &1720976851 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 1720976850}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001017 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 1720976850}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
---- !u!1001 &1774811067
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 349548192}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (3)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &1774811068 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 1774811067}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001018 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 1774811067}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
---- !u!1001 &690025868
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1269282817}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (1)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &690025869 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 690025868}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001019 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 690025868}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
---- !u!1001 &248349957
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1269282817}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (2)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &248349958 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 248349957}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001020 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 248349957}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
---- !u!1001 &719660203
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1269282817}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (3)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &719660204 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 719660203}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001021 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 719660203}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
---- !u!1001 &1268258811
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 811238943}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (1)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &1268258812 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 1268258811}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001022 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 1268258811}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
---- !u!1001 &1601477047
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 811238943}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (2)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &1601477048 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 1601477047}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001023 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 1601477047}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
---- !u!1001 &986285542
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 811238943}
-    m_Modifications:
-    - target: {fileID: 35522902, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-      propertyPath: m_Name
-      value: SkillFrame (3)
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
---- !u!224 &986285543 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 35522903, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 986285542}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &992800001024 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 992800101004, guid: 2dd233429e2c45479b1e5ef2f21708f0, type: 3}
-  m_PrefabInstance: {fileID: 986285542}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView

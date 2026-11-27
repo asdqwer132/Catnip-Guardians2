@@ -19,9 +19,9 @@ MonoBehaviour:
   navigation:
     serializedVersion: 2
     x: 0
-    y: 0.9305556
-    width: 1
-    height: 0.06944442
+    y: 0
+    width: 0
+    height: 0
   battle:
     serializedVersion: 2
     x: 0
@@ -35,20 +35,20 @@ MonoBehaviour:
     width: 0.39999998
     height: 1
   savedNavigation:
-    canvasSize: {x: 1920, y: 1440}
-    position: {x: 0, y: 1340}
-    size: {x: 1920, y: 99.99996}
-    positionSlope: {x: 0, y: 1}
-    sizeSlope: {x: 1, y: 0}
-  savedBattle:
-    canvasSize: {x: 1920, y: 1440}
+    canvasSize: {x: 0, y: 0}
     position: {x: 0, y: 0}
-    size: {x: 1142.4, y: 1440}
+    size: {x: 0, y: 0}
+    positionSlope: {x: 0, y: 0}
+    sizeSlope: {x: 0, y: 0}
+  savedBattle:
+    canvasSize: {x: 7680, y: 4320}
+    position: {x: 0, y: 0}
+    size: {x: 4569.6, y: 4320}
     positionSlope: {x: 0, y: 0}
     sizeSlope: {x: 0.595, y: 1}
   savedItem:
-    canvasSize: {x: 1920, y: 1440}
-    position: {x: 1152, y: 0}
-    size: {x: 767.99994, y: 1440}
+    canvasSize: {x: 7680, y: 4320}
+    position: {x: 4608, y: 0}
+    size: {x: 3071.9998, y: 4320}
     positionSlope: {x: 0.6, y: 0}
     sizeSlope: {x: 0.4, y: 1}
