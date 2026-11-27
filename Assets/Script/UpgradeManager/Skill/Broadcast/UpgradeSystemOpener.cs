@@ -11,19 +11,13 @@ public class ObjectByKey
 }
 public class UpgradeSystemOpener : RefreshListener
 {
-    [SerializeField] private ObjectByKey[] mapToggles;
-    [SerializeField] private ObjectByKey[] pannelToggles;
+    [SerializeField] private ObjectByKey[] gimickSKills;
     protected override void Refresh(RefreshType refreshType)
     {
-        foreach (ObjectByKey mapToggle in mapToggles)
+        foreach (ObjectByKey gimickSKill in gimickSKills)
         {
-            bool isUnlocked = UnlockManager.Instance.IsUnlocked(DataType.System, mapToggle.key);
-            mapToggle.obj.SetActive(isUnlocked);
-        }
-        foreach (ObjectByKey pannelToggle in pannelToggles)
-        {
-            bool isUnlocked = UnlockManager.Instance.IsUnlocked(DataType.System, pannelToggle.key);
-            pannelToggle.obj.SetActive(isUnlocked);
+            bool isUnlocked = UnlockManager.Instance.IsUnlocked(DataType.System, gimickSKill.key);
+            gimickSKill.obj.SetActive(isUnlocked);
         }
     }
 }

@@ -10,9 +10,9 @@ public sealed class GameScreenLayoutProfile : ScriptableObject
     [Min(1)] public int worldPixelsPerUnit = 32;
     [Tooltip("전체 화면 높이에 대응하는 월드 영상 픽셀 수. UI 기준 해상도와 별개인 렌더링 해상도입니다.")]
     [Min(1)] public int worldReferenceHeight = 320;
-    [HideInInspector] public Rect navigation = new Rect(0,.85f,1,.15f);
-    [HideInInspector] public Rect battle = new Rect(0,0,.6f,.85f);
-    [HideInInspector] public Rect item = new Rect(.6f,0,.4f,.85f);
+    [ReadOnly] public Rect navigation = new Rect(0,.85f,1,.15f);
+    [ReadOnly] public Rect battle = new Rect(0,0,.6f,.85f);
+    [ReadOnly] public Rect item = new Rect(.6f,0,.4f,.85f);
     [SerializeField, HideInInspector] private SavedScreenRegion savedNavigation, savedBattle, savedItem;
     public void Capture(GameScreenRegion region, RectTransform area, Rect viewport, Vector2 canvasSize)
     {
