@@ -53,7 +53,7 @@ public class DefaultData : ScriptableObject, DefinedData
 
     public string GetDescription() => GetDescription(LanguageManager.CurrentLanguage);
 
-    public string GetDescription(language targetLanguage)
+    public virtual string GetDescription(language targetLanguage)
     {
         Description languageData = GetLanguageData(targetLanguage);
 

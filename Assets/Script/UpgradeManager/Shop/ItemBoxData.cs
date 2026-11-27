@@ -43,6 +43,7 @@ public class ItemBoxData : UnlockableDefaultData
     [Space(10)] public Cost[] costs;
     public GachaItemInfo[] gachaItems;
     [Space(10), Tooltip("평상시에는 기본 아이콘을 사용하고 구매 성공 시에만 이 클립을 재생합니다.")]
+    public Sprite background;
     public AnimationClip openClip;
 
     public List<InventoryItem> RollRewards()

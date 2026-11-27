@@ -50,7 +50,7 @@ public class ShopManager : MonoBehaviour, IStoryProgressSource
 
     public void RefreshShopWithoutCost()
     {
-        if (showingResult) return;
+        CloseResult();
         ClearSelectedBox();
         ApplyBoxes(boxButtons, boxPoolManager != null
             ? boxPoolManager.GetRandomBoxes(displayBoxCount) : null);
@@ -61,7 +61,7 @@ public class ShopManager : MonoBehaviour, IStoryProgressSource
 
     public void RerollShop()
     {
-        if (rerollManager == null || showingResult)
+        if (rerollManager == null)
             return;
 
         bool canReroll = rerollManager.TryPayRerollPrice();
@@ -87,8 +87,6 @@ public class ShopManager : MonoBehaviour, IStoryProgressSource
         }
     }
 
-    public bool IsShowingResult => showingResult;
-
     public bool IsSelectedButton(ShopBoxButton button)
     {
         return currentSelectedButton == button;
@@ -96,8 +94,9 @@ public class ShopManager : MonoBehaviour, IStoryProgressSource
 
     public void SelectBox(ShopBoxButton button, ItemBoxData boxData)
     {
-        if (showingResult || button == null || boxData == null || button.IsPurchased || button.BoxData != boxData || !OwnsSlot(button))
+        if (button == null || boxData == null || button.IsPurchased || button.BoxData != boxData || !OwnsSlot(button))
             return;
+        CloseResult();
         if (currentSelectedButton != null && currentSelectedButton != button) currentSelectedButton.ClearSelection();
 
         currentSelectedButton = button;
@@ -147,9 +146,16 @@ public class ShopManager : MonoBehaviour, IStoryProgressSource
         => (boxButtons != null && System.Array.IndexOf(boxButtons, button) >= 0) ||
             (pinBoxButtons != null && System.Array.IndexOf(pinBoxButtons, button) >= 0);
 
+    private void CloseResult()
+    {
+        if (!showingResult) return;
+        showingResult = false;
+        purchaseResultPanelUI?.Hide();
+    }
+
     public void ReturnToSummary()
     {
-        showingResult = false;
+        CloseResult();
         itemTooltip?.Hide();
         ClearSelectedBox();
         summary?.Refresh();
@@ -157,7 +163,7 @@ public class ShopManager : MonoBehaviour, IStoryProgressSource
 
     private bool Purchase(ShopBoxButton button, ItemBoxData boxData)
     {
-        if (purchasing || showingResult) return PurchaseFailed("구매 처리 중입니다.");
+        if (purchasing) return PurchaseFailed("구매 처리 중입니다.");
         if (button == null || boxData == null || !OwnsSlot(button) || button.IsPurchased || button.BoxData != boxData)
             return PurchaseFailed("구매 가능한 상자 슬롯이 없습니다.");
         var wallet = CurrencyManager.instance;
@@ -196,14 +202,12 @@ public class ShopManager : MonoBehaviour, IStoryProgressSource
                     StoryProgressValue.NumberValue("amount", reward.amount)));
             CodexDiscoveryHistory.Current.Record(CodexDiscoveryKind.Chest, boxData.dataId);
             itemTooltip?.Hide();
-            if (summary != null && purchaseResultPanelUI != null)
-            {
-                showingResult = true;
-                ClearSelectedBox();
-            }
+            showingResult = purchaseResultPanelUI != null;
+            ClearSelectedBox();
             resultHeader?.SetData(boxData);
             var results = rewards.ConvertAll(r => new ShopPurchaseResultEntry(r.itemData,r.amount));
-            if (purchaseResultPanelUI != null) purchaseResultPanelUI.ShowStoryResults(results, StoryProgressManager.ChestResult);
+            purchaseResultPanelUI?.ShowResults(results);
+            StoryProgressManager.Instance?.ConfirmArea(StoryProgressManager.ChestResult);
             return true;
         }
         finally { purchasing = false; }

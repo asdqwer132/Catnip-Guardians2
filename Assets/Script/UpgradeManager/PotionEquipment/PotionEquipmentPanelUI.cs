@@ -20,7 +20,6 @@ public sealed class PotionEquipmentPanelUI : MonoBehaviour
     public Button replaceButton;
     public Button clearButton;
     private InventoryManager subscribedInventory;
-    private bool selectedSlotWasEmpty;
     public int SelectedSlot { get; private set; } = -1;
     public ItemData PendingPotion { get; private set; }
 
@@ -65,7 +64,6 @@ public sealed class PotionEquipmentPanelUI : MonoBehaviour
     {
         if (manager == null || manager.IsLocked(index)) return;
         SelectedSlot = index;
-        selectedSlotWasEmpty = manager.GetPotion(index) == null;
         PendingPotion = null;
         if (inventoryView != null) inventoryView.ClearSelection();
         RefreshUI();
@@ -74,7 +72,6 @@ public sealed class PotionEquipmentPanelUI : MonoBehaviour
     public void ClearSelection()
     {
         SelectedSlot = -1;
-        selectedSlotWasEmpty = false;
         PendingPotion = null;
         if (inventoryView != null) inventoryView.ClearSelection();
         RefreshUI();
@@ -117,10 +114,8 @@ public sealed class PotionEquipmentPanelUI : MonoBehaviour
     private void OnEquipmentChanged()
     {
         PendingPotion = null;
-        // A successful empty-slot fill clears only the destination, including API-driven fills.
-        if (manager == null || manager.IsLocked(SelectedSlot) || (selectedSlotWasEmpty && manager.GetPotion(SelectedSlot) != null))
+        if (manager == null || manager.IsLocked(SelectedSlot))
             SelectedSlot = -1;
-        selectedSlotWasEmpty = manager != null && SelectedSlot >= 0 && manager.GetPotion(SelectedSlot) == null;
         RefreshUI();
     }
 

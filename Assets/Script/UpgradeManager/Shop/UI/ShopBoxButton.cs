@@ -12,6 +12,8 @@ public class ShopBoxButton : SlotUI
     [Header("Shop Slot")]
     public Toggle toggle;
     [SerializeField] private Image materialRarityImage;
+    [SerializeField] private Image backgroundImage;
+    private Sprite defaultBackground;
     private Sprite defaultRaritySprite;
 
     public void SetMaterialRarity(Sprite sprite)
@@ -27,6 +29,7 @@ public class ShopBoxButton : SlotUI
 
     private void Awake()
     {
+        if (backgroundImage != null) defaultBackground = backgroundImage.sprite;
         if (materialRarityImage != null) defaultRaritySprite = materialRarityImage.sprite;
         if (toggle == null) toggle = GetComponent<Toggle>();
         if (toggle != null) toggle.onValueChanged.AddListener(OnToggleChanged);
@@ -46,6 +49,11 @@ public class ShopBoxButton : SlotUI
         if (purchasedOverlay != null) purchasedOverlay.SetActive(false);
         if (toggle != null) toggle.interactable = data != null;
         SetData(data);
+        if (backgroundImage != null)
+        {
+            backgroundImage.sprite = data != null && data.background != null ? data.background : defaultBackground;
+            backgroundImage.enabled = backgroundImage.sprite != null;
+        }
         if (openAnimation != null) openAnimation.ResetToBox(data);
         if (uIControler != null) uIControler.ResetColor();
     }
@@ -75,7 +83,7 @@ public class ShopBoxButton : SlotUI
 
     private void OnToggleChanged(bool selected)
     {
-        if (shopManager == null || shopManager.IsShowingResult || boxData == null || IsPurchased)
+        if (shopManager == null || boxData == null || IsPurchased)
         {
             if (selected) ClearSelection();
             return;

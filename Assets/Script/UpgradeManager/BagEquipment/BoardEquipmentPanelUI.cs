@@ -12,8 +12,9 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
         public MergeBoxEquipmentData data;
         public Toggle toggle;
         public GameObject selected;
-        public Image[] skillFrames;
-        [NonSerialized] public Color[] authoredColors;
+        public Image[] skillFrames = Array.Empty<Image>();
+        public Image[] skillIcons = Array.Empty<Image>();
+        public BoardSkillTooltipProvider[] skillTooltips = Array.Empty<BoardSkillTooltipProvider>();
     }
 
     [SerializeField] private BagEquipmentInventoryUI inventory;
@@ -83,8 +84,6 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
         for (int i = 0; i < boardSkills.Length; i++)
         {
             var option = boardSkills[i];
-            if (option.authoredColors == null && option.skillFrames != null)
-                option.authoredColors = Array.ConvertAll(option.skillFrames, frame => frame != null ? frame.color : Color.white);
             skillHandlers[i] = selected => SetSkill(option, selected);
             option.toggle.onValueChanged.AddListener(skillHandlers[i]);
         }
@@ -268,17 +267,23 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
             option.toggle.interactable = available && (selected || equippedSkillCount < MergeGimicManager.MaxActiveModules);
             option.toggle.SetIsOnWithoutNotify(selected);
             if (option.selected != null) option.selected.SetActive(selected);
-            if (option.authoredColors != null)
-                for (int i = 0; i < option.skillFrames.Length; i++)
+            option.toggle.gameObject.SetActive(available);
+            for (int i = 0; i < option.skillFrames.Length; i++)
+            {
+                var frame = option.skillFrames[i];
+                if (frame == null) continue;
+                var skill = i < data.skills.Length ? data.skills[i] : null;
+                bool visible = available && skill != null && MergeBoxUpgradeManager.IsBoardSkillUnlocked(
+                    data.boxIndex, i + 1, session?.UnlockedSkillNodes);
+                if (i < option.skillIcons.Length && option.skillIcons[i] != null)
                 {
-                    var frame = option.skillFrames[i];
-                    if (frame == null) continue;
-                    bool skillUnlocked = available && MergeBoxUpgradeManager.IsBoardSkillUnlocked(
-                        data.boxIndex, i + 1, session?.UnlockedSkillNodes);
-                    var color = option.authoredColors[i];
-                    if (!skillUnlocked) color.a *= 0.32f;
-                    frame.color = color;
+                    var icon = option.skillIcons[i];
+                    icon.sprite = skill != null ? skill.icon : null;
+                    icon.enabled = icon.sprite != null;
                 }
+                if (i < option.skillTooltips.Length) option.skillTooltips[i]?.SetSource(skill);
+                frame.gameObject.SetActive(visible);
+            }
             canChangeEgg |= available && data.plant != null && data != egg;
         }
         previousEgg.interactable = canChangeEgg;

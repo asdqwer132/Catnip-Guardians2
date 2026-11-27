@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 581bae3a869146ea9aa5598c5291b516, type: 3}
+  m_Name: 03 - 2
+  m_EditorClassIdentifier: Assembly-CSharp::BoardGimmickSkillData
+  icon: {fileID: 593919604, guid: 21f630a9222a2304585d155730bbf450, type: 3}
+  data:
+  - language: 0
+    dataName: Mineral Spawn Ore Active
+    description: "Deliver a random ore immediately."
+    detailDescription:
+  - language: 1
+    dataName: "\uAD11\uBB3C \uC989\uC2DC \uC6B4\uBC18"
+    description: "랜덤 광물을 즉시 운반한다."
+    detailDescription:
+  dataNumbering:
+  dataId: Mineral.SpawnOre.Active
+  dataType: 0
+  grade: -1
+  series: 0
+  skillType: 0
+  cooldown: 10
+  duration: 0

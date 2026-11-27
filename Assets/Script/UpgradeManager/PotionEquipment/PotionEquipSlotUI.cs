@@ -29,6 +29,7 @@ public sealed class PotionEquipSlotUI : ClickableItemSlotUI
         if (slotNumberText != null) slotNumberText.text = (SlotIndex + 1).ToString();
         if (slotToggle != null)
         {
+            slotToggle.interactable = !IsLocked;
             if (!IsLocked && panel.SelectedSlot == SlotIndex) slotToggle.SetIsOnWithoutNotify(true);
             else ResetSelection();
         }

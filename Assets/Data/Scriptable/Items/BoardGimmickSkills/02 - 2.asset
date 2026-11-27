@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 581bae3a869146ea9aa5598c5291b516, type: 3}
+  m_Name: 02 - 2
+  m_EditorClassIdentifier: Assembly-CSharp::BoardGimmickSkillData
+  icon: {fileID: -1604157463, guid: 21f630a9222a2304585d155730bbf450, type: 3}
+  data:
+  - language: 0
+    dataName: Food Auto Bake
+    description: "Periodically bake items in the cooking area."
+    detailDescription:
+  - language: 1
+    dataName: "\uC790\uB3D9 \uAD7D\uAE30"
+    description: "굽는 영역에 있는 아이템을 주기적으로 굽는다."
+    detailDescription:
+  dataNumbering:
+  dataId: Food.AutoBake
+  dataType: 0
+  grade: -1
+  series: 0
+  skillType: 1
+  cooldown: 10
+  duration: 0

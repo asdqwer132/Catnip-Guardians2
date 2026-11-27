@@ -22,6 +22,7 @@ public class SkillNodeUI : MonoBehaviour, IScrollHandler
     private SkillTreeUI ownerUI;
     private UIZoomController zoom;
     private SkillNodeTooltipProvider tooltipProvider;
+    private ItemTooltipTrigger tooltipTrigger;
     private CanvasGroup visibilityGroup;
     private float visibleAlpha;
     private bool visibleInteractable, visibleRaycasts;
@@ -44,6 +45,9 @@ public class SkillNodeUI : MonoBehaviour, IScrollHandler
         ownerUI = owner;
         zoom = GetComponentInParent<UIZoomController>(true);
         if (tooltipProvider == null) TryGetComponent(out tooltipProvider);
+        if (tooltipTrigger == null) TryGetComponent(out tooltipTrigger);
+        if (tooltipTrigger != null && tooltipTrigger.tooltipUI == null && owner != null)
+            tooltipTrigger.Init(owner.SelectionTooltip);
 
         if (button == null)
             button = GetComponent<Button>();
@@ -77,8 +81,8 @@ public class SkillNodeUI : MonoBehaviour, IScrollHandler
         var manager = SkillTreeManager.Instance;
         if (!manager.IsUnlocked(skillNodeData)) manager.UnlockSkill(skillNodeData);
         Refresh();
-        if (ownerUI != null && tooltipProvider != null)
-            ownerUI.SelectionTooltip?.TogglePin(tooltipProvider);
+        if (tooltipTrigger != null && tooltipTrigger.isActiveAndEnabled && tooltipProvider != null)
+            tooltipTrigger.tooltipUI?.RefreshVisible(tooltipProvider);
     }
 
     public void OnScroll(PointerEventData eventData)

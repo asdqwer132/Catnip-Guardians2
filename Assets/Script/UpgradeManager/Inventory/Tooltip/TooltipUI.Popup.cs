@@ -134,6 +134,11 @@ public partial class TooltipUI
         Hide();
     }
 
+    public void RefreshVisible(ITooltipContentProvider provider)
+    {
+        if (ReferenceEquals(currentOwner, provider) && IsVisible) Show(provider);
+    }
+
     public void TogglePin(ITooltipContentProvider provider)
     {
         if (!useTooltip || provider == null) return;
