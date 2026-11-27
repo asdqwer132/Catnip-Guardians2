@@ -62,8 +62,9 @@ public class UpgradeManager : MonoBehaviour
             var catalog = Resources.Load<UpgradeProgressCatalog>("UpgradeProgressCatalog");
             if (catalog != null)
             {
+                var start = UpgradeDebugStart.Load();
                 inventory.items = GameSessionItemCopy.Copy(catalog.entries.ConvertAll(entry =>
-                    entry.asset is ItemData item ? new InventoryItem(item, 99) : null));
+                    entry.asset is ItemData item ? new InventoryItem(item, start.GetAmount(item)) : null));
                 inventory.onInventoryChanged?.Invoke();
             }
         }

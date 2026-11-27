@@ -116,7 +116,12 @@ public class CurrencyManager : MonoBehaviour
         // New currency types without an entry keep their configured initial amount.
         if (GameManager.DebugMode)
         {
-            foreach (CurrencyType type in Enum.GetValues(typeof(CurrencyType))) currencies[type] = 100000;
+            var start = UpgradeDebugStart.Load();
+            foreach (CurrencyType type in Enum.GetValues(typeof(CurrencyType)))
+                currencies[type] = Mathf.Max(0, start.defaultCurrencyAmount);
+            foreach (var entry in start.currencies ?? Array.Empty<Cost>())
+                if (entry != null && currencies.ContainsKey(entry.currencyType))
+                    currencies[entry.currencyType] = Mathf.Max(0, entry.amount);
         }
         else if (PlayerPrefs.HasKey(SaveKey))
         {
