@@ -5,6 +5,10 @@ public abstract class TooltipProvider : MonoBehaviour, ITooltipContentProvider
     public virtual bool HideOnPointerExit => false;
     [Header("Anchor")]
     [SerializeField] protected RectTransform anchorRect;
+    [Tooltip("Offset from the anchor in the tooltip parent's local UI units.")]
+    [SerializeField] private Vector2 tooltipOffset;
+
+    public Vector2 TooltipOffset => tooltipOffset;
 
     protected virtual void Awake()
     {

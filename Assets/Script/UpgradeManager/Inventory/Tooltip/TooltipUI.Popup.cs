@@ -7,6 +7,8 @@ public partial class TooltipUI
     public bool startHidden;
     protected virtual bool HideOnAwake => startHidden;
     public Vector2 offset = new Vector2(0f, 20f);
+    [Tooltip("Use only the provider's offset from the slot anchor. When off, add this tooltip's offset.")]
+    [SerializeField] private bool fixedPosition;
     public bool clampToParent = true;
     [SerializeField] private bool flipHorizontalOffsetAtEdge;
     [Tooltip("Disable for an information panel already positioned by the scene layout.")]
@@ -19,7 +21,6 @@ public partial class TooltipUI
 
     private object currentOwner;
     private object pinnedOwner;
-    private RectTransform currentAnchorRect;
 
     private RectTransform tooltipRect;
     private RectTransform parentRect;
@@ -52,7 +53,6 @@ public partial class TooltipUI
         PrepareTooltipPanel();
         currentOwner = data;
         pinnedOwner = null;
-        currentAnchorRect = null;
         SetData(data);
         tooltipPanel.SetActive(data != null);
         if (data != null) SetAlternatePanelsActive(false);
@@ -90,7 +90,6 @@ public partial class TooltipUI
 
         PrepareTooltipPanel();
         currentOwner = owner;
-        currentAnchorRect = anchor;
 
         ApplyData(data);
 
@@ -99,7 +98,7 @@ public partial class TooltipUI
 
         SetAlternatePanelsActive(false);
 
-        UpdatePosition();
+        UpdatePosition(anchor, owner is ITooltipContentProvider provider ? provider.TooltipOffset : Vector2.zero);
         VisibilityChanged?.Invoke(true);
     }
 
@@ -110,7 +109,6 @@ public partial class TooltipUI
         if (tooltipPanel == null) tooltipPanel = gameObject;
 
         currentOwner = null;
-        currentAnchorRect = null;
 
         if (tooltipPanel != null)
             tooltipPanel.SetActive(false);
@@ -171,16 +169,16 @@ public partial class TooltipUI
         SetDefinedData(data, data.dataName);
     }
 
-    private void UpdatePosition()
+    private void UpdatePosition(RectTransform anchor, Vector2 providerOffset)
     {
         if (!positionAtAnchor)
             return;
 
-        if (currentAnchorRect == null || tooltipRect == null || parentRect == null)
+        if (tooltipRect == null || parentRect == null)
             return;
 
         Vector3[] corners = new Vector3[4];
-        currentAnchorRect.GetWorldCorners(corners);
+        anchor.GetWorldCorners(corners);
 
         Vector3 topCenterWorld = (corners[1] + corners[2]) * 0.5f;
 
@@ -193,12 +191,13 @@ public partial class TooltipUI
             out Vector2 localPos
         );
 
-        Vector2 targetPos = localPos + offset;
+        Vector2 placementOffset = fixedPosition ? providerOffset : providerOffset + offset;
+        Vector2 targetPos = localPos + placementOffset;
         if (clampToParent)
         {
-            if (flipHorizontalOffsetAtEdge && offset.x > 0 &&
+            if (flipHorizontalOffsetAtEdge && placementOffset.x > 0 &&
                 targetPos.x + tooltipRect.rect.width * (1f - tooltipRect.pivot.x) > parentRect.rect.xMax)
-                targetPos.x = localPos.x - offset.x;
+                targetPos.x = localPos.x - placementOffset.x;
             targetPos = ClampToParent(targetPos);
         }
 
