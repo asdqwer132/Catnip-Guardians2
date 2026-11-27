@@ -12,7 +12,8 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - _CLOCKWISE_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -47,7 +48,7 @@ Material:
     m_Floats:
     - _Clockwise: 1
     - _EnableExternalAlpha: 0
-    - _FillAmount: 1
+    - _FillAmount: 0.655
     - _FillMode: 0
     - _StartAngle: 0
     - _ZWrite: 0
@@ -55,7 +56,7 @@ Material:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 0.7490196}
     - _BoundsMin: {r: -0.5, g: -0.5, b: 0, a: 0}
     - _BoundsSize: {r: 1, g: 1, b: 0, a: 0}
-    - _Color: {r: 1, g: 1, b: 1, a: 0.2509804}
+    - _Color: {r: 0.3886792, g: 0.3886792, b: 0.3886792, a: 0.2509804}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
