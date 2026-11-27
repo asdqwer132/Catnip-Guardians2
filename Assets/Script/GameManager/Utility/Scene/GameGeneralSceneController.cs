@@ -373,27 +373,53 @@ public sealed class GameGeneralSceneController : MonoBehaviour
     [ContextMenu("Save UI Regions To Screen Profile")]
     public void SaveUIRegions()
     {
-        if(screenProfile==null || viewportSource!=GameViewportSource.UIRegions) return;
-#if UNITY_EDITOR
-        UnityEditor.Undo.RecordObject(screenProfile,"Save screen UI regions");
-#endif
-        navigationCanvas?.GetComponent<ViewportCanvasScaler>()?.RefreshScale();
+        if (screenProfile == null || viewportSource != GameViewportSource.UIRegions ||
+            navigationCanvas == null || !(navigationCanvas.rootCanvas.transform is RectTransform canvasRect)) return;
+
+        navigationCanvas.GetComponent<ViewportCanvasScaler>()?.RefreshScale();
         Canvas.ForceUpdateCanvases();
-        screenProfile.navigation=ReadUIArea(navigationArea,null);
-        screenProfile.battle=ReadUIArea(battleArea,null);
-        screenProfile.item=ReadUIArea(itemArea,null);
-        var canvasRect=navigationCanvas!=null?navigationCanvas.transform as RectTransform:null;
-        if(canvasRect!=null)
+        UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(canvasRect);
+        Rect battle = MeasureCanvasRegion(battleArea, canvasRect);
+        Rect item = MeasureCanvasRegion(itemArea, canvasRect);
+        if (battle.width <= 0f || battle.height <= 0f || item.width <= 0f || item.height <= 0f)
         {
-            screenProfile.Capture(GameScreenRegion.Navigation,navigationArea,screenProfile.navigation,canvasRect.rect.size);
-            screenProfile.Capture(GameScreenRegion.Battle,battleArea,screenProfile.battle,canvasRect.rect.size);
-            screenProfile.Capture(GameScreenRegion.Item,itemArea,screenProfile.item,canvasRect.rect.size);
+            Debug.LogWarning("The battle and item areas must both have a valid layout before saving the screen profile.", this);
+            return;
         }
+
+#if UNITY_EDITOR
+        UnityEditor.Undo.RecordObject(screenProfile, "Save screen UI regions");
+#endif
+        screenProfile.navigation = MeasureCanvasRegion(navigationArea, canvasRect);
+        screenProfile.battle = battle;
+        screenProfile.item = item;
+        screenProfile.Capture(GameScreenRegion.Navigation, navigationArea, screenProfile.navigation, canvasRect.rect.size);
+        screenProfile.Capture(GameScreenRegion.Battle, battleArea, battle, canvasRect.rect.size);
+        screenProfile.Capture(GameScreenRegion.Item, itemArea, item, canvasRect.rect.size);
 #if UNITY_EDITOR
         UnityEditor.EditorUtility.SetDirty(screenProfile);
         UnityEditor.AssetDatabase.SaveAssetIfDirty(screenProfile);
 #endif
     }
+
+    private static Rect MeasureCanvasRegion(RectTransform area, RectTransform canvas)
+    {
+        if (area == null || !area.gameObject.activeInHierarchy || !area.IsChildOf(canvas) ||
+            canvas.rect.width <= 0f || canvas.rect.height <= 0f) return default;
+        var corners = new Vector3[4];
+        area.GetWorldCorners(corners);
+        Vector2 min = Vector2.one;
+        Vector2 max = Vector2.zero;
+        foreach (var corner in corners)
+        {
+            var point = ((Vector2)canvas.InverseTransformPoint(corner) - canvas.rect.min) / canvas.rect.size;
+            point = new Vector2(Mathf.Clamp01(point.x), Mathf.Clamp01(point.y));
+            min = Vector2.Min(min, point);
+            max = Vector2.Max(max, point);
+        }
+        return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
+    }
+
     private void LateUpdate() => ApplyLayout();
     private void OnEnable()
     {

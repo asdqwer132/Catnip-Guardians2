@@ -14,7 +14,7 @@ Unity Inspector와 프로젝트 데이터에서 자주 바꾸는 설정을 모�
 
 1. 제너럴 씬의 `Game General Controller`에서 `Viewport Source`가 `UI Regions`인지 확인한다.
 2. Overlay Canvas에서 `Battle Area`와 `Item Area`로 연결된 RectTransform의 앵커, 위치, 크기를 조정한다. 제너럴 씬에서 부팅하면 이 두 영역을 직접 읽어 카메라에 적용한다.
-3. 배틀·아이템 씬을 단독으로 열 때도 같은 배치를 쓰려면, 원하는 가로세로 비율의 **Game 뷰**에서 컨트롤러 컴포넌트 메뉴 `⋮ > Save UI Regions To Screen Profile`을 실행한다. 프로필을 저장한 뒤 씬도 저장한다. [화면 배치 프로필](../Assets/Data/Scriptable/Scene/GameScreenLayoutProfile.asset)
+3. 제너럴 씬을 저장하면 공유 화면 배치 프로필이 자동으로 갱신된다. 배틀·아이템 씬을 각각 열어 Game 뷰에서 해당 영역을 확인한다. 프로필만 다시 갱신해야 할 때는 컨트롤러 메뉴 `⋮ > Save UI Regions To Screen Profile`을 실행한다. [화면 배치 프로필](../Assets/Data/Scriptable/Scene/GameScreenLayoutProfile.asset)
 4. 게임 전체 월드의 픽셀 밀도와 기준 높이는 프로필의 `World Pixels Per Unit`, `World Reference Height`에서 관리한다. 화면 분할 폭은 2단계에서 조정하고, Canvas UI 스케일은 공유 `SceneUIScaleProfile`에서 조정한다. [UI 스케일 프로필](../Assets/Data/Scriptable/Scene/SceneUIScaleProfile.asset)
 
 ## 2. 아이템 씬의 핀볼 보드
