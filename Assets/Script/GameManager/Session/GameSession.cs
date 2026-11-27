@@ -156,12 +156,23 @@ public class GameSession : MonoBehaviour
         var inventory = data.materialItems;
         data.materialItems = new List<InventoryItem>();
         bool hasBoard = data.equipment.board?.IsConfigured == true;
+        var usedMaterials = new Dictionary<ItemData, int>();
         foreach (string id in data.equipment.itemIds)
         {
             var item = string.IsNullOrEmpty(id) ? null : inventory.Find(entry => entry.itemData.dataId == id);
             if (hasBoard)
             {
                 if (!BoardLoadout.AcceptsMaterial(item?.itemData)) item = null;
+                else
+                {
+                    usedMaterials.TryGetValue(item.itemData, out int equipped);
+                    if (equipped >= item.amount) item = null;
+                    else
+                    {
+                        usedMaterials[item.itemData] = equipped + 1;
+                        item = new InventoryItem(item.itemData, 1);
+                    }
+                }
                 data.boardMaterialSlots.Add(item);
             }
             if (item != null) data.materialItems.Add(item);

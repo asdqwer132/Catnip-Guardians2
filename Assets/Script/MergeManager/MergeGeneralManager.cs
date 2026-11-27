@@ -166,8 +166,9 @@ public sealed class MergeGeneralManager : MonoBehaviour
                 continue;
             }
 
+            bool hasBoardSlots = UsesLoadout && roundData.equipment.board?.IsConfigured == true;
             var added = new HashSet<ItemData>();
-            var stockItems = roundData?.materialItems;
+            var stockItems = hasBoardSlots ? roundData.boardMaterialSlots : roundData?.materialItems;
             if (stockItems != null)
             {
                 foreach (var stock in stockItems)
@@ -180,7 +181,7 @@ public sealed class MergeGeneralManager : MonoBehaviour
             void AddMaterial(InventoryItem stock)
             {
                 var item = stock?.itemData;
-                if (item == null || stock.amount <= 0 || !added.Add(item)) return;
+                if (item == null || stock.amount <= 0 || (!hasBoardSlots && !added.Add(item))) return;
                 var definition = board.GetDefinitionAtMergeItem(item)
                     ?? entry.Value.Find(material => material.mergeItem.item == item)?.mergeItem;
                 if (definition == null && UsesLoadout)
@@ -190,10 +191,11 @@ public sealed class MergeGeneralManager : MonoBehaviour
                         if (definition != null) break;
                     }
                 if (MergegameManager.TryGetPrefab(definition, out _))
-                    materials.Add(new MergeItemMaterial(definition, null, 0));
+                    materials.Add(new MergeItemMaterial(definition, null, stock.amount));
             }
             board.mergeMaterials = materials;
-            board.SetMaterialStock(roundData?.materialItems);
+            if (hasBoardSlots) board.SetConfiguredMaterialCounts(materials.ConvertAll(material => material.count));
+            else board.SetMaterialStock(roundData?.materialItems);
         }
         initialized = true;
         appliedDebugMode = debugMode;

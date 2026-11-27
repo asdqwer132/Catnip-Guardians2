@@ -161,14 +161,11 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
     {
         var equipment = EquipmentSave.Current;
         string id = item.itemData.dataId;
-        // A material lane reserves its full stack for the round. Each pin slot reserves one pin.
-        if (item.itemData is not BoardPinData)
-            return equipment.itemIds.Contains(id) ? 0 : item.amount;
-
+        var ids = item.itemData is BoardPinData ? equipment.board?.pinIds : equipment.itemIds;
         int available = item.amount;
-        if (equipment.board?.pinIds != null)
-            foreach (string pinId in equipment.board.pinIds)
-                if (pinId == id) available--;
+        if (ids != null)
+            foreach (string equippedId in ids)
+                if (equippedId == id) available--;
         return Mathf.Max(0, available);
     }
 
@@ -194,16 +191,7 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
         }
         if (index < 0 || index >= capacity || ReadId(ids, index) == item.dataId) return;
 
-        int equipped = 0;
-        for (int i = 0; i < capacity; i++)
-            if (i != index && ReadId(ids, i) == item.dataId) equipped++;
-        // A material drop lane uses that item's full round allocation. A pin slot uses one copy.
-        if (editingPin && equipped >= stock.GetItemAmount(item)) return;
-        if (!editingPin && equipped > 0)
-        {
-            int previous = ids.IndexOf(item.dataId);
-            ids[previous] = ReadId(ids, index) ?? string.Empty;
-        }
+        if (GetAvailableAmount(new InventoryItem(item, stock.GetItemAmount(item))) <= 0) return;
 
         while (ids.Count <= index) ids.Add(string.Empty);
         ids[index] = item.dataId;
