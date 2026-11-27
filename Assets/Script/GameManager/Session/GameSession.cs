@@ -25,8 +25,7 @@ public class GameSession : MonoBehaviour
     public int GameDataRevision { get; private set; }
     public int RoundRevision { get; private set; }
     public int PendingBattleBatchCount => pendingBattleItems.Count;
-    public IReadOnlyList<int> UnlockedMergeBoxes => generalData?.unlockedMergeBoxes;
-    public IReadOnlyList<SkillNodeData> UnlockedSkillNodes => generalData?.unlockedSkillNodes;
+    public IReadOnlyList<string> EquipmentUnlockKeys => generalData?.equipmentUnlockKeys;
     public bool HasSkillItems =>
         generalData != null && generalData.skillItems != null && generalData.skillItems.Count > 0;
     public GameItemToBattleData LastSentToBattle => lastSentToBattle?.Copy();
@@ -68,7 +67,7 @@ public class GameSession : MonoBehaviour
     }
 
     public void CaptureUpgradeProgress(MergeBoxUpgradeManager mergeBoxUpgrades, PotionEquipmentManager potionEquipment,
-        InventoryManager materialInventory, BuffSkillManager buffSkillManager)
+        InventoryManager materialInventory, BuffSkillManager buffSkillManager, UnlockManager unlockManager)
     {
         var data = new UpgradeToGeneralData();
         if (mergeBoxUpgrades != null)
@@ -106,7 +105,7 @@ public class GameSession : MonoBehaviour
                     data.skillItems.Add(new SkillItemSnapshot(item));
             }
         }
-        data.unlockedMergeBoxes = MergeBoxUpgradeManager.CaptureChestUnlocks(data.unlockedSkillNodes);
+        data.equipmentUnlockKeys = unlockManager != null ? EquipmentUnlocks.Capture(unlockManager) : null;
         SaveUpgradeToGeneral(data);
     }
 
@@ -123,15 +122,15 @@ public class GameSession : MonoBehaviour
         else EquipmentSave.StorePotions(data.potionSlots);
         UpgradeProgressSave.RefreshSkillValues(data);
         data.equipment = EquipmentSave.Current.Copy();
-        data.unlockedMergeBoxes = MergeBoxUpgradeManager.CaptureChestUnlocks(data.unlockedSkillNodes);
         SaveUpgradeToGeneral(data);
     }
 
     public void SaveUpgradeToGeneral(UpgradeToGeneralData data)
     {
         generalData = (data ?? new UpgradeToGeneralData()).Copy();
-        generalData.equippedChest = EquipmentSave.ResolveChest(generalData.equipment, generalData.unlockedMergeBoxes);
-        generalData.equippedEgg = EquipmentSave.ResolveEgg(generalData.equipment, generalData.unlockedMergeBoxes);
+        generalData.equipmentUnlockKeys ??= EquipmentUnlocks.RestoreLegacy(generalData.unlockedSkillNodes);
+        generalData.equippedChest = EquipmentSave.ResolveChest(generalData.equipment, generalData.equipmentUnlockKeys);
+        generalData.equippedEgg = EquipmentSave.ResolveEgg(generalData.equipment, generalData.equipmentUnlockKeys);
         var progress = generalData.Copy();
         progress.equipment = null;
         progress.equippedChest = null;
@@ -192,8 +191,8 @@ public class GameSession : MonoBehaviour
     {
         generalData ??= new UpgradeToGeneralData();
         generalData.equipment = equipment?.Copy();
-        generalData.equippedChest = EquipmentSave.ResolveChest(equipment, generalData.unlockedMergeBoxes);
-        generalData.equippedEgg = EquipmentSave.ResolveEgg(equipment, generalData.unlockedMergeBoxes);
+        generalData.equippedChest = EquipmentSave.ResolveChest(equipment, generalData.equipmentUnlockKeys);
+        generalData.equippedEgg = EquipmentSave.ResolveEgg(equipment, generalData.equipmentUnlockKeys);
         if (!hasGeneralData) return;
         GameDataRevision++;
         GameDataChanged?.Invoke();

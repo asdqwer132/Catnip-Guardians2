@@ -55,43 +55,6 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
     private static IMergeBoxUpgradeSaveStore DefaultStore()
         => new MergeBoxUpgradeFileStore(Path.Combine(Application.persistentDataPath, SaveFileName));
 
-    public static List<int> CaptureChestUnlocks(IEnumerable<SkillNodeData> nodes)
-    {
-        var result = new List<int> { 1 };
-        if (GameManager.DebugMode)
-        {
-            for (int box = 2; box <= 8; box++) result.Add(box);
-            return result;
-        }
-        if (nodes != null) foreach (var node in nodes)
-        {
-            if (node == null || node.rewards == null) continue;
-            foreach (var reward in node.rewards)
-                if (reward is UnlockSkillReward unlock && unlock.UnlockType == DataType.MergeBox &&
-                    int.TryParse(unlock.UnlockId, out int number) && number.ToString() == unlock.UnlockId) Add(number);
-        }
-        return result;
-
-        void Add(int number)
-        {
-            if (number >= 2 && number <= 8 && !result.Contains(number)) result.Add(number);
-        }
-    }
-
-    public static bool IsBoardSkillUnlocked(int box, int skill, IEnumerable<SkillNodeData> nodes)
-    {
-        if (box < 1 || box > 8 || skill < 1 || skill > 3) return false;
-        if (GameManager.DebugMode || skill == 1) return true;
-        if (nodes == null) return false;
-        string id = $"{box}:{skill}";
-        foreach (var node in nodes)
-            if (node != null && node.rewards != null)
-                foreach (var reward in node.rewards)
-                    if (reward is UnlockSkillReward unlock && unlock.UnlockType == DataType.BoardSkill &&
-                        unlock.UnlockId == id) return true;
-        return false;
-    }
-
     // UpgradeManager가 기본 해금/버프 복원을 끝낸 후 호출합니다. 비용을 다시 차감하지 않습니다.
     public void Initialize()
     {

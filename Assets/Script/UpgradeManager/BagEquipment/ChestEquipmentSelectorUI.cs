@@ -26,7 +26,7 @@ public sealed class ChestEquipmentSelectorUI : MonoBehaviour
     private void Refresh()
     {
         session.TryReadGeneralData(out var data);
-        chestSlot.Show(EquipmentSave.ResolveChest(EquipmentSave.Current, data?.unlockedMergeBoxes), false);
+        chestSlot.Show(EquipmentSave.ResolveChest(EquipmentSave.Current, data?.equipmentUnlockKeys), false);
         if (chestSlot.slotToggle != null) chestSlot.slotToggle.interactable = false;
     }
 
@@ -34,11 +34,11 @@ public sealed class ChestEquipmentSelectorUI : MonoBehaviour
     {
         session.TryReadGeneralData(out var data);
         var equipment = EquipmentSave.Current.Copy();
-        int current = EquipmentSave.ResolveChest(equipment, data?.unlockedMergeBoxes)?.boxIndex ?? 1;
+        int current = EquipmentSave.ResolveChest(equipment, data?.equipmentUnlockKeys)?.boxIndex ?? 1;
         for (int offset = 1; offset < 8; offset++)
         {
             int number = (current - 1 + offset) % 8 + 1;
-            if (!EquipmentSave.IsChestUnlocked(number, data?.unlockedMergeBoxes) || EquipmentSave.FindChest(number) == null)
+            if (!EquipmentUnlocks.HasBox(data?.equipmentUnlockKeys, number) || EquipmentSave.FindChest(number) == null)
                 continue;
 
             equipment.equippedChests.Clear();

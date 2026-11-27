@@ -87,17 +87,13 @@ public class UpgradeManager : MonoBehaviour
 
     private void UIInit()
     {
-        mergeBoxUpgrades?.Initialize();
-        if (boardEquipment != null)
-        {
-            var unlockedNodes = mergeBoxUpgrades != null ? mergeBoxUpgrades.CaptureUnlockedNodes() : null;
-            boardEquipment.InitializeLoadout(MergeBoxUpgradeManager.CaptureChestUnlocks(unlockedNodes));
-        }
-        if (potionEquipment != null && GameSession.Instance != null && GameSession.Instance.TryReadGeneralData(out var data))
-            potionEquipment.RestoreSlots(data.potionSlots);
         if (skillTreeUI != null)
             skillTreeUI.Init();
-
+        mergeBoxUpgrades?.Initialize();
+        if (boardEquipment != null)
+            boardEquipment.InitializeLoadout(unlockManager != null ? EquipmentUnlocks.Capture(unlockManager) : null);
+        if (potionEquipment != null && GameSession.Instance != null && GameSession.Instance.TryReadGeneralData(out var data))
+            potionEquipment.RestoreSlots(data.potionSlots);
         if (inventoryUIs == null)
             return;
 
@@ -136,6 +132,6 @@ public class UpgradeManager : MonoBehaviour
     {
         captureQueued = false;
         GameSession.GetOrCreate().CaptureUpgradeProgress(
-            mergeBoxUpgrades, potionEquipment, materialInventory != null ? materialInventory : InventoryManager.instance, buffSkillManager);
+            mergeBoxUpgrades, potionEquipment, materialInventory != null ? materialInventory : InventoryManager.instance, buffSkillManager, unlockManager);
     }
 }

@@ -52,7 +52,7 @@ public sealed class UpgradeToGeneralData
     // Derived for gameplay from equipped IDs and round stock. Empty entries keep board positions.
     [NonSerialized] public List<InventoryItem> boardMaterialSlots = new List<InventoryItem>();
     [NonSerialized] public List<BoardPinData> boardPinSlots = new List<BoardPinData>();
-    public List<int> unlockedMergeBoxes = new List<int> { 1 };
+    public List<string> equipmentUnlockKeys;
     public List<InventoryItem> materialItems = new List<InventoryItem>();
     public List<SkillItemSnapshot> skillItems = new List<SkillItemSnapshot>();
     public List<SkillNodeData> unlockedSkillNodes = new List<SkillNodeData>();
@@ -69,7 +69,7 @@ public sealed class UpgradeToGeneralData
             boardMaterialSlots = boardMaterialSlots?.ConvertAll(item =>
                 item != null ? new InventoryItem(item.itemData, item.amount) : null) ?? new List<InventoryItem>(),
             boardPinSlots = boardPinSlots != null ? new List<BoardPinData>(boardPinSlots) : new List<BoardPinData>(),
-            unlockedMergeBoxes = unlockedMergeBoxes != null ? new List<int>(unlockedMergeBoxes) : new List<int> { 1 },
+            equipmentUnlockKeys = equipmentUnlockKeys != null ? new List<string>(equipmentUnlockKeys) : null,
             materialItems = GameSessionItemCopy.Copy(materialItems),
             unlockedSkillNodes = unlockedSkillNodes != null ? new List<SkillNodeData>(unlockedSkillNodes) : new List<SkillNodeData>(),
             potionSlots = potionSlots != null ? potionSlots.ConvertAll(value => value?.Copy()) : new List<PotionEquipmentSnapshot>()

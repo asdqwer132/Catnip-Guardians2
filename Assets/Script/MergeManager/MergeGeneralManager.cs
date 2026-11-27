@@ -127,7 +127,7 @@ public sealed class MergeGeneralManager : MonoBehaviour
             equippedProfileIndices.Add(StartingSeriesIndex);
             foreach (int number in board.skillIndices)
             {
-                if (!EquipmentSave.IsChestUnlocked(number, roundData.unlockedMergeBoxes)) continue;
+                if (!EquipmentUnlocks.HasBox(roundData.equipmentUnlockKeys, number)) continue;
                 var gimmick = boxes != null ? boxes.GetProfile(number - 1)?.gimmick : null;
                 if (gimmick != null && !equippedModules.Contains(gimmick)) equippedModules.Add(gimmick);
             }
@@ -247,10 +247,14 @@ public sealed class MergeGeneralManager : MonoBehaviour
 
     private bool CanUseBoardSkill(MergeBoxGimic module, int index)
     {
-        if (roundData?.equipment?.board?.IsConfigured != true) return true;
+        if (roundData?.equipment == null) return true;
+        if (roundData.equipment.board?.IsConfigured != true)
+            return roundData.equippedChest != null &&
+                EquipmentUnlocks.HasSkill(roundData.equipmentUnlockKeys, roundData.equippedChest.boxIndex, index + 1);
+
         foreach (int number in roundData.equipment.board.skillIndices)
             if (boxes.GetProfile(number - 1)?.gimmick == module)
-                return MergeBoxUpgradeManager.IsBoardSkillUnlocked(number, index + 1, roundData.unlockedSkillNodes);
+                return EquipmentUnlocks.HasSkill(roundData.equipmentUnlockKeys, number, index + 1);
         return false;
     }
 

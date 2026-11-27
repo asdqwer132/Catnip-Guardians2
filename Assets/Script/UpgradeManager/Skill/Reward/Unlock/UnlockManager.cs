@@ -56,7 +56,7 @@ public class UnlockManager : MonoBehaviour
     public void Unlock(DataType type, string unlockId)
     {
         if (type == DataType.MergeBox &&
-            (!int.TryParse(unlockId, out int box) || box < 2 || box > 8 || box.ToString() != unlockId))
+            (!int.TryParse(unlockId, out int box) || box < 1 || box > 8 || box.ToString() != unlockId))
             return;
 
         if (string.IsNullOrEmpty(unlockId))
@@ -89,7 +89,7 @@ public class UnlockManager : MonoBehaviour
     public void Lock(DataType type, string unlockId)
     {
         if (type == DataType.MergeBox &&
-            (!int.TryParse(unlockId, out int box) || box < 2 || box > 8 || box.ToString() != unlockId))
+            (!int.TryParse(unlockId, out int box) || box < 1 || box > 8 || box.ToString() != unlockId))
             return;
 
         if (string.IsNullOrEmpty(unlockId))
@@ -118,7 +118,6 @@ public class UnlockManager : MonoBehaviour
     public bool IsUnlocked(DataType type, string unlockId)
     {
         if (GameManager.DebugMode && !string.IsNullOrEmpty(unlockId)) return true;
-        if (type == DataType.MergeBox && unlockId == "1") return true;
         if (string.IsNullOrEmpty(unlockId))
             return false;
 
@@ -135,7 +134,7 @@ public class UnlockManager : MonoBehaviour
 
     public bool HasAnyUnlocked(DataType type)
     {
-        if (GameManager.DebugMode || type == DataType.MergeBox) return true;
+        if (GameManager.DebugMode) return true;
         if (!unlockedByType.TryGetValue(type, out HashSet<string> ids))
             return false;
 
@@ -145,7 +144,6 @@ public class UnlockManager : MonoBehaviour
     public List<string> GetUnlockedIds(DataType type)
     {
         var result = unlockedByType.TryGetValue(type, out var ids) ? new List<string>(ids) : new List<string>();
-        if (type == DataType.MergeBox) result.Insert(0, "1");
         return result;
     }
 
@@ -159,7 +157,6 @@ public class UnlockManager : MonoBehaviour
             result.Add(pair.Key, new List<string>(pair.Value));
         }
 
-        result[DataType.MergeBox] = GetUnlockedIds(DataType.MergeBox);
         return result;
     }
 

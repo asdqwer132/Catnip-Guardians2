@@ -23,6 +23,8 @@ public sealed class EquipmentData
 [Serializable]
 public sealed class BoardLoadout
 {
+    public const int NoEgg = -1;
+
     public int eggBoxIndex;
     public List<int> skillIndices = new List<int>();
     public List<string> pinIds = new List<string>();
@@ -39,7 +41,7 @@ public sealed class BoardLoadout
             int.TryParse(item.dataId.Substring(prefix.Length), out int number) && number > 0;
     }
 
-    public bool IsConfigured => eggBoxIndex > 0;
+    public bool IsConfigured => eggBoxIndex != 0;
     public BoardLoadout Copy() => new BoardLoadout
     {
         eggBoxIndex = eggBoxIndex,
@@ -114,30 +116,25 @@ public static class EquipmentSave
         Catalog?.entries.Find(entry => entry.asset is MergeBoxEquipmentData chest && chest.boxIndex == number)?.asset
             as MergeBoxEquipmentData;
 
-    public static MergeBoxEquipmentData ResolveChest(EquipmentData equipment, IReadOnlyList<int> unlocked)
+    public static MergeBoxEquipmentData ResolveChest(EquipmentData equipment, IReadOnlyList<string> unlocked)
     {
         if (equipment != null)
             foreach (int number in equipment.equippedChests)
-                if (IsChestUnlocked(number, unlocked) && FindChest(number) is { } chest) return chest;
+                if (EquipmentUnlocks.HasBox(unlocked, number) && FindChest(number) is { } chest) return chest;
 
-        return FindChest(1);
+        return EquipmentUnlocks.HasBox(unlocked, 1) ? FindChest(1) : null;
     }
 
-    public static MergeBoxEquipmentData ResolveEgg(EquipmentData equipment, IReadOnlyList<int> unlocked)
+    public static MergeBoxEquipmentData ResolveEgg(EquipmentData equipment, IReadOnlyList<string> unlocked)
     {
-        if (equipment?.board?.IsConfigured != true) return ResolveChest(equipment, unlocked);
-        int index = equipment.board.eggBoxIndex;
-        return IsChestUnlocked(index, unlocked) && FindChest(index) is { plant: not null } egg
-            ? egg : FindChest(1);
-    }
+        int index = equipment?.board?.eggBoxIndex ?? 0;
+        if (EquipmentUnlocks.HasEgg(unlocked, index) && FindChest(index) is { plant: not null } selected)
+            return selected;
 
-    public static bool IsChestUnlocked(int number, IReadOnlyList<int> unlocked)
-    {
-        if (number == 1 || (GameManager.DebugMode && number >= 2 && number <= 8)) return true;
-        if (number < 2 || number > 8 || unlocked == null) return false;
-        foreach (int value in unlocked)
-            if (value == number) return true;
-        return false;
+        for (int number = 1; number <= EquipmentUnlocks.BoxCount; number++)
+            if (EquipmentUnlocks.HasEgg(unlocked, number) && FindChest(number) is { plant: not null } egg)
+                return egg;
+        return null;
     }
 
     public static bool StorePotions(IReadOnlyList<PotionEquipmentSnapshot> slots)

@@ -8,7 +8,7 @@ public class UnlockSkillReward : SkillRewardData
 {
     [Header("Unlock")]
     [SerializeField] private DataType unlockType;
-    [Tooltip("MergeBox: box number (2–8). BoardSkill: box:skill, e.g. 2:3. Skill 1 opens with the box.")]
+    [Tooltip("Equipment System keys: GimickOpen_2, Gimick1SkillOpen_2, TreeOpen_2.")]
     [SerializeField] private string unlockId;
 
     public DataType UnlockType => unlockType;
