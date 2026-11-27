@@ -3,10 +3,15 @@ using UnityEngine.EventSystems;
 
 public sealed class BoardSkillTooltipProvider : TooltipProvider, IPointerEnterHandler, IPointerExitHandler
 {
-    [SerializeField] private TooltipUI tooltip;
+    private TooltipUI tooltip;
     private BoardGimmickSkillData data;
 
-    public void SetSource(BoardGimmickSkillData value) => data = value;
+    public void Bind(BoardGimmickSkillData value, TooltipUI window)
+    {
+        if ((data != value || tooltip != window) && tooltip != null) tooltip.Hide(this);
+        data = value;
+        tooltip = window;
+    }
 
     public override bool TryGetTooltipData(out TooltipData result)
     {

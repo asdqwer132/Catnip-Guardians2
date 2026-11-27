@@ -12,9 +12,7 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
         public MergeBoxEquipmentData data;
         public Toggle toggle;
         public GameObject selected;
-        public Image[] skillFrames = Array.Empty<Image>();
-        public Image[] skillIcons = Array.Empty<Image>();
-        public BoardSkillTooltipProvider[] skillTooltips = Array.Empty<BoardSkillTooltipProvider>();
+        public BoardSkillView[] skillViews = Array.Empty<BoardSkillView>();
     }
 
     [SerializeField] private BagEquipmentInventoryUI inventory;
@@ -297,20 +295,11 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
             option.toggle.SetIsOnWithoutNotify(selected);
             if (option.selected != null) option.selected.SetActive(selected);
             option.toggle.gameObject.SetActive(available);
-            for (int i = 0; i < option.skillFrames.Length; i++)
+            for (int i = 0; i < option.skillViews.Length; i++)
             {
-                var frame = option.skillFrames[i];
-                if (frame == null) continue;
                 var skill = i < data.skills.Length ? data.skills[i] : null;
-                bool visible = available && skill != null && EquipmentUnlocks.HasSkill(unlocked, data.boxIndex, i + 1);
-                if (i < option.skillIcons.Length && option.skillIcons[i] != null)
-                {
-                    var icon = option.skillIcons[i];
-                    icon.sprite = skill != null ? skill.icon : null;
-                    icon.enabled = icon.sprite != null;
-                }
-                if (i < option.skillTooltips.Length) option.skillTooltips[i]?.SetSource(skill);
-                frame.gameObject.SetActive(visible);
+                bool unlockedSkill = available && EquipmentUnlocks.HasSkill(unlocked, data.boxIndex, i + 1);
+                option.skillViews[i]?.Show(unlockedSkill ? skill : null, itemTooltip);
             }
         }
         previousEgg.interactable = canChangeEgg;
