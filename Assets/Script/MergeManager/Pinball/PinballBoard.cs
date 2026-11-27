@@ -291,17 +291,42 @@ public sealed class PinballBoard : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (!showGizmos || !fitToUI || !TryGetFrame(out var origin, out var width, out var height)) return;
-        Color previous = Gizmos.color;
+        if (!showGizmos) return;
+        Color previousColor = Gizmos.color;
+        Matrix4x4 previousMatrix = Gizmos.matrix;
         Gizmos.color = Color.cyan;
-        foreach (var cell in layout.PinCells)
-            Gizmos.DrawWireSphere(At(origin, width, height, cell.center), GetDiameter(cell, width, height) * .5f);
-        GetRamps(origin, width, height, out var left, out var innerLeft, out var innerRight, out var right);
+        if (pins.Count > 0)
+        {
+            foreach (var pin in pins) DrawPinGizmo(pin.collider);
+        }
+        else if (scenePins != null)
+        {
+            foreach (var pin in scenePins)
+                if (pin != null) DrawPinGizmo(pin.GetComponent<CircleCollider2D>());
+        }
+
         Gizmos.color = new Color(1f, .68f, .25f);
-        Gizmos.DrawLine(left, innerLeft);
-        Gizmos.DrawLine(innerRight, right);
+        DrawBoxGizmo(leftRamp);
+        DrawBoxGizmo(rightRamp);
         Gizmos.color = Color.green;
-        Gizmos.DrawLine(innerLeft, innerRight);
-        Gizmos.color = previous;
+        DrawBoxGizmo(outlet);
+        Gizmos.matrix = previousMatrix;
+        Gizmos.color = previousColor;
+    }
+
+    private static void DrawPinGizmo(CircleCollider2D collider)
+    {
+        if (collider == null || !collider.enabled || !collider.gameObject.activeInHierarchy) return;
+        var scale = collider.transform.lossyScale;
+        float radius = collider.radius * Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y));
+        Gizmos.matrix = Matrix4x4.identity;
+        Gizmos.DrawWireSphere(collider.transform.TransformPoint(collider.offset), radius);
+    }
+
+    private static void DrawBoxGizmo(BoxCollider2D collider)
+    {
+        if (collider == null || !collider.enabled || !collider.gameObject.activeInHierarchy) return;
+        Gizmos.matrix = collider.transform.localToWorldMatrix;
+        Gizmos.DrawWireCube(collider.offset, new Vector3(collider.size.x, collider.size.y, 0f));
     }
 }
