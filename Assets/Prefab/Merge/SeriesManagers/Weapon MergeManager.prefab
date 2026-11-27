@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5753382963874761464}
   - component: {fileID: 7972414329389823318}
-  - component: {fileID: 5093010132288736860}
   - component: {fileID: 5763765669095024634}
   m_Layer: 0
   m_Name: MergeManager
@@ -87,28 +86,6 @@ MonoBehaviour:
   cycleAutomaticMaterials: 1
   logActions: 1
   lastMessage: 
---- !u!114 &5093010132288736860
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3521399810690874270}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed94fe9950e84f369adb45642a84c852, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MergeItemSelection
-  board: {fileID: 7972414329389823318}
-  inputCamera: {fileID: 0}
-  dragVisual: {fileID: 0}
-  dragAllowedArea: {fileID: 0}
-  maximumDragWidth: 3
-  maximumDragHeight: 3
-  dragThreshold: 0.1
-  dragCooldown: 0.5
-  clickCooldown: 0.2
-  logSelections: 1
 --- !u!114 &5763765669095024634
 MonoBehaviour:
   m_ObjectHideFlags: 0

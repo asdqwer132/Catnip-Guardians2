@@ -53,7 +53,6 @@ public partial class MergegameManager : MonoBehaviour
     public bool IsDropTimerRunning => Dropper.IsTimerRunning;
     public float DropInterval => Dropper.Interval;
     public bool MaterialUIEnabled => displayMaterialUI;
-    public bool SelectionSuppressed { get; set; }
     internal PinballBoard Pinball { get; set; }
     public bool UsesAutomaticFeeding => automaticDrop || ForceAutomaticFeeding;
     public bool IsFeedingEnabled => isFeeding || ForceAutomaticFeeding;

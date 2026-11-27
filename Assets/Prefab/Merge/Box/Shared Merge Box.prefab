@@ -837,49 +837,16 @@ MonoBehaviour:
   visuals:
   - role: 4
     target: {fileID: 5065561302392604081}
-    originalSize: {x: 0.375, y: 3}
-    position: {x: -2.625, y: -2.5, z: 0}
-    units: {x: 1, y: 1}
-    colliderUnits: {x: 0.99999994, y: 0.99999994}
   - role: 5
     target: {fileID: 4810541784263849798}
-    originalSize: {x: 0.375, y: 3}
-    position: {x: 2.625, y: -2.5, z: 0}
-    units: {x: 1, y: 1}
-    colliderUnits: {x: 0.99999994, y: 0.99999994}
   - role: 1
     target: {fileID: 4976273811831407129}
-    originalSize: {x: 5.625, y: 0.46875}
-    position: {x: 0, y: -3.775, z: 0}
-    units: {x: 1, y: 1}
-    colliderUnits: {x: 0.99999994, y: 0.99999994}
   - role: 2
     target: {fileID: 1057048187663836954}
-    originalSize: {x: 5.25, y: 2.75}
-    position: {x: 0, y: -2.375, z: 0}
-    units: {x: 1, y: 1}
-    colliderUnits: {x: 0, y: 0}
   - role: 6
     target: {fileID: 0}
-    originalSize: {x: 5.25, y: 2.75}
-    position: {x: 0, y: -2.375, z: 0}
-    units: {x: 1, y: 1}
-    colliderUnits: {x: 0, y: 0}
   - role: 7
     target: {fileID: 0}
-    originalSize: {x: 5.25, y: 2.75}
-    position: {x: 0, y: -2.375, z: 0}
-    units: {x: 1, y: 1}
-    colliderUnits: {x: 0, y: 0}
-  referenceSize: {x: 5.25, y: 3}
-  linePosition: {x: 0, y: -1.1725, z: 0}
-  lineSize: {x: 5, y: 0.025}
-  originalMovement:
-    serializedVersion: 2
-    x: -3.7800002
-    y: -1.0230116
-    width: 7.5600004
-    height: 0.28636366
   spawnPoint: {fileID: 8092913434314397028}
   dropZone: {fileID: 864643136452412017}
 --- !u!114 &864643136452412017
@@ -4262,7 +4229,6 @@ MonoBehaviour:
   clawReturnDuration: 0.5
   clawGripOffset: 0.3
   inputCamera: {fileID: 0}
-  selection: {fileID: 0}
 --- !u!1 &8320632661875235801
 GameObject:
   m_ObjectHideFlags: 0

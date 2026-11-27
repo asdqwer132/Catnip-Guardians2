@@ -148,7 +148,8 @@ public class InventoryUI : ItemSearchFilterTargetUI
     protected IReadOnlyList<BaseItemSlotUI> Slots => quickSlotUIs;
     protected virtual int DisplayItemCount => validItemsCache.Count;
     protected virtual void CollectDisplayItems() => GetValidItems(validItemsCache);
-    protected virtual void BindSlot(BaseItemSlotUI slot, int index) => slot.SetSlot(validItemsCache[index]);
+    protected virtual InventoryItem GetDisplayItem(InventoryItem item) => item;
+    protected virtual void BindSlot(BaseItemSlotUI slot, int index) => slot.SetSlot(GetDisplayItem(validItemsCache[index]));
     protected virtual void OnSlotsRefreshed() { }
 
     public virtual void RefreshUI()

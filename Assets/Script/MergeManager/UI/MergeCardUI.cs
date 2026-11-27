@@ -5,9 +5,7 @@ using UnityEngine.UI;
 public sealed class MergeCardUI : MonoBehaviour
 {
     public MergeBoxSceneController boxes;
-    public MergeItemSelection selection;
     public Button materialChange;
-    public Image dragCooldown;
     public GameObject materialPanel;
     public RectTransform slotParent;
     public MergeMaterialSelectionUI materialHelpers;
@@ -45,16 +43,6 @@ public sealed class MergeCardUI : MonoBehaviour
     private void OnDisable()
     {
         if (materialChange != null) materialChange.onClick.RemoveListener(AdvanceMaterial);
-    }
-
-    private void LateUpdate()
-    {
-        if (dragCooldown != null)
-        {
-            float progress = selection != null ? selection.CooldownProgress : 0f;
-            dragCooldown.fillAmount = progress;
-            dragCooldown.enabled = progress > 0f;
-        }
     }
 
     private void AdvanceMaterial() => boxes?.SelectedBoard?.AdvanceSelectedMaterial();

@@ -23,7 +23,6 @@ public sealed class MergeBoxSceneController : MonoBehaviour
 {
     public MergeGeneralManager gameManager;
     public TMP_Dropdown seriesDropdown;
-    public MergeItemSelection selection;
     public MergeBoxBindings sharedBox;
     public MergeCardUI card;
     [SerializeField] private PinballBoard pinball;
@@ -49,8 +48,6 @@ public sealed class MergeBoxSceneController : MonoBehaviour
         {
             if (profile?.board != null)
             {
-                if (profile.board.TryGetComponent<MergeItemSelection>(out var settings) && settings != selection)
-                    settings.enabled = false;
                 profile.board.SetMaterialUIEnabled(false);
                 profile.board.enabled = false;
             }
@@ -66,7 +63,6 @@ public sealed class MergeBoxSceneController : MonoBehaviour
     private void OnDisable()
     {
         if (seriesDropdown != null) seriesDropdown.onValueChanged.RemoveListener(SelectBox);
-        CancelSelection();
     }
 
     public bool CanShowBox(int index)
@@ -77,7 +73,6 @@ public sealed class MergeBoxSceneController : MonoBehaviour
     public void ShowBox(int index, int level, bool restart, IReadOnlyList<BoardPinData> pins = null)
     {
         var profile = GetProfile(index);
-        CancelSelection();
         if (SelectedProfile != profile)
         {
             if (SelectedBoard != null)
@@ -97,7 +92,6 @@ public sealed class MergeBoxSceneController : MonoBehaviour
         profile.board.enabled = true;
         card?.Bind(profile.board);
         profile.board.SetMaterialUIEnabled(true);
-        if (selection != null) selection.SetBoard(profile.board);
         if (seriesDropdown != null) seriesDropdown.SetValueWithoutNotify(index);
     }
 
@@ -132,13 +126,6 @@ public sealed class MergeBoxSceneController : MonoBehaviour
             if (entry != null && entry.minimumLevel > level)
                 next = Math.Min(next, entry.minimumLevel);
         return next;
-    }
-
-    private void CancelSelection()
-    {
-        if (selection == null) return;
-        selection.CancelSelection();
-        selection.ActiveSpawnPointDragger?.EndDrag();
     }
 
     public bool SetBoxLevel(ItemSeries series, int level) => gameManager != null && gameManager.SetBoxLevel(series, level);

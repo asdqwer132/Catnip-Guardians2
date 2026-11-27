@@ -18,9 +18,7 @@ public class InventorySearchUI : ItemSearchUIBase
     private void OnCategoryDropdownChanged(int index)
     {
         if (index < 0 || index >= categoryDropdownValues.Length) return;
-        DataType category = categoryDropdownValues[index];
-        if (category == DataType.Pin && filter.useSeries) ResetSeriesFilter();
-        OnCategoryChanged((int)category);
+        OnCategoryChanged((int)categoryDropdownValues[index]);
     }
 
     public void SetSeriesControlAvailable(bool available)
@@ -103,8 +101,6 @@ public class InventorySearchUI : ItemSearchUIBase
         }
         if (seriesDropdown != null)
         {
-            if (categoryDropdown != null)
-                seriesDropdown.interactable = !filter.useCategory || filter.category != DataType.Pin;
             if (!filter.useSeries) seriesDropdown.SetValueWithoutNotify(0);
         }
     }

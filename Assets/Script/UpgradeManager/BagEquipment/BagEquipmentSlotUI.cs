@@ -1,23 +1,26 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class BagEquipmentSlotUI : ClickableItemSlotUI
+public class BagEquipmentSlotUI : ClickableItemSlotUI, IPointerClickHandler
 {
     public TextMeshProUGUI slotNumberText;
     [UnityEngine.SerializeField] private UnityEngine.UI.Image selectionBackground;
     private Action clicked;
     private Action deselected;
+    private Action unequip;
     private Color normalIconColor = Color.white;
     private Color normalBackgroundColor;
     private bool capturedColors;
     protected override bool AllowEmptySelection => true;
     protected override bool KeepSelectionOnRefresh => true;
 
-    public void Bind(Action action, int number = 0, TooltipUI tooltip = null, Action onDeselected = null)
+    public void Bind(Action action, int number = 0, TooltipUI tooltip = null, Action onDeselected = null, Action onUnequip = null)
     {
         clicked = action;
         deselected = onDeselected;
+        unequip = onUnequip;
         if (tooltip != null && TryGetComponent<ItemTooltipTrigger>(out var trigger)) trigger.Init(tooltip);
         if (slotNumberText != null && number > 0) slotNumberText.text = number.ToString();
         if (capturedColors) return;
@@ -69,6 +72,11 @@ public class BagEquipmentSlotUI : ClickableItemSlotUI
         if (selected) OnClickSlot();
         else if (slotToggle == null || slotToggle.group == null || !slotToggle.group.AnyTogglesOn())
             deselected?.Invoke();
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.button == PointerEventData.InputButton.Right && !IsLocked) unequip?.Invoke();
     }
 
     public override void OnClickSlot()

@@ -20,7 +20,6 @@ public sealed class UIWorldBoundsFitter : MonoBehaviour
     [Tooltip("시각 오브젝트/콜라이더 외에 투입구처럼 프레임 안에 포함할 기준점입니다.")]
     public Transform[] includePoints = Array.Empty<Transform>();
     public MergegameManager[] boards = Array.Empty<MergegameManager>();
-    public MergeItemSelection[] selections = Array.Empty<MergeItemSelection>();
     public event Action<Matrix4x4> LayoutChanged;
     private bool captured;
     private Transform capturedRoot;
@@ -110,8 +109,6 @@ public sealed class UIWorldBoundsFitter : MonoBehaviour
         bool rootChanged = worldRoot.position != oldPosition || worldRoot.localScale != oldScale;
         if (!rootChanged && !cameraMoved) return false;
         Matrix4x4 change = worldRoot.localToWorldMatrix * previous.inverse;
-        if (selections != null) foreach (var selection in selections)
-            if (selection != null && selection.IsSelecting) selection.CancelSelection();
         if (rootChanged)
         {
             if (boards != null) foreach (var board in boards) if (board != null) board.RemapLayout(change);

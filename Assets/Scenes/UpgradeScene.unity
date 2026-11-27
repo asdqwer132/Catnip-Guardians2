@@ -69500,8 +69500,6 @@ MonoBehaviour:
   NodesParents:
   - {fileID: 2674727041271878056}
   tooltipUI: {fileID: 289082802}
-  infoToggel: {fileID: 0}
-  invenToggle: {fileID: 0}
   includeInactive: 1
   injectOnAwake: 1
   keepInfoOnPointerExit: 0
@@ -75482,7 +75480,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1644459204}
   - component: {fileID: 1644459205}
-  - component: {fileID: 1644459208}
   m_Layer: 0
   m_Name: UpgradeManager
   m_TagString: Untagged
@@ -75535,20 +75532,6 @@ MonoBehaviour:
   sceneMoveManager: {fileID: 910000300001}
   materialInventory: {fileID: 1979291818}
   debugMode: 0
---- !u!114 &1644459208
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1644459203}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80c30447c3fffc34096ffd6245a97f82, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MapOpener
-  listenType: 0
-  gimickSKills: []
 --- !u!1001 &1651943915
 PrefabInstance:
   m_ObjectHideFlags: 0

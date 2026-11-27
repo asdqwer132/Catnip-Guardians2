@@ -34,8 +34,7 @@ public sealed class MergeBoxMachine : MergeBoxGimic
     [Min(0f)] public float clawGripOffset = .3f;
     [Header("Existing input references")]
     public Camera inputCamera;
-    public MergeItemSelection selection;
-    private bool draggingLaser, previousSuppression;
+    private bool draggingLaser;
     private float laserRemaining;
     private readonly List<RaycastResult> uiHits = new List<RaycastResult>();
     protected override void EnsureSkills() => SetDefaultSkills(
@@ -43,7 +42,6 @@ public sealed class MergeBoxMachine : MergeBoxGimic
         new GimicSkill { id = "Machine.Claw", type = GimicSkillType.Active, defaultSkillCool = 10f });
     public override void GimicStart()
     {
-        if (Board is { } machine) machine.LaserDragArea = laserDragArea;
         ParkClaw();
     }
     protected override bool CanUseActiveSkill(int index) => Board is { } machine &&
@@ -59,8 +57,7 @@ public sealed class MergeBoxMachine : MergeBoxGimic
             machine.FireLaser(laserHitArea,splitMultiplier);
             laserRemaining=laserVisualSeconds;
         }
-        else if (machine.BeginClaw(clawVisual, clawRail, clawHandlePoint, clawCleanPoint, clawSpeed, clawGripOffset))
-        { selection?.CancelSelection(); selection?.ActiveSpawnPointDragger?.EndDrag(); }
+        else machine.BeginClaw(clawVisual, clawRail, clawHandlePoint, clawCleanPoint, clawSpeed, clawGripOffset);
     }
     protected override void TickGimic(float deltaTime)
     {
@@ -80,10 +77,7 @@ public sealed class MergeBoxMachine : MergeBoxGimic
         {
             if (machine.ClawState == MergeClawState.AwaitingItem) TryGrabClawItem(world);
             else if (machine.ClawState == MergeClawState.Idle && laserDragArea != null && laserDragArea.OverlapPoint(world))
-            {
-                draggingLaser = true; previousSuppression = Board.SelectionSuppressed; Board.SelectionSuppressed = true;
-                selection?.CancelSelection(); selection?.ActiveSpawnPointDragger?.EndDrag();
-            }
+                draggingLaser = true;
         }
         UpdateClawTarget(world);
         if (draggingLaser && laserEmitter != null && laserDragArea != null)
@@ -158,12 +152,11 @@ public sealed class MergeBoxMachine : MergeBoxGimic
         foreach (var hit in uiHits) if (hit.module is GraphicRaycaster) return true;
         return false;
     }
-    private void EndLaserDrag()
-    { if (draggingLaser && Board != null) Board.SelectionSuppressed = previousSuppression; draggingLaser = false; }
+    private void EndLaserDrag() => draggingLaser = false;
     public override void GimicStop()
     {
         EndLaserDrag();
-        if (Board is { } machine) { machine.CancelClaw(); machine.LaserDragArea = null; }
+        Board?.CancelClaw();
         ParkClaw();
         if (laserObject != null) laserObject.SetActive(false);
         followingTarget=false;if(clawTarget!=null) clawTarget.gameObject.SetActive(false);

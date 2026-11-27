@@ -5,7 +5,7 @@ public class SubPlantUIManager : MonoBehaviour
     public SubPlantManager subplantmanager;
     public SubPlantMaterialSlotUI[] slots;
     public InventorySlotUI resultSlot;
-    public ToggleTooltipTrigger trigger;
+    public ItemTooltipTrigger trigger;
     public CraftSuccessEffectUI successEffect;
 
     public bool dynamicCombine = false;

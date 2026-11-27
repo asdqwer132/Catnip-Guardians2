@@ -120,7 +120,7 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
                 if (selectedSlot != index || editingPin != pin) return;
                 selectedSlot = -1;
                 Refresh();
-            });
+            }, onUnequip: () => UnequipSlot(pin, index));
         }
     }
 
@@ -138,6 +138,38 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
         editingPin = pin;
         selectedSlot = index;
         inventory.ClearSelection();
+        search.OnCategoryChanged((int)(pin ? DataType.Pin : DataType.ItemMaterial));
+    }
+
+    private void UnequipSlot(bool pin, int index)
+    {
+        var equipment = EquipmentSave.Current.Copy();
+        var ids = pin ? equipment.board?.pinIds : equipment.itemIds;
+        if (ids != null && index < ids.Count && !string.IsNullOrEmpty(ids[index]))
+        {
+            ids[index] = string.Empty;
+            if (!Write(equipment)) return;
+        }
+
+        selectedSlot = -1;
+        inventory.ClearSelection();
+        itemTooltip?.Hide();
+        Refresh();
+    }
+
+    public int GetAvailableAmount(InventoryItem item)
+    {
+        var equipment = EquipmentSave.Current;
+        string id = item.itemData.dataId;
+        // A material lane reserves its full stack for the round. Each pin slot reserves one pin.
+        if (item.itemData is not BoardPinData)
+            return equipment.itemIds.Contains(id) ? 0 : item.amount;
+
+        int available = item.amount;
+        if (equipment.board?.pinIds != null)
+            foreach (string pinId in equipment.board.pinIds)
+                if (pinId == id) available--;
+        return Mathf.Max(0, available);
     }
 
     public bool CanDisplay(ItemData item) => item is BoardPinData || BoardLoadout.AcceptsMaterial(item);
@@ -249,6 +281,7 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
     private void Refresh()
     {
         var equipment = EquipmentSave.Current;
+        inventory.RefreshUI();
         var board = GetOrCreateBoard(equipment.Copy(), GetUnlocked());
         var unlocked = GetUnlocked();
         RefreshSlots(materialSlots, equipment.itemIds, false);

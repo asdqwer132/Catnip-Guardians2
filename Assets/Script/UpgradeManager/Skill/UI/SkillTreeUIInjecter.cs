@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class SkillTreeUIInjecter : MonoBehaviour
 {
@@ -8,8 +7,6 @@ public class SkillTreeUIInjecter : MonoBehaviour
 
     [Header("Setting")]
     public TooltipUI tooltipUI;
-    public Toggle infoToggel;
-    public Toggle invenToggle;
 
     [Header("Option")]
     [Tooltip("비활성화된 노드도 포함해서 찾습니다.")]
@@ -27,7 +24,7 @@ public class SkillTreeUIInjecter : MonoBehaviour
             Inject();
     }
 
-    [ContextMenu("Inject Toggle Tooltip Triggers")]
+    [ContextMenu("Inject Item Tooltip Triggers")]
     public void Inject()
     {
         if (NodesParents == null || NodesParents.Length == 0)
@@ -45,29 +42,27 @@ public class SkillTreeUIInjecter : MonoBehaviour
             if (nodesParent == null)
                 continue;
 
-            ToggleTooltipTrigger[] triggers =
-                nodesParent.GetComponentsInChildren<ToggleTooltipTrigger>(
+            ItemTooltipTrigger[] triggers =
+                nodesParent.GetComponentsInChildren<ItemTooltipTrigger>(
                     includeInactive
                 );
 
             for (int j = 0; j < triggers.Length; j++)
             {
-                ToggleTooltipTrigger trigger = triggers[j];
+                ItemTooltipTrigger trigger = triggers[j];
 
                 if (trigger == null)
                     continue;
 
                 trigger.tooltipUI = tooltipUI;
                 trigger.hideOnPointerExit = !keepInfoOnPointerExit;
-                trigger.infoToggle = infoToggel;
-                trigger.invenToggle = invenToggle;
 
                 injectedCount++;
             }
         }
 
         //Debug.Log(
-        //    $"ToggleTooltipTrigger 주입 완료: {injectedCount}개",
+        //    $"ItemTooltipTrigger 주입 완료: {injectedCount}개",
         //    this
         //);
     }

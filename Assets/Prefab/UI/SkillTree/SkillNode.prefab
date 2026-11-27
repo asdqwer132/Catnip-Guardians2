@@ -412,9 +412,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 8281552216295151602}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: edd5a4566a67c494ea5429e6afe2e07b, type: 3}
+  m_Script: {fileID: 11500000, guid: 3f811147cfbd52a4b8cf7877b3eb1bc0, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ToggleTooltipTrigger
+  m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipTrigger
   isPointer: 1
   autoDisable: 1
   startShow: 0
@@ -422,9 +422,6 @@ MonoBehaviour:
   showOnSelection: 0
   tooltipUI: {fileID: 0}
   providerComponent: {fileID: 6370626538912415708}
-  infoToggle: {fileID: 0}
-  invenToggle: {fileID: 0}
-  isExitUse: 1
 --- !u!114 &7787977839073372347
 MonoBehaviour:
   m_ObjectHideFlags: 0

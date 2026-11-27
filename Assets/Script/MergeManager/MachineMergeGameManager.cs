@@ -8,9 +8,6 @@ public sealed class MachineMergeGameManager : MergegameManager { }
 
 public partial class MergegameManager
 {
-    public Collider2D LaserDragArea { get; set; }
-    public virtual bool CapturesSelectionPointer(Vector2 worldPosition) => ClawState != MergeClawState.Idle ||
-        (LaserDragArea != null && LaserDragArea.isActiveAndEnabled && LaserDragArea.OverlapPoint(worldPosition));
     public MergeClawState ClawState { get; private set; }
     private Transform claw;
     private Collider2D rail;
@@ -29,7 +26,7 @@ public partial class MergegameManager
         returnDuration = Mathf.Max(.01f, duration);
         ClawState = MergeClawState.Returning;
     }
-    private bool dropRequested, previousSuppression;
+    private bool dropRequested;
     private Vector3 pickupPosition;
     public bool ClawHasItem => grabbed != null && (ClawState == MergeClawState.Lifting || ClawState == MergeClawState.MovingAlongRail);
     private readonly List<Collider2D> laserHits = new List<Collider2D>();
@@ -93,7 +90,6 @@ public partial class MergegameManager
         claw = clawVisual; rail = movementRail; clawSpeed = Mathf.Max(.01f, speed); gripOffset = Mathf.Max(0f, itemOffset);
         clawTopY = handlePoint != null ? handlePoint.position.y : movementRail.bounds.center.y;
         cleanPoint = parkingPoint;
-        previousSuppression = SelectionSuppressed; SelectionSuppressed = true;
         dropRequested = false; ClawState = MergeClawState.AwaitingItem; return true;
     }
     public bool TryGrab(Vector2 world)
@@ -155,7 +151,6 @@ public partial class MergegameManager
     {
         if (grabbed != null && grabbed.LifeId == grabbedLife) grabbed.ReleaseHold(this);
         grabbed = null;
-        if (ClawState != MergeClawState.Idle) SelectionSuppressed = previousSuppression;
         ClawState = MergeClawState.Idle; dropRequested = false;
         if (claw != null && cleanPoint != null) ParkClaw(claw, cleanPoint, returnDuration);
     }
