@@ -92,7 +92,7 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
         session.GameDataChanged += Refresh;
         InventoryManager.InstanceChanged += BindStock;
         BindStock();
-        search.SetSeriesControlAvailable(true);
+        search.SetTargetUI(inventory);
         inventory.Init();
     }
 
@@ -135,25 +135,20 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
 
     private void SelectSlot(bool pin, int index)
     {
-        bool categoryChanged = editingPin != pin;
         editingPin = pin;
         selectedSlot = index;
         inventory.ClearSelection();
-        if (categoryChanged)
-        {
-            // Pins have no merge-item series.
-            search.SetSeriesControlAvailable(!pin);
-            if (!pin) inventory.RefreshUI();
-        }
     }
 
-    public bool CanDisplay(ItemData item)
-        => editingPin ? item is BoardPinData : BoardLoadout.AcceptsMaterial(item);
+    public bool CanDisplay(ItemData item) => item is BoardPinData || BoardLoadout.AcceptsMaterial(item);
 
     public void SelectItem(ItemData item)
     {
         if (!CanDisplay(item) || stock == null || stock.GetItemAmount(item) <= 0 || string.IsNullOrWhiteSpace(item.dataId))
             return;
+        bool pin = item is BoardPinData;
+        if (selectedSlot >= 0 && editingPin != pin) return;
+        editingPin = pin;
 
         var equipment = EquipmentSave.Current.Copy();
         var board = GetOrCreateBoard(equipment, GetUnlocked());

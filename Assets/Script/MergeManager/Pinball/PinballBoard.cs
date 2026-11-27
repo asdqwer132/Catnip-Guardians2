@@ -8,7 +8,6 @@ public sealed class PinballBoard : MonoBehaviour
     [SerializeField] private PinballBoardLayout layout;
     [Tooltip("Pin used in an unequipped cell. Clear this to leave empty cells open.")]
     [SerializeField] private BoardPinData defaultPin;
-    [SerializeField] private PhysicsMaterial2D surfaceMaterial;
     [Header("Board proportions")]
     [SerializeField, Range(.1f, .65f)] private float outletWidth = .25f;
     [SerializeField, Range(.04f, .4f)] private float rampRise = .17f;
@@ -16,22 +15,23 @@ public sealed class PinballBoard : MonoBehaviour
     [SerializeField, Range(.01f, .12f)] private float maximumItemRadius = .038f;
     [Header("Preview")]
     [SerializeField] private bool showGizmos = true;
-    [SerializeField] private Color rampColor = new Color(.55f, .37f, .20f);
-    [SerializeField] private Color outletColor = new Color(.34f, .64f, .43f);
 
     private struct Pin
     {
         public PinballPin behaviour;
         public CircleCollider2D collider;
         public SpriteRenderer renderer;
+        public PinballPin replacementSource;
     }
 
     private readonly List<Pin> pins = new List<Pin>();
     private readonly List<(MergeItemObject piece, int life, Vector2 center, float radius)> merges = new();
     private MergegameManager board;
-    private Transform geometry;
-    private BoxCollider2D leftRamp, rightRamp, outlet;
-    private Sprite strip;
+    [Header("Scene Geometry")]
+    [SerializeField] private Transform geometry;
+    [SerializeField] private bool fitToUI = true;
+    [SerializeField] private BoxCollider2D leftRamp, rightRamp, outlet;
+    [SerializeField] private PinballPin[] scenePins;
     private BoxCollider2D previousFloor;
     private SpriteRenderer previousFloorVisual;
     private bool floorWasEnabled, floorWasVisible, lineWasVisible;
@@ -41,7 +41,8 @@ public sealed class PinballBoard : MonoBehaviour
 
     private void OnValidate() => fitDirty = true;
 
-    public bool IsConfigured => isActiveAndEnabled && layout != null && layout.PinCells.Count > 0 &&
+    public bool IsConfigured => isActiveAndEnabled && layout != null && layout.PinCells.Count > 0 && geometry != null && scenePins != null &&
+        scenePins.Length == layout.PinCells.Count && outlet != null && leftRamp != null && rightRamp != null &&
         wallFitter != null && wallFitter.frame != null && wallFitter.box != null;
     internal bool Owns(MergeItemObject piece) => board != null && board.CanOperate &&
         piece != null && piece.IsLive && piece.Owner == board;
@@ -68,14 +69,42 @@ public sealed class PinballBoard : MonoBehaviour
             board.dropZone.RefreshLine();
         }
 
-        if (geometry == null) CreateGeometry();
+        if (pins.Count == 0)
+            foreach (var cell in scenePins)
+                pins.Add(new Pin { behaviour = cell, collider = cell.GetComponent<CircleCollider2D>(),
+                    renderer = cell.GetComponentInChildren<SpriteRenderer>(true) });
+        outlet.GetComponent<PinballOutlet>().Board = this;
         for (int i = 0; i < pins.Count; i++)
         {
             var pin = pins[i];
             var definition = i < (equipment?.Count ?? 0) ? equipment[i] : null;
             if (definition == null) definition = defaultPin;
+            var replacement = definition != null ? definition.worldPrefab : null;
+            if (replacement != null && (!replacement.TryGetComponent<CircleCollider2D>(out _) ||
+                replacement.GetComponentInChildren<SpriteRenderer>(true) == null))
+                replacement = null;
+            if (replacement != pin.replacementSource)
+            {
+                var anchor = scenePins[i];
+                if (pin.behaviour != anchor)
+                {
+                    pin.behaviour.gameObject.SetActive(false);
+                    Destroy(pin.behaviour.gameObject);
+                }
+                var instance = replacement != null ? Instantiate(replacement, anchor.transform.parent) : anchor;
+                if (instance != anchor)
+                {
+                    instance.transform.SetLocalPositionAndRotation(anchor.transform.localPosition, anchor.transform.localRotation);
+                    instance.transform.localScale = anchor.transform.localScale;
+                    anchor.gameObject.SetActive(false);
+                }
+                pin = new Pin { behaviour = instance, collider = instance.GetComponent<CircleCollider2D>(),
+                    renderer = instance.GetComponentInChildren<SpriteRenderer>(true), replacementSource = replacement };
+                pins[i] = pin;
+            }
             pin.behaviour.Bind(this, definition);
-            pin.renderer.sprite = definition != null ? definition.boardIcon ?? definition.icon : null;
+            if (replacement == null || pin.renderer.sprite == null)
+                pin.renderer.sprite = definition != null ? definition.boardIcon ?? definition.icon : null;
             pin.behaviour.gameObject.SetActive(definition != null);
         }
         geometryReady = false;
@@ -108,12 +137,6 @@ public sealed class PinballBoard : MonoBehaviour
     {
         merges.Clear();
         Unbind();
-    }
-
-    private void OnDestroy()
-    {
-        if (geometry != null) Destroy(geometry.gameObject);
-        if (strip != null) Destroy(strip);
     }
 
     private void LateUpdate()
@@ -164,63 +187,6 @@ public sealed class PinballBoard : MonoBehaviour
         session.SendItemsToBattle(transfer);
     }
 
-    private void CreateGeometry()
-    {
-        geometry = new GameObject("Pinball Physics").transform;
-        geometry.SetParent(wallFitter.box.transform, false);
-        geometry.gameObject.SetActive(false);
-        Texture2D texture = Texture2D.whiteTexture;
-        strip = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
-            new Vector2(.5f, .5f), texture.width, 0, SpriteMeshType.FullRect);
-
-        for (int i = 0; i < layout.PinCells.Count; i++)
-        {
-            GameObject cell = CreatePart($"Pin {i + 1}");
-            var collider = cell.AddComponent<CircleCollider2D>();
-            collider.sharedMaterial = surfaceMaterial;
-            GameObject visual = new GameObject("Icon");
-            visual.transform.SetParent(cell.transform, false);
-            pins.Add(new Pin { behaviour = cell.AddComponent<PinballPin>(), collider = collider, renderer = AddRenderer(visual) });
-        }
-        leftRamp = CreateRamp("Left ramp");
-        rightRamp = CreateRamp("Right ramp");
-        GameObject exit = CreatePart("Battle outlet");
-        exit.AddComponent<PinballOutlet>().Board = this;
-        outlet = exit.AddComponent<BoxCollider2D>();
-        outlet.isTrigger = true;
-        var marker = CreatePart("Outlet marker");
-        marker.transform.SetParent(exit.transform, false);
-        var renderer = AddRenderer(marker);
-        renderer.sprite = strip;
-        renderer.color = outletColor;
-    }
-
-    private GameObject CreatePart(string label)
-    {
-        var part = new GameObject(label);
-        part.transform.SetParent(geometry, false);
-        return part;
-    }
-
-    private static SpriteRenderer AddRenderer(GameObject target)
-    {
-        var renderer = target.AddComponent<SpriteRenderer>();
-        renderer.sortingLayerName = "GameItemWorld";
-        renderer.sortingOrder = -40;
-        return renderer;
-    }
-
-    private BoxCollider2D CreateRamp(string label)
-    {
-        var part = CreatePart(label);
-        var collider = part.AddComponent<BoxCollider2D>();
-        collider.sharedMaterial = surfaceMaterial;
-        var renderer = AddRenderer(part);
-        renderer.sprite = strip;
-        renderer.color = rampColor;
-        return collider;
-    }
-
     private void Fit()
     {
         if (!TryGetFrame(out var origin, out var width, out var height))
@@ -251,9 +217,11 @@ public sealed class PinballBoard : MonoBehaviour
             var pin = pins[i];
             var cell = layout.PinCells[i];
             float diameter = GetDiameter(cell, width, height);
-            pin.behaviour.transform.position = At(origin, width, height, cell.center);
+            if (fitToUI) pin.behaviour.transform.position = At(origin, width, height, cell.center);
             Vector3 lossyScale = pin.behaviour.transform.lossyScale;
-            pin.collider.radius = diameter * .5f / Mathf.Max(.0001f, Mathf.Abs(lossyScale.x), Mathf.Abs(lossyScale.y));
+            float worldScale = Mathf.Max(.0001f, Mathf.Abs(lossyScale.x), Mathf.Abs(lossyScale.y));
+            if (fitToUI) pin.collider.radius = diameter * .5f / worldScale;
+            else diameter = pin.collider.radius * 2f * worldScale;
             if (pin.renderer.sprite == null) continue;
             var size = pin.renderer.sprite.bounds.size;
             float scale = diameter / Mathf.Max(size.x, size.y);
@@ -261,19 +229,22 @@ public sealed class PinballBoard : MonoBehaviour
                 scale / Mathf.Abs(lossyScale.y), 1f);
         }
 
-        GetRamps(origin, width, height, out var left, out var innerLeft, out var innerRight, out var right);
-        float thickness = Mathf.Max(.025f, width.magnitude * .018f);
-        FitRamp(leftRamp, left, innerLeft, thickness);
-        FitRamp(rightRamp, innerRight, right, thickness);
-        outlet.transform.position = (innerLeft + innerRight) * .5f;
-        outlet.transform.rotation = Quaternion.FromToRotation(Vector3.right, width);
-        float depth = Mathf.Max(.35f, width.magnitude * .18f);
-        outlet.size = new Vector2((innerRight - innerLeft).magnitude / Mathf.Abs(outlet.transform.lossyScale.x),
-            depth / Mathf.Abs(outlet.transform.lossyScale.y));
-        outlet.offset = Vector2.down * (outlet.size.y * .4f);
-        Transform marker = outlet.transform.GetChild(0);
-        marker.localPosition = Vector3.down * (thickness * 3f / Mathf.Abs(outlet.transform.lossyScale.y));
-        marker.localScale = new Vector3(outlet.size.x, thickness / Mathf.Abs(outlet.transform.lossyScale.y), 1f);
+        if (fitToUI)
+        {
+            GetRamps(origin, width, height, out var left, out var innerLeft, out var innerRight, out var right);
+            float thickness = Mathf.Max(.025f, width.magnitude * .018f);
+            FitRamp(leftRamp, left, innerLeft, thickness);
+            FitRamp(rightRamp, innerRight, right, thickness);
+            outlet.transform.position = (innerLeft + innerRight) * .5f;
+            outlet.transform.rotation = Quaternion.FromToRotation(Vector3.right, width);
+            float depth = Mathf.Max(.35f, width.magnitude * .18f);
+            outlet.size = new Vector2((innerRight - innerLeft).magnitude / Mathf.Abs(outlet.transform.lossyScale.x),
+                depth / Mathf.Abs(outlet.transform.lossyScale.y));
+            outlet.offset = Vector2.down * (outlet.size.y * .4f);
+            Transform marker = outlet.transform.GetChild(0);
+            marker.localPosition = Vector3.down * (thickness * 3f / Mathf.Abs(outlet.transform.lossyScale.y));
+            marker.localScale = new Vector3(outlet.size.x, thickness / Mathf.Abs(outlet.transform.lossyScale.y), 1f);
+        }
 
         if (previousFloor != null) previousFloor.enabled = false;
         if (previousFloorVisual != null) previousFloorVisual.enabled = false;
@@ -320,7 +291,7 @@ public sealed class PinballBoard : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (!showGizmos || !TryGetFrame(out var origin, out var width, out var height)) return;
+        if (!showGizmos || !fitToUI || !TryGetFrame(out var origin, out var width, out var height)) return;
         Color previous = Gizmos.color;
         Gizmos.color = Color.cyan;
         foreach (var cell in layout.PinCells)

@@ -8,6 +8,10 @@ public sealed class BagEquipmentInventoryUI : InventoryUI
         => item != null && item.amount > 0 && item.itemData != null &&
             (board != null ? board.CanDisplay(item.itemData) : equipment != null && equipment.IsMaterial(item.itemData)) && base.CanDisplayItem(item);
 
+    protected override DataType GetSearchCategory(ItemData item)
+        => item is BoardPinData ? DataType.Pin : BoardLoadout.AcceptsMaterial(item)
+            ? DataType.ItemMaterial : base.GetSearchCategory(item);
+
     protected override void ConfigureTooltip(ItemTooltipTrigger trigger)
     {
         base.ConfigureTooltip(trigger);

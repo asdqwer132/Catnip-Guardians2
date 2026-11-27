@@ -116,12 +116,15 @@ public abstract class ItemSearchFilterTargetUI : MonoBehaviour, IItemSearchFilte
         return IsItemDataVisible(item.itemData);
     }
 
+    protected virtual DataType GetSearchCategory(ItemData item) => item.dataType;
+
     protected bool IsItemDataVisible(ItemData itemData)
     {
         if (itemData == null)
             return false;
 
-        if (IsCategoryMasked(itemData.dataType))
+        DataType category = GetSearchCategory(itemData);
+        if (IsCategoryMasked(itemData.dataType) || IsCategoryMasked(category))
             return false;
 
         if (IsSeriesMasked(itemData.series))
@@ -133,7 +136,7 @@ public abstract class ItemSearchFilterTargetUI : MonoBehaviour, IItemSearchFilte
         if (searchFilter == null)
             return true;
 
-        if (searchFilter.useCategory && itemData.dataType != searchFilter.category)
+        if (searchFilter.useCategory && category != searchFilter.category)
             return false;
 
         if (searchFilter.useSeries && itemData.series != searchFilter.series)

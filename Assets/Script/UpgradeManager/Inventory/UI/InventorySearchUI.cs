@@ -12,6 +12,16 @@ public class InventorySearchUI : ItemSearchUIBase
 
     [SerializeField] private TMP_InputField directSearchInput;
     [SerializeField] private TMP_Dropdown seriesDropdown;
+    [SerializeField] private TMP_Dropdown categoryDropdown;
+    [SerializeField] private DataType[] categoryDropdownValues = { DataType.None, DataType.ItemMaterial, DataType.Pin };
+
+    private void OnCategoryDropdownChanged(int index)
+    {
+        if (index < 0 || index >= categoryDropdownValues.Length) return;
+        DataType category = categoryDropdownValues[index];
+        if (category == DataType.Pin && filter.useSeries) ResetSeriesFilter();
+        OnCategoryChanged((int)category);
+    }
 
     public void SetSeriesControlAvailable(bool available)
     {
@@ -70,12 +80,14 @@ public class InventorySearchUI : ItemSearchUIBase
 
     protected override void BindControlEvents()
     {
+        if (categoryDropdown != null) categoryDropdown.onValueChanged.AddListener(OnCategoryDropdownChanged);
         if (directSearchInput != null)
             directSearchInput.onValueChanged.AddListener(OnSearchTextChanged);
     }
 
     protected override void UnbindControlEvents()
     {
+        if (categoryDropdown != null) categoryDropdown.onValueChanged.RemoveListener(OnCategoryDropdownChanged);
         if (directSearchInput != null)
             directSearchInput.onValueChanged.RemoveListener(OnSearchTextChanged);
     }
@@ -84,6 +96,16 @@ public class InventorySearchUI : ItemSearchUIBase
     {
         if (directSearchInput != null && directSearchInput.text.Trim() != filter.query)
             directSearchInput.SetTextWithoutNotify(filter.query);
-        if (seriesDropdown != null && !filter.useSeries) seriesDropdown.SetValueWithoutNotify(0);
+        if (categoryDropdown != null)
+        {
+            int option = filter.useCategory ? Array.IndexOf(categoryDropdownValues, filter.category) : 0;
+            categoryDropdown.SetValueWithoutNotify(Mathf.Max(0, option));
+        }
+        if (seriesDropdown != null)
+        {
+            if (categoryDropdown != null)
+                seriesDropdown.interactable = !filter.useCategory || filter.category != DataType.Pin;
+            if (!filter.useSeries) seriesDropdown.SetValueWithoutNotify(0);
+        }
     }
 }
