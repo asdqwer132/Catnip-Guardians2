@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
-public class SkillNodeUI : MonoBehaviour
+public class SkillNodeUI : MonoBehaviour, IScrollHandler
 {
     [Header("Data")]
     [SerializeField] private SkillNodeData skillNodeData;
@@ -19,6 +20,7 @@ public class SkillNodeUI : MonoBehaviour
     [SerializeField] private bool hideUnavailableNodes;
 
     private SkillTreeUI ownerUI;
+    private UIZoomController zoom;
     private SkillNodeTooltipProvider tooltipProvider;
     private CanvasGroup visibilityGroup;
     private float visibleAlpha;
@@ -40,6 +42,7 @@ public class SkillNodeUI : MonoBehaviour
     public void Init(SkillTreeUI owner)
     {
         ownerUI = owner;
+        zoom = GetComponentInParent<UIZoomController>(true);
         if (tooltipProvider == null) TryGetComponent(out tooltipProvider);
 
         if (button == null)
@@ -71,17 +74,16 @@ public class SkillNodeUI : MonoBehaviour
         if (SkillTreeManager.Instance == null)
             return;
 
-        if (ownerUI != null && ownerUI.SelectionTooltip != null && tooltipProvider != null)
-        {
-            ownerUI.SelectionTooltip.TogglePin(tooltipProvider);
-            return;
-        }
-
-        bool success = SkillTreeManager.Instance.UnlockSkill(skillNodeData);
-
-        if (success && ownerUI != null)
-            ownerUI.RefreshAllNodes();
+        var manager = SkillTreeManager.Instance;
+        if (!manager.IsUnlocked(skillNodeData)) manager.UnlockSkill(skillNodeData);
         Refresh();
+        if (ownerUI != null && tooltipProvider != null)
+            ownerUI.SelectionTooltip?.TogglePin(tooltipProvider);
+    }
+
+    public void OnScroll(PointerEventData eventData)
+    {
+        if (zoom != null && zoom.isActiveAndEnabled) zoom.OnScroll(eventData);
     }
 
     public void ApplyIcon()
@@ -104,11 +106,8 @@ public class SkillNodeUI : MonoBehaviour
     public void ApplyLevel()
     {
         if (levelSelector == null) levelSelector = GetComponentInChildren<SkillLevelSelecter>(true);
-        if (levelSelector != null && skillNodeData != null) {
-
-            Debug.Log(name + "." + skillNodeData.level);
+        if (levelSelector != null && skillNodeData != null)
             levelSelector.SetNodeLevel(Mathf.Max(1, skillNodeData.level));
-        }
     }
 
     public void Refresh()

@@ -19,7 +19,7 @@ public sealed class MergeGeneralManager : MonoBehaviour
     public bool debugMode;
 
     [Header("현재 활성 기믹")]
-    [SerializeField, ReadOnly] private List<MergeBoxGimic> activeGimmicks = new List<MergeBoxGimic>(2);
+    [SerializeField, ReadOnly] private List<MergeBoxGimic> activeGimmicks = new List<MergeBoxGimic>(MergeGimicManager.MaxActiveModules);
 
     public int SelectedIndex { get; private set; } = -1;
     public int SelectedLevel => boxes != null && SelectedIndex >= 0 ? boxes.SelectedLevel : startingLevel;
@@ -31,7 +31,7 @@ public sealed class MergeGeneralManager : MonoBehaviour
     private bool initialized, appliedDebugMode;
     private bool UsesLoadout => !debugMode && roundData?.equipment != null;
     private readonly List<int> equippedProfileIndices = new List<int>(2);
-    private readonly List<MergeBoxGimic> equippedModules = new List<MergeBoxGimic>(2);
+    private readonly List<MergeBoxGimic> equippedModules = new List<MergeBoxGimic>(MergeGimicManager.MaxActiveModules);
 
     private void Awake()
     {
@@ -234,7 +234,7 @@ public sealed class MergeGeneralManager : MonoBehaviour
         gimicManager?.StopGimic();
         boxes.ShowBox(index, level, restart);
         SelectedIndex = index;
-        if (!debugMode) gimicManager?.InitializeModules(boxes.SelectedBoard, equippedModules);
+        if (!debugMode) gimicManager?.InitializeModules(boxes.SelectedBoard, equippedModules, CanUseBoardSkill);
         else gimicManager?.InitializeModule(boxes.SelectedBoard, boxes.SelectedProfile.gimmick);
 
         activeGimmicks.Clear();
@@ -243,6 +243,15 @@ public sealed class MergeGeneralManager : MonoBehaviour
                 if (gimmick != null && gimmick.Running && gimmick.isActiveAndEnabled)
                     activeGimmicks.Add(gimmick);
         return true;
+    }
+
+    private bool CanUseBoardSkill(MergeBoxGimic module, int index)
+    {
+        if (roundData?.equipment?.board?.IsConfigured != true) return true;
+        foreach (int number in roundData.equipment.board.skillIndices)
+            if (boxes.GetProfile(number - 1)?.gimmick == module)
+                return MergeBoxUpgradeManager.IsBoardSkillUnlocked(number, index + 1, roundData.unlockedSkillNodes);
+        return false;
     }
 
     public void SetBox(int index)

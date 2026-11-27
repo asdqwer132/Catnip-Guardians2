@@ -62,17 +62,19 @@ public static class EquipmentSave
 {
     public const string SaveFileName = "equipment.json";
     private static string PathToSave => Path.Combine(Application.persistentDataPath, SaveFileName);
-    public static bool Exists => File.Exists(PathToSave);
+    public static bool Exists => GameManager.DebugMode ? debugEquipment != null : File.Exists(PathToSave);
+    private static EquipmentData debugEquipment;
     private static EquipmentData current;
     private static UpgradeProgressCatalog Catalog => Resources.Load<UpgradeProgressCatalog>("UpgradeProgressCatalog");
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    private static void ClearCache() => current = null;
+    private static void ClearCache() => current = debugEquipment = null;
 
     public static EquipmentData Current
     {
         get
         {
+            if (GameManager.DebugMode) return debugEquipment ??= new EquipmentData();
             if (current != null) return current;
             try
             {
@@ -90,6 +92,11 @@ public static class EquipmentSave
 
     public static bool Write(EquipmentData data)
     {
+        if (GameManager.DebugMode)
+        {
+            debugEquipment = data;
+            return true;
+        }
         try
         {
             new MergeBoxUpgradeFileStore(PathToSave).Write(JsonUtility.ToJson(data, true));
@@ -126,7 +133,7 @@ public static class EquipmentSave
 
     public static bool IsChestUnlocked(int number, IReadOnlyList<int> unlocked)
     {
-        if (number == 1) return true;
+        if (number == 1 || (GameManager.DebugMode && number >= 2 && number <= 8)) return true;
         if (number < 2 || number > 8 || unlocked == null) return false;
         foreach (int value in unlocked)
             if (value == number) return true;
@@ -183,5 +190,9 @@ public static class EquipmentSave
         return slots;
     }
 
-    public static void ResetCache() => current = null;
+    public static void ResetCache()
+    {
+        if (GameManager.DebugMode) debugEquipment = null;
+        else current = null;
+    }
 }

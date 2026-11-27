@@ -13,9 +13,10 @@ public sealed class CodexDiscoveryFileStore : ICodexDiscoveryStore
 {
     private readonly string path;
     public CodexDiscoveryFileStore(string path) => this.path = path ?? throw new ArgumentNullException(nameof(path));
-    public string Read() => File.Exists(path) ? File.ReadAllText(path) : null;
+    public string Read() => !GameManager.DebugMode && File.Exists(path) ? File.ReadAllText(path) : null;
     public void Write(string json)
     {
+        if (GameManager.DebugMode) return;
         string directory = Path.GetDirectoryName(path);
         if (!string.IsNullOrEmpty(directory)) Directory.CreateDirectory(directory);
         string temporary = path + ".tmp";
@@ -67,7 +68,7 @@ public sealed class CodexDiscoveryHistory
 
     public bool Contains(CodexDiscoveryKind kind, string id)
     {
-        return EnsureLoaded() && !string.IsNullOrWhiteSpace(id) && Collection(kind).Contains(id);
+        return !string.IsNullOrWhiteSpace(id) && (GameManager.DebugMode || (EnsureLoaded() && Collection(kind).Contains(id)));
     }
 
     public bool Record(CodexDiscoveryKind kind, string id)

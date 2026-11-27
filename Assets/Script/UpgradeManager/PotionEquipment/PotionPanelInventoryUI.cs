@@ -94,7 +94,9 @@ public sealed class PotionPanelInventoryUI : InventoryUI
 
     protected override void ConfigureTooltip(ItemTooltipTrigger trigger)
     {
-        base.ConfigureTooltip(trigger);
+        trigger.Init(tooltipUI);
+        if (trigger.showOnSelection) trigger.ReleaseSelection();
+        trigger.showOnSelection = false;
         if (tooltipUI != null) trigger.isPointer = true;
     }
 

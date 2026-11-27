@@ -26,6 +26,7 @@ public class GameSession : MonoBehaviour
     public int RoundRevision { get; private set; }
     public int PendingBattleBatchCount => pendingBattleItems.Count;
     public IReadOnlyList<int> UnlockedMergeBoxes => generalData?.unlockedMergeBoxes;
+    public IReadOnlyList<SkillNodeData> UnlockedSkillNodes => generalData?.unlockedSkillNodes;
     public bool HasSkillItems =>
         generalData != null && generalData.skillItems != null && generalData.skillItems.Count > 0;
     public GameItemToBattleData LastSentToBattle => lastSentToBattle?.Copy();

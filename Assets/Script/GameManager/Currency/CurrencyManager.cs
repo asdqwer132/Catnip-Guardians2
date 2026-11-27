@@ -114,7 +114,11 @@ public class CurrencyManager : MonoBehaviour
 
         // Apply saved entries after defaults: zero is a saved value too.
         // New currency types without an entry keep their configured initial amount.
-        if (PlayerPrefs.HasKey(SaveKey))
+        if (GameManager.DebugMode)
+        {
+            foreach (CurrencyType type in Enum.GetValues(typeof(CurrencyType))) currencies[type] = 100000;
+        }
+        else if (PlayerPrefs.HasKey(SaveKey))
         {
             try
             {
@@ -139,13 +143,14 @@ public class CurrencyManager : MonoBehaviour
 
     public void ResetToInitialAmounts()
     {
-        PlayerPrefs.DeleteKey(SaveKey);
+        if (!GameManager.DebugMode) PlayerPrefs.DeleteKey(SaveKey);
         InitCurrencies();
         UpdateAllUI();
     }
 
     private void SaveCurrencies()
     {
+        if (GameManager.DebugMode) return;
         var saved = new WalletSave();
         saved.discovered.AddRange(discovered);
         foreach (CurrencyType type in Enum.GetValues(typeof(CurrencyType)))

@@ -24,6 +24,7 @@ public class InventoryUI : ItemSearchFilterTargetUI
 
     private bool isInitialized;
     private InventoryManager boundInventory;
+    private InventoryManager inventorySource;
     private ItemRecipeManager boundMaterialSource;
 
     private readonly List<InventoryItem> validItemsCache = new List<InventoryItem>();
@@ -117,11 +118,20 @@ public class InventoryUI : ItemSearchFilterTargetUI
         BindInventoryEvent();
         if (isInitialized) RefreshUI();
     }
+    public void SetInventorySource(InventoryManager source)
+    {
+        if (inventorySource == source) return;
+        inventorySource = source;
+        if (isActiveAndEnabled) OnInventorySourceChanged();
+    }
+
+    private InventoryManager InventorySource => inventorySource != null ? inventorySource : InventoryManager.instance;
+
     private void BindInventoryEvent()
     {
-        if (boundInventory == InventoryManager.instance) return;
+        if (boundInventory == InventorySource) return;
         UnbindInventoryEvent();
-        boundInventory = InventoryManager.instance;
+        boundInventory = InventorySource;
         if (boundInventory != null) boundInventory.onInventoryChanged += RefreshUI;
     }
     private void UnbindInventoryEvent()
@@ -152,10 +162,11 @@ public class InventoryUI : ItemSearchFilterTargetUI
     {
         result.Clear();
 
-        if (InventoryManager.instance == null)
+        var inventory = InventorySource;
+        if (inventory == null)
             return;
 
-        foreach (InventoryItem item in InventoryManager.instance.items)
+        foreach (InventoryItem item in inventory.items)
         {
             if (!CanDisplayItem(item))
                 continue;

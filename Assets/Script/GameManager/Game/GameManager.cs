@@ -1,8 +1,27 @@
 using UnityEngine;
 
+[DefaultExecutionOrder(-10000)]
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+    public static bool DebugMode { get; private set; }
+
+    [SerializeField, Tooltip("Unlock gameplay for this run and keep progress in memory.")]
+    private bool debugMode;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetDebugMode()
+        => DebugMode = System.Array.Exists(System.Environment.GetCommandLineArgs(), arg => arg == "-catnip-debug");
+
+    internal static void EnableDebugMode()
+    {
+        if (DebugMode) return;
+        DebugMode = true;
+        CurrencyManager.instance?.ResetToInitialAmounts();
+        GameSession.Instance?.ClearAll();
+        CodexDiscoveryHistory.Current.Reload();
+        StoryProgressManager.Instance?.ReloadProgress();
+    }
     [Header("Manager")]
     public InitManager initManager;
     [SerializeField] private Player player;
@@ -15,6 +34,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        if (debugMode) EnableDebugMode();
         instance = this;
        
     }

@@ -19,7 +19,7 @@ public static class GameSaveData
     {
         try
         {
-            DeleteJsonSaves(Application.persistentDataPath);
+            if (!GameManager.DebugMode) DeleteJsonSaves(Application.persistentDataPath);
         }
         catch (Exception error) when (error is IOException || error is UnauthorizedAccessException)
         {
@@ -27,11 +27,10 @@ public static class GameSaveData
             return false;
         }
 
-        PlayerPrefs.DeleteAll();
+        if (!GameManager.DebugMode) PlayerPrefs.DeleteAll();
         EquipmentSave.ResetCache();
         UnlockManager.Instance?.ClearAllUnlocks();
-        MergeBoxUpgradeManager.SkipDevelopmentSeed();
-        PlayerPrefs.Save();
+        if (!GameManager.DebugMode) PlayerPrefs.Save();
         // Core services survive scene changes: deleting files alone leaves their old values alive.
         StoryProgressManager.Instance?.ReloadProgress();
         CodexDiscoveryHistory.Current.Reload();

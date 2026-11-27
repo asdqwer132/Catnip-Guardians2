@@ -38,14 +38,21 @@ public abstract class MergeBoxGimic : MonoBehaviour
     public bool Running { get; private set; }
     public GimicSkill[] skills = System.Array.Empty<GimicSkill>();
     public virtual int SkillCount => skills.Length;
-    public bool IsSkillEnabled(int index) => index >= 0 && index < skills.Length && skills[index] != null && skills[index].enabled;
+    private bool[] unlockedSkills;
+    public bool IsSkillEnabled(int index) => index >= 0 && index < skills.Length && skills[index] != null &&
+        skills[index].enabled && (unlockedSkills == null || unlockedSkills[index]);
     public Sprite GetSkillSprite(int index) => index >= 0 && index < skills.Length ? skills[index]?.skillImage : null;
     public void Init(GimicData data) => Data = data;
-    public void Initialize(MergegameManager board)
+    public void Initialize(MergegameManager board, Func<int, bool> skillUnlock = null)
     {
         GimicStop();
         Board = board;
         EnsureSkills();
+        if (skillUnlock != null)
+        {
+            unlockedSkills = new bool[skills.Length];
+            for (int i = 0; i < unlockedSkills.Length; i++) unlockedSkills[i] = skillUnlock(i);
+        }
         runtimeSkills = new GimicSkillRuntime[skills.Length];
         var ids = new System.Collections.Generic.HashSet<string>();
         for (int i = 0; i < skills.Length; i++)
@@ -63,7 +70,7 @@ public abstract class MergeBoxGimic : MonoBehaviour
         durationRemaining=new float[skills.Length];durationTotal=new float[skills.Length];active=new bool[skills.Length];
         passiveTimerStarted = new bool[skills.Length];
         for (int i = 0; i < skills.Length; i++)
-            if (!IsActiveSkill(i) && GetSkillStat(i).cooldown > 0f)
+            if (IsSkillEnabled(i) && !IsActiveSkill(i) && GetSkillStat(i).cooldown > 0f)
             { remaining[i] = 1f; passiveTimerStarted[i] = true; }
         Running = true;
         GimicStart();
@@ -75,6 +82,7 @@ public abstract class MergeBoxGimic : MonoBehaviour
         foreach (var skill in skills) if (skill != null)
         { skill.activationPresentation?.Stop(); skill.completionPresentation?.Stop(); }
         Running = false;
+        unlockedSkills = null;
         remaining = Array.Empty<float>();
         durationRemaining=durationTotal=Array.Empty<float>();active=Array.Empty<bool>();
         passiveTimerStarted = Array.Empty<bool>();

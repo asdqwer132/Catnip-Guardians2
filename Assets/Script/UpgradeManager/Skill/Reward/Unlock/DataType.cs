@@ -13,6 +13,7 @@ public enum DataType
     ItemMaterial = 7,
     MergeBox = 8,
     Pin = 9,
+    BoardSkill = 10,
 }
 
 [Serializable]

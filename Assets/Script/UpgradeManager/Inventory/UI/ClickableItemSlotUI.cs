@@ -11,6 +11,7 @@ public class ClickableItemSlotUI : BaseItemSlotUI
     public Toggle slotToggle;
     private static readonly List<RaycastResult> ClickHits = new();
     private ItemTooltipTrigger selectionTooltip;
+    protected virtual bool ClearSelectionOnOutsideClick => true;
     protected virtual bool AllowEmptySelection => false;
     protected virtual bool KeepSelectionOnRefresh => false;
 
@@ -40,7 +41,7 @@ public class ClickableItemSlotUI : BaseItemSlotUI
 
     protected void LateUpdate()
     {
-        if (slotToggle == null || !slotToggle.isOn) return;
+        if (!ClearSelectionOnOutsideClick || slotToggle == null || !slotToggle.isOn) return;
 
         var mouse = Mouse.current;
         var eventSystem = EventSystem.current;

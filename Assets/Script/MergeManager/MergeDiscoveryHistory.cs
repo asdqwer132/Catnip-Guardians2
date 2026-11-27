@@ -15,9 +15,10 @@ public sealed class MergeDiscoveryFileStore : IMergeDiscoveryStore
 {
     private readonly string path;
     public MergeDiscoveryFileStore(string path) => this.path = path;
-    public string Read() => File.Exists(path) ? File.ReadAllText(path) : null;
+    public string Read() => !GameManager.DebugMode && File.Exists(path) ? File.ReadAllText(path) : null;
     public void Write(string json)
     {
+        if (GameManager.DebugMode) return;
         Directory.CreateDirectory(Path.GetDirectoryName(path));
         string temporary = path + ".tmp";
         File.WriteAllText(temporary, json);
@@ -26,6 +27,7 @@ public sealed class MergeDiscoveryFileStore : IMergeDiscoveryStore
     }
     public void Delete()
     {
+        if (GameManager.DebugMode) return;
         if (File.Exists(path)) File.Delete(path);
         if (File.Exists(path + ".tmp")) File.Delete(path + ".tmp");
     }
@@ -60,7 +62,7 @@ public sealed class MergeDiscoveryHistory : MonoBehaviour
     public bool HasCrafted(ItemData item)
     {
         EnsureLoaded();
-        return item != null && !string.IsNullOrWhiteSpace(item.dataId) && crafted.Contains(item.dataId);
+        return item != null && !string.IsNullOrWhiteSpace(item.dataId) && (GameManager.DebugMode || crafted.Contains(item.dataId));
     }
 
     // 실제 합성 확정 후에만 호출합니다. 투입/풀 생성/아이템 선택은 제작으로 세지 않습니다.

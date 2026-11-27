@@ -63,7 +63,7 @@ public class CostTooltipUI : BasicTooltipUI
             SkillTreeManager.Instance != null && SkillTreeManager.Instance.CanUnlock(displayedSkill);
         if (statusText != null)
             statusText.text = costData.isUnlocked ? (korean ? "해금됨" : "Unlocked") :
-                canUnlock ? (korean ? "해금하기" : "Unlock") : (korean ? "잠김" : "Locked");
+                (korean ? "잠김" : "Locked");
 
         if (boundUnlockButton != null) boundUnlockButton.interactable = statusPanel != null ? canUnlock : displayedSkill != null && !costData.isUnlocked;
         if (needCurrencyPanel != null) needCurrencyPanel.SetActive(!costData.isUnlocked);

@@ -12,6 +12,8 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
         public MergeBoxEquipmentData data;
         public Toggle toggle;
         public GameObject selected;
+        public Image[] skillFrames;
+        [NonSerialized] public Color[] authoredColors;
     }
 
     [SerializeField] private BagEquipmentInventoryUI inventory;
@@ -23,6 +25,7 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
     [SerializeField] private Button previousEgg;
     [SerializeField] private Button nextEgg;
     [SerializeField] private TooltipUI itemTooltip;
+    [SerializeField] private InventoryManager materialInventory;
 
     private GameSession session;
     private InventoryManager stock;
@@ -61,6 +64,8 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
         for (int i = 0; i < boardSkills.Length; i++)
         {
             var option = boardSkills[i];
+            if (option.authoredColors == null && option.skillFrames != null)
+                option.authoredColors = Array.ConvertAll(option.skillFrames, frame => frame != null ? frame.color : Color.white);
             skillHandlers[i] = selected => SetSkill(option, selected);
             option.toggle.onValueChanged.AddListener(skillHandlers[i]);
         }
@@ -104,7 +109,8 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
     private void BindStock()
     {
         if (stock != null) stock.onInventoryChanged -= Refresh;
-        stock = InventoryManager.instance;
+        stock = materialInventory != null ? materialInventory : InventoryManager.instance;
+        inventory.SetInventorySource(stock);
         if (stock != null) stock.onInventoryChanged += Refresh;
         Refresh();
     }
@@ -147,7 +153,12 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
         for (int i = 0; i < capacity; i++)
             if (i != index && ReadId(ids, i) == item.dataId) equipped++;
         // A material drop lane uses that item's full round allocation. A pin slot uses one copy.
-        if (equipped >= (editingPin ? stock.GetItemAmount(item) : 1)) return;
+        if (editingPin && equipped >= stock.GetItemAmount(item)) return;
+        if (!editingPin && equipped > 0)
+        {
+            int previous = ids.IndexOf(item.dataId);
+            ids[previous] = ReadId(ids, index) ?? string.Empty;
+        }
 
         while (ids.Count <= index) ids.Add(string.Empty);
         ids[index] = item.dataId;
@@ -238,6 +249,17 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
             option.toggle.interactable = available && (selected || equippedSkillCount < MergeGimicManager.MaxActiveModules);
             option.toggle.SetIsOnWithoutNotify(selected);
             if (option.selected != null) option.selected.SetActive(selected);
+            if (option.authoredColors != null)
+                for (int i = 0; i < option.skillFrames.Length; i++)
+                {
+                    var frame = option.skillFrames[i];
+                    if (frame == null) continue;
+                    bool skillUnlocked = available && MergeBoxUpgradeManager.IsBoardSkillUnlocked(
+                        data.boxIndex, i + 1, session?.UnlockedSkillNodes);
+                    var color = option.authoredColors[i];
+                    if (!skillUnlocked) color.a *= 0.32f;
+                    frame.color = color;
+                }
             canChangeEgg |= available && data.plant != null && data != egg;
         }
         previousEgg.interactable = canChangeEgg;

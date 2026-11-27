@@ -13,9 +13,10 @@ public sealed class PotionRecipeFileStore : IPotionRecipeHistoryStore
 {
     private readonly string path;
     public PotionRecipeFileStore(string path) => this.path = path;
-    public string Read() => File.Exists(path) ? File.ReadAllText(path) : null;
+    public string Read() => !GameManager.DebugMode && File.Exists(path) ? File.ReadAllText(path) : null;
     public void Write(string json)
     {
+        if (GameManager.DebugMode) return;
         string directory = Path.GetDirectoryName(path);
         if (!string.IsNullOrEmpty(directory)) Directory.CreateDirectory(directory);
         string temporary = path + ".tmp";
@@ -46,7 +47,7 @@ public sealed class PotionRecipeHistory : MonoBehaviour
     public bool HasCrafted(ItemData item)
     {
         EnsureLoaded();
-        return item != null && !string.IsNullOrWhiteSpace(item.dataId) && crafted.Contains(item.dataId);
+        return item != null && !string.IsNullOrWhiteSpace(item.dataId) && (GameManager.DebugMode || crafted.Contains(item.dataId));
     }
     public bool RecordCrafted(ItemData item)
     {

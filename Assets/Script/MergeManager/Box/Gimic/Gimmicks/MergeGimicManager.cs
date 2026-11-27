@@ -9,10 +9,10 @@ using TMPro;
 [DefaultExecutionOrder(-90)]
 public class MergeGimicManager : MonoBehaviour
 {
-    public const int MaxActiveModules = 2;
+    public const int MaxActiveModules = 3;
     [SerializeField] private CoolButton[] skillButtons = Array.Empty<CoolButton>();
     [ReadOnly, SerializeField] private MergeBoxGimic currentBox;
-    private readonly List<MergeBoxGimic> modules = new List<MergeBoxGimic>(2);
+    private readonly List<MergeBoxGimic> modules = new List<MergeBoxGimic>(MaxActiveModules);
     private readonly List<(MergeBoxGimic module, int index)> skills = new List<(MergeBoxGimic, int)>();
     private UnityAction[] handlers;
     private Color[] authoredSkillColors;
@@ -25,7 +25,7 @@ public class MergeGimicManager : MonoBehaviour
     public void InitializeModule(MergegameManager board, MergeBoxGimic gimmick)
         => InitializeModules(board, new[] { gimmick });
 
-    public void InitializeModules(MergegameManager board, IEnumerable<MergeBoxGimic> gimmicks)
+    public void InitializeModules(MergegameManager board, IEnumerable<MergeBoxGimic> gimmicks, Func<MergeBoxGimic, int, bool> isSkillUnlocked = null)
     {
         StopGimic();
         if (board != null)
@@ -33,7 +33,7 @@ public class MergeGimicManager : MonoBehaviour
             {
                 if (gimmick == null || modules.Contains(gimmick)) continue;
                 gimmick.gameObject.SetActive(true);
-                gimmick.Initialize(board);
+                gimmick.Initialize(board, isSkillUnlocked == null ? null : index => isSkillUnlocked(gimmick, index));
                 if (!gimmick.Running)
                 {
                     gimmick.gameObject.SetActive(false);

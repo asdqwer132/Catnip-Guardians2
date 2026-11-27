@@ -25,7 +25,7 @@ public sealed class PotionEquipmentManager : MonoBehaviour
     private InventoryManager Inventory => inventory != null ? inventory : InventoryManager.instance;
     private bool ValidIndex(int index) => index >= 0 && index < SlotCount && slots[index] != null;
     public static bool IsPotion(ItemData item) => item != null && item.series == ItemSeries.Potions;
-    public bool IsLocked(int index) => !ValidIndex(index) || slots[index].locked;
+    public bool IsLocked(int index) => !ValidIndex(index) || (!GameManager.DebugMode && slots[index].locked);
     public ItemData GetPotion(int index) => ValidIndex(index) ? slots[index].potion : null;
     public int GetAvailableCount(ItemData item) => Inventory != null ? Inventory.GetItemAmount(item) : 0;
 

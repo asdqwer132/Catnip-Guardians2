@@ -1,5 +1,6 @@
 public sealed class CodexSlotUI : InventorySlotUI
 {
+    protected override bool ClearSelectionOnOutsideClick => false;
     protected override bool AllowEmptySelection => true;
 
     protected override bool KeepSelectionOnRefresh => true;

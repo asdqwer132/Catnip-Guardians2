@@ -13,6 +13,7 @@ public static class TutorialCompletionHistory
 
     public static bool HasSeen(string scope, string id)
     {
+        if (GameManager.DebugMode) return true;
         var data = Read();
         string key = Key(scope, id);
         return data.seenTutorialIds.Contains(key) || data.completedTutorialIds.Contains(key);
@@ -20,6 +21,7 @@ public static class TutorialCompletionHistory
 
     public static void RecordSeen(string scope, string id)
     {
+        if (GameManager.DebugMode) return;
         var data = Read();
         string key = Key(scope, id);
         if (data.seenTutorialIds.Contains(key)) return;
@@ -28,10 +30,11 @@ public static class TutorialCompletionHistory
         PlayerPrefs.Save();
     }
 
-    public static bool IsCompleted(string scope, string id) => Read().completedTutorialIds.Contains(Key(scope, id));
+    public static bool IsCompleted(string scope, string id) => GameManager.DebugMode || Read().completedTutorialIds.Contains(Key(scope, id));
 
     public static void Complete(string scope, string id)
     {
+        if (GameManager.DebugMode) return;
         var data = Read();
         string key = Key(scope, id);
         if (data.completedTutorialIds.Contains(key)) return;
@@ -42,6 +45,7 @@ public static class TutorialCompletionHistory
 
     public static void ResetAll()
     {
+        if (GameManager.DebugMode) return;
         PlayerPrefs.DeleteKey(SaveKey);
         PlayerPrefs.DeleteKey("TutorialProgress");
         PlayerPrefs.Save();

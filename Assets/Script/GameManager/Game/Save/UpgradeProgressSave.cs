@@ -18,6 +18,7 @@ public static class UpgradeProgressSave
     private static UpgradeProgressCatalog Catalog => Resources.Load<UpgradeProgressCatalog>("UpgradeProgressCatalog");
     public static void Write(UpgradeToGeneralData data, string directory = null)
     {
+        if (GameManager.DebugMode) return;
         var catalog = Catalog;
         if (catalog == null) { Debug.LogError("Upgrade progress catalog is missing."); return; }
         string json = JsonUtility.ToJson(data);
@@ -28,6 +29,7 @@ public static class UpgradeProgressSave
     }
     public static UpgradeToGeneralData Read(string directory = null)
     {
+        if (GameManager.DebugMode) return null;
         var catalog = Catalog;
         if (catalog == null) return null;
         string path = Path.Combine(directory ?? Application.persistentDataPath, SaveFileName);

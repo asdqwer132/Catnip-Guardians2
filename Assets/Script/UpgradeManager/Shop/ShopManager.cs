@@ -13,6 +13,7 @@ public class ShopManager : MonoBehaviour, IStoryProgressSource
 
     [Header("Box Pool")]
     public ItemBoxPoolManager boxPoolManager;
+    [SerializeField] private ItemGradeData materialChestGrades;
 
     [Header("Reroll Manager")]
     public ShopRerollManager rerollManager;
@@ -81,6 +82,8 @@ public class ShopManager : MonoBehaviour, IStoryProgressSource
             var box = offers != null && i < offers.Count ? offers[i] : null;
             slot.gameObject.SetActive(box != null);
             slot.Init(this, box);
+            slot.SetMaterialRarity(box != null && box.kind == ShopBoxKind.Material
+                ? materialChestGrades?.GetEntry(box.grade)?.icon : null);
         }
     }
 

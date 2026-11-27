@@ -31,11 +31,11 @@ public sealed class StoryProgressManager : MonoBehaviour
     private void OnDisable() => StoryProgressSources.Reported -= Report;
     private void OnDestroy() { if (Instance == this) Instance = null; }
     private void Update() => TryStartReady(null);
-    private void Save() { PlayerPrefs.SetString(SaveKey, tracker.ToJson()); PlayerPrefs.Save(); }
+    private void Save() { if (GameManager.DebugMode) return; PlayerPrefs.SetString(SaveKey, tracker.ToJson()); PlayerPrefs.Save(); }
     public void ReloadProgress()
     {
         playing = null;
-        tracker = new StoryProgressTracker(rules, PlayerPrefs.GetString(SaveKey, ""));
+        tracker = new StoryProgressTracker(rules, GameManager.DebugMode ? "" : PlayerPrefs.GetString(SaveKey, ""));
     }
     public void Report(StoryProgressEvent fact) { if (tracker.Report(fact)) Save(); }
     public void MeetCondition(string ruleId) { if (tracker.MeetCondition(ruleId)) Save(); }

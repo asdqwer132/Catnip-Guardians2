@@ -117,6 +117,7 @@ public class UnlockManager : MonoBehaviour
 
     public bool IsUnlocked(DataType type, string unlockId)
     {
+        if (GameManager.DebugMode && !string.IsNullOrEmpty(unlockId)) return true;
         if (type == DataType.MergeBox && unlockId == "1") return true;
         if (string.IsNullOrEmpty(unlockId))
             return false;
@@ -134,7 +135,7 @@ public class UnlockManager : MonoBehaviour
 
     public bool HasAnyUnlocked(DataType type)
     {
-        if (type == DataType.MergeBox) return true;
+        if (GameManager.DebugMode || type == DataType.MergeBox) return true;
         if (!unlockedByType.TryGetValue(type, out HashSet<string> ids))
             return false;
 

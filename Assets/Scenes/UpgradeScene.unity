@@ -33099,6 +33099,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ShopManager
   progressEventId: chest.item-obtained
   boxPoolManager: {fileID: 642885259}
+  materialChestGrades: {fileID: 11400000, guid: 97686a48283a4b6ab4b7361cb33b4988, type: 2}
   rerollManager: {fileID: 642885258}
   displayBoxCount: 8
   boxButtons:
@@ -62103,6 +62104,14 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 0f7f1586b6bbc1f478fd6ced7fe11d9a, type: 2}
     - {fileID: 11400000, guid: 5c3a18fea68cb4e4e8d18419b2c8595a, type: 2}
     - {fileID: 11400000, guid: 78c4f76431cc3a647bfad69368b0770e, type: 2}
+  - memo: Starting board materials
+    isUse: 1
+    itemDatas:
+    - {fileID: 11400000, guid: fa3464a86d46a3c4e80853d2d8d84338, type: 2}
+    - {fileID: 11400000, guid: 8e9ad0b64ab344d49939a1071de8de6d, type: 2}
+    - {fileID: 11400000, guid: 93432b520869c5c4bb34b5703e60ada9, type: 2}
+    - {fileID: 11400000, guid: e534d433e78d5b048a5aab12fdcfbe4e, type: 2}
+    - {fileID: 11400000, guid: ba9f3bf45703dc24eabb69f562c53c02, type: 2}
   - memo: Weapon
     isUse: 0
     itemDatas:
@@ -71967,7 +71976,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -75391,7 +75400,6 @@ MonoBehaviour:
   skillNodes: []
   progress:
     unlockedSkillIds: []
-    developmentUnlockedChests: 
     boxLevels: []
 --- !u!1 &1489516931
 GameObject:
@@ -80474,7 +80482,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -89381,7 +89389,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -92888,7 +92896,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -114481,30 +114489,63 @@ MonoBehaviour:
   - data: {fileID: 11400000, guid: 8123e8778d924876a1bf62144c35d7fe, type: 2}
     toggle: {fileID: 7375501807980904900}
     selected: {fileID: 57338706}
+    skillFrames:
+    - {fileID: 2076186527}
+    - {fileID: 1347577003}
+    - {fileID: 1285233637}
   - data: {fileID: 11400000, guid: 470e875d0eab4905811c8133518067ec, type: 2}
     toggle: {fileID: 7375501808554001264}
     selected: {fileID: 976221301}
+    skillFrames:
+    - {fileID: 35522904}
+    - {fileID: 1979065151}
+    - {fileID: 1912158444}
   - data: {fileID: 11400000, guid: a2a0f92c40414ad58bd496a4c4730c0a, type: 2}
     toggle: {fileID: 7375501808017665976}
     selected: {fileID: 1573914283}
+    skillFrames:
+    - {fileID: 119109968}
+    - {fileID: 943631879}
+    - {fileID: 478811851}
   - data: {fileID: 11400000, guid: b4691a9a8b9644c0bb36c9fbd0c64864, type: 2}
     toggle: {fileID: 7375501807850813607}
     selected: {fileID: 1588449203}
+    skillFrames:
+    - {fileID: 705160310}
+    - {fileID: 825328011}
+    - {fileID: 819157230}
   - data: {fileID: 11400000, guid: c2a923207d6d431cb2a78e1501b3f759, type: 2}
     toggle: {fileID: 7375501807027758257}
     selected: {fileID: 234558994}
+    skillFrames:
+    - {fileID: 1614945437}
+    - {fileID: 2034199221}
+    - {fileID: 368017266}
   - data: {fileID: 11400000, guid: e36bab1b5b0240d8b91e5912f4441702, type: 2}
     toggle: {fileID: 7375501808793532475}
     selected: {fileID: 1035185845}
+    skillFrames:
+    - {fileID: 1386847119}
+    - {fileID: 1720976852}
+    - {fileID: 1774811069}
   - data: {fileID: 11400000, guid: 2a58f9eacf134960b9dce0a524b86c4b, type: 2}
     toggle: {fileID: 7375501807538147008}
     selected: {fileID: 1283432220}
+    skillFrames:
+    - {fileID: 690025870}
+    - {fileID: 248349959}
+    - {fileID: 719660205}
   - data: {fileID: 11400000, guid: e4c57a9563c54b3f8aa6e7e383c67477, type: 2}
     toggle: {fileID: 7375501808801255581}
     selected: {fileID: 840478944}
+    skillFrames:
+    - {fileID: 1268258813}
+    - {fileID: 1601477049}
+    - {fileID: 986285544}
   eggSlot: {fileID: 920962000137}
   previousEgg: {fileID: 7783250952165911725}
   nextEgg: {fileID: 7783250951765325100}
+  materialInventory: {fileID: 1979291818}
   itemTooltip: {fileID: 463038097}
 --- !u!114 &4910951194322460646 stripped
 MonoBehaviour:
@@ -116360,7 +116401,7 @@ MonoBehaviour:
   slotPrefab: {fileID: 7802189374282463730, guid: ef017fe9ca7eea449840a9c0064be656, type: 3}
   showItemCount: 1
   tooltipUI: {fileID: 463038097}
-  showTooltipOnSelection: 1
+  showTooltipOnSelection: 0
   selectionGroup: {fileID: 2076554194514838038}
   materialSource: {fileID: 875675672}
   crafting: {fileID: 920962000191}

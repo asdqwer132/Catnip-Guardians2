@@ -8,11 +8,9 @@ using UnityEngine;
 public sealed class MergeBoxUpgradeManager : MonoBehaviour
 {
     public const string SaveFileName = "merge-box-upgrades.json";
-    private const string DevelopmentSeedKey = "MergeBox_SkillLedgerSeeded";
     [Serializable] private sealed class Progress
     {
         public List<string> unlockedSkillIds = new List<string>();
-        public List<int> developmentUnlockedChests = new List<int>();
         public List<MergeBoxLevelSnapshot> boxLevels = new List<MergeBoxLevelSnapshot>();
     }
 
@@ -21,7 +19,6 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
     [SerializeField] private Progress progress = new Progress();
     private IMergeBoxUpgradeSaveStore store;
     private bool loaded, restoring, initialized;
-    private bool usesDefaultStore;
 
     private void Awake() => Load();
     private void OnEnable()
@@ -39,7 +36,7 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
     }
     public void SetSaveStore(IMergeBoxUpgradeSaveStore value)
     {
-        store = value; usesDefaultStore = false; progress = new Progress(); loaded = initialized = false;
+        store = value; progress = new Progress(); loaded = initialized = false;
     }
     private void Load()
     {
@@ -47,53 +44,25 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
         if (store == null)
         {
             store = DefaultStore();
-            usesDefaultStore = true;
         }
-        string json = store.Read();
+        string json = GameManager.DebugMode ? null : store.Read();
         if (!string.IsNullOrEmpty(json)) progress = JsonUtility.FromJson<Progress>(json) ?? new Progress();
         if (progress.unlockedSkillIds == null) progress.unlockedSkillIds = new List<string>();
         if (progress.boxLevels == null) progress.boxLevels = new List<MergeBoxLevelSnapshot>();
-        progress.developmentUnlockedChests ??= new List<int>();
-        if (usesDefaultStore) SeedDevelopmentUnlocks(store, progress);
         loaded = true;
     }
 
     private static IMergeBoxUpgradeSaveStore DefaultStore()
         => new MergeBoxUpgradeFileStore(Path.Combine(Application.persistentDataPath, SaveFileName));
 
-    private static void SeedDevelopmentUnlocks(IMergeBoxUpgradeSaveStore store, Progress progress)
-    {
-        if (PlayerPrefs.HasKey(DevelopmentSeedKey)) return;
-        var asset = Resources.Load<TextAsset>("Data/MergeBoxDevelopmentUnlocks");
-        var seed = asset != null ? JsonUtility.FromJson<Progress>(asset.text) : null;
-        if (seed?.developmentUnlockedChests == null) return;
-        foreach (int number in seed.developmentUnlockedChests)
-            if (number >= 2 && number <= 8 && !progress.developmentUnlockedChests.Contains(number))
-                progress.developmentUnlockedChests.Add(number);
-        try
-        {
-            store.Write(JsonUtility.ToJson(progress, true));
-            SkipDevelopmentSeed();
-        }
-        catch (Exception error) when (error is IOException || error is UnauthorizedAccessException)
-        { Debug.LogWarning("[MergeBoxUnlock] " + error.Message); }
-    }
-
-    public static void SkipDevelopmentSeed()
-    {
-        PlayerPrefs.SetInt(DevelopmentSeedKey, 1);
-        PlayerPrefs.Save();
-    }
-
     public static List<int> CaptureChestUnlocks(IEnumerable<SkillNodeData> nodes)
     {
-        var store = DefaultStore();
-        string json = store.Read();
-        var progress = string.IsNullOrEmpty(json) ? new Progress() : JsonUtility.FromJson<Progress>(json) ?? new Progress();
-        progress.developmentUnlockedChests ??= new List<int>();
-        SeedDevelopmentUnlocks(store, progress);
         var result = new List<int> { 1 };
-        foreach (int number in progress.developmentUnlockedChests) Add(number);
+        if (GameManager.DebugMode)
+        {
+            for (int box = 2; box <= 8; box++) result.Add(box);
+            return result;
+        }
         if (nodes != null) foreach (var node in nodes)
         {
             if (node == null || node.rewards == null) continue;
@@ -107,6 +76,20 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
         {
             if (number >= 2 && number <= 8 && !result.Contains(number)) result.Add(number);
         }
+    }
+
+    public static bool IsBoardSkillUnlocked(int box, int skill, IEnumerable<SkillNodeData> nodes)
+    {
+        if (box < 1 || box > 8 || skill < 1 || skill > 3) return false;
+        if (GameManager.DebugMode || skill == 1) return true;
+        if (nodes == null) return false;
+        string id = $"{box}:{skill}";
+        foreach (var node in nodes)
+            if (node != null && node.rewards != null)
+                foreach (var reward in node.rewards)
+                    if (reward is UnlockSkillReward unlock && unlock.UnlockType == DataType.BoardSkill &&
+                        unlock.UnlockId == id) return true;
+        return false;
     }
 
     // UpgradeManager가 기본 해금/버프 복원을 끝낸 후 호출합니다. 비용을 다시 차감하지 않습니다.
@@ -127,10 +110,11 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
         restoring = true;
         try
         {
-            var unlocked = skillNodes.FindAll(node => node != null && progress.unlockedSkillIds.Contains(node.ProgressKey));
+            var unlocked = skillNodes.FindAll(node => node != null && (GameManager.DebugMode || progress.unlockedSkillIds.Contains(node.ProgressKey)));
             skillTree.RestoreUnlockedSkills(unlocked);
-            foreach (int number in progress.developmentUnlockedChests)
-                UnlockManager.Instance?.Unlock(DataType.MergeBox, number.ToString());
+            if (GameManager.DebugMode)
+                foreach (var node in unlocked)
+                    if (!progress.unlockedSkillIds.Contains(node.ProgressKey)) progress.unlockedSkillIds.Add(node.ProgressKey);
             RebuildLevels();
             initialized = true;
         }
@@ -149,7 +133,8 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
         Load();
         if (!initialized || skillTree == null) return;
         if (skillTree.IsUnlocked(node)) { RebuildLevels(); return; }
-        if (!progress.unlockedSkillIds.Contains(node.ProgressKey)) return;
+        if (!GameManager.DebugMode && !progress.unlockedSkillIds.Contains(node.ProgressKey)) return;
+        if (!progress.unlockedSkillIds.Contains(node.ProgressKey)) progress.unlockedSkillIds.Add(node.ProgressKey);
         restoring = true;
         try { skillTree.RestoreUnlockedSkills(new[] { node }); RebuildLevels(); }
         finally { restoring = false; }
@@ -189,7 +174,7 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
             else progress.unlockedSkillIds.Remove(node.ProgressKey);
         }
         RebuildLevels();
-        store.Write(JsonUtility.ToJson(progress));
+        if (!GameManager.DebugMode) store.Write(JsonUtility.ToJson(progress));
     }
     public List<SkillNodeData> CaptureUnlockedNodes()
     {

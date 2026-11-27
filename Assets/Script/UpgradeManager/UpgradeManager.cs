@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[DefaultExecutionOrder(-10000)]
 public class UpgradeManager : MonoBehaviour
 {
     private bool isInited = false;
@@ -22,6 +23,13 @@ public class UpgradeManager : MonoBehaviour
     public SceneMoveManager sceneMoveManager;
     [Tooltip("제너럴/아이템 씬에 전달할 재료 인벤토리. 비워두면 현재 InventoryManager를 사용합니다.")]
     public InventoryManager materialInventory;
+
+    [SerializeField, Tooltip("Enable GameManager debug mode when starting in the upgrade scene.")]
+    private bool debugMode;
+    private void Awake()
+    {
+        if (debugMode) GameManager.EnableDebugMode();
+    }
 
     private void Start()
     {
@@ -49,7 +57,17 @@ public class UpgradeManager : MonoBehaviour
 
         var inventory = materialInventory != null ? materialInventory : InventoryManager.instance;
         bool restored = GameSession.Instance != null && GameSession.Instance.TryRestoreUpgradeInventory(inventory);
-        if (!restored && itemInitManager != null)
+        if (GameManager.DebugMode && !restored && inventory != null)
+        {
+            var catalog = Resources.Load<UpgradeProgressCatalog>("UpgradeProgressCatalog");
+            if (catalog != null)
+            {
+                inventory.items = GameSessionItemCopy.Copy(catalog.entries.ConvertAll(entry =>
+                    entry.asset is ItemData item ? new InventoryItem(item, 99) : null));
+                inventory.onInventoryChanged?.Invoke();
+            }
+        }
+        else if (!restored && itemInitManager != null)
             itemInitManager.ApplyDefaultInventoryItems();
 
         if (unlockManager != null)

@@ -30,16 +30,18 @@ public class ShopBoxInfoUI : BasicTooltipUI
     public ShopManager shopManager;
 
 
-    private void Start()
+    protected override void OnEnable()
     {
+        base.OnEnable();
         if (buyButton != null)
             buyButton.onClick.AddListener(OnClickBuy);
 
     }
 
-    private void OnDestroy()
+    protected override void OnDisable()
     {
         if (buyButton != null) buyButton.onClick.RemoveListener(OnClickBuy);
+        base.OnDisable();
     }
 
     public void ShowBoxInfo(ItemBoxData boxData)

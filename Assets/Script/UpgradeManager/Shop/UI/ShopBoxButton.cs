@@ -11,6 +11,13 @@ public class ShopBoxButton : SlotUI
 
     [Header("Shop Slot")]
     public Toggle toggle;
+    [SerializeField] private Image materialRarityImage;
+    private Sprite defaultRaritySprite;
+
+    public void SetMaterialRarity(Sprite sprite)
+    {
+        if (materialRarityImage != null) materialRarityImage.sprite = sprite != null ? sprite : defaultRaritySprite;
+    }
     public ShopSlotOpenAnimationUI openAnimation;
     public GameObject purchasedOverlay;
     public ChildrenUIControler uIControler;
@@ -20,6 +27,7 @@ public class ShopBoxButton : SlotUI
 
     private void Awake()
     {
+        if (materialRarityImage != null) defaultRaritySprite = materialRarityImage.sprite;
         if (toggle == null) toggle = GetComponent<Toggle>();
         if (toggle != null) toggle.onValueChanged.AddListener(OnToggleChanged);
     }
