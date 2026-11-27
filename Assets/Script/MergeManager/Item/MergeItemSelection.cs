@@ -94,7 +94,7 @@ public sealed class MergeItemSelection : MonoBehaviour, IBuffTarget
     public string LastMessage { get; private set; }
     public IReadOnlyList<InventoryItem> SelectedItems => displayedItems;
     public event Action SelectionChanged;
-    private bool CanSelect => isActiveAndEnabled && !committing && board != null && board.CanOperate && !board.SelectionSuppressed &&
+    private bool CanSelect => isActiveAndEnabled && !committing && board != null && board.CanOperate && board.Pinball == null && !board.SelectionSuppressed &&
         (ActiveSpawnPointDragger == null || !ActiveSpawnPointDragger.IsDragging) &&
         (GameInputManager.instance == null || !GameInputManager.instance.IsBlocked(GameInputBlockType.Gameplay));
 

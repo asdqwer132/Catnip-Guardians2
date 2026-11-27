@@ -54,6 +54,7 @@ public partial class MergegameManager : MonoBehaviour
     public float DropInterval => Dropper.Interval;
     public bool MaterialUIEnabled => displayMaterialUI;
     public bool SelectionSuppressed { get; set; }
+    internal PinballBoard Pinball { get; set; }
     public bool UsesAutomaticFeeding => automaticDrop || ForceAutomaticFeeding;
     public bool IsFeedingEnabled => isFeeding || ForceAutomaticFeeding;
     public bool CanOperate => isActiveAndEnabled && !clearing && Time.timeScale > 0f;
@@ -66,7 +67,7 @@ public partial class MergegameManager : MonoBehaviour
     protected virtual void OnEnable() => Dropper.Begin();
     protected virtual void Start() { PrewarmItems(); RefreshUI(); }
     protected virtual void Update() => Dropper.Tick();
-    protected virtual void LateUpdate() { if (CanOperate) dropZone?.TickDeadline(this); Combiner.ProcessContacts(); }
+    protected virtual void LateUpdate() { if (CanOperate && Pinball == null) dropZone?.TickDeadline(this); Combiner.ProcessContacts(); }
     protected virtual void OnDisable()
     {
         CancelClaw();
@@ -86,7 +87,12 @@ public partial class MergegameManager : MonoBehaviour
     public void SetAllMaterialsSelected(bool selected) => Dropper.SetAllMaterialsSelected(selected);
     public void SetMaterialStock(IReadOnlyList<InventoryItem> items) => Dropper.SetMaterialStock(items);
     public void SetConfiguredMaterialCounts(IReadOnlyList<int> counts) => Dropper.SetConfiguredMaterialCounts(counts);
-    public void QueueContact(MergeItemObject a, MergeItemObject b) => Combiner.QueueContact(a, b);
+    public void QueueContact(MergeItemObject a, MergeItemObject b)
+    {
+        if (Pinball == null) Combiner.QueueContact(a, b);
+    }
+    internal bool TryMergeAtPin(MergeItemObject piece, Vector2 center, float radius)
+        => Combiner.TryMergeAtPin(piece, center, radius);
     public void ProcessContacts() => Combiner.ProcessContacts();
     protected bool TryMergeWithIngredient(MergeItemObject food, MergeItem burningItem) => Combiner.TryBake(food, burningItem);
 

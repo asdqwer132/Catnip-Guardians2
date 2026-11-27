@@ -135,7 +135,7 @@ public class MergeItemObject : MonoBehaviour, IPoolable
         Velocity = Vector2.zero;
         body.angularVelocity = 0f;
 
-        ApplyRadius(definition.Radius);
+        ApplyRadius(owner.Pinball != null ? owner.Pinball.FitItemRadius(definition.Radius) : definition.Radius);
 
         if (colider2d != null)
             colider2d.enabled = true;

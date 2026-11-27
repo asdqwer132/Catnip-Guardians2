@@ -5,6 +5,8 @@ public sealed class BoardPinData : ItemData
 {
     [Tooltip("Optional sprite shown in an equipped board cell. The inventory uses the basic icon.")]
     public Sprite boardIcon;
+    [Tooltip("Effects are run in order each time a falling item hits this pin.")]
+    public BoardPinEffect[] hitEffects = System.Array.Empty<BoardPinEffect>();
 
     private void OnValidate() => dataType = DataType.Pin;
 }

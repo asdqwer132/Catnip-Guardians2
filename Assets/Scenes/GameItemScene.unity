@@ -4216,6 +4216,7 @@ GameObject:
   - component: {fileID: 990400000004}
   - component: {fileID: 990400000005}
   - component: {fileID: 990400000006}
+  - component: {fileID: 991010000001}
   m_Layer: 0
   m_Name: MergeGeneralManager
   m_TagString: Untagged
@@ -7951,6 +7952,7 @@ MonoBehaviour:
   selection: {fileID: 1595348420}
   sharedBox: {fileID: 381265478}
   card: {fileID: 1254111160}
+  pinball: {fileID: 991010000001}
   profiles:
   - board: {fileID: 1595348419}
     gimmick: {fileID: 381265485}
@@ -9415,6 +9417,29 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 10ed06c8720e447789f3715432e00c5e, type: 3}
+--- !u!114 &991010000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1122774685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abfeefca3cb9457c82630a4ae9135a4c, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PinballBoard
+  wallFitter: {fileID: 990760000001}
+  layout: {fileID: 11400000, guid: f41f1c011f654d70a1e17dc733377f28, type: 2}
+  defaultPin: {fileID: 11400000, guid: a42ae75a6a9146359d4ed51fd67fb06d, type: 2}
+  surfaceMaterial: {fileID: 0}
+  outletWidth: 0.25
+  rampRise: 0.17
+  pinSize: 0.7
+  maximumItemRadius: 0.038
+  showGizmos: 1
+  rampColor: {r: 0.55, g: 0.37, b: 0.2, a: 1}
+  outletColor: {r: 0.34, g: 0.64, b: 0.43, a: 1}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

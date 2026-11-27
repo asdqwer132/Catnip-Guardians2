@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -25,6 +26,7 @@ public sealed class MergeBoxSceneController : MonoBehaviour
     public MergeItemSelection selection;
     public MergeBoxBindings sharedBox;
     public MergeCardUI card;
+    [SerializeField] private PinballBoard pinball;
     [Tooltip("상자 번호 순서대로 입력합니다. 첫 항목이 1번입니다.")]
     public MergeBoxRoundProfile[] profiles = Array.Empty<MergeBoxRoundProfile>();
     public MergeBoxDeadlineLevel[] deadlineLevels = Array.Empty<MergeBoxDeadlineLevel>();
@@ -69,9 +71,10 @@ public sealed class MergeBoxSceneController : MonoBehaviour
 
     public bool CanShowBox(int index)
         => GetProfile(index)?.board != null && sharedBox != null && sharedBox.dropZone != null &&
-            sharedBox.dropZone.spawnPoint != null && sharedBox.dropZone.lineSprite != null;
+            sharedBox.dropZone.spawnPoint != null &&
+        ((pinball != null && pinball.IsConfigured) || sharedBox.dropZone.lineSprite != null);
 
-    public void ShowBox(int index, int level, bool restart)
+    public void ShowBox(int index, int level, bool restart, IReadOnlyList<BoardPinData> pins = null)
     {
         var profile = GetProfile(index);
         CancelSelection();
@@ -90,6 +93,7 @@ public sealed class MergeBoxSceneController : MonoBehaviour
         SetDeadlineLevel(level);
         profile.board.dropZone = sharedBox.dropZone;
         profile.board.spawnPoint = sharedBox.dropZone.spawnPoint;
+        if (pinball != null && pinball.IsConfigured) pinball.Bind(profile.board, pins);
         profile.board.enabled = true;
         card?.Bind(profile.board);
         profile.board.SetMaterialUIEnabled(true);
@@ -100,6 +104,7 @@ public sealed class MergeBoxSceneController : MonoBehaviour
     internal void SetDeadlineLevel(int level)
     {
         SelectedLevel = Mathf.Max(1, level);
+        if (sharedBox.dropZone.lineSprite == null) return;
         var line = sharedBox.dropZone.lineSprite.transform;
         Vector3 position = sharedBox.transform.InverseTransformPoint(line.position);
         position.y = ResolveDeadline(SelectedLevel, defaultDeadlineY);

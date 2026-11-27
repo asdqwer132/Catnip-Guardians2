@@ -88,6 +88,31 @@ internal sealed class MergeItemCombiner
         foreach (int amount in remaining.Values) if (amount > 0) return null;
         return selected;
     }
+    public bool TryMergeAtPin(MergeItemObject seed, Vector2 center, float radius)
+    {
+        float searchRadiusSquared = radius * radius;
+        if (!Usable(seed) || (seed.Position - center).sqrMagnitude > searchRadiusSquared) return false;
+        foreach (var recipe in owner.GetRoundRecipes())
+        {
+            if (!MergeTree.TryGetIngredients(recipe, out var needed) ||
+                !needed.TryGetValue(seed.item, out int seedCount)) continue;
+            needed[seed.item] = seedCount - 1;
+            var ingredients = new List<MergeItemObject> { seed };
+            foreach (var candidate in owner.ActiveItems)
+            {
+                if (candidate == seed || !Usable(candidate) || !needed.TryGetValue(candidate.item, out int count) ||
+                    count <= 0 || (candidate.Position - center).sqrMagnitude > searchRadiusSquared) continue;
+                ingredients.Add(candidate);
+                needed[candidate.item] = count - 1;
+            }
+
+            bool complete = true;
+            foreach (int count in needed.Values) if (count > 0) { complete = false; break; }
+            if (complete && TryMerge(recipe, ingredients)) return true;
+        }
+        return false;
+    }
+
     public bool TryBake(MergeItemObject food, MergeItem burningItem)
     {
         if (!Usable(food) || burningItem == null) return false;

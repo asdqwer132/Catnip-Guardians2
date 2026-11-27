@@ -249,6 +249,16 @@ public sealed class MergeWallUIFitter : MonoBehaviour
         backgroundMask.enabled = true;
     }
 
+    internal bool TryProjectBoardPoint(Vector2 normalizedPosition, out Vector3 world)
+    {
+        world = default;
+        if (box == null || worldCamera == null || !worldCamera.isActiveAndEnabled ||
+            !TryGetUICamera(frame, out var uiCamera)) return false;
+        Rect area = frame.rect;
+        return Project(frame, uiCamera, new Plane(Vector3.forward, box.transform.position),
+            area.min + normalizedPosition * area.size, out world);
+    }
+
     private bool TryGetUICamera(RectTransform source, out Camera camera)
     {
         camera = null;

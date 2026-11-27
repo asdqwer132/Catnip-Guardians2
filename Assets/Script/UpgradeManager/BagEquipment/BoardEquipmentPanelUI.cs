@@ -27,6 +27,25 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
     [SerializeField] private TooltipUI itemTooltip;
     [SerializeField] private InventoryManager materialInventory;
 
+    [Header("Pinball Layout")]
+    [SerializeField] private RectTransform pinballLayoutArea;
+    [SerializeField] private PinballBoardLayout pinballLayout;
+
+#if UNITY_EDITOR
+    [ContextMenu("Capture Pinball Layout")]
+    private void CapturePinballLayout()
+    {
+        if (Application.isPlaying || pinballLayout == null || pinballLayoutArea == null) return;
+        if (!pinballLayoutArea.gameObject.activeInHierarchy)
+        {
+            Debug.LogWarning("Show the equipment board in the scene before capturing its pin layout.", this);
+            return;
+        }
+        Canvas.ForceUpdateCanvases();
+        pinballLayout.Capture(pinballLayoutArea, pinSlots);
+    }
+#endif
+
     private GameSession session;
     private InventoryManager stock;
     private UnityAction<bool>[] skillHandlers;

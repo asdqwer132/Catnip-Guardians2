@@ -232,7 +232,7 @@ public sealed class MergeGeneralManager : MonoBehaviour
         }
 
         gimicManager?.StopGimic();
-        boxes.ShowBox(index, level, restart);
+        boxes.ShowBox(index, level, restart, UsesLoadout ? roundData.boardPinSlots : null);
         SelectedIndex = index;
         if (!debugMode) gimicManager?.InitializeModules(boxes.SelectedBoard, equippedModules, CanUseBoardSkill);
         else gimicManager?.InitializeModule(boxes.SelectedBoard, boxes.SelectedProfile.gimmick);
