@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 35522904}
   - component: {fileID: 992800001004}
   - component: {fileID: 992800101004}
+  - component: {fileID: 992800201004}
   m_Layer: 5
   m_Name: Board Skill
   m_TagString: Untagged
@@ -87,11 +88,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 35522902}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d77bb2c754b4eeda02d68cf56fa750e, type: 3}
+  m_Script: {fileID: 11500000, guid: cebc139f689b4f9f98d0888cd3700170, type: 3}
   m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillTooltipProvider
+  m_EditorClassIdentifier: Assembly-CSharp::SlotDataTooltipProvider
   anchorRect: {fileID: 0}
   tooltipOffset: {x: 0, y: 0}
+  view: {fileID: 992800101004}
 --- !u!1 &1844987650
 GameObject:
   m_ObjectHideFlags: 0
@@ -266,8 +268,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 35522902}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd47eb7de575468e92b129782a08e355, type: 3}
+  m_Script: {fileID: 11500000, guid: 3a3f5b214a30c2d40a875f5d7a93b459, type: 3}
   m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::BoardSkillView
-  icon: {fileID: 1307605763}
-  tooltipProvider: {fileID: 992800001004}
+  m_EditorClassIdentifier: Assembly-CSharp::InventorySlotUI
+  slotInformation:
+    icon: {fileID: 1307605763}
+--- !u!114 &992800201004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 35522902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f811147cfbd52a4b8cf7877b3eb1bc0, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ItemTooltipTrigger
+  isPointer: 1
+  autoDisable: 1
+  hideOnPointerExit: 1
+  providerComponent: {fileID: 992800001004}

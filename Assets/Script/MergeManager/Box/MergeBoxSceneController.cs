@@ -33,6 +33,7 @@ public sealed class MergeBoxSceneController : MonoBehaviour
     public int SelectedIndex { get; private set; } = -1;
     public int SelectedLevel { get; private set; } = 1;
     public MergeBoxRoundProfile SelectedProfile => GetProfile(SelectedIndex);
+    public bool HasPinball => pinball != null && pinball.IsConfigured;
     public MergegameManager SelectedBoard => SelectedProfile?.board;
     private float defaultDeadlineY;
 

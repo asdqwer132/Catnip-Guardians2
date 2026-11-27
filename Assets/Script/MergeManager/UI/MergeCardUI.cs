@@ -52,12 +52,12 @@ public sealed class MergeCardUI : MonoBehaviour
         int capacity = MaterialCapacity;
         if (boundBoard != null)
         {
-            var selected = selections[boundBoard];
-            selected.Clear();
+            selections.TryGetValue(boundBoard, out var selected);
+            selected?.Clear();
             foreach (var material in boundMaterials)
             {
                 if (material.mergeUI != null && material.mergeUI.toggle != null && material.mergeUI.toggle.isOn)
-                    selected.Add(material.mergeItem.item);
+                    selected?.Add(material.mergeItem.item);
                 material.mergeUI = null;
             }
             boundBoard.RefreshUI();
@@ -70,6 +70,12 @@ public sealed class MergeCardUI : MonoBehaviour
             HideUnusedSlots();
             return;
         }
+        if (board.Pinball != null)
+        {
+            BindInlets(board, capacity);
+            return;
+        }
+
         if (!selections.TryGetValue(board, out var remembered))
             selections.Add(board, remembered = new HashSet<ItemData>());
         foreach (var material in board.mergeMaterials)
@@ -85,6 +91,32 @@ public sealed class MergeCardUI : MonoBehaviour
             slot.gameObject.SetActive(true);
         }
         HideUnusedSlots();
+        board.RefreshUI();
+    }
+
+    private void BindInlets(MergegameManager board, int capacity)
+    {
+        for (int i = 0; i < slots.Count; i++)
+        {
+            var slot = slots[i];
+            bool visible = i < capacity;
+            slot.gameObject.SetActive(visible);
+            if (!visible) continue;
+
+            var material = i < board.mergeMaterials.Count ? board.mergeMaterials[i] : null;
+            if (material != null)
+            {
+                material.mergeUI = slot;
+                boundMaterials.Add(material);
+            }
+            if (slot.itemIcon != null)
+            {
+                slot.itemIcon.sprite = material?.mergeItem?.item?.icon;
+                slot.itemIcon.enabled = slot.itemIcon.sprite != null;
+            }
+            slot.SetCount(material?.count ?? 0);
+            if (slot.toggle != null) slot.toggle.SetIsOnWithoutNotify(material?.count > 0);
+        }
         board.RefreshUI();
     }
 

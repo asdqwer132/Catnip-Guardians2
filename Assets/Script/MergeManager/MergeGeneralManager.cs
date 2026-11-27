@@ -145,7 +145,8 @@ public sealed class MergeGeneralManager : MonoBehaviour
     private void ApplyRoundStock()
     {
         CaptureConfiguredMaterials();
-        int limit = boxes != null && boxes.card != null ? boxes.card.MaterialCapacity : int.MaxValue;
+        int limit = boxes != null && boxes.HasPinball ? PinballBoard.InletCount :
+            boxes != null && boxes.card != null ? boxes.card.MaterialCapacity : int.MaxValue;
         foreach (var entry in configuredMaterials)
         {
             var board = entry.Key;
@@ -174,7 +175,9 @@ public sealed class MergeGeneralManager : MonoBehaviour
                 foreach (var stock in stockItems)
                 {
                     if (materials.Count >= limit) break;
+                    int previousCount = materials.Count;
                     if (UsesLoadout || stock?.itemData?.series == board.itemSeries) AddMaterial(stock);
+                    if (hasBoardSlots && materials.Count == previousCount) materials.Add(null);
                 }
             }
 
@@ -194,7 +197,7 @@ public sealed class MergeGeneralManager : MonoBehaviour
                     materials.Add(new MergeItemMaterial(definition, null, stock.amount));
             }
             board.mergeMaterials = materials;
-            if (hasBoardSlots) board.SetConfiguredMaterialCounts(materials.ConvertAll(material => material.count));
+            if (hasBoardSlots) board.SetConfiguredMaterialCounts(materials.ConvertAll(material => material?.count ?? 0));
             else board.SetMaterialStock(roundData?.materialItems);
         }
         initialized = true;

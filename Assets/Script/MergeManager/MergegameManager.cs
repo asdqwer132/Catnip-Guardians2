@@ -102,6 +102,8 @@ public partial class MergegameManager : MonoBehaviour
             {
                 material?.SetCountText();
                 material?.SetActive();
+                if (Pinball != null && material?.mergeUI?.toggle != null)
+                    material.mergeUI.toggle.interactable = false;
             }
         Dropper.RefreshMaterialSelection();
     }

@@ -8,6 +8,14 @@ public sealed class PinballBoard : MonoBehaviour
     [SerializeField] private PinballBoardLayout layout;
     [Tooltip("Pin used in an unequipped cell. Clear this to leave empty cells open.")]
     [SerializeField] private BoardPinData defaultPin;
+    public const int InletCount = 5;
+    [Header("Inlets (left to right)")]
+    [SerializeField] private Vector2[] inletPositions =
+    {
+        new Vector2(.1f, .9f), new Vector2(.3f, .9f), new Vector2(.5f, .9f),
+        new Vector2(.7f, .9f), new Vector2(.9f, .9f)
+    };
+
     [Header("Board proportions")]
     [SerializeField, Range(.1f, .65f)] private float outletWidth = .25f;
     [SerializeField, Range(.04f, .4f)] private float rampRise = .17f;
@@ -44,6 +52,14 @@ public sealed class PinballBoard : MonoBehaviour
     public bool IsConfigured => isActiveAndEnabled && layout != null && layout.PinCells.Count > 0 && geometry != null && scenePins != null &&
         scenePins.Length == layout.PinCells.Count && outlet != null && leftRamp != null && rightRamp != null &&
         wallFitter != null && wallFitter.frame != null && wallFitter.box != null;
+    internal bool TryGetInletPosition(int index, out Vector3 position)
+    {
+        Vector2 normalized = index < inletPositions.Length ? inletPositions[index] :
+            new Vector2((index + .5f) / InletCount, .9f);
+        position = At(worldOrigin, worldWidth, worldHeight, normalized);
+        return geometryReady;
+    }
+
     internal bool Owns(MergeItemObject piece) => board != null && board.CanOperate &&
         piece != null && piece.IsLive && piece.Owner == board;
 

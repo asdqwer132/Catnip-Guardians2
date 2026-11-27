@@ -12,7 +12,7 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
         public MergeBoxEquipmentData data;
         public Toggle toggle;
         public GameObject selected;
-        public BoardSkillView[] skillViews = Array.Empty<BoardSkillView>();
+        public InventorySlotUI[] skillViews = Array.Empty<InventorySlotUI>();
     }
 
     [SerializeField] private BagEquipmentInventoryUI inventory;
@@ -82,6 +82,9 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
         for (int i = 0; i < boardSkills.Length; i++)
         {
             var option = boardSkills[i];
+            foreach (var slot in option.skillViews)
+                if (slot != null && slot.TryGetComponent<ItemTooltipTrigger>(out var tooltip))
+                    tooltip.Init(itemTooltip);
             skillHandlers[i] = selected => SetSkill(option, selected);
             option.toggle.onValueChanged.AddListener(skillHandlers[i]);
         }
@@ -299,7 +302,7 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
             {
                 var skill = i < data.skills.Length ? data.skills[i] : null;
                 bool unlockedSkill = available && EquipmentUnlocks.HasSkill(unlocked, data.boxIndex, i + 1);
-                option.skillViews[i]?.Show(unlockedSkill ? skill : null, itemTooltip);
+                option.skillViews[i]?.Show(unlockedSkill ? skill : null);
             }
         }
         previousEgg.interactable = canChangeEgg;

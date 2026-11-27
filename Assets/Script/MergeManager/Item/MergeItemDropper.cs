@@ -11,11 +11,12 @@ internal sealed class MergeItemDropper
     private readonly Dictionary<MergeItemMaterial, long> previewStock = new Dictionary<MergeItemMaterial, long>();
     private bool sharedItemStock, dropping;
     private float nextDropAt, nextAutomaticDropAt;
+    private readonly float[] inletReadyAt = new float[PinballBoard.InletCount];
     private float previousInterval = -1f;
     private int stockRevision;
     private bool hadSelectedMaterial;
     public MergeItemDropper(MergegameManager owner) => this.owner = owner;
-    public void ResetCooldown() { nextDropAt = 0f; RestartAutomaticTimer(); }
+    public void ResetCooldown() { nextDropAt = 0f; RestartAutomaticTimer(); ResetInlets(); }
     private void RestartAutomaticTimer()
     {
         previousInterval = AutomaticInterval;
@@ -82,6 +83,7 @@ internal sealed class MergeItemDropper
     {
         hadSelectedMaterial = false;
         RestartAutomaticTimer();
+        ResetInlets();
         RefreshMaterialSelection();
     }
 
@@ -135,6 +137,12 @@ internal sealed class MergeItemDropper
 
     public void Tick()
     {
+        if (owner.Pinball != null)
+        {
+            TickInlets(owner.Pinball);
+            return;
+        }
+
         if (!RefreshSelectionState()) return;
         if (!owner.UsesAutomaticFeeding || !owner.IsFeedingEnabled || !owner.CanOperate ||
             (GameInputManager.instance != null && GameInputManager.instance.IsBlocked(GameInputBlockType.Gameplay)))
@@ -150,10 +158,37 @@ internal sealed class MergeItemDropper
             owner.currentMaterial = NextFeedingMaterial(usedMaterial);
     }
 
+    private void ResetInlets()
+    {
+        float readyAt = Time.time + AutomaticInterval;
+        Array.Fill(inletReadyAt, readyAt);
+    }
+
+    private void TickInlets(PinballBoard pinball)
+    {
+        if (!owner.UsesAutomaticFeeding || !owner.IsFeedingEnabled || !owner.CanOperate ||
+            (GameInputManager.instance != null && GameInputManager.instance.IsBlocked(GameInputBlockType.Gameplay)))
+        {
+            ResetInlets();
+            return;
+        }
+
+        int count = Mathf.Min(inletReadyAt.Length, owner.mergeMaterials.Count);
+        for (int i = 0; i < count; i++)
+        {
+            var material = owner.mergeMaterials[i];
+            if (material?.mergeItem == null || material.count <= 0 || Time.time < inletReadyAt[i] ||
+                !pinball.TryGetInletPosition(i, out var position)) continue;
+
+            if (TryDrop(material, position)) inletReadyAt[i] = Time.time + AutomaticInterval;
+        }
+    }
+
     public void SetFeeding(bool value)
     {
         owner.isFeeding = value;
         RestartAutomaticTimer();
+        ResetInlets();
     }
 
     public void SetAutomaticDrop(bool value)
@@ -244,6 +279,7 @@ internal sealed class MergeItemDropper
 
     public bool TryDropCurrent()
     {
+        if (owner.Pinball != null) return false;
         if (!owner.IsFeedingEnabled) return owner.Reject("투입이 중지되어 있습니다.");
         if (!owner.CanOperate || dropping) return owner.Reject("현재 생성할 수 없는 상태입니다.");
         if (owner.objectPool == null || owner.dropZone == null || owner.dropZone.spawnPoint == null) return owner.Reject("Object Pool / Spawn Point 연결을 확인하세요.");
@@ -252,10 +288,15 @@ internal sealed class MergeItemDropper
         if (owner.ActiveItemCount >= Mathf.Max(1, owner.maximumActiveItems)) return owner.Reject("최대 활성 아이템 개수에 도달했습니다.");
         EnsureSelection();
         if (!CanFeedMaterial(owner.currentMaterial)) return owner.Reject("토글이 켜진 사용 가능한 재료가 없습니다.");
-        var material = owner.currentMaterial;
+        return TryDrop(owner.currentMaterial, owner.dropZone.spawnPoint.position);
+    }
+
+    private bool TryDrop(MergeItemMaterial material, Vector3 position)
+    {
+        if (!owner.CanOperate || dropping || owner.objectPool == null ||
+            owner.ActiveItemCount >= Mathf.Max(1, owner.maximumActiveItems)) return false;
         if (!MergegameManager.TryGetPrefab(material.mergeItem, out _))
             return owner.Reject("선택 재료의 MergeItem → Prefab에 활성 MergeItemObject가 있는 프리팹을 연결하세요.");
-        Vector3 position = owner.dropZone.spawnPoint.position;
         dropping = true;
         int before = owner.Revision;
         bool committed = false;
@@ -271,8 +312,11 @@ internal sealed class MergeItemDropper
             reserved = true;
             if (before != owner.Revision || !owner.CanOperate) return false;
             piece.SetSimulated(true);
-            nextDropAt = Time.time + AutomaticInterval;
-            RestartAutomaticTimer();
+            if (owner.Pinball == null)
+            {
+                nextDropAt = Time.time + AutomaticInterval;
+                RestartAutomaticTimer();
+            }
             committed = true;
             owner.RefreshUI();
             EnsureSelection();
