@@ -26,7 +26,7 @@ public sealed class PinballInlet
             itemIcon.sprite = item != null ? item.item.icon : null;
             itemIcon.enabled = itemIcon.sprite != null;
         }
-        cooldown?.SetFill(0);
+        cooldown?.SetFill(remaining > 0 && spawnPoint != null ? 1 : 0);
     }
 
     internal void Tick(MergegameManager board, float intervalSeconds, float deltaTime)
