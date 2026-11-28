@@ -1,13 +1,30 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 [Serializable]
-public class ObjectByKey
+public sealed class GimmickSkillGroup
 {
-    public GameObject obj;
-    public string key;
+    public MergeBoxEquipmentData data;
+    public Toggle toggle;
+    public GameObject selected;
+    public Image representativeIcon;
+    public InventorySlotUI[] skillViews = new InventorySlotUI[3];
+
+    public void ApplyUnlocks(IReadOnlyList<string> keys)
+    {
+        if (data == null) return;
+        int box = data.boxIndex;
+        for (int index = 0; index < skillViews.Length; index++)
+        {
+            var slot = skillViews[index];
+            if (slot != null)
+                slot.gameObject.SetActive(UpgradeSystemOpener.IsSkillOpen(keys, box, index + 1));
+        }
+        if (toggle != null)
+            toggle.gameObject.SetActive(UpgradeSystemOpener.IsBoxOpen(keys, box));
+    }
 }
 
 [Serializable]
@@ -20,8 +37,8 @@ public class TreeByKey
 public sealed class UpgradeSystemOpener : RefreshListener
 {
     [SerializeField] private UnlockManager unlockManager;
-    [FormerlySerializedAs("gimickSKills")]
-    [SerializeField] private ObjectByKey[] gimickSkills = Array.Empty<ObjectByKey>();
+    [SerializeField] private GimmickSkillGroup[] gimmickSkills = Array.Empty<GimmickSkillGroup>();
+    public IReadOnlyList<GimmickSkillGroup> GimmickSkills => gimmickSkills;
     [SerializeField] private TreeByKey[] plants = Array.Empty<TreeByKey>();
 
     public event Action Changed;
@@ -69,8 +86,7 @@ public sealed class UpgradeSystemOpener : RefreshListener
     protected override void Refresh(RefreshType refreshType)
     {
         var keys = ReadKeys();
-        foreach (var target in gimickSkills)
-            if (target?.obj != null) target.obj.SetActive(IsOpen(keys, target.key));
+        foreach (var group in gimmickSkills) group?.ApplyUnlocks(keys);
         Changed?.Invoke();
     }
 }

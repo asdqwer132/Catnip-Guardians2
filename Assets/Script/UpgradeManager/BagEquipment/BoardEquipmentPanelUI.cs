@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -6,20 +5,10 @@ using UnityEngine.UI;
 
 public sealed class BoardEquipmentPanelUI : MonoBehaviour
 {
-    [Serializable]
-    public sealed class SkillOption
-    {
-        public MergeBoxEquipmentData data;
-        public Toggle toggle;
-        public GameObject selected;
-        public InventorySlotUI[] skillViews = Array.Empty<InventorySlotUI>();
-    }
-
     [SerializeField] private BagEquipmentInventoryUI inventory;
     [SerializeField] private InventorySearchUI search;
     [SerializeField] private BagEquipmentSlotUI[] materialSlots;
     [SerializeField] private BagEquipmentSlotUI[] pinSlots;
-    [SerializeField] private SkillOption[] boardSkills;
     [SerializeField] private UpgradeSystemOpener systemOpener;
     [SerializeField] private BagEquipmentSlotUI eggSlot;
     [SerializeField] private Button previousEgg;
@@ -45,6 +34,8 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
         pinballLayout.Capture(pinballLayoutArea, pinSlots);
     }
 #endif
+
+    private IReadOnlyList<GimmickSkillGroup> BoardSkills => systemOpener.GimmickSkills;
 
     private GameSession session;
     private InventoryManager stock;
@@ -79,10 +70,10 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
         previousEgg.onClick.AddListener(SelectPreviousEgg);
         nextEgg.onClick.AddListener(SelectNextEgg);
 
-        skillHandlers = new UnityAction<bool>[boardSkills.Length];
-        for (int i = 0; i < boardSkills.Length; i++)
+        skillHandlers = new UnityAction<bool>[BoardSkills.Count];
+        for (int i = 0; i < BoardSkills.Count; i++)
         {
-            var option = boardSkills[i];
+            var option = BoardSkills[i];
             foreach (var slot in option.skillViews)
                 if (slot != null && slot.TryGetComponent<ItemTooltipTrigger>(out var tooltip))
                     tooltip.Init(itemTooltip);
@@ -103,8 +94,8 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
     {
         previousEgg.onClick.RemoveListener(SelectPreviousEgg);
         nextEgg.onClick.RemoveListener(SelectNextEgg);
-        for (int i = 0; i < boardSkills.Length; i++)
-            boardSkills[i].toggle.onValueChanged.RemoveListener(skillHandlers[i]);
+        for (int i = 0; i < BoardSkills.Count; i++)
+            BoardSkills[i].toggle.onValueChanged.RemoveListener(skillHandlers[i]);
         if (session != null) session.GameDataChanged -= Refresh;
         if (systemOpener != null) systemOpener.Changed -= Refresh;
         InventoryManager.InstanceChanged -= BindStock;
@@ -206,7 +197,7 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
         }
     }
 
-    private void SetSkill(SkillOption option, bool selected)
+    private void SetSkill(GimmickSkillGroup option, bool selected)
     {
         var equipment = EquipmentSave.Current.Copy();
         var unlocked = GetUnlocked();
@@ -308,20 +299,23 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
         }
 
         int equippedSkillCount = board.skillIndices.FindAll(index => UpgradeSystemOpener.IsBoxOpen(unlocked, index)).Count;
-        foreach (var option in boardSkills)
+        foreach (var option in BoardSkills)
         {
             var data = option.data;
+            if (option.representativeIcon != null)
+                option.representativeIcon.sprite = data.representativeIcon;
             bool available = UpgradeSystemOpener.IsBoxOpen(unlocked, data.boxIndex);
             bool selected = available && board.skillIndices.Contains(data.boxIndex);
             option.toggle.interactable = available && (selected || equippedSkillCount < MergeGimicManager.MaxActiveModules);
             option.toggle.SetIsOnWithoutNotify(selected);
             if (option.selected != null) option.selected.SetActive(selected);
-            option.toggle.gameObject.SetActive(available);
             for (int i = 0; i < option.skillViews.Length; i++)
             {
                 var skill = i < data.skills.Length ? data.skills[i] : null;
                 bool unlockedSkill = available && UpgradeSystemOpener.IsSkillOpen(unlocked, data.boxIndex, i + 1);
-                option.skillViews[i]?.Show(unlockedSkill ? skill : null);
+                var slot = option.skillViews[i];
+                if (slot == null) continue;
+                slot.SetData(unlockedSkill ? skill : null);
             }
         }
         previousEgg.interactable = canChangeEgg;

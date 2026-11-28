@@ -8,8 +8,7 @@ public class UnlockManager : MonoBehaviour
     [Header("Default Unlock Rewards")]
     [Tooltip("게임 시작 시 기본으로 해금할 UnlockSkillReward 에셋들을 넣으세요.")]
     [SerializeField]
-    private List<UnlockSkillReward> defaultUnlockRewards =
-        new List<UnlockSkillReward>();
+    private DefaultUnlockRewards defaultUnlockRewards;
 
     [Header("Runtime Unlocked List")]
     [Tooltip("플레이 중 현재 해금된 목록 확인용입니다. 실제 로직에서는 사용하지 마세요.")]
@@ -42,15 +41,11 @@ public class UnlockManager : MonoBehaviour
 
     private void ApplyDefaultUnlockRewards()
     {
-        for (int i = 0; i < defaultUnlockRewards.Count; i++)
-        {
-            UnlockSkillReward reward = defaultUnlockRewards[i];
-
-            if (reward == null)
-                continue;
-
-            Unlock(reward.UnlockType, reward.UnlockId);
-        }
+        var defaults = defaultUnlockRewards != null ? defaultUnlockRewards : DefaultUnlockRewards.Load();
+        if (defaults == null) return;
+        foreach (var reward in defaults.rewards)
+            if (reward != null)
+                Unlock(reward.UnlockType, reward.UnlockId);
     }
 
     public void Unlock(DataType type, string unlockId)

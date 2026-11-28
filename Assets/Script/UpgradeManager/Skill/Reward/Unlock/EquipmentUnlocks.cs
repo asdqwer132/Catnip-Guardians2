@@ -18,22 +18,31 @@ public static class EquipmentUnlocks
         return keys;
     }
 
-    // Older round snapshots did not store unlock keys or the starter rewards.
-    public static List<string> RestoreLegacy(IEnumerable<SkillNodeData> nodes)
+    public static List<string> Restore(IEnumerable<SkillNodeData> nodes)
     {
-        var keys = new List<string> { BoxKey(1), SkillKey(1, 1), EggKey(1) };
+        var keys = new List<string>();
+        var defaults = DefaultUnlockRewards.Load();
+        if (defaults != null)
+            foreach (var reward in defaults.rewards)
+                AddReward(keys, reward);
         if (nodes == null) return keys;
         foreach (var node in nodes)
         {
             if (node?.rewards == null) continue;
             foreach (var reward in node.rewards)
-            {
-                if (reward is not UnlockSkillReward unlock) continue;
-                if (unlock.UnlockType == DataType.System) keys.Add(unlock.UnlockId);
-                else AddLegacyKey(keys, unlock.UnlockType, unlock.UnlockId);
-            }
+                AddReward(keys, reward as UnlockSkillReward);
         }
         return keys;
+    }
+
+    private static void AddReward(List<string> keys, UnlockSkillReward reward)
+    {
+        if (reward == null || string.IsNullOrWhiteSpace(reward.UnlockId)) return;
+        if (reward.UnlockType == DataType.System)
+        {
+            if (!keys.Contains(reward.UnlockId)) keys.Add(reward.UnlockId);
+        }
+        else AddLegacyKey(keys, reward.UnlockType, reward.UnlockId);
     }
 
     private static void AddLegacyKey(List<string> keys, DataType type, string id)

@@ -120,6 +120,7 @@ public class GameSession : MonoBehaviour
         if (savedPotions.Count > 0) data.potionSlots = savedPotions;
         else EquipmentSave.StorePotions(data.potionSlots);
         UpgradeProgressSave.RefreshSkillValues(data);
+        data.equipmentUnlockKeys = EquipmentUnlocks.Restore(data.unlockedSkillNodes);
         data.equipment = EquipmentSave.Current.Copy();
         SaveUpgradeToGeneral(data);
     }
@@ -127,7 +128,7 @@ public class GameSession : MonoBehaviour
     public void SaveUpgradeToGeneral(UpgradeToGeneralData data)
     {
         generalData = (data ?? new UpgradeToGeneralData()).Copy();
-        generalData.equipmentUnlockKeys ??= EquipmentUnlocks.RestoreLegacy(generalData.unlockedSkillNodes);
+        generalData.equipmentUnlockKeys ??= EquipmentUnlocks.Restore(generalData.unlockedSkillNodes);
         generalData.equippedEgg = EquipmentSave.ResolveEgg(generalData.equipment, generalData.equipmentUnlockKeys);
         var progress = generalData.Copy();
         progress.equipment = null;
