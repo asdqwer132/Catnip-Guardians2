@@ -154,23 +154,35 @@ public class GameSession : MonoBehaviour
         var inventory = data.materialItems;
         data.materialItems = new List<InventoryItem>();
         bool hasBoard = data.equipment.board?.IsConfigured == true;
-        var usedMaterials = new Dictionary<ItemData, int>();
+        var remainingSlots = new Dictionary<string, int>();
         foreach (string id in data.equipment.itemIds)
         {
+            if (string.IsNullOrEmpty(id)) continue;
+            remainingSlots.TryGetValue(id, out int count);
+            remainingSlots[id] = count + 1;
+        }
+
+        var remainingStock = new Dictionary<string, int>();
+        foreach (string id in data.equipment.itemIds)
+        {
+            InventoryItem slot = null;
             var item = string.IsNullOrEmpty(id) ? null :
                 inventory.Find(entry => entry.itemData.dataId == id && BoardLoadout.AcceptsMaterial(entry.itemData));
             if (item != null)
             {
-                usedMaterials.TryGetValue(item.itemData, out int equipped);
-                if (equipped < item.amount)
+                if (!remainingStock.TryGetValue(id, out int available)) available = item.amount;
+                int slotCount = remainingSlots[id];
+                // Split the round stock across matching inlets, giving extra units to earlier slots.
+                int amount = available / slotCount + (available % slotCount > 0 ? 1 : 0);
+                remainingStock[id] = available - amount;
+                remainingSlots[id] = slotCount - 1;
+                if (amount > 0)
                 {
-                    usedMaterials[item.itemData] = equipped + 1;
-                    item = new InventoryItem(item.itemData, 1);
-                    data.materialItems.Add(item);
+                    slot = new InventoryItem(item.itemData, amount);
+                    data.materialItems.Add(slot);
                 }
-                else item = null;
             }
-            data.boardMaterialSlots.Add(item);
+            data.boardMaterialSlots.Add(slot);
         }
 
         if (hasBoard)

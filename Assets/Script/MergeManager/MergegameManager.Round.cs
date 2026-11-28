@@ -12,6 +12,7 @@ public partial class MergegameManager
     [SerializeField, Min(0f)] private float dropInterval = .5f;
     [SerializeField, Min(0f)] private float minimumDropInterval = .1f;
 
+    private float[] inletIntervalOffsets;
     private GameSession session;
     private bool started;
     private int dataRevision = -1, roundRevision = -1;
@@ -60,6 +61,16 @@ public partial class MergegameManager
 
     public void InitializeRound(UpgradeToGeneralData data)
     {
+        inletIntervalOffsets = new float[inlets.Length];
+        if (data?.unlockedSkillNodes != null)
+            foreach (var node in data.unlockedSkillNodes)
+            {
+                if (node?.rewards == null) continue;
+                foreach (var reward in node.rewards)
+                    if (reward is PinballInletIntervalReward intervalReward)
+                        intervalReward.AddOffsets(inletIntervalOffsets);
+            }
+
         gimmickManager?.StopGimic();
         ClearItems();
         bool preview = debugMode || (data?.equipment == null && !SceneManager.GetSceneByName(GameSceneRoutes.General).isLoaded);
@@ -82,13 +93,15 @@ public partial class MergegameManager
 
     private void Update()
     {
-        if (!CanOperate || pinball == null || !pinball.LayoutInlets(inlets) ||
+        if (inletIntervalOffsets == null || !CanOperate || pinball == null || !pinball.LayoutInlets(inlets) ||
             (GameInputManager.instance != null && GameInputManager.instance.IsBlocked(GameInputBlockType.Gameplay))) return;
 
-        foreach (var inlet in inlets)
+        for (int i = 0; i < inlets.Length; i++)
         {
+            var inlet = inlets[i];
             if (inlet == null) continue;
             float configured = inlet.interval > 0 ? inlet.interval : dropInterval;
+            configured += inletIntervalOffsets[i];
             float interval = Mathf.Max(minimumDropInterval, configured / Mathf.Max(.01f, FeedingSpeedMultiplier));
             inlet.Tick(this, interval, Time.deltaTime);
         }
