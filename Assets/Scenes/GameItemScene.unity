@@ -1898,6 +1898,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 950f804f20b74ce4879ee2ecd473cb97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PinballPin
+--- !u!1 &438377065
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 438377066}
+  m_Layer: 5
+  m_Name: Left
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &438377066
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 438377065}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1372983057}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: -16, y: -16}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &460992701
 GameObject:
   m_ObjectHideFlags: 0
@@ -3752,7 +3787,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
+  m_Children: []
   m_Father: {fileID: 758099004}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1175199270
@@ -4285,7 +4320,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 438377066}
   m_Father: {fileID: 1230442322}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -5018,7 +5054,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f6e08452a43a4f16979a3dbb92718533, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
   key: Exit
   tmpText: {fileID: 1605885749}
@@ -6328,6 +6364,86 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &900050001001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 20095606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d63609e830602024dbe8da45179a352a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpriteCooldownController
+  fillMode: 0
+  fillAmount: 0
+  clockwise: 1
+  startAngle: 0
+--- !u!114 &900050001002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 585129687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d63609e830602024dbe8da45179a352a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpriteCooldownController
+  fillMode: 0
+  fillAmount: 0
+  clockwise: 1
+  startAngle: 0
+--- !u!114 &900050001003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 831592011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d63609e830602024dbe8da45179a352a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpriteCooldownController
+  fillMode: 0
+  fillAmount: 0
+  clockwise: 1
+  startAngle: 0
+--- !u!114 &900050001004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 45535286}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d63609e830602024dbe8da45179a352a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpriteCooldownController
+  fillMode: 0
+  fillAmount: 0
+  clockwise: 1
+  startAngle: 0
+--- !u!114 &900050001005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 65674845}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d63609e830602024dbe8da45179a352a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpriteCooldownController
+  fillMode: 0
+  fillAmount: 0
+  clockwise: 1
+  startAngle: 0
 --- !u!114 &910000300001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6876,8 +6992,54 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3bd5d76e7f078984486ffa0126928ee9, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergegameManager
+  pinball: {fileID: 991010000001}
+  gimmickManager: {fileID: 990400000006}
+  inlets:
+  - marker: {fileID: 3222754940367754416}
+    spawnPoint: {fileID: 8092913434090435365}
+    itemIcon: {fileID: 192910303073248852}
+    cooldown: {fileID: 900050001001}
+    interval: 0
+    previewMaterial: {fileID: 11400000, guid: ac0dd3bebbf15eb4d9368a5cb6f17d85, type: 2}
+    previewCount: 3
+    remaining: 0
+  - marker: {fileID: 285357083}
+    spawnPoint: {fileID: 1197499504}
+    itemIcon: {fileID: 1530333211}
+    cooldown: {fileID: 900050001002}
+    interval: 0
+    previewMaterial: {fileID: 11400000, guid: cd8257532844a864ebe76453d3a9a7aa, type: 2}
+    previewCount: 3
+    remaining: 0
+  - marker: {fileID: 460992702}
+    spawnPoint: {fileID: 620245936}
+    itemIcon: {fileID: 217188151}
+    cooldown: {fileID: 900050001003}
+    interval: 0
+    previewMaterial: {fileID: 11400000, guid: 537ba3e8558e56b4785f9cfc73e303c1, type: 2}
+    previewCount: 3
+    remaining: 0
+  - marker: {fileID: 85086656}
+    spawnPoint: {fileID: 364910474}
+    itemIcon: {fileID: 1030924825}
+    cooldown: {fileID: 900050001004}
+    interval: 0
+    previewMaterial: {fileID: 11400000, guid: b7bc78ef50c10704980a93a9bde2827a, type: 2}
+    previewCount: 3
+    remaining: 0
+  - marker: {fileID: 1367155891}
+    spawnPoint: {fileID: 160685648}
+    itemIcon: {fileID: 502709637}
+    cooldown: {fileID: 900050001005}
+    interval: 0
+    previewMaterial: {fileID: 11400000, guid: add02df668a72e4479c8387771fb4e02, type: 2}
+    previewCount: 3
+    remaining: 0
+  debugMode: 0
+  dropInterval: 2
+  minimumDropInterval: 0.1
   recipeBooks:
   - {fileID: 11400000, guid: e12606425bca22c47b29206c834421d8, type: 2}
   - {fileID: 11400000, guid: a5c3066ecfdbcc54eaa1259d5dc11f55, type: 2}
@@ -6893,47 +7055,14 @@ MonoBehaviour:
   prewarmCount: 4
   resultMergeDelay: 0.1
   logActions: 1
-  pinball: {fileID: 991010000001}
-  gimmickManager: {fileID: 990400000006}
-  debugMode: 0
-  dropInterval: 2
-  minimumDropInterval: 0.1
-  inlets:
-  - marker: {fileID: 3222754940367754416}
-    spawnPoint: {fileID: 8092913434090435365}
-    itemIcon: {fileID: 192910303073248852}
-    cooldown: {fileID: 900050001001}
-    interval: 0
-    previewMaterial: {fileID: 11400000, guid: ac0dd3bebbf15eb4d9368a5cb6f17d85, type: 2}
-    previewCount: 3
-  - marker: {fileID: 285357083}
-    spawnPoint: {fileID: 1197499504}
-    itemIcon: {fileID: 1530333211}
-    cooldown: {fileID: 900050001002}
-    interval: 0
-    previewMaterial: {fileID: 11400000, guid: cd8257532844a864ebe76453d3a9a7aa, type: 2}
-    previewCount: 3
-  - marker: {fileID: 460992702}
-    spawnPoint: {fileID: 620245936}
-    itemIcon: {fileID: 217188151}
-    cooldown: {fileID: 900050001003}
-    interval: 0
-    previewMaterial: {fileID: 11400000, guid: 537ba3e8558e56b4785f9cfc73e303c1, type: 2}
-    previewCount: 3
-  - marker: {fileID: 85086656}
-    spawnPoint: {fileID: 364910474}
-    itemIcon: {fileID: 1030924825}
-    cooldown: {fileID: 900050001004}
-    interval: 0
-    previewMaterial: {fileID: 11400000, guid: b7bc78ef50c10704980a93a9bde2827a, type: 2}
-    previewCount: 3
-  - marker: {fileID: 1367155891}
-    spawnPoint: {fileID: 160685648}
-    itemIcon: {fileID: 502709637}
-    cooldown: {fileID: 900050001005}
-    interval: 0
-    previewMaterial: {fileID: 11400000, guid: add02df668a72e4479c8387771fb4e02, type: 2}
-    previewCount: 3
+  lastMessage: 
+  bonusSpawn:
+    scatter: {x: 0.15, y: 0.1}
+    outwardSpeed: 1
+    upwardSpeed: 1
+    explosionRadius: 1
+    explosionImpulse: 1
+    explosionFalloff: 1
 --- !u!114 &990400000005
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7015,7 +7144,7 @@ MonoBehaviour:
   topCollider: {fileID: 4715295357562226922}
   backgroundMode: 0
   showFitGizmos: 1
-  leftThickness: 0.035
+  leftThickness: 0.109
   rightThickness: 0.035
   topThickness: 0.035
 --- !u!114 &991010000001
@@ -9851,7 +9980,7 @@ BoxCollider2D:
     drawMode: 2
     adaptiveTiling: 1
   m_AutoTiling: 0
-  m_Size: {x: 0.28499982, y: 10.6746025}
+  m_Size: {x: 0.88757104, y: 10.6746025}
   m_EdgeRadius: 0
 --- !u!4 &3982616035986579322
 Transform:
@@ -11376,7 +11505,7 @@ Transform:
   m_GameObject: {fileID: 5065561302771573744}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.4289284, y: -1.7519841, z: 0}
+  m_LocalPosition: {x: -1.1276429, y: -1.7519841, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11580,7 +11709,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
-  m_Size: {x: 0.28499982, y: 10.6746025}
+  m_Size: {x: 0.88757104, y: 10.6746025}
   m_AdaptiveModeThreshold: 1
   m_SpriteTileMode: 1
   m_WasSpriteAssigned: 0
@@ -12172,7 +12301,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
+  m_Children: []
   m_Father: {fileID: 2238346149581842030}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &7344227633808295155
@@ -13727,83 +13856,3 @@ SceneRoots:
   - {fileID: 4125981631216644559}
   - {fileID: 758099004}
   - {fileID: 910010200001}
---- !u!114 &900050001001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 20095606}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d63609e830602024dbe8da45179a352a, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::SpriteCooldownController
-  fillMode: 0
-  fillAmount: 0
-  clockwise: 1
-  startAngle: 0
---- !u!114 &900050001002
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 585129687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d63609e830602024dbe8da45179a352a, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::SpriteCooldownController
-  fillMode: 0
-  fillAmount: 0
-  clockwise: 1
-  startAngle: 0
---- !u!114 &900050001003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 831592011}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d63609e830602024dbe8da45179a352a, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::SpriteCooldownController
-  fillMode: 0
-  fillAmount: 0
-  clockwise: 1
-  startAngle: 0
---- !u!114 &900050001004
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 45535286}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d63609e830602024dbe8da45179a352a, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::SpriteCooldownController
-  fillMode: 0
-  fillAmount: 0
-  clockwise: 1
-  startAngle: 0
---- !u!114 &900050001005
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 65674845}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d63609e830602024dbe8da45179a352a, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::SpriteCooldownController
-  fillMode: 0
-  fillAmount: 0
-  clockwise: 1
-  startAngle: 0
