@@ -128,7 +128,6 @@ internal static class SaveDataInspection
     [Serializable] private sealed class Upgrades
     {
         public List<string> unlockedSkillIds = new List<string>();
-        public List<MergeBoxLevelSnapshot> boxLevels = new List<MergeBoxLevelSnapshot>();
     }
 
     [Serializable] private sealed class CodexDiscoveries
@@ -147,7 +146,7 @@ internal static class SaveDataInspection
             System.IO.Path.Combine(directory, CodexDiscoveryHistory.SaveFileName),
             System.IO.Path.Combine(directory, PotionRecipeHistory.SaveFileName),
             System.IO.Path.Combine(directory, MergeDiscoveryHistory.SaveFileName),
-            System.IO.Path.Combine(directory, MergeBoxUpgradeManager.SaveFileName)
+            System.IO.Path.Combine(directory, SkillTreeProgressManager.SaveFileName)
         };
         try
         {
@@ -167,7 +166,7 @@ internal static class SaveDataInspection
             case CodexDiscoveryHistory.SaveFileName: return "Codex discoveries";
             case PotionRecipeHistory.SaveFileName: return "Potion recipe discoveries";
             case MergeDiscoveryHistory.SaveFileName: return "Merge item discoveries";
-            case MergeBoxUpgradeManager.SaveFileName: return "Skills and merge box upgrades";
+            case SkillTreeProgressManager.SaveFileName: return "Skills and merge box upgrades";
             default: return System.IO.Path.GetFileName(path);
         }
     }
@@ -206,15 +205,10 @@ internal static class SaveDataInspection
             var ids = file == PotionRecipeHistory.SaveFileName ? data?.craftedPotionIds : data?.craftedItemIds;
             return DescribeIds("Crafted items", ids);
         }
-        if (file == MergeBoxUpgradeManager.SaveFileName)
+        if (file == SkillTreeProgressManager.SaveFileName)
         {
             var data = JsonUtility.FromJson<Upgrades>(json);
-            var summary = new StringBuilder(DescribeIds("Unlocked skills", data?.unlockedSkillIds));
-            summary.Append("\n\nBox levels");
-            if (data?.boxLevels != null)
-                foreach (var entry in data.boxLevels)
-                    summary.Append(entry == null ? "\n<null>" : "\n" + entry.series + ": " + entry.level);
-            return summary.ToString();
+            return DescribeIds("Unlocked skills", data?.unlockedSkillIds);
         }
         return "Additional JSON save. See the raw contents below.";
     }

@@ -15,7 +15,7 @@ public class SkillTreeManager : MonoBehaviour, IStoryProgressSource
 
 
     public BuffSkillManager buffSkillManager;
-    public MergeBoxUpgradeManager mergeBoxUpgrades;
+    public SkillTreeProgressManager skillProgress;
 
     public event Action OnSkillTreeChanged;
     public event Action<SkillNodeData> OnSkillUnlocked;
@@ -53,7 +53,6 @@ public class SkillTreeManager : MonoBehaviour, IStoryProgressSource
             skillTreeManager = this,
             unlockManager = UnlockManager.Instance,
             buffSkillManager = buffSkillManager,
-            mergeBoxUpgrades = mergeBoxUpgrades
         };
     }
 
@@ -67,7 +66,6 @@ public class SkillTreeManager : MonoBehaviour, IStoryProgressSource
         context.skillTreeManager = this;
         context.unlockManager = UnlockManager.Instance;
         context.buffSkillManager = buffSkillManager;
-        context.mergeBoxUpgrades = mergeBoxUpgrades;
     }
 
     // Restore purchased nodes without charging their costs or publishing purchase events again.

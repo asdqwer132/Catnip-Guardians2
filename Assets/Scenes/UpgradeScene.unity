@@ -65851,7 +65851,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SkillTreeManager
   progressEventId: skill.unlocked
   buffSkillManager: {fileID: 1190752872}
-  mergeBoxUpgrades: {fileID: 1482356635}
+  skillProgress: {fileID: 1482356635}
   debugLog: 0
 --- !u!114 &1482356629
 MonoBehaviour:
@@ -65928,7 +65928,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 845c7107071b4df48f051bc64cf00573, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MergeBoxUpgradeManager
+  m_EditorClassIdentifier: Assembly-CSharp::SkillTreeProgressManager
   skillTree: {fileID: 1482356628}
   skillNodes: []
   progress:
@@ -71580,7 +71580,7 @@ MonoBehaviour:
   unlockManager: {fileID: 1631567003}
   shopManager: {fileID: 642885257}
   buffSkillManager: {fileID: 1190752872}
-  mergeBoxUpgrades: {fileID: 1482356635}
+  skillProgress: {fileID: 1482356635}
   potionEquipment: {fileID: 875675674}
   skillTreeUI: {fileID: 1482356631}
   inventoryUIs:

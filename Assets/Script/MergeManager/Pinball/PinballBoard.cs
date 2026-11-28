@@ -8,13 +8,9 @@ public sealed class PinballBoard : MonoBehaviour
     [SerializeField] private PinballBoardLayout layout;
     [Tooltip("Pin used in an unequipped cell. Clear this to leave empty cells open.")]
     [SerializeField] private BoardPinData defaultPin;
-    public const int InletCount = 5;
-    [Header("Inlets (left to right)")]
-    [SerializeField] private Vector2[] inletPositions =
-    {
-        new Vector2(.1f, .9f), new Vector2(.3f, .9f), new Vector2(.5f, .9f),
-        new Vector2(.7f, .9f), new Vector2(.9f, .9f)
-    };
+    [Header("Inlets")]
+    [Tooltip("Normalized region in the board frame. Each inlet is centered in an equally sized cell.")]
+    [SerializeField] private Rect inletArea = new Rect(.04f, .85f, .92f, .12f);
 
     [Header("Board proportions")]
     [SerializeField, Range(.1f, .65f)] private float outletWidth = .25f;
@@ -40,9 +36,6 @@ public sealed class PinballBoard : MonoBehaviour
     [SerializeField] private bool fitToUI = true;
     [SerializeField] private BoxCollider2D leftRamp, rightRamp, outlet;
     [SerializeField] private PinballPin[] scenePins;
-    private BoxCollider2D previousFloor;
-    private SpriteRenderer previousFloorVisual;
-    private bool floorWasEnabled, floorWasVisible, lineWasVisible;
     private Vector3 worldOrigin, worldWidth, worldHeight;
     private bool geometryReady;
     private bool fitDirty;
@@ -51,13 +44,18 @@ public sealed class PinballBoard : MonoBehaviour
 
     public bool IsConfigured => isActiveAndEnabled && layout != null && layout.PinCells.Count > 0 && geometry != null && scenePins != null &&
         scenePins.Length == layout.PinCells.Count && outlet != null && leftRamp != null && rightRamp != null &&
-        wallFitter != null && wallFitter.frame != null && wallFitter.box != null;
-    internal bool TryGetInletPosition(int index, out Vector3 position)
+        wallFitter != null && wallFitter.frame != null && wallFitter.boardRoot != null;
+    internal bool LayoutInlets(PinballInlet[] inlets)
     {
-        Vector2 normalized = index < inletPositions.Length ? inletPositions[index] :
-            new Vector2((index + .5f) / InletCount, .9f);
-        position = At(worldOrigin, worldWidth, worldHeight, normalized);
-        return geometryReady;
+        if (!geometryReady) return false;
+        for (int i = 0; i < inlets.Length; i++)
+        {
+            var marker = inlets[i]?.marker;
+            if (marker == null) continue;
+            Vector2 center = new Vector2(inletArea.xMin + inletArea.width * (i + .5f) / inlets.Length, inletArea.center.y);
+            marker.position = At(worldOrigin, worldWidth, worldHeight, center);
+        }
+        return true;
     }
 
     internal bool Owns(MergeItemObject piece) => board != null && board.CanOperate &&
@@ -70,19 +68,6 @@ public sealed class PinballBoard : MonoBehaviour
         {
             Unbind();
             board = value;
-            board.Pinball = this;
-            foreach (var part in wallFitter.box.visuals)
-            {
-                if (part?.role != MergeBoxSpriteRole.BottomWall || part.wallCollider == null) continue;
-                previousFloor = part.wallCollider;
-                floorWasEnabled = previousFloor.enabled;
-                previousFloorVisual = part.renderer;
-                floorWasVisible = previousFloorVisual != null && previousFloorVisual.enabled;
-                break;
-            }
-            lineWasVisible = board.dropZone.showWorldLine;
-            board.dropZone.showWorldLine = false;
-            board.dropZone.RefreshLine();
         }
 
         if (pins.Count == 0)
@@ -129,24 +114,9 @@ public sealed class PinballBoard : MonoBehaviour
 
     private void Unbind()
     {
-        if (board != null)
-        {
-            board.Pinball = null;
-            board.dropZone.showWorldLine = lineWasVisible;
-            board.dropZone.RefreshLine();
-        }
-        RestoreFloor();
-        previousFloor = null;
-        previousFloorVisual = null;
         board = null;
         geometryReady = false;
         if (geometry != null) geometry.gameObject.SetActive(false);
-    }
-
-    private void RestoreFloor()
-    {
-        if (previousFloor != null) previousFloor.enabled = floorWasEnabled;
-        if (previousFloorVisual != null) previousFloorVisual.enabled = floorWasVisible;
     }
 
     private void OnDisable()
@@ -190,9 +160,8 @@ public sealed class PinballBoard : MonoBehaviour
         var transfer = new GameItemToBattleData();
         transfer.items.Add(new InventoryItem(piece.item, 1));
 
-        if (board.RetainSelectedItems && board.spawnPoint != null)
+        if (board.RetainSelectedItems && board.TryGetReturnPosition(out var spawn))
         {
-            Vector3 spawn = board.spawnPoint.position;
             piece.body.position = spawn;
             piece.transform.position = spawn;
             piece.Velocity = Vector2.zero;
@@ -210,7 +179,6 @@ public sealed class PinballBoard : MonoBehaviour
             if (geometryReady)
             {
                 geometry.gameObject.SetActive(false);
-                RestoreFloor();
                 geometryReady = false;
             }
             return;
@@ -262,8 +230,6 @@ public sealed class PinballBoard : MonoBehaviour
             marker.localScale = new Vector3(outlet.size.x, thickness / Mathf.Abs(outlet.transform.lossyScale.y), 1f);
         }
 
-        if (previousFloor != null) previousFloor.enabled = false;
-        if (previousFloorVisual != null) previousFloorVisual.enabled = false;
         geometry.gameObject.SetActive(true);
         Physics2D.SyncTransforms();
     }
@@ -310,6 +276,14 @@ public sealed class PinballBoard : MonoBehaviour
         if (!showGizmos) return;
         Color previousColor = Gizmos.color;
         Matrix4x4 previousMatrix = Gizmos.matrix;
+        if (wallFitter != null &&
+            wallFitter.TryProjectBoardPoint(inletArea.min, out var inletMin) &&
+            wallFitter.TryProjectBoardPoint(inletArea.max, out var inletMax))
+        {
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawWireCube((inletMin + inletMax) * .5f, inletMax - inletMin);
+        }
+
         Gizmos.color = Color.cyan;
         if (pins.Count > 0)
         {

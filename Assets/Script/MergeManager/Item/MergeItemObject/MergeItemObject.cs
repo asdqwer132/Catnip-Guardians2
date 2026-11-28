@@ -305,28 +305,6 @@ public class MergeItemObject : MonoBehaviour, IPoolable
             previous.NotifyReturned(this);
     }
 
-    protected virtual void OnCollisionEnter2D(Collision2D collision)
-    {
-        Contact(collision);
-    }
-
-    protected virtual void OnCollisionStay2D(Collision2D collision)
-    {
-        Contact(collision);
-    }
-
-    private void Contact(Collision2D collision)
-    {
-        if (!IsLive || collision.collider == null)
-            return;
-
-        var other =
-            collision.collider.GetComponentInParent<MergeItemObject>();
-
-        if (other != null && other.Owner == Owner)
-            Owner.QueueContact(this, other);
-    }
-
     public void ReturnToPool()
     {
         if (pooled != null && pooled.OwnerPool != null)

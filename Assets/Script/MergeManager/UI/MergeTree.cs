@@ -49,17 +49,4 @@ public static class MergeTree
         }
         return count == 2 && ((a == first && b == second) || (a == second && b == first));
     }
-    public static bool IsAvailable(MergeItemMaterial material)
-        => material != null && material.mergeItem != null && material.mergeItem.item != null && material.IsAvailable();
-    public static MergeItemMaterial NextMaterial(IList<MergeItemMaterial> materials, MergeItemMaterial current)
-    {
-        if (materials == null || materials.Count == 0) return null;
-        int start = materials.IndexOf(current);
-        for (int offset = 1; offset <= materials.Count; offset++)
-        {
-            var candidate = materials[(start + offset) % materials.Count];
-            if (IsAvailable(candidate)) return candidate;
-        }
-        return null;
-    }
 }

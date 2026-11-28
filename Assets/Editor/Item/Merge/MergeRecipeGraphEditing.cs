@@ -281,8 +281,17 @@ public static class MergeRecipeGraphEditing
     public static void Apply(MergeRecipeGraphAsset graph, MergegameManager manager)
     {
         if (manager == null) throw new InvalidOperationException("머지 매니저를 연결하세요.");
-        var book = Export(graph); Undo.RecordObject(manager, "Connect merge recipe book"); manager.recipeBook = book;
-        EditorUtility.SetDirty(manager); PrefabUtility.RecordPrefabInstancePropertyModifications(manager);
+        var book = Export(graph);
+        foreach (var existing in manager.RecipeBooks)
+            if (existing == book) return;
+
+        var serialized = new SerializedObject(manager);
+        var books = serialized.FindProperty("recipeBooks");
+        int index = books.arraySize;
+        books.arraySize++;
+        books.GetArrayElementAtIndex(index).objectReferenceValue = book;
+        serialized.ApplyModifiedProperties();
+        PrefabUtility.RecordPrefabInstancePropertyModifications(manager);
         if (manager.gameObject.scene.IsValid()) EditorSceneManager.MarkSceneDirty(manager.gameObject.scene);
     }
     public static void ImportBook(MergeRecipeGraphAsset graph, MergeRecipeBook book)
@@ -307,11 +316,6 @@ public static class MergeRecipeGraphEditing
             if (previous != null) { node.position = previous.position; node.gridPosition = previous.gridPosition; }
         }
         EditorUtility.SetDirty(graph);
-    }
-    public static void Import(MergeRecipeGraphAsset graph, MergegameManager manager)
-    {
-        if (manager == null || manager.recipeBook == null) throw new InvalidOperationException("매니저의 레시피북을 연결하세요.");
-        ImportBook(graph, manager.recipeBook);
     }
     public static void Arrange(MergeRecipeGraphAsset graph) => MergeRecipeGraphLayout.Arrange(graph);
 

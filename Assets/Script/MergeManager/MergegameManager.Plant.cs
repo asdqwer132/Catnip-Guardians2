@@ -10,8 +10,6 @@ public sealed class MergePlantGrowthRule
     public WeightedMergeItem[] nextItems = Array.Empty<WeightedMergeItem>();
 }
 
-[DefaultExecutionOrder(-200)]
-public sealed class PlantMergeGameManager : MergegameManager { }
 
 public partial class MergegameManager
 {

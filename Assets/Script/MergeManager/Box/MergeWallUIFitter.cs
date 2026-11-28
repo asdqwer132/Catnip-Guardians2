@@ -3,14 +3,15 @@ using UnityEngine;
 [ExecuteAlways, DisallowMultipleComponent, DefaultExecutionOrder(210)]
 public sealed class MergeWallUIFitter : MonoBehaviour
 {
-    public MergeBoxBindings box;
+    public Transform boardRoot;
+    public SpriteRenderer background;
+    public BoxCollider2D leftCollider, rightCollider;
     public Camera worldCamera;
     public RectTransform frame;
     [Tooltip("벽마다 별도 UI를 연결하면 해당 Rect 전체를 사용합니다.")]
-    public RectTransform leftWall, rightWall, bottomWall;
+    public RectTransform leftWall, rightWall;
     public RectTransform topWall;
     public BoxCollider2D topCollider;
-    public RectTransform inletAnchor;
     public enum BackgroundMode { Fill, Mask }
 
     [Tooltip("Fill은 영역에 맞춰 크기를 조정합니다. Mask는 현재 크기와 위치를 유지하고 영역 밖을 가립니다.")]
@@ -22,7 +23,6 @@ public sealed class MergeWallUIFitter : MonoBehaviour
     [SerializeField] private bool showFitGizmos = true;
     [Range(.005f, .2f)] public float leftThickness = .035f;
     [Range(.005f, .2f)] public float rightThickness = .035f;
-    [Range(.005f, .2f)] public float bottomThickness = .035f;
     [Range(.005f, .2f)] public float topThickness = .035f;
 
     private void OnEnable() => Canvas.willRenderCanvases += FitWalls;
@@ -53,69 +53,17 @@ public sealed class MergeWallUIFitter : MonoBehaviour
     [ContextMenu("Fit Walls")]
     public void FitWalls()
     {
-        if (box == null || worldCamera == null || !worldCamera.isActiveAndEnabled) return;
-        bool changed = false;
-        foreach (var part in box.visuals)
-        {
-            if (part != null && part.role == MergeBoxSpriteRole.BackFrame)
-                FitBackground(part.renderer);
-            var wall = part?.wallCollider;
-            if (wall == null) continue;
-            switch (part.role)
-            {
-                case MergeBoxSpriteRole.LeftWall:
-                    changed |= Fit(wall, leftWall, new Rect(0, 0, leftThickness, 1));
-                    break;
-                case MergeBoxSpriteRole.RightWall:
-                    changed |= Fit(wall, rightWall, new Rect(1 - rightThickness, 0, rightThickness, 1));
-                    break;
-                case MergeBoxSpriteRole.BottomWall:
-                    changed |= Fit(wall, bottomWall, new Rect(0, 0, 1, bottomThickness));
-                    break;
-            }
-        }
-        if (topCollider != null)
-            changed |= Fit(topCollider, topWall, new Rect(0, 1 - topThickness, 1, topThickness));
-        var zone = box.dropZone;
-        if (zone != null)
-        {
-            FitDeadlineWidth(zone.lineSprite);
-            var spawn = zone.spawnPoint;
-            if (spawn != null && TryGetUICamera(inletAnchor, out var uiCamera) &&
-                Project(inletAnchor, uiCamera, new Plane(Vector3.forward, spawn.position), inletAnchor.rect.center, out var inlet))
-            {
-                var marker = zone.spawnMarker;
-                if (marker != null)
-                {
-                    if ((marker.transform.position - inlet).sqrMagnitude > .00000001f)
-                        marker.transform.position = inlet;
-                    marker.enabled = marker.sprite != null;
-                }
-                if ((spawn.position - inlet).sqrMagnitude > .00000001f)
-                    spawn.position = inlet;
-            }
-        }
+        if (boardRoot == null || worldCamera == null || !worldCamera.isActiveAndEnabled) return;
+        FitBackground(background);
+        bool changed = Fit(leftCollider, leftWall, new Rect(0, 0, leftThickness, 1));
+        changed |= Fit(rightCollider, rightWall, new Rect(1 - rightThickness, 0, rightThickness, 1));
+        changed |= Fit(topCollider, topWall, new Rect(0, 1 - topThickness, 1, topThickness));
         if (changed && Application.isPlaying) Physics2D.SyncTransforms();
-    }
-
-    private void FitDeadlineWidth(SpriteRenderer line)
-    {
-        if (line == null || line.drawMode == SpriteDrawMode.Simple || !TryGetUICamera(frame, out var uiCamera)) return;
-        var t = line.transform;
-        var plane = new Plane(Vector3.forward, t.position);
-        var area = frame.rect;
-        if (!Project(frame, uiCamera, plane, new Vector2(area.xMin, area.center.y), out var left) ||
-            !Project(frame, uiCamera, plane, new Vector2(area.xMax, area.center.y), out var right)) return;
-        float width = Mathf.Abs(t.InverseTransformVector(right - left).x);
-        if (width < .0001f) return;
-        if (Mathf.Abs(line.size.x - width) > .0001f) line.size = new Vector2(width, line.size.y);
-        var position = t.position;
-        position.x = (left.x + right.x) * .5f - t.TransformVector(line.localBounds.center).x;
-        if (Mathf.Abs(position.x - t.position.x) > .0001f) t.position = position;
     }
 
     private bool Fit(BoxCollider2D wall, RectTransform anchor, Rect edge)
     {
+        if (wall == null) return false;
         RectTransform source = anchor != null ? anchor : frame;
         if (!TryGetUICamera(source, out var uiCamera)) return false;
 
@@ -252,10 +200,10 @@ public sealed class MergeWallUIFitter : MonoBehaviour
     internal bool TryProjectBoardPoint(Vector2 normalizedPosition, out Vector3 world)
     {
         world = default;
-        if (box == null || worldCamera == null || !worldCamera.isActiveAndEnabled ||
+        if (boardRoot == null || worldCamera == null || !worldCamera.isActiveAndEnabled ||
             !TryGetUICamera(frame, out var uiCamera)) return false;
         Rect area = frame.rect;
-        return Project(frame, uiCamera, new Plane(Vector3.forward, box.transform.position),
+        return Project(frame, uiCamera, new Plane(Vector3.forward, boardRoot.position),
             area.min + normalizedPosition * area.size, out world);
     }
 
@@ -305,22 +253,18 @@ public sealed class MergeWallUIFitter : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        if (!showFitGizmos || box == null || worldCamera == null) return;
+        if (!showFitGizmos || boardRoot == null || worldCamera == null) return;
         Color previousColor = Gizmos.color;
         Matrix4x4 previousMatrix = Gizmos.matrix;
         Gizmos.matrix = Matrix4x4.identity;
-        DrawProjectedRect(frame, box.transform.position, Color.yellow);
+        DrawProjectedRect(frame, boardRoot.position, Color.yellow);
 
-        foreach (var part in box.visuals)
+        if (background != null && background.enabled && background.sprite != null)
         {
-            if (part == null || part.role != MergeBoxSpriteRole.BackFrame || part.renderer == null) continue;
-            var renderer = part.renderer;
-            if (!renderer.enabled || renderer.sprite == null) continue;
             Gizmos.color = Color.green;
-            Gizmos.matrix = renderer.transform.localToWorldMatrix;
-            Bounds bounds = renderer.localBounds;
+            Gizmos.matrix = background.transform.localToWorldMatrix;
+            Bounds bounds = background.localBounds;
             Gizmos.DrawWireCube(bounds.center, bounds.size);
-            Gizmos.matrix = Matrix4x4.identity;
         }
 
         Gizmos.matrix = previousMatrix;

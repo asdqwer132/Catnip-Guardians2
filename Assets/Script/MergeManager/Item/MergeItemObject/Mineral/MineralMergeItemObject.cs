@@ -52,10 +52,10 @@ public sealed class MineralMergeItemObject : MergeItemObject
         if (RemainingResource <= 0) ReturnToPool();
         return true;
     }
-    protected override void OnCollisionEnter2D(Collision2D collision)
-    { base.OnCollisionEnter2D(collision); TryMine(collision.collider.GetComponentInParent<MergeItemObject>()); }
-    protected override void OnCollisionStay2D(Collision2D collision)
-    { base.OnCollisionStay2D(collision); TryMine(collision.collider.GetComponentInParent<MergeItemObject>()); }
+    private void OnCollisionEnter2D(Collision2D collision)
+    { TryMine(collision.collider.GetComponentInParent<MergeItemObject>()); }
+    private void OnCollisionStay2D(Collision2D collision)
+    { TryMine(collision.collider.GetComponentInParent<MergeItemObject>()); }
     private void OnTriggerEnter2D(Collider2D other) => TryMine(other.GetComponentInParent<MergeItemObject>());
     private void OnTriggerStay2D(Collider2D other) => TryMine(other.GetComponentInParent<MergeItemObject>());
 }

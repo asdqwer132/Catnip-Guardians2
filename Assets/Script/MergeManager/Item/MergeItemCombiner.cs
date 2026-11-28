@@ -1,93 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// 접촉 대기열과 레시피 합성만 담당합니다. 투입 재고는 변경하지 않습니다.
+// 핀 접촉과 굽기에서 호출하는 레시피 합성입니다.
 internal sealed class MergeItemCombiner
 {
     private readonly MergegameManager owner;
-    private readonly List<Contact> contacts = new List<Contact>();
-    private readonly HashSet<ulong> queued = new HashSet<ulong>();
-    private bool processing;
-    private struct Contact { public MergeItemObject a, b; public int aLife, bLife; }
-    private sealed class RecipePlan
-    {
-        public ItemRecipeData recipe;
-        public Dictionary<ItemData, int> required;
-    }
     public MergeItemCombiner(MergegameManager owner) => this.owner = owner;
-    public void ClearContacts() { contacts.Clear(); queued.Clear(); }
-    public void ClearPending() { ClearContacts(); }
-
-    public void QueueContact(MergeItemObject a, MergeItemObject b)
-    {
-        if (!Usable(a) || !Usable(b) || a == b) return;
-        ulong key = a.Serial < b.Serial ? ((ulong)a.Serial << 32) | b.Serial : ((ulong)b.Serial << 32) | a.Serial;
-        if (queued.Add(key)) contacts.Add(new Contact { a = a, b = b, aLife = a.LifeId, bLife = b.LifeId });
-    }
     private bool Usable(MergeItemObject item) => owner.CanOperate && item != null && item.Owner == owner && item.CanMerge;
-    private static bool Touching(MergeItemObject a, MergeItemObject b)
-    {
-        if (a.colider2d == null || b.colider2d == null) return false;
-        var distance = a.colider2d.Distance(b.colider2d);
-        return distance.isValid && distance.distance <= Physics2D.defaultContactOffset * 2f;
-    }
-    private bool Current(Contact contact)
-        => Usable(contact.a) && Usable(contact.b) && contact.a.LifeId == contact.aLife && contact.b.LifeId == contact.bLife && Touching(contact.a, contact.b);
 
-    public void ProcessContacts()
-    {
-        if (processing || contacts.Count == 0) return;
-        var pending = contacts.ToArray(); contacts.Clear(); queued.Clear(); processing = true;
-        try
-        {
-            var neighbors = new Dictionary<MergeItemObject, List<MergeItemObject>>();
-            var lives = new Dictionary<MergeItemObject, int>();
-            foreach (var contact in pending) if (Current(contact))
-            {
-                if (!neighbors.ContainsKey(contact.a)) neighbors.Add(contact.a, new List<MergeItemObject>());
-                if (!neighbors.ContainsKey(contact.b)) neighbors.Add(contact.b, new List<MergeItemObject>());
-                neighbors[contact.a].Add(contact.b); neighbors[contact.b].Add(contact.a);
-                lives[contact.a] = contact.aLife; lives[contact.b] = contact.bLife;
-            }
-            var plans = new List<RecipePlan>();
-            foreach (var recipe in owner.GetRoundRecipes())
-                    if (MergeTree.TryGetIngredients(recipe, out var required)) plans.Add(new RecipePlan { recipe = recipe, required = required });
-            foreach (var contact in pending)
-            {
-                if (!owner.CanOperate) break;
-                if (!Current(contact)) continue;
-                foreach (var plan in plans)
-                {
-                    var selected = SelectIngredients(contact, plan.required, neighbors, lives);
-                    if (selected == null) continue;
-                    if (TryMerge(plan.recipe, selected)) break;
-                }
-            }
-        }
-        finally
-        {
-            processing = false;
-        }
-    }
-    // 같은 접촉 묶음 안에서만 필요한 개수를 고릅니다. 멀리 떨어진 재료는 소비하지 않습니다.
-    private List<MergeItemObject> SelectIngredients(Contact contact, Dictionary<ItemData, int> required,
-        Dictionary<MergeItemObject, List<MergeItemObject>> neighbors, Dictionary<MergeItemObject, int> lives)
-    {
-        if (!required.ContainsKey(contact.a.item)) return null;
-        var remaining = new Dictionary<ItemData, int>(required);
-        var selected = new List<MergeItemObject>();
-        var visited = new HashSet<MergeItemObject>();
-        var search = new Queue<MergeItemObject>(); search.Enqueue(contact.a);
-        while (search.Count > 0)
-        {
-            var item = search.Dequeue();
-            if (!visited.Add(item) || !Usable(item) || item.LifeId != lives[item] || !required.ContainsKey(item.item)) continue;
-            if (remaining[item.item] > 0) { selected.Add(item); remaining[item.item]--; }
-            foreach (var next in neighbors[item]) search.Enqueue(next);
-        }
-        foreach (int amount in remaining.Values) if (amount > 0) return null;
-        return selected;
-    }
     public bool TryMergeAtPin(MergeItemObject seed, Vector2 center, float radius)
     {
         float searchRadiusSquared = radius * radius;

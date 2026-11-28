@@ -1,7 +1,5 @@
 using UnityEngine;
 
-[DefaultExecutionOrder(-200)]
-public sealed class FoodMergeGameManager : MergegameManager { }
 
 public partial class MergegameManager
 {

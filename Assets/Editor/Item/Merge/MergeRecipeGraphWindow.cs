@@ -97,7 +97,6 @@ public sealed class MergeRecipeGraphWindow : EditorWindow
         var targetField = new ObjectField("머지 매니저") { objectType = typeof(MergegameManager), allowSceneObjects = true, value = manager };
         targetField.style.width = 370; targetField.RegisterValueChangedCallback(evt => manager = evt.newValue as MergegameManager);
         targets.Add(targetField);
-        targets.Add(new ToolbarButton(() => Run(() => { MergeRecipeGraphEditing.Import(graph, manager); Rebuild(); canvas.FrameAll(); })) { text = "매니저 북 불러오기" });
         targets.Add(new ToolbarButton(() => Run(() => { MergeRecipeGraphEditing.Apply(graph, manager); Rebuild(); SetStatus("매니저에 레시피북을 연결했습니다."); })) { text = "생성 후 매니저 연결" });
         targets.Add(new ToolbarButton(() => Run(() =>
         {

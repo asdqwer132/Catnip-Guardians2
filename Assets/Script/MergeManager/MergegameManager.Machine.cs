@@ -3,8 +3,6 @@ using UnityEngine;
 
 public enum MergeClawState { Idle, AwaitingItem, Lifting, MovingAlongRail, ApproachingItem, Lowering, Retracting, Returning }
 
-[DefaultExecutionOrder(-200)]
-public sealed class MachineMergeGameManager : MergegameManager { }
 
 public partial class MergegameManager
 {

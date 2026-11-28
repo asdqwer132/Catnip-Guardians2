@@ -12,7 +12,7 @@ public static class GameSaveData
         MergeDiscoveryHistory.SaveFileName,
         UpgradeProgressSave.SaveFileName,
         EquipmentSave.SaveFileName,
-        MergeBoxUpgradeManager.SaveFileName
+        SkillTreeProgressManager.SaveFileName
     };
 
     public static bool ResetAll()

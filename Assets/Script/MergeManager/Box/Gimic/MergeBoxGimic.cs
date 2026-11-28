@@ -57,7 +57,7 @@ public abstract class MergeBoxGimic : MonoBehaviour
         var ids = new System.Collections.Generic.HashSet<string>();
         for (int i = 0; i < skills.Length; i++)
         {
-            if (skills[i] != null && string.IsNullOrWhiteSpace(skills[i].id)) skills[i].id = board.itemSeries + ".Skill" + (i + 1);
+            if (skills[i] != null && string.IsNullOrWhiteSpace(skills[i].id)) skills[i].id = GetType().Name + ".Skill" + (i + 1);
             if (skills[i] == null || !ids.Add(skills[i].id))
             {
                 Debug.LogError("기믹 스킬 ID는 비어 있지 않은 고유 값이어야 합니다.", this);

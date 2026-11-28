@@ -1,36 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 [DefaultExecutionOrder(-200)]
 public partial class MergegameManager : MonoBehaviour
 {
-    public ItemSeries itemSeries;
-    public MergeRecipeBook recipeBook;
+    [SerializeField] private MergeRecipeBook[] recipeBooks = System.Array.Empty<MergeRecipeBook>();
+    public IReadOnlyList<MergeRecipeBook> RecipeBooks => recipeBooks;
     public MergeDiscoveryHistory discoveryHistory;
-    public List<MergeItem> mergeItems = new List<MergeItem>();
-    public List<MergeItemMaterial> mergeMaterials = new List<MergeItemMaterial>();
-    public MergeItemMaterial currentMaterial;
-
-    [Header("기존 씬/풀 연결")]
     public ObjectPoolManager objectPool;
-    public Transform spawnPoint;
-    public MergeDropZone dropZone;
-
-    [Header("생성 옵션")]
-    [Min(0f)] public float dropInterval = 0.5f;
-    [Tooltip("자동·수동 투입에 공통 적용되는 최소 간격입니다. 0이면 별도 시간 하한이 없습니다.")]
-    [Min(0f)] public float minimumDropInterval = .1f;
     [Min(1)] public int maximumActiveItems = 50;
     [Min(0)] public int prewarmCount = 4;
-    [Min(0f)] public float resultMergeDelay = 0.1f;
-    [Min(0f)] public float dropOffset = 0.02f;
-
-    [Header("자동 투입")]
-    public bool automaticDrop;
-    public bool isFeeding = true;
-    [Tooltip("자동 투입이 성공하면 다음 종류를 선택합니다. 소진된 종류는 건너뜁니다.")]
-    public bool cycleAutomaticMaterials = true;
-
+    [Min(0f)] public float resultMergeDelay = .1f;
 
     public bool logActions = true;
 
@@ -38,24 +17,13 @@ public partial class MergegameManager : MonoBehaviour
     private readonly List<MergeItemObject> active = new List<MergeItemObject>();
     [Header("보너스 아이템 생성")]
     public MergeBonusSpawnSettings bonusSpawn = new MergeBonusSpawnSettings();
-    private MergeItemDropper dropper;
     private MergeItemCombiner combiner;
-    private MergeItemDropper Dropper => dropper ?? (dropper = new MergeItemDropper(this));
-    private MergeItemCombiner Combiner => combiner ?? (combiner = new MergeItemCombiner(this));
-    private bool displayMaterialUI = true;
+    private MergeItemCombiner Combiner => combiner ??= new MergeItemCombiner(this);
     private bool clearing;
     private uint serial;
     private int revision;
     public IReadOnlyList<MergeItemObject> ActiveItems => active;
     public string LastMessage => lastMessage;
-    public ItemData NextDropItem => Dropper.NextItem;
-    public float DropCountdown => Dropper.Countdown;
-    public bool IsDropTimerRunning => Dropper.IsTimerRunning;
-    public float DropInterval => Dropper.Interval;
-    public bool MaterialUIEnabled => displayMaterialUI;
-    internal PinballBoard Pinball { get; set; }
-    public bool UsesAutomaticFeeding => automaticDrop || ForceAutomaticFeeding;
-    public bool IsFeedingEnabled => isFeeding || ForceAutomaticFeeding;
     public bool CanOperate => isActiveAndEnabled && !clearing && Time.timeScale > 0f;
     internal int Revision => revision;
     internal int ActiveItemCount
@@ -63,61 +31,21 @@ public partial class MergegameManager : MonoBehaviour
         get { active.RemoveAll(piece => piece == null || !piece.IsLive); return active.Count; }
     }
 
-    protected virtual void OnEnable() => Dropper.Begin();
-    protected virtual void Start() { PrewarmItems(); RefreshUI(); }
-    protected virtual void Update() => Dropper.Tick();
-    protected virtual void LateUpdate() { if (CanOperate && Pinball == null) dropZone?.TickDeadline(this); Combiner.ProcessContacts(); }
-    protected virtual void OnDisable()
+    private void OnDisable()
     {
+        GameSession.InstanceChanged -= BindSession;
+        UnbindSession();
+        gimmickManager?.StopGimic();
         CancelClaw();
         ReleaseRoots();
         ClearMagic();
         ClearMonsters();
-        dropper?.End();
         ClearItems();
     }
 
-    public void RefreshFeedingTiming() => Dropper.ResetCooldown();
-    public void SetFeeding(bool value) => Dropper.SetFeeding(value);
-    public void SetAutomaticDrop(bool value) => Dropper.SetAutomaticDrop(value);
-    public bool TryDropCurrent() => Dropper.TryDropCurrent();
-    public void GetUpcomingDropItems(List<ItemData> result, int maximum) => Dropper.GetUpcomingItems(result, maximum);
-    public void AdvanceSelectedMaterial() => Dropper.AdvanceSelectedMaterial();
-    public void SetAllMaterialsSelected(bool selected) => Dropper.SetAllMaterialsSelected(selected);
-    public void SetMaterialStock(IReadOnlyList<InventoryItem> items) => Dropper.SetMaterialStock(items);
-    public void SetConfiguredMaterialCounts(IReadOnlyList<int> counts) => Dropper.SetConfiguredMaterialCounts(counts);
-    public void QueueContact(MergeItemObject a, MergeItemObject b)
-    {
-        if (Pinball == null) Combiner.QueueContact(a, b);
-    }
     internal bool TryMergeAtPin(MergeItemObject piece, Vector2 center, float radius)
         => Combiner.TryMergeAtPin(piece, center, radius);
-    public void ProcessContacts() => Combiner.ProcessContacts();
     protected bool TryMergeWithIngredient(MergeItemObject food, MergeItem burningItem) => Combiner.TryBake(food, burningItem);
-
-    public void RefreshUI()
-    {
-        if (displayMaterialUI && mergeMaterials != null)
-            foreach (var material in mergeMaterials)
-            {
-                material?.SetCountText();
-                material?.SetActive();
-                if (Pinball != null && material?.mergeUI?.toggle != null)
-                    material.mergeUI.toggle.interactable = false;
-            }
-        Dropper.RefreshMaterialSelection();
-    }
-
-    public void PrewarmItems()
-    {
-        if (objectPool == null || prewarmCount <= 0) return;
-        var prefabs = new HashSet<GameObject>();
-        if (mergeMaterials != null) foreach (var material in mergeMaterials)
-        {
-            if (TryGetPrefab(material?.mergeItem, out var prefab)) prefabs.Add(prefab);
-        }
-        foreach (var prefab in prefabs) objectPool.Prewarm(prefab, prewarmCount);
-    }
 
     internal static bool TryGetPrefab(MergeItem definition, out GameObject prefab)
     {
@@ -127,62 +55,21 @@ public partial class MergegameManager : MonoBehaviour
         return component != null && component.enabled;
     }
 
-    public void SetMaterialUIEnabled(bool value)
-    {
-        displayMaterialUI = value;
-        if (value) RefreshUI();
-    }
-
-    public MergeItemMaterial GetDefinition(ItemData item)
-    {
-        if (item == null) return null;
-        if (mergeMaterials != null) foreach (var definition in mergeMaterials)
-            if (definition?.mergeItem != null && definition.mergeItem.item == item)
-                    return new MergeItemMaterial(
-                        definition.mergeItem,
-                        definition.mergeUI,
-                        0);
-        return null;
-    }
-
-    private IReadOnlyList<MergeBoxRoundProfile> roundSources;
-
-    internal void SetRoundRecipeSources(IReadOnlyList<MergeBoxRoundProfile> sources) => roundSources = sources;
-
     internal IEnumerable<ItemRecipeData> GetRoundRecipes()
     {
-        if (recipeBook != null)
-            foreach (var recipe in recipeBook.Recipes) yield return recipe;
-        if (roundSources == null) yield break;
-        foreach (var profile in roundSources)
-        {
-            var book = profile?.board?.recipeBook;
-            if (book == null || book == recipeBook) continue;
-            foreach (var recipe in book.Recipes) yield return recipe;
-        }
+        foreach (var book in recipeBooks)
+            if (book != null)
+                foreach (var recipe in book.Recipes) yield return recipe;
     }
 
     public MergeItem GetDefinitionAtMergeItem(ItemData item)
     {
         if (item == null) return null;
-        var definition = GetLocalMergeDefinition(item);
-        if (definition != null || roundSources == null) return definition;
-        foreach (var profile in roundSources)
+        foreach (var book in recipeBooks)
         {
-            var board = profile?.board;
-            if (board == null || board == this) continue;
-            definition = board.GetLocalMergeDefinition(item);
+            var definition = book != null ? book.GetDefinition(item) : null;
             if (definition != null) return definition;
         }
-        return null;
-    }
-
-    private MergeItem GetLocalMergeDefinition(ItemData item)
-    {
-        var fromBook = recipeBook != null ? recipeBook.GetDefinition(item) : null;
-        if (fromBook != null) return fromBook;
-        if (mergeItems != null) foreach (var definition in mergeItems)
-            if (definition != null && definition.item == item) return definition;
         return null;
     }
 
@@ -214,7 +101,6 @@ public partial class MergegameManager : MonoBehaviour
 
     public void RemapLayout(Matrix4x4 change)
     {
-        Combiner.ClearContacts();
         foreach (var piece in active)
         {
             if (piece == null || !piece.IsLive) continue;
@@ -241,9 +127,9 @@ public partial class MergegameManager : MonoBehaviour
         clearing = true;
         try
         {
-            revision++; Combiner.ClearPending();
+            revision++;
             foreach (var piece in active.ToArray()) if (piece != null) piece.ReturnToPool();
-            active.Clear(); dropper?.ResetCooldown();
+            active.Clear();
         }
         finally { clearing = false; }
     }

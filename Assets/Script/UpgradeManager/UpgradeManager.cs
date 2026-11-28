@@ -11,7 +11,7 @@ public class UpgradeManager : MonoBehaviour
     public UnlockManager unlockManager;
     public ShopManager shopManager;
     public BuffSkillManager buffSkillManager;
-    public MergeBoxUpgradeManager mergeBoxUpgrades;
+    public SkillTreeProgressManager skillProgress;
     public PotionEquipmentManager potionEquipment;
 
     [Header("UI")]
@@ -38,14 +38,14 @@ public class UpgradeManager : MonoBehaviour
 
         UpgradeInit();
         UIInit();
-        if (mergeBoxUpgrades != null)
+        if (skillProgress != null)
             RefreshBroadcaster.Instance?.Broadcast(RefreshType.SkillTree | RefreshType.Unlock | RefreshType.Shop | RefreshType.Inventory | RefreshType.Equipment);
 
         isInited = true;
         var inventory = materialInventory != null ? materialInventory : InventoryManager.instance;
         if (inventory != null) inventory.onInventoryChanged += QueueCapture;
         if (potionEquipment != null) potionEquipment.Changed += CaptureProgress;
-        if (mergeBoxUpgrades != null && mergeBoxUpgrades.skillTree != null) mergeBoxUpgrades.skillTree.OnSkillTreeChanged += CaptureProgress;
+        if (skillProgress != null && skillProgress.skillTree != null) skillProgress.skillTree.OnSkillTreeChanged += CaptureProgress;
         CaptureProgress();
     }
 
@@ -89,7 +89,7 @@ public class UpgradeManager : MonoBehaviour
     {
         if (skillTreeUI != null)
             skillTreeUI.Init();
-        mergeBoxUpgrades?.Initialize();
+        skillProgress?.Initialize();
         if (boardEquipment != null)
             boardEquipment.InitializeLoadout(unlockManager != null ? EquipmentUnlocks.Capture(unlockManager) : null);
         if (potionEquipment != null && GameSession.Instance != null && GameSession.Instance.TryReadGeneralData(out var data))
@@ -109,7 +109,7 @@ public class UpgradeManager : MonoBehaviour
         var inventory = materialInventory != null ? materialInventory : InventoryManager.instance;
         if (inventory != null) inventory.onInventoryChanged -= QueueCapture;
         if (potionEquipment != null) potionEquipment.Changed -= CaptureProgress;
-        if (mergeBoxUpgrades != null && mergeBoxUpgrades.skillTree != null) mergeBoxUpgrades.skillTree.OnSkillTreeChanged -= CaptureProgress;
+        if (skillProgress != null && skillProgress.skillTree != null) skillProgress.skillTree.OnSkillTreeChanged -= CaptureProgress;
     }
 
 
@@ -132,6 +132,6 @@ public class UpgradeManager : MonoBehaviour
     {
         captureQueued = false;
         GameSession.GetOrCreate().CaptureUpgradeProgress(
-            mergeBoxUpgrades, potionEquipment, materialInventory != null ? materialInventory : InventoryManager.instance, buffSkillManager, unlockManager);
+            skillProgress, potionEquipment, materialInventory != null ? materialInventory : InventoryManager.instance, buffSkillManager, unlockManager);
     }
 }

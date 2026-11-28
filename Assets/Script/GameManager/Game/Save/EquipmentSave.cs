@@ -36,7 +36,7 @@ public sealed class BoardLoadout
 
         // Existing material assets can still be tagged Item in the data workbook.
         string prefix = item.series + "Material";
-        return item.dataType == DataType.Item && MergeBoxLevelSnapshot.IsBoxSeries(item.series) &&
+        return item.dataType == DataType.Item && (item.series is >= ItemSeries.Weapon and <= ItemSeries.Magic) &&
             item.dataId.StartsWith(prefix, StringComparison.Ordinal) &&
             int.TryParse(item.dataId.Substring(prefix.Length), out int number) && number > 0;
     }
@@ -115,15 +115,6 @@ public static class EquipmentSave
     public static MergeBoxEquipmentData FindChest(int number) =>
         Catalog?.entries.Find(entry => entry.asset is MergeBoxEquipmentData chest && chest.boxIndex == number)?.asset
             as MergeBoxEquipmentData;
-
-    public static MergeBoxEquipmentData ResolveChest(EquipmentData equipment, IReadOnlyList<string> unlocked)
-    {
-        if (equipment != null)
-            foreach (int number in equipment.equippedChests)
-                if (EquipmentUnlocks.HasBox(unlocked, number) && FindChest(number) is { } chest) return chest;
-
-        return EquipmentUnlocks.HasBox(unlocked, 1) ? FindChest(1) : null;
-    }
 
     public static MergeBoxEquipmentData ResolveEgg(EquipmentData equipment, IReadOnlyList<string> unlocked)
     {

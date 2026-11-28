@@ -19,9 +19,9 @@ Unity Inspector와 프로젝트 데이터에서 자주 바꾸는 설정을 모�
 
 ## 2. 아이템 씬의 핀볼 보드
 
-- **벽과 투입구** — `MergeWallUIFitter`의 `Frame`과 `Inlet Anchor`가 기준이다. 각 벽의 두께를 개별로 설정할 수 있고, 별도의 벽 RectTransform을 연결하면 그 영역이 우선한다.
+- **벽과 투입구** — `MergeWallUIFitter > Frame`을 기준으로 좌우·위쪽 벽을 맞춘다. `Pinball Board > Inlet Area`는 프레임 왼쪽 아래를 원점으로 하는 0~1 영역이다. 영역을 다섯 칸으로 나눠 각 칸의 중앙에 스폰 마커를 놓는다. 각 마커의 투입 간격은 `MergegameManager > Inlets`에서 지정하고, 0이면 공용 `Drop Interval`을 사용한다.
 - **핀과 배출구** — `Shared Merge Box > Pinball Physics`에서 `Pin 01`부터 `Pin 28`, 좌우 경사로, 배출구 트리거를 찾는다. `Pinball Board > Fit To UI`를 켜면 현재 화면의 UI 영역에 맞춰 핀·경사로·배출구가 배치된다. 이 상태에서는 `Pin Size`, `Ramp Rise`, `Outlet Width`, `Maximum Item Radius`를 조정한다. 오브젝트의 Transform과 콜라이더를 직접 편집하려면 `Fit To UI`를 끈다.
-- **핀 배치 원본** — 업그레이드 씬의 백 패널에서 `Equip Board > Pins` 배치를 수정한다. 보드가 에디터 Hierarchy에서 활성화된 상태에서 `BoardEquipmentPanelUI > ⋮ > Capture Pinball Layout`을 실행하고 에셋을 저장한다. 핀 배열 순서는 장착 슬롯 인덱스와 일치해야 한다. 캡처는 위치와 크기를 저장하며, 슬롯 수를 바꿨다면 아이템 씬의 `Scene Pins` 배열도 같은 순서와 개수로 맞춘다. [핀 배치 에셋](<../Assets/Data/Scriptable/Items/BoardPins/Pinball Board Layout.asset>)
+- **핀 배치 원본** — 업그레이드 씬의 백 패널에서 `Equip Board > Pins` 배치를 수정한다. 보드가 에디터 Hierarchy에서 활성화된 상태에서 `BoardEquipmentPanelUI > ⋮ > Capture Pinball Layout`을 실행하고 에셋을 저장한다. 핀 배열 순서는 장착 슬롯 인덱스와 일치해야 한다. 캡처는 위치와 크기를 저장하며, 슬롯 수를 바꿨다면 아이템 씬의 `Scene Pins` 배열도 같은 순서와 개수로 맞춘다. [핀 배치 에셋](<../Assets/Data/Scriptable/Items/BoardPins/PinSetting/Pinball Board Layout.asset>)
 - **핀 효과** — `BoardPinData > Hit Effects`에 튕김·합성 등의 효과 에셋을 순서대로 연결한다. `World Prefab`은 선택 사항이다. 핀을 교체할 프리팹은 루트에 `PinballPin`과 `CircleCollider2D`, 하위 또는 루트에 `SpriteRenderer`가 있어야 한다. 빈 슬롯에는 `Pinball Board > Default Pin`이 들어간다. [핀과 효과 에셋](../Assets/Data/Scriptable/Items/BoardPins)
 - **기즈모 읽기** — 노란 사각형은 `MergeWallUIFitter`가 투영한 UI 기준 영역, 초록 사각형은 배경 스프라이트 범위다. 핀의 청록 원과 경사로·배출구 표시는 실제 콜라이더를 그린다.
 

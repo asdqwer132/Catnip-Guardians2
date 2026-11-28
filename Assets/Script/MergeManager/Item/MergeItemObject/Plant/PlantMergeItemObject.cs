@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// Growth timing belongs to PlantMergeGameManager; this pooled item displays it.
+// Growth timing belongs to MergegameManager; this pooled item displays it.
 public sealed class PlantMergeItemObject : MergeItemObject
 {
     [SerializeField] private SpriteCooldownController growthFill;

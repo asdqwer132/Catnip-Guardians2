@@ -43,7 +43,7 @@ public static class UpgradeProgressSave
             var snapshot = JsonUtility.FromJson<UpgradeToGeneralData>(json);
             // The purchase ledger is authoritative after correcting duplicated asset IDs.
             // Older snapshots may contain several assets that formerly shared a single purchased key.
-            string ledgerPath = Path.Combine(directory ?? Application.persistentDataPath, MergeBoxUpgradeManager.SaveFileName);
+            string ledgerPath = Path.Combine(directory ?? Application.persistentDataPath, SkillTreeProgressManager.SaveFileName);
             if (snapshot?.unlockedSkillNodes != null && File.Exists(ledgerPath))
             {
                 var ledger = JsonUtility.FromJson<LegacySkills>(File.ReadAllText(ledgerPath));
@@ -51,14 +51,13 @@ public static class UpgradeProgressSave
                     (!ledger.unlockedSkillIds.Contains(node.ProgressKey) && !ledger.unlockedSkillIds.Contains(node.dataId))) > 0)
                 {
                     snapshot.skillItems.Clear();
-                    snapshot.boxLevels.Clear();
                     RefreshSkillValues(snapshot);
                 }
             }
             return snapshot;
         }
         // Migration: older versions persisted unlock IDs but no equipment/inventory snapshot.
-        path = Path.Combine(directory ?? Application.persistentDataPath, MergeBoxUpgradeManager.SaveFileName);
+        path = Path.Combine(directory ?? Application.persistentDataPath, SkillTreeProgressManager.SaveFileName);
         if (!File.Exists(path)) return null;
         var legacy = JsonUtility.FromJson<LegacySkills>(File.ReadAllText(path));
         var data = new UpgradeToGeneralData { legacySkillsOnly = true };
@@ -71,7 +70,6 @@ public static class UpgradeProgressSave
     {
         if (data.unlockedSkillNodes == null || data.unlockedSkillNodes.Count == 0) return;
         data.skillItems.Clear();
-        data.boxLevels.Clear();
         foreach (var node in data.unlockedSkillNodes)
         {
             if (node == null || node.rewards == null) continue;
@@ -79,12 +77,7 @@ public static class UpgradeProgressSave
             {
                 if (reward is BuffSkillReward buff && buff.buffItemData != null && !data.skillItems.Exists(value => value.itemData == buff.buffItemData))
                     data.skillItems.Add(new SkillItemSnapshot { itemData = buff.buffItemData });
-                if (reward is MergeBoxLevelSkillReward box)
-                {
-                    var level = data.boxLevels.Find(value => value.series == box.series);
-                    if (level == null) data.boxLevels.Add(new MergeBoxLevelSnapshot { series = box.series, level = box.level });
-                    else level.level = Math.Max(level.level, box.level);
-                }
+
             }
         }
     }

@@ -66,14 +66,13 @@ public class GameSession : MonoBehaviour
         InstanceChanged?.Invoke();
     }
 
-    public void CaptureUpgradeProgress(MergeBoxUpgradeManager mergeBoxUpgrades, PotionEquipmentManager potionEquipment,
+    public void CaptureUpgradeProgress(SkillTreeProgressManager skillProgress, PotionEquipmentManager potionEquipment,
         InventoryManager materialInventory, BuffSkillManager buffSkillManager, UnlockManager unlockManager)
     {
         var data = new UpgradeToGeneralData();
-        if (mergeBoxUpgrades != null)
+        if (skillProgress != null)
         {
-            data.boxLevels = mergeBoxUpgrades.CaptureLevels();
-            data.unlockedSkillNodes = mergeBoxUpgrades.CaptureUnlockedNodes();
+            data.unlockedSkillNodes = skillProgress.CaptureUnlockedNodes();
         }
         if (potionEquipment != null)
         {
@@ -129,11 +128,9 @@ public class GameSession : MonoBehaviour
     {
         generalData = (data ?? new UpgradeToGeneralData()).Copy();
         generalData.equipmentUnlockKeys ??= EquipmentUnlocks.RestoreLegacy(generalData.unlockedSkillNodes);
-        generalData.equippedChest = EquipmentSave.ResolveChest(generalData.equipment, generalData.equipmentUnlockKeys);
         generalData.equippedEgg = EquipmentSave.ResolveEgg(generalData.equipment, generalData.equipmentUnlockKeys);
         var progress = generalData.Copy();
         progress.equipment = null;
-        progress.equippedChest = null;
         if (EquipmentSave.Current.potions.Count > 0) progress.potionSlots.Clear();
         UpgradeProgressSave.Write(progress);
         hasGeneralData = true;
@@ -159,23 +156,20 @@ public class GameSession : MonoBehaviour
         var usedMaterials = new Dictionary<ItemData, int>();
         foreach (string id in data.equipment.itemIds)
         {
-            var item = string.IsNullOrEmpty(id) ? null : inventory.Find(entry => entry.itemData.dataId == id);
-            if (hasBoard)
+            var item = string.IsNullOrEmpty(id) ? null :
+                inventory.Find(entry => entry.itemData.dataId == id && BoardLoadout.AcceptsMaterial(entry.itemData));
+            if (item != null)
             {
-                if (!BoardLoadout.AcceptsMaterial(item?.itemData)) item = null;
-                else
+                usedMaterials.TryGetValue(item.itemData, out int equipped);
+                if (equipped < item.amount)
                 {
-                    usedMaterials.TryGetValue(item.itemData, out int equipped);
-                    if (equipped >= item.amount) item = null;
-                    else
-                    {
-                        usedMaterials[item.itemData] = equipped + 1;
-                        item = new InventoryItem(item.itemData, 1);
-                    }
+                    usedMaterials[item.itemData] = equipped + 1;
+                    item = new InventoryItem(item.itemData, 1);
+                    data.materialItems.Add(item);
                 }
-                data.boardMaterialSlots.Add(item);
+                else item = null;
             }
-            if (item != null) data.materialItems.Add(item);
+            data.boardMaterialSlots.Add(item);
         }
 
         if (hasBoard)
@@ -202,7 +196,6 @@ public class GameSession : MonoBehaviour
     {
         generalData ??= new UpgradeToGeneralData();
         generalData.equipment = equipment?.Copy();
-        generalData.equippedChest = EquipmentSave.ResolveChest(equipment, generalData.equipmentUnlockKeys);
         generalData.equippedEgg = EquipmentSave.ResolveEgg(equipment, generalData.equipmentUnlockKeys);
         if (!hasGeneralData) return;
         GameDataRevision++;

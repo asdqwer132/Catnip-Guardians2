@@ -10,6 +10,7 @@ using TMPro;
 public class MergeGimicManager : MonoBehaviour
 {
     public const int MaxActiveModules = 3;
+    [SerializeField] private MergeBoxGimic[] availableGimmicks = Array.Empty<MergeBoxGimic>();
     [SerializeField] private CoolButton[] skillButtons = Array.Empty<CoolButton>();
     [ReadOnly, SerializeField] private MergeBoxGimic currentBox;
     private readonly List<MergeBoxGimic> modules = new List<MergeBoxGimic>(MaxActiveModules);
@@ -19,11 +20,20 @@ public class MergeGimicManager : MonoBehaviour
     public MergeBoxGimic CurrentGimic => currentBox;
     public IReadOnlyList<MergeBoxGimic> ActiveModules => modules;
 
-    public void InitializeGimic(MergegameManager board, MergeBoxBindings box)
-        => InitializeModule(board, box != null ? box.GetComponent<MergeBoxGimic>() : null);
+    public void ApplyLoadout(MergegameManager board, UpgradeToGeneralData data)
+    {
+        var selected = new List<MergeBoxGimic>(MaxActiveModules);
+        var equipment = data?.equipment;
+        var indices = equipment?.board?.IsConfigured == true ? equipment.board.skillIndices : equipment?.equippedChests;
+        if (indices != null)
+            foreach (int number in indices)
+                if (number >= 1 && number <= availableGimmicks.Length &&
+                    EquipmentUnlocks.HasBox(data.equipmentUnlockKeys, number))
+                    selected.Add(availableGimmicks[number - 1]);
 
-    public void InitializeModule(MergegameManager board, MergeBoxGimic gimmick)
-        => InitializeModules(board, new[] { gimmick });
+        InitializeModules(board, selected, (gimmick, index) =>
+            EquipmentUnlocks.HasSkill(data.equipmentUnlockKeys, Array.IndexOf(availableGimmicks, gimmick) + 1, index + 1));
+    }
 
     public void InitializeModules(MergegameManager board, IEnumerable<MergeBoxGimic> gimmicks, Func<MergeBoxGimic, int, bool> isSkillUnlocked = null)
     {

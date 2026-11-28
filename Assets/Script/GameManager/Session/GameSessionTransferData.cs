@@ -1,15 +1,6 @@
 using System;
 using System.Collections.Generic;
 
-[Serializable]
-public sealed class MergeBoxLevelSnapshot
-{
-    public ItemSeries series;
-    public int level = 1;
-    public static bool IsBoxSeries(ItemSeries value) => value != ItemSeries.None && value != ItemSeries.Potions && Enum.IsDefined(typeof(ItemSeries), value);
-    public MergeBoxLevelSnapshot Copy() => new MergeBoxLevelSnapshot { series = series, level = Math.Max(1, level) };
-}
-
 /// <summary>스킬트리에서 등록한 실행 아이템입니다.</summary>
 [Serializable]
 public sealed class SkillItemSnapshot
@@ -41,13 +32,12 @@ public sealed class PotionEquipmentSnapshot
     public PotionEquipmentSnapshot Copy() => new PotionEquipmentSnapshot { slotIndex = slotIndex, locked = locked, potion = potion };
 }
 
-/// <summary>업그레이드 씬 → 제너럴 씬. 아이템 에셋·수량과 시리즈별 상자 레벨을 보관합니다.</summary>
+/// <summary>업그레이드 씬 → 제너럴 씬. 아이템 에셋·수량과 장착 정보를 보관합니다.</summary>
 [Serializable]
 public sealed class UpgradeToGeneralData
 {
     public bool legacySkillsOnly;
     public EquipmentData equipment;
-    public MergeBoxEquipmentData equippedChest;
     [NonSerialized] public MergeBoxEquipmentData equippedEgg;
     // Derived for gameplay from equipped IDs and round stock. Empty entries keep board positions.
     [NonSerialized] public List<InventoryItem> boardMaterialSlots = new List<InventoryItem>();
@@ -57,14 +47,12 @@ public sealed class UpgradeToGeneralData
     public List<SkillItemSnapshot> skillItems = new List<SkillItemSnapshot>();
     public List<SkillNodeData> unlockedSkillNodes = new List<SkillNodeData>();
     public List<PotionEquipmentSnapshot> potionSlots = new List<PotionEquipmentSnapshot>();
-    public List<MergeBoxLevelSnapshot> boxLevels = new List<MergeBoxLevelSnapshot>();
 
     public UpgradeToGeneralData Copy()
     {
         var copy = new UpgradeToGeneralData {
             legacySkillsOnly = legacySkillsOnly,
             equipment = equipment?.Copy(),
-            equippedChest = equippedChest,
             equippedEgg = equippedEgg,
             boardMaterialSlots = boardMaterialSlots?.ConvertAll(item =>
                 item != null ? new InventoryItem(item.itemData, item.amount) : null) ?? new List<InventoryItem>(),
@@ -74,8 +62,6 @@ public sealed class UpgradeToGeneralData
             unlockedSkillNodes = unlockedSkillNodes != null ? new List<SkillNodeData>(unlockedSkillNodes) : new List<SkillNodeData>(),
             potionSlots = potionSlots != null ? potionSlots.ConvertAll(value => value?.Copy()) : new List<PotionEquipmentSnapshot>()
         };
-        if (boxLevels != null) foreach (var entry in boxLevels)
-            if (entry != null && MergeBoxLevelSnapshot.IsBoxSeries(entry.series)) copy.boxLevels.Add(entry.Copy());
         if (skillItems != null)
         {
             foreach (SkillItemSnapshot item in skillItems)

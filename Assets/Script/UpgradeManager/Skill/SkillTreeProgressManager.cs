@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-// Upgrade 씬의 구매 기록을 저장하고, 씬 오브젝트 없이 상자 레벨만 세션에 전달합니다.
+// Upgrade 씬에서 구매한 스킬 노드를 저장하고 복원합니다.
 [DefaultExecutionOrder(-50), DisallowMultipleComponent]
-public sealed class MergeBoxUpgradeManager : MonoBehaviour
+public sealed class SkillTreeProgressManager : MonoBehaviour
 {
     public const string SaveFileName = "merge-box-upgrades.json";
     [Serializable] private sealed class Progress
     {
         public List<string> unlockedSkillIds = new List<string>();
-        public List<MergeBoxLevelSnapshot> boxLevels = new List<MergeBoxLevelSnapshot>();
     }
 
     public SkillTreeManager skillTree;
@@ -24,7 +23,7 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
     private void OnEnable()
     {
         if (skillTree == null) return;
-        skillTree.mergeBoxUpgrades = this;
+        skillTree.skillProgress = this;
         skillTree.OnSkillUnlocked += RegisterNode;
         skillTree.OnSkillTreeChanged += SaveProgress;
     }
@@ -48,7 +47,6 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
         string json = GameManager.DebugMode ? null : store.Read();
         if (!string.IsNullOrEmpty(json)) progress = JsonUtility.FromJson<Progress>(json) ?? new Progress();
         if (progress.unlockedSkillIds == null) progress.unlockedSkillIds = new List<string>();
-        if (progress.boxLevels == null) progress.boxLevels = new List<MergeBoxLevelSnapshot>();
         loaded = true;
     }
 
@@ -60,7 +58,7 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
     {
         Load();
         if (initialized || skillTree == null) return;
-        skillTree.mergeBoxUpgrades = this;
+        skillTree.skillProgress = this;
         // Old saves stored only node IDs. Preserve their original first-match interpretation,
         // then use map-qualified identities for every subsequent purchase.
         for (int i = 0; i < progress.unlockedSkillIds.Count; i++)
@@ -78,7 +76,6 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
             if (GameManager.DebugMode)
                 foreach (var node in unlocked)
                     if (!progress.unlockedSkillIds.Contains(node.ProgressKey)) progress.unlockedSkillIds.Add(node.ProgressKey);
-            RebuildLevels();
             initialized = true;
         }
         finally { restoring = false; }
@@ -95,35 +92,12 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
         // 새로 작성한 UI 노드도 이전 구매 ID가 있으면 복원합니다.
         Load();
         if (!initialized || skillTree == null) return;
-        if (skillTree.IsUnlocked(node)) { RebuildLevels(); return; }
+        if (skillTree.IsUnlocked(node)) return;
         if (!GameManager.DebugMode && !progress.unlockedSkillIds.Contains(node.ProgressKey)) return;
         if (!progress.unlockedSkillIds.Contains(node.ProgressKey)) progress.unlockedSkillIds.Add(node.ProgressKey);
         restoring = true;
-        try { skillTree.RestoreUnlockedSkills(new[] { node }); RebuildLevels(); }
+        try { skillTree.RestoreUnlockedSkills(new[] { node }); }
         finally { restoring = false; }
-    }
-    public void ApplyReward(ItemSeries series, int level)
-    {
-        Load();
-        if (!MergeBoxLevelSnapshot.IsBoxSeries(series)) return;
-        var entry = progress.boxLevels.Find(value => value.series == series);
-        if (entry == null) progress.boxLevels.Add(new MergeBoxLevelSnapshot { series = series, level = Math.Max(1, level) });
-        else entry.level = Math.Max(entry.level, level);
-    }
-    private void RebuildLevels()
-    {
-        progress.boxLevels.Clear();
-        foreach (ItemSeries series in Enum.GetValues(typeof(ItemSeries)))
-            if (MergeBoxLevelSnapshot.IsBoxSeries(series)) ApplyReward(series, 1);
-        foreach (string id in progress.unlockedSkillIds)
-        {
-            var node = skillNodes.Find(value => value != null && value.ProgressKey == id);
-            if (node == null || !skillTree.IsUnlocked(node) || node.rewards == null) continue;
-            foreach (var reward in node.rewards)
-            {
-                if (reward is MergeBoxLevelSkillReward box) ApplyReward(box.series, box.level);
-            }
-        }
     }
     public void SaveProgress()
     {
@@ -136,23 +110,11 @@ public sealed class MergeBoxUpgradeManager : MonoBehaviour
             { if (!progress.unlockedSkillIds.Contains(node.ProgressKey)) progress.unlockedSkillIds.Add(node.ProgressKey); }
             else progress.unlockedSkillIds.Remove(node.ProgressKey);
         }
-        RebuildLevels();
         if (!GameManager.DebugMode) store.Write(JsonUtility.ToJson(progress));
     }
     public List<SkillNodeData> CaptureUnlockedNodes()
     {
         Initialize();
         return skillNodes.FindAll(node => node != null && skillTree != null && skillTree.IsUnlocked(node));
-    }
-
-    public List<MergeBoxLevelSnapshot> CaptureLevels()
-    {
-        Initialize();
-        return progress.boxLevels.ConvertAll(entry => entry.Copy());
-    }
-    public int GetLevel(ItemSeries series)
-    {
-        Initialize();
-        return progress.boxLevels.Find(entry => entry.series == series)?.level ?? 1;
     }
 }
