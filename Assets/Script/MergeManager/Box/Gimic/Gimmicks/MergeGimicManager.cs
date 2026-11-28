@@ -28,11 +28,11 @@ public class MergeGimicManager : MonoBehaviour
         if (indices != null)
             foreach (int number in indices)
                 if (number >= 1 && number <= availableGimmicks.Length &&
-                    EquipmentUnlocks.HasBox(data.equipmentUnlockKeys, number))
+                    UpgradeSystemOpener.IsBoxOpen(data.equipmentUnlockKeys, number))
                     selected.Add(availableGimmicks[number - 1]);
 
         InitializeModules(board, selected, (gimmick, index) =>
-            EquipmentUnlocks.HasSkill(data.equipmentUnlockKeys, Array.IndexOf(availableGimmicks, gimmick) + 1, index + 1));
+            UpgradeSystemOpener.IsSkillOpen(data.equipmentUnlockKeys, Array.IndexOf(availableGimmicks, gimmick) + 1, index + 1));
     }
 
     public void InitializeModules(MergegameManager board, IEnumerable<MergeBoxGimic> gimmicks, Func<MergeBoxGimic, int, bool> isSkillUnlocked = null)

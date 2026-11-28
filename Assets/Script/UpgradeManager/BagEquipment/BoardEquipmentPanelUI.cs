@@ -20,6 +20,7 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
     [SerializeField] private BagEquipmentSlotUI[] materialSlots;
     [SerializeField] private BagEquipmentSlotUI[] pinSlots;
     [SerializeField] private SkillOption[] boardSkills;
+    [SerializeField] private UpgradeSystemOpener systemOpener;
     [SerializeField] private BagEquipmentSlotUI eggSlot;
     [SerializeField] private Button previousEgg;
     [SerializeField] private Button nextEgg;
@@ -51,14 +52,14 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
     private bool editingPin;
     private int selectedSlot = -1;
 
-    public void InitializeLoadout(IReadOnlyList<string> unlocked)
+    public void InitializeLoadout()
     {
         var current = EquipmentSave.Current;
         if (current.board?.IsConfigured == true && current.itemIds.Count == materialSlots.Length &&
             current.board.pinIds.Count == pinSlots.Length) return;
 
         var equipment = current.Copy();
-        var board = GetOrCreateBoard(equipment, unlocked);
+        var board = GetOrCreateBoard(equipment, GetUnlocked());
         FitSlots(equipment.itemIds, materialSlots.Length);
         FitSlots(board.pinIds, pinSlots.Length);
         EquipmentSave.Write(equipment);
@@ -91,6 +92,7 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
 
         session = GameSession.GetOrCreate();
         session.GameDataChanged += Refresh;
+        if (systemOpener != null) systemOpener.Changed += Refresh;
         InventoryManager.InstanceChanged += BindStock;
         BindStock();
         search.SetTargetUI(inventory);
@@ -104,6 +106,7 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
         for (int i = 0; i < boardSkills.Length; i++)
             boardSkills[i].toggle.onValueChanged.RemoveListener(skillHandlers[i]);
         if (session != null) session.GameDataChanged -= Refresh;
+        if (systemOpener != null) systemOpener.Changed -= Refresh;
         InventoryManager.InstanceChanged -= BindStock;
         if (stock != null) stock.onInventoryChanged -= Refresh;
         stock = null;
@@ -209,9 +212,9 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
         var unlocked = GetUnlocked();
         var board = GetOrCreateBoard(equipment, unlocked);
         int number = option.data.boxIndex;
-        if (!EquipmentUnlocks.HasBox(unlocked, number)) { Refresh(); return; }
+        if (!UpgradeSystemOpener.IsBoxOpen(unlocked, number)) { Refresh(); return; }
 
-        board.skillIndices.RemoveAll(index => !EquipmentUnlocks.HasBox(unlocked, index));
+        board.skillIndices.RemoveAll(index => !UpgradeSystemOpener.IsBoxOpen(unlocked, index));
         if (selected && !board.skillIndices.Contains(number))
         {
             if (board.skillIndices.Count >= MergeGimicManager.MaxActiveModules) { Refresh(); return; }
@@ -229,12 +232,13 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
         var equipment = EquipmentSave.Current.Copy();
         var unlocked = GetUnlocked();
         var board = GetOrCreateBoard(equipment, unlocked);
-        int current = EquipmentSave.ResolveEgg(equipment, unlocked)?.boxIndex ?? 1;
+        int current = ResolveOpenEggIndex(equipment, unlocked);
+        if (current == BoardLoadout.NoEgg) return;
         int count = EquipmentUnlocks.BoxCount;
         for (int step = 1; step < count; step++)
         {
             int index = (current - 1 + direction * step + count) % count + 1;
-            if (!EquipmentUnlocks.HasEgg(unlocked, index) || EquipmentSave.FindChest(index)?.plant == null) continue;
+            if (systemOpener.GetOpenTree(index, unlocked) == null) continue;
             board.eggBoxIndex = index;
             if (Write(equipment))
             {
@@ -245,20 +249,29 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
         }
     }
 
-    private static BoardLoadout GetOrCreateBoard(EquipmentData equipment, IReadOnlyList<string> unlocked)
+    private BoardLoadout GetOrCreateBoard(EquipmentData equipment, IReadOnlyList<string> unlocked)
     {
         if (equipment.board?.IsConfigured == true) return equipment.board;
-        var board = new BoardLoadout { eggBoxIndex = EquipmentSave.ResolveEgg(equipment, unlocked)?.boxIndex ?? BoardLoadout.NoEgg };
+        var board = new BoardLoadout { eggBoxIndex = ResolveOpenEggIndex(equipment, unlocked) };
         foreach (int index in equipment.equippedChests)
         {
-            if (!EquipmentUnlocks.HasBox(unlocked, index) || board.skillIndices.Contains(index)) continue;
+            if (!UpgradeSystemOpener.IsBoxOpen(unlocked, index) || board.skillIndices.Contains(index)) continue;
             board.skillIndices.Add(index);
             if (board.skillIndices.Count == MergeGimicManager.MaxActiveModules) break;
         }
         return equipment.board = board;
     }
 
-    private IReadOnlyList<string> GetUnlocked() => session?.EquipmentUnlockKeys;
+    private IReadOnlyList<string> GetUnlocked() => systemOpener?.ReadKeys() ?? session?.EquipmentUnlockKeys;
+
+    private int ResolveOpenEggIndex(EquipmentData equipment, IReadOnlyList<string> keys)
+    {
+        int selected = equipment.board?.eggBoxIndex ?? BoardLoadout.NoEgg;
+        if (systemOpener?.GetOpenTree(selected, keys) != null) return selected;
+        for (int i = 1; i <= EquipmentUnlocks.BoxCount; i++)
+            if (systemOpener?.GetOpenTree(i, keys) != null) return i;
+        return BoardLoadout.NoEgg;
+    }
 
     private bool Write(EquipmentData equipment)
     {
@@ -271,28 +284,34 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
     {
         var equipment = EquipmentSave.Current;
         inventory.RefreshUI();
-        var board = GetOrCreateBoard(equipment.Copy(), GetUnlocked());
         var unlocked = GetUnlocked();
+        var board = GetOrCreateBoard(equipment.Copy(), unlocked);
         RefreshSlots(materialSlots, equipment.itemIds, false);
         RefreshSlots(pinSlots, board.pinIds, true);
-        var egg = EquipmentSave.ResolveEgg(equipment, unlocked);
-        var plant = egg != null ? egg.plant : null;
-        eggSlot?.Show(plant, false, displayIcon: plant != null ? plant.GetGrowthSprite(0) ?? egg.icon : null);
+        int eggIndex = ResolveOpenEggIndex(equipment, unlocked);
+        var plant = systemOpener?.GetOpenTree(eggIndex, unlocked);
+        Sprite icon = null;
+        if (plant != null)
+        {
+            icon = plant.GetGrowthSprite(0);
+            if (icon == null) icon = plant.icon;
+            if (icon == null) icon = EquipmentSave.FindChest(eggIndex)?.icon;
+        }
+        eggSlot?.Show(plant, false, displayIcon: icon);
 
         bool canChangeEgg = false;
         for (int index = 1; index <= EquipmentUnlocks.BoxCount; index++)
         {
-            if (index == egg?.boxIndex || !EquipmentUnlocks.HasEgg(unlocked, index)) continue;
-            if (EquipmentSave.FindChest(index)?.plant == null) continue;
+            if (index == eggIndex || systemOpener?.GetOpenTree(index, unlocked) == null) continue;
             canChangeEgg = true;
             break;
         }
 
-        int equippedSkillCount = board.skillIndices.FindAll(index => EquipmentUnlocks.HasBox(unlocked, index)).Count;
+        int equippedSkillCount = board.skillIndices.FindAll(index => UpgradeSystemOpener.IsBoxOpen(unlocked, index)).Count;
         foreach (var option in boardSkills)
         {
             var data = option.data;
-            bool available = EquipmentUnlocks.HasBox(unlocked, data.boxIndex);
+            bool available = UpgradeSystemOpener.IsBoxOpen(unlocked, data.boxIndex);
             bool selected = available && board.skillIndices.Contains(data.boxIndex);
             option.toggle.interactable = available && (selected || equippedSkillCount < MergeGimicManager.MaxActiveModules);
             option.toggle.SetIsOnWithoutNotify(selected);
@@ -301,7 +320,7 @@ public sealed class BoardEquipmentPanelUI : MonoBehaviour
             for (int i = 0; i < option.skillViews.Length; i++)
             {
                 var skill = i < data.skills.Length ? data.skills[i] : null;
-                bool unlockedSkill = available && EquipmentUnlocks.HasSkill(unlocked, data.boxIndex, i + 1);
+                bool unlockedSkill = available && UpgradeSystemOpener.IsSkillOpen(unlocked, data.boxIndex, i + 1);
                 option.skillViews[i]?.Show(unlockedSkill ? skill : null);
             }
         }

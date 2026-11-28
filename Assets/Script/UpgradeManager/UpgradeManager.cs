@@ -91,7 +91,7 @@ public class UpgradeManager : MonoBehaviour
             skillTreeUI.Init();
         skillProgress?.Initialize();
         if (boardEquipment != null)
-            boardEquipment.InitializeLoadout(unlockManager != null ? EquipmentUnlocks.Capture(unlockManager) : null);
+            boardEquipment.InitializeLoadout();
         if (potionEquipment != null && GameSession.Instance != null && GameSession.Instance.TryReadGeneralData(out var data))
             potionEquipment.RestoreSlots(data.potionSlots);
         if (inventoryUIs == null)

@@ -74,7 +74,7 @@ public class UnlockManager : MonoBehaviour
         bool added = ids.Add(unlockId);
 
         RefreshDebugList();
-        if (type == DataType.MergeBox && added)
+        if (added && type is (DataType.System or DataType.MergeBox or DataType.BoardSkill))
             RefreshBroadcaster.Instance?.Broadcast(RefreshType.Unlock | RefreshType.Equipment);
 
         if (debugLog)
@@ -106,7 +106,7 @@ public class UnlockManager : MonoBehaviour
         }
 
         RefreshDebugList();
-        if (type == DataType.MergeBox && removed)
+        if (removed && type is (DataType.System or DataType.MergeBox or DataType.BoardSkill))
             RefreshBroadcaster.Instance?.Broadcast(RefreshType.Unlock | RefreshType.Equipment);
 
         if (debugLog && removed)

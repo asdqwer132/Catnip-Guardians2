@@ -4,27 +4,9 @@ public static class EquipmentUnlocks
 {
     public const int BoxCount = 8;
 
-    public static bool HasBox(IReadOnlyList<string> keys, int box) =>
-        box >= 1 && box <= BoxCount && Has(keys, BoxKey(box));
-
-    public static bool HasSkill(IReadOnlyList<string> keys, int box, int skill) =>
-        skill >= 1 && skill <= 3 && HasBox(keys, box) && Has(keys, SkillKey(box, skill));
-
-    public static bool HasEgg(IReadOnlyList<string> keys, int box) =>
-        box >= 1 && box <= BoxCount && Has(keys, EggKey(box));
-
-    private static bool Has(IReadOnlyList<string> keys, string key)
-    {
-        if (GameManager.DebugMode) return true;
-        if (keys != null)
-            foreach (string value in keys)
-                if (value == key) return true;
-        return false;
-    }
-
-    private static string BoxKey(int box) => $"GimickOpen_{box}";
-    private static string SkillKey(int box, int skill) => $"Gimick{skill}SkillOpen_{box}";
-    private static string EggKey(int box) => $"TreeOpen_{box}";
+    internal static string BoxKey(int box) => $"GimickOpen_{box}";
+    internal static string SkillKey(int box, int skill) => $"Gimick{skill}SkillOpen_{box}";
+    internal static string EggKey(int box) => $"TreeOpen_{box}";
 
     public static List<string> Capture(UnlockManager manager)
     {

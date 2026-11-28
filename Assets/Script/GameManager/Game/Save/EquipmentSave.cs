@@ -119,11 +119,11 @@ public static class EquipmentSave
     public static MergeBoxEquipmentData ResolveEgg(EquipmentData equipment, IReadOnlyList<string> unlocked)
     {
         int index = equipment?.board?.eggBoxIndex ?? 0;
-        if (EquipmentUnlocks.HasEgg(unlocked, index) && FindChest(index) is { plant: not null } selected)
+        if (UpgradeSystemOpener.IsTreeOpen(unlocked, index) && FindChest(index) is { plant: not null } selected)
             return selected;
 
         for (int number = 1; number <= EquipmentUnlocks.BoxCount; number++)
-            if (EquipmentUnlocks.HasEgg(unlocked, number) && FindChest(number) is { plant: not null } egg)
+            if (UpgradeSystemOpener.IsTreeOpen(unlocked, number) && FindChest(number) is { plant: not null } egg)
                 return egg;
         return null;
     }
